@@ -67,7 +67,7 @@ git commit -m 'Initial commit: Uploading notebook.md'
 git push origin main
 ```
 
-### Meeting with Alison
+### Meeting with Alison, 2022-1018
 - Label yeast (*S. cerevisiae*) with 4tU for 6 minutes: this allows us to identify nascent transcription
 - Isolate RNA from frozen pellet
 - *K. lactis* spiked in during the RNA-isolation step; thus, the RNA is comprised of two species
@@ -89,3 +89,41 @@ git push origin main
 - RPKM/FPKM normalization is a form of RNA-seq normalization that is known to perform poorly when assumptions for library-size normalization (namely, as assumption that extracted  mRNA/cell is the same `*`) are violated; have we considered trying other forms of normalization? I wonder if that's something I could try on the side while Alison moves forward with...
 - What does "single tag" and "double tag" mean again?
 
+### Meeting with Alison and Toshi, 2022-1019
+#### Design
+- With Alison's project, comparing three types of Q cells
+- For parental and mutant strains, there are two lines (except double mutant strains)
+- Add 4tU, label for 6 minutes: transcribed RNAs within this window will include 4tU
+- Sequence all RNA
+	- The total is considered "steady state" RNA
+	- Pull down the transcripts that contain 4tU (using "click chemistry")
+- Rationale for normalization: On a per-cell level, how much is transcription changing? Unless we normalize, we can't say if, e.g., "antisense is only increasing or sense is going down"
+	- This rationale is not super clear
+- From 40 µg total RNA, end up with 16 µL of nascent RNA at a concentration of approximately 5 ng/µL
+
+#### Background
+- In Q, many genes have highly elevated antisense transcription
+- Want to establish what among these have functional significance
+- Experimental system: Have depleted genetic factors with roles in the termination of antisense transcription
+- We'll know this experimental system work if/when...
+    - we see that antisense transcription is up for genes
+    - antisense transcription termination is blocked, i.e., the ncRNA is longer
+
+#### Goals for me
+- Help Alison with normalization
+    - "The logic for *ratio of ratios*: If *S. cerevisiae* goes up, we want the scaling factor to go up."
+    - `#QUESTION` But surely there's another way to calculate a number with this property, right?
+    - `#NOTE` Toshi requested that Alison try a different calculation/normalization scheme
+    - `#TODO` Touch base with Alison on what she's doing now
+    - I think this is it:
+    	- First, normalize to depth
+    	- Then, calculate size factor for the strain (take the ratio `KL/SC`)
+    	- "One strain set as basis"  `#WHAT`
+- Need to establish an automated way to annotate ncRNAs with Trinity
+	- Non trivially difficult: No ORF as with sense transcripts
+
+#### Next steps
+- Get Alison's code running on the cluster
+- Systematize it
+- `#GENERAL` Learn how people do things and search for more streamlined ways to do things
+- Look into additional programs to do transcriptome annotation like Trinity, but touch base with Alison before trying any of them: She may have tried them already and may then have input
