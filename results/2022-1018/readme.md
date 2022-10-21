@@ -1,6 +1,6 @@
 
 # 2022-1018
-## E-mail 1
+## E-mail 1 (from Alison)
 ### Scripts
 The following scripts
 - `New_101122_sc_bowtie_4tu.sh`
@@ -9,7 +9,7 @@ The following scripts
 - `map2genome_gff.sh`
 ...were included in an email sent by Alison on 2022-1018.
 
-### Contents (from Alison)
+### Contents
 Hi Kris! 
 
 I know Toshi got a really fancy computer, so it may be better/faster to do this locally for you. For me, I use the server. 
@@ -32,36 +32,36 @@ Hope you feel better. Take your time with this; I know it's a lot of information
 Best, 
 Alison 
 
-## E-mail 2
+## E-mail 2 (from Alison)
 ### Attached files
 - heatmaps_nab3_nrd1.pptx
 - 20220928_lab_meeting.pptx
 - scaling_factor.xlsx
 
-### Contents (from Alison)
+### Contents
 NA
 
-## E-mail 3
+## E-mail 3 (from Alison)
 (Concerns Nature Reviews on noncoding RNAs.)
 - [How noncoding RNAs began to leave the junkyard | Nature Methods](https://www.nature.com/articles/s41592-022-01627-8?utm_source=nmeth_etoc&utm_medium=email&utm_campaign=toc_41592_19_10&utm_content=20221011)
 - [Regulatory non-coding RNAs: everything is possible, but what is important? | Nature Methods](https://www.nature.com/articles/s41592-022-01629-6?utm_source=nmeth_etoc&utm_medium=email&utm_campaign=toc_41592_19_10&utm_content=20221011)
 - [Some roads ahead for noncoding RNAs | Nature Methods](https://www.nature.com/articles/s41592-022-01628-7?utm_source=nmeth_etoc&utm_medium=email&utm_campaign=toc_41592_19_10&utm_content=20221011)
 
-## E-mail 4
+## E-mail 4 (from Alison)
 ### Script
 - AG_CC_read_counts_RNA_April2022.sh
 
-### Contents (from Alison)
+### Contents
 I realized I never gave you the script that counts reads for normalization. Here is that! (No need to look at it tonight!!!) 
 
 Alison
 
 # 2022-1019
-## E-mail 1
+## E-mail 1 (from Alison)
 ### File
 - normalization_station.pptx
 
-### Contents (from Alison)
+### Contents
 (To Toshi, cc Kris)
 Hi Toshi - 
 
