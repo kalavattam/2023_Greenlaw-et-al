@@ -2,12 +2,10 @@
 # 2022-1018
 ## E-mail 1 (from Alison)
 ### Scripts
-The following scripts
 - `New_101122_sc_bowtie_4tu.sh`
 - `bam_split_paired_end.sh`
 - `trin4.1_adjusted_salmo.sh`
 - `map2genome_gff.sh`
-...were included in an email sent by Alison on 2022-1018.
 
 ### Contents
 Hi Kris! 
@@ -34,9 +32,9 @@ Alison
 
 ## E-mail 2 (from Alison)
 ### Attached files
-- heatmaps_nab3_nrd1.pptx
-- 20220928_lab_meeting.pptx
-- scaling_factor.xlsx
+- `heatmaps_nab3_nrd1.pptx`
+- `20220928_lab_meeting.pptx`
+- `scaling_factor.xlsx`
 
 ### Contents
 NA
@@ -49,7 +47,7 @@ NA
 
 ## E-mail 4 (from Alison)
 ### Script
-- AG_CC_read_counts_RNA_April2022.sh
+- `AG_CC_read_counts_RNA_April2022.sh`
 
 ### Contents
 I realized I never gave you the script that counts reads for normalization. Here is that! (No need to look at it tonight!!!) 
@@ -59,7 +57,7 @@ Alison
 # 2022-1019
 ## E-mail 1 (from Alison)
 ### File
-- normalization_station.pptx
+- `normalization_station.pptx`
 
 ### Contents
 (To Toshi, cc Kris)
