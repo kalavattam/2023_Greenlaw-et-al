@@ -127,3 +127,62 @@ git push origin main
 - Systematize it
 - `#GENERAL` Learn how people do things and search for more streamlined ways to do things
 - Look into additional programs to do transcriptome annotation like Trinity, but touch base with Alison before trying any of them: She may have tried them already and may then have input
+
+## 2020-1020
+### Brief notes on Fred Hutch's cluster resources
+```
+#  Log into FH cluster
+ssh kalavatt@rhino.fhcrc.org
+kalavatt@rhino.fhcrc.org's password: *******************
+```
+- `Rhino`: shared cluster node
+- `Gizmo`: reserved cluster node
+
+More details recorded in gists [here](https://gist.github.com/kalavattam).
+
+### New slides from Alison
+- The new normalization approach seems to be effective
+- Results appear to be reproducible between replicates
+- PC1 captures the vast majority of variance in the data but PC2 is the PC that actually separates nascent from steady state
+	- The vast majority of variance may be the random-variable nature of the counts for low-expression genes, right?
+
+### How Alison is calling Trinity
+- See `trin4.1_adjusted_salmo.sh`
+```
+Trinity \
+	--genome_guided_bam ${file} \
+	--max_memory 50G \
+	--SS_lib_type FR \
+	--normalize_max_read_cov 200 \
+	--jaccard_clip \
+	--genome_guided_max_intron 1002 \
+    --min_kmer_cov 2 \
+    --max_reads_per_graph 500000 \
+    --min_glue 2 \
+    --group_pairs_distance 700 \
+    --min_contig_length 200 \
+    --full_cleanup \
+    --output ./trinity_trin4s_${file%.bam_sorted_new.bam}
+```
+- `--genome_guided_bam`: "If a genome sequence is available, Trinity offers a method whereby reads are first aligned to the genome, partitioned according to locus, followed by de novo transcriptome assembly at each locus" ([more info](https://github.com/trinityrnaseq/trinityrnaseq/wiki/Genome-Guided-Trinity-Transcriptome-Assembly))
+	- "In this use-case, the genome is only being used as a substrate for grouping overlapping reads into clusters that will then be separately fed into Trinity for de novo transcriptome assembly."
+	- "This is very much *unlike* typical genome-guided approaches (e.g., cufflinks) where aligned reads are stitched into transcript structures and where transcript sequences are reconstructed based on the reference genome sequence."
+	- "Here, transcripts are reconstructed based on the actual read sequences."
+- `--max_memory`: suggested max memory to use by Trinity, where limiting can be enabled
+- `--SS_lib_type`: if paired, RF or FR (dUTP method = RF); if single, F or R; this means that left-end reads are on the forward strand and right-end reads are on the reverse strand
+- `--normalize_max_read_cov`: defaults to 200, an *in silico* read normalization option
+	- `#QUESTION` Does it mean that it sets the maximum coverage to 200x?
+	- `#ANSWER` It means that "poorly covered regions \[are\] unchanged, but reads \[are\] down-sampled in high-coverage regions" (see slide 16 [here](https://biohpc.cornell.edu/lab/doc/Trinity_workshop.pdf))
+	- "May end up using just 20% of all reads reducing computational burden with no impact on assembly quality"
+	- `#NOTE` This normalization method has "mixed reviews" – \[it\] tends to skip whole genes
+- `--jaccard_clip`: set if you have paired reads and you expect high gene density with UTR overlap (use FASTQ input file format for reads)
+	- `#QUESTION`: Our input appears to be a bam; does this affect things?
+- `--genome_guided_max_intron`: "...use a maximum intron length that makes most sense given your targeted organism" ([more info](https://github.com/trinityrnaseq/trinityrnaseq/wiki/Genome-Guided-Trinity-Transcriptome-Assembly))
+- `--min_kmer_cov`: with a setting of 2, it means that singleton k-mers will not be included in initial Inchworm contigs (suggested by the Trinity team)
+- `--max_reads_per_graph`: maximum number of reads to anchor within a single graph (default: 200000)
+- `--min_glue`: min number of reads needed to glue two inchworm contigs together. (default: 2)
+- `--group_pairs_distance`: maximum length expected between fragment pairs (default: 500) (reads outside this distance are treated as single-end)
+- `--min_contig_length`: minimum assembled contig length to report (def=200, must be >= 100)
+- `--full_cleanup`: only retain the Trinity fasta file, rename as ${output_dir}.Trinity.fasta
+- `--output`: name of directory for output (will be created if it doesn't already exist) default( your current working directory: "/usr/local/src/trinity_out_dir" note: must include 'trinity' in the name as a safety precaution! )
+
