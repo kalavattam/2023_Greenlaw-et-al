@@ -2,7 +2,7 @@
 # 2022-1020
 ## E-mail 1.1 (from Alison): "Quality control analysis"
 ### File
-- replicate_comparison.pptx
+- `replicate_comparison.pptx`
 
 ### Contents
 Some more quality control analysis in lieu of yesterday's conversation. I feel data is good enough to keep going with analysis. Whether or not 6126/7716 is really much more drastically scaled or if this is artifact of technique is hard to know, but I feel data is otherwise looking very reproduceable between replicates so far. 
@@ -31,14 +31,14 @@ toshi
 
 ## E-mail 2 (from Alison): "More Code!"
 ### Files
-- replicate_ratio_comparison_mRNA.Rmd
-- mRNA_Nascent_Nab3.txt
-- AS_mRNA_Nascent_Nab3.txt
-- combined_mRNA.txt
-- Correlation.sh
-- 19_oct_bamcoverage_scale_HARD2.sh
-- 13_OCT_Heatmaps.sh
-- 3heatmap.sh
+- `replicate_ratio_comparison_mRNA.Rmd`
+- `mRNA_Nascent_Nab3.txt`
+- `AS_mRNA_Nascent_Nab3.txt`
+- `combined_mRNA.txt`
+- `Correlation.sh`
+- `19_oct_bamcoverage_scale_HARD2.sh`
+- `13_OCT_Heatmaps.sh`
+- `3heatmap.sh`
 
 ### Contents
 Hi Kris - 
@@ -99,17 +99,17 @@ Alison
 
 ## E-mail 4 (from Alison): "Hand Curation and so many annotation files"
 ### Files
-- Trintity_minus.gtf
-- Trinity_plus.gtf
-- Trinity GTF_PROOFING TIME - keep+\_1st_Try.gtf
-- final_downloadable.gtf
-- downloadable_collapsed.gtf
-- GSE95556_Sc.cerevisiae.feature.anno_Steinmetz_2013.gtf
-- sacCer3.intergenic.convergent.bed
-- sacCer3.intergenic.divergent.bed
-- sacCer3.intergenic.tandem.bed
-- Saccharomyces_cerevisiae.R64-1-1.104.gtf
-- combined.gtf
+- `Trintity_minus.gtf`
+- `Trinity_plus.gtf`
+- `Trinity GTF_PROOFING TIME - keep+\_1st_Try.gtf`
+- `final_downloadable.gtf`
+- `downloadable_collapsed.gtf`
+- `GSE95556_Sc.cerevisiae.feature.anno_Steinmetz_2013.gtf`
+- `sacCer3.intergenic.convergent.bed`
+- `sacCer3.intergenic.divergent.bed`
+- `sacCer3.intergenic.tandem.bed`
+- `Saccharomyces_cerevisiae.R64-1-1.104.gtf`
+- `combined.gtf`
 
 ### Contents
 Kris - 
@@ -130,7 +130,7 @@ Alison
 
 ## E-mail 5 (from Alison): "Small fraction of AS transcripts functional on first pass"
 ### File
-- Sense_Antisense.pptx
+- `Sense_Antisense.pptx`
 
 ### Contents
 (To Toshi, cc Kris)
