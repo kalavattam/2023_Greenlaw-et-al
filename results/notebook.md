@@ -28,6 +28,7 @@ alias Trinity="docker run --rm -v`pwd`:`pwd` --platform linux/amd64 trinityrnase
 - https://github.com/trinityrnaseq/trinityrnaseq/wiki/Running-Trinity
 - https://www.broadinstitute.org/broade/trinity-screencast
 - https://github.com/trinityrnaseq/trinityrnaseq/wiki/Trinity-in-Docker#run-trinity-using-docker
+- https://informatics.fas.harvard.edu/best-practices-for-de-novo-transcriptome-assembly-with-trinity.html
 
 ### Set up directory structure for 2022_transcriptome-construction
 1. Create repo on Github per, e.g., [these instructions](https://github.com/prog4biol/pfb2022/blob/master/unix.md#creating-a-new-repository)
@@ -164,7 +165,7 @@ Trinity \
     --full_cleanup \
     --output ./trinity_trin4s_${file%.bam_sorted_new.bam}
 ```
-- `--genome_guided_bam`: "If a genome sequence is available, Trinity offers a method whereby reads are first aligned to the genome, partitioned according to locus, followed by de novo transcriptome assembly at each locus" ([more info](https://github.com/trinityrnaseq/trinityrnaseq/wiki/Genome-Guided-Trinity-Transcriptome-Assembly))
+- `--genome_guided_bam`: "If a genome sequence is available, Trinity offers a method whereby reads are first aligned to the genome, partitioned according to locus, followed by *de novo* transcriptome assembly at each locus" ([more info](https://github.com/trinityrnaseq/trinityrnaseq/wiki/Genome-Guided-Trinity-Transcriptome-Assembly))
 	- "In this use-case, the genome is only being used as a substrate for grouping overlapping reads into clusters that will then be separately fed into Trinity for de novo transcriptome assembly."
 	- "This is very much *unlike* typical genome-guided approaches (e.g., cufflinks) where aligned reads are stitched into transcript structures and where transcript sequences are reconstructed based on the reference genome sequence."
 	- "Here, transcripts are reconstructed based on the actual read sequences."
@@ -183,6 +184,23 @@ Trinity \
 - `--min_glue`: min number of reads needed to glue two inchworm contigs together. (default: 2)
 - `--group_pairs_distance`: maximum length expected between fragment pairs (default: 500) (reads outside this distance are treated as single-end)
 - `--min_contig_length`: minimum assembled contig length to report (def=200, must be >= 100)
-- `--full_cleanup`: only retain the Trinity fasta file, rename as ${output_dir}.Trinity.fasta
-- `--output`: name of directory for output (will be created if it doesn't already exist) default( your current working directory: "/usr/local/src/trinity_out_dir" note: must include 'trinity' in the name as a safety precaution! )
+- `--full_cleanup`: only retain the Trinity fasta file, rename as `${output_dir}.Trinity.fasta`
+- `--output`: name of directory for output (will be created if it doesn't already exist) default( your current working directory: `/usr/local/src/trinity_out_dir` note: must include 'trinity' in the name as a safety precaution! )
+
+## 2022-1021
+### Working through HPC materials, tutorials
+#### Logging on to `rhino` for the first time
+[Tutorial here](https://sciwiki.fredhutch.org/compdemos/first_rhino/).
+Command to request one's own compute node: `grabnode`
+Follow the on-screen prompts
+
+### More studying up on `Trinity`
+(See 2013 *Nat Biotechnol* manuscript.)
+1. What is Trinity and what does it do?
+- Program that assembles full-length transcriptome *de novo*, i.e., without the need for a reference genome
+- Additional breakdown of Inchworm, Chrysalis, and Butterfly in the 2013 *Nat Biotechnol* manuscript
+2. What is a de Bruijn graph?
+- In this type of graph, a node is defined by a sequence of a fixed length of k nucleotides (“k-mer”, with k considerably shorter than the read length), and nodes are connected by edges, if they perfectly overlap by k-1 nucleotides, and the sequence data supports this connection.
+- This compact representation allows for enumerating all possible solutions by which linear sequences can be reconstructed given overlaps of k-1. For transcriptome assembly, each path in the graph represents a possible transcript.
+- A scoring scheme applied to the graph structure can rely on the original read sequences and mate-pair information to discard nonsensical solutions (transcripts) and compute all plausible ones.
 
