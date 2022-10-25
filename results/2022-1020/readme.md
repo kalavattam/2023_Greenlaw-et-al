@@ -1,17 +1,18 @@
 
 # 2022-1020
-## E-mail 1.1 (from Alison): "Quality control analysis"
-### File
+## E-mail 1: "Quality control analysis"
+### 1.1 (from Alison)
+#### File
 - `replicate_comparison.pptx`
 
-### Contents
+#### Contents
 Some more quality control analysis in lieu of yesterday's conversation. I feel data is good enough to keep going with analysis. Whether or not 6126/7716 is really much more drastically scaled or if this is artifact of technique is hard to know, but I feel data is otherwise looking very reproduceable between replicates so far. 
 
 Kris - I will send you some more scripts related to this analysis in a separate email. 
 
 Alison
 
-## E-mail 1.2 (from Kris)
+### 1.2 (from Kris)
 Sounds good, Alison!
  
 Yes, it seems reproducible to me too.
@@ -24,7 +25,7 @@ Interesting how PC1 captures the vast majority of variance in the data but PC2 i
  
 Kris
 
-## E-mail 1.3 (from Toshi)
+### E-mail 1.3 (from Toshi)
 Your data sets looks good, if I understand correctly. I am glad to see single- and doule-depletion strains are similar. 
 
 toshi
@@ -122,10 +123,10 @@ I have attached the Trinity gtf output before and after annotation:
 I did all the curation in google sheets because excel destroys .gtf files: [link](https://docs.google.com/spreadsheets/d/14NWzq4HJQfft_yWxbmT4bi6C8w1G0Q3PUBbVDO7XguM/edit#gid=1833438810)
 
 I have also attached some general yeast annotation files:
-- GSE95556_Sc.cerevisiae.feature.anno_Steinmetz_2013.gtf - great annotation
+- `GSE95556_Sc.cerevisiae.feature.anno_Steinmetz_2013.gtf` - great annotation
 - intergenic bed - bed files by orientation of intergenic region
 - R64 - one of the official recent annotations, though definitely not the most recent. 
-- combined.gtf - every CDS, and bunch of annotations from various noncoding annotation attempts - this is the file that is used for HTseq count btw 
+- `combined.gtf` - every CDS, and bunch of annotations from various noncoding annotation attempts - this is the file that is used for HTseq count btw 
 Alison 
 
 ## E-mail 5 (from Alison): "Small fraction of AS transcripts functional on first pass"

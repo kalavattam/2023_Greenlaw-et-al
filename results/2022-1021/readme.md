@@ -1,5 +1,5 @@
 
-## Trinity trial run
+## `Trinity`, etc. trial run
 Work with this file, `5781_Q_IP_sorted.bam`, at this location, `/home/kalavatt/tsukiyamalab/alisong/WTQvsG1/automation_of_annotation/test1`
 
 ### Copy the file to the directory for upcoming work
@@ -34,8 +34,8 @@ samtools view -b "${file}" chrVII > "${file%.bam}.chrVII.bam"
 samtools index "${file%.bam}.chrVII.bam"
 ```
 
-### On how I'll call Trinity
-Adapted from what Alison is doing
+### On how to call `Trinity`
+Adapted from what Alison is doing: `submit-Trinity.sh`
 ```zsh
 #DONTRUN
 
@@ -46,20 +46,181 @@ Adapted from what Alison is doing
 #SBATCH --error=./%J.err.txt
 #SBATCH --output=./%J.out.txt
 
+#  submit-Trinity.sh
+#  KA
+
+module purge
+module load Trinity/2.10.0-foss-2019b-Python-3.7.4
+
+file="5781_Q_IP_sorted.chrVII.bam"  # Separately, try 5781_Q_IP_sorted.bam
+
 Trinity \
-	--genome_guided_bam ${file} \
-	--CPU "${SLURM_CPUS_ON_NODE}" \
-	--max_memory 50G \
-	--SS_lib_type FR \
-	--normalize_max_read_cov 200 \
-	--jaccard_clip \
-	--genome_guided_max_intron 1002 \
-	--min_kmer_cov 2 \
-	--max_reads_per_graph 500000 \
-	--min_glue 2 \
-	--group_pairs_distance 700 \
-	--min_contig_length 200 \
-	--full_cleanup \
-	--output "./trinity_trin4s_${file%.bam}"
+    --genome_guided_bam "${file}" \
+    --CPU "${SLURM_CPUS_ON_NODE}" \
+    --max_memory 50G \
+    --SS_lib_type FR \
+    --normalize_max_read_cov 200 \
+    --jaccard_clip \
+    --genome_guided_max_intron 1002 \
+    --min_kmer_cov 2 \
+    --max_reads_per_graph 500000 \
+    --min_glue 2 \
+    --group_pairs_distance 700 \
+    --min_contig_length 200 \
+    --full_cleanup \
+    --output "./trinity_trin4s_${file%.bam}"
+```
+Essentially, above contents saved to the script `submit-Trinity.sh` in directory `results/2022-1021`, which is where output from `Trinity` and output from SLURM (e.g., stderr and stdout) is saved as well.
+
+Run time for the full genome
+- start: Friday, October 21, 2022: 15:46:37
+- stop: Friday, October 21, 2022: 17:37:29
+
+### On making a `GFF` from the `Trinity`-assembled transcriptome
+#### Use `GMAP`
+For example, following the instructions [here](https://www.biostars.org/p/248479/).
+
+However, this requires that we have `GMAP` genome indices (i.e., `GMAP` database) for the model organism of interest, *S. cerevisae*
+
+#### Generate genome indices for `GMAP`/build a "`GMAP` database"
+Apparently, we need to have only one chromosome per FASTA entry
+```zsh
+#  Download UCSC sacCer3 chromosomes from, e.g.,
+#+ https://hgdownload.soe.ucsc.edu/goldenPath/sacCer3/chromosomes/
+
+mkdir ~/genomes
+cd genomes || echo "cd failed. Check on this."
+
+wget --no-parent -r https://hgdownload.soe.ucsc.edu/goldenPath/sacCer3/chromosomes/
+
+cd hgdownload.soe.ucsc.edu/goldenPath/sacCer3/chromosomes || echo "cd failed. Check on this."
+cd ../..
+mv sacCer3/ ../..  # Move sacCer3/chromosomes directly into directory 'genomes'
+
+#  Do some cleanup
+cd ..
+rm robots.txt && rmdir goldenPath
+cd ..
+rmdir hgdownload.soe.ucsc.edu
+
+cd sacCer3/chromosomes
+rm *\?C=*  # Remove non-necessary index-related files
+
+pwd
+# /home/kalavatt/genomes/sacCer3/chromosomes  # Use this path for running 'gmap_build'
+ls /home/kalavatt/genomes/sacCer3/chromosomes/*.fa.gz
+
+#  Make a location to store the indices, etc. for GMAP
+cd .. || echo "cd failed. Check on this."
+mkdir GMAP
+
+#  Get the twoBit file, convert it to fasta, then try building the genome from that
+curl https://hgdownload.soe.ucsc.edu/goldenPath/sacCer3/bigZips/sacCer3.2bit > sacCer3.2bit
+
+conda create -n ucsc_env -c bioconda ucsc-twobittofa
+
+grabnode
+conda activate ucsc_env
+twoBitToFa sacCer3.2bit sacCer3.fa
+exit
+
 ```
 
+Call `gmap_build` from a bespoke script, `submit-gmap_build.sh`, that submits a job to SLURM
+```zsh
+#DONTRUN
+
+#!/bin/bash
+
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=2
+#SBATCH --error=./%J.err.txt
+#SBATCH --output=./%J.out.txt
+
+#  submit-gmap_build.sh
+#  KA
+
+ml GMAP-GSNAP/2018-07-04-foss-2018b
+
+location_for_output="${HOME}/genomes/sacCer3/GMAP"
+fasta="${HOME}/genomes/sacCer3/sacCer3.fa"
+
+# gmap_build -d <genome> [-k <kmer size>] <fasta_files...>
+#  e.g., see section 4 of https://github.com/juliangehring/GMAP-GSNAP/blob/master/README
+gmap_build \
+	--dir "${location_for_output}" \
+	--sort "none" \
+	--db "sacCer3" \
+	"${fasta}"
+
+#NOTE 1/3 Switched to using the whole-genome fasta because trying to run
+#NOTE 2/3 gmap_build with individual fastas for the chromosomes was throwing
+#NOTE 3/3 inscrutable (to me) errors
+
+#NOTE 1/3 Ran the script with '--cpus-per-task=2' in order to increase the
+#NOTE 2/3 amount of memory to the job per the instructions here:
+#NOTE 3/3 https://sciwiki.fredhutch.org/scicomputing/compute_jobs/#memory
+```
+
+Contents of `2436414.out.txt`
+```txt
+Opening file /home/kalavatt/genomes/sacCer3/sacCer3.fa
+  Processed short contigs (<1000000 nt): ...
+  Contig chrIV: concatenated at chromosome end: chrIV:1..1531933 (length = 1531933 nt)
+  Processed short contigs (<1000000 nt): ...
+  Contig chrVII: concatenated at chromosome end: chrVII:1..1090940 (length = 1090940 nt)
+  Processed short contigs (<1000000 nt): ...
+  Contig chrXII: concatenated at chromosome end: chrXII:1..1078177 (length = 1078177 nt)
+  Processed short contigs (<1000000 nt): ..
+  Contig chrXV: concatenated at chromosome end: chrXV:1..1091291 (length = 1091291 nt)
+  Processed short contigs (<1000000 nt): ..
+============================================================
+Contig mapping information has been written to file /home/kalavatt/genomes/sacCer3/GMAP/sacCer3.coords.
+You should look at this file, and edit it if necessary
+If everything is okay, you should proceed by running
+    make gmapdb
+============================================================
+No alternate scaffolds observed
+```
+Do I need to do anything more? This should be everything, right? I think so...
+
+Let's clean things up by moving the contents of `/home/kalavatt/genomes/sacCer3/GMAP/sacCer3` to `/home/kalavatt/genomes/sacCer3/GMAP`
+```zsh
+mv /home/kalavatt/genomes/sacCer3/GMAP/sacCer3/* /home/kalavatt/genomes/sacCer3/GMAP/
+rmdir sacCer3
+
+#  Also, go ahead and delete the individual chromosome fastas to save space (we
+#+ didn't end up using them)
+cd /home/kalavatt/genomes/sacCer3/chromosomes || echo "cd failed. Check on this."
+rm *.{fa.gz,html,txt}
+cd .. && rmdir chromosomes
+pwd  # /home/kalavatt/genomes/sacCer3
+```
+
+#### Try making a `GFF` from the `Trinity`-assembled transcriptome based on the script from Alison
+```zsh
+#DONTRUN
+
+#!/bin/bash
+
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=1
+#SBATCH --error=./%J.err.txt
+#SBATCH --output=./%J.out.txt
+
+ml GMAP-GSNAP/2018-07-04-foss-2018b
+ml SAMtools/1.16.1-GCC-11.2.0
+
+d_Kris="${HOME}/tsukiyamalab/Kris"
+d_proj="2022_transcriptome-construction/results"
+d_exp="2022-1021/trinity_trin4s_5781_Q_IP_sorted.chrVII"
+fasta="Trinity-GG.fasta"
+
+gmap \
+	-d "sacCer3" \
+	-D "${HOME}/genomes/sacCer3/GMAP" \
+    -A "${d_Kris}/${d_proj}/${d_exp}/${fasta}" \
+    --format="gff3_gene" "samse" \
+    	> "${d_Kris}/${d_proj}/${d_exp}/${fasta%.fasta}.GMAP.gff"
+```
+Save the above contents to `submit-gmap_chrVII.sh` in `${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1021`

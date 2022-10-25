@@ -204,3 +204,78 @@ Follow the on-screen prompts
 - This compact representation allows for enumerating all possible solutions by which linear sequences can be reconstructed given overlaps of k-1. For transcriptome assembly, each path in the graph represents a possible transcript.
 - A scoring scheme applied to the graph structure can rely on the original read sequences and mate-pair information to discard nonsensical solutions (transcripts) and compute all plausible ones.
 
+## 2022-1024
+### Miscellaneous SLURM-related things
+#### Print the number of CPUs in use per job in SLURM
+Per [this link](https://stackoverflow.com/questions/64928381/print-the-number-of-cpus-in-use-per-job-in-slurm), the `squeue` command has two parameters that allow choosing the columns displayed in the output, `--format` and `--Format`. Each has an option (respectively `%c` and `NumCPUs`) to display the number of cores requested by the job.
+
+Try with
+```
+squeue -o "%.18i %.9P %.8j %.8u %.2t %.10M %.6D %R %c"
+```
+This will show the default columns and add the number of cores as the last column. You can fiddle with the format string to arrange the columns as you want. Then, when you are happy with the output, you can set it as the value of the `SQUEUE_FORMAT` variable in your `.bash_profile` or `.bashrc`.
+```
+export SQUEUE_FORMAT='%.18i %.9P %.8j %.8u %.2t %.10M %.6D %R %c'
+```
+See the `squeue` man page for more details.
+
+### Going over Trinity assessments with Alison
+- Can split gff3 by strand: `#TODO` Look into this (e.g., see [this link](https://www.biostars.org/p/215428/))
+- Per-chromosome fastq approach: `#TODO` Look into this
+	- We seem to do a "worse job when we do everything all at one," where here "everything" means running Trinity on the full genome versus running it with respect to one chromosome at a time
+
+In the IGV instance that Alison had pulled up
+- Each line is one strand of one replicate: `#TODO` Set up my readout like this too
+- Alison obtained these tracks after having run `bam_split_paired_end.sh` (currently found in `results/2022-1018/sh`)
+- It should be possible to obtain a similar such file using `deepTools bamCoverage` with appropriate arguments, e.g., `--filterRNAstrand` (e.g., see [this link](https://deeptools.readthedocs.io/en/develop/content/tools/bamCoverage.html)): `#TODO` Look into this
+
+Other ideas
+- Consider whether/how to filter data to remove transcripts below a certain value
+- This kind of filtration should take place prior to running `Trinity`, right?
+
+Goal/genereal approach
+- Set up `Trinity` to do as well as it can
+- Make assignments
+	- Evaluate the assignments with respect to known annotations
+	- Evaluate the assignments with respect to *de novo* (`Trinity`) annotations
+
+On snoRNAs versus snRNAs
+- snRNAs are associated with the spliceosome
+- snoRNAs direct ribosome modifications
+
+On the means to evaluate Trinity results by aligning reads back to the transcriptome assembly (e.g., as described [here](https://bioinformaticsdotca.github.io/rnaseq_2017_tutorial6))
+- From the above link: "Generally, in a high quality assembly, you would expect to see at least ~70% \[overall alignment rate\] and at least ~70% of the reads to exist as proper pairs."
+- Alison: "100% of reads captured would be too much" (with respect to mapping back to the *de novo* assembly)
+- Alison: "Giving it less to chew on may be better"
+- `#TODO` Get these experiments up and running
+
+Five things to try out/work on
+1. `deepTools bamCoverage` (see above)
+2. Ways/means to parameterize Trinity: Identify what paramter(s) to test, then set up experiments for the tests 
+3. Test the genome-guided bam approach to `Trinity` versus the fastq approach (with the Jaccard index parameter) to `Trinity`: The thinking here is that, based on the documentation, it's not clear that the Jaccard index parameter is working with genome-guided bam approach
+4. Evaluate the percent overall alignment rate and percent of reads as proper pairs after aligning the reads to the assembled transcriptome (again, see [here](https://bioinformaticsdotca.github.io/rnaseq_2017_tutorial6))
+5. Re-review the tutorial ([link](https://bioinformaticsdotca.github.io/rnaseq_2017_tutorial6)) to see if there are other general things we can evaluate; also, check for other tutorials and then check their contents
+
+### Meeting with Toshi about additional things to work on, above and beyond the `Trinity` work (above)
+In Alison's eventual paper, we're focused on antisense transcription, but we need to say something about mRNA transcription too
+#### mRNA: *steady-state* versus *nascent*
+
+We can make direct comparisons between steady-state G1 and steady-state Q (or log and Q), because we can perform spike-in normalization. We *can't* do the same for nascent G1 and nascent Q. Instead, we can only make within-sample comparisons, e.g., can only make comparisons within Q or can only make comparisons within G1, and can't make comparisons between Q and G1.
+
+`#TODO` However, see if you can think of anything for some kind of normalization that would allow for comparisons between Q and G1...
+
+When labeling for 4tU in Q, there's nothing to compete for 4tU incorporation because Q cells are in water whereas G1 or log cells are in medium.
+
+#### Strategy hit upon by Toshi and Alison
+Rank steady-state mRNA and nascent mRNA, then just compare ranks
+Some corresponding logic:
+- N: mRNA is in top 10%; SS: mRNA is in bottom 10%; can assume transcript is actively degraded
+- N: mRNA is in bottom 10%; SS: mRNA is in top 10%; can assume transcript is stablized
+
+#### Goals (per Toshi)
+1. Did we do this (rank comparison method) in the right way?
+2. Also, we want to have something to say about mRNA in Q...
+
+#### Additional things (low priority)
+- Compare protein abundances to mRNA abundances
+- Teach Rachel basic ChIP-seq analyses, e.g., RPD3
