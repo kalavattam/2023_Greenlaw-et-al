@@ -1,4 +1,5 @@
 
+# 2022-1021-1024
 ## `Trinity`, etc. trial run
 Work with this file, `5781_Q_IP_sorted.bam`, at this location, `/home/kalavatt/tsukiyamalab/alisong/WTQvsG1/automation_of_annotation/test1`
 
@@ -223,4 +224,18 @@ gmap \
     --format="gff3_gene" "samse" \
     	> "${d_Kris}/${d_proj}/${d_exp}/${fasta%.fasta}.GMAP.gff"
 ```
-Save the above contents to `submit-gmap_chrVII.sh` in `${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1021`
+Save the above contents to `submit-gmap_chrVII.sh` in `${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1021`.
+
+`#DONE` Also, make a version of the script for the full genome, i.e., not just chrVII.
+
+#### Relevant links on/related to the generation of a GFF from the `Trinity`-assembled transcriptome, etc.
+- [Fasta to gff with custom set of genes](https://www.biostars.org/p/248479/)
+- [Generate GTF/GFF file (coordinates) from a FASTA annotated file](https://www.biostars.org/p/398693/)
+- [How to make GFF file based on assembled transcriptome and genome sequence?](https://www.biostars.org/p/426969/)
+- [Running gmap tool via gmapR package?](https://support.bioconductor.org/p/74613/)
+- [juliangehring/GMAP-GSNAP (public archive)](https://github.com/juliangehring/GMAP-GSNAP)
+- [Main page for GMAP/GSNAP](http://research-pub.gene.com/gmap/)
+- [Main README for GMAP/GSNAP](http://research-pub.gene.com/gmap/src/README)
+- [Convert Trinity transcriptome assembly to GTF/GFF](https://groups.google.com/g/trinityrnaseq-users/c/e5oKouOpvA0)
+- [Gene Structure Annotation and Analysis Using PASA (GitHub wiki)](https://github.com/PASApipeline/PASApipeline/wiki)
+- [Search results for "use gmap to make gff from fasta"](https://www.google.com/search?q=use+gmap+to+make+gff+from+fasta&ei=XO5WY5unIs_G0PEPvZ--yAk&ved=0ahUKEwibxe-00_n6AhVPIzQIHb2PD5kQ4dUDCBA&uact=5&oq=use+gmap+to+make+gff+from+fasta&gs_lcp=Cgdnd3Mtd2l6EAMyBwghEKABEApKBAhBGAFKBAhGGABQ9gRY9gRgowdoAXAAeACAAV2IAV2SAQExmAEAoAEBwAEB&sclient=gws-wiz)

@@ -1,18 +1,24 @@
 
 # 2022-1020
-## E-mail 1: "Quality control analysis"
-### 1.1 (from Alison)
-#### File
+## E-mail 1.1 (from Alison): "Quality control analysis"
+From: [Greenlaw, Alison C](agreenla@fredhutch.org)
+Sent: Thursday, October 20, 2022 2:26 PM
+To: [Tsukiyama, Toshio](ttsukiya@fredhutch.org)
+Cc: [Alavattam, Kris](kalavatt@fredhutch.org)
+Subject: Quality control analysis
+
+### File
 - `replicate_comparison.pptx`
 
-#### Contents
+### Contents
 Some more quality control analysis in lieu of yesterday's conversation. I feel data is good enough to keep going with analysis. Whether or not 6126/7716 is really much more drastically scaled or if this is artifact of technique is hard to know, but I feel data is otherwise looking very reproduceable between replicates so far. 
 
 Kris - I will send you some more scripts related to this analysis in a separate email. 
 
 Alison
 
-### 1.2 (from Kris)
+## E-mail 1.2 (from Kris): "Quality control analysis"
+### Contents
 Sounds good, Alison!
  
 Yes, it seems reproducible to me too.
@@ -25,12 +31,18 @@ Interesting how PC1 captures the vast majority of variance in the data but PC2 i
  
 Kris
 
-### E-mail 1.3 (from Toshi)
+## E-mail 1.3 (from Toshi): "Quality control analysis"
+### Contents
 Your data sets looks good, if I understand correctly. I am glad to see single- and doule-depletion strains are similar. 
 
 toshi
 
 ## E-mail 2 (from Alison): "More Code!"
+From: [Greenlaw, Alison C](agreenla@fredhutch.org)
+Date: Thursday, October 20, 2022 at 3:28 PM
+To: [Alavattam, Kris](kalavatt@fredhutch.org)
+Subject: More Code!
+
 ### Files
 - `replicate_ratio_comparison_mRNA.Rmd`
 - `mRNA_Nascent_Nab3.txt`
@@ -57,6 +69,12 @@ No rush on any of this. I am not too worried that there are glaring issues here,
 Alison
 
 ## E-mail 3 (from Alison): "File Locations"
+From: [Greenlaw, Alison C](agreenla@fredhutch.org)
+Date: Thursday, October 20, 2022 at 5:56 PM
+To: [Alavattam, Kris](kalavatt@fredhutch.org)
+Subject: File Locations
+
+### Contents
 Hi Kris - 
 
 Nab3 depletion data 
@@ -99,6 +117,11 @@ All the R stuff is local to my laptop/on my OneDrive. Happy to figure out a way 
 Alison
 
 ## E-mail 4 (from Alison): "Hand Curation and so many annotation files"
+From: [Greenlaw, Alison C](agreenla@fredhutch.org)
+Date: Thursday, October 20, 2022 at 6:24 PM
+To: [Alavattam, Kris](kalavatt@fredhutch.org)
+Subject: Hand Curation and so many annotation files 
+
 ### Files
 - `Trintity_minus.gtf`
 - `Trinity_plus.gtf`
@@ -130,11 +153,16 @@ I have also attached some general yeast annotation files:
 Alison 
 
 ## E-mail 5 (from Alison): "Small fraction of AS transcripts functional on first pass"
+From: [Greenlaw, Alison C](agreenla@fredhutch.org)
+Date: Thursday, October 20, 2022 at 11:35 PM
+To: [Tsukiyama, Toshio](ttsukiya@fredhutch.org)
+Cc: [Alavattam, Kris](kalavatt@fredhutch.org)
+Subject: Small fraction of AS transcripts functional on first pass
+
 ### File
 - `Sense_Antisense.pptx`
 
 ### Contents
-(To Toshi, cc Kris)
 From my analysis it looks like because both transcription and steady state RNA level go up so much, that very few genes are down. I suspect if I removed sized factors from this data it would look like a lot more antisense transcripts are functional, and I think that is what happened with the 2013 paper as a spike in control is not mentioned. 
 
 I think the functional fraction is still very interesting, and there's a lot of room to play around with gating to really understand what's going on a bit better - perhaps log2foldchange 2 is too harsh a cut off. Also quite interested in digging more into what mRNAs NNS regulates in Q, and I will plan to spend more time on that soon. 

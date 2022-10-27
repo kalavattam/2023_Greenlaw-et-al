@@ -1,6 +1,11 @@
 
 # 2022-1018
-## E-mail 1 (from Alison)
+## E-mail 1: "Fred Hutch Server and a few of my scripts"
+From: [Greenlaw, Alison C](agreenla@fredhutch.org)
+Sent: Monday, October 17, 2022 5:01 PM
+To: [Alavattam, Kris](kalavatt@fredhutch.org)
+Subject: Fred Hutch Server and a few of my scripts
+
 ### Scripts
 - `New_101122_sc_bowtie_4tu.sh`
 - `bam_split_paired_end.sh`
@@ -8,7 +13,7 @@
 - `map2genome_gff.sh`
 
 ### Contents
-Hi Kris! 
+Hi Kris!
 
 I know Toshi got a really fancy computer, so it may be better/faster to do this locally for you. For me, I use the server. 
 
@@ -30,7 +35,12 @@ Hope you feel better. Take your time with this; I know it's a lot of information
 Best, 
 Alison 
 
-## E-mail 2 (from Alison)
+## E-mail 2: "Fred Hutch Server and a few of my scripts"
+From: [Greenlaw, Alison C](agreenla@fredhutch.org)
+Sent: Tuesday, October 18, 2022 2:11 PM
+To: [Alavattam, Kris](kalavatt@fredhutch.org)
+Subject: Re: Fred Hutch Server and a few of my scripts
+
 ### Attached files
 - `heatmaps_nab3_nrd1.pptx`
 - `20220928_lab_meeting.pptx`
@@ -39,13 +49,27 @@ Alison
 ### Contents
 NA
 
-## E-mail 3 (from Alison)
+## E-mail 3: "Fred Hutch Server and a few of my scripts"
+From: [Greenlaw, Alison C](agreenla@fredhutch.org)
+Sent: Tuesday, October 18, 2022 2:12 PM
+To: [Alavattam, Kris](kalavatt@fredhutch.org)
+Subject: Re: Fred Hutch Server and a few of my scripts
+
+### Attached files
+NA
+
+### Contents
 (Concerns Nature Reviews on noncoding RNAs.)
 - [How noncoding RNAs began to leave the junkyard | Nature Methods](https://www.nature.com/articles/s41592-022-01627-8?utm_source=nmeth_etoc&utm_medium=email&utm_campaign=toc_41592_19_10&utm_content=20221011)
 - [Regulatory non-coding RNAs: everything is possible, but what is important? | Nature Methods](https://www.nature.com/articles/s41592-022-01629-6?utm_source=nmeth_etoc&utm_medium=email&utm_campaign=toc_41592_19_10&utm_content=20221011)
 - [Some roads ahead for noncoding RNAs | Nature Methods](https://www.nature.com/articles/s41592-022-01628-7?utm_source=nmeth_etoc&utm_medium=email&utm_campaign=toc_41592_19_10&utm_content=20221011)
 
-## E-mail 4 (from Alison)
+## E-mail 4: "Fred Hutch Server and a few of my scripts"
+From: [Greenlaw, Alison C](agreenla@fredhutch.org)
+Sent: Tuesday, October 18, 2022 7:22 PM
+To: [Alavattam, Kris](kalavatt@fredhutch.org)
+Subject: Re: Fred Hutch Server and a few of my scripts
+
 ### Script
 - `AG_CC_read_counts_RNA_April2022.sh`
 
@@ -55,12 +79,16 @@ I realized I never gave you the script that counts reads for normalization. Here
 Alison
 
 # 2022-1019
-## E-mail 1 (from Alison)
+## E-mail 1: "Nascent normalization remains baffling"
+From: [Greenlaw, Alison C](agreenla@fredhutch.org)
+Sent: Wednesday, October 19, 2022 7:30 AM
+To: [Alavattam, Kris](kalavatt@fredhutch.org)
+Subject: Nascent normalization remains baffling
+
 ### File
 - `normalization_station.pptx`
 
 ### Contents
-(To Toshi, cc Kris)
 Hi Toshi - 
 
 I messed around with the normalization, trying to get the big nascent discrepancy to make sense and I couldn't. I have attached the details. 
