@@ -634,7 +634,7 @@ Results for `combined_SC_KL_20S.fasta`:
 
 ```zsh
 #  Make a directory for the combined genome
-pwd  # /home/kalavatt/genomes/combined_SC_KL_20S
+cd "${HOME}/genomes/combined_SC_KL_20S" || echo "cd failed. Check on this."
 mkdir -p fasta_individual  # For S. cerevisiae, K. lactis, and the 20 S narnavirus
 
 mv "${fasta_SC}" "${fasta_KL}" "${fasta_20S}" fasta_individual/
@@ -650,5 +650,13 @@ bowtie2-build combined_SC_KL_20S.fasta Bowtie2/combined_SC_KL_20S 1> combined_SC
 cd Bowtie2 || echo "cd failed. Check on this."
 bowtie2-inspect -n ecoli  # It looks correct
 cd ..
+
+#  Clean up a bit
+mkdir -p {txt,fasta}
+mv *fasta* fasta/
+mv *.txt txt/
 ```
 
+# 2022-1027
+`#TODO (   )` Edit the `Bowtie2` alignment script from Alison in order to align an RNA-seq `fasta` file to the combined reference genome
+`#TODO (   )` Figure out what to do regarding PCR duplicates and UMIs/demultiplexing; copy in and reflect on the recent, related e-mail chains from Alison
