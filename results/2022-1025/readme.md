@@ -660,3 +660,144 @@ mv *.txt txt/
 # 2022-1027
 `#TODO (   )` Edit the `Bowtie2` alignment script from Alison in order to align an RNA-seq `fasta` file to the combined reference genome
 `#TODO (   )` Figure out what to do regarding PCR duplicates and UMIs/demultiplexing; copy in and reflect on the recent, related e-mail chains from Alison
+
+Stepping through each line of the `Bowtie2` alignment, etc. script
+```zsh
+grabnode  # Default settings
+
+cd "${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1025"
+alias .,="ls -lhaFG"
+
+
+#  1: "Configuration variables"
+wrap=""
+rundir="$(pwd)"
+
+echo "${wrap}"
+echo "${rundir}"
+
+
+#  1 (cont.)
+threads="${1:-"1"}"  # Normally, 16
+load_module_cmd="module load"
+load_modules="Bowtie2/2.4.4-GCC-11.2.0 SAMtools/1.16.1-GCC-11.2.0 deepTools/3.5.1-foss-2021b"
+reference_genome="${HOME}/genomes/combined_SC_KL_20S/Bowtie2/combined_SC_KL_20S"
+split_reads="${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/bin/split_bam_paired_end.sh"
+
+echo "${threads}"
+echo "${load_module_cmd}"
+echo "${load_modules}"
+echo "${reference_genome}"
+echo "${split_reads}"
+
+., "${reference_genome}"*
+., "${split_reads}"
+
+
+#  1 (cont.)
+sample_directory="${2:-"${HOME}/tsukiyamalab/alisong/WTQvsG1/Project_ccucinot/Sample_5781_G1_IN"}"
+sample_root="${3:-"5781_G1_IN_merged"}"
+
+echo "${sample_directory}"
+echo "${sample_root}"
+
+., "${sample_directory}"
+., "${sample_directory}/${sample_root}"*
+
+
+#  1 (cont.)
+expected_results="*sorted.bam *sorted.bam.bai"
+expected_results_2=".bw"
+output_directory="${rundir}/bam"
+output_directory_2="${rundir}/bw"
+cleanup_files=""
+cleanup_command="echo Cleaning up files matching ${cleanup_files}"
+reprocess="manual"
+
+echo "${expected_results}"
+echo "${expected_results_2}"
+echo "${output_directory}"
+echo "${output_directory_2}"
+echo "${cleanup_files}"
+echo "${cleanup_command}"
+echo "${reprocess}"
+
+
+#  2: "Identify samples"
+samples=""
+params="$@"
+
+echo "${samples}"
+echo "${params}"
+
+
+#  3: "Process samples"
+wrap="log eval "
+log() { echo "\$ ${@/eval/}" 2>&1 | tee -a ${sample_log}; "$@" 2>&1 | tee -a ${sample_log}; }
+logcd() { echo "\$ cd ${@/eval/}" 2>&1 | tee -a ${sample_log}; cd "$@" 2>&1 | tee -a ${sample_log}; }  #NOTE #KA Function does not appear to be used (2022-1027)
+logNoExec() { echo "\$ ${@/eval/}" 2>&1 | tee -a ${sample_log}; }
+logNoEcho() { "$@" 2>&1 | tee -a ${sample_log}; }
+
+echo "Preparing environment to process samples: "
+echo ${samples}
+#TODO prompt to continue
+#echo "Continue?"
+
+# Load required python modules.
+for pymodule in ${load_modules}; do
+    echo "Loading module ${pymodule}..."
+    ${load_module_cmd} ${pymodule}
+    echo "...done."
+done
+#KA It works
+#KA Try the for loop with quoted variables: It breaks; leave as is
+
+
+#  3
+# Create the output directory and any needed parent directories.
+mkdir -p "${output_directory}"
+#  mkdir: created directory '/home/kalavatt/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1025/bam'
+
+#  Locate the infiles
+typeset -a infiles
+while IFS=" " read -r -d $'\0'; do
+    infiles+=( "${REPLY}" )
+done < <(\
+    find "${sample_directory}" \
+        -maxdepth 1 \
+        -type f \
+        -name "${sample_root}"* \
+        -print0 \
+            | sort -z \
+)
+# for i in "${infiles[@]}"; do echo "${i}"; done
+
+#  Only two fastq files should be found; if less or more, then exit with a
+#+ warning message
+if [[ "${#infiles[@]}" -eq 0 ]]; then
+    echo "Exiting: Zero fastq files were found..." && exit 1
+elif [[ "${#infiles[@]}" -lt 2 ]]; then
+    echo "Exiting: Only one fastq file was found..." && exit 1
+elif [[ "${#infiles[@]}" -gt 2 ]]; then
+    echo "Exiting: More than two fastq files were found..." && exit 1
+elif [[ "${#infiles[@]}" -eq 2 ]]; then
+    :
+fi
+
+#  So far, it works; let's do some additional set-up
+```
+
+Downsample fastq files in order to run quick tests that don't need many threads
+```zsh
+#  Download BBMap (latest version) from SourceForge
+cd ~  # Do everything in "${HOME}"
+curl -L https://sourceforge.net/projects/bbmap/files/BBMap_39.01.tar.gz/download \
+	> BBMap_39.01.tar.gz
+
+tar -xvf BBMap_39.01.tar.gz  # Unpack the tar.gz file
+#  Unpacked directory in "${HOME}" now: bbmap
+
+#  Add this to the end of .bashrc:
+#+ export PATH=$PATH:$HOME/bbmap
+
+```

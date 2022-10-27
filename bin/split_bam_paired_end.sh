@@ -51,6 +51,9 @@ Take user-input .bam files and split them into distinct .bam files for the
 forward and reverse strands, saving the split .bam files to a user-defined out
 directory.
 
+Dependencies:
+  - samtools >= 1.9
+
 Arguments:
   -h  print this help message and exit
   -u  use safe mode: \"TRUE\" or \"FALSE\" <logical; default: FALSE>
