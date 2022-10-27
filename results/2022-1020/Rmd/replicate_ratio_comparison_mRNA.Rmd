@@ -1,0 +1,268 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+R version:
+R version 3.6.3 (2020-02-29) -- "Holding the Windsock"
+Copyright (C) 2020 The R Foundation for Statistical Computing
+Platform: x86_64-apple-darwin15.6.0 (64-bit)
+
+```{r}
+library(tidyverse)
+```
+
+#read in count data and mRNA transcript info
+```{r}
+countdata <- read.delim("mRNA_Nascent_Nab3.txt", header = TRUE)
+combined_mRNA_info <- read.delim("combined_mRNA.txt", header = TRUE)
+```
+
+#turn mRNA annotation to a data frame with each gene name and it's length in kb
+```{r}
+combined_mRNA_info <- separate(combined_mRNA_info, gene, c("crap", "name"), sep = "gene_id ")
+combined_mRNA_info$name<-gsub(";", "",combined_mRNA_info$name)
+combined_mRNA_info$name<-gsub("\"", "",combined_mRNA_info$name)
+combined_mRNA_info <- combined_mRNA_info %>% 
+  mutate(length_bp = combined_mRNA_info$stop - combined_mRNA_info$start)
+combined_mRNA_info <- combined_mRNA_info %>% 
+  mutate(length_kb = combined_mRNA_info$length_bp/1000)
+gene_length_frame <- combined_mRNA_info %>% select(c('name', 'length_kb'))
+
+gene_length_frame
+```
+
+#make one table with counts and length data
+```{r}
+with_length <- merge(countdata, gene_length_frame, by ="name")
+```
+
+#divid counts per gene by the gene's length in kb
+```{r}
+Reads_p_KB <- mutate(with_length, with_length[,2:5] / with_length[,6])
+```
+
+#total read counts
+#Sample_CT10_7718_pIAA_Q_Nascent_sorted.bam	29,656,900
+#Sample_CT2_6125_pIAA_Q_Nascent_sorted.bam	28,720,284
+#Sample_CT4_6126_pIAA_Q_Nascent_sorted.bam	23,177,532
+#Sample_CT8_7716_pIAA_Q_Nascent_sorted.bam	37,358,128
+
+#divide reads per kb by millions of reads
+```{r}
+TPM<- mutate(Reads_p_KB, Reads_p_KB[2] / 28.720284, Reads_p_KB[3] / 29.656900, Reads_p_KB[4] / 23.177532, Reads_p_KB[5] /37.358128)
+```
+
+#determine tagged depletion over parental ratio
+```{r}
+
+TPM <- TPM %>% 
+  mutate(ratio_6125 = (TPM$Q_7718_N_sense/TPM$Q_6125_N_sense))
+
+TPM <- TPM %>% 
+  mutate(ratio_6126 = (TPM$Q_7716_N_sense/TPM$Q_6126_N_sense))
+```
+
+#filter out infinite ratios into a new data frame
+```{r}
+TPM_r <- TPM
+
+TPM_r <- TPM_r %>% 
+  filter_at(vars(ratio_6125:ratio_6126), all_vars(!is.infinite(.)))
+```
+
+
+#load packages to graph 
+```{r}
+library("DESeq2")
+library("ggplot2")
+library("dplyr")
+library(ggpubr)
+library(scales)
+library(grid)
+```
+
+
+#compare finite ratios
+#N/A values removed for correlation calc to work
+```{r}
+grob4 = grobTree(textGrob(paste("Pearson Correlation : ", round(cor(TPM_r$ratio_6125, TPM_r$ratio_6126, use = "pairwise.complete.obs"), 4) ), x= 0.63, y= 0.97, hjust = 0, gp = gpar(col = "red", fontsize = 11, fontface = "bold")))
+
+ggplot(data = TPM_r) + 
+  geom_point(mapping = aes(y=ratio_6126, x= ratio_6125), alpha = 2/10, size = 1) +
+  scale_x_continuous(trans = log2_trans(),
+    breaks = trans_breaks("log2", function(x) 2^x),
+    labels = trans_format("log2", math_format(2^.x))) +
+  scale_y_continuous(trans = log2_trans(),
+    breaks = trans_breaks("log2", function(x) 2^x),
+    labels = trans_format("log2", math_format(2^.x))) +
+  geom_smooth(aes(y= ratio_6126, x= ratio_6125), method = lm, se = TRUE) +
+  theme_bw()+
+  annotation_custom(grob4)
+```
+
+
+#compare two parents 
+```{r}
+grob2 = grobTree(textGrob(paste("Pearson Correlation : ", round(cor(TPM$Q_6125_N_sense, TPM$Q_6126_N_sense, use = "pairwise.complete.obs"), 4) ), x= 0.63, y= 0.97, hjust = 0, gp = gpar(col = "red", fontsize = 11, fontface = "bold")))
+
+
+ggplot(data = TPM) + 
+  geom_point(mapping = aes(x=Q_6125_N_sense, y= Q_6126_N_sense), alpha = 2/10, size = 1) +
+  scale_x_continuous(trans = log2_trans(),
+    breaks = trans_breaks("log2", function(x) 2^x),
+    labels = trans_format("log2", math_format(2^.x))) +
+  scale_y_continuous(trans = log2_trans(),
+    breaks = trans_breaks("log2", function(x) 2^x),
+    labels = trans_format("log2", math_format(2^.x))) +
+  geom_smooth(aes(x= Q_6125_N_sense, y= Q_6126_N_sense), method = lm, se = TRUE) +
+  theme_bw()+
+  annotation_custom(grob2)
+```
+
+#compare two single tag strains
+```{r}
+grob3 = grobTree(textGrob(paste("Pearson Correlation : ", round(cor(TPM$Q_7718_N_sense, TPM$Q_7716_N_sense, use = "pairwise.complete.obs"), 4) ), x= 0.63, y= 0.97, hjust = 0, gp = gpar(col = "red", fontsize = 11, fontface = "bold")))
+
+
+ggplot(data = TPM) + 
+  geom_point(mapping = aes(x=Q_7718_N_sense, y= Q_7716_N_sense), alpha = 2/10, size = 1) +
+  scale_x_continuous(trans = log2_trans(),
+    breaks = trans_breaks("log2", function(x) 2^x),
+    labels = trans_format("log2", math_format(2^.x))) +
+  scale_y_continuous(trans = log2_trans(),
+    breaks = trans_breaks("log2", function(x) 2^x),
+    labels = trans_format("log2", math_format(2^.x))) +
+  geom_smooth(aes(x= Q_7718_N_sense, y= Q_7716_N_sense), method = lm, se = TRUE) +
+  theme_bw()+
+  annotation_custom(grob3)
+```
+
+
+```{r}
+grob8 = grobTree(textGrob(paste("Pearson Correlation : ", round(cor(TPM$Q_7718_N_sense, TPM$Q_6125_N_sense, use = "pairwise.complete.obs"), 4) ), x= 0.63, y= 0.97, hjust = 0, gp = gpar(col = "red", fontsize = 11, fontface = "bold")))
+
+
+ggplot(data = TPM) + 
+  geom_point(mapping = aes(x=Q_7718_N_sense, y= Q_6125_N_sense), alpha = 2/10, size = 1) +
+  scale_x_continuous(trans = log2_trans(),
+    breaks = trans_breaks("log2", function(x) 2^x),
+    labels = trans_format("log2", math_format(2^.x))) +
+  scale_y_continuous(trans = log2_trans(),
+    breaks = trans_breaks("log2", function(x) 2^x),
+    labels = trans_format("log2", math_format(2^.x))) +
+  geom_smooth(aes(x= Q_7718_N_sense, y= Q_6125_N_sense), method = lm, se = TRUE) +
+  theme_bw()+
+  annotation_custom(grob8)
+```
+
+
+```{r}
+grob9 = grobTree(textGrob(paste("Pearson Correlation : ", round(cor(TPM$Q_7716_N_sense, TPM$Q_6126_N_sense, use = "pairwise.complete.obs"), 4) ), x= 0.63, y= 0.97, hjust = 0, gp = gpar(col = "red", fontsize = 11, fontface = "bold")))
+
+
+ggplot(data = TPM) + 
+  geom_point(mapping = aes(x=Q_7716_N_sense, y= Q_6126_N_sense), alpha = 2/10, size = 1) +
+  scale_x_continuous(trans = log2_trans(),
+    breaks = trans_breaks("log2", function(x) 2^x),
+    labels = trans_format("log2", math_format(2^.x))) +
+  scale_y_continuous(trans = log2_trans(),
+    breaks = trans_breaks("log2", function(x) 2^x),
+    labels = trans_format("log2", math_format(2^.x))) +
+  geom_smooth(aes(x= Q_7716_N_sense, y= Q_6126_N_sense), method = lm, se = TRUE) +
+  theme_bw()+
+  annotation_custom(grob9)
+```
+
+
+
+
+#Now with AS
+
+```{r}
+countdata_AS <- read.delim("AS_mRNA_Nascent_Nab3.txt", header = TRUE)
+```
+
+#repeat with AS
+```{r}
+AS_with_length <- merge(countdata_AS, gene_length_frame, by ="name")
+AS_Reads_p_KB <- mutate(AS_with_length, AS_with_length[,2:5] / AS_with_length[,6])
+
+AS_TPM<- mutate(AS_Reads_p_KB, AS_Reads_p_KB[2] / 28.720284, AS_Reads_p_KB[3] / 29.656900, AS_Reads_p_KB[4] / 23.177532, AS_Reads_p_KB[5] /37.358128)
+```
+
+
+```{r}
+
+AS_TPM <- AS_TPM %>% 
+  mutate(ratio_6125 = (AS_TPM$Q_7718_N_AS/AS_TPM$Q_6125_N_AS))
+
+AS_TPM <- AS_TPM %>% 
+  mutate(ratio_6126 = (AS_TPM$Q_7716_N_AS/AS_TPM$Q_6126_N_AS))
+```
+
+```{r}
+AS_TPM_r <- AS_TPM
+```
+
+
+```{r}
+AS_TPM_r <- AS_TPM_r %>% 
+  filter_at(vars(ratio_6125:ratio_6126), all_vars(!is.infinite(.)))
+```
+
+
+```{r}
+grob5 = grobTree(textGrob(paste("Pearson Correlation : ", round(cor(AS_TPM_r$ratio_6125, AS_TPM_r$ratio_6126, use = "pairwise.complete.obs"), 4) ), x= 0.63, y= 0.97, hjust = 0, gp = gpar(col = "red", fontsize = 11, fontface = "bold")))
+
+ggplot(data = AS_TPM_r) + 
+  geom_point(mapping = aes(y=ratio_6126, x= ratio_6125), alpha = 2/10, size = 1) +
+  scale_x_continuous(trans = log2_trans(),
+    breaks = trans_breaks("log2", function(x) 2^x),
+    labels = trans_format("log2", math_format(2^.x))) +
+  scale_y_continuous(trans = log2_trans(),
+    breaks = trans_breaks("log2", function(x) 2^x),
+    labels = trans_format("log2", math_format(2^.x))) +
+  geom_smooth(aes(y= ratio_6126, x= ratio_6125), method = lm, se = TRUE) +
+  theme_bw()+
+  annotation_custom(grob5)
+```
+
+
+```{r}
+grob6 = grobTree(textGrob(paste("Pearson Correlation : ", round(cor(AS_TPM$Q_6125_N_AS, AS_TPM$Q_6126_N_AS, use = "pairwise.complete.obs"), 4) ), x= 0.63, y= 0.97, hjust = 0, gp = gpar(col = "red", fontsize = 11, fontface = "bold")))
+
+
+ggplot(data = AS_TPM) + 
+  geom_point(mapping = aes(x=Q_6125_N_AS, y= Q_6126_N_AS), alpha = 2/10, size = 1) +
+  scale_x_continuous(trans = log2_trans(),
+    breaks = trans_breaks("log2", function(x) 2^x),
+    labels = trans_format("log2", math_format(2^.x))) +
+  scale_y_continuous(trans = log2_trans(),
+    breaks = trans_breaks("log2", function(x) 2^x),
+    labels = trans_format("log2", math_format(2^.x))) +
+  geom_smooth(aes(x= Q_6125_N_AS, y= Q_6126_N_AS), method = lm, se = TRUE) +
+  theme_bw()+
+  annotation_custom(grob6)
+```
+
+
+
+
+```{r}
+grob7 = grobTree(textGrob(paste("Pearson Correlation : ", round(cor(AS_TPM$Q_7718_N_AS, AS_TPM$Q_7716_N_AS, use = "pairwise.complete.obs"), 4) ), x= 0.63, y= 0.97, hjust = 0, gp = gpar(col = "red", fontsize = 11, fontface = "bold")))
+
+
+ggplot(data = AS_TPM) + 
+  geom_point(mapping = aes(x=Q_7718_N_AS, y= Q_7716_N_AS), alpha = 2/10, size = 1) +
+  scale_x_continuous(trans = log2_trans(),
+    breaks = trans_breaks("log2", function(x) 2^x),
+    labels = trans_format("log2", math_format(2^.x))) +
+  scale_y_continuous(trans = log2_trans(),
+    breaks = trans_breaks("log2", function(x) 2^x),
+    labels = trans_format("log2", math_format(2^.x))) +
+  geom_smooth(aes(x= Q_7718_N_AS, y= Q_7716_N_AS), method = lm, se = TRUE) +
+  theme_bw()+
+  annotation_custom(grob7)
+```
+
