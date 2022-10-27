@@ -800,4 +800,12 @@ tar -xvf BBMap_39.01.tar.gz  # Unpack the tar.gz file
 #  Add this to the end of .bashrc:
 #+ export PATH=$PATH:$HOME/bbmap
 
+#  Use your bespoke script, downsample-fastqs.sh, which makes use of BBMap
+#+ reformat.sh, to downsample fastq files
+cd "${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction"
+
+bash ./bin/downsample-fastqs.sh \
+	5781_G1_IN_merged_R1.fastq \
+	5781_G1_IN_merged_R2.fastq \
+	
 ```
