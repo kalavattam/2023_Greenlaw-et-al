@@ -658,8 +658,67 @@ mv *.txt txt/
 ```
 
 # 2022-1027
-`#TODO (   )` Edit the `Bowtie2` alignment script from Alison in order to align an RNA-seq `fasta` file to the combined reference genome
-`#TODO (   )` Figure out what to do regarding PCR duplicates and UMIs/demultiplexing; copy in and reflect on the recent, related e-mail chains from Alison
+Move `how_are_we_stranded_here` output to a distinct directory, `how_are_we_stranded_here`, in `"${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1025"`
+```zsh
+cd "${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1025"
+
+mkdir -p how_are_we_stranded_here
+mv \
+	kallisto_index \
+	stranded_test_5781_G1_IN_GTCGAGAA_L001_R1_001/ \
+	how_are_we_stranded_here/
+```
+
+`#TODO (...)` Edit the `Bowtie2` alignment script from Alison in order to align an RNA-seq `fasta` file to the combined reference genome
+`#TODO ( Y )` Figure out what to do regarding PCR duplicates and UMIs/demultiplexing; copy in and reflect on the recent, related e-mail chains from Alison
+`#TODO ( Y )` Downsample fastq files
+
+Downsample fastq files in order to run quick tests that don't need many threads
+```zsh
+#  Download BBMap (latest version) from SourceForge
+cd ~  # Do everything in "${HOME}"
+curl -L https://sourceforge.net/projects/bbmap/files/BBMap_39.01.tar.gz/download \
+	> BBMap_39.01.tar.gz
+
+tar -xvf BBMap_39.01.tar.gz  # Unpack the tar.gz file
+#  Unpacked directory in "${HOME}" now: bbmap
+
+#  Add this to the end of .bashrc:
+#+ export PATH=$PATH:$HOME/bbmap
+
+#  Use your bespoke script, downsample-fastqs.sh, which makes use of BBMap
+#+ reformat.sh, to downsample fastq files
+cd "${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction"
+
+#  Sample down to 50,000 reads per file
+#+ Also, need to install Java and/or at least have it loaded as a module
+ml Java/15.0.1
+
+mkdir -p "${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1025/fastq"
+
+/bin/bash ./bin/downsample-fastqs.sh \
+	"${HOME}/tsukiyamalab/alisong/WTQvsG1/Project_ccucinot/Sample_5781_G1_IN/5781_G1_IN_merged_R1.fastq" \
+	"${HOME}/tsukiyamalab/alisong/WTQvsG1/Project_ccucinot/Sample_5781_G1_IN/5781_G1_IN_merged_R2.fastq" \
+	"50k" \
+	"${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1025/fastq"
+#  Without loading Java, command exits with error code 127:
+#+ /home/kalavatt/bbmap/reformat.sh: line 230: java: command not found
+```
+
+Printed to screen with the call to `downsample-fastqs.sh`:
+```txt
+java -ea -Xms300m -cp /home/kalavatt/bbmap/current/ jgi.ReformatReads in1=/home/kalavatt/tsukiyamalab/alisong/WTQvsG1/Project_ccucinot/Sample_5781_G1_IN/5781_G1_IN_merged_R1.fastq in2=/home/kalavatt/tsukiyamalab/alisong/WTQvsG1/Project_ccucinot/Sample_5781_G1_IN/5781_G1_IN_merged_R2.fastq out1=/home/kalavatt/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1025/fastq/5781_G1_IN_merged_R1.50k.fastq out2=/home/kalavatt/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1025/fastq/5781_G1_IN_merged_R2.50k.fastq samplereadstarget=50k
+Executing jgi.ReformatReads [in1=/home/kalavatt/tsukiyamalab/alisong/WTQvsG1/Project_ccucinot/Sample_5781_G1_IN/5781_G1_IN_merged_R1.fastq, in2=/home/kalavatt/tsukiyamalab/alisong/WTQvsG1/Project_ccucinot/Sample_5781_G1_IN/5781_G1_IN_merged_R2.fastq, out1=/home/kalavatt/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1025/fastq/5781_G1_IN_merged_R1.50k.fastq, out2=/home/kalavatt/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1025/fastq/5781_G1_IN_merged_R2.50k.fastq, samplereadstarget=50k]
+
+Set INTERLEAVED to false
+Input is being processed as paired
+Input:                  	27977684 reads          	1398884200 bases
+Output:                 	100000 reads (0.36%) 	5000000 bases (0.36%)
+
+Time:                         	25.654 seconds.
+Reads Processed:      27977k 	1090.58k reads/sec
+Bases Processed:       1398m 	54.53m bases/sec
+```
 
 Stepping through each line of the `Bowtie2` alignment, etc. script
 ```zsh
@@ -695,7 +754,7 @@ echo "${split_reads}"
 
 
 #  1 (cont.)
-sample_directory="${2:-"${HOME}/tsukiyamalab/alisong/WTQvsG1/Project_ccucinot/Sample_5781_G1_IN"}"
+sample_directory="${2:-"${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1025/fastq"}"
 sample_root="${3:-"5781_G1_IN_merged"}"
 
 echo "${sample_directory}"
@@ -753,12 +812,13 @@ done
 #KA Try the for loop with quoted variables: It breaks; leave as is
 
 
-#  3
+#  4
 # Create the output directory and any needed parent directories.
 mkdir -p "${output_directory}"
 #  mkdir: created directory '/home/kalavatt/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1025/bam'
 
 #  Locate the infiles
+unset infiles
 typeset -a infiles
 while IFS=" " read -r -d $'\0'; do
     infiles+=( "${REPLY}" )
@@ -770,7 +830,8 @@ done < <(\
         -print0 \
             | sort -z \
 )
-# for i in "${infiles[@]}"; do echo "${i}"; done
+for i in "${infiles[@]}"; do echo "${i}"; done
+echo ""
 
 #  Only two fastq files should be found; if less or more, then exit with a
 #+ warning message
@@ -784,28 +845,58 @@ elif [[ "${#infiles[@]}" -eq 2 ]]; then
     :
 fi
 
-#  So far, it works; let's do some additional set-up
-```
+#  So far, it works; let's keep stepping
 
-Downsample fastq files in order to run quick tests that don't need many threads
-```zsh
-#  Download BBMap (latest version) from SourceForge
-cd ~  # Do everything in "${HOME}"
-curl -L https://sourceforge.net/projects/bbmap/files/BBMap_39.01.tar.gz/download \
-	> BBMap_39.01.tar.gz
 
-tar -xvf BBMap_39.01.tar.gz  # Unpack the tar.gz file
-#  Unpacked directory in "${HOME}" now: bbmap
+#  5
+logNoExec "==========================="
+logNoEcho date
+logNoExec "Processing ${sample_name}"
 
-#  Add this to the end of .bashrc:
-#+ export PATH=$PATH:$HOME/bbmap
+echo "$wrap"
+echo "${threads}"
+echo "${reference_genome}"
+echo "${infiles[0]}"
+echo "${infiles[1]}"
 
-#  Use your bespoke script, downsample-fastqs.sh, which makes use of BBMap
-#+ reformat.sh, to downsample fastq files
-cd "${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction"
 
-bash ./bin/downsample-fastqs.sh \
-	5781_G1_IN_merged_R1.fastq \
-	5781_G1_IN_merged_R2.fastq \
-	
+${wrap} bowtie2 \
+    -p "${threads}" \
+    -x "${reference_genome}" \
+    -1 "${infiles[0]}" \
+    -2 "${infiles[1]}" \
+    --trim5 1 \
+    --local \
+    --very-sensitive-local \
+    --no-unal \
+    --no-mixed \
+    --no-discordant \
+    --phred33 \
+    -I 10 \
+    -X 700 \
+    --no-overlap \
+    --no-dovetail \
+    | samtools sort -@ "${threads}" -o "${infiles[0]%_R1.fastq}_sorted.bam" -
+#  Meaning of Bowtie2 parameters:
+#+ -p: threads
+#+ -x: Bowtie2 indices, including path and root
+#+ -1: Read #1 of paired-end reads
+#+ -2: Read #2 of paired-end reads
+#+ --trim5: trim <int> bases from 5'/left end of reads
+#+ --local: local alignment; ends might be soft clipped (off)
+#+ --very-sensitive-local: -D 20 -R 3 -N 0 -L 20 -i S,1,0.50
+#+ -D: give up extending after <int> failed extends in a row (15)
+#+ -R: for reads w/ repetitive seeds, try <int> sets of seeds (2)
+#+ -N: max # mismatches in seed alignment; can be 0 or 1 (0)
+#+ -L: length of seed substrings; must be >3, <32 (22)
+#+ -i: interval between seed substrings w/r/t read len (S,1,1.15)
+#+ --no-unal: suppress SAM records for unaligned reads
+#+ --no-mixed: suppress unpaired alignments for paired reads
+#+ --no-discordant: suppress discordant alignments for paired reads
+#+ --phred33: qualities are Phred+33 (default)
+#+ -I: minimum fragment length (0)
+#+ -X: maximum fragment length (500)
+#+ --no-overlap: not concordant when mates overlap at all
+#+ --no-dovetail: NA
+#+ -S: <sam>
 ```
