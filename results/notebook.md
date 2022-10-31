@@ -382,7 +382,7 @@ Some corresponding logic:
 1. `#TODO (   )` A "better way" to calculate TPM (see "Notes from meeting with Alison and Toshi" above)
 2. `#TODO (   )` Create a combined genome comprised of *S. cerevisiae*, *K. lactis*, and 20 S (more details immediately above); then, select the *S. cerevisiae* alignments for downstream analyses
 
-# 2022-1025
+# 2022-1025-1028
 ## E-mail: "Additional Nab3 Analysis"
 ## Working through the bullets in "Five things to try out/work on" in `notebook.md` ("Going over Trinity assessments with Alison")
 ### Working on the bullet "Test the genome-guided bam approach to `Trinity` versus the fastq approach"

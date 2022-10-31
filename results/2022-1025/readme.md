@@ -140,10 +140,10 @@ pa_fastq="${HOME}/tsukiyamalab/alisong/WTQvsG1/Project_ccucinot/Sample_157_G1_IN
 pa_gtf_cDNA="${HOME}/genomes/sacCer3/Ensembl/108"
 
 check_strandedness \
-	--gtf "${pa_gtf_cDNA}/gtf/Saccharomyces_cerevisiae.R64-1-1.108.gtf" \
-	--transcripts "${pa_gtf_cDNA}/cDNA/Saccharomyces_cerevisiae.R64-1-1.cdna.all.fa" \
-	--reads_1 "${pa_fastq}/5781_G1_IN_GTCGAGAA_L001_R1_001.fastq" \
-	--reads_2 "${pa_fastq}/5781_G1_IN_GTCGAGAA_L001_R2_001.fastq"
+    --gtf "${pa_gtf_cDNA}/gtf/Saccharomyces_cerevisiae.R64-1-1.108.gtf" \
+    --transcripts "${pa_gtf_cDNA}/cDNA/Saccharomyces_cerevisiae.R64-1-1.cdna.all.fa" \
+    --reads_1 "${pa_fastq}/5781_G1_IN_GTCGAGAA_L001_R1_001.fastq" \
+    --reads_2 "${pa_fastq}/5781_G1_IN_GTCGAGAA_L001_R2_001.fastq"
 ```
 
 Output of `how-are-we-stranded-here` printed to screen
@@ -219,9 +219,9 @@ Alison
 
 ## Creation of a combined reference genome comprised of *S. cerevisiae*, *K. lactis*, and 20 S narnavirus
 ### 1. The `fasta` for *Saccharomyces 20 S narnavirus* can be obtained from the [Saccharomyces Genome Database (SGD)](https://www.yeastgenome.org/)
-	- In the search bar, input "20 S"
-	- The second result (October 26, 2022) is "20S_RNA_Narnavirus_1997_NC004051.fsa"
-	- Downloads for the `fasta` file and `README` are available; use the links to download the files
+    - In the search bar, input "20 S"
+    - The second result (October 26, 2022) is "20S_RNA_Narnavirus_1997_NC004051.fsa"
+    - Downloads for the `fasta` file and `README` are available; use the links to download the files
 ```zsh
 grabnode
 
@@ -420,30 +420,30 @@ Looks like I already did. Nice.
 Click the link ["Download DNA sequence"](http://ftp.ensemblgenomes.org/pub/fungi/release-55/fasta/fungi_ascomycota1_collection/kluyveromyces_lactis_gca_000002515/dna/). Site contents:
 ```txt
 
-[ICO]	Name	Last modified	Size	Description
-[PARENTDIR]	Parent Directory	 	-	 
-CHECKSUMS	2022-09-21 11:02	1.7K	 
-Kluyveromyces_lactis_gca_000002515.ASM251v1.dna.chromosome.A.fa.gz	2022-08-16 05:28	324K	 
-Kluyveromyces_lactis_gca_000002515.ASM251v1.dna.chromosome.B.fa.gz	2022-08-16 05:28	403K	 
-Kluyveromyces_lactis_gca_000002515.ASM251v1.dna.chromosome.C.fa.gz	2022-08-16 05:28	535K	 
-Kluyveromyces_lactis_gca_000002515.ASM251v1.dna.chromosome.D.fa.gz	2022-08-16 05:28	520K	 
-Kluyveromyces_lactis_gca_000002515.ASM251v1.dna.chromosome.E.fa.gz	2022-08-16 05:28	681K	 
-Kluyveromyces_lactis_gca_000002515.ASM251v1.dna.chromosome.F.fa.gz	2022-08-16 05:28	793K	 
-Kluyveromyces_lactis_gca_000002515.ASM251v1.dna.toplevel.fa.gz	2022-08-16 05:28	3.2M	 
-Kluyveromyces_lactis_gca_000002515.ASM251v1.dna_rm.chromosome.A.fa.gz	2022-08-16 05:28	323K	 
-Kluyveromyces_lactis_gca_000002515.ASM251v1.dna_rm.chromosome.B.fa.gz	2022-08-16 05:28	402K	 
-Kluyveromyces_lactis_gca_000002515.ASM251v1.dna_rm.chromosome.C.fa.gz	2022-08-16 05:28	534K	 
-Kluyveromyces_lactis_gca_000002515.ASM251v1.dna_rm.chromosome.D.fa.gz	2022-08-16 05:28	520K	 
-Kluyveromyces_lactis_gca_000002515.ASM251v1.dna_rm.chromosome.E.fa.gz	2022-08-16 05:28	680K	 
-Kluyveromyces_lactis_gca_000002515.ASM251v1.dna_rm.chromosome.F.fa.gz	2022-08-16 05:28	793K	 
-Kluyveromyces_lactis_gca_000002515.ASM251v1.dna_rm.toplevel.fa.gz	2022-08-16 05:28	3.2M	 
-Kluyveromyces_lactis_gca_000002515.ASM251v1.dna_sm.chromosome.A.fa.gz	2022-08-16 05:28	324K	 
-Kluyveromyces_lactis_gca_000002515.ASM251v1.dna_sm.chromosome.B.fa.gz	2022-08-16 05:28	403K	 
-Kluyveromyces_lactis_gca_000002515.ASM251v1.dna_sm.chromosome.C.fa.gz	2022-08-16 05:29	535K	 
-Kluyveromyces_lactis_gca_000002515.ASM251v1.dna_sm.chromosome.D.fa.gz	2022-08-16 05:29	521K	 
-Kluyveromyces_lactis_gca_000002515.ASM251v1.dna_sm.chromosome.E.fa.gz	2022-08-16 05:29	682K	 
-Kluyveromyces_lactis_gca_000002515.ASM251v1.dna_sm.chromosome.F.fa.gz	2022-08-16 05:29	794K	 
-Kluyveromyces_lactis_gca_000002515.ASM251v1.dna_sm.toplevel.fa.gz	2022-08-16 05:29	3.2M	 
+[ICO]    Name    Last modified    Size    Description
+[PARENTDIR]    Parent Directory         -     
+CHECKSUMS    2022-09-21 11:02    1.7K     
+Kluyveromyces_lactis_gca_000002515.ASM251v1.dna.chromosome.A.fa.gz    2022-08-16 05:28    324K     
+Kluyveromyces_lactis_gca_000002515.ASM251v1.dna.chromosome.B.fa.gz    2022-08-16 05:28    403K     
+Kluyveromyces_lactis_gca_000002515.ASM251v1.dna.chromosome.C.fa.gz    2022-08-16 05:28    535K     
+Kluyveromyces_lactis_gca_000002515.ASM251v1.dna.chromosome.D.fa.gz    2022-08-16 05:28    520K     
+Kluyveromyces_lactis_gca_000002515.ASM251v1.dna.chromosome.E.fa.gz    2022-08-16 05:28    681K     
+Kluyveromyces_lactis_gca_000002515.ASM251v1.dna.chromosome.F.fa.gz    2022-08-16 05:28    793K     
+Kluyveromyces_lactis_gca_000002515.ASM251v1.dna.toplevel.fa.gz    2022-08-16 05:28    3.2M     
+Kluyveromyces_lactis_gca_000002515.ASM251v1.dna_rm.chromosome.A.fa.gz    2022-08-16 05:28    323K     
+Kluyveromyces_lactis_gca_000002515.ASM251v1.dna_rm.chromosome.B.fa.gz    2022-08-16 05:28    402K     
+Kluyveromyces_lactis_gca_000002515.ASM251v1.dna_rm.chromosome.C.fa.gz    2022-08-16 05:28    534K     
+Kluyveromyces_lactis_gca_000002515.ASM251v1.dna_rm.chromosome.D.fa.gz    2022-08-16 05:28    520K     
+Kluyveromyces_lactis_gca_000002515.ASM251v1.dna_rm.chromosome.E.fa.gz    2022-08-16 05:28    680K     
+Kluyveromyces_lactis_gca_000002515.ASM251v1.dna_rm.chromosome.F.fa.gz    2022-08-16 05:28    793K     
+Kluyveromyces_lactis_gca_000002515.ASM251v1.dna_rm.toplevel.fa.gz    2022-08-16 05:28    3.2M     
+Kluyveromyces_lactis_gca_000002515.ASM251v1.dna_sm.chromosome.A.fa.gz    2022-08-16 05:28    324K     
+Kluyveromyces_lactis_gca_000002515.ASM251v1.dna_sm.chromosome.B.fa.gz    2022-08-16 05:28    403K     
+Kluyveromyces_lactis_gca_000002515.ASM251v1.dna_sm.chromosome.C.fa.gz    2022-08-16 05:29    535K     
+Kluyveromyces_lactis_gca_000002515.ASM251v1.dna_sm.chromosome.D.fa.gz    2022-08-16 05:29    521K     
+Kluyveromyces_lactis_gca_000002515.ASM251v1.dna_sm.chromosome.E.fa.gz    2022-08-16 05:29    682K     
+Kluyveromyces_lactis_gca_000002515.ASM251v1.dna_sm.chromosome.F.fa.gz    2022-08-16 05:29    794K     
+Kluyveromyces_lactis_gca_000002515.ASM251v1.dna_sm.toplevel.fa.gz    2022-08-16 05:29    3.2M     
 README
 ```
 Cool. Looks like we need `Kluyveromyces_lactis_gca_000002515.ASM251v1.dna.toplevel.fa.gz`, `README`, and `CHECKSUMS`:
@@ -604,7 +604,7 @@ cat "${fasta_SC}" "${fasta_KL}" "${fasta_20S}" > "${fasta_comb}"
 zgrep ">" "${fasta_comb}"
 ```
 
-Results for `combined_SC_KL_20S.fasta`:
+### Chromosome contents of `combined_SC_KL_20S.fasta`:
 ```txt
 >I
 >II
@@ -631,6 +631,7 @@ Results for `combined_SC_KL_20S.fasta`:
 >F
 >20S
 ```
+Great, this is what we want.
 
 ```zsh
 #  Make a directory for the combined genome
@@ -657,50 +658,60 @@ mv *fasta* fasta/
 mv *.txt txt/
 ```
 
-# 2022-1027
+# 2022-1027-1028
+## Continued work with `how_are_we_stranded_here`
 Move `how_are_we_stranded_here` output to a distinct directory, `how_are_we_stranded_here`, in `"${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1025"`
 ```zsh
 cd "${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1025"
 
 mkdir -p how_are_we_stranded_here
 mv \
-	kallisto_index \
-	stranded_test_5781_G1_IN_GTCGAGAA_L001_R1_001/ \
-	how_are_we_stranded_here/
+    kallisto_index \
+    stranded_test_5781_G1_IN_GTCGAGAA_L001_R1_001/ \
+    how_are_we_stranded_here/
 ```
 
+## `#TODO` items to work through
 `#TODO (...)` Edit the `Bowtie2` alignment script from Alison in order to align an RNA-seq `fasta` file to the combined reference genome
 `#TODO ( Y )` Figure out what to do regarding PCR duplicates and UMIs/demultiplexing; copy in and reflect on the recent, related e-mail chains from Alison
 `#TODO ( Y )` Downsample fastq files
 
-Downsample fastq files in order to run quick tests that don't need many threads
+### Downsampling `fastq` files
+Downsample `fastq` files in order to run quick tests that don't need many threads:
 ```zsh
-#  Download BBMap (latest version) from SourceForge
-cd ~  # Do everything in "${HOME}"
+#  First, download BBMap (latest version) from SourceForge; BBMap provides a
+#+ quick and easy to do this sort of random downsampling
+cd ~  # Do the following work in "${HOME}"
 curl -L https://sourceforge.net/projects/bbmap/files/BBMap_39.01.tar.gz/download \
-	> BBMap_39.01.tar.gz
+    > BBMap_39.01.tar.gz
 
 tar -xvf BBMap_39.01.tar.gz  # Unpack the tar.gz file
-#  Unpacked directory in "${HOME}" now: bbmap
+#  Unpacked directory in "${HOME}" now: It's in a directory simply called
+#+ "bbmap" (with the decompression, a bunch of info on files in the tar were
+#+ printed to screen)
 
-#  Add this to the end of .bashrc:
-#+ export PATH=$PATH:$HOME/bbmap
+#  Get BBMap into "${PATH}" by adding this to the end of .bashrc:
+#+ export PATH="${PATH}:${HOME}/bbmap"
 
-#  Use your bespoke script, downsample-fastqs.sh, which makes use of BBMap
-#+ reformat.sh, to downsample fastq files
+#  Go ahead and remove the *.tar.gz file
+rm BBMap_39.01.tar.gz
+
+#  Use your bespoke script, 'downsample-fastqs.sh', which makes use of BBMap
+#+ 'reformat.sh', to downsample fastq files
 cd "${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction"
 
 #  Sample down to 50,000 reads per file
 #+ Also, need to install Java and/or at least have it loaded as a module
 ml Java/15.0.1
 
+#  Make a directory to store the downsampled fastq files
 mkdir -p "${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1025/fastq"
 
 /bin/bash ./bin/downsample-fastqs.sh \
-	"${HOME}/tsukiyamalab/alisong/WTQvsG1/Project_ccucinot/Sample_5781_G1_IN/5781_G1_IN_merged_R1.fastq" \
-	"${HOME}/tsukiyamalab/alisong/WTQvsG1/Project_ccucinot/Sample_5781_G1_IN/5781_G1_IN_merged_R2.fastq" \
-	"50k" \
-	"${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1025/fastq"
+    "${HOME}/tsukiyamalab/alisong/WTQvsG1/Project_ccucinot/Sample_5781_G1_IN/5781_G1_IN_merged_R1.fastq" \
+    "${HOME}/tsukiyamalab/alisong/WTQvsG1/Project_ccucinot/Sample_5781_G1_IN/5781_G1_IN_merged_R2.fastq" \
+    "50k" \
+    "${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1025/fastq"
 #  Without loading Java, command exits with error code 127:
 #+ /home/kalavatt/bbmap/reformat.sh: line 230: java: command not found
 ```
@@ -712,15 +723,15 @@ Executing jgi.ReformatReads [in1=/home/kalavatt/tsukiyamalab/alisong/WTQvsG1/Pro
 
 Set INTERLEAVED to false
 Input is being processed as paired
-Input:                  	27977684 reads          	1398884200 bases
-Output:                 	100000 reads (0.36%) 	5000000 bases (0.36%)
+Input:                      27977684 reads              1398884200 bases
+Output:                     100000 reads (0.36%)     5000000 bases (0.36%)
 
-Time:                         	25.654 seconds.
-Reads Processed:      27977k 	1090.58k reads/sec
-Bases Processed:       1398m 	54.53m bases/sec
+Time:                             25.654 seconds.
+Reads Processed:      27977k     1090.58k reads/sec
+Bases Processed:       1398m     54.53m bases/sec
 ```
 
-Stepping through each line of the `Bowtie2` alignment, etc. script
+### Stepping through each line of the `Bowtie2` alignment and processing script from Alison G. (derived from `New_101122_sc_bowtie_4tu.sh`)
 ```zsh
 grabnode  # Default settings
 
@@ -741,7 +752,7 @@ threads="${1:-"1"}"  # Normally, 16
 load_module_cmd="module load"
 load_modules="Bowtie2/2.4.4-GCC-11.2.0 SAMtools/1.16.1-GCC-11.2.0 deepTools/3.5.1-foss-2021b"
 reference_genome="${HOME}/genomes/combined_SC_KL_20S/Bowtie2/combined_SC_KL_20S"
-split_reads="${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/bin/split_bam_paired_end.sh"
+split_reads="${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/bin/split_bam_fwd_rev.sh"
 
 echo "${threads}"
 echo "${load_module_cmd}"
@@ -814,7 +825,11 @@ done
 
 #  4
 # Create the output directory and any needed parent directories.
-mkdir -p "${output_directory}"
+[[ -d "${output_directory}" ]] ||
+    {
+        echo "${output_directory} does not exist; mkdir'ing it..."
+        mkdir -p "${output_directory}"
+    }
 #  mkdir: created directory '/home/kalavatt/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1025/bam'
 
 #  Locate the infiles
@@ -830,7 +845,7 @@ done < <(\
         -print0 \
             | sort -z \
 )
-for i in "${infiles[@]}"; do echo "${i}"; done
+for i in "${infiles[@]}"; do echo "${i}"; done  # Check; can comment out later
 echo ""
 
 #  Only two fastq files should be found; if less or more, then exit with a
@@ -844,7 +859,6 @@ elif [[ "${#infiles[@]}" -gt 2 ]]; then
 elif [[ "${#infiles[@]}" -eq 2 ]]; then
     :
 fi
-
 #  So far, it works; let's keep stepping
 
 
@@ -860,7 +874,28 @@ echo "${infiles[0]}"
 echo "${infiles[1]}"
 
 
-${wrap} bowtie2 \
+# ${wrap} bowtie2 \
+#     -p "${threads}" \
+#     -x "${reference_genome}" \
+#     -1 "${infiles[0]}" \
+#     -2 "${infiles[1]}" \
+#     --trim5 1 \
+#     --local \
+#     --very-sensitive-local \
+#     --no-unal \
+#     --no-mixed \
+#     --no-discordant \
+#     --phred33 \
+#     -I 10 \
+#     -X 700 \
+#     --no-overlap \
+#     --no-dovetail \
+#         | samtools sort -@ "${threads}" -o "${infiles[0]%_R1.fastq}_sorted.bam" -
+#NOTE 1/2 In order for the pipe operation to work, the call to ${wrap} needs to
+#NOTE 2/2 be removed
+
+#  For example, it should be called like this:
+bowtie2 \
     -p "${threads}" \
     -x "${reference_genome}" \
     -1 "${infiles[0]}" \
@@ -876,7 +911,7 @@ ${wrap} bowtie2 \
     -X 700 \
     --no-overlap \
     --no-dovetail \
-    | samtools sort -@ "${threads}" -o "${infiles[0]%_R1.fastq}_sorted.bam" -
+        | samtools sort -@ "${threads}" -o "${infiles[0]%_R1.fastq}_sorted.bam" -
 #  Meaning of Bowtie2 parameters:
 #+ -p: threads
 #+ -x: Bowtie2 indices, including path and root
@@ -899,4 +934,618 @@ ${wrap} bowtie2 \
 #+ --no-overlap: not concordant when mates overlap at all
 #+ --no-dovetail: NA
 #+ -S: <sam>
+
+#QUESTION Will piping to threaded samtools sort work?
+#ANSWER 1/2 It seems so: github.com/samtools/samtools/issues/891
+#ANSWER 2/2 (Relevant text pasted below:)
 ```
+
+#### Will piping to threaded `samtools sort` work?
+##### [`samtools sort` number of threads in reading phase #891](https://github.com/samtools/samtools/issues/891)
+###### `bernt-matthias` commented on Jul 11, 2018
+**Is your feature request related to a problem? Please specify.**
+1. When using `mapper | samtools sort -`, it is difficult to specify the number of threads for the mapper and for samtools.
+2. Until all data is read entirely, `samtools` seldomly uses the available CPUs efficiently (CPU usage is seldomly larger than 100%).
+
+**Describe the solution you would like.**
+I suggest to allow to specify the number of CPUs used by samtools during reading the data (and producing pre-sorted chunks) separately. This would simplify the specification of the number of threads used by both programs. Until the mapper is finished, `samtools` could, for instance, use a single thread for reading and chunking and then use the full number of threads afterwards (when the mapper has finished). Thereby
+- the CPU usage could be better limited (in shared environments you need to specify the number of cores and sometimes admins really check)
+- the currently suboptimal performance of `samtools sort` during reading would be nicely hidden.
+- I guess the single thread for the first phase could nicely fill the missing CPU utilization of the mapper.
+
+###### `jkbonfield` commented on Jul 11, 2018
+`sort` could certainly be more efficient. Ideally, it would be using asynchronous I/O too.
+
+However, this particular problem is perhaps one of expectation. Over-specifying the number of threads is not a catastrophically bad thing to do, and you can use `cgroups` or `hwloc-bind` to govern how many cores the entire process can take up too.
+
+Also, I don't think it's true to say that `samtools sort` only uses more than one CPU until the mapper has finished. It uses one thread until it's read enough data and then it uses multiple threads to sort and write that temporary data to disk, repeatedly. On finishing (no more `stdin`), it then has a separate merge stage. If your mapper is the slow part, then "yes", `samtools` will likely be stuck at under 100% CPU, but that's not really a `samtools` issue I think.
+
+Note there is more or less a way to handle what you want already (untested, but I think it's equivalent), e.g.:
+
+`mapper | samtools sort -l 0 -O bam -@2 | samtools view -O bam -@16 -o out.bam`
+
+The second merge stage only starts when the mapper has finished, and this will be I/O bound and won't be threading on output as there are no lengthy `bgzf` compression steps. The `samtools view` command will only start consuming CPU after the mapper has finished, so both mapper and view can be given the same cores to work on.
+
+Finally maybe you'll get more luck using `mapper | mbuffer | samtools` too with some systems and/or aligners. This can avoid issues with small pipe sizes.
+
+###### `bernt-matthias` commented on Jul 11, 2018
+Thanks for the info and suggestions.
+
+> On finishing (no more `stdin`) it then has a separate merge stage. If your mapper is the slow part, then "yes", `samtools` will likely be stuck at under 100% CPU, but that's not really a `samtools` issue I think.
+
+Actually (in my case the mapper is `hisat2`), CPU usage is most of the time approx 100% and then spikes for a short time to approximately `x`\*100%, where `x` ist the number of threads given to `samtools`. But this time is really short.
+
+> Note there is more or less a way to handle what you want already (untested, but I think it's equivalent), e.g.:
+>
+> `mapper | samtools sort -l 0 -O bam -@2 | samtools view -O bam -@16 -o out.bam`
+>
+> The second merge stage only starts when the mapper has finished, and this will be I/O bound and won't be threading on output as there are no lengthy `bgzf` compression steps. The `samtools view` command will only start consuming CPU after the mapper has finished, so both mapper and view can be given the same cores to work on.
+
+Sounds like a cool idea. The result should be equivalent.
+
+Efficiency depends a bit on how sort merges the temporary files. If it is done in a tree-like fashion, then it would start to write output on the top level of the merge tree. But if all temporary files are merged at once, then it would start writing output immediately (which would start `view` earlier). For the suggested solution the latter would be better, I guess.
+
+###### `jkbonfield` commented on Jul 11, 2018
+Sadly, `sort` is pretty noddy. It simply reads until hitting the memory limit, sorts, writes to temporary file, repeats. At the end, it then opens *ALL* files and merges. This isn't particularly efficient and can cause major I/O bottlenecks and/or running out of file descriptors if you've set the memory limit too low.
+
+It can perhaps be sped up by adjusting the block size to be larger than the file system hints at (`fstat`) via the `--input-fmt-option block_size=10000000` option, for example. This would use more memory (but probably still less than you used for sorting), but will perhaps thrash the system less.
+
+###### My thoughts, 2022-1028
+I am not so sure about the `mapper | mbuffer | samtools` and `--input-fmt-option block_size=10000000` approaches mentioned above...
+
+Let's move forward with the `mapper | samtools sort -l 0 -O bam -@2 | samtools view -O bam -@16 -o out.bam` approach discussed above. If I understand things correctly, this will get uncompressed sorting started and cap it at a maximum of two threads, which I have decided to subtract from the number supplied to `bowtie2` to prevent overthreading; e.g., of 16 threads total, 14 are assigned to `bowtie2` and two are assigned to `samtools sort`. Then, the final compressed merge via `samtools view` will not begin until mapping with `bowtie2` is completed.
+
+The call to `bowtie2` and `samtools` will look like this:
+```zsh
+#DONTRUN
+threads=16
+
+#  superuser.com/questions/49765/how-to-make-a-statement-that-checks-if-something-is-divisible-by-something-else
+#  stackoverflow.com/questions/8356698/how-to-remove-decimal-from-a-variable
+if [[ "${threads}" -gt 1 ]] && (( "${threads}" % 4 == 0 )); then  #TODO More robust if/then logic here
+    #  Call Bowtie2 in this manner if we've assigned a number of threads
+    #+ divisible by 4
+    threads_bowtie2_float="$(echo "${threads}"*0.875 | bc)"
+    threads_sort_float="$(echo "${threads}"*0.125 | bc)"
+    threads_bowtie2="$(printf %.0f "${threads_bowtie2}")"
+    threads_sort="$(printf %.0f "${threads_sort}")"
+
+    bowtie2 \
+        -p "${threads_bowtie2}" \
+        -x "${reference_genome}" \
+        -1 "${infiles[0]}" \
+        -2 "${infiles[1]}" \
+        --trim5 1 \
+        --local \
+        --very-sensitive-local \
+        --no-unal \
+        --no-mixed \
+        --no-discordant \
+        --phred33 \
+        -I 10 \
+        -X 700 \
+        --no-overlap \
+        --no-dovetail \
+            | samtools sort -@ "${threads_sort}" -l 0 -O "bam" \
+            | samtools view -@ "${threads}" -0 bam "${infiles[0]%_R1.fastq}.bam"
+else
+    echo "Threads is not greater than 1 and/or not divisible by 4"
+fi
+```
+
+Have added explicit arguments to the script `align_process_fastqs.sh`; let's carefully step through and test the things that have been drafted thus far...
+```zsh
+grabnode  # If not already on gizmo
+
+#  Source functions -----------------------------------------------------------
+check_dependency() {
+    # Check if program is available in "${PATH}"; exit if not
+    # 
+    # :param 1: program/package <chr>
+    command -v "${1}" &>/dev/null ||
+        {
+            echo "Exiting: ${1} not found. Install ${1}."
+            # exit 1
+        }
+}
+
+
+check_exit() {
+    # Check the exit code of a child process
+    # 
+    # :param 1: exit code <int >= 0>
+    # :param 2: program/package <chr>
+    if [[ "${1}" == "0" ]]; then
+        echo "${2} completed: $(date)"
+    else
+        err "#ERROR: ${2} returned exit code ${1}"
+    fi
+}
+
+
+err() {
+    # Print an error meassage, then exit with code 1
+    # 
+    # :param 1: program/package <chr>
+    echo "${1} exited unexpectedly"
+    # exit 1
+}
+
+
+print_usage() {
+    # Print the help message and exit
+    echo "${help}"
+    # exit 1
+}
+
+
+#  Handle arguments, assign variables -----------------------------------------
+help="""
+Take user-input .bam files and split them into distinct .bam files for the
+forward and reverse strands, saving the split .bam files to a user-defined out
+directory.
+
+Dependencies:
+  - samtools >= 1.9
+
+Arguments:
+  -h  print this help message and exit
+  -u  use safe mode: \"TRUE\" or \"FALSE\" <logical; default: FALSE>
+  -i  infile, including path <chr>
+  -o  outfile directory, including path; if not found, will be mkdir'd <chr>
+  -t  number of threads <int >= 1>
+  -c  remove bams for flags 147, 99, 83, and 163: \"TRUE\" or \"FALSE\" <logical; default: TRUE>
+"""
+
+while getopts "h:u:i:o:t:c:" opt; do
+	case "${opt}" in
+		h) echo "${help}" && exit ;;
+		u) safe_mode="${OPTARG}" ;;
+		i) infile="${OPTARG}" ;;
+		o) outdir="${OPTARG}" ;;
+        t) threads="${OPTARG}" ;;
+        c) clean_up="${OPTARG}" ;;
+		*) print_usage ;;
+	esac
+done
+
+[[ -z "${safe_mode}" ]] && safe_mode=FALSE
+[[ -z "${infile}" ]] && print_usage
+[[ -z "${outdir}" ]] && print_usage
+[[ -z "${threads}" ]] && threads=16
+[[ -z "${clean_up}" ]] && clean_up=TRUE
+
+#  Assignments for tests
+safe_mode=FALSE
+infile="${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1025/align_process_fastqs/bam/5781_G1_IN_merged.bam"
+outdir="${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1025/align_process_fastqs/bam"
+threads=1
+clean_up=TRUE
+
+echo "${safe_mode}"
+echo "${infile}"
+echo "${outdir}"
+echo "${threads}"
+echo "${clean_up}"
+
+ls -lhaFG "${infile}"
+ls -lhaFG "${outdir}"
+
+
+#  Check variable assignments and dependencies --------------------------------
+echo ""
+echo "Running ${0}... "
+
+#  Evaluate "${safe_mode}"
+case "$(echo "${safe_mode}" | tr '[:upper:]' '[:lower:]')" in
+    true | t) \
+        echo -e "-u: \"Safe mode\" is TRUE.\n" && set -Eeuxo pipefail ;;
+    false | f) \
+        echo -e "-u: \"Safe mode\" is FALSE.\n" ;;
+    *) \
+        echo -e "Exiting: -u \"safe mode\" argument must be TRUE or FALSE.\n"
+        # exit 1
+        ;;
+esac
+
+#  Check that "${infile}" exists
+[[ -f "${infile}" ]] ||
+    {
+        echo -e "Exiting: -i ${infile} does not exist.\n"
+        # exit 1
+    }
+
+#  Make "${outdir}" if it doesn't exist
+[[ -d "${outdir}" ]] ||
+    {
+        echo -e "-o: Directory ${outdir} does not exist; making the directory.\n"
+        mkdir -p "${outdir}"
+    }
+
+#  Evaluate "${clean_up}"
+case "$(echo "${clean_up}" | tr '[:upper:]' '[:lower:]')" in
+    true | t) \
+        echo -e "-c: \"Clean up\" is TRUE.\n" ;;
+    false | f) \
+        echo -e "-c: \"Clean up\" is FALSE.\n" ;;
+    *) \
+        echo -e "Exiting: -c \"clean up\" argument must be TRUE or FALSE.\n"
+        # exit 1
+        ;;
+esac
+
+echo ""
+
+#  Check for necessary dependencies; exit if not found
+module="SAMtools/1.16.1-GCC-11.2.0"
+ml "${module}"
+check_dependency samtools
+
+
+#  Make additional variable assignments from the arguments --------------------
+base="$(basename "${infile}")"
+name="${base%.*}"
+forward_1="${outdir}/${name}.fwd_99.bam"
+forward_2="${outdir}/${name}.fwd_147.bam"
+forward="${outdir}/${name}.fwd.bam"
+reverse_1="${outdir}/${name}.rev_83.bam"
+reverse_2="${outdir}/${name}.rev_163.bam"
+reverse="${outdir}/${name}.rev.bam"
+
+echo "${base}"
+echo "${name}"
+echo "${forward_1}"
+echo "${forward_2}"
+echo "${forward}"
+echo "${reverse_1}"
+echo "${reverse_2}"
+echo "${reverse}"
+
+
+#  Forward strand ---------------------
+#+
+#+ 1. Alignments of the second in pair if they map to the forward strand
+#+ 2. Alignments of the first in pair if they map to the reverse strand
+
+#  0x1 - paired
+#+ 0x2 - properly paired
+#+ 0x20 - partner on reverse strand
+#+ 0x40 - read one
+#+ FLAGs 0x1 + 0x2 + 0x20 + 0x40 = 0x63 = 99 in decimal
+samtools view -@ "${threads}" -bh -f 99 "${infile}" -o "${forward_1}"
+check_exit $? "samtools"
+
+samtools index -@ "${threads}" "${forward_1}"
+check_exit $? "samtools"
+
+#  0x1 - paired
+#+ 0x2 - properly paired
+#+ 0x10 - on reverse strand
+#+ 0x80 - read two
+#+ FLAGs 0x1 + 0x2 + 0x10 + 0x80 = 0x93 = 147 in decimal
+samtools view -@ "${threads}" -bh -f 147 "${infile}" -o "${forward_2}"
+check_exit $? "samtools"
+
+samtools index -@ "${threads}" "${forward_2}"
+check_exit $? "samtools"
+
+#  Combine alignments that originate on the forward strand
+samtools merge -@ "${threads}" -f "${forward_1}" "${forward_2}" -o "${forward}"
+check_exit $? "samtools"
+
+samtools index -@ "${threads}" "${forward}"
+check_exit $? "samtools"
+
+
+#  Reverse strand ---------------------
+#+
+#+ 1. Alignments of the second in pair if they map to the reverse strand
+#+ 2. Alignments of the first in pair if they map to the forward strand
+
+#  0x1 - paired
+#+ 0x2 - properly paired
+#+ 0x10 - reverse strand
+#+ 0x40 - read one
+#+ FLAGs 0x1 + 0x2 + 0x10 + 0x40 = 0x53 = 83 in decimal
+samtools view -@ "${threads}" -bh -f 83 "${infile}" -o "${reverse_1}"
+check_exit $? "samtools"
+
+samtools index -@ "${threads}" "${reverse_1}"
+check_exit $? "samtools"
+
+#  0x1 - paired
+#+ 0x2 - properly paired
+#+ 0x30 - partner on reverse strand
+#+ 0x80 - read two
+#+ FLAGs 0x1 + 0x2 + 0x20 + 0x80 = 0xA3 = 163 in decimal
+samtools view -@ "${threads}" -bh -f 163 "${infile}" -o "${reverse_2}"
+check_exit $? "samtools"
+
+samtools index -@ "${threads}" "${reverse_2}"
+check_exit $? "samtools"
+
+#  Combine alignments that originate on the reverse strand
+samtools merge -@ "${threads}" -f "${reverse_1}" "${reverse_2}" -o "${reverse}"
+check_exit $? "samtools"
+
+samtools index "${reverse}"
+check_exit $? "samtools"
+
+
+#  Clean up -------------------------------------------------------------------
+if \
+    [[ "$(echo "${clean_up}" | tr '[:upper:]' '[:lower:]')" == "true" ]] || \
+    [[ "$(echo "${clean_up}" | tr '[:upper:]' '[:lower:]')" == "t" ]]; then
+        rm \
+        	"${forward_1}" \
+        	"${forward_2}" \
+        	"${reverse_1}" \
+        	"${reverse_2}"
+        rm \
+        	"${forward_1}.bai" \
+        	"${forward_2}.bai" \
+        	"${reverse_1}.bai" \
+        	"${reverse_2}.bai"
+fi
+```
+
+Great, it works. Now, write up code, to be kept in a separate script, for filtering the `bam` files by *S. cerevisiae*, *K. lactis*, and 20 S narnavirus.
+```zsh
+bam="5781_G1_IN_merged.bam"
+samtools idxstats "${bam}" | cut -f 1
+# I
+# II
+# III
+# IV
+# V
+# VI
+# VII
+# VIII
+# IX
+# X
+# XI
+# XII
+# XIII
+# XIV
+# XV
+# XVI
+# Mito
+# A
+# B
+# C
+# D
+# E
+# F
+# 20S
+# *
+
+samtools view -h "${bam}" | tail -5
+# HISEQ:1007:HGV5NBCX3:1:2111:1451:67691	147	20S	2037	44	49M	=	1861	-225	CGACTATAAGGTCACCCGGCCGGGTAAGATGTACCCGGACCGTTACGGC	GIIGIGIIGGIIIGIIG<IIGIGGGGIGGAIIIIIIGIGGIIGIIGGGG	AS:i:91	XN:i:0	XM:i:1	XO:i:0	XG:i:0	NM:i:1	MD:Z:36A12	YS:i:90	YT:Z:CP
+# HISEQ:1007:HGV5NBCX3:1:1212:20534:19899	99	20S	2061	44	49M	=	2364	352	TAAGATGTACCCGGACCGTTACGGCTTTCTTGATGGAGAGTCTCTTCGG	GGGGIGIIIIIGIIIGIIIIIGIIGGIIIIIIGIIGIIGGGGGIGGIII	AS:i:90	XN:i:0	XM:i:1	XO:i:0	XG:i:0	NM:i:1	MD:Z:12A36	YS:i:98	YT:Z:CP
+# HISEQ:1007:HGV5NBCX3:1:1113:3051:23043	147	20S	2123	44	49M	=	1874	-298	TGTTGAACTCGGCCGTCTATGAGACTTTTCTCGGACCTGACCCTGACGC	GIGIGGIIIGIGGGGGAGGGGIIIIIIIGGGIGGAGIGIIIIIIIGGGG	AS:i:98	XN:i:0	XM:i:0	XO:i:0	XG:i:0	NM:i:0	MD:Z:49	YS:i:90	YT:Z:CP
+# HISEQ:1007:HGV5NBCX3:1:2109:1871:100283	147	20S	2124	44	49M	=	1761	-412	GTTGAACTCGGCCGTCTATGAGACTTTTCTCGGACCTGACCCTGACGCC	GIGIIIIIGIIIGAGGAIIIGIIIIIGGGGGIGGGGIIIGGGGGIGGGA	AS:i:98	XN:i:0	XM:i:0	XO:i:0	XG:i:0	NM:i:0	MD:Z:49	YS:i:98	YT:Z:CP
+# HISEQ:1007:HGV5NBCX3:1:1212:20534:19899	147	20S	2364	44	49M	=	2061	-352	GTTACTGATGGATGAGAGCGTGTACCAACGTAGATTCCGGCAACTGGTC	GIGGGGGIIIIGGIGGAIIIGGGIIGGAGIGIGIIGGGGIIIIIGGGAG	AS:i:98	XN:i:0	XM:i:0	XO:i:0	XG:i:0	NM:i:0	MD:Z:49	YS:i:90	YT:Z:CP
+
+
+#  Should I keep or exclude 'Mito' from *S. cerevisiae*? Have reached out to
+#+ Alison regarding this and awaiting her feedback
+chromosomes_SC="I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI"
+chromosomes_SC_Mito="I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI Mito"
+chromosomes_Mito="Mito"
+chromosomes_KL="A B C D E F"
+chromosome_20S="20S"
+
+echo "${chromosomes_SC}"
+echo "${chromosomes_SC_Mito}"
+echo "${chromosomes_Mito}"
+echo "${chromosomes_KL}"
+echo "${chromosome_20S}"
+
+#  For some reason, echoing the variable within the call samtools view does not
+#+ work
+samtools view \
+	-@ "${threads}" \
+	-h "${bam}" \
+	I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI \
+	-o "${bam%.bam}.split_SC.bam"
+
+samtools view \
+	-@ "${threads}" \
+	-h "${bam}" \
+	I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI Mito \
+	-o "${bam%.bam}.split_SC_Mito.bam"
+
+samtools view \
+	-@ "${threads}" \
+	-h "${bam}" \
+	Mito \
+	-o "${bam%.bam}.split_Mito.bam"
+
+samtools view \
+	-@ "${threads}" \
+	-h "${bam}" \
+	A B C D E F \
+	-o "${bam%.bam}.split_KL.bam"
+
+samtools view \
+	-@ "${threads}" \
+	-h "${bam}" \
+	20S \
+	-o "${bam%.bam}.split_20S.bam"
+```
+
+Stepping through the script for splitting by species/chromosome, `split_bam_by_species.sh`:
+```zsh
+#  Source functions -----------------------------------------------------------
+check_dependency() {
+    # Check if program is available in "${PATH}"; exit if not
+    # 
+    # :param 1: program/package <chr>
+    command -v "${1}" &>/dev/null ||
+        {
+            echo "Exiting: ${1} not found. Install ${1}."
+            # exit 1
+        }
+}
+
+
+check_exit() {
+    # Check the exit code of a child process
+    # 
+    # :param 1: exit code <int >= 0>
+    # :param 2: program/package <chr>
+    if [[ "${1}" == "0" ]]; then
+        echo "${2} completed: $(date)"
+    else
+        err "#ERROR: ${2} returned exit code ${1}"
+    fi
+}
+
+
+err() {
+    # Print an error meassage, then exit with code 1
+    # 
+    # :param 1: program/package <chr>
+    echo "${1} exited unexpectedly"
+    # exit 1
+}
+
+
+print_usage() {
+    # Print the help message and exit
+    echo "${help}"
+    # exit 1
+}
+
+
+#  Handle arguments, assign variables -----------------------------------------
+help="""
+Take user-input .bam files containing alignments to S. cerevisiae, K. lactis,
+and 20 S narnavirus, and split them into distinct .bam files for each species,
+with three splits for S. cerevisiae: all S. cerevisiae chromosomes not
+including chrM, all S. cerevisiae including chrM, and S. cerevisiae chrM only.
+The split .bam files are saved to a user-defined out directory.
+
+Dependencies:
+  - samtools >= 1.9
+
+Arguments:
+  -h  print this help message and exit
+  -u  use safe mode: \"TRUE\" or \"FALSE\" <logical; default: FALSE>
+  -i  infile, including path <chr>
+  -o  outfile directory, including path; if not found, will be mkdir'd <chr>
+  -t  number of threads <int >= 1>
+"""
+
+while getopts "h:u:i:o:t:" opt; do
+    case "${opt}" in
+        h) echo "${help}" && exit ;;
+        u) safe_mode="${OPTARG}" ;;
+        i) infile="${OPTARG}" ;;
+        o) outdir="${OPTARG}" ;;
+        t) threads="${OPTARG}" ;;
+        *) print_usage ;;
+    esac
+done
+
+[[ -z "${safe_mode}" ]] && safe_mode=FALSE
+[[ -z "${infile}" ]] && print_usage
+[[ -z "${outdir}" ]] && print_usage
+[[ -z "${threads}" ]] && threads=16
+
+#  Assignments for tests
+safe_mode=FALSE
+infile="${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1025/align_process_fastqs/bam/5781_G1_IN_merged.bam"
+outdir="${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1025/align_process_fastqs/bam"
+threads=1
+
+echo "${safe_mode}"
+echo "${infile}"
+echo "${outdir}"
+echo "${threads}"
+
+ls -lhaFG "${infile}"
+ls -lhaFG "${outdir}"
+
+
+#  Check variable assignments and dependencies --------------------------------
+echo ""
+echo "Running ${0}... "
+
+#  Evaluate "${safe_mode}"
+case "$(echo "${safe_mode}" | tr '[:upper:]' '[:lower:]')" in
+    true | t) \
+        echo -e "-u: \"Safe mode\" is TRUE.\n" && set -Eeuxo pipefail ;;
+    false | f) \
+        echo -e "-u: \"Safe mode\" is FALSE.\n" ;;
+    *) \
+        echo -e "Exiting: -u \"safe mode\" argument must be TRUE or FALSE.\n"
+        # exit 1
+        ;;
+esac
+
+#  Check that "${infile}" exists
+[[ -f "${infile}" ]] ||
+    {
+        echo -e "Exiting: -i ${infile} does not exist.\n"
+        # exit 1
+    }
+
+#  Make "${outdir}" if it doesn't exist
+[[ -d "${outdir}" ]] ||
+    {
+        echo -e "-o: Directory ${outdir} does not exist; making the directory.\n"
+        mkdir -p "${outdir}"
+    }
+
+echo ""
+
+#  Check for necessary dependencies; exit if not found
+module="SAMtools/1.16.1-GCC-11.2.0"
+ml "${module}"
+check_dependency samtools
+
+
+#  Make additional variable assignments from the arguments --------------------
+base="$(basename "${infile}")"
+name="${base%.*}"
+split_SC="${outdir}/${name}.split_SC.bam"
+split_SC_Mito="${outdir}/${name}.split_SC_Mito.bam"
+split_Mito="${outdir}/${name}.split_Mito.bam"
+split_KL="${outdir}/${name}.split_KL.bam"
+split_20S="${outdir}/${name}.split_20S.bam"
+
+
+#  Run samtools to split the bam by species/chromosome ------------------------
+samtools view \
+	-@ "${threads}" \
+	-h "${infile}" \
+	I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI \
+	-o "${split_SC}"
+
+samtools view \
+	-@ "${threads}" \
+	-h "${infile}" \
+	I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI Mito \
+	-o "${split_SC_Mito}"
+
+samtools view \
+	-@ "${threads}" \
+	-h "${infile}" \
+	Mito \
+	-o "${split_Mito}"
+
+samtools view \
+	-@ "${threads}" \
+	-h "${infile}" \
+	A B C D E F \
+	-o "${split_KL}"
+
+samtools view \
+	-@ "${threads}" \
+	-h "${infile}" \
+	20S \
+	-o "${split_20S}"
+```
+
+Have this open eventually: https://bioinformaticsdotca.github.io/rnaseq_2017_tutorial6
