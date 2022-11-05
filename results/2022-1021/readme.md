@@ -4,7 +4,7 @@
 Work with this file, `5781_Q_IP_sorted.bam`, at this location, `/home/kalavatt/tsukiyamalab/alisong/WTQvsG1/automation_of_annotation/test1`
 
 ### Copy the file to the directory for upcoming work
-```zsh
+```bash
 dir_from="/home/kalavatt/tsukiyamalab/alisong/WTQvsG1/automation_of_annotation/test1"
 dir_to="/home/kalavatt/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1021"
 file="5781_Q_IP_sorted.bam"
@@ -13,7 +13,7 @@ cp "${dir_from}/${file}" "${dir_to}/${file}"
 ```
 
 ### Filter the bam file such that it contains only chrVII
-```zsh
+```bash
 ml SAMtools/1.16.1-GCC-11.2.0
 
 samtools view *.bam | head -5
@@ -28,7 +28,7 @@ HISEQ:1007:HGV5NBCX3:1:2210:9324:79218	99	chrI	229	11	16M1I32M	=	295	115	ATTACCC
 HISEQ:1007:HGV5NBCX3:1:1216:10817:56273	147	chrI	234	2	11M1I37M	=	159	-123	CCATATCCTACTCCACTGCCACTTACCCTACCATTACCCTACCATCCAC	IIGGGIIIIGGGIGGGGIIIIIIGGGIIIGIIIGGGIIGGGIGGGGGGG	AS:i:80	XS:i:83	XN:i:0	XM:i:1	XO:i:1	XG:i:1	NM:i:2	MD:Z:8A39	YS:i:66	YT:Z:CP
 ```
 
-```zsh
+```bash
 samtools index "${file}"
 
 samtools view -b "${file}" chrVII > "${file%.bam}.chrVII.bam"
@@ -37,7 +37,7 @@ samtools index "${file%.bam}.chrVII.bam"
 
 ### On how to call `Trinity`
 Adapted from what Alison is doing: `submit-Trinity.sh`
-```zsh
+```bash
 #DONTRUN
 
 #!/bin/bash
@@ -85,7 +85,7 @@ However, this requires that we have `GMAP` genome indices (i.e., `GMAP` database
 
 #### Generate genome indices for `GMAP`/build a "`GMAP` database"
 Apparently, we need to have only one chromosome per FASTA entry
-```zsh
+```bash
 #  Download UCSC sacCer3 chromosomes from, e.g.,
 #+ https://hgdownload.soe.ucsc.edu/goldenPath/sacCer3/chromosomes/
 
@@ -128,7 +128,7 @@ exit
 ```
 
 Call `gmap_build` from a bespoke script, `submit-gmap_build.sh`, that submits a job to SLURM
-```zsh
+```bash
 #DONTRUN
 
 #!/bin/bash
@@ -186,7 +186,7 @@ No alternate scaffolds observed
 Do I need to do anything more? This should be everything, right? I think so...
 
 Let's clean things up by moving the contents of `/home/kalavatt/genomes/sacCer3/GMAP/sacCer3` to `/home/kalavatt/genomes/sacCer3/GMAP`
-```zsh
+```bash
 mv /home/kalavatt/genomes/sacCer3/GMAP/sacCer3/* /home/kalavatt/genomes/sacCer3/GMAP/
 rmdir sacCer3
 
@@ -199,7 +199,7 @@ pwd  # /home/kalavatt/genomes/sacCer3
 ```
 
 #### Try making a `GFF` from the `Trinity`-assembled transcriptome based on the script from Alison
-```zsh
+```bash
 #DONTRUN
 
 #!/bin/bash

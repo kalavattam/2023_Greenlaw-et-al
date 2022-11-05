@@ -1,10 +1,10 @@
 
 # 2022-1025
 ## E-mail: "Additional Nab3 Analysis"
-From: [Greenlaw, Alison C](agreenla@fredhutch.org)
-Date: Monday, October 24, 2022 at 11:34 PM
-To: [Tsukiyama, Toshio](ttsukiya@fredhutch.org)
-Cc: [Alavattam, Kris](kalavatt@fredhutch.org)
+From: [Greenlaw, Alison C](agreenla@fredhutch.org)  
+Date: Monday, October 24, 2022 at 11:34 PM  
+To: [Tsukiyama, Toshio](ttsukiya@fredhutch.org)  
+Cc: [Alavattam, Kris](kalavatt@fredhutch.org)  
 Subject: Additional Nab3 Analysis
 
 ### File
@@ -19,26 +19,40 @@ Kris - I will send you the code related to this analysis in the next few days. I
 
 Alison
 
-## Working through the bullets in "Five things to try out/work on" in `notebook.md` ("Going over Trinity assessments with Alison")
-### Working on the bullet "Test the genome-guided bam approach to `Trinity` versus the fastq approach"
+## Working through the "Five things to try out/work on" in `notebook.md`
+...("Going over Trinity assessments with Alison")
+### Working on the bullet "Test the genome-guided bam approach to `Trinity`..."
+...versus the fastq approach
 #### Snippets, etc. from searching the [`Trinity Google Group`](https://groups.google.com/g/trinityrnaseq-users)
 ##### Have searched for term "Jaccard" 
 ###### ["Genome-guided assembly questions"](https://groups.google.com/g/trinityrnaseq-users/c/HV-JK9xiC8E/m/tVyPJzpYBgAJ)
 Post #2
 > ...
+> <br />
+> <br />
+> 
 > For drosophila, the `--jaccard_clip` can help. If you have strand-specific rna-seq, then I wouldn't bother, since the strand-specific rna-seq already solves a lot of the problems that jaccard-clip is meant to mitigate.
+> <br />
+> <br />
+> 
 > ...
 
 Post #3
 > Brian,
+> <br />
+> <br />
 > 
 > Is it your recommendation to never use jaccard-clip with strand-specific RNA-seq? Or would you still use it with *very dense genomes like yeast*?
+> <br />
+> <br />
 > 
-> thanks,
+> thanks,  
 > -Will
 
 Post #4
-> With very dense genomes, you'll always need it.   For moderately-dense genomes, you can probably get away w/out it if you have strand-specific data.
+> With very dense genomes, you'll always need it.  For moderately-dense genomes, you can probably get away w/out it if you have strand-specific data.
+> <br />
+> <br />
 > 
 > Jaccard clip is by no means a 'cure' for the issue....  it just mitigates it.  We still need a more effective approach for it ... someday.
 > 
@@ -51,12 +65,19 @@ Post #6
 
 ###### ["filtering 'fake' antisense and overly similar sequences" by Brian Haas](https://groups.google.com/g/trinityrnaseq-users/c/2Fe5dZu7FnY/m/r69jVJfSBAAJ)
 > Hi all,
-> 
+> <br />
+> <br />
 > Attached is a little script you can drop into trinityrnaseq/util/misc and use (along with having cdhit installed) to filter out transcripts that might derive from 'fake' antisense in the context of > strand-specific rna-seq, or to weed out overly similar sequences that tend to be shorter and lowly expressed (possible artifacts).
+> <br />
+> <br />
 > 
 > It'll go into the next release as an option for additional filtering.
+> <br />
+> <br />
 > 
 > It's only been used lightly so far by myself, so let me know if you encounter any weirdness / bugs.
+> <br />
+> <br />
 > 
 > Run like so:
 > ```bash
@@ -72,6 +93,8 @@ Post #2
 - I guess this pertains to `filter_similar_seqs_expr_and_strand_aware.pl` in `trinityrnaseq/util/misc` mentioned immediately above
 
 > Hi Sjannie,
+> <br />
+> <br />
 > 
 > If it's a deeply sequenced data set, then I expect you'll see more of a spread, and it's because the strand-specificity is generally about 99% effective.  If you sequence deep enough, that remaining 1% can accumulate sufficient reads to have Trinity assemble the same transcript in the 'antisense' orientation in addition to the more dominantly supported sense orientation.  So, you end up with some artificial lowly expressed antisense transcript assemblies in the output, and these are presumably the transcripts that are shifting the distribution here.  They'll be lowly expressed in when quantified using a strand-specific quantification method.
 > 
@@ -194,6 +217,8 @@ Over 90% of reads explained by "1 ++,1--,2+-,2-+"
 Data is likely FR/fr-secondstrand
 ```
 Sure enough, the library is likely to be `FR`, consistent with what Alison is invoking in `Trinity`
+<br />
+<br />
 
 # 2022-1026
 ## E-mail: "Some R code"
@@ -657,6 +682,8 @@ mkdir -p {txt,fasta}
 mv *fasta* fasta/
 mv *.txt txt/
 ```
+<br />
+<br />
 
 # 2022-1027-1028
 ## Continued work with `how_are_we_stranded_here`
@@ -920,24 +947,26 @@ bowtie2 \
 #+ --trim5: trim <int> bases from 5'/left end of reads
 #+ --local: local alignment; ends might be soft clipped (off)
 #+ --very-sensitive-local: -D 20 -R 3 -N 0 -L 20 -i S,1,0.50
-#+ -D: give up extending after <int> failed extends in a row (15)
-#+ -R: for reads w/ repetitive seeds, try <int> sets of seeds (2)
-#+ -N: max # mismatches in seed alignment; can be 0 or 1 (0)
-#+ -L: length of seed substrings; must be >3, <32 (22)
-#+ -i: interval between seed substrings w/r/t read len (S,1,1.15)
+#+     -D: give up extending after <int> failed extends in a row (15)
+#+     -R: for reads w/ repetitive seeds, try <int> sets of seeds (2)
+#+     -N: max # mismatches in seed alignment; can be 0 or 1 (0)
+#+     -L: length of seed substrings; must be >3, <32 (22)
+#+     -i: interval between seed substrings w/r/t read len (S,1,1.15)
 #+ --no-unal: suppress SAM records for unaligned reads
 #+ --no-mixed: suppress unpaired alignments for paired reads
 #+ --no-discordant: suppress discordant alignments for paired reads
+#+    From biostars.org/p/78446/, a discordant alignment is an alignment where
+#+    both mates align uniquely, but that does not satisfy the paired-end
+#+    constraints (--fr/--rf/--ff, -I, -X).
 #+ --phred33: qualities are Phred+33 (default)
 #+ -I: minimum fragment length (0)
 #+ -X: maximum fragment length (500)
 #+ --no-overlap: not concordant when mates overlap at all
 #+ --no-dovetail: NA
-#+ -S: <sam>
 
 #QUESTION Will piping to threaded samtools sort work?
 #ANSWER 1/2 It seems so: github.com/samtools/samtools/issues/891
-#ANSWER 2/2 (Relevant text pasted below:)
+#ANSWER 2/2 (Relevant text pasted below)
 ```
 
 #### Will piping to threaded `samtools sort` work?
@@ -1033,6 +1062,7 @@ else
 fi
 ```
 
+### Stepping through each line of the `Bowtie2` alignment and processing script, which is now `align_process_fastqs.sh`
 Have added explicit arguments to the script `align_process_fastqs.sh`; let's carefully step through and test the things that have been drafted thus far...
 ```zsh
 grabnode  # If not already on gizmo
@@ -1289,6 +1319,7 @@ if \
 fi
 ```
 
+#### Stepping through `split_bam_by_species.sh`
 Great, it works. Now, write up code, to be kept in a separate script, for filtering the `bam` files by *S. cerevisiae*, *K. lactis*, and 20 S narnavirus.
 ```zsh
 bam="5781_G1_IN_merged.bam"
@@ -1548,4 +1579,29 @@ samtools view \
 	-o "${split_20S}"
 ```
 
+#### Miscellaneous tab to remember
 Have this open eventually: https://bioinformaticsdotca.github.io/rnaseq_2017_tutorial6
+<br />
+<br />
+
+# 2022-1031
+## `#NOTE`
+- Spent much of the morning updating MacOS, and fine-tuning the `brew` installation and the ARM- and M1-installation of `conda` (`mambaforge`); also, organized files and began to reacquaint myself with the TPM-calculation work from early September (prior to starting this job)
+- Spent much of the late morning and afternoon working with Alison's script, `Analysis_sense_antisense.Rmd`, running it line by line and adjusting it to have proper paths
+    - Made a few small code changes, especially in response to questions and issues raised by Alison
+    - Made many formatting changes such as adding namespaces, indenting and adding new lines, etc.
+- Spent the late afternoon reacquainting myself with the TPM-calculation work, including the installation of [`slowkow/picardmetrics`](https://github.com/slowkow/picardmetrics), which is documented in detail [here as a `GitHub Gist`](https://gist.github.com/kalavattam/74394ed83c542862e087658accbdbc38)
+
+## `#TODO`
+- Continue the TPM work
+    - Understand what needs to be run before/after what when working with the adapted code base from `slowkow` (the work started in early September, 2022)
+    - `#NOTE` TPM, like FPKM/RPKM, is not well-suited for between-sample comparisons: We may want to end up using something like `DESeq2` normalization (`#QUESTION` including something like `rlow`?) or `edgeR` TMM; still, get the TPM code up and running
+- Review notes (e.g., from previous meetings), steps, written-by-me code, and e-mails (incorporating some into this or another notebook where necessary) prior to Alison's arrival to the lab tomorrow; we-ll likely touch base to talk about things when she comes
+    - Look into the PCR deduplication with UMI tools that was suggested by Alison: Need to figure out what that entails
+    - Remember, the goal is to have appropriately processed bam files for experimetns to determine the best way(s) to call `Trinity`
+- Continue to build out the alignment and processing script you were working on at the end of last week (functionize it, get major modules into separate scripts, get the main work into a driver script, etc.)
+<br />
+<br />
+
+# 2022-1101
+Work on calculating TPM, alignment, processing, etc. continued in `2022_transcriptome-assembly/2022-1101/readme.md`, etc.

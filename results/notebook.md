@@ -1,6 +1,5 @@
 
 ## 2022-1018
-
 ### Installing local instance of `Trinity`
 [Instructions.](https://github.com/trinityrnaseq/trinityrnaseq/wiki/Trinity-in-Docker#run-trinity-using-docker)
 1. Install `Docker`; then, log in to `Docker`
@@ -121,7 +120,7 @@ git push origin main
     	- Then, calculate size factor for the strain (take the ratio `KL/SC`)
     	- "One strain set as basis"  `#WHAT`
 - Need to establish an automated way to annotate ncRNAs with Trinity
-	- Non trivially difficult: No ORF as with sense transcripts
+	- Non-trivially difficult: No ORF as with sense transcripts
 
 #### Next steps
 - Get Alison's code running on the cluster
@@ -130,14 +129,15 @@ git push origin main
 - Look into additional programs to do transcriptome annotation like Trinity, but touch base with Alison before trying any of them: She may have tried them already and may then have input
 
 ### Contents of `results/2022-1018/readme.md`
-#### 2022-1018
-##### E-mail 1: "Fred Hutch Server and a few of my scripts"
-##### E-mail 2: "Fred Hutch Server and a few of my scripts"
-##### E-mail 3: "Fred Hutch Server and a few of my scripts"
-##### E-mail 4: "Fred Hutch Server and a few of my scripts"
-#### 2022-1019
-##### E-mail 1: "Nascent normalization remains baffling"
-
+- 2022-1018
+	+ E-mail 1: "Fred Hutch Server and a few of my scripts"
+	+ E-mail 2: "Fred Hutch Server and a few of my scripts"
+	+ E-mail 3: "Fred Hutch Server and a few of my scripts"
+	+ E-mail 4: "Fred Hutch Server and a few of my scripts"
+- 2022-1019
+	+ E-mail 1: "Nascent normalization remains baffling"
+<br />
+<br />
 
 ## 2020-1020
 ### Brief notes on Fred Hutch's cluster resources
@@ -159,7 +159,7 @@ More details recorded in gists [here](https://gist.github.com/kalavattam).
 
 ### How Alison is calling Trinity
 - See `trin4.1_adjusted_salmo.sh`
-```
+```bash
 Trinity \
 	--genome_guided_bam ${file} \
 	--max_memory 50G \
@@ -198,14 +198,15 @@ Trinity \
 - `--output`: name of directory for output (will be created if it doesn't already exist) default( your current working directory: `/usr/local/src/trinity_out_dir` note: must include 'trinity' in the name as a safety precaution! )
 
 ### Contents of `results/2022-1020/readme.md`
-##### E-mail 1.1 (from Alison): "Quality control analysis"
-##### E-mail 1.2 (from Kris): "Quality control analysis"
-##### E-mail 1.3 (from Toshi): "Quality control analysis"
-##### E-mail 2 (from Alison): "More Code!"
-##### E-mail 3 (from Alison): "File Locations"
-##### E-mail 4 (from Alison): "Hand Curation and so many annotation files"
-##### E-mail 5 (from Alison): "Small fraction of AS transcripts functional on first pass"
-
+- E-mail 1.1 (from Alison): "Quality control analysis"
+- E-mail 1.2 (from Kris): "Quality control analysis"
+- E-mail 1.3 (from Toshi): "Quality control analysis"
+- E-mail 2 (from Alison): "More Code!"
+- E-mail 3 (from Alison): "File Locations"
+- E-mail 4 (from Alison): "Hand Curation and so many annotation files"
+- E-mail 5 (from Alison): "Small fraction of AS transcripts functional on first pass"
+<br />
+<br />
 
 ## 2022-1021
 ### Working through HPC materials, tutorials
@@ -223,7 +224,8 @@ Follow the on-screen prompts
 - In this type of graph, a node is defined by a sequence of a fixed length of k nucleotides (“k-mer”, with k considerably shorter than the read length), and nodes are connected by edges, if they perfectly overlap by k-1 nucleotides, and the sequence data supports this connection.
 - This compact representation allows for enumerating all possible solutions by which linear sequences can be reconstructed given overlaps of k-1. For transcriptome assembly, each path in the graph represents a possible transcript.
 - A scoring scheme applied to the graph structure can rely on the original read sequences and mate-pair information to discard nonsensical solutions (transcripts) and compute all plausible ones.
-
+<br />
+<br />
 
 ## 2022-1024
 ### Miscellaneous SLURM-related things
@@ -241,51 +243,54 @@ export SQUEUE_FORMAT='%.18i %.9P %.8j %.8u %.2t %.10M %.6D %R %c'
 See the `squeue` man page for more details.
 
 ### Going over Trinity assessments with Alison
-- Can split gff3 by strand: `#TODO` Look into this (e.g., see [this link](https://www.biostars.org/p/215428/))
-- Per-chromosome fastq approach: `#TODO` Look into this
+- Can split gff3 by strand: `#TODO Look into this` (e.g., see [this link](https://www.biostars.org/p/215428/))
+- Per-chromosome fastq approach: `#TODO Look into this`
 	- We seem to do a "worse job when we do everything all at one," where here "everything" means running Trinity on the full genome versus running it with respect to one chromosome at a time
 
-In the IGV instance that Alison had pulled up
-- Each line is one strand of one replicate: `#TODO` Set up my readout like this too
+*In the IGV instance that Alison had pulled up*
+- Each line is one strand of one replicate: `#TODO Set up my readout like this too`
 - Alison obtained these tracks after having run `bam_split_paired_end.sh` (currently found in `results/2022-1018/sh`)
-- It should be possible to obtain a similar such file using `deepTools bamCoverage` with appropriate arguments, e.g., `--filterRNAstrand` (e.g., see [this link](https://deeptools.readthedocs.io/en/develop/content/tools/bamCoverage.html)): `#TODO` Look into this
+- It should be possible to obtain a similar such file using `deepTools bamCoverage` with appropriate arguments, e.g., `--filterRNAstrand` (e.g., see [this link](https://deeptools.readthedocs.io/en/develop/content/tools/bamCoverage.html)): `#TODO Look into this`
 
-Other ideas
+*Other ideas*
 - Consider whether/how to filter data to remove transcripts below a certain value
 - This kind of filtration should take place prior to running `Trinity`, right?
 
-Goal/genereal approach
+*Goal/genereal approach*
 - Set up `Trinity` to do as well as it can
 - Make assignments
 	- Evaluate the assignments with respect to known annotations
 	- Evaluate the assignments with respect to *de novo* (`Trinity`) annotations
 
-On snoRNAs versus snRNAs
+*On snoRNAs versus snRNAs*
 - snRNAs are associated with the spliceosome
 - snoRNAs direct ribosome modifications
 
-On the means to evaluate Trinity results by aligning reads back to the transcriptome assembly (e.g., as described [here](https://bioinformaticsdotca.github.io/rnaseq_2017_tutorial6))
+*On the means to evaluate Trinity results by aligning reads back to the transcriptome assembly* (e.g., as described [here](https://bioinformaticsdotca.github.io/rnaseq_2017_tutorial6))
 - From the above link: "Generally, in a high quality assembly, you would expect to see at least ~70% \[overall alignment rate\] and at least ~70% of the reads to exist as proper pairs."
 - Alison: "100% of reads captured would be too much" (with respect to mapping back to the *de novo* assembly)
 - Alison: "Giving it less to chew on may be better"
 - Alison expects that we will get much higher than 70% overall alignment rate because of the very high coverage of the data (remember that the yeast genome is very small)
-- `#TODO` Get these experiments up and running
+- `#TODO Get these experiments up and running`
 
 #### Five things to try out/work on
-1. `(   )` `deepTools bamCoverage` (see above)
-2. `(   )` Ways/means to parameterize Trinity: Identify what paramter(s) to test, then set up experiments for the tests 
-3. `(   )` Test the genome-guided bam approach to `Trinity` versus the fastq approach (with the Jaccard index parameter): The thinking here is that, based on the documentation, it's not clear that the Jaccard index parameter is working with genome-guided bam approach
-4. `(   )` Evaluate the percent overall alignment rate and percent of reads as proper pairs after aligning the reads to the assembled transcriptome (again, see [here](https://bioinformaticsdotca.github.io/rnaseq_2017_tutorial6))
-5. `(   )` Re-review the tutorial ([link](https://bioinformaticsdotca.github.io/rnaseq_2017_tutorial6)) to see if there are other general things we can evaluate; also, check for other tutorials and then check their contents
-6. `(   )` Determine that running `Trinity` with respect to one chromosome at a time versus all chromosomes indeed makes a difference; for example, perhaps the spurious annotations observed in the telomeric region of chrVII in the 'full' approach come from transcripts associated with another chromosome; thus, they may show up when concatenating files from `Trinity` with respect to one chromosome at a time
+1. `#WAIT (...)` `deepTools bamCoverage` (see above)  `#NOTE See results/2022-1101/readme.md`
+2. `#TODO (   )` Ways/means to parameterize `Trinity`: Identify what paramter(s) to test, then set up experiments for the tests 
+3. `#TODO (   )` Test the genome-guided bam approach to `Trinity` versus the fastq approach (with the Jaccard index parameter): The thinking here is that, based on the documentation, it's not clear that the Jaccard index parameter is working with genome-guided bam approach
+4. `#TODO (   )` Evaluate the percent overall alignment rate and percent of reads as proper pairs after aligning the reads to the assembled transcriptome (again, see [here](https://bioinformaticsdotca.github.io/rnaseq_2017_tutorial6))
+5. `#TODO (   )` Re-review the tutorial ([link](https://bioinformaticsdotca.github.io/rnaseq_2017_tutorial6)) to see if there are other general things we can evaluate; also, check for other tutorials and then check their contents
+6. `#TODO (   )` Determine that running `Trinity` with respect to one chromosome at a time versus all chromosomes indeed makes a difference; for example, perhaps the spurious annotations observed in the telomeric region of chrVII in the 'full' approach come from transcripts associated with another chromosome; thus, they may show up when concatenating files from `Trinity` with respect to one chromosome at a time
 
-### Meeting with Toshi about additional things to work on, above and beyond the `Trinity` work (above)
+### Meeting with Toshi about additional things to work on
+...above and beyond the `Trinity` work (above)  
 In Alison's eventual paper, we're focused on antisense transcription, but we need to say something about mRNA transcription too
 
 #### mRNA: *steady-state* versus *nascent*
 We can make direct comparisons between steady-state G1 and steady-state Q (or log and Q), because we can perform spike-in normalization. We *can't* do the same for nascent G1 and nascent Q. Instead, we can only make within-sample comparisons, e.g., can only make comparisons within Q or can only make comparisons within G1, and can't make comparisons between Q and G1.
 
-`#TODO` However, see if you can think of anything for some kind of normalization that would allow for comparisons between Q and G1...
+`#TODO (...)` `#MAYBE` However, see if you can think of anything for some kind of normalization that would allow for comparisons between Q and G1...
+- `#NOTE 2022-1103` Could consider doing `DESeq2::estimateSizeFactors(controlGene = ...)` and then DESeq2 RLE normalization
+	+ This could make the comparisons across the different conditions possible and valid, but does the RLE normalization lose otherwise important outliers?
 
 When labeling for 4tU in Q, there's nothing to compete for 4tU incorporation because Q cells are in water whereas G1 or log cells are in medium.
 
@@ -304,23 +309,27 @@ Some corresponding logic:
 - Teach Rachel basic ChIP-seq analyses, e.g., RPD3
 
 ### Contents of `results/2022-1021/readme.md`
-#### `Trinity`, etc. trial run
-##### Copy the file to the directory for upcoming work
-##### Filter the bam file such that it contains only chrVII
-##### On how to call `Trinity`
-##### On making a `GFF` from the `Trinity`-assembled transcriptome
-###### Use `GMAP`
-###### Generate genome indices for `GMAP`/build a "`GMAP` database"
-###### Try making a `GFF` from the `Trinity`-assembled transcriptome based on the script from Alison
-###### Relevant links on/related to the generation of a GFF from the `Trinity`-assembled transcriptome, etc.
-
+`#TODO Do this in a list, not different headers as below`
+`#TODO Link to the headers in the different files`
+- `Trinity`, etc. trial run
+	+ Copy the file to the directory for upcoming work
+	+ Filter the bam file such that it contains only chrVII
+	+ On how to call `Trinity`
+	+ On making a `GFF` from the `Trinity`-assembled transcriptome
+		* Use `GMAP`
+		* Generate genome indices for `GMAP`/build a "`GMAP` database"
+		* Try making a `GFF` from the `Trinity`-assembled transcriptome based on the script from Alison
+		* Relevant links on/related to the generation of a GFF from the `Trinity`-assembled transcriptome, etc.
+<br />
+<br />
 
 ## 2022-1025
 ### Miscellaneous
-`#TODO` Look into [these Google search results for "spike-in normalization eli5"](https://www.google.com/search?q=spike-in+normalization+eli5&oq=spike-in+normalization+eli5&aqs=chrome..69i57j0i546l2.5874j0j7&sourceid=chrome&ie=UTF-8)
+`#TODO` Look into [these Google search results for "spike-in normalization eli5"](https://www.google.com/search?q=spike-in+normalization+eli5&oq=spike-in+normalization+eli5&aqs=chrome..69i57j0i546l2.5874j0j7&sourceid=chrome&ie=UTF-8)  
 `#TODO` Look into [these Google search results for "s cerevisiae blacklist"](https://www.google.com/search?q=s+cerevisiae+blacklist&oq=s+cerevisiae+blacklist&aqs=chrome..69i57j69i64l3.4473j0j4&sourceid=chrome&ie=UTF-8)
 
-### Notes from meeting with Alison and Toshi (with regards to `pptx` in e-mail "Additional Nab3 Analysis," sent 2022-1024)
+### Notes from meeting with Alison and Toshi
+(...with regards to `pptx` in e-mail "Additional Nab3 Analysis," sent 2022-1024)
 - `#TODO` A more formal, polished implementation of the calculation of TPM (e.g., see *Slide 1*), building on what Alison did in `Analysis_sense_antisense.Rmd` (see directory `results/2022-1025/Rmd`)
 - `#QUESTION` What does "gated at 14 TPM" mean?
 	- `#ANSWER` Top 20% expressed antisense transcripts upon depletion of *Nab3*
@@ -378,30 +387,65 @@ Some corresponding logic:
 - `#QUESTION` ...for the `fastq` and `bam` files prior to using them as input for `deepTools bamCoverage`?
 - `#QUESTION` Alison is calling `Trinity` with `--SS_lib_type FR`; however, most strand-specific libraries are generated with the dUTP method, which means they need `--SS_lib_type RF`; therefore, are we sure that `--SS_lib_type FR` is correct here? `#ANSWER` Yes, see the results of your work with `how_are_we_stranded_here` in `results/2022-1025/readme.md`
 
-#### `#TODOs` resulting from the meeting: Two things to try out/work on
+#### Two things to try out
 1. `#TODO (   )` A "better way" to calculate TPM (see "Notes from meeting with Alison and Toshi" above)
 2. `#TODO (   )` Create a combined genome comprised of *S. cerevisiae*, *K. lactis*, and 20 S (more details immediately above); then, select the *S. cerevisiae* alignments for downstream analyses
+<br />
+<br />
 
 # 2022-1025-1028
-## E-mail: "Additional Nab3 Analysis"
-## Working through the bullets in "Five things to try out/work on" in `notebook.md` ("Going over Trinity assessments with Alison")
-### Working on the bullet "Test the genome-guided bam approach to `Trinity` versus the fastq approach"
-#### Snippets, etc. from searching the [`Trinity Google Group`](https://groups.google.com/g/trinityrnaseq-users)
-##### Have searched for term "Jaccard" 
-###### ["Genome-guided assembly questions"](https://groups.google.com/g/trinityrnaseq-users/c/HV-JK9xiC8E/m/tVyPJzpYBgAJ)
-##### Have searched for the term "antisense"
-###### ["genome guided strand specific assembly"](https://groups.google.com/g/trinityrnaseq-users/c/DVnpAnhdNeA/m/RM5oT_PXAAAJ)
-###### ["filtering 'fake' antisense and overly similar sequences" by Brian Haas](https://groups.google.com/g/trinityrnaseq-users/c/2Fe5dZu7FnY/m/r69jVJfSBAAJ)
-###### [""]()
-#### Important links, etc.
-#### Check that libraries are indeed FR and not RF
+- E-mail: "Additional Nab3 Analysis"
+- Working through the bullets in "Five things to try out/work on" in `notebook.md` ("Going over Trinity assessments with Alison")
+	+ Working on the bullet "Test the genome-guided bam approach to `Trinity` versus the fastq approach"
+		* Snippets, etc. from searching the [`Trinity Google Group`](https://groups.google.com/g/trinityrnaseq-users)
+			- Have searched for term "Jaccard" 
+				+ ["Genome-guided assembly questions"](https://groups.google.com/g/trinityrnaseq-users/c/HV-JK9xiC8E/m/tVyPJzpYBgAJ)
+			- Have searched for the term "antisense"
+				+ ["genome guided strand specific assembly"](https://groups.google.com/g/trinityrnaseq-users/c/DVnpAnhdNeA/m/RM5oT_PXAAAJ)
+				+ ["filtering 'fake' antisense and overly similar sequences" by Brian Haas](https://groups.google.com/g/trinityrnaseq-users/c/2Fe5dZu7FnY/m/r69jVJfSBAAJ)
+				+ [""]()
+		* Important links, etc.
+		* Check that libraries are indeed FR and not RF
+<br />
+<br />
+
 # 2022-1026
-## E-mail: "Some R code"
-### Contents of `results/2022-1025/readme.md`
-## Creation of a combined reference genome comprised of *S. cerevisiae*, *K. lactis*, and 20 S narnavirus
-### 1. The `fasta` for *Saccharomyces 20 S narnavirus* can be obtained from the [Saccharomyces Genome Database (SGD)](https://www.yeastgenome.org/)
-### 2. Go ahead and grab the other *S. cerevisiae* virus sequences available on [SGD](https://www.yeastgenome.org/)
-### 3. Now, get the genome `fasta` for *S. cerevisiae* from [Ensembl release 108](https://ftp.ensembl.org/pub/release-108/fasta/saccharomyces_cerevisiae/)
-### 4. Now, get the genome `fasta` for *K. lactis* from what appears to be a special version of Ensembl for fungi, e.g., [here](https://fungi.ensembl.org) and a specific page for [*K. lactis*](https://fungi.ensembl.org/Kluyveromyces_lactis_gca_000002515/Info/Index)
-### 5. Clean up the headers for the 20S narnavirus, *S. cerevisisae*, and *K. lactis*
-## Concatenate the *S. cerevisiae*, *K. lactis*, and *S20* genomes, creating a combined genome for RNA-seq and related analyses)
+- E-mail: "Some R code"
+	+ Contents of `results/2022-1025/readme.md`
+- Creation of a combined reference genome comprised of *S. cerevisiae*, *K. lactis*, and 20 S narnavirus
+	+ 1. The `fasta` for *Saccharomyces 20 S narnavirus* can be obtained from the [Saccharomyces Genome Database (SGD)](https://www.yeastgenome.org/)
+	+ 2. Go ahead and grab the other *S. cerevisiae* virus sequences available on [SGD](https://www.yeastgenome.org/)
+	+ 3. Now, get the genome `fasta` for *S. cerevisiae* from [Ensembl release 108](https://ftp.ensembl.org/pub/release-108/fasta/saccharomyces_cerevisiae/)
+	+ 4. Now, get the genome `fasta` for *K. lactis* from what appears to be a special version of Ensembl for fungi, e.g., [here](https://fungi.ensembl.org) and a specific page for [*K. lactis*](https://fungi.ensembl.org/Kluyveromyces_lactis_gca_000002515/Info/Index)
+	+ 5. Clean up the headers for the 20S narnavirus, *S. cerevisisae*, and *K. lactis*
+- Concatenate the *S. cerevisiae*, *K. lactis*, and *S20* genomes, creating a combined genome for RNA-seq and related analyses)
+<br />
+<br />
+
+# `#TODO Include TOC for days between 2022-1026 and 2022-1103` 
+<br />
+<br />
+
+# 2022-1103
+## Discussion with Alison on what I should prioritize
+- Need to address the important question **on how best to call Trinity**
+	+ For example...
+		* Are we giving `.bam` or `.fastq` files?
+		* Are we calling with the Jaccard option?
+		* Are we running in genome-guided mode?
+		* Are we running things on one chromosome at a time?
+- Downstream of `Trinity`
+	+ "Match Trinity annotations with [Saccharomyces Genome Database (SGD)](https://www.yeastgenome.org/) annotations"
+		* If an annotation is shared between Trinity and SGD, favor the Trinity annotation
+		* If the same, then discard the Trinity annotation, keeping only the Trinity annotation
+		* This entails a comparison of `.gtf` files with appropriate logic implemented in the code
+- Upstream of `Trinity`
+	+ All lower priority: all to be done later; e.g.,
+		* `.bam` file work (`split-bam-by-species.sh`, `split-bam-by-strand.sh`, `bamCoverage`, etc.)
+		* `.fastq` work (UMI-tools, etc.)
+		* TPM work
+		* QC work (e.g., `picardmetrics`)
+		* etc.
+- Parameter that will likely need to change on a per-dataset basis (Alison's thinking)
+	+ "Linker k-mer number may vary from dataset to dataset"
+		* Could be read-depth dependent

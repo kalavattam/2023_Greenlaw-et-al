@@ -1,0 +1,1197 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+---
+title: "R Notebook"
+output: html_notebook
+---
+# Clear environment
+```{r}
+rm(list = ls())
+```
+
+# Load required packages
+## Packages have been installed with mamba into a specific, special conda environment set up to run RStudio sessions
+```{r}
+library("DESeq2")
+library("tidyverse")
+library("EnhancedVolcano")
+library("ggpubr")
+library("scales")
+library("grid")
+```
+
+# Set up variables for paths
+```{r}
+p_repo <- "~/projects-etc/2022_transcriptome-construction"
+p_res <- "results/2022-1025"
+p_txt <- "Alison/txt"
+
+p_full <- paste(p_repo, p_res, p_txt, sep = "/")
+dir.exists(p_full)
+
+p_Alison <- gsub('(.*)/\\w+', '\\1', p_full)
+dir.exists(p_Alison)
+
+p_save <- paste(p_repo, p_res, sep = "/")
+```
+
+# Read in count and metadata for mRNA
+```{r}
+countData_Nascent <- read.delim(
+    paste(p_full, "mRNA_Nascent_Nab3.txt", sep = "/"),
+    header = TRUE
+)
+metadata_Nascent <- read.delim(
+    paste(p_full, "deletionmeta.txt", sep = "/"),
+    header = TRUE
+)
+```
+
+
+## Make DESEQDataSet Object
+```{r}
+dds_n <- DESeq2::DESeqDataSetFromMatrix(
+    countData=countData_Nascent,
+    colData=metadata_Nascent, 
+    design= ~ dex,
+    tidy = TRUE
+)
+dds_n
+# class: DESeqDataSet 
+# dim: 6600 5 
+# metadata(1): version
+# assays(1): counts
+# rownames(6600): Q0010 Q0017 ... YPR204C-A YPR204W
+# rowData names(0):
+# colnames(5): Q_6125_N Q_7718_N Q_6126_N Q_7716_N Q_7714_N
+# colData names(2): id dex
+```
+
+## Set size factors (from spike in)
+```{r}
+BiocGenerics::sizeFactors(dds_n) <- c(1, 1.188, 1, 2.097, 1.662)
+```
+
+`#QUESTION` Is this where we want the estimated size factors to be input?
+`#QUESTION` Is the current means of calculating them appropriate for the DESeq2 model?
+
+## Run DESEQ Function
+```{r}
+dds_n <- DESeq2::DESeq(dds_n)
+```
+
+## Look at results table
+```{r}
+res_n <- DESeq2::results(dds_n)
+DESeq2::results(dds_n, tidy = TRUE) %>% head()
+```
+
+
+## Summary of differential gene expression
+```{r}
+summary(res_n)
+# out of 6488 with nonzero total read count
+# adjusted p-value < 0.1
+# LFC > 0 (up)       : 2111, 33%
+# LFC < 0 (down)     : 872, 13%
+# outliers [1]       : 1, 0.015%
+# low counts [2]     : 0, 0%
+# (mean count < 0)
+# [1] see 'cooksCutoff' argument of ?results
+# [2] see 'independentFiltering' argument of ?results
+```
+
+
+### Sort Summary List by adjusted p-value
+```{r}
+res_n <- res_n[order(res_n$padj), ]
+head(res_n)
+```
+
+### Make volcano
+```{r}
+EnhancedVolcano::EnhancedVolcano(
+    res_n,
+    lab = NA,
+    x = 'log2FoldChange',
+    y = 'pvalue'
+)
+```
+
+### Make volcano and save png
+```{r}
+dir.exists(paste(p_save, "png", sep = "/")) ||
+    dir.create(paste(p_save, "png", sep = "/"))
+
+png <- EnhancedVolcano::EnhancedVolcano(
+    res_n,
+    lab = NA,
+    x = 'log2FoldChange',
+    y = 'padj',
+    xlab = bquote(~Log[2]~ 'fold change'),
+    title = 'Sense Nascent Transcription', 
+    gridlines.major = FALSE,
+    gridlines.minor = FALSE,
+    pCutoff = 0.05,
+    FCcutoff = 2
+)
+
+timestampedFilename <- paste0(
+    paste(p_save, "png", sep = "/"), "/",
+    "sense_differential_nascent_expression", ".",
+    format(Sys.time(), format = "%F_%H%M%S"), ".png"
+)
+ggplot2::ggsave(timestampedFilename, plot = png)
+```
+
+### Write DESeq2 to matrix
+```{r}
+dir.exists(paste(p_save, "txt", sep = "/")) ||
+    dir.create(paste(p_save, "txt", sep = "/"))
+
+p_txt <- paste(p_save, "txt", sep = "/")
+write.table(
+    tibble::rownames_to_column(as.data.frame(res_n), "gene"),
+    file = paste(p_txt, "nascent_mRNA_diff_res.txt", sep = "/"),
+    sep = "\t",
+    row.names = FALSE
+)
+
+write.table(
+    tibble::rownames_to_column(
+        as.data.frame(res_n[order(res_n$padj), ]), "gene"
+    ),
+    file = paste(p_txt, "nascent_mRNA_diff_res_ordered.txt", sep = "/"),
+    sep = "\t",
+    row.names = FALSE
+)
+```
+`#QUESTION` I then go in excel and name the gene category "name" Why does R not name this column? I wish I knew
+
+`#ANSWER` `write.table` is printing the row names which, by default, don't have column names; the row names become the first column for all lines after the initial one; see the way I addressed this above
+
+### Read ordered DESeq2 matrix back in
+`#COMMENT` There has gotta be a better way to do this
+
+`#ANSWER` There is: see below
+```{r}
+res1_n <- tibble::rownames_to_column(
+    as.data.frame(res_n[order(res_n$padj), ]), "gene"
+)
+```
+
+#filter results
+```{r}
+res1Nab3_up <- dplyr::filter(res1_n, log2FoldChange > 2, padj < 0.05)
+res1Nab3_down <- dplyr::filter(res1_n, log2FoldChange < -2, padj < 0.05)
+```
+
+#write filtered results for go terms
+```{r}
+write.table(
+    res1Nab3_up,
+    file = paste(p_txt, "res1Nab3_up_SENSE.txt", sep = "/"),
+    sep = "\t",
+    row.names = FALSE
+)
+
+write.table(
+    res1Nab3_down,
+    file = paste(p_txt, "res1Nab3_down_SENSE.txt", sep = "/"),
+    sep = "\t",
+    row.names = FALSE
+)
+```
+
+#filter results
+```{r}
+res1Nab3_up_1p5 <- filter(res1_n, log2FoldChange > 1.5, padj < 0.05)
+res1Nab3_down_1p5 <- filter(res1_n, log2FoldChange < -1.5, padj < 0.05)
+```
+
+
+#read in AS count and metadata
+```{r}
+AS_countData_Nascent <- read.delim(
+    paste(p_full, "AS_mRNA_Nascent_Nab3.txt", sep = "/"),
+    header = TRUE
+)
+AS_metadata_Nascent <- read.delim(
+    paste(p_full, "deletionmeta_AS.txt", sep = "/"),
+    header = TRUE
+)
+```
+
+
+## Make DESEQDataSet Object AS
+```{r}
+dds_n_as<- DESeq2::DESeqDataSetFromMatrix(
+    countData = AS_countData_Nascent,
+    colData = AS_metadata_Nascent, 
+    design= ~ dex,
+    tidy = TRUE
+)
+dds_n_as
+```
+
+#size factors
+#from spike in
+```{r}
+BiocGenerics::sizeFactors(dds_n_as)  <-  c(1, 1.188, 1, 2.097, 1.662)
+```
+
+
+## Run DESEQ Function
+```{r}
+dds_n_as <- DESeq2::DESeq(dds_n_as)
+```
+
+
+## Look at results table
+```{r}
+res_n_as<- DESeq2::results(dds_n_as)
+DESeq2::results(dds_n_as, tidy=TRUE) %>% head()
+```
+
+
+## Summary of differential gene expression
+```{r}
+summary(res_n_as)
+```
+
+
+##Sort Summary List by p-value
+```{r}
+res_n_as <- res_n_as[order(res_n_as$padj), ]
+head(res_n_as)
+```
+
+#make volcano plot - saves png 
+```{r}
+png <- EnhancedVolcano::EnhancedVolcano(
+    res_n_as,
+    lab = NA,
+    x = 'log2FoldChange',
+    y = 'padj',
+    xlab = bquote(~Log[2]~ 'fold change'),
+    title = 'Antisense Nascent Transcription', 
+    gridlines.major = FALSE,
+    gridlines.minor = FALSE,
+    pCutoff = 0.05,
+    FCcutoff = 2
+)
+
+timestampedFilename <- paste0(
+    paste(p_save, "png", sep = "/"), "/",
+    "AS_differential_nascent_expression", ".",
+    format(Sys.time(), format = "%F_%H%M%S"), ".png"
+)
+ggplot2::ggsave(timestampedFilename, plot = png)
+```
+
+#write results file AS
+```{r}
+write.table(
+    tibble::rownames_to_column(as.data.frame(res_n_as), "gene"),
+    file = paste(p_txt, "AS_Nascent_mRNA_diff_res_sf.txt", sep = "/"),
+    sep = "\t",
+    row.names = FALSE
+)
+
+write.table(
+    tibble::rownames_to_column(
+        as.data.frame(res_n_as[order(res_n_as$padj), ]), "gene"
+    ),
+    file = paste(p_txt, "AS_Nascent_mRNA_diff_res_sf_ordered.txt", sep = "/"),
+    sep = "\t",
+    row.names = FALSE
+)
+```
+
+```{r}
+res1_n_as <- tibble::rownames_to_column(
+    as.data.frame(res_n_as[order(res_n_as$padj), ]), "gene"
+)
+```
+
+#filter AS results 
+```{r}
+AS_res1Nab3_up <- dplyr::filter(res1_n_as, log2FoldChange > 2, padj < 0.05)
+AS_res1Nab3_down <- dplyr::filter(res1_n_as, log2FoldChange < -2, padj < 0.05)
+```
+
+#write AS to file 
+```{r}
+write.table(
+    AS_res1Nab3_up, 
+    file = paste(p_txt, "AS_res1Nab3_up.txt", sep = "/"),
+    sep = "\t",
+    row.names = FALSE
+)
+
+write.table(
+    AS_res1Nab3_down, 
+    file = paste(p_txt, "AS_res1Nab3_down.txt", sep = "/"),
+    sep = "\t",
+    row.names = FALSE
+)
+```
+
+
+#filter AS results different 
+```{r}
+AS_res1Nab3_up_1p5 <- dplyr::filter(res1_n_as, log2FoldChange > 1.5, padj < 0.05)
+AS_res1Nab3_down_1p5 <- dplyr::filter(res1_n_as, log2FoldChange < -1.5, padj < 0.05)
+```
+
+
+#overlap between sense and AS by name 
+```{r}
+Nas_AS_up <- dplyr::inner_join(
+    AS_res1Nab3_up,
+    res1Nab3_up,
+    by = "gene"
+)
+Nas_AS_down <- dplyr::inner_join(
+    AS_res1Nab3_down,
+    res1Nab3_down,
+    by = "gene"
+)
+Nas_AS_down_up <- dplyr::inner_join(
+    AS_res1Nab3_down,
+    res1Nab3_up,
+    by = "gene"
+)
+Nas_AS_up_down <- dplyr::inner_join(
+    AS_res1Nab3_up,
+    res1Nab3_down,
+    by = "gene"
+)
+```
+
+#overlap between sense and AS by name - different gates 
+```{r}
+Nas_1.5_AS_up <- dplyr::inner_join(
+    AS_res1Nab3_up_1p5,
+    res1Nab3_up_1p5,
+    by = "gene"
+)
+Nas_1.5_AS_down <- dplyr::inner_join(
+    AS_res1Nab3_down_1p5,
+    res1Nab3_down_1p5,
+    by = "gene"
+)
+Nas_1.5_AS_down_up <- dplyr::inner_join(
+    AS_res1Nab3_down_1p5,
+    res1Nab3_up_1p5,
+    by = "gene"
+)
+Nas_1.5_AS_up_down <- dplyr::inner_join(
+    AS_res1Nab3_up_1p5,
+    res1Nab3_down_1p5,
+    by = "gene"
+)
+```
+
+#read in AS of Nab3 TPM - from replicate analysis rmd 
+```{r}
+AS_TPM <- read.delim(
+    paste(p_full, "AS_TPM.txt", sep = "/"),
+    header = TRUE
+)
+```
+
+#calc average TPM 
+```{r}
+
+AS_TPM <- AS_TPM %>%
+    dplyr::rowwise() %>%
+    dplyr::mutate(
+        Avg_single_Tag_AS_TPM = mean(c(Q_7718_N_AS, Q_7718_N_AS), na.rm = T)
+    ) 
+AS_TPM <- AS_TPM %>%
+    dplyr::rowwise() %>%
+    dplyr::mutate(
+        Avg_parental_AS_TPM = mean(c(Q_6125_N_AS, Q_6126_N_AS), na.rm = T)
+    )
+
+```
+
+#extract only relevent columns 
+```{r}
+AS_TPM_Clean <- AS_TPM %>%
+    dplyr::select(c("name", "Avg_single_Tag_AS_TPM", "Avg_parental_AS_TPM"))
+
+#  Change the "name" column to "gene" column
+colnames(AS_TPM_Clean)[colnames(AS_TPM_Clean) == "name"] <- "gene"
+```
+
+#access quantiles 
+```{r}
+quantile(AS_TPM_Clean$Avg_single_Tag_AS_TPM) 
+quantile(AS_TPM_Clean$Avg_parental_AS_TPM) 
+```
+
+#more fine grain 
+```{r}
+quantile(AS_TPM_Clean$Avg_single_Tag_AS_TPM, probs = c(0.8,0.85, .9, .95)) 
+quantile(AS_TPM_Clean$Avg_parental_AS_TPM, probs = c(0.8,0.85, .9, .95)) 
+```
+
+#highest 20% of AS by absolute level 
+```{r}
+Cuttoff_TPM_AS <- dplyr::filter(AS_TPM_Clean, Avg_single_Tag_AS_TPM > 14)
+```
+
+#now were doing the intersection of AS of high level and differential expression 
+```{r}
+TPM_Nas_AS_up <- dplyr::inner_join(AS_res1Nab3_up, Cuttoff_TPM_AS, by = "gene")
+nrow(TPM_Nas_AS_up)
+```
+#731 AS up 
+
+#overlap between TPM_Nas_AS_up and res1Nab3_down_1p5 (one way to gate functional AS)
+```{r}
+TPM_AS_up_Sense_down <- dplyr::inner_join(
+    TPM_Nas_AS_up,
+    res1Nab3_down_1p5,
+    by = "gene"
+)
+nrow(TPM_AS_up_Sense_down)
+nrow(res1Nab3_down_1p5)
+```
+
+#overlap between TPM_Nas_AS_up and res1Nab3_down (different way to gate functional AS)
+```{r}
+TPM_AS_up_Sense_down_2 <- dplyr::inner_join(
+    TPM_Nas_AS_up,
+    res1Nab3_down,
+    by = "gene"
+)
+nrow(TPM_AS_up_Sense_down_2)
+nrow(res1Nab3_down)
+```
+
+#rename AS table names so I can compare them with sense values - they will then have different names and labels 
+```{r}
+colnames(res1_n_as) <- c(
+    "gene", "AS_baseMean", "AS_log2FoldChange", "AS_lfcSE",
+    "AS_stat", "AS_pvalue", "AS_padj"
+)
+```
+
+#one giant matrix of both sense and Antisense 
+```{r}
+Combinded_RES <- merge(res1_n, res1_n_as, by = "gene")
+```
+
+#graph logfoldchange of sense and Antisense
+#"pairwise.complete.obs" must be used to throw out incomplete values - I know some authors will change every zero to 1 to fix this 
+```{r}
+grob1 <- grid::grobTree(
+    grid::textGrob(
+        paste(
+            "Pearson Correlation: ",
+            round(cor(
+                Combinded_RES$log2FoldChange,
+                Combinded_RES$AS_log2FoldChange,
+                use = "pairwise.complete.obs"),
+            4)
+        ),
+        x = 0.5,
+        y = 0.97,
+        hjust = 0,
+        gp = gpar(col = 'blue', fontsize = 11, fontface = "bold")
+    )
+)
+
+ggplot2::ggplot(data = Combinded_RES) + 
+    ggplot2::geom_vline(xintercept = 0, alpha = .5) +
+    ggplot2::geom_hline(yintercept = 0, alpha = .5) +
+    ggplot2::geom_point(
+        data = Combinded_RES,
+        mapping = aes(y = log2FoldChange, x = AS_log2FoldChange),
+        alpha = 4/10,
+        size = 1,
+        color = 'black'
+    ) +
+    ggplot2::geom_smooth(
+        aes(y = log2FoldChange, x = AS_log2FoldChange),
+        method = lm,
+        se = TRUE,
+        color = 'forestgreen'
+    ) +
+    ggplot2::theme_bw() +
+    ggplot2::annotation_custom(grob1) +
+    ggplot2::geom_smooth(
+        data = Combinded_RES,
+        aes(y = log2FoldChange, x = AS_log2FoldChange),
+        method = lm,
+        se = TRUE,
+        color = 'blue'
+    )
+```
+
+
+#check colnames of TPM_Nas_AS_up
+```{r}
+colnames(TPM_Nas_AS_up)
+```
+
+#rename AS table names so I can compare them with sense values - they will then have different names and labels 
+```{r}
+colnames(TPM_Nas_AS_up) <- c(
+    "gene", "AS_baseMean", "AS_log2FoldChange", "AS_lfcSE", "AS_stat",
+    "AS_pvalue", "AS_padj", "Avg_single_Tag_AS_TPM", "Avg_parental_AS_TPM"
+)
+```
+
+#add sense expression info onto highest AS table so those points can be graphed seperately 
+```{r}
+High_up_AS <- merge(TPM_Nas_AS_up, res1_n, by = "gene")
+```
+
+#scatterplot now with high AS highlighted in red 
+```{r}
+grob2 <- grid::grobTree(
+    grid::textGrob(
+        paste(
+            "Pearson Correlation Over Expressed AS: ",
+            round(
+                cor(
+                    High_up_AS$log2FoldChange,
+                    High_up_AS$AS_log2FoldChange,
+                    use = "pairwise.complete.obs"),
+                4
+            )
+        ),
+        x= 0.3,
+        y = 0.93,
+        hjust = 0,
+        gp = gpar(col = 'red', fontsize = 11, fontface = "bold")
+    )
+)
+
+ggplot2::ggplot(data = Combinded_RES) + 
+    ggplot2::geom_vline(xintercept = 0, alpha = .5) +
+    ggplot2::geom_hline(yintercept = 0, alpha = .5) +
+    ggplot2::geom_point(
+        data = Combinded_RES,
+        mapping = aes(y = log2FoldChange, x = AS_log2FoldChange),
+        alpha = 4/10,
+        size = 1,
+        color = 'black'
+    ) +
+    ggplot2::geom_smooth(
+        aes(y = log2FoldChange, x = AS_log2FoldChange),
+        method = lm,
+        se = TRUE,
+        color = 'forestgreen'
+    ) +
+    ggplot2::theme_bw() +
+    ggplot2::geom_point(
+        data = High_up_AS, 
+        aes(y = log2FoldChange,x=AS_log2FoldChange), 
+        color = "red",
+        size =1, 
+        alpha = 4/10
+    )+
+    ggplot2::annotation_custom(grob1) +
+    ggplot2::annotation_custom(grob2) +
+    ggplot2::geom_smooth(
+        data = Combinded_RES,
+        aes(y = log2FoldChange, x = AS_log2FoldChange),
+        method = lm,
+        se = TRUE,
+        color = 'blue'
+    ) +
+    ggplot2::geom_smooth(
+        data = High_up_AS,
+        aes(y = log2FoldChange, x = AS_log2FoldChange),
+        method = lm,
+        se = TRUE,
+        color = "red"
+    )
+```
+
+
+## now it is time to do grouped analysis :) 
+#Make a new variable that's the same thing (need this to remove genes, so no gene is asigned to more than one group)
+```{r}
+DeSeq2_Sense_Results <- res1_n
+```
+
+#now we are binning genes by group of mRNA expression
+#group 1 up genes
+#group 5 down genes
+```{r}
+grp1_DeSeq2_Sense_Results <- dplyr::filter(res1_n, log2FoldChange > 2, padj < 0.05)
+grp5_DeSeq2_Sense_Results <- dplyr::filter(res1_n, log2FoldChange < -2, padj < 0.05)
+```
+
+#group 3 "neutral"
+```{r}
+grp3_DeSeq2_Sense_Results <- dplyr::filter(res1_n, log2FoldChange < 1 , log2FoldChange >-1 )
+```
+
+#remove group 1 genes from DeSeq2_Sense_Results 
+```{r}
+DeSeq2_Sense_Results <- DeSeq2_Sense_Results[
+    !(DeSeq2_Sense_Results$gene %in% grp1_DeSeq2_Sense_Results$gene), 
+]
+nrow(DeSeq2_Sense_Results) + nrow(grp1_DeSeq2_Sense_Results)
+```
+
+#remove group 5 genes from DeSeq2_Sense_Results 
+```{r}
+DeSeq2_Sense_Results <- DeSeq2_Sense_Results[
+    !(DeSeq2_Sense_Results$gene %in% grp5_DeSeq2_Sense_Results$gene), 
+]
+
+nrow(DeSeq2_Sense_Results) +
+nrow(grp1_DeSeq2_Sense_Results) +
+nrow(grp5_DeSeq2_Sense_Results)
+
+nrow(DeSeq2_Sense_Results)
+
+nrow(grp1_DeSeq2_Sense_Results) + nrow(grp5_DeSeq2_Sense_Results)
+```
+
+#remove group 3 genes from DeSeq2_Sense_Results 
+```{r}
+DeSeq2_Sense_Results <- DeSeq2_Sense_Results[
+    !(DeSeq2_Sense_Results$gene %in% grp3_DeSeq2_Sense_Results$gene), 
+]
+nrow(DeSeq2_Sense_Results)
+nrow(grp3_DeSeq2_Sense_Results)
+```
+
+#sanity check count rows
+```{r}
+nrow(grp1_DeSeq2_Sense_Results) 
+nrow(grp5_DeSeq2_Sense_Results)
+```
+
+#now from not group 1,3,5 - split into group 2 and 4
+```{r}
+grp2_DeSeq2_Sense_Results <- filter(DeSeq2_Sense_Results, log2FoldChange >=1)
+grp4_DeSeq2_Sense_Results <- filter(DeSeq2_Sense_Results, log2FoldChange <= -1 )
+```
+
+#sanity check count rows
+```{r}
+nrow(grp1_DeSeq2_Sense_Results) +
+nrow(grp5_DeSeq2_Sense_Results) +
+nrow(grp3_DeSeq2_Sense_Results) +
+nrow(grp2_DeSeq2_Sense_Results) +
+nrow(grp4_DeSeq2_Sense_Results)
+```
+
+#sanity check count rows
+```{r}
+DeSeq2_Sense_Results <- DeSeq2_Sense_Results[
+    !(DeSeq2_Sense_Results$gene %in% grp5_DeSeq2_Sense_Results$gene), 
+]
+
+nrow(DeSeq2_Sense_Results) +
+nrow(grp1_DeSeq2_Sense_Results) +
+nrow(grp5_DeSeq2_Sense_Results)
+
+nrow(DeSeq2_Sense_Results)
+
+nrow(grp1_DeSeq2_Sense_Results) + nrow(grp5_DeSeq2_Sense_Results)
+```
+
+#sanity check count rows
+#only thing left in "DeSeq2_Sense_Results" is NA results 
+```{r}
+DeSeq2_Sense_Results <- DeSeq2_Sense_Results[
+    !(DeSeq2_Sense_Results$gene %in% grp2_DeSeq2_Sense_Results$gene), 
+]
+DeSeq2_Sense_Results <- DeSeq2_Sense_Results[
+    !(DeSeq2_Sense_Results$gene %in% grp4_DeSeq2_Sense_Results$gene), 
+]
+nrow(DeSeq2_Sense_Results)
+```
+
+#now we have groups by sense expression change
+#now make table to integrate AS expression info 
+```{r}
+group1 <- merge(grp1_DeSeq2_Sense_Results, res1_n_as, by = "gene")
+group2 <- merge(grp2_DeSeq2_Sense_Results, res1_n_as, by = "gene")
+group3 <- merge(grp3_DeSeq2_Sense_Results, res1_n_as, by = "gene")
+group4 <- merge(grp4_DeSeq2_Sense_Results, res1_n_as, by = "gene")
+group5 <- merge(grp5_DeSeq2_Sense_Results, res1_n_as, by = "gene")
+```
+
+#what happens next is how i make violin plots. 
+#I figured this out like a year ago and have copy pasted this code a bunch.
+#this is the bins 
+```{r}
+mRNA1 <- data.frame(AS_log2FoldChange = group1$AS_log2FoldChange)
+mRNA2 <- data.frame(AS_log2FoldChange = group2$AS_log2FoldChange)
+mRNA3 <- data.frame(AS_log2FoldChange = group3$AS_log2FoldChange)
+mRNA4 <- data.frame(AS_log2FoldChange = group4$AS_log2FoldChange)
+mRNA5 <- data.frame(AS_log2FoldChange = group5$AS_log2FoldChange)
+```
+
+#now the little seperate bins are glued together 
+```{r}
+# Now, combine your two dataframes into one.  
+# First make a new column in each that will be 
+# a variable to identify where they came from later.
+mRNA1$expression <- 'Over_Expressed'
+mRNA2$expression <- 'Over_Expressed_not_sig'
+mRNA3$expression <- 'Neutral'
+mRNA4$expression <- 'Under_Expressed_not_sig'
+mRNA5$expression <- 'Under_Expressed'
+
+# and combine into your new data frame vegLengths
+dataframe1 <- rbind(mRNA2, mRNA3, mRNA4, mRNA5, mRNA1)
+```
+
+#now we we make a violin plot 
+```{r}
+p <- ggplot2::ggplot(
+    dataframe1,
+    aes(factor(expression), fill = expression, AS_log2FoldChange)
+) +
+    ggplot2::geom_violin(draw_quantiles = c(0.25, 0.5, 0.75)) +
+    ggplot2::scale_fill_manual(
+        values = c("#9F9BA2", "limegreen", "#44A043", "#D1B3EC", "#825CA6")
+    ) +
+    ggplot2::theme_minimal()
+p
+```
+
+#now we we make a violin plot with p values 
+```{r}
+my_comparisons <- list(
+    c('Neutral', 'Over_Expressed'),
+    c('Neutral', 'Under_Expressed'),
+    c('Under_Expressed', 'Over_Expressed')
+)
+
+p <- ggplot2::ggplot(
+    dataframe1,
+    aes(factor(expression), fill = expression, AS_log2FoldChange)
+) +
+    ggplot2::geom_violin(draw_quantiles = c(0.25, 0.5, 0.75)) +
+    ggplot2::scale_fill_manual(
+        values = c("#9F9BA2", "limegreen", "#44A043", "#D1B3EC", "#825CA6")
+    ) +
+    ggplot2::theme_minimal() +
+    ggpubr::stat_compare_means(comparisons = my_comparisons)
+p
+```
+
+#now were going to do the same thing
+#the bins stay the same
+#but in the bins were are putting AS expression level 
+```{r}
+colnames(AS_TPM)[colnames(AS_TPM) == "name"] <- "gene"
+
+TPM_group1 <- merge(grp1_DeSeq2_Sense_Results, AS_TPM, by = "gene")
+TPM_group2 <- merge(grp2_DeSeq2_Sense_Results, AS_TPM, by = "gene")
+TPM_group3 <- merge(grp3_DeSeq2_Sense_Results, AS_TPM, by = "gene")
+TPM_group4 <- merge(grp4_DeSeq2_Sense_Results, AS_TPM, by = "gene")
+TPM_group5 <- merge(grp5_DeSeq2_Sense_Results, AS_TPM, by = "gene")
+```
+
+```{r}
+colnames(TPM_group1)
+```
+
+#making data frames to put into violin plot
+```{r}
+TPM_mRNA1 <- data.frame(AS_Level_Depletion = TPM_group1$Avg_single_Tag_AS_TPM)
+TPM_mRNA2 <- data.frame(AS_Level_Depletion = TPM_group2$Avg_single_Tag_AS_TPM)
+TPM_mRNA3 <- data.frame(AS_Level_Depletion = TPM_group3$Avg_single_Tag_AS_TPM)
+TPM_mRNA4 <- data.frame(AS_Level_Depletion = TPM_group4$Avg_single_Tag_AS_TPM)
+TPM_mRNA5 <- data.frame(AS_Level_Depletion = TPM_group5$Avg_single_Tag_AS_TPM)
+```
+
+#glueing the data frames into one 
+```{r}
+# Now, combine your two dataframes into one.  
+# First make a new column in each that will be 
+# a variable to identify where they came from later.
+TPM_mRNA1$expression <- 'Over_Expressed'
+TPM_mRNA2$expression <- 'Over_Expressed_not_sig'
+TPM_mRNA3$expression <- 'Neutral'
+TPM_mRNA4$expression <- 'Under_Expressed_not_sig'
+TPM_mRNA5$expression <- 'Under_Expressed'
+
+# and combine into your new data frame vegLengths
+dataframe2 <- rbind(TPM_mRNA2, TPM_mRNA3, TPM_mRNA4, TPM_mRNA5, TPM_mRNA1)
+```
+
+#make violin plot
+```{r}
+my_comparisons <- list(
+    c('Neutral', 'Over_Expressed'),
+    c('Neutral', 'Under_Expressed'),
+    c('Under_Expressed', 'Over_Expressed')
+)
+
+p2 <- ggplot2::ggplot(
+    dataframe2,
+    aes(factor(expression), fill = expression, AS_Level_Depletion)
+) + ggplot2::geom_violin(draw_quantiles = c(0.25, 0.5, 0.75)) +
+    ggplot2::scale_fill_manual(
+        values = c("#9F9BA2", "limegreen", "#44A043", "#D1B3EC", "#825CA6")
+    ) +
+    ggplot2::theme_minimal() +
+    ggplot2::ylim(0, 100)
+p2
+```
+
+
+#make violin plot but now with p values 
+```{r}
+my_comparisons <- list(
+    c('Neutral', 'Over_Expressed'),
+    c('Neutral', 'Under_Expressed'),
+    c('Under_Expressed', 'Over_Expressed')
+)
+
+p2 <- ggplot2::ggplot(
+    dataframe2,
+    aes(factor(expression), fill = expression, AS_Level_Depletion)
+) +
+    ggplot2::geom_violin(draw_quantiles = c(0.25, 0.5, 0.75)) +
+    ggplot2::scale_fill_manual(
+        values = c("#9F9BA2", "limegreen", "#44A043", "#D1B3EC", "#825CA6")
+    ) +
+    ggplot2::theme_minimal() +
+    ggpubr::stat_compare_means(comparisons = my_comparisons, method = "t.test")
+p2
+```
+
+
+#now I am gating by fold change >2 instead of 4 
+```{r}
+ONE_AS_res1Nab3_up <- dplyr::filter(
+    res1_n_as,
+    AS_log2FoldChange > 1,
+    AS_padj < 0.05
+)
+ONE_AS_res1Nab3_down <- dplyr::filter(
+    res1_n_as,
+    AS_log2FoldChange < -1,
+    AS_padj < 0.05
+)
+```
+
+#comparing between fold change >2 instead of 4 
+```{r}
+ONE_TPM_Nas_AS_up <- dplyr::inner_join(
+    ONE_AS_res1Nab3_up, Cuttoff_TPM_AS, by = "gene"
+)
+nrow(TPM_Nas_AS_up)
+nrow(ONE_TPM_Nas_AS_up)
+```
+
+#New Sense filters 
+```{r}
+ONE_res1Nab3_up <- dplyr::filter(res1_n, log2FoldChange > 1, padj < 0.05)
+ONE_res1Nab3_down <- dplyr::filter(res1_n, log2FoldChange < -1, padj < 0.05)
+```
+
+
+#new functional RNA catagory 
+```{r}
+ONE_UpAS_DownMRNA <- inner_join(ONE_TPM_Nas_AS_up, ONE_res1Nab3_down, by = "gene")
+nrow(ONE_UpAS_DownMRNA)
+```
+
+#write names only to file
+#thanks for writing this Kris
+```{r}
+fileConn <- paste(p_txt, "functional_AS_test_list.txt", sep = "/")
+writeLines(as.character(ONE_UpAS_DownMRNA$gene), fileConn)
+close(fileConn)
+```
+
+#calc overlaps 
+```{r}
+ONE_UpAS_UpMRNA <- dplyr::inner_join(
+    ONE_TPM_Nas_AS_up, ONE_res1Nab3_up, by = "gene"
+)
+nrow(ONE_UpAS_UpMRNA)
+nrow(ONE_TPM_Nas_AS_up)
+nrow(ONE_res1Nab3_up)
+```
+
+
+`#HERE`
+##now I am going to compare to 5781 and 2 WT Q and G1
+#so I gotta read that data in 
+```{r}
+WT_AS_diff_expression <- read.delim(
+    paste(p_full, "res_order_AS_Diff_expression.txt", sep = "/"),
+    header = TRUE
+)
+WT_TPM <- read.delim(
+    paste(p_full, "WT_Q_G1_TPM.txt", sep = "/"),
+    header = TRUE
+)
+```
+
+#filtered by expression 
+```{r}
+WT_AS_UP_Q <- dplyr::filter(
+    WT_AS_diff_expression,
+    log2FoldChange > 1,
+    padj < 0.05
+)
+```
+
+#calc what high AS is 
+```{r}
+quantile(WT_TPM$Avg_Q_IP_ANTISense, probs = c(0.5, 0.75, 0.8,0.85, 0.9, 0.95)) 
+```
+#once again I am gating at 80% 
+```{r}
+WT_high_level_AS <- dplyr::filter(WT_TPM, Avg_Q_IP_ANTISense > 14)
+```
+
+#check colnames 
+```{r}
+colnames(WT_high_level_AS)
+```
+
+
+#merge high level and overexpressed 
+```{r}
+colnames(WT_AS_UP_Q)[colnames(WT_AS_UP_Q) == "name"] <- "gene"
+WT_best_AS <- merge(WT_AS_UP_Q, WT_high_level_AS, by.x = "gene", by.y = "ensgene")
+```
+
+#now compare WT to Nab3 experiment 
+```{r}
+AS_tested <- merge(WT_best_AS, High_up_AS, by = "gene")
+nrow(AS_tested)
+nrow(WT_best_AS)
+nrow(High_up_AS)
+```
+
+#of the 180 above - how many are functional?
+```{r}
+Functional_WT <- merge(ONE_UpAS_DownMRNA, AS_tested, by = "gene")
+nrow(Functional_WT)
+nrow(ONE_UpAS_DownMRNA)
+nrow(AS_tested)
+
+```
+
+#making a list of gene names from Nab3 data so I can highlight those genes in WT data 
+```{r}
+ONE_UpAS_DownMRNA_list <- ONE_UpAS_DownMRNA %>% dplyr::select(c("gene"))
+ONE_TPM_Nas_AS_up_list <- ONE_TPM_Nas_AS_up %>% dplyr::select(c("gene"))
+
+nrow(ONE_UpAS_DownMRNA_list)
+nrow(ONE_TPM_Nas_AS_up_list)
+```
+#all genes in WT - AS tpm and differential expression 
+```{r}
+colnames(WT_AS_diff_expression)[
+    colnames(WT_AS_diff_expression) == "name"
+] <- "gene"
+WT_data <- merge(WT_TPM, WT_AS_diff_expression, by.x = "ensgene", by.y = "gene")
+```
+
+#graph it and it is a blob 
+```{r}
+grob7 <- grid::grobTree(
+    grid::textGrob(
+        paste(
+            "Pearson Correlation : ",
+            round(
+                cor(
+                    WT_data$Avg_Q_IP_ANTISense,
+                    WT_data$log2FoldChange,
+                    use = "pairwise.complete.obs"
+                ),
+                4
+            )
+        ),
+        x = 0.5,
+        y = 0.97,
+        hjust = 0,
+        gp = gpar(col = "black", fontsize = 11, fontface = "bold")
+    )
+)
+
+
+ggplot2::ggplot(data = WT_data) + 
+    ggplot2::geom_point(
+        mapping = aes(y = log2FoldChange, x= Avg_Q_IP_ANTISense),
+        alpha = 2/10,
+        size = 1
+    ) +
+    ggplot2::scale_x_continuous(
+        trans = log2_trans(),
+        breaks = trans_breaks("log2", function(x) 2^x),
+        labels = trans_format("log2", math_format(2^.x))
+    ) +
+    ggplot2::theme_bw()+
+    ggplot2::annotation_custom(grob7)+
+    ggplot2::geom_smooth(
+        data = WT_data,
+        aes(y = log2FoldChange, x = Avg_Q_IP_ANTISense),
+        method = lm,
+        se = TRUE,
+        color = 'black'
+    )
+```
+
+
+
+#map Nab3 genes to WT data 
+```{r}
+WT_data_Nab3_Sensitive_genes <- merge(
+    WT_data, ONE_TPM_Nas_AS_up_list, by.x = "ensgene", by.y = "gene"
+)
+
+WT_data_functional_AS <- merge(
+    WT_data, ONE_UpAS_DownMRNA_list, by.x = "ensgene", by.y = "gene"
+)
+```
+
+#graph it and it is 2 blobs!! :) 
+```{r}
+grob8 <- grid::grobTree(
+    grid::textGrob(
+        paste(
+            "Pearson Correlation : ",
+            round(
+                cor(
+                    WT_data_Nab3_Sensitive_genes$Avg_Q_IP_ANTISense,
+                    WT_data_Nab3_Sensitive_genes$log2FoldChange,
+                    use = "pairwise.complete.obs"
+                ),
+                4
+            )
+        ),
+        x = 0.5,
+        y = 0.93,
+        hjust = 0,
+        gp = gpar(col = '#D37538', fontsize = 11, fontface = "bold")
+    )
+)
+
+ggplot2::ggplot(data = WT_data) + 
+    ggplot2::geom_point(
+        mapping = aes(y = log2FoldChange, x= Avg_Q_IP_ANTISense),
+        alpha = 2/10,
+        size = 1
+    ) +
+    ggplot2::scale_x_continuous(
+        trans = log2_trans(),
+        breaks = trans_breaks("log2", function(x) 2^x),
+        labels = trans_format("log2", math_format(2^.x))) +
+    ggplot2::theme_bw() +
+    ggplot2::annotation_custom(grob7)+
+    ggplot2::annotation_custom(grob8)+
+    ggplot2::geom_point(data = WT_data_Nab3_Sensitive_genes, 
+             aes(y = log2FoldChange, x = Avg_Q_IP_ANTISense), 
+             color = '#D37538',
+             size = 1) +
+    ggplot2::geom_smooth(
+        data = WT_data,
+        aes(y = log2FoldChange, x = Avg_Q_IP_ANTISense),
+        method = lm,
+        se = TRUE,
+        color = 'black'
+    ) +
+    ggplot2::geom_smooth(
+        data = WT_data_Nab3_Sensitive_genes,
+        aes(y = log2FoldChange, x = Avg_Q_IP_ANTISense),
+        method = lm,
+        se = TRUE,
+        color ='#D37538'
+    )
+```
+
+#graph it again 
+```{r}
+grob9 <- grid::grobTree(
+    grid::textGrob(
+        paste(
+            "Pearson Correlation :",
+            round(
+                cor(
+                    WT_data_functional_AS$Avg_Q_IP_ANTISense,
+                    WT_data_functional_AS$log2FoldChange,
+                    use = "pairwise.complete.obs"
+                ),
+                4
+            )
+        ),
+        x = 0.5,
+        y = 0.93,
+        hjust = 0,
+        gp = grid::gpar(col = 'red', fontsize = 11, fontface = "bold")
+    )
+)
+
+
+ggplot2::ggplot(data = WT_data) + 
+    ggplot2::geom_point(mapping = aes(y= log2FoldChange, x= Avg_Q_IP_ANTISense), alpha = 2/10, size = 1) +
+    ggplot2::scale_x_continuous(
+        trans = log2_trans(),
+        breaks = trans_breaks("log2", function(x) 2^x),
+        labels = trans_format("log2", math_format(2^.x))
+    ) +
+    ggplot2::theme_bw()+
+    ggplot2::annotation_custom(grob7)+
+    ggplot2::annotation_custom(grob9)+
+    ggplot2::geom_point(
+        data = WT_data_functional_AS, 
+        aes(y = log2FoldChange, x = Avg_Q_IP_ANTISense), 
+        color ='red',
+        size = 1
+    ) +
+    ggplot2::geom_smooth(
+        data = WT_data,
+        aes(y = log2FoldChange, x = Avg_Q_IP_ANTISense),
+        method = lm,
+        se = TRUE,
+        color='black'
+    ) +
+    ggplot2::geom_smooth(
+        data = WT_data_functional_AS,
+        aes(y = log2FoldChange, x = Avg_Q_IP_ANTISense),
+        method = lm,
+        se = TRUE,
+        color = 'red'
+    )
+```
+
+#all on one. busy, very hard to look at. 
+```{r}
+ggplot2::ggplot(data = WT_data) + 
+    ggplot2::geom_point(mapping = aes(y= log2FoldChange, x= Avg_Q_IP_ANTISense), alpha = 2/10, size = 1) +
+    ggplot2::scale_x_continuous(
+        trans = log2_trans(),
+        breaks = trans_breaks("log2", function(x) 2^x),
+        labels = trans_format("log2", math_format(2^.x))
+    ) +
+    ggplot2::theme_bw()+
+    ggplot2::geom_point(
+        data = WT_data_Nab3_Sensitive_genes, 
+        aes(y = log2FoldChange, x = Avg_Q_IP_ANTISense), 
+        color = '#D37538',
+        size = 1
+    ) +
+    ggplot2::geom_point(
+        data = WT_data_functional_AS, 
+        aes(y = log2FoldChange, x = Avg_Q_IP_ANTISense), 
+        color = 'red',
+        size = 1
+    )
+```

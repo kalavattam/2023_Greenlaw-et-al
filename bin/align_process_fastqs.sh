@@ -49,6 +49,7 @@ print_usage() {
 
 #  Handle arguments, assign variables -----------------------------------------
 help="""
+${0}
 Align a pair of .fastq files from paired-end sequencing, then sort and compress
 the alignments. Then, ...
 
@@ -92,7 +93,7 @@ done
 [[ -z "${script}" ]] && script="${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/bin/split_bam_paired_end.sh"  #TODO Address this
 [[ -z "${threads}" ]] && threads=16
 
-#  Assignments for tests
+#  Assignments for tests (to be commented out)
 safe_mode=FALSE
 dir_infiles="${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1025/fastq"
 prefix_infiles="5781_G1_IN_merged"
@@ -135,8 +136,9 @@ esac
         # exit 1
     }
 
-#  Check that exactly two files corresponding to "${dir_infiles}/${prefix_infiles}"
-#+ are found
+#  Grab the infiles in the above directory, then check that exactly two files
+#+ corresponding to "${dir_infiles}/${prefix_infiles}" are found; throw an
+#+ error and exit if not
 unset infiles
 typeset -a infiles
 while IFS=" " read -r -d $'\0'; do
@@ -195,10 +197,9 @@ done < <(\
             | sort -z \
 )
 
-#  Five Bowtie 2 index files should be found; if less than or more than six
-#+ are found, then exit with a warning message; at that point,
-#+ the user will need to troubleshoot their dir_indices and/or prefix_indices
-#+ assignments
+#  Six Bowtie 2 index files should be found; if less than or more than six are
+#+ found, then exit with a warning message; at that point, the user will need
+#+ to troubleshoot their dir_indices and/or prefix_indices assignments
 if [[ "${#indices[@]}" -eq 0 ]]; then
     echo -e "Exiting: -b and/or -r: zero Bowtie 2 index files were found.\n"
     # exit 1
@@ -315,9 +316,9 @@ samtools index \
     "${outdir}/bam/$(basename "${infiles[0]%_R1*fastq}.bam")"
 
 
-#  Run 
+#  Run ... #TBC
 #  Run split_bam_paired_end.sh ------------------------------------------------
-bash "${script}" -u FALSE -i -o
+bash "${script}" -u FALSE -i -o  #TBC
 
 
 

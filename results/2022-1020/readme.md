@@ -1,10 +1,10 @@
 
 # 2022-1020
 ## E-mail 1.1 (from Alison): "Quality control analysis"
-From: [Greenlaw, Alison C](agreenla@fredhutch.org)
-Sent: Thursday, October 20, 2022 2:26 PM
-To: [Tsukiyama, Toshio](ttsukiya@fredhutch.org)
-Cc: [Alavattam, Kris](kalavatt@fredhutch.org)
+From: [Greenlaw, Alison C](agreenla@fredhutch.org)  
+Sent: Thursday, October 20, 2022 2:26 PM  
+To: [Tsukiyama, Toshio](ttsukiya@fredhutch.org)  
+Cc: [Alavattam, Kris](kalavatt@fredhutch.org)  
 Subject: Quality control analysis
 
 ### File
@@ -38,9 +38,9 @@ Your data sets looks good, if I understand correctly. I am glad to see single- a
 toshi
 
 ## E-mail 2 (from Alison): "More Code!"
-From: [Greenlaw, Alison C](agreenla@fredhutch.org)
-Date: Thursday, October 20, 2022 at 3:28 PM
-To: [Alavattam, Kris](kalavatt@fredhutch.org)
+From: [Greenlaw, Alison C](agreenla@fredhutch.org)  
+Date: Thursday, October 20, 2022 at 3:28 PM  
+To: [Alavattam, Kris](kalavatt@fredhutch.org)  
 Subject: More Code!
 
 ### Files
@@ -69,15 +69,15 @@ No rush on any of this. I am not too worried that there are glaring issues here,
 Alison
 
 ## E-mail 3 (from Alison): "File Locations"
-From: [Greenlaw, Alison C](agreenla@fredhutch.org)
-Date: Thursday, October 20, 2022 at 5:56 PM
-To: [Alavattam, Kris](kalavatt@fredhutch.org)
+From: [Greenlaw, Alison C](agreenla@fredhutch.org)  
+Date: Thursday, October 20, 2022 at 5:56 PM  
+To: [Alavattam, Kris](kalavatt@fredhutch.org)  
 Subject: File Locations
 
 ### Contents
 Hi Kris - 
 
-Nab3 depletion data 
+Nab3 depletion data  
 `~/tsukiyamalab/alisong/Nab3_Nrd1_Depletion/Sequencing/Project_agreenla`
 
 Folders of interest:
@@ -90,7 +90,7 @@ Folders of interest:
 	- Output of HTSeq count (one for each folder above):
 		- `~/tsukiyamalab/alisong/Nab3_Nrd1_Depletion/Sequencing/Project_agreenla/6126_7716/S_cerevisiae_BamFiles/bam_resort/feature_counts_7716_6126`
 
-WT G1 vs Q data 
+WT G1 vs Q data  
 `~/tsukiyamalab/alisong/WTQvsG1/`
 
 Folders of interest: 
@@ -117,9 +117,9 @@ All the R stuff is local to my laptop/on my OneDrive. Happy to figure out a way 
 Alison
 
 ## E-mail 4 (from Alison): "Hand Curation and so many annotation files"
-From: [Greenlaw, Alison C](agreenla@fredhutch.org)
-Date: Thursday, October 20, 2022 at 6:24 PM
-To: [Alavattam, Kris](kalavatt@fredhutch.org)
+From: [Greenlaw, Alison C](agreenla@fredhutch.org)  
+Date: Thursday, October 20, 2022 at 6:24 PM  
+To: [Alavattam, Kris](kalavatt@fredhutch.org)  
 Subject: Hand Curation and so many annotation files 
 
 ### Files
@@ -149,14 +149,15 @@ I have also attached some general yeast annotation files:
 - `GSE95556_Sc.cerevisiae.feature.anno_Steinmetz_2013.gtf` - great annotation
 - intergenic bed - bed files by orientation of intergenic region
 - R64 - one of the official recent annotations, though definitely not the most recent. 
-- `combined.gtf` - every CDS, and bunch of annotations from various noncoding annotation attempts - this is the file that is used for HTseq count btw 
+- `combined.gtf` - every CDS, and bunch of annotations from various noncoding annotation attempts - this is the file that is used for HTseq count btw
+
 Alison 
 
 ## E-mail 5 (from Alison): "Small fraction of AS transcripts functional on first pass"
-From: [Greenlaw, Alison C](agreenla@fredhutch.org)
-Date: Thursday, October 20, 2022 at 11:35 PM
-To: [Tsukiyama, Toshio](ttsukiya@fredhutch.org)
-Cc: [Alavattam, Kris](kalavatt@fredhutch.org)
+From: [Greenlaw, Alison C](agreenla@fredhutch.org)  
+Date: Thursday, October 20, 2022 at 11:35 PM  
+To: [Tsukiyama, Toshio](ttsukiya@fredhutch.org)  
+Cc: [Alavattam, Kris](kalavatt@fredhutch.org)  
 Subject: Small fraction of AS transcripts functional on first pass
 
 ### File
