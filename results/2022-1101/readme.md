@@ -1850,3 +1850,7 @@ As `Trinity` does not use the reference genome directly to assemble transfrags, 
 - Also, discussed the possibility of doing bench-work in the future
     + Mentioned how, after tackling the `Trinity` tasks, it'd be a fun and interesting bioinformatics experiment to compare yeast G2/M MicroC data (from the Koshland Lab) to the yeast Q MicroC data (from this lab)
     + From there, based on what we find, we could consider to design and perform wet experiments
+
+## Next steps
+`#NEXTWEEK` Pick up with fine-tuning the initial call to `Bowtie2`; read and take notes on [this paper sent by Alison](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-016-1406-x#Sec2), which makes use of Trinity for transcriptome assembly
+`#WEEKEND` Read over the biology-related papers sent by Alison, in particular her QE proposal
