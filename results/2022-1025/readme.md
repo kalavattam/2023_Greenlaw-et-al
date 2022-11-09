@@ -114,7 +114,7 @@ Post #2
 #### Check that libraries are indeed FR and not RF
 - ["Strandness in RNASeq" by Hong Zheng, 2017-0817](https://littlebitofdata.com/en/2017/08/strandness_in_rnaseq/)
 - ["signalbash/how_are_we_stranded_here"](https://github.com/signalbash/how_are_we_stranded_here)
-```zsh
+```bash
 #  Install how_are_we_stranded_here in its own environment on rhino/gizmo -----
 
 #NOTE Installation is finnicky; here's how I ultimately ended up doing it...
@@ -247,7 +247,7 @@ Alison
     - In the search bar, input "20 S"
     - The second result (October 26, 2022) is "20S_RNA_Narnavirus_1997_NC004051.fsa"
     - Downloads for the `fasta` file and `README` are available; use the links to download the files
-```zsh
+```bash
 grabnode
 
 #  Saccharomyces cerevisiae narnavirus 20S RNA
@@ -261,7 +261,7 @@ curl https://sgd-prod-upload.s3.amazonaws.com/S000209349/20S_RNA_Narnavirus_1997
 ```
 ### 2. Go ahead and grab the other *S. cerevisiae* virus sequences available on [SGD](https://www.yeastgenome.org/)
 
-```zsh
+```bash
 #  Saccharomyces cerevisiae virus L-A (L1)
 #+ yeastgenome.org/search?q=L-A_L1_2002_NC003745&is_quick=true
 cd "${HOME}/genomes"
@@ -304,7 +304,7 @@ curl https://sgd-prod-upload.s3.amazonaws.com/S000209353/L-BC_La_1993_NC001641.g
 cd ..
 ```
 ### 3. Now, get the genome `fasta` for *S. cerevisiae* from [Ensembl release 108](https://ftp.ensembl.org/pub/release-108/fasta/saccharomyces_cerevisiae/)
-```zsh
+```bash
 cd "${HOME}/genomes/sacCer3" || echo "cd failed. Check on this."
 
 alias .,="ls -lhaFG"
@@ -323,7 +323,7 @@ drwxrwx--- 3 kalavatt  628 Oct 24 15:07 GMAP/
 ```
 
 Looks we have a `fasta` already, `sacCer3.fa`, from converting the `2bit` to `fasta` with `twoBitToFa`. Technically, these files should be with the `Ensembl/108/` subdirectory, so go ahead and move them into there. Also, go ahead and rename the file to `sacCer3.fasta`, and grab the corresponding `README` for the file.
-```zsh
+```bash
 mv sacCer.* Ensembl/108/
 
 cd Ensembl/108/
@@ -336,7 +336,7 @@ mv *.2bit *.fasta  2bit_fasta/
 ```
 
 The `2bit` was obtained from [this UCSC goldenPath link](https://hgdownload.soe.ucsc.edu/goldenPath/sacCer3/bigZips); thus, get the `README` from this spot too. Also, per the `README`, the `2bit` is dated 2011-08-24. This is quite old.
-```zsh
+```bash
 cd 2bit_fasta || echo "cd failed. Check on this."
 
 vi README  # Then, copy in the text from the above UCSC goldenPath link
@@ -344,7 +344,7 @@ curl https://hgdownload.soe.ucsc.edu/goldenPath/sacCer3/bigZips/md5sum.txt > md5
 ```
 
 Is there an updated genome fasta available from [Ensembl release 108](https://ftp.ensembl.org/pub/release-108/fasta/saccharomyces_cerevisiae/)? Let's check.
-```zsh
+```bash
 #  Move 2bit_fasta to a new, non-Ensembl-release-108 directory for clear
 #+ indication of its status as an older assembly
 cd "${HOME}/genomes/sacCer3" || echo "cd failed. Check on this."
@@ -376,7 +376,7 @@ CACCATCCATCCCTCTACTTACTACCACTCACCCACCGTTACCCTCCAATTACCCATATC
 Note how the name of the chromosome is 'I' and not 'chrI' as it is in the UCSC `2bit`/`fasta`. `#NOTE` I may need to make a new version of the `*.toplevel.fa.gz` file with cleaned up, simplified chromosome names.
 
 List all of the chromosome names in the Ensembl `fasta` file:
-```zsh
+```bash
 fasta="Saccharomyces_cerevisiae.R64-1-1.dna.toplevel.fa.gz"
 zgrep "^>" "${fasta}"
 ```
@@ -403,7 +403,7 @@ Results:
 ```
 
 For thoroughness, let's go ahead and get `README` and `CHECKSUMS` files for everything else we've downloaded from Ensembl in the last couple of days:
-```zsh
+```bash
 cd "${HOME}/genomes/sacCer3/Ensembl/108"
 alias .,s="ls -lhaFG ./*"
 .,s
@@ -472,7 +472,7 @@ Kluyveromyces_lactis_gca_000002515.ASM251v1.dna_sm.toplevel.fa.gz    2022-08-16 
 README
 ```
 Cool. Looks like we need `Kluyveromyces_lactis_gca_000002515.ASM251v1.dna.toplevel.fa.gz`, `README`, and `CHECKSUMS`:
-```zsh
+```bash
 cd "${HOME}/genomes/" || echo "cd failed. Check on this."
 mkdir -p kluyveromyces_lactis_gca_000002515/Ensembl/55/DNA && cd kluyveromyces_lactis_gca_000002515/Ensembl/55/DNA
 
@@ -516,7 +516,7 @@ Results for chromosome names in `Kluyveromyces_lactis_gca_000002515.ASM251v1.dna
 ```
 
 And what is the "chromosome name" for the 20 S narnavirus?
-```zsh
+```bash
 cd "${HOME}/genomes/20S_RNA_Narnavirus_1997_NC004051/" || echo "cd failed. Check on this."
 
 fasta="20S_RNA_Narnavirus_1997_NC004051.fasta"
@@ -530,7 +530,7 @@ Results for `20S_RNA_Narnavirus_1997_NC004051.fasta`
 ```
 
 Try renaming the "chromosome name" for the 20 S narnavirus
-```zsh
+```bash
 cd "${HOME}/genomes/20S_RNA_Narnavirus_1997_NC004051/"
 
 fasta="20S_RNA_Narnavirus_1997_NC004051.fasta"
@@ -538,7 +538,7 @@ awk '/^>/ {$0=$1} 1' "${fasta}" > "${fasta%.fasta}.chr-rename.fasta"
 ```
 
 It works, but let's give the header a more informative string:
-```zsh
+```bash
 fasta="20S_RNA_Narnavirus_1997_NC004051.chr-rename.fasta"
 cp "${fasta}" "${fasta}.bak"
 
@@ -558,7 +558,7 @@ TTCGACGCGGCTCTCGCGGCCTACTCCGGCGTCGTCGTCTCCAGAGGTACACGCTCTCTACCGCCATCGC
 ```
 
 Change the chromosome names (headers) for *S. cerevisiae* and *K.lactis* by removing everything after (and including) the first space
-```zsh
+```bash
 cd "${HOME}/genomes/sacCer3/Ensembl/108/DNA" || echo "cd failed. Check on this."
 
 fasta="Saccharomyces_cerevisiae.R64-1-1.dna.toplevel.fa.gz"
@@ -589,7 +589,7 @@ Results for `Saccharomyces_cerevisiae.R64-1-1.dna.toplevel.chr-rename.fasta`:
 >Mito
 ```
 
-```zsh
+```bash
 #  K. lactis
 cd "${HOME}/genomes/kluyveromyces_lactis_gca_000002515/Ensembl/55/DNA" || echo "cd failed. Check on this."
 
@@ -610,8 +610,9 @@ Results for `Kluyveromyces_lactis_gca_000002515.ASM251v1.dna.toplevel.chr-rename
 >F
 ```
 
-## Concatenate the *S. cerevisiae*, *K. lactis*, and *S20* genomes, creating a combined genome for RNA-seq and related analyses
-```zsh
+## [Concatenate the *S. cerevisiae*, *K. lactis*, and *S20* genomes](#concatenate-the-s-cerevisiae-k-lactis-and-s20-genomes)
+...creating a combined genome for RNA-seq and related analyses
+```bash
 #  Make a directory for the combined genome
 cd "${HOME}/genomes" || echo "cd failed. Check on this."
 mkdir -p combined_SC_KL_20S  # For S. cerevisiae, K. lactis, and the 20 S narnavirus
@@ -658,7 +659,9 @@ zgrep ">" "${fasta_comb}"
 ```
 Great, this is what we want.
 
-```zsh
+### [Create `Bowtie 2` indices](#create-bowtie-2-indices)
+...for `combined_SC_KL_20S`
+```bash
 #  Make a directory for the combined genome
 cd "${HOME}/genomes/combined_SC_KL_20S" || echo "cd failed. Check on this."
 mkdir -p fasta_individual  # For S. cerevisiae, K. lactis, and the 20 S narnavirus
@@ -674,7 +677,7 @@ mkdir -p Bowtie2
 bowtie2-build combined_SC_KL_20S.fasta Bowtie2/combined_SC_KL_20S 1> combined_SC_KL_20S.bowtie2-build.stdout.txt
 
 cd Bowtie2 || echo "cd failed. Check on this."
-bowtie2-inspect -n ecoli  # It looks correct
+bowtie2-inspect --names combined_SC_KL_20S  # It looks correct
 cd ..
 
 #  Clean up a bit
@@ -688,7 +691,7 @@ mv *.txt txt/
 # 2022-1027-1028
 ## Continued work with `how_are_we_stranded_here`
 Move `how_are_we_stranded_here` output to a distinct directory, `how_are_we_stranded_here`, in `"${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1025"`
-```zsh
+```bash
 cd "${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1025"
 
 mkdir -p how_are_we_stranded_here
@@ -705,7 +708,7 @@ mv \
 
 ### Downsampling `fastq` files
 Downsample `fastq` files in order to run quick tests that don't need many threads:
-```zsh
+```bash
 #  First, download BBMap (latest version) from SourceForge; BBMap provides a
 #+ quick and easy to do this sort of random downsampling
 cd ~  # Do the following work in "${HOME}"
@@ -759,7 +762,7 @@ Bases Processed:       1398m     54.53m bases/sec
 ```
 
 ### Stepping through each line of the `Bowtie2` alignment and processing script from Alison G. (derived from `New_101122_sc_bowtie_4tu.sh`)
-```zsh
+```bash
 grabnode  # Default settings
 
 cd "${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1025"
@@ -1025,7 +1028,7 @@ I am not so sure about the `mapper | mbuffer | samtools` and `--input-fmt-option
 Let's move forward with the `mapper | samtools sort -l 0 -O bam -@2 | samtools view -O bam -@16 -o out.bam` approach discussed above. If I understand things correctly, this will get uncompressed sorting started and cap it at a maximum of two threads, which I have decided to subtract from the number supplied to `bowtie2` to prevent overthreading; e.g., of 16 threads total, 14 are assigned to `bowtie2` and two are assigned to `samtools sort`. Then, the final compressed merge via `samtools view` will not begin until mapping with `bowtie2` is completed.
 
 The call to `bowtie2` and `samtools` will look like this:
-```zsh
+```bash
 #DONTRUN
 threads=16
 
@@ -1064,7 +1067,7 @@ fi
 
 ### Stepping through each line of the `Bowtie2` alignment and processing script, which is now `align_process_fastqs.sh`
 Have added explicit arguments to the script `align_process_fastqs.sh`; let's carefully step through and test the things that have been drafted thus far...
-```zsh
+```bash
 grabnode  # If not already on gizmo
 
 #  Source functions -----------------------------------------------------------
@@ -1321,7 +1324,7 @@ fi
 
 #### Stepping through `split_bam_by_species.sh`
 Great, it works. Now, write up code, to be kept in a separate script, for filtering the `bam` files by *S. cerevisiae*, *K. lactis*, and 20 S narnavirus.
-```zsh
+```bash
 bam="5781_G1_IN_merged.bam"
 samtools idxstats "${bam}" | cut -f 1
 # I
@@ -1406,7 +1409,7 @@ samtools view \
 ```
 
 Stepping through the script for splitting by species/chromosome, `split_bam_by_species.sh`:
-```zsh
+```bash
 #  Source functions -----------------------------------------------------------
 check_dependency() {
     # Check if program is available in "${PATH}"; exit if not

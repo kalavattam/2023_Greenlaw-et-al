@@ -713,8 +713,8 @@ Remember, the overarching goal is to have appropriately processed bam files for 
 <br />
 <br />
 
-# 2022-1102-1104
-## Links on how to do miscellaneous things
+# 2022-1102-1108
+## [Links on how to do miscellaneous things](#links-on-how-to-do-miscellaneous-things)
 ### System
 - [How to shut off auto-period with double space](https://stackoverflow.com/questions/42566449/avoid-auto-period-character-after-quick-type-space-in-sublime-text-3) (in particular, see comment #2, which gives a command-line input answer)
 
@@ -749,6 +749,10 @@ Remember, the overarching goal is to have appropriately processed bam files for 
 
 ### Shell scripting
 - [Scripting Tips for Bioinformatics](https://informatics.fas.harvard.edu/scripting-tips-for-bioinformatics.html)
+- [Use bash to multiply floats](https://stackoverflow.com/questions/26003503/utilizing-bash-to-multiply-an-interger-by-a-float-with-an-if-statement)
+
+### On yeast genomics
+- [SGD Wiki][https://wiki.yeastgenome.org/index.php/Main_Page]  `#NOTE This is fantastic`
 <br />
 <br />
 
@@ -1104,7 +1108,7 @@ The usage of **UMIs** is recommended primarily for three scenarios: very low inp
 - For **conventional RNA-seq and DNA sequencing applications**, you will specifically have to request UMIs on the submission form. The default library preparations will NOT use UMIs. The UMIs will be located in-line with the insert sequences for conventional RNA-seq, genomic DNA-sequencing, or ChIP-seq. *The first twelve bases of both forward and reverse reads will represent UMIs and associated linker sequences (7 nt UMI sequence followed by a 5 nt spacer "TGACT"; UMIs of forward and reverse read are independent, resulting in a combined UMI length of 14 nt)*. UMIs and spacers are then followed by the biological insert sequences (for paired-end data, a total of 22 bp will be dedicated to the UMIs instead of the inserts). The UMI and spacer sequences are usually trimmed off and the information transferred into the read ID header with software utilities like UMI-Tools or FASTP.
 
 The figure below displays the (simplified) principles of the UMI data analysis for quantitative and variant detection studies.  
-![UMI figure](./files_readme/UMIs.png)
+![UMI figure](./readme/UMIs.png)
 
 ##### Notes, questions related to the above text
 - `#TODO (   )` Look into how to use UMIs to detetermine the complexity of RNA-seq libraries
@@ -1293,7 +1297,7 @@ Notes and summary based on an email chain between me and Alison, [shown below](#
 - How are these files different from the above?
 
 #### Email chain between me and Alison
-...on "raw" .fastq files and "UMI information"
+...on "raw" `.fastq` files and "UMI information"
 
 ##### Message #1
 From: [Alavattam, Kris](kalavatt@fredhutch.org)  
@@ -1465,7 +1469,7 @@ Subject: FW: A question and a thought
 
 Did a bit more reading: seems like calling `DESeq2::estimateSizeFactors()` with the `controlGenes` option set to our KL genes can be the way to go.
  
-So, in that case…
+So, in that case...
 1. when we call the script to split the bam by species, we should output, for each condition, bam files that contains both SC and KL (we should continue to filter out 20S, right?)
 2. when we call `DESeq2::estimateSizeFactors()`, we should set the `controlGenes` option to refer to only the KL genes in our dds object; then, when size factors are determined, DESeq2 is going to run calculations that assume KL gene expression is unchanging between conditions
 3. the size factors will continue to pertain only to the SC genes (for each condition) and be affected by the unchanging-KL-gene-expression assumption
@@ -1501,8 +1505,8 @@ cd "${results}/2022-1101"
 
 #  Make a directory for the results from the previous picardmetrics test (see
 #+ above)
-mkdir -p picardmetrics
-mv 5781_G1_IN_sorted.* picardmetrics.conf picardmetrics/
+mkdir -p exp_picardmetrics
+mv 5781_G1_IN_sorted.* picardmetrics.conf exp_picardmetrics/
 
 #  Make symlinks to the test bams
 ln -s \
@@ -1569,133 +1573,95 @@ sbatch ./submit-Trinity.sh
 #  Run time:
 #+ - Job started: Thursday, November 3, 2022: 15:26:01
 #+ - Job finished: Thursday, November 3, 2022: 15:37:00
+
+
+#  Clean up Trinity outfiles
+pwd
+# "${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1101"
+
+mkdir -p exp_Trinity
+mv 5781_* 3299486* trinity_5781_* exp_Trinity/
 ```
 
 ## Continued reading, studying regarding `Trinity`
 Builds on work [performed here](../2022-1025/readme.md#snippets-etc-from-searching-the-trinity-google-group)
 
-### Outstanding, ongoing questions, points, etc.
+### [Outstanding, ongoing questions, points, etc.](#outstanding-ongoing-questions-points-etc)
 - When building a transcriptome with Trinity, should we use all `.fastq` (*de novo* assembly) or `.bam` (genome-guided assembly) files in one run? Would doing so build a transcriptome from that combined information?
 - What is *minimizing the sum of ranks* [described below](#from-file-s1)?
     + Does it mean summing the three metrics of interest&mdash;**Transcript Length Distribution Related Factors (when maximized)**, **Unweighted K-mer KL_A_to_M (when minimized)**, and **Unweighted_Pair_F1 (when maximized)**&mdash;and then taking the assembly with lowest sum?
     + I think that could be it...
     + Some kind of transformation (hence, "rank") needs to take place, I think
+- For `Bowtie 2` alignment, what does "concordant" and "discordant" mean?
+    + "A discordant alignment is an alignment where both mates align uniquely, but that does not satisfy the paired-end constraints (`--fr`/`--rf`/`--ff`, `-I`, `-X`)" ([reference](https://www.biostars.org/p/78446/))
+        * `--fr`/`--rf`/`--ff`: The upstream/downstream mate orientations for a valid paired-end alignment against the forward reference strand
+        * `-I`: The minimum fragment length for valid paired-end alignments
+        * `-X`: The maximum fragment length for valid paired-end alignments
+- For `Bowtie 2` alignment, what does `--no-mixed`/"mixed mode" mean?
+    + If `Bowtie 2` cannot find a paired-end alignment for a pair, by default it will go on to look for unpaired alignments for the constituent mates. This is called "mixed mode."
+    + To disable mixed mode, set the `--no-mixed` option.
+    + `Bowtie 2` runs a little faster in `--no-mixed` mode, but <mark>will only consider alignment status of pairs *per se*, not individual mates</mark>.
+    + ([reference](https://bowtie-bio.sourceforge.net/bowtie2/manual.shtml#mixed-mode-paired-where-possible-unpaired-otherwise))
+- Bowtie 2 is not a splice-aware aligner, so why are we using it for RNA-seq work?
+    + Very little splicing takes place in yeast
+    + I discussed this with Toshi on 2022-1107
+        * Categories of genes that undergo splicing
+            - Ribosome protein-coding genes
+            - Housekeeping genes such as ACT1 (Actin)  `#TODO Look up how to format genes and proteins for yeast`
+            - Toshi says that genes with alternative splicing tend to be constitutively active
+                + These are not well-studied by researchers who tend to be interested in genes that are expressed under different conditions and circumstances
+                + "...boring"
+        * Per Toshi, there are no genes with more than one intron
+        * Average gene size is less than one kb, probably ~800 bp, but Toshi is not certain about that
+        * Out of some 6000 genes, 283 have introns (nearly 5%)
+            - `#NOTE` This could make the switch from Bowtie 2 to a splice-aware aligner such as STAR meaningful
 - What does "\[a\]lignment stringency was set to minimum of 95% identity across at least 90% of the transcript sequence" as [described below](#from-file-s1)?
-    + I think it will become clear as I read through the PASA documentation
+    + I think it will become clear as I read through the `PASA` documentation
 - Could [this use of `Cuffmerge`](#from-supplementary-figure-1) address the [downstream work](../notebook.md#discussion-with-alison-on-what-i-should-prioritize) required for the transcriptome-assembly process?
+    + More info on [`Cuffmerge` here](http://cole-trapnell-lab.github.io/cufflinks/cuffmerge/)
 - `#IMPORTANT` Prior to running `Trinity`&mdash;among other things&mdash;we need to map the `.fastq` files to the combined reference (*S. cerevisiae*, *K. lactis*, and 20 S) and then filter out those that are assigned to *K. lactis* and 20 S
     + Then, we need to convert the `.bam` files back to `.fastq` files
     + `#QUESTION` But what about reads that are unmapped?
         * Option #1: ***Do include them*** with reads that mapped to *S. cerevisiae* in the *de novo* transcriptome assembly
         * Option #2: ***Do not include them*** with reads that mapped to *S. cerevisiae* in the *de novo* transcriptome assembly
     + And what about the parameters for calling `Bowtie2`? Here is how we're currently calling it:
-```bash
-bowtie2 \
-    -p "${threads}" \
-    -x "${reference_genome}" \
-    -1 "${infiles[0]}" \
-    -2 "${infiles[1]}" \
-    --trim5 1 \
-    --local \
-    --very-sensitive-local \
-    --no-unal \
-    --no-mixed \
-    --no-discordant \
-    --phred33 \
-    -I 10 \
-    -X 700 \
-    --no-overlap \
-    --no-dovetail \
-        | samtools sort -@ "${threads}" -o "${infiles[0]%_R1.fastq}_sorted.bam" -
-#  Meaning of Bowtie2 parameters:
-#+ -p: threads
-#+ -x: Bowtie2 indices, including path and root
-#+ -1: Read #1 of paired-end reads
-#+ -2: Read #2 of paired-end reads
-#+ --trim5: trim <int> bases from 5'/left end of reads
-#+ --local: local alignment; ends might be soft clipped (off)
-#+ --very-sensitive-local: -D 20 -R 3 -N 0 -L 20 -i S,1,0.50
-#+     -D: give up extending after <int> failed extends in a row (15)
-#+     -R: for reads w/ repetitive seeds, try <int> sets of seeds (2)
-#+     -N: max # mismatches in seed alignment; can be 0 or 1 (0)
-#+     -L: length of seed substrings; must be >3, <32 (22)
-#+     -i: interval between seed substrings w/r/t read len (S,1,1.15)
-#+ --no-unal: suppress SAM records for unaligned reads
-#+ --no-mixed: suppress unpaired alignments for paired reads
-#+ --no-discordant: suppress discordant alignments for paired reads
-#+    From biostars.org/p/78446/, a discordant alignment is an alignment where
-#+    both mates align uniquely, but that does not satisfy the paired-end
-#+    constraints (--fr/--rf/--ff, -I, -X).
-#+ --phred33: qualities are Phred+33 (default)
-#+ -I: minimum fragment length (0)
-#+ -X: maximum fragment length (500)
-#+ --no-overlap: not concordant when mates overlap at all
-#+ --no-dovetail: NA
 
-#  Based on the description for --dovetail, "concordant when mates extend past
-#+ each other", I presume --no-dovetail means "not concordant when mates extend
-#+ past each other"
-
-#QUESTION Why do we do '--trim5 1'?
-```
-
-When calling `Bowtie2` for [**Step 3** below](#in-progress-steps-of-the-pipeline)), we'll want to ~~remove the pipe to `samtools` and~~ take advantage of these flags for directing the alignments, or lack thereof, to specific files
-```txt
-  --un <path>        write unpaired reads that didn't align to <path>
-  --al <path>        write unpaired reads that aligned at least once to <path>
-  --un-conc <path>   write pairs that didn't align concordantly to <path>
-  --al-conc <path>   write pairs that aligned concordantly at least once to <path>
-    (Note: for --un, --al, --un-conc, or --al-conc, add '-gz' to the option name, e.g.
-    --un-gz <path>, to gzip compress output, or add '-bz2' to bzip2 compress output.)
-```
-
-Thus, we'll want to call `Bowtie2` like this (also incorporates thoughts from sub-bullets for [**Step 3** below](#in-progress-steps-of-the-pipeline)):
-```bash
-bowtie2 \
-    -p "${threads}" \
-    -x "${reference_genome}" \
-    -1 "${infiles[0]}" \
-    -2 "${infiles[1]}" \
-    --trim5 1 \
-    --local \
-    --very-sensitive-local \
-    --no-unal \
-    --no-mixed \
-    --no-discordant \
-    --phred33 \
-    -I 10 \
-    -X 700 \
-    --no-overlap \
-    --no-dovetail \
-    --un-conc-gz "${infiles[0]%_R1.fastq}.unaligned" \
-    --al-conc-gz "${infiles[0]%_R1.fastq}.aligned"
-
-#  Bowtie2 will append .1.fastq.gz and .2.fastq.gz to, e.g.,
-#+ "${infiles[0]%_R1.fastq}.unaligned"
-````
-### Pipeline
-#### References for the experimental design
+### [The pipeline (in progress)](#the-pipeline-in-progress)
+#### [References for the experimental design](#references-for-the-experimental-design)
 - [Best Practices for De Novo Transcriptome Assembly with Trinity](https://informatics.fas.harvard.edu/best-practices-for-de-novo-transcriptome-assembly-with-trinity.html)
-- ...
-- ...
+- [McIlwain et al. (Hittinger), *G3* 2016](https://academic.oup.com/g3journal/article/6/6/1757/6029942) ([notes below](#mcilwain-et-al-hittinger-g3-2016))
+- ...  
+`#TODO For the in-progress steps below, describe what material is from what reference above`
 
-#### In-progress steps of the pipeline
+#### [In-progress steps of the pipeline](#in-progress-steps-of-the-pipeline)
+0. Generate downsampled paired-end `.fastq` files for use in tests of preprocessing and *de novo* transcriptome assembly
 1. Run some kind of quality check on the `.fastq` files, e.g., `FastqQC` or `fastp`, paying attention to
     - adapter content
     - k-mer content
     - other metrics? `#TODO`
-2. Filter out adapters using, e.g., `Trimmomatic` or `Trim Galore`, which has been shown to outperform `Trimmomatic`
-3. Map the `.fastq` files to the combined reference (*S. cerevisiae*, *K. lactis*, and 20 S)
-    - Retain unmapped reads in the resulting `.bam` files (or write the unmapped reads to a separate `.bam` or `.fastq` file)
-        + Get rid of `--no-unal`
-    - I wonder, but I don't think we should worry about concordance with the initial alignments
-        + Thus, perhaps we should get rid of the flags that control for concordance
-        + Actually, we can keep the flags because they'll be retained in one form or another
-            * If they're properly paired but not concordant, they'll be written to `"${infiles[0]%_R1.fastq}.unaligned"` via `--un-conc-gz`
-            * If they're not properly paired, we won't be able to evaluate concordance, but they'll retained in the sense that they'll be written to the `.bam` outfile because we're no longer calling `--no-unal`
-    - I don't think we should worry about unpaired alignments for paired reads just yet either
-        + Get rid of `--no-mixed`
-4. Filter `.bam` files to remove reads that are assigned to *K. lactis* and 20 S&mdash;and *S. cerevisiae* chrM as well? `#TODO`
+2. Filter out adapters using, e.g., `Trimmomatic` or `Trim Galore`, which has been shown to outperform `Trimmomatic`  
+3. Map the `.fastq` files to the combined reference (*S. cerevisiae*, *K. lactis*, and 20 S) with `Bowtie 2`
+    - `Bowtie 2`
+        + Retain unmapped reads in the resulting `.bam` files
+            * (or write the unmapped reads to a separate `.bam` or `.fastq` file)
+            * `#DONE` Get rid of `--no-unal`
+        + I don't think we should worry about concordance with the initial alignments
+            * Thus, perhaps we should get rid of the flags that control for concordance
+            * ~~Actually, we can keep *some* of the flags because they'll be retained in one form or another~~
+                - ~~If they're properly paired but not concordant, they'll be written to `"${infiles[0]%_R1.fastq}.unaligned"` via `--un-conc-gz`~~
+                - If they're not properly paired, we won't be able to evaluate concordance, but they'll be retained in the sense that they'll be written to the `.bam` outfile because we're no longer calling `--no-unal`
+                - `#DONE` Actually, go ahead and get rid of `--no-discordant` because we don't want them written to a `.fastq` file: we want them written to the `.bam` outfile with mapped coordinates (that we can later use for filtering)
+                - `#DONE` Go ahead and get rid of `--no-overlap` too for the same reasons
+                - `#DONE` Same with `--no-dovetail`
+        + I don't think we should worry about unpaired alignments for paired reads just yet either; just keep and use them all, if possible
+            * `#DONE` Get rid of `--no-mixed`
+        + `#TODO` Get rid of `--trim5`; not sure why we bother with it in the first place
+        + `#MAYBE` Get rid of `--al-conc-gz` because it writes the alignments to a `.fastq.gz`; actually, I think they're going into the `.bam` too... hold off on this
+    - `STAR`
+        + Map the `.fastq` files to the combined reference with `STAR`
+        + Can use [these parameters](https://groups.google.com/g/rna-star/c/hQeHTBbkc0c)
+4. Filter `.bam` files to remove reads that are assigned to *K. lactis* and 20 S&mdash;and `#QUESTION` *S. cerevisiae* chrM as well? `#TODO`
+    - `#ANSWER` Let's go with 'yes' 
 5. Convert the `.bam` files back to `.fastq` files
     - `#TODO` Determine the handling of unmapped reads: If we decide we want to include them in the transcriptome assembly, then they need to be in the resulting `.fastq` files
 6. Perform a quality check of the new `.fastq` files using the same program, paying special attention to the same metrics
@@ -1705,11 +1671,13 @@ bowtie2 \
 9. `#MAYBE` Map trimmed reads to a blacklist to remove unwanted (rRNA reads; OPTIONAL)  `#TODO Check with Alison on whether or not we would want to do this`
     + ["Reads mapped to blacklisted regions were removed (i.e., mitochondrial genome, ribosomal genes in chromosome 12, and subtelomeres)."](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8407396/) (do `cmd f` for *blacklist*)
     + If your RNA-seq libraries are built with a stranded protocol (see the link)  `#QUESTION What was I typing up and referring to here?`  `#TODO Come back to the best practices document`
-    + Spoke with Toshi briefly about the existence of and use of blacklists in yeast NGS work; [details below](#brief discussion with Toshi about yeast blacklists)
+    + Spoke with Toshi briefly about the existence of and use of blacklists in yeast NGS work; [details below](#brief-discussion-with-toshi-about-yeast-blacklists)
 10. ...
 
-### Pertinent reading and notes
-#### [McIlwain et al. (Hittinger), *G3* 2016](https://academic.oup.com/g3journal/article/6/6/1757/6029942)
+### [Notes from the references listed above](#notes-from-the-references-listed-above)
+#### McIlwain et al. (Hittinger), *G3* 2016
+[Link to paper](https://academic.oup.com/g3journal/article/6/6/1757/6029942)
+
 ##### From *Materials and Methods*
 ...
 
@@ -1740,8 +1708,8 @@ Visual comparison of the mapping results derived from the optimized and default-
 
 ...
 
-#### [Blevins et al. (Mar Albà), bioRxiv 2019-0313](https://www.biorxiv.org/content/10.1101/575837v1.full)
-This is the study Alison referenced for the parameters [used here](#get-another-trial-run-of-trinity-going).
+#### Blevins et al. (Mar Albà), bioRxiv 2019-0313
+[Link to paper](https://www.biorxiv.org/content/10.1101/575837v1.full); this is the study Alison referenced for the parameters [used here](#get-another-trial-run-of-trinity-going)
 
 ##### From *Results*
 **Assembling novel transcripts from 11 yeast species**
@@ -1808,8 +1776,2014 @@ In this mode, `Trinity` works with mapped reads, but it does not use the referen
 We used `Transrate` (Smith-Unna et al. 2016) to evaluate the quality of each assembly and refined the parameters of Trinity to achieve a high-quality de novo assembly.
 
 As `Trinity` does not use the reference genome directly to assemble transfrags, we used GMAP (Wu and Watanabe 2005) to map the assembled transcripts back to the reference genome. We used Cuffmerge from the Cufflinks suite version 2.2.0 (Trapnell et al. 2012) to combine the de novo assemblies from normal and stress conditions with the reference transcriptome. When we combined novel and annotated transcripts into a comprehensive transcriptome, novel transcripts from our assembly which overlapped the reference annotations were considered redundant and were excluded from most of the analysis; however, these transcripts were still included in the BLAST database during homology searches.
+<br />
+<br />
 
-### To be organized
+## [Sussing out the alignment work for the pipeline](#sussing-out-the-alignment-work-for-the-pipeline)
+### [On calling `Bowtie 2`](#on-calling-bowtie-2)
+Section ties into the section immediately [above](#outstanding-ongoing-questions-points-etc) and [below](#in-progress-steps-of-the-pipeline)
+```bash
+bowtie2 \
+    -p "${threads}" \
+    -x "${reference_genome}" \
+    -1 "${infiles[0]}" \
+    -2 "${infiles[1]}" \
+    --trim5 1 \
+    --local \
+    --very-sensitive-local \
+    --no-unal \
+    --no-mixed \
+    --no-discordant \
+    --phred33 \
+    -I 10 \
+    -X 700 \
+    --no-overlap \
+    --no-dovetail \
+        | samtools sort -@ "${threads}" -o "${infiles[0]%_R1.fastq}_sorted.bam" -
+```
+
+#### [Meaning of `Bowtie 2` parameters](#meaning-of-bowtie-2-parameters)
+```txt
+-p: threads
+-x: Bowtie2 indices, including path and root
+-1: Read #1 of paired-end reads
+-2: Read #2 of paired-end reads
+--trim5: trim <int> bases from 5'/left end of reads
+--local: local alignment; ends might be soft clipped (off)
+--very-sensitive-local: -D 20 -R 3 -N 0 -L 20 -i S,1,0.50
+    -D: give up extending after <int> failed extends in a row (15)
+    -R: for reads w/ repetitive seeds, try <int> sets of seeds (2)
+    -N: max # mismatches in seed alignment; can be 0 or 1 (0)
+    -L: length of seed substrings; must be >3, <32 (22)
+    -i: interval between seed substrings w/r/t read len (S,1,1.15)
+--no-unal: suppress SAM records for unaligned reads
+--no-mixed: suppress unpaired alignments for paired reads
+--no-discordant: suppress discordant alignments for paired reads
+    From biostars.org/p/78446/, a discordant alignment is an alignment where
+    both mates align uniquely, but that does not satisfy the paired-end
+    constraints (--fr/--rf/--ff, -I, -X).
+--phred33: qualities are Phred+33 (default)
+-I: minimum fragment length (0)
+-X: maximum fragment length (500)
+--no-overlap: not concordant when mates overlap at all
+--no-dovetail: NA
+
+Based on the description for --dovetail, "concordant when mates extend past
+each other", I presume --no-dovetail means "not concordant when mates extend
+past each other"
+
+#QUESTION Why do we do '--trim5 1'?
+    #QUESTION What is the length of our reads? Is it something to do with that?
+```
+
+When calling `Bowtie2` for [**Step 3** below](#in-progress-steps-of-the-pipeline)), we'll want to ~~remove the pipe to `samtools` and~~ take advantage of these flags for directing the alignments, or lack thereof, to specific files
+```txt
+  --un <path>        write unpaired reads that didn't align to <path>
+  --al <path>        write unpaired reads that aligned at least once to <path>
+  --un-conc <path>   write pairs that didn't align concordantly to <path>
+  --al-conc <path>   write pairs that aligned concordantly at least once to <path>
+    (Note: for --un, --al, --un-conc, or --al-conc, add '-gz' to the option name, e.g.
+    --un-gz <path>, to gzip compress output, or add '-bz2' to bzip2 compress output.)
+```
+
+#### [How we should call `Bowtie 2`](#how-we-should-call-bowtie-2)
+Thus, we'll want to call `Bowtie 2` like this (also incorporates thoughts from sub-bullets for [**Step 3** below](#in-progress-steps-of-the-pipeline)):
+```bash
+bowtie2 \
+    -p "${threads}" \
+    -x "${reference_genome}" \
+    -1 "${infiles[0]}" \
+    -2 "${infiles[1]}" \
+    --local \
+    --very-sensitive-local \
+    --phred33 \
+    -I 10 \
+    -X 700 \
+    --un-conc-gz "${infiles[0]%_R1.fastq}.unaligned" \
+    --al-conc-gz "${infiles[0]%_R1.fastq}.aligned"
+        | samtools sort -@ "${threads}" -o "${infiles[0]%_R1.fastq}_sorted.bam" -
+
+#  Bowtie2 will append .1.fastq.gz and .2.fastq.gz to
+#+ "${infiles[0]%_R1.fastq}.unaligned"
+````
+
+### [On calling `STAR`](#on-calling-star)
+- Section ties into the section immediately [above](#outstanding-ongoing-questions-points-etc) and [below](#in-progress-steps-of-the-pipeline)
+- Performing `STAR` "genome generation" (i.e., creating an indexed genome file with annotations) is based on the parameters described [here (example call)](https://groups.google.com/g/rna-star/c/TPTdAL7NNZ4), [here (on `--genomeSAindexNbases`)](https://groups.google.com/g/rna-star/c/08UtIdEFFmY/m/gU1eif_1KdwJ), and [here (on `--sjdbGTFfeatureExon CDS`)](https://groups.google.com/g/rna-star/c/IOJuxxONrKs/m/a0jV0kkCAQAJ)
+- Performing `STAR` alignment with *S. cerevisiae* data is based on the parameters described [here](https://groups.google.com/g/rna-star/c/hQeHTBbkc0c)
+- An [important consideration](https://groups.google.com/g/rna-star/c/08UtIdEFFmY/m/gU1eif_1KdwJ) for building the yeast genome index with `STAR`
+
+#### [Building a `STAR` genome index](#building-a-star-genome-index)
+```bash
+#DONTRUN
+
+STAR \
+    --runThreadN "${SLURM_CPUS_ON_NODE}" \
+    --runMode genomeGenerate \
+    --genomeDir "${genomeDir}" \
+    --genomeFastaFiles "${genomeFastaFiles}" \
+    --sjdbGTFfile "${sjdbGTFfile}" \
+    --sjdbOverhang ${sjdbOverhang} \
+    --sjdbGTFtagExonParentTranscript Parent \
+    --genomeSAindexNbases "${genomeSAindexNbases}"
+
+#  'exon' not found in gff3 for yeast, but 'CDS' is, so use that for
+#+ --sjdbGTFfeatureExon
+
+#  Wait, this is not true--see plenty of examples of 'exon' in the .gff3.gz
+#+ files; thus, remove --sjdbGTFfeatureExon CDS from the call
+```
+
+#### [Meaning of `STAR` parameters for `genomeGenerate`](#meaning-of-star-parameters-for-genomegenerate)
+Meaning of the parameters for `STAR --runMode genomeGenerate`:
+```txt
+                    --runThreadN  number of threads to be used for genome generation
+                     --genomeDir  path to the directory where the genome indices are stored;
+                                  must be mkdir'd already
+              --genomeFastaFiles  one or more FASTA files with the genome reference sequences
+                   --sjdbGTFfile  path to the file with annotated transcripts in the standard
+                                  .gtf format; STAR can be run without annotations, but using
+                                  annotations is highly recommended whenever they are
+                                  available; the annotations can also be included on the fly
+                                  at the mapping step (that is, instead of including them
+                                  now, they can be included in the mapping step); for .gff3
+                                  formatted annotations, use
+                                  '--sjdbGTFtagExonParentTranscript Parent'
+                  --sjdbOverhang  length of genomic sequence around the annotated junction to
+                                  be used in constructing the splice junctions database; this
+                                  length should be equal to the ReadLength-1, where
+                                  ReadLength is the length of the reads; in case of reads of
+                                  varying length, the value should be max(ReadLength)-1
+            --sjdbGTFfeatureExon  (see below)
+--sjdbGTFtagExonParentTranscript  use when a .gff3 formatted annotation is supplied to 
+                                  --sjdbGTFfile; in general, for --sjdbGTFfile files STAR
+                                  only processes lines that have --sjdbGTFfeatureExon (=exon
+                                  by default) in the 3rd field (column); exons are assigned
+                                  to the transcripts using parent-child relationship defined
+                                  by the --sjdbGTFtagExonParentTranscript (=transcript id by
+                                  default) .gtf/.gff attribute
+           --genomeSAindexNbases  for small genomes, the parameter --genomeSAindexNbases must
+                                  be scaled down, with a typical value of
+                                  min(14, log2(GenomeLength)/2 - 1); for example, for a 1 Mb
+                                  genome, this is equal to 9; for a 100 kb genome, this is
+                                  equal to 7; for yeast, this is ~12
+```
+
+#### [How we should call `STAR`](#how-we-should-call-star)
+```bash
+#DONTRUN
+
+STAR \
+    --runThreadN "${SLURM_CPUS_ON_NODE}" \
+    --outSAMunmapped Within \
+    --genomeDir "${genomeDir}" \
+    --readFilesIn "${infiles[0]}" "${infiles[1]}" \
+    --outFileNamePrefix "${infiles[0]%_R1.fastq}" \
+    --limitBAMsortRAM 4000000000 \
+    --outFilterMultimapNmax 1 \
+    --alignSJoverhangMin 8 \
+    --alignSJDBoverhangMin 1 \
+    --outFilterMismatchNmax 999 \
+    --alignIntronMin 4 \
+    --alignIntronMax 5000 \
+    --alignMatesGapMax 5000 \
+    --outSAMtype BAM SortedByCoordinate
+
+#  Don't need...
+#+     - '--readFilesCommand zcat' b/c .fastq files are unzipped 
+#+     - '--quantMode TranscriptomeSAM \' b/c only care about what does and
+#+       does not align
+#+     - '--outTmpDir' b/c we can just use the default settings
+#+     - '--outSAMattributes' b/c the default is fine
+
+#  Changes...
+#+     - Change '--alignIntronMin' from '0' to '4' per this note from Dobin:
+#+       "I would use at least 4 for --alignIntronMin , I do not think the very
+#+       small introns in the annotations are real"
+#+         - https://groups.google.com/g/rna-star/c/hQeHTBbkc0c?pli=1
+#+         - https://groups.google.com/d/msg/rna-star/LqxVCE34464/GBordrd6AQAJ
+#+     - More from Dobin: "I would increase --alignMatesGapMax to at least
+#+       --alignIntronMin since the gap between mates may contain a splice
+#+       junction."
+#+         - Marco increased --alignMatesGapMax from '2000' to '5000'
+
+#  Miscellaneous notes
+#+     - If we used default settings for --alignIntronMax, the value would be
+#+       589824 (see 'Meaning of parameters...' below); leave as is (set by
+#+       Marco)
+#+     - Can maybe leave '--outSAMattrIHstart 0' as is; default is '1'? '1' is
+#+       needed for use with some downstream applications, including StringTie
+#+       and Cufflinks; however, that doesn't matter for my situation, so just
+#+       delete it and go with defaults for now
+```
+
+#### [Meaning of `STAR` parameters for `alignReads`](#meaning-of-star-parameters-for-alignreads)
+```txt
+           --runThreadN  number of threads to run STAR
+                         < format: int>0 >
+       --outSAMunmapped  output of unmapped reads in the SAM format
+                             1st word:
+                                 None   ... no output
+                                 Within ... output unmapped reads within the main SAM file
+                                            (i.e., Aligned.out.sam)
+                             2nd word:
+                                 KeepPairs ... record unmapped mate for each alignment, and,
+                                               in case of unsorted output, keep it adjacent
+                                               to its mapped mate; only affects multi-mapping
+                                               reads
+                         < string(s) >
+            --genomeDir  path to the directory where genome files are stored (for --runMode
+                         alignReads) or will be generated (for --runMode generateGenome)
+                         < format: ./GenomeDir/ >
+          --readFilesIn  paths to files that contain input read1 (and, if needed, read2)
+                         < format: string(s); format: Read1 Read2 >
+    --outFileNamePrefix  output files name prefix (including full or relative path)
+                         < format: string; format: ./ >
+     --readFilesCommand  command line to execute for each of the input file; this command
+                         should generate FASTA or FASTQ text and send it to stdout; for
+                         example, 'zcat' to uncompress .gz files, 'bzcat' to uncompress .bz2
+                         files, etc.
+                         < string(s) >
+            --quantMode  types of quantification requested
+                             -                ... none
+                             TranscriptomeSAM ... output SAM/BAM alignments to transcriptome
+                                                  into a separate file
+                             GeneCounts       ... count reads per gene
+                         < string(s) >
+      --limitBAMsortRAM  maximum available RAM (bytes) for sorting BAM; if =0, it will be set
+                         to the genome index size; 0 value can only be used with --genomeLoad
+                         NoSharedMemory option < int>=0 >
+        --outFilterType  type of filtering
+                             Normal  ... standard filtering using only current alignment
+                             BySJout ... keep only those reads that contain junctions that
+                                         passed filtering into SJ.out.tab
+                         < format: string; default: Normal >
+--outFilterMultimapNmax  maximum number of loci the read is allowed to map to; alignments
+                         (all of them) will be output only if the read maps to no more loci
+                         than this value; otherwise no alignments will be output, and the
+                         read will be counted as "mapped to too many loci" in the
+                         Log.final.out
+                         < format: int; default: 10 >
+   --alignSJoverhangMin  minimum overhang (i.e. block size) for spliced alignments
+                         < format: int>0; default: 5 >
+ --alignSJDBoverhangMin  minimum overhang (i.e. block size) for annotated (sjdb) spliced
+                         alignments
+                         < format: int>0; default: 3 >
+--outFilterMismatchNmax  alignment will be output only if it has no more mismatches than this
+                         value
+                         < format: int; default: 10 >
+       --alignIntronMin  minimum intron size: genomic gap is considered intron if its
+                         length>=alignIntronMin, otherwise it is considered Deletion
+                         < default: 21 >
+       --alignIntronMax  maximum intron size, if 0, max intron size will be determined by
+                         (2^winBinNbits)*winAnchorDistNbins < default: 0 >
+          --winBinNbits  =log2(winBin), where winBin is the size of the bin for the
+                         windows/clustering, each window will occupy an integer number of
+                         bins
+                         < int>0; default: 16 >
+   --winAnchorDistNbins  max number of bins between two anchors that allows aggregation of
+                         anchors into one window
+                         < int>0; default: 9 >
+     --alignMatesGapMax  maximum gap between two mates, if 0, max intron gap will be
+                         determined by (2^winBinNbits)*winAnchorDistNbins < default: 0 >
+            --outTmpDir  path to a directory that will be used as temporary by STAR; all
+                         contents of this directory will be removed; the temp directory will
+                         default to outFileNamePrefix_STARtmp
+                         < format: string >
+    --outSAMattrIHstart  start value for the IH attribute; 0 may be required by some
+                         downstream software, such as Cufflinks or StringTie
+                         < int>=0; default: 1 >
+     --outSAMattributes  a string of desired SAM attributes, in the order desired for the
+                         output SAM; tags can be listed in any combination/order
+                         < format: string; default: Standard >
+           --outSAMtype  type of SAM/BAM output
+                             1st word:
+                                 BAM  ... output BAM without sorting
+                                 SAM  ... output SAM without sorting
+                                 None ... no SAM/BAM output
+                             2nd, 3rd:
+                                 Unsorted           ... standard unsorted
+                                 SortedByCoordinate ... sorted by coordinate; this option
+                                                        will allocate extra memory for
+                                                        sorting which can be specified by
+                                                        --limitBAMsortRAM
+                         < format: strings; default: SAM >
+```
+
+### [Implementing the alignment steps with `STAR` and `Bowtie 2`](#implementing-the-alignment-steps-with-star-and-bowtie-2)
+#### [Generating files needed for `STAR` alignment (2022-1107)](#generating-files-needed-for-star-alignment-2022-1107)
+...to the combined reference genes (*S. cerevisiae*, *K. lactis*, and S20)
+
+##### [Preparing the `.fasta` and `.gff3` files for `STAR`](#preparing-the-fasta-and-gff3-files-for-star)
+```bash
+#DONTRUN
+
+#  grabnode can be "on" or "off"
+
+
+#  Download .gff3 files for sacCer3 (Ensembl 108) -----------------------------
+cd ~/genomes/sacCer3/Ensembl/108
+mkdir -p gff3 && cd gff3/
+
+URL="https://ftp.ensembl.org/pub/release-108/gff3/saccharomyces_cerevisiae"
+
+curl \
+    "${URL}/CHECKSUMS" \
+    > "CHECKSUMS"
+
+curl \
+    "${URL}/README" \
+    > "README"
+
+curl \
+    "${URL}/Saccharomyces_cerevisiae.R64-1-1.108.abinitio.gff3.gz" \
+    > "Saccharomyces_cerevisiae.R64-1-1.108.abinitio.gff3.gz"
+
+curl \
+    "${URL}/Saccharomyces_cerevisiae.R64-1-1.108.gff3.gz" \
+    > "Saccharomyces_cerevisiae.R64-1-1.108.gff3.gz"
+
+#NOTE No "abinitio" gene predictions for K. lactis 
+
+
+#  Are chromosome names consistent between sacCer3 .gff3 and .fasta? ----------
+#  Check the file contents: How are chromosomes named?
+zcat Saccharomyces_cerevisiae.R64-1-1.108.gff3.gz | head -23
+# ##gff-version 3
+# ##sequence-region   I 1 230218
+# ##sequence-region   II 1 813184
+# ##sequence-region   III 1 316620
+# ##sequence-region   IV 1 1531933
+# ##sequence-region   IX 1 439888
+# ##sequence-region   Mito 1 85779
+# ##sequence-region   V 1 576874
+# ##sequence-region   VI 1 270161
+# ##sequence-region   VII 1 1090940
+# ##sequence-region   VIII 1 562643
+# ##sequence-region   X 1 745751
+# ##sequence-region   XI 1 666816
+# ##sequence-region   XII 1 1078177
+# ##sequence-region   XIII 1 924431
+# ##sequence-region   XIV 1 784333
+# ##sequence-region   XV 1 1091291
+# ##sequence-region   XVI 1 948066
+# #!genome-build  R64-1-1
+# #!genome-version R64-1-1
+# #!genome-date 2011-09
+# #!genome-build-accession GCA_000146045.2
+# #!genebuild-last-updated 2018-10
+
+#QUESTION Need to rename "Mito"? #ANSWER No (see immediately below)
+
+cd ~/genomes/sacCer3/Ensembl/108/DNA
+
+grep "^>" Saccharomyces_cerevisiae.R64-1-1.dna.toplevel.chr-rename.fasta
+# >I
+# >II
+# >III
+# >IV
+# >V
+# >VI
+# >VII
+# >VIII
+# >IX
+# >X
+# >XI
+# >XII
+# >XIII
+# >XIV
+# >XV
+# >XVI
+# >Mito
+
+
+#  Check on consistency of chromosome names in K. lactis ----------------------
+#+ ...looking at .fasta and .gff3.gz
+cd ~/genomes/kluyveromyces_lactis_gca_000002515/Ensembl/55
+
+zcat ./gff3/Kluyveromyces_lactis_gca_000002515.ASM251v1.55.gff3.gz \
+    | head -11
+# ##gff-version 3
+# ##sequence-region   A 1 1062590
+# ##sequence-region   B 1 1320834
+# ##sequence-region   C 1 1753957
+# ##sequence-region   D 1 1715506
+# ##sequence-region   E 1 2234072
+# ##sequence-region   F 1 2602197
+# #!genome-build Genolevures Consortium ASM251v1
+# #!genome-version ASM251v1
+# #!genome-build-accession GCA_000002515.1
+# #!genebuild-last-updated 2015-02
+
+grep \
+    "^>" \
+    ./DNA/Kluyveromyces_lactis_gca_000002515.ASM251v1.dna.toplevel.chr-rename.fasta
+# >A
+# >B
+# >C
+# >D
+# >E
+# >F
+
+#NOTE #IMPORTANT For both genomes, chromosome names are consistent
+
+
+#  Merge the two .gff3 files --------------------------------------------------
+grabnode  # Lowest and/or default settings
+
+cd ~/genomes/
+
+#  Use AGAT (Another Gff Analysis Toolkit):
+#+ biostars.org/p/413510/
+ml AGAT/0.9.2-GCC-11.2.0  # Nice, a module is available
+
+#  This seems like the script to use: agat_sp_merge_annotations.pl
+agat_sp_merge_annotations.pl
+#
+#  ------------------------------------------------------------------------------
+# |   Another GFF Analysis Toolkit (AGAT) - Version: v0.9.1                      |
+# |   https://github.com/NBISweden/AGAT                                          |
+# |   National Bioinformatics Infrastructure Sweden (NBIS) - www.nbis.se         |
+#  ------------------------------------------------------------------------------
+#
+# At least 2 files are mandatory:
+#  --gff file1 --gff file2
+#
+#
+# Usage:
+#         agat_sp_merge_annotations.pl --gff infile1 --gff infile2 --out outFile
+#         agat_sp_merge_annotations.pl --help
+
+agat_sp_merge_annotations.pl --help
+#
+#  ------------------------------------------------------------------------------
+# |   Another GFF Analysis Toolkit (AGAT) - Version: v0.9.1                      |
+# |   https://github.com/NBISweden/AGAT                                          |
+# |   National Bioinformatics Infrastructure Sweden (NBIS) - www.nbis.se         |
+#  ------------------------------------------------------------------------------
+#
+#
+# Name:
+#     agat_sp_merge_annotations.pl
+#
+# Description:
+#     This script merge different gff annotation files in one. It uses the
+#     Omniscient parser that takes care of duplicated names and fixes other
+#     oddities met in those files.
+#
+# Usage:
+#         agat_sp_merge_annotations.pl --gff infile1 --gff infile2 --out outFile
+#         agat_sp_merge_annotations.pl --help
+#
+# Options:
+#     --gff or -f
+#             Input GTF/GFF file(s). You can specify as much file you want
+#             like so: -f file1 -f file2 -f file3
+#
+#     --out, --output or -o
+#             Output gff3 file where the gene incriminated will be write.
+#
+#     --help or -h
+#             Display this helpful text.
+#
+# Feedback:
+#   Did you find a bug?:
+#     Do not hesitate to report bugs to help us keep track of the bugs and
+#     their resolution. Please use the GitHub issue tracking system available
+#     at this address:
+#
+#                 https://github.com/NBISweden/AGAT/issues
+#
+#      Ensure that the bug was not already reported by searching under Issues.
+#      If you're unable to find an (open) issue addressing the problem, open a new one.
+#      Try as much as possible to include in the issue when relevant:
+#      - a clear description,
+#      - as much relevant information as possible,
+#      - the command used,
+#      - a data sample,
+#      - an explanation of the expected behaviour that is not occurring.
+#
+#   Do you want to contribute?:
+#     You are very welcome, visit this address for the Contributing
+#     guidelines:
+#     https://github.com/NBISweden/AGAT/blob/master/CONTRIBUTING.md
+
+infile_1="./sacCer3/Ensembl/108/gff3/Saccharomyces_cerevisiae.R64-1-1.108.gff3.gz"
+infile_2="./kluyveromyces_lactis_gca_000002515/Ensembl/55/gff3/Kluyveromyces_lactis_gca_000002515.ASM251v1.55.gff3.gz"
+outfile="./combined_SC_KL_20S/g/combined_SC_KL"
+
+mkdir -p "$(dirname "${outfile}")"
+
+agat_sp_merge_annotations.pl \
+    -f "${infile_1}" \
+    -f "${infile_2}" \
+    -o "${outfile}"
+#  See STDERR printed to screen below
+
+#  Give a proper name to the outdirectory within "${outfile}"
+mv "$(dirname "${outfile}")" "./combined_SC_KL_20S/gff3"
+# For some reason, the sequence 'gff3' is stripped away from strings by AGAT
+
+#  Rename and compress outfile
+outfile="./combined_SC_KL_20S/gff3/combined_SC_KL"
+
+mv "${outfile}.gff" "${outfile}.gff3"
+gzip "${outfile}.gff3"
+
+ls -1 ./combined_SC_KL_20S/gff3  # Check
+# combined_SC_KL.gff3.gz
+
+
+#  Are chromosome names consistent for combined_SC_KL_20S? --------------------
+grep "^>" ./combined_SC_KL_20S/fasta/combined_SC_KL_20S.fasta
+# >I
+# >II
+# >III
+# >IV
+# >V
+# >VI
+# >VII
+# >VIII
+# >IX
+# >X
+# >XI
+# >XII
+# >XIII
+# >XIV
+# >XV
+# >XVI
+# >Mito
+# >A
+# >B
+# >C
+# >D
+# >E
+# >F
+# >20S
+
+zcat ./combined_SC_KL_20S/gff3/combined_SC_KL.gff3.gz \
+    | head -33
+# ##gff-version 3
+# ##sequence-region   I 1 230218
+# ##sequence-region   II 1 813184
+# ##sequence-region   III 1 316620
+# ##sequence-region   IV 1 1531933
+# ##sequence-region   IX 1 439888
+# ##sequence-region   Mito 1 85779
+# ##sequence-region   V 1 576874
+# ##sequence-region   VI 1 270161
+# ##sequence-region   VII 1 1090940
+# ##sequence-region   VIII 1 562643
+# ##sequence-region   X 1 745751
+# ##sequence-region   XI 1 666816
+# ##sequence-region   XII 1 1078177
+# ##sequence-region   XIII 1 924431
+# ##sequence-region   XIV 1 784333
+# ##sequence-region   XV 1 1091291
+# ##sequence-region   XVI 1 948066
+# #!genome-build  R64-1-1
+# #!genome-version R64-1-1
+# #!genome-date 2011-09
+# #!genome-build-accession GCA_000146045.2
+# #!genebuild-last-updated 2018-10
+# ##sequence-region   A 1 1062590
+# ##sequence-region   B 1 1320834
+# ##sequence-region   C 1 1753957
+# ##sequence-region   D 1 1715506
+# ##sequence-region   E 1 2234072
+# ##sequence-region   F 1 2602197
+# #!genome-build Genolevures Consortium ASM251v1
+# #!genome-version ASM251v1
+# #!genome-build-accession GCA_000002515.1
+# #!genebuild-last-updated 2015-02
+
+#NOTE #IMPORTANT Chromosome names are consistent
+```
+
+Call to [AGAT](https://www.biostars.org/p/413510/) `agat_sp_merge_annotations.pl` printed the following to screen (`STDERR`):
+```txt
+********************************************************************************
+*                              - Start parsing -                               *
+********************************************************************************
+-------------------------- parse options and metadata --------------------------
+=> Accessing the feature level json files
+    Using standard /app/software/AGAT/0.9.2-GCC-11.2.0/lib/perl5/site_perl/5.34.0/auto/share/dist/AGAT/features_level1.json file
+    Using standard /app/software/AGAT/0.9.2-GCC-11.2.0/lib/perl5/site_perl/5.34.0/auto/share/dist/AGAT/features_level2.json file
+    Using standard /app/software/AGAT/0.9.2-GCC-11.2.0/lib/perl5/site_perl/5.34.0/auto/share/dist/AGAT/features_level3.json file
+    Using standard /app/software/AGAT/0.9.2-GCC-11.2.0/lib/perl5/site_perl/5.34.0/auto/share/dist/AGAT/features_spread.json file
+=> Attribute used to group features when no Parent/ID relationship exists (i.e common tag):
+    * locus_tag
+    * gene_id
+=> merge_loci option deactivated
+=> Machine information:
+    This script is being run by perl v5.34.0
+    Bioperl location being used: /app/software/BioPerl/1.7.8-GCCcore-11.2.0/lib/perl5/site_perl/5.34.0/Bio/
+    Operating system being used: linux
+=> Accessing Ontology
+    No ontology accessible from the gff file header!
+    We use the SOFA ontology distributed with AGAT:
+        /app/software/AGAT/0.9.2-GCC-11.2.0/lib/perl5/site_perl/5.34.0/auto/share/dist/AGAT/so.obo
+    Read ontology /app/software/AGAT/0.9.2-GCC-11.2.0/lib/perl5/site_perl/5.34.0/auto/share/dist/AGAT/so.obo:
+        4 root terms, and 2596 total terms, and 1516 leaf terms
+    Filtering ontology:
+        We found 1861 terms that are sequence_feature or is_a child of it.
+--------------------------------- parsing file ---------------------------------
+=> Number of line in file: 35862
+=> Number of comment lines: 7167
+=> Fasta included: No
+=> Number of features lines: 28695
+=> Number of feature type (3rd column): 16
+    * Level1: 6 => transposable_element_gene ncRNA_gene chromosome gene pseudogene transposable_element
+    * level2: 7 => snRNA ncRNA pseudogenic_transcript tRNA mRNA rRNA snoRNA
+    * level3: 3 => exon five_prime_UTR CDS
+    * unknown: 0 =>
+=> Version of the Bioperl GFF parser selected by AGAT: 3
+Parsing: 100% [======================================================]D 0h00m03s
+********************************************************************************
+*                               - End parsing -                                *
+*                              done in 5 seconds                               *
+********************************************************************************
+
+********************************************************************************
+*                               - Start checks -                               *
+********************************************************************************
+---------------------------- Check1: feature types -----------------------------
+----------------------------------- ontology -----------------------------------
+All feature types in agreement with the Ontology.
+------------------------------------- agat -------------------------------------
+AGAT can deal with all the encountered feature types (3rd column)
+------------------------------ done in 0 seconds -------------------------------
+
+------------------------------ Check2: duplicates ------------------------------
+None found
+------------------------------ done in 0 seconds -------------------------------
+
+-------------------------- Check3: sequential bucket ---------------------------
+None found
+------------------------------ done in 0 seconds -------------------------------
+
+--------------------------- Check4: l2 linked to l3 ----------------------------
+91 cases fixed where L3 features have parent feature(s) missing
+------------------------------ done in 0 seconds -------------------------------
+
+--------------------------- Check5: l1 linked to l2 ----------------------------
+No problem found
+------------------------------ done in 0 seconds -------------------------------
+
+--------------------------- Check6: remove orphan l1 ---------------------------
+We remove only those not supposed to be orphan
+91 cases removed where L1 features do not have children (while they are suposed to have children).
+------------------------------ done in 0 seconds -------------------------------
+
+------------------------- Check7: all level3 locations -------------------------
+------------------------------ done in 0 seconds -------------------------------
+
+------------------------------ Check8: check cds -------------------------------
+No problem found
+------------------------------ done in 0 seconds -------------------------------
+
+----------------------------- Check9: check exons ------------------------------
+No exons created
+No exons locations modified
+No supernumerary exons removed
+No level2 locations modified
+------------------------------ done in 0 seconds -------------------------------
+
+----------------------------- Check10: check utrs ------------------------------
+No UTRs created
+No UTRs locations modified
+No supernumerary UTRs removed
+------------------------------ done in 1 seconds -------------------------------
+
+------------------------ Check11: all level2 locations -------------------------
+No problem found
+------------------------------ done in 0 seconds -------------------------------
+
+------------------------ Check12: all level1 locations -------------------------
+No problem found
+------------------------------ done in 0 seconds -------------------------------
+
+---------------------- Check13: remove identical isoforms ----------------------
+None found
+------------------------------ done in 0 seconds -------------------------------
+********************************************************************************
+*                                - End checks -                                *
+*                              done in 1 seconds                               *
+********************************************************************************
+
+=> OmniscientI total time: 6 seconds
+./sacCer3/Ensembl/108/gff3/Saccharomyces_cerevisiae.R64-1-1.108.gff3.gz GFF3 file parsed
+There is 7507 exon
+There is 91 rna
+There is 0 transposable_element_gene
+There is 424 ncrna_gene
+There is 6913 cds
+There is 4 five_prime_utr
+There is 12 pseudogenic_transcript
+There is 17 chromosome
+There is 6600 gene
+There is 77 snorna
+There is 18 ncrna
+There is 24 rrna
+There is 6600 mrna
+There is 91 transposable_element
+There is 12 pseudogene
+There is 6 snrna
+There is 299 trna
+********************************************************************************
+*                              - Start parsing -                               *
+********************************************************************************
+-------------------------- parse options and metadata --------------------------
+=> Accessing the feature level json files
+    Using standard /app/software/AGAT/0.9.2-GCC-11.2.0/lib/perl5/site_perl/5.34.0/auto/share/dist/AGAT/features_level1.json file
+    Using standard /app/software/AGAT/0.9.2-GCC-11.2.0/lib/perl5/site_perl/5.34.0/auto/share/dist/AGAT/features_level2.json file
+    Using standard /app/software/AGAT/0.9.2-GCC-11.2.0/lib/perl5/site_perl/5.34.0/auto/share/dist/AGAT/features_level3.json file
+    Using standard /app/software/AGAT/0.9.2-GCC-11.2.0/lib/perl5/site_perl/5.34.0/auto/share/dist/AGAT/features_spread.json file
+=> Attribute used to group features when no Parent/ID relationship exists (i.e common tag):
+    * locus_tag
+    * gene_id
+=> merge_loci option deactivated
+=> Machine information:
+    This script is being run by perl v5.34.0
+    Bioperl location being used: /app/software/BioPerl/1.7.8-GCCcore-11.2.0/lib/perl5/site_perl/5.34.0/Bio/
+    Operating system being used: linux
+=> Accessing Ontology
+    No ontology accessible from the gff file header!
+    We use the SOFA ontology distributed with AGAT:
+        /app/software/AGAT/0.9.2-GCC-11.2.0/lib/perl5/site_perl/5.34.0/auto/share/dist/AGAT/so.obo
+    Read ontology /app/software/AGAT/0.9.2-GCC-11.2.0/lib/perl5/site_perl/5.34.0/auto/share/dist/AGAT/so.obo:
+        4 root terms, and 2596 total terms, and 1516 leaf terms
+    Filtering ontology:
+        We found 1861 terms that are sequence_feature or is_a child of it.
+--------------------------------- parsing file ---------------------------------
+=> Number of line in file: 27298
+=> Number of comment lines: 5461
+=> Fasta included: No
+=> Number of features lines: 21837
+=> Number of feature type (3rd column): 12
+    * Level1: 4 => chromosome biological_region gene ncRNA_gene
+    * level2: 6 => snRNA ncRNA tRNA rRNA mRNA lnc_RNA
+    * level3: 2 => exon CDS
+    * unknown: 0 =>
+=> Version of the Bioperl GFF parser selected by AGAT: 3
+gff3 reader error level1: No ID attribute found @ for the feature: A    ena_mobile_element  biological_region   9115    9552    .   +   .   external_name "KLLA0_A00165t; CR382121.1:mobile_element:9115..9552"  ; logic_name ena_mobile_element
+gff3 reader error level1: No ID attribute found @ for the feature: A    ena_mobile_element  biological_region   341014  344221  .   -   .   external_name "KLLA0_A03844t; DNA transposon of KLLA part of the newly discovered ROVER DNA transposon family of the Kluyveromyces: degenerate copy with probably 2 frameshifts"  ; logic_name ena_mobile_element
+gff3 reader error level1: No ID attribute found @ for the feature: A    ena_mobile_element  biological_region   584843  585278  .   +   .   external_name "KLLA0_A06457t; CR382121.1:mobile_element:584843..585278"  ; logic_name ena_mobile_element
+gff3 reader error level1: No ID attribute found @ for the feature: A    ena_misc_feature    biological_region   760404  760598  .   +   .   external_name "KLLA0_A08668s; Centromere Klla0A"  ; logic_name ena_misc_feature
+gff3 reader error level1: No ID attribute found @ for the feature: A    ena_mobile_element  biological_region   1046924 1047346 .   -   .   external_name "KLLA0_A12023t; CR382121.1:mobile_element:complement(1046924..1047346)"  ; logic_name ena_mobile_element
+gff3 reader error level1: No ID attribute found @ for the feature: A    ena_mobile_element  biological_region   1047531 1048025 .   -   .   external_name "KLLA0_A12034t; CR382121.1:mobile_element:complement(1047531..1048025)"  ; logic_name ena_mobile_element
+gff3 reader error level1: No ID attribute found @ for the feature: A    ena_mobile_element  biological_region   1054728 1060266 .   -   .   external_name "KLLA0_A12134t; CR382121.1:mobile_element:complement(1054728..1060266)"  ; logic_name ena_mobile_element
+gff3 reader error level1: No ID attribute found @ for the feature: B    ena_mobile_element  biological_region   21083   21192   .   +   .   external_name "KLLA0_B00330t; CR382122.1:mobile_element:21083..21192"  ; logic_name ena_mobile_element
+gff3 reader error level1: No ID attribute found @ for the feature: B    ena_misc_feature    biological_region   1168861 1169058 .   +   .   external_name "KLLA0_B13299s; Centromere Klla0B"  ; logic_name ena_misc_feature
+gff3 reader error level1: No ID attribute found @ for the feature: C    ena_misc_feature    biological_region   1638151 1638347 .   +   .   external_name "KLLA0_C18529s; Centromere Klla0C"  ; logic_name ena_misc_feature
+gff3 reader error level1: No ID attribute found  ************** Too much WARNING message we skip the next **************
+Parsing: 100% [======================================================]D 0h00m02s
+33 warning messages: gff3 reader error level1: No ID attribute found
+********************************************************************************
+*                               - End parsing -                                *
+*                              done in 3 seconds                               *
+********************************************************************************
+
+********************************************************************************
+*                               - Start checks -                               *
+********************************************************************************
+---------------------------- Check1: feature types -----------------------------
+----------------------------------- ontology -----------------------------------
+INFO - Feature types not expected by the GFF3 specification:
+* lnc_rna
+The feature type (3rd column in GFF3) is constrained to be either a term from th
+e Sequence Ontology or an SO accession number. The latter alternative is disting
+uished using the syntax SO:000000. In either case, it must be sequence_feature (
+SO:0000110) or an is_a child of it.To follow rigorously the gff3 format, please
+visit this website:
+https://github.com/The-Sequence-Ontology/Specifications/blob/master/gff3.md
+------------------------------------- agat -------------------------------------
+AGAT can deal with all the encountered feature types (3rd column)
+------------------------------ done in 0 seconds -------------------------------
+
+------------------------------ Check2: duplicates ------------------------------
+None found
+------------------------------ done in 0 seconds -------------------------------
+
+-------------------------- Check3: sequential bucket ---------------------------
+None found
+------------------------------ done in 1 seconds -------------------------------
+
+--------------------------- Check4: l2 linked to l3 ----------------------------
+No problem found
+------------------------------ done in 0 seconds -------------------------------
+
+--------------------------- Check5: l1 linked to l2 ----------------------------
+No problem found
+------------------------------ done in 0 seconds -------------------------------
+
+--------------------------- Check6: remove orphan l1 ---------------------------
+We remove only those not supposed to be orphan
+None found
+------------------------------ done in 0 seconds -------------------------------
+
+------------------------- Check7: all level3 locations -------------------------
+------------------------------ done in 0 seconds -------------------------------
+
+------------------------------ Check8: check cds -------------------------------
+No problem found
+------------------------------ done in 0 seconds -------------------------------
+
+----------------------------- Check9: check exons ------------------------------
+No exons created
+No exons locations modified
+No supernumerary exons removed
+No level2 locations modified
+------------------------------ done in 0 seconds -------------------------------
+
+----------------------------- Check10: check utrs ------------------------------
+No UTRs created
+No UTRs locations modified
+No supernumerary UTRs removed
+------------------------------ done in 0 seconds -------------------------------
+
+------------------------ Check11: all level2 locations -------------------------
+No problem found
+------------------------------ done in 0 seconds -------------------------------
+
+------------------------ Check12: all level1 locations -------------------------
+No problem found
+------------------------------ done in 0 seconds -------------------------------
+
+---------------------- Check13: remove identical isoforms ----------------------
+None found
+------------------------------ done in 0 seconds -------------------------------
+********************************************************************************
+*                                - End checks -                                *
+*                              done in 1 seconds                               *
+********************************************************************************
+
+=> OmniscientI total time: 4 seconds
+./kluyveromyces_lactis_gca_000002515/Ensembl/55/gff3/Kluyveromyces_lactis_gca_000002515.ASM251v1.55.gff3.gz GFF3 file parsed
+There is 6 chromosome
+There is 5076 gene
+There is 33 biological_region
+There is 1 lnc_rna
+There is 5076 mrna
+There is 21 rrna
+There is 1 ncrna
+There is 310 trna
+There is 35 snrna
+There is 5659 exon
+There is 5251 cds
+There is 368 ncrna_gene
+
+Total raw data of files together:
+There is 77 snorna
+There is 1 lnc_rna
+There is 23 chromosome
+There is 33 biological_region
+There is 11676 gene
+There is 41 snrna
+There is 12 pseudogene
+There is 609 trna
+There is 19 ncrna
+There is 45 rrna
+There is 11676 mrna
+There is 91 transposable_element
+There is 13166 exon
+There is 91 rna
+There is 0 transposable_element_gene
+There is 4 five_prime_utr
+There is 12 pseudogenic_transcript
+There is 792 ncrna_gene
+There is 12164 cds
+
+Now merging overlaping loci, and removing identical isoforms
+********************************************************************************
+*                              - Start parsing -                               *
+********************************************************************************
+-------------------------- parse options and metadata --------------------------
+=> Accessing the feature level json files
+    Using standard /app/software/AGAT/0.9.2-GCC-11.2.0/lib/perl5/site_perl/5.34.0/auto/share/dist/AGAT/features_level1.json file
+    Using standard /app/software/AGAT/0.9.2-GCC-11.2.0/lib/perl5/site_perl/5.34.0/auto/share/dist/AGAT/features_level2.json file
+    Using standard /app/software/AGAT/0.9.2-GCC-11.2.0/lib/perl5/site_perl/5.34.0/auto/share/dist/AGAT/features_level3.json file
+    Using standard /app/software/AGAT/0.9.2-GCC-11.2.0/lib/perl5/site_perl/5.34.0/auto/share/dist/AGAT/features_spread.json file
+=> Attribute used to group features when no Parent/ID relationship exists (i.e common tag):
+    * locus_tag
+    * gene_id
+=> merge_loci option activated
+=> Machine information:
+    This script is being run by perl v5.34.0
+    Bioperl location being used: /app/software/BioPerl/1.7.8-GCCcore-11.2.0/lib/perl5/site_perl/5.34.0/Bio/
+    Operating system being used: linux
+=> Accessing Ontology
+    No ontology accessible from the gff file header!
+    We use the SOFA ontology distributed with AGAT:
+        /app/software/AGAT/0.9.2-GCC-11.2.0/lib/perl5/site_perl/5.34.0/auto/share/dist/AGAT/so.obo
+    Read ontology /app/software/AGAT/0.9.2-GCC-11.2.0/lib/perl5/site_perl/5.34.0/auto/share/dist/AGAT/so.obo:
+        4 root terms, and 2596 total terms, and 1516 leaf terms
+    Filtering ontology:
+        We found 1861 terms that are sequence_feature or is_a child of it.
+--------------------------------- parsing file ---------------------------------
+********************************************************************************
+*                               - End parsing -                                *
+*                              done in 2 seconds                               *
+********************************************************************************
+
+********************************************************************************
+*                               - Start checks -                               *
+********************************************************************************
+---------------------------- Check1: feature types -----------------------------
+----------------------------------- ontology -----------------------------------
+INFO - Feature types not expected by the GFF3 specification:
+* lnc_rna
+* rna
+The feature type (3rd column in GFF3) is constrained to be either a term from th
+e Sequence Ontology or an SO accession number. The latter alternative is disting
+uished using the syntax SO:000000. In either case, it must be sequence_feature (
+SO:0000110) or an is_a child of it.To follow rigorously the gff3 format, please
+visit this website:
+https://github.com/The-Sequence-Ontology/Specifications/blob/master/gff3.md
+------------------------------------- agat -------------------------------------
+AGAT can deal with all the encountered feature types (3rd column)
+------------------------------ done in 0 seconds -------------------------------
+
+------------------------------ Check2: duplicates ------------------------------
+None found
+------------------------------ done in 0 seconds -------------------------------
+
+-------------------------- Check3: sequential bucket ---------------------------
+None found
+------------------------------ done in 1 seconds -------------------------------
+
+--------------------------- Check4: l2 linked to l3 ----------------------------
+No problem found
+------------------------------ done in 0 seconds -------------------------------
+
+--------------------------- Check5: l1 linked to l2 ----------------------------
+No problem found
+------------------------------ done in 0 seconds -------------------------------
+
+--------------------------- Check6: remove orphan l1 ---------------------------
+We remove only those not supposed to be orphan
+None found
+------------------------------ done in 0 seconds -------------------------------
+
+------------------------- Check7: all level3 locations -------------------------
+------------------------------ done in 0 seconds -------------------------------
+
+------------------------------ Check8: check cds -------------------------------
+No problem found
+------------------------------ done in 0 seconds -------------------------------
+
+----------------------------- Check9: check exons ------------------------------
+No exons created
+No exons locations modified
+No supernumerary exons removed
+No level2 locations modified
+------------------------------ done in 1 seconds -------------------------------
+
+----------------------------- Check10: check utrs ------------------------------
+No UTRs created
+No UTRs locations modified
+No supernumerary UTRs removed
+------------------------------ done in 0 seconds -------------------------------
+
+------------------------ Check11: all level2 locations -------------------------
+No problem found
+------------------------------ done in 0 seconds -------------------------------
+
+------------------------ Check12: all level1 locations -------------------------
+No problem found
+------------------------------ done in 1 seconds -------------------------------
+
+-------------- Check13: merge overlaping features into same locus --------------
+165 overlapping cases found. For each case 2 loci have been merged within a same locus
+------------------------------ done in 1 seconds -------------------------------
+
+---------------------- Check14: remove identical isoforms ----------------------
+None found
+------------------------------ done in 0 seconds -------------------------------
+********************************************************************************
+*                                - End checks -                                *
+*                              done in 4 seconds                               *
+********************************************************************************
+
+=> OmniscientI total time: 6 seconds
+
+final result:
+There is 19 ncrna
+There is 45 rrna
+There is 11676 mrna
+There is 50 transposable_element
+There is 10 pseudogene
+There is 41 snrna
+There is 609 trna
+There is 23 chromosome
+There is 11557 gene
+There is 33 biological_region
+There is 77 snorna
+There is 1 lnc_rna
+There is 789 ncrna_gene
+There is 12164 cds
+There is 12 pseudogenic_transcript
+There is 4 five_prime_utr
+There is 13166 exon
+There is 91 rna
+```
+Seems to be OK...
+
+##### [Getting the `.fastq` files of interest into one location](#getting-the-fastq-files-of-interest-into-one-location)
+```bash
+#DONTRUN
+
+#  grabnode should be "on"
+
+#  Base directory containing subdirectories with original merged .fastq files
+cd ~/tsukiyamalab/alisong/WTQvsG1/Project_ccucinot
+
+ls -d1 Sample_57*
+# Sample_5781_G1_IN
+# Sample_5781_G1_IP
+# Sample_5781_Q_IN
+# Sample_5781_Q_IP
+# Sample_5782_G1_IN
+# Sample_5782_G1_IP
+# Sample_5782_Q_IN
+# Sample_5782_Q_IP
+
+ls -d1 Sample_57*/*merged*fastq*
+# Sample_5781_G1_IN/5781_G1_IN_merged_R1.fastq
+# Sample_5781_G1_IN/5781_G1_IN_merged_R2.fastq
+# Sample_5781_G1_IP/5781_G1_IP_merged_R1.fastq
+# Sample_5781_G1_IP/5781_G1_IP_merged_R2.fastq
+# Sample_5781_Q_IN/5781_Q_IN_merged_R1.fastq
+# Sample_5781_Q_IN/5781_Q_IN_merged_R2.fastq
+# Sample_5781_Q_IP/5781_Q_IP_merged_R1.fastq
+# Sample_5781_Q_IP/5781_Q_IP_merged_R2.fastq
+# Sample_5782_G1_IN/5782_G1_IN_merged_R1.fastq
+# Sample_5782_G1_IN/5782_G1_IN_merged_R2.fastq
+# Sample_5782_G1_IP/5782_G1_IP_merged_R1.fastq
+# Sample_5782_G1_IP/5782_G1_IP_merged_R2.fastq
+# Sample_5782_Q_IN/5782_Q_IN_merged_R1.fastq
+# Sample_5782_Q_IN/5782_Q_IN_merged_R2.fastq
+# Sample_5782_Q_IP/5782_Q_IP_merged_R1.fastq
+# Sample_5782_Q_IP/5782_Q_IP_merged_R2.fastq
+
+#  Get the .fastq files into an array to loop over
+cd ~
+
+unset infiles
+typeset -a infiles
+while IFS=" " read -r -d $'\0'; do
+    infiles+=( "${REPLY}" )
+done < <(\
+    find ${HOME}/tsukiyamalab/alisong/WTQvsG1/Project_ccucinot \
+        -type f \
+        -name *578*merged*fastq* \
+        -print0 \
+            | sort -z \
+)
+for i in "${infiles[@]}"; do echo "${i}"; done  # Check
+for i in "${infiles[@]}"; do echo "$(basename "${i}")"; done  # Check
+
+#  Make symlinks to the .fastq files in 2022_transcriptome-contructions results
+mkdir -p ~/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1101/files_fastq_symlinks
+
+for i in "${infiles[@]}"; do
+    ln -s \
+        ${i} \
+        ~/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1101/files_fastq_symlinks/$(basename ${i})
+done
+
+ls -1 ~/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1101/files_fastq_symlinks
+# 5781_G1_IN_merged_R1.fastq
+# 5781_G1_IN_merged_R2.fastq
+# 5781_G1_IP_merged_R1.fastq
+# 5781_G1_IP_merged_R2.fastq
+# 5781_Q_IN_merged_R1.fastq
+# 5781_Q_IN_merged_R2.fastq
+# 5781_Q_IP_merged_R1.fastq
+# 5781_Q_IP_merged_R2.fastq
+# 5782_G1_IN_merged_R1.fastq
+# 5782_G1_IN_merged_R2.fastq
+# 5782_G1_IP_merged_R1.fastq
+# 5782_G1_IP_merged_R2.fastq
+# 5782_Q_IN_merged_R1.fastq
+# 5782_Q_IN_merged_R2.fastq
+# 5782_Q_IP_merged_R1.fastq
+# 5782_Q_IP_merged_R2.fastq
+
+#NOTE Per Alison, "IP" = Nascent, "IN" = SteadyState
+```
+
+##### [Checking on the length of reads for each `.fastq` file](#checking-on-the-length-of-reads-for-each-fastq-file)
+```bash
+#DONTRUN
+
+#  grabnode should be "on"
+
+cd ~/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1101
+
+#  Prepare for and run FastQC
+mkdir -p files_fastq_symlinks/FastQC
+
+cat << script > "./submit-FastQC.sh"
+#!/bin/bash
+
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=4
+#SBATCH --error=./%J.err.txt
+#SBATCH --output=./%J.out.txt
+
+#  submit-FastQC.sh
+#  KA
+
+module load FastQC/0.11.9-Java-11
+
+infile="\${1}"
+outdir="\${2}"
+
+fastqc \\
+    --threads "\${SLURM_CPUS_ON_NODE}" \\
+    --outdir "\${outdir}" \\
+    "\${infile}"
+script
+
+#  Get the symlinked .fastq files into an array to loop over
+unset infiles
+typeset -a infiles
+while IFS=" " read -r -d $'\0'; do
+    infiles+=( "${REPLY}" )
+done < <(\
+    find . \
+        -type l \
+        -name 578*merged*fastq* \
+        -print0 \
+            | sort -z \
+)
+for i in "${infiles[@]}"; do echo "${i}"; done  # Check
+for i in "${infiles[@]}"; do echo "$(basename "${i}" ".fastq")"; done  # Check
+
+#  Do a test run of submit-FastQC.sh
+i="${infiles[0]}"
+
+mkdir -p "./files_fastq_symlinks/FastQC/$(basename "${i}" ".fastq")"
+
+sbatch ./submit-FastQC.sh \
+    "${i}" \
+    "./files_fastq_symlinks/FastQC/$(basename "${i}" ".fastq")"
+#NOTE It works
+
+#  Submit the .fastq files to SLURM
+for i in "${infiles[@]}"; do
+    mkdir -p "./files_fastq_symlinks/FastQC/$(basename "${i}" ".fastq")"
+
+    sbatch ./submit-FastQC.sh \
+        "${i}" \
+        "./files_fastq_symlinks/FastQC/$(basename "${i}" ".fastq")"
+
+    sleep 0.5
+done
+
+#  Clean up the FastQC work
+mkdir -p exp_FastQC
+mv *.{err,out}.txt exp_FastQC/
+
+ls -d ./files_fastq_symlinks/FastQC/*.bak
+./files_fastq_symlinks/FastQC/5781_G1_IN_merged_R1.bak
+rm -r ./files_fastq_symlinks/FastQC/5781_G1_IN_merged_R1.bak
+
+#  Going into the ./files_fastq_symlinks/FastQC subdirectories and manually
+#+ spot-checking the .html files
+
+#NOTE #IMPORTANT The read length is bp (at least for these "WTQvsG1" files)
+````
+
+#### [Run `STAR` genome generation](#run-star-genome-generation)
+```bash
+#DONTRUN
+
+#  grabnode has been called with default/lowest settings
+cd ~/genomes/combined_SC_KL_20S
+mkdir -p STAR/{err_out,sh}
+cd STAR/
+
+#  Reference
+# STAR \
+#     --runThreadN "${SLURM_CPUS_ON_NODE}" \
+#     --runMode genomeGenerate \
+#     --genomeDir "${genome_dir}" \
+#     --genomeFastaFiles "${genome_fasta_file}" \
+#     --sjdbGTFfile "${sjdb_gtf_file}" \
+#     --sjdbOverhang "${sjdb_overhang}" \
+#     --sjdbGTFtagExonParentTranscript Parent \
+#     --genomeSAindexNbases "${genome_sa_index_n_bases}"
+
+cat << script > "./submit-STAR-genomeGenerate.sh"
+#!/bin/bash
+
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=8
+#SBATCH --error=./%J.err.txt
+#SBATCH --output=./%J.out.txt
+
+#  submit-STAR-genomeGenerate.sh
+#  KA
+
+module load STAR/2.7.9a-GCC-11.2.0
+
+genome_dir="\${1}"
+genome_fasta_file="\${2}"
+sjdb_gtf_file="\${3}"
+sjdb_overhang="\${4}"
+genome_sa_index_n_bases="\${5}"
+
+STAR \\
+    --runThreadN "\${SLURM_CPUS_ON_NODE}" \\
+    --runMode genomeGenerate \\
+    --genomeDir "\${genome_dir}" \\
+    --genomeFastaFiles "\${genome_fasta_file}" \\
+    --sjdbGTFfile "\${sjdb_gtf_file}" \\
+    --sjdbOverhang "\${sjdb_overhang}" \\
+    --sjdbGTFtagExonParentTranscript Parent \\
+    --genomeSAindexNbases "\${genome_sa_index_n_bases}"
+script
+
+#  First, make sure the .gff3 file is unzipped
+[[ -f ../gff3/combined_SC_KL.gff3 ]] ||
+    {
+        cd ../gff3
+        gzip -dk combined_SC_KL.gff3.gz
+        cd -
+    }
+
+#  Try it out
+genome_dir="."
+genome_fasta_file="../fasta/combined_SC_KL_20S.fasta"
+sjdb_gtf_file="../gff3/combined_SC_KL.gff3"
+sjdb_overhang="49"  # 50 - 1
+genome_sa_index_n_bases="10"
+#  Per Alex Dobin, 12 is appropriate the S. cerevisiae genome; however, in a
+#+ trial run, I got the following error (broken over multiple lines by me):
+#+ 
+#+ !!!!! WARNING: --genomeSAindexNbases 12 is too large for the genome
+#+ size=22848775, which may cause seg-fault at the mapping step. Re-run genome
+#+ generation with recommended --genomeSAindexNbases 11
+#+ 
+#+ Therefore, I changed genome_sa_index_n_bases from "12" to "11"
+
+#IMPORTANT 
+#  Actually, the above is incorrect; Dobin recommends "10", not "12", for
+#+ --genomeSAindexNbases: Set --genomeSAindexNbases 10
+#+ 
+#+ groups.google.com/g/rna-star/c/hQeHTBbkc0c?pli=1
+
+sbatch submit-STAR-genomeGenerate.sh \
+    "${genome_dir}" \
+    "${genome_fasta_file}" \
+    "${sjdb_gtf_file}" \
+    "${sjdb_overhang}" \
+    "${genome_sa_index_n_bases}"
+#NOTE #IMPORTED Completed remarkably quickly... like, less than 10 seconds
+
+#  Clean up
+mv *.{err,out}.txt err_out/
+mv *.sh sh/
+
+#  Document things a bit
+mkdir readme && cd readme/
+touch readme.md
+echo \
+    "Made 2022-1107. See readme.md in directory results/2022-1101 for details." \
+    >> readme.md
+
+echo \
+    "Files made on 2022-1107 used '--genomeSAindexNbases 11'. Alex Dobin recommends '10', not '11', for the yeast genome. Therefore, deleted those files." \
+    >> readme.md
+
+echo "" >> readme.md
+
+echo \
+    "Files made on 2022-1108 used '--genomeSAindexNbases 10'." \
+    >> readme.md
+```
+
+#### [Run `STAR` alignment](#run-star-alignment)
+```bash
+#DONTRUN
+
+#  grabnode has been called with default/lowest settings
+cd "${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1101"
+mkdir -p {exp_alignment_STAR,files_bams}
+
+#  Find and list .fastq files; designate the 'prefix' and other variables
+unset infiles
+typeset -a infiles
+while IFS=" " read -r -d $'\0'; do
+    infiles+=( "${REPLY}" )
+done < <(\
+    find . \
+        -type l \
+        -name *578*merged*.fastq \
+        -print0 \
+            | sort -z \
+)
+#  Some checks...
+for i in "${infiles[@]}"; do echo "${i}"; done && echo ""
+for i in "${infiles[@]}"; do echo "$(basename "${i}")"; done && echo
+for i in "${infiles[@]}"; do echo "$(basename "${i%_R?.fastq}")"; done && echo ""
+
+echo "${infiles[0]}" && echo ""
+echo "${infiles[1]}" && echo ""
+echo "$(basename "${infiles[0]%_R?.fastq}")" && echo ""
+
+read_1="${infiles[0]}"
+read_2="${infiles[1]}"
+prefix="./files_bams/$(basename "${read_1%_R?.fastq}")"
+genome_dir="${HOME}/genomes/combined_SC_KL_20S/STAR"
+
+echo "${genome_dir}"
+echo "${read_1}"
+echo "${read_2}"
+echo "${prefix}"
+
+#NOTE #REMEMBER "IP" = Nascent, "IN" = SteadyState
+
+#  Run the alignment
+if [[ -f "./submit-STAR-alignReads.sh" ]]; then
+    rm "./submit-STAR-alignReads.sh"
+fi
+
+cat << script > "./submit-STAR-alignReads.sh"
+#!/bin/bash
+
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=8
+#SBATCH --error=./%J.err.txt
+#SBATCH --output=./%J.out.txt
+
+#  submit-STAR-alignReads.sh
+#  KA
+
+module load STAR/2.7.9a-GCC-11.2.0
+
+genome_dir="\${1}"
+read_1="\${2}"
+read_2="\${3}"
+prefix="\${4}"
+
+STAR \\
+    --runThreadN "\${SLURM_CPUS_ON_NODE}" \\
+    --outSAMunmapped Within \\
+    --genomeDir "\${genome_dir}" \\
+    --readFilesIn "\${read_1}" "\${read_2}" \\
+    --outFileNamePrefix "\${prefix}" \\
+    --limitBAMsortRAM 4000000000 \\
+    --outFilterMultimapNmax 1 \\
+    --alignSJoverhangMin 8 \\
+    --alignSJDBoverhangMin 1 \\
+    --outFilterMismatchNmax 999 \\
+    --alignIntronMin 4 \\
+    --alignIntronMax 5000 \\
+    --alignMatesGapMax 5000 \\
+    --outSAMtype BAM SortedByCoordinate
+script
+
+sbatch submit-STAR-alignReads.sh \
+    "${genome_dir}" \
+    "${read_1}" \
+    "${read_2}" \
+    "${prefix}"
+```
+
+##### [Alignment metrics for the test run of `STAR`](#alignment-metrics-for-the-test-run-of-star)
+```txt
+                                 Started job on |       Nov 08 10:28:26
+                             Started mapping on |       Nov 08 10:28:27
+                                    Finished on |       Nov 08 10:29:41
+       Mapping speed, Million of reads per hour |       680.54
+
+                          Number of input reads |       13988842
+                      Average input read length |       100
+                                    UNIQUE READS:
+                   Uniquely mapped reads number |       8559366
+                        Uniquely mapped reads % |       61.19%
+                          Average mapped length |       98.22
+                       Number of splices: Total |       352426
+            Number of splices: Annotated (sjdb) |       289654
+                       Number of splices: GT/AG |       321441
+                       Number of splices: GC/AG |       232
+                       Number of splices: AT/AC |       2334
+               Number of splices: Non-canonical |       28419
+                      Mismatch rate per base, % |       0.39%
+                         Deletion rate per base |       0.01%
+                        Deletion average length |       1.19
+                        Insertion rate per base |       0.01%
+                       Insertion average length |       1.17
+                             MULTI-MAPPING READS:
+        Number of reads mapped to multiple loci |       0
+             % of reads mapped to multiple loci |       0.00%
+        Number of reads mapped to too many loci |       5035208
+             % of reads mapped to too many loci |       35.99%
+                                  UNMAPPED READS:
+  Number of reads unmapped: too many mismatches |       0
+       % of reads unmapped: too many mismatches |       0.00%
+            Number of reads unmapped: too short |       393913
+                 % of reads unmapped: too short |       2.82%
+                Number of reads unmapped: other |       355
+                     % of reads unmapped: other |       0.00%
+                                  CHIMERIC READS:
+                       Number of chimeric reads |       0
+                            % of chimeric reads |       0.00%
+```
+###### [Thoughts on the alignment metrics for `STAR`](#thoughts-on-the-alignment-metrics-for-star):
+- A lot of multi-mappers in the dataset...
+- `#TODO` Later, check what value I assigned to `--outFilterMultimapNmax` in my 4DN RNA-seq work; consider to replace the current value, `1`, with that other value
+- `#TODO` What does the [`Trinity` Google Group](https://groups.google.com/g/trinityrnaseq-users) have to say about multimappers?
+    + Per Brian Haas at [this post](https://groups.google.com/g/trinityrnaseq-users/c/L4hypoWSk_o/m/bTO2L8ssAQAJ): "If reads are mapped to multiple genomic locations, then `Trinity` will use those reads as substrates for *de novo* assembly at each of the locations. This is important to do in the case of paralogs that share sequences in common."
+        * However, here, he's talking about genome-guided assembly; is this also the case for non-genome-guided assembly?
+            - I would think so... What he says about potential paralogs seems like it holds true in this circumstance too
+        * For now, keep the multimappers
+
+###### [Examine the flags in the `.bam` outfile from the test run of `STAR`](#examine-the-flags-in-the-bam-outfile-from-the-test-run-of-star)
+Use `samtools flagstat` and the bespoke function `list_tally_flags`:
+```bash
+#!/bin/bash
+#DONTRUN
+
+samtools flagstat \
+    ./files_bams/5781_G1_IN_mergedAligned.sortedByCoord.out.bam \
+    > ./files_bams/5781_G1_IN_mergedAligned.sortedByCoord.out.flagstat.txt
+
+#  grabnode has been called with default/lowest settings; samtools is loaded
+cd "${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1101"
+
+less ./files_bams/5781_G1_IN_mergedAligned.sortedByCoord.out.flagstat.txt
+# 27446606 + 531078 in total (QC-passed reads + QC-failed reads)
+# 27446606 + 531078 primary
+# 0 + 0 secondary
+# 0 + 0 supplementary
+# 0 + 0 duplicates
+# 0 + 0 primary duplicates
+# 16893176 + 225556 mapped (61.55% : 42.47%)
+# 16893176 + 225556 primary mapped (61.55% : 42.47%)
+# 27446606 + 531078 paired in sequencing
+# 13723303 + 265539 read1
+# 13723303 + 265539 read2
+# 16893176 + 225556 properly paired (61.55% : 42.47%)
+# 16893176 + 225556 with itself and mate mapped
+# 0 + 0 singletons (0.00% : 0.00%)
+# 0 + 0 with mate mapped to a different chr
+# 0 + 0 with mate mapped to a different chr (mapQ>=5)
+
+cd ./files_bams
+
+calculate_run_time() {
+    # Calculate run time for chunk of code
+    #
+    # :param 1: start time in $(date +%s) format
+    # :param 2: end time in $(date +%s) format
+    # :param 3: message to be displayed when printing the run time (chr)
+    run_time="$(echo "${2}" - "${1}" | bc -l)"
+    
+    echo ""
+    echo "${3}"
+    printf 'Run time: %dh:%dm:%ds\n' \
+    $(( run_time/3600 )) $(( run_time%3600/60 )) $(( run_time%60 ))
+    echo ""
+}
+
+
+display_spinning_icon() {
+    # Display "spinning icon" while a background process runs
+    #
+    # :param 1: PID of the last program the shell ran in the background (int)
+    # :param 2: message to be displayed next to the spinning icon (chr)
+    spin="/|\\–"
+    i=0
+    while kill -0 "${1}" 2> /dev/null; do
+        i=$(( (i + 1) % 4 ))
+        printf "\r${spin:$i:1} %s" "${2}"
+        sleep .15
+    done
+}
+
+
+list_tally_flags() {
+    # List and tally flags in a bam infile; function acts on a bam infile to
+    # perform piped commands (samtools view, cut, sort, uniq -c, sort -nr) that
+    # list and tally flags; function writes the results to a txt outfile, the
+    # name of which is derived from the txt infile
+    #
+    # :param 1: name of bam infile, including path (chr)
+    start="$(date +%s)"
+    
+    samtools view "${1}" \
+        | cut -d$'\t' -f 2 \
+        | sort \
+        | uniq -c \
+        | sort -nr \
+        > "${1/.bam/.flags.txt}" &
+    display_spinning_icon $! \
+    "Running piped commands (samtools view, cut, sort, uniq -c, sort -nr) on $(basename "${1}")... "
+        
+    end="$(date +%s)"
+    echo ""
+    calculate_run_time "${start}" "${end}"  \
+    "List and tally flags in $(basename "${1}")."
+}
+
+
+list_tally_flags 5781_G1_IN_mergedAligned.sortedByCoord.out.bam
+
+#  Numbers of records in the .bam file
+samtools view -c \
+    5781_G1_IN_mergedAligned.sortedByCoord.out.bam
+# 27977684
+
+#  Numbers of records in the *_R{1,2}.fastq files
+cd ..
+echo $(cat ./files_fastq_symlinks/5781_G1_IN_merged_R1.fastq | wc -l)/4 | bc
+# 13988842
+echo $(cat ./files_fastq_symlinks/5781_G1_IN_merged_R2.fastq | wc -l)/4 | bc
+# 13988842
+
+echo $(( 13988842 + 13988842 ))
+# 27977684
+
+#  The numbers of records in the .bam and .fastq files are equivalent
+```
+
+Contents of outfile from running `list_tally_flags`...
+```txt
+5276715 77
+5276715 141
+4691235 99
+4691235 147
+3755353 83
+3755353 163
+ 152761 653
+ 152761 589
+  62364 659
+  62364 611
+  50414 675
+  50414 595
+```
+What are the meanings of these flags? Use [this tool](https://broadinstitute.github.io/picard/explain-flags.html) to check:
+| flag | meaning                                                                                                                     |
+| :--- | :-------------------------------------------------------------------------------------------------------------------------- |
+| 77   | read paired (0x1), read unmapped (0x4), mate unmapped (0x8), first in pair (0x40)                                           |
+| 141  | read paired (0x1), read unmapped (0x4), mate unmapped (0x8), second in pair (0x80)                                          |
+| 99   | read paired (0x1), read mapped in proper pair (0x2), mate reverse strand (0x20), first in pair (0x40)                       |
+| 147  | read paired (0x1), read mapped in proper pair (0x2), read reverse strand (0x10), second in pair (0x80)                      |
+| 83   | read paired (0x1), read mapped in proper pair (0x2), read reverse strand (0x10), first in pair (0x40)                       |
+| 163  | read paired (0x1), read mapped in proper pair (0x2), mate reverse strand (0x20), second in pair (0x80)                      |
+| 653  | read paired (0x1), read unmapped (0x4), mate unmapped (0x8), second in pair (0x80), read fails* (0x200)                     |
+| 589  | read paired (0x1), read unmapped (0x4), mate unmapped (0x8), first in pair (0x40), read fails* (0x200)                      |
+| 659  | read paired (0x1), read mapped in proper pair (0x2), read reverse strand (0x10), second in pair (0x80), read fails* (0x200) |
+| 611  | read paired (0x1), read mapped in proper pair (0x2), mate reverse strand (0x20), first in pair (0x40), read fails* (0x200)  |
+| 675  | read paired (0x1), read mapped in proper pair (0x2), mate reverse strand (0x20), second in pair (0x80), read fails* (0x200) |
+| 595  | read paired (0x1), read mapped in proper pair (0x2), read reverse strand (0x10), first in pair (0x40), read fails* (0x200)  |
+
+###### [Additional thoughts on the alignment metrics and flags from `STAR`](#additional-thoughts-on-the-alignment-metrics-and-flags-from-star)
+- Because we want to use the multimappers in `Trinity` transcriptome assembly (rationale in "Thoughts on the above" above), it'd probably be good to have information for where `STAR` (and `Bowtie 2`) is aligning them in the bam file, instead of them being unmapped as above
+- Thus, we should adjust the parameters for how we call `STAR` to retain the multi-mappers
+- `(   ) #TODO #TOMORROW` Adjust `STAR` parameters based on the repetitive-element work you did in 2020 (bring your laptop to work tomorrow); for now, move on to `Bowtie 2` work
+
+###### [Do a little clean-up prior to running alignment with `Bowtie 2`](#do-a-little-clean-up-prior-to-running-alignment-with-bowtie-2)
+```bash
+#!/bin/bash
+#DONTRUN
+
+cd "${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1101"
+
+mv files_bams/ exp_alignment_STAR/
+```
+
+#### [Generating files needed for `Bowtie 2` alignment (2022-1108)](#generating-files-needed-for-bowtie-2-alignment-2022-1108)
+...to the combined reference genes (*S. cerevisiae*, *K. lactis*, and S20)
+
+##### [Preparing the `.fasta` and `.gff3` files for `Bowtie 2`](#preparing-the-fasta-and-gff3-files-for-bowtie-2)
+`Bowtie 2` indices were already generated: see [this link](../2022-1025/readme.md#create-bowtie-2-indices); but just checking on things before diving into things...
+```bash
+#!/bin/bash
+#DONTRUN
+
+cd "${HOME}/genomes/combined_SC_KL_20S"
+
+#  Checking the .fasta
+grep "^>" ./fasta/*.fasta
+# >I
+# >II
+# >III
+# >IV
+# >V
+# >VI
+# >VII
+# >VIII
+# >IX
+# >X
+# >XI
+# >XII
+# >XIII
+# >XIV
+# >XV
+# >XVI
+# >Mito
+# >A
+# >B
+# >C
+# >D
+# >E
+# >F
+# >20S
+
+#  Checking the .gff3
+head -33 ./gff3/combined_SC_KL.gff3
+# ##gff-version 3
+# ##sequence-region   I 1 230218
+# ##sequence-region   II 1 813184
+# ##sequence-region   III 1 316620
+# ##sequence-region   IV 1 1531933
+# ##sequence-region   IX 1 439888
+# ##sequence-region   Mito 1 85779
+# ##sequence-region   V 1 576874
+# ##sequence-region   VI 1 270161
+# ##sequence-region   VII 1 1090940
+# ##sequence-region   VIII 1 562643
+# ##sequence-region   X 1 745751
+# ##sequence-region   XI 1 666816
+# ##sequence-region   XII 1 1078177
+# ##sequence-region   XIII 1 924431
+# ##sequence-region   XIV 1 784333
+# ##sequence-region   XV 1 1091291
+# ##sequence-region   XVI 1 948066
+# #!genome-build  R64-1-1
+# #!genome-version R64-1-1
+# #!genome-date 2011-09
+# #!genome-build-accession GCA_000146045.2
+# #!genebuild-last-updated 2018-10
+# ##sequence-region   A 1 1062590
+# ##sequence-region   B 1 1320834
+# ##sequence-region   C 1 1753957
+# ##sequence-region   D 1 1715506
+# ##sequence-region   E 1 2234072
+# ##sequence-region   F 1 2602197
+# #!genome-build Genolevures Consortium ASM251v1
+# #!genome-version ASM251v1
+# #!genome-build-accession GCA_000002515.1
+# #!genebuild-last-updated 2015-02
+
+#  Checking the Bowtie 2 indices
+#+ bowtie-bio.sourceforge.net/bowtie2/manual.shtml#the-bowtie2-build-indexer
+module load Bowtie2/2.4.4-GCC-11.2.0
+bowtie2-inspect --names ./Bowtie2/combined_SC_KL_20S
+# I
+# II
+# III
+# IV
+# V
+# VI
+# VII
+# VIII
+# IX
+# X
+# XI
+# XII
+# XIII
+# XIV
+# XV
+# XVI
+# Mito
+# A
+# B
+# C
+# D
+# E
+# F
+# 20S
+```
+
+##### [On the location of the `.fastq` files](#on-the-location-of-the-fastq-files)
+See all the work done [here](#getting-the-fastq-files-of-interest-into-one-location)
+
+##### [Run `Bowtie 2` alignment](#run-bowtie-2-alignment)
+```bash
+#!/bin/bash
+#DONTRUN
+
+#  Have called grabnode with lowest/default settings
+cd "${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1101"
+
+mkdir -p exp_alignment_Bowtie_2/files_bams
+
+#  Get .fastq files into an array
+#  Find and list .fastq files; designate the 'prefix' and other variables
+unset infiles
+typeset -a infiles
+while IFS=" " read -r -d $'\0'; do
+    infiles+=( "${REPLY}" )
+done < <(\
+    find . \
+        -type l \
+        -name *578*merged*.fastq \
+        -print0 \
+            | sort -z \
+)
+
+read_1="${infiles[0]}"
+read_2="${infiles[1]}"
+prefix="./exp_alignment_Bowtie_2/files_bams/$(basename "${read_1%_R?.fastq}")"
+genome_dir="${HOME}/genomes/combined_SC_KL_20S/Bowtie2/combined_SC_KL_20S"
+
+#  Some checks...
+echo "${genome_dir}"
+ls -lhaFG ${genome_dir}* && echo ""
+echo "${read_1}"
+echo "${read_2}"
+echo "${prefix}"
+
+#NOTE #REMEMBER "IP" = Nascent, "IN" = SteadyState
+
+#  Perform alignment with Bowtie 2
+if [[ -f "./submit-Bowtie-2.sh" ]]; then
+    rm "./submit-Bowtie-2.sh"
+fi
+
+cat << script > "./submit-Bowtie-2.sh"
+#!/bin/bash
+
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=8
+#SBATCH --error=./%J.err.txt
+#SBATCH --output=./%J.out.txt
+
+#  submit-Bowtie-2.sh
+#  KA
+
+module load Bowtie2/2.4.4-GCC-11.2.0
+
+genome_dir="\${1}"
+read_1="\${2}"
+read_2="\${3}"
+prefix="\${4}"
+
+bowtie2 \\
+    -p "\${SLURM_CPUS_ON_NODE}" \\
+    -x "\${genome_dir}" \\
+    -1 "\${read_1}" \\
+    -2 "\${read_2}" \\
+    --trim5 1 \\
+    --local \\
+    --very-sensitive-local \\
+    --no-unal \\
+    --no-mixed \\
+    --no-discordant \\
+    --phred33 \\
+    -I 10 \\
+    -X 700 \\
+    --no-overlap \\
+    --no-dovetail \\
+        | samtools sort -@ "\${SLURM_CPUS_ON_NODE}" -o "\${prefix}_sorted.bam" -
+script
+
+sbatch submit-Bowtie-2.sh \
+    "${genome_dir}" \
+    "${read_1}" \
+    "${read_2}" \
+    "${prefix}"
+```
+
+##### [Alignment metrics for the test run of `Bowtie 2`](#alignment-metrics-for-the-test-run-of-bowtie-2)
+```txt
+13988842 reads; of these:
+  13988842 (100.00%) were paired; of these:
+    904915 (6.47%) aligned concordantly 0 times
+    7154822 (51.15%) aligned concordantly exactly 1 time
+    5929105 (42.38%) aligned concordantly >1 times
+93.53% overall alignment rate
+[bam_sort_core] merging from 7 files and 1 in-memory blocks..
+```
+
+###### [Thoughts on the alignment metrics for `Bowtie 2`](#thoughts-on-the-alignment-metrics-for-bowtie-2)
+- Approximately half are well-aligned
+- Approximately 7% of reads don't align at all
+- The rest, 43%, are discordant
+
+###### [Examine the flags in the `.bam` outfile from the test run of `STAR`](#examine-the-flags-in-the-bam-outfile-from-the-test-run-of-star)
+```bash
+#!/bin/bash
+#DONTRUN
+
+#  Have called grabnode with default/lowest settings
+cd "${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1101"
+
+#  First, a bit of clean-up
+mv *.txt exp_alignment_Bowtie_2/
+
+ml SAMtools/1.16.1-GCC-11.2.0
+
+samtools flagstat \
+    ./exp_alignment_Bowtie_2/files_bams/5781_G1_IN_merged_sorted.bam \
+    > ./exp_alignment_Bowtie_2/files_bams/5781_G1_IN_merged_sorted.flagstat.txt
+# 26167854 + 0 in total (QC-passed reads + QC-failed reads)
+# 26167854 + 0 primary
+# 0 + 0 secondary
+# 0 + 0 supplementary
+# 0 + 0 duplicates
+# 0 + 0 primary duplicates
+# 26167854 + 0 mapped (100.00% : N/A)
+# 26167854 + 0 primary mapped (100.00% : N/A)
+# 26167854 + 0 paired in sequencing
+# 13083927 + 0 read1
+# 13083927 + 0 read2
+# 26167854 + 0 properly paired (100.00% : N/A)
+# 26167854 + 0 with itself and mate mapped
+# 0 + 0 singletons (0.00% : N/A)
+# 0 + 0 with mate mapped to a different chr
+# 0 + 0 with mate mapped to a different chr (mapQ>=5)
+
+calculate_run_time() {
+    # Calculate run time for chunk of code
+    #
+    # :param 1: start time in $(date +%s) format
+    # :param 2: end time in $(date +%s) format
+    # :param 3: message to be displayed when printing the run time (chr)
+    run_time="$(echo "${2}" - "${1}" | bc -l)"
+    
+    echo ""
+    echo "${3}"
+    printf 'Run time: %dh:%dm:%ds\n' \
+    $(( run_time/3600 )) $(( run_time%3600/60 )) $(( run_time%60 ))
+    echo ""
+}
+
+
+display_spinning_icon() {
+    # Display "spinning icon" while a background process runs
+    #
+    # :param 1: PID of the last program the shell ran in the background (int)
+    # :param 2: message to be displayed next to the spinning icon (chr)
+    spin="/|\\–"
+    i=0
+    while kill -0 "${1}" 2> /dev/null; do
+        i=$(( (i + 1) % 4 ))
+        printf "\r${spin:$i:1} %s" "${2}"
+        sleep .15
+    done
+}
+
+
+list_tally_flags() {
+    # List and tally flags in a bam infile; function acts on a bam infile to
+    # perform piped commands (samtools view, cut, sort, uniq -c, sort -nr) that
+    # list and tally flags; function writes the results to a txt outfile, the
+    # name of which is derived from the txt infile
+    #
+    # :param 1: name of bam infile, including path (chr)
+    start="$(date +%s)"
+    
+    samtools view "${1}" \
+        | cut -d$'\t' -f 2 \
+        | sort \
+        | uniq -c \
+        | sort -nr \
+        > "${1/.bam/.flags.txt}" &
+    display_spinning_icon $! \
+    "Running piped commands (samtools view, cut, sort, uniq -c, sort -nr) on $(basename "${1}")... "
+        
+    end="$(date +%s)"
+    echo ""
+    calculate_run_time "${start}" "${end}"  \
+    "List and tally flags in $(basename "${1}")."
+}
+
+
+list_tally_flags exp_alignment_Bowtie_2/files_bams/5781_G1_IN_merged_sorted.bam
+
+samtools view -c \
+    ./exp_alignment_Bowtie_2/files_bams/5781_G1_IN_merged_sorted.bam
+# 26167854
+
+#  Numbers of records in the *_R{1,2}.fastq files
+cd ..
+echo $(cat ./files_fastq_symlinks/5781_G1_IN_merged_R1.fastq | wc -l)/4 | bc
+# 13988842
+echo $(cat ./files_fastq_symlinks/5781_G1_IN_merged_R2.fastq | wc -l)/4 | bc
+# 13988842
+
+echo $(( 13988842 + 13988842 ))
+# 27977684
+
+# Multiply by the overall alignment rate: Is it equal to the number of records in the .bam file?
+echo "27977684*0.9353" | bc
+# 26167527.8452; rounds up to 26167528; rounds down to 26167527
+
+#  The numbers of records in the .bam and .fastq files are not equivalent
+```
+
+Contents of outfile from running `list_tally_flags`...
+```txt
+7070153 83
+7070153 163
+6013774 99
+6013774 147
+```
+
+##### Try re-running `Bowtie 2` alignment
+...with flags for removing unaligned and discordant reads removed
+```bash
+#!/bin/bash
+#DONTRUN
+
+#  Have called grabnode with lowest/default settings
+cd "${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1101"
+
+#  Remove the bams and other files from the "first test"
+rm -r exp_alignment_Bowtie_2/
+
+#  Remake the experiment directory
+mkdir -p exp_alignment_Bowtie_2/files_bams  # Should already be done
+
+#  Get .fastq files into an array
+#  Find and list .fastq files; designate the 'prefix' and other variables
+unset infiles
+typeset -a infiles
+while IFS=" " read -r -d $'\0'; do
+    infiles+=( "${REPLY}" )
+done < <(\
+    find . \
+        -type l \
+        -name *578*merged*.fastq \
+        -print0 \
+            | sort -z \
+)
+
+read_1="${infiles[0]}"
+read_2="${infiles[1]}"
+prefix="./exp_alignment_Bowtie_2/files_bams/$(basename "${read_1%_R?.fastq}")"
+genome_dir="${HOME}/genomes/combined_SC_KL_20S/Bowtie2/combined_SC_KL_20S"
+
+#  Some checks...
+echo "${genome_dir}"
+ls -lhaFG ${genome_dir}* && echo ""
+echo "${read_1}"
+echo "${read_2}"
+echo "${prefix}"
+
+#NOTE #REMEMBER "IP" = Nascent, "IN" = SteadyState
+
+#  Rename the script for calling Bowtie 2 as in the preceding code chunk
+if [[ -f "submit-Bowtie-2.sh" ]]; then
+    mv "submit-Bowtie-2.sh" "submit-Bowtie-2.test-1.sh"
+fi
+
+#  Perform alignment with Bowtie 2
+if [[ -f "./submit-Bowtie-2.test-2.sh" ]]; then
+    rm "./submit-Bowtie-2.test-2.sh"
+fi
+
+cat << script > "./submit-Bowtie-2.test-2.sh"
+#!/bin/bash
+
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=8
+#SBATCH --error=./%J.err.txt
+#SBATCH --output=./%J.out.txt
+
+#  submit-Bowtie-2.sh
+#  KA
+
+module load Bowtie2/2.4.4-GCC-11.2.0
+
+genome_dir="\${1}"
+read_1="\${2}"
+read_2="\${3}"
+prefix="\${4}"
+
+bowtie2 \\
+    -p "\${SLURM_CPUS_ON_NODE}" \\
+    -x "\${genome_dir}" \\
+    -1 "\${read_1}" \\
+    -2 "\${read_2}" \\
+    --local \\
+    --very-sensitive-local \\
+    --phred33 \\
+    -I 10 \\
+    -X 700 \\
+    --un-conc-gz "\${prefix}.unaligned" \\
+    --al-conc-gz "${prefix}.aligned" \\
+        | samtools sort -@ "\${SLURM_CPUS_ON_NODE}" -o "\${prefix}_sorted.bam" -
+script
+
+sbatch submit-Bowtie-2.test-2.sh \
+    "${genome_dir}" \
+    "${read_1}" \
+    "${read_2}" \
+    "${prefix}"
+````
+<br />
+<br />
+
+## To be organized
+### Packages for the pipeline
 - Ongoing list packages for a `conda env` for doing the transcriptome-assembly work:
     + `Trinity`
         * [`conda`](https://anaconda.org/bioconda/trinity)
@@ -1852,5 +3826,13 @@ As `Trinity` does not use the reference genome directly to assemble transfrags, 
     + From there, based on what we find, we could consider to design and perform wet experiments
 
 ## Next steps
-`#NEXTWEEK` Pick up with fine-tuning the initial call to `Bowtie2`; read and take notes on [this paper sent by Alison](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-016-1406-x#Sec2), which makes use of Trinity for transcriptome assembly
-`#WEEKEND` Read over the biology-related papers sent by Alison, in particular her QE proposal
+`( Y ) #MONDAY` Pick up with fine-tuning the initial call to `Bowtie2`: *Shifting focus to STAR, a splice-aware aligner*
+`( Y ) #TUESDAY` Use the combined-reference .fasta, .gtf, and genome index files to try aligning one of the (symlinked) .fastq files using the parameters for *S. cerevisiae* you found on the `STAR` Google group
+    - First, sus out and describe the parameters (for example, are all of them needed, are the values appropriate, etc.?)
+    - Once this is done, move on to "filtering" the bam file, including isolating unmapped reads, and stripping away chromosomes that are not needed
+`( Y ) #TUESDAY` Do the same with `Bowtie 2`
+`(   ) #WEDNESDAT` Read over the biology-related papers sent by Alison, in particular her QE proposal
+`(   ) #WEDNESDAY` Pick up with the assessment of the Bowtie 2 alignment test #2 experiment: Need to know, from the alignments, what reads are unimappers, multimappers, etc.
+`(   ) #WEDNESDAY` Adjust `STAR` parameters based on the repetitive-element work you did in 2020 (bring your laptop to work tomorrow); for now, move on to `Bowtie 2` work
+`(   ) #WEDNESDAY` Read and take notes on [this paper sent by Alison](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-016-1406-x#Sec2), which makes use of `Trinity` for transcriptome assembly  
+`(   ) #WEDNESDAY` Continue to read and take notes on [Best Practices for De Novo Transcriptome Assembly with Trinity](https://informatics.fas.harvard.edu/best-practices-for-de-novo-transcriptome-assembly-with-trinity.html)  
