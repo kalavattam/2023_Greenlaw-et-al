@@ -743,6 +743,7 @@ Remember, the overarching goal is to have appropriately processed bam files for 
 - [How to link to headers](https://stackoverflow.com/questions/51221730/markdown-link-to-header)
 - [How to reference a section in another file](https://stackoverflow.com/questions/51187658/markdown-reference-to-section-from-another-file)
 - [How to highlight text in a Markdown document](https://stackoverflow.com/questions/25104738/text-highlight-in-markdown)
+- [Get underlined text with Markdown](https://stackoverflow.com/questions/3003476/get-underlined-text-with-markdown)
 
 ### Slack
 - [fhbig.slack.com](https://fhbig.slack.com/)
@@ -1627,12 +1628,6 @@ Builds on work [performed here](../2022-1025/readme.md#snippets-etc-from-searchi
     + And what about the parameters for calling `Bowtie2`? Here is how we're currently calling it:
 
 ### [The pipeline (in progress)](#the-pipeline-in-progress)
-#### [References for the experimental design](#references-for-the-experimental-design)
-- [Best Practices for De Novo Transcriptome Assembly with Trinity](https://informatics.fas.harvard.edu/best-practices-for-de-novo-transcriptome-assembly-with-trinity.html)
-- [McIlwain et al. (Hittinger), *G3* 2016](https://academic.oup.com/g3journal/article/6/6/1757/6029942) ([notes below](#mcilwain-et-al-hittinger-g3-2016))
-- ...  
-`#TODO For the in-progress steps below, describe what material is from what reference above`
-
 #### [In-progress steps of the pipeline](#in-progress-steps-of-the-pipeline)
 0. Generate downsampled paired-end `.fastq` files for use in tests of preprocessing and *de novo* transcriptome assembly
 1. Run some kind of quality check on the `.fastq` files, e.g., `FastqQC` or `fastp`, paying attention to
@@ -1673,6 +1668,41 @@ Builds on work [performed here](../2022-1025/readme.md#snippets-etc-from-searchi
     + If your RNA-seq libraries are built with a stranded protocol (see the link)  `#QUESTION What was I typing up and referring to here?`  `#TODO Come back to the best practices document`
     + Spoke with Toshi briefly about the existence of and use of blacklists in yeast NGS work; [details below](#brief-discussion-with-toshi-about-yeast-blacklists)
 10. ...
+
+##### [In-progress list of packages for the pipeline](#in-progress-list-of-packages-for-the-pipeline)
+- Ongoing list packages for a `conda env` for doing the transcriptome-assembly work:
+    + `Trinity`
+        * [`conda`](https://anaconda.org/bioconda/trinity)
+        * [`Repository`](https://github.com/trinityrnaseq/trinityrnaseq/)
+        * [`Documentation`](https://github.com/trinityrnaseq/trinityrnaseq/wiki)
+    + `TrimGalore`
+        * [`conda`](https://anaconda.org/bioconda/trim-galore)
+        * [`Home`](https://www.bioinformatics.babraham.ac.uk/projects/trim_galore/)
+        * [`Repository`](https://github.com/FelixKrueger/TrimGalore) 
+        * [`Documentation`](https://github.com/FelixKrueger/TrimGalore/blob/master/Docs/Trim_Galore_User_Guide.md)
+    + `rCorrector` Use to remove spurious k-mers
+        * `#TODO` Follow up on this
+    + `DETONATE` Would be used for validation
+        * [`Vignette`](https://deweylab.biostat.wisc.edu/detonate/vignette.html)
+    + `BUSCO` Would be used for validation
+    + `FastQC` `#DECISION fastp or FastQC?`
+    + `fastp` `#DECISION fastp or FastQC?` 
+        * [`Repo and documentation`](https://github.com/OpenGene/fastp)
+        * [`conda`](https://anaconda.org/bioconda/fastp)
+    + `pasa` Would be used for mapping Trinity sequences to the reference
+        * `#TODO` Follow up on this
+    + `Transrate` `#MAYBE` Would be used for validation
+        * [`Documentation`](http://hibberdlab.com/transrate/)
+        * [`Repository`](https://github.com/blahah/transrate/)
+        * [`conda`](https://anaconda.org/bioconda/transrate)
+    + etc.
+- Related resource: [Lessons on using Trinity from Brian Haas](https://bioinformaticsdotca.github.io/rnaseq_2018)
+
+#### [References for the experimental design/pipeline](#references-for-the-experimental-design)
+- [Best Practices for De Novo Transcriptome Assembly with Trinity](https://informatics.fas.harvard.edu/best-practices-for-de-novo-transcriptome-assembly-with-trinity.html)
+- [McIlwain et al. (Hittinger), *G3* 2016](https://academic.oup.com/g3journal/article/6/6/1757/6029942) ([notes below](#mcilwain-et-al-hittinger-g3-2016))
+- ...  
+`#TODO For the in-progress steps below, describe what material is from what reference above`
 
 ### [Notes from the references listed above](#notes-from-the-references-listed-above)
 #### McIlwain et al. (Hittinger), *G3* 2016
@@ -3195,12 +3225,34 @@ sbatch submit-STAR-alignReads.sh \
 ```
 ###### [Thoughts on the alignment metrics for `STAR`](#thoughts-on-the-alignment-metrics-for-star):
 - A lot of multi-mappers in the dataset...
-- `#TODO` Later, check what value I assigned to `--outFilterMultimapNmax` in my 4DN RNA-seq work; consider to replace the current value, `1`, with that other value
-- `#TODO` What does the [`Trinity` Google Group](https://groups.google.com/g/trinityrnaseq-users) have to say about multimappers?
-    + Per Brian Haas at [this post](https://groups.google.com/g/trinityrnaseq-users/c/L4hypoWSk_o/m/bTO2L8ssAQAJ): "If reads are mapped to multiple genomic locations, then `Trinity` will use those reads as substrates for *de novo* assembly at each of the locations. This is important to do in the case of paralogs that share sequences in common."
+- `#DONE` Later, check what value I assigned to `--outFilterMultimapNmax` in my 4DN RNA-seq work; consider to replace the current value, `1`, with that other value
+    + `#ANSWER` `--outFilterMultimapNmax 1000`
+- `#DONE` What does the [`Trinity` Google Group](https://groups.google.com/g/trinityrnaseq-users) have to say about multimappers?
+    + `#ANSWER` Per Brian Haas at [this post](https://groups.google.com/g/trinityrnaseq-users/c/L4hypoWSk_o/m/bTO2L8ssAQAJ): "If reads are mapped to multiple genomic locations, then `Trinity` will use those reads as substrates for *de novo* assembly at each of the locations. This is important to do in the case of paralogs that share sequences in common."
         * However, here, he's talking about genome-guided assembly; is this also the case for non-genome-guided assembly?
-            - I would think so... What he says about potential paralogs seems like it holds true in this circumstance too
-        * For now, keep the multimappers
+            - `#ANSWER` ~~I would think so... What he says about potential paralogs seems like it holds true in this circumstance too~~
+            - `#ANSWER` Actually, I don't think so: We would essentially be increasing the numbers of reads in our `.fastq` files: for example, our .bam files will contain multimappers after converting 
+            - Actually, reach out to the `Trinity` Google group to ask about it
+        * `#CONCLUSION` ***Don't*** keep the multimappers and ***don't*** use them in draft-free *de novo* assembly of the transcriptome; consider using them in genome-guided assembly `#TBD`
+
+Message that I sent to the Trinity Google group:
+```txt
+Hi all,
+
+I am preparing to do a non-genome-guided transcriptome assembly for S. cerevisiae with Trinity (our yeast model has high levels of gene expression in unannotated parts of the genome, so that's why we are doing transcriptome assembly with an otherwise well-annotated organism).
+
+I am working with RNA-seq data that contain spike-in RNA from another yeast species. I filter this out by performing an initial alignment (with either Bowtie 2 or STAR) to a reference genome made up of S. cerevisiae and the other species. Using the resulting .bam file, I filter out alignments to the chromosomes of the other species. I also filter out unaligned reads (a relatively small percentage of reads: I wonder if I should just keep them in?). Then, I convert the filtered .bam (containing only S. cerevisiae alignments) to .fastq files (paired-end). I use these files as input to Trinity for non-genome-guided transcriptome assembly.
+
+There are many multimappers (multiple alignments per read) in my data. Based on the information in this previous post to the Trinity Google group (Genome-guided Trinity - reads mapping to multiple loci?), I am curious to know if I should report and keep the multiple alignments per read, not filter them from my .bam file, and in turn have them present in the converted .fastq files. This is because, if I understand correctly, these reads can be "substrates for de novo assembly at each of the locations" where they map, at least in genome-guided assembly. In practice, this will add duplicates to the .fastq files, so will this have the same effect with non-genome-guided assembly?
+
+What do you think? Any input will be greatly appreciated.
+
+Thanks,
+Kris
+
+Link from above:
+https://groups.google.com/g/trinityrnaseq-users/c/L4hypoWSk_o/m/bTO2L8ssAQAJ
+```
 
 ###### [Examine the flags in the `.bam` outfile from the test run of `STAR`](#examine-the-flags-in-the-bam-outfile-from-the-test-run-of-star)
 Use `samtools flagstat` and the bespoke function `list_tally_flags`:
@@ -3343,7 +3395,7 @@ What are the meanings of these flags? Use [this tool](https://broadinstitute.git
 | 595  | read paired (0x1), read mapped in proper pair (0x2), read reverse strand (0x10), first in pair (0x40), read fails* (0x200)  |
 
 ###### [Additional thoughts on the alignment metrics and flags from `STAR`](#additional-thoughts-on-the-alignment-metrics-and-flags-from-star)
-- Because we want to use the multimappers in `Trinity` transcriptome assembly (rationale in "Thoughts on the above" above), it'd probably be good to have information for where `STAR` (and `Bowtie 2`) is aligning them in the bam file, instead of them being unmapped as above
+- Because we want to use the multimappers in `Trinity` transcriptome assembly (rationale in ["Thoughts on the..."](#thoughts-on-the-alignment-metrics-for-star) above), it'd probably be good to have information for where `STAR` (and `Bowtie 2`) is aligning them in the bam file, instead of them being unmapped as above
 - Thus, we should adjust the parameters for how we call `STAR` to retain the multi-mappers
 - `(   ) #TODO #TOMORROW` Adjust `STAR` parameters based on the repetitive-element work you did in 2020 (bring your laptop to work tomorrow); for now, move on to `Bowtie 2` work
 
@@ -3567,7 +3619,7 @@ sbatch submit-Bowtie-2.sh \
 - Approximately 7% of reads don't align at all
 - The rest, 43%, are discordant
 
-###### [Examine the flags in the `.bam` outfile from the test run of `STAR`](#examine-the-flags-in-the-bam-outfile-from-the-test-run-of-star)
+###### [Examine the flags in the `.bam` outfile from the test run of `Bowtie 2`](#examine-the-flags-in-the-bam-outfile-from-the-test-run-of-bowtie-2)
 ```bash
 #!/bin/bash
 #DONTRUN
@@ -3688,7 +3740,7 @@ Contents of outfile from running `list_tally_flags`...
 ```
 
 ##### Try re-running `Bowtie 2` alignment
-...with flags for removing unaligned and discordant reads removed
+...***without*** the flags for removing unaligned and discordant reads, which were mistakenly included in the first run
 ```bash
 #!/bin/bash
 #DONTRUN
@@ -3740,6 +3792,7 @@ if [[ -f "./submit-Bowtie-2.test-2.sh" ]]; then
     rm "./submit-Bowtie-2.test-2.sh"
 fi
 
+#  Parameters updated in comparison to the first test
 cat << script > "./submit-Bowtie-2.test-2.sh"
 #!/bin/bash
 
@@ -3778,41 +3831,354 @@ sbatch submit-Bowtie-2.test-2.sh \
     "${read_1}" \
     "${read_2}" \
     "${prefix}"
-````
+```
+
+##### [Alignment metrics for the *corrected* test run of Bowtie 2](#alignment-metrics-for-the-corrected-test-run-of-bowtie-2)
+```txt
+13988842 reads; of these:
+  13988842 (100.00%) were paired; of these:
+    552105 (3.95%) aligned concordantly 0 times
+    7261264 (51.91%) aligned concordantly exactly 1 time
+    6175473 (44.15%) aligned concordantly >1 times
+    ----
+    552105 pairs aligned concordantly 0 times; of these:
+      119842 (21.71%) aligned discordantly 1 time
+    ----
+    432263 pairs aligned 0 times concordantly or discordantly; of these:
+      864526 mates make up the pairs; of these:
+        386601 (44.72%) aligned 0 times
+        176417 (20.41%) aligned exactly 1 time
+        301508 (34.88%) aligned >1 times
+98.62% overall alignment 
+[bam_sort_core] merging from 8 files and 8 in-memory blocks...
+```
+
+###### [Thoughts on the alignment metrics for Bowtie 2 (*corrected*)](#thoughts-on-the-alignment-metrics-for-bowtie-2-corrected)
+- Very similar to the previous run...
+
+###### [Examine the flags in the `.bam` outfile from the *corrected* test run of `Bowtie 2`](#examine-the-flags-in-the-bam-outfile-from-the-corrected-test-run-of-bowtie-2)
+```bash
+#!/bin/bash
+#DONTRUN
+
+#  Have called grabnode with default/lowest settings
+cd "${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1101"
+
+#  First, a bit of clean-up
+mv *.txt exp_alignment_Bowtie_2/
+
+ml SAMtools/1.16.1-GCC-11.2.0
+
+samtools flagstat \
+    ./exp_alignment_Bowtie_2/files_bams/5781_G1_IN_merged_sorted.bam \
+    > ./exp_alignment_Bowtie_2/files_bams/5781_G1_IN_merged_sorted.flagstat.txt
+#  1. Readout from "correct" .bam (i.e., with correct parameters)
+# 27977684 + 0 in total (QC-passed reads + QC-failed reads)
+# 27977684 + 0 primary
+# 0 + 0 secondary
+# 0 + 0 supplementary
+# 0 + 0 duplicates
+# 0 + 0 primary duplicates
+# 27591083 + 0 mapped (98.62% : N/A)
+# 27591083 + 0 primary mapped (98.62% : N/A)
+# 27977684 + 0 paired in sequencing
+# 13988842 + 0 read1
+# 13988842 + 0 read2
+# 26873474 + 0 properly paired (96.05% : N/A)
+# 27450096 + 0 with itself and mate mapped
+# 140987 + 0 singletons (0.50% : N/A)
+# 153696 + 0 with mate mapped to a different chr
+# 65835 + 0 with mate mapped to a different chr (mapQ>=5)
+
+#  1. Readout from "uncorrect" .bam (i.e., with incorrect parameters; see
+#+    above)
+# 26167854 + 0 in total (QC-passed reads + QC-failed reads)
+# 26167854 + 0 primary
+# 0 + 0 secondary
+# 0 + 0 supplementary
+# 0 + 0 duplicates
+# 0 + 0 primary duplicates
+# 26167854 + 0 mapped (100.00% : N/A)
+# 26167854 + 0 primary mapped (100.00% : N/A)
+# 26167854 + 0 paired in sequencing
+# 13083927 + 0 read1
+# 13083927 + 0 read2
+# 26167854 + 0 properly paired (100.00% : N/A)
+# 26167854 + 0 with itself and mate mapped
+# 0 + 0 singletons (0.00% : N/A)
+# 0 + 0 with mate mapped to a different chr
+# 0 + 0 with mate mapped to a different chr (mapQ>=5)
+
+calculate_run_time() {
+    # Calculate run time for chunk of code
+    #
+    # :param 1: start time in $(date +%s) format
+    # :param 2: end time in $(date +%s) format
+    # :param 3: message to be displayed when printing the run time (chr)
+    run_time="$(echo "${2}" - "${1}" | bc -l)"
+    
+    echo ""
+    echo "${3}"
+    printf 'Run time: %dh:%dm:%ds\n' \
+    $(( run_time/3600 )) $(( run_time%3600/60 )) $(( run_time%60 ))
+    echo ""
+}
+
+
+display_spinning_icon() {
+    # Display "spinning icon" while a background process runs
+    #
+    # :param 1: PID of the last program the shell ran in the background (int)
+    # :param 2: message to be displayed next to the spinning icon (chr)
+    spin="/|\\–"
+    i=0
+    while kill -0 "${1}" 2> /dev/null; do
+        i=$(( (i + 1) % 4 ))
+        printf "\r${spin:$i:1} %s" "${2}"
+        sleep .15
+    done
+}
+
+
+list_tally_flags() {
+    # List and tally flags in a bam infile; function acts on a bam infile to
+    # perform piped commands (samtools view, cut, sort, uniq -c, sort -nr) that
+    # list and tally flags; function writes the results to a txt outfile, the
+    # name of which is derived from the txt infile
+    #
+    # :param 1: name of bam infile, including path (chr)
+    start="$(date +%s)"
+    
+    samtools view "${1}" \
+        | cut -d$'\t' -f 2 \
+        | sort \
+        | uniq -c \
+        | sort -nr \
+        > "${1/.bam/.flags.txt}" &
+    display_spinning_icon $! \
+    "Running piped commands (samtools view, cut, sort, uniq -c, sort -nr) on $(basename "${1}")... "
+        
+    end="$(date +%s)"
+    echo ""
+    calculate_run_time "${start}" "${end}"  \
+    "List and tally flags in $(basename "${1}")."
+}
+
+
+list_tally_flags exp_alignment_Bowtie_2/files_bams/5781_G1_IN_merged_sorted.bam
+
+samtools view -c \
+    ./exp_alignment_Bowtie_2/files_bams/5781_G1_IN_merged_sorted.bam
+# 27977684
+
+#  Numbers of records in the *_R{1,2}.fastq files
+cd ..
+echo $(cat ./files_fastq_symlinks/5781_G1_IN_merged_R1.fastq | wc -l)/4 | bc
+# 13988842
+echo $(cat ./files_fastq_symlinks/5781_G1_IN_merged_R2.fastq | wc -l)/4 | bc
+# 13988842
+
+echo $(( 13988842 + 13988842 ))
+# 27977684
+
+# Multiply by the overall alignment rate: Is it equal to the number of records in the .bam file?
+echo "27977684*0.9862" | bc
+# 27591591.9608; rounds up to 27591592; rounds down to 27591591
+
+#  Numbers of records in the .bam and .fastq files *are* equivalent
+#+ Great!
+```
+
+Contents of outfile from running `list_tally_flags` (with notes from me)...
+```txt
+7314425 83
+7314425 163
+6122312 99
+6122312 147
+ 139372 97
+ 139372 145
+ 122807 77
+ 122807 141
+  96792 81
+  96792 161
+  42776 89
+  42776 165
+  40407 73
+  40407 133
+  33323 65
+  33323 129
+  31296 153 unmapped
+  31296 101 unmapped
+  26508 69 unmapped
+  26508 137 unmapped
+  18824 177
+  18824 113
+```
+What are the meanings of these flags? Use [this tool](https://broadinstitute.github.io/picard/explain-flags.html) to check:
+| flag | meaning                                                                                                |
+| :--- | :----------------------------------------------------------------------------------------------------- |
+| 83   | read paired (0x1), read mapped in proper pair (0x2), read reverse strand (0x10), first in pair (0x40)  |
+| 163  | read paired (0x1), read mapped in proper pair (0x2), mate reverse strand (0x20), second in pair (0x80) |
+| 99   | read paired (0x1), read mapped in proper pair (0x2), mate reverse strand (0x20), first in pair (0x40)  |
+| 147  | read paired (0x1), read mapped in proper pair (0x2), read reverse strand (0x10), second in pair (0x80) |
+| 97   | read paired (0x1), mate reverse strand (0x20), first in pair (0x40)                                    |
+| 145  | read paired (0x1), read reverse strand (0x10), second in pair (0x80)                                   |
+| 77   | read paired (0x1), read unmapped (0x4), mate unmapped (0x8), first in pair (0x40)                      |
+| 141  | read paired (0x1), read unmapped (0x4), mate unmapped (0x8), second in pair (0x80)                     |
+| 81   | read paired (0x1), read reverse strand (0x10), first in pair (0x40)                                    |
+| 161  | read paired (0x1), mate reverse strand (0x20), second in pair (0x80)                                   |
+| 89   | read paired (0x1), mate unmapped (0x8), read reverse strand (0x10), first in pair (0x40)               |
+| 165  | read paired (0x1), read unmapped (0x4), mate reverse strand (0x20), second in pair (0x80)              |
+| 73   | read paired (0x1), mate unmapped (0x8), first in pair (0x40)                                           |
+| 133  | read paired (0x1), read unmapped (0x4), second in pair (0x80)                                          |
+| 65   | read paired (0x1), first in pair (0x40)                                                                |
+| 129  | read paired (0x1), second in pair (0x80)                                                               |
+| 153  | read paired (0x1), mate unmapped (0x8), read reverse strand (0x10), second in pair (0x80)              |
+| 101  | read paired (0x1), read unmapped (0x4), mate reverse strand (0x20), first in pair (0x40)               |
+| 69   | read paired (0x1), read unmapped (0x4), first in pair (0x40)                                           |
+| 137  | read paired (0x1), mate unmapped (0x8), second in pair (0x80)                                          |
+| 177  | read paired (0x1), read reverse strand (0x10), mate reverse strand (0x20), second in pair (0x80)       |
+| 113  | read paired (0x1), read reverse strand (0x10), mate reverse strand (0x20), first in pair (0x40)        |
 <br />
 <br />
 
-## To be organized
-### Packages for the pipeline
-- Ongoing list packages for a `conda env` for doing the transcriptome-assembly work:
-    + `Trinity`
-        * [`conda`](https://anaconda.org/bioconda/trinity)
-        * [`Repository`](https://github.com/trinityrnaseq/trinityrnaseq/)
-        * [`Documentation`](https://github.com/trinityrnaseq/trinityrnaseq/wiki)
-    + `TrimGalore`
-        * [`conda`](https://anaconda.org/bioconda/trim-galore)
-        * [`Home`](https://www.bioinformatics.babraham.ac.uk/projects/trim_galore/)
-        * [`Repository`](https://github.com/FelixKrueger/TrimGalore) 
-        * [`Documentation`](https://github.com/FelixKrueger/TrimGalore/blob/master/Docs/Trim_Galore_User_Guide.md)
-    + `rCorrector` Use to remove spurious k-mers
-        * `#TODO` Follow up on this
-    + `DETONATE` Would be used for validation
-    + `BUSCO` Would be used for validation
-    + `FastQC` `#DECISION fastp or FastQC?`
-    + `fastp` `#DECISION fastp or FastQC?` 
-        * [`Repo and documentation`](https://github.com/OpenGene/fastp)
-        * [`conda`](https://anaconda.org/bioconda/fastp)
-    + `pasa` Would be used for mapping Trinity sequences to the reference
-        * `#TODO` Follow up on this
-    + `Transrate` `#MAYBE` Would be used for validation
-        * [`Documentation`](http://hibberdlab.com/transrate/)
-        * [`Repository`](https://github.com/blahah/transrate/)
-        * [`conda`](https://anaconda.org/bioconda/transrate)
-    + etc.
-- Important link: [lessons on using Trinity from Brian Haas](https://bioinformaticsdotca.github.io/rnaseq_2018)
-- Package to be used for validation of assembled transcriptomes: [DETONATE](https://deweylab.biostat.wisc.edu/detonate/vignette.html)
+Do the above counts sum to 27977684?
+```bash
+echo $(( \
+    7314425 + \
+    7314425 + \
+    6122312 + \
+    6122312 + \
+    139372 + \
+    139372 + \
+    122807 + \
+    122807 + \
+    96792 + \
+    96792 + \
+    42776 + \
+    42776 + \
+    40407 + \
+    40407 + \
+    33323 + \
+    33323 + \
+    31296 + \
+    31296 + \
+    26508 + \
+    26508 + \
+    18824 + \
+    18824 \
+))
+# 27977684: Yes
+```
 
-### Brief discussion with Toshi about yeast blacklists
+###### [Examine the `.fastq` outfiles from the *corrected* test run of `Bowtie 2`](#examine-the-fastq-outfiles-from-the-corrected-test-run-of-bowtie-2)
+```bash
+cd "${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1101/exp_alignment_Bowtie_2/files_bams"
+
+ls -lhaFG
+# total 2.5G
+# drwxrws--- 2 kalavatt  337 Nov  9 15:31 ./
+# drwxrws--- 3 kalavatt  160 Nov  9 15:23 ../
+# -rw-rw---- 1 kalavatt 427M Nov  8 16:24 5781_G1_IN_merged.1.aligned
+# -rw-rw---- 1 kalavatt  19M Nov  8 16:24 5781_G1_IN_merged.1.unaligned
+# -rw-rw---- 1 kalavatt 447M Nov  8 16:24 5781_G1_IN_merged.2.aligned
+# -rw-rw---- 1 kalavatt  19M Nov  8 16:24 5781_G1_IN_merged.2.unaligned
+# -rw-rw---- 1 kalavatt 942M Nov  8 16:24 5781_G1_IN_merged_sorted.bam
+# -rw-rw---- 1 kalavatt  531 Nov  9 15:25 5781_G1_IN_merged_sorted.flagstat.txt
+# -rw-rw---- 1 kalavatt  255 Nov  9 15:29 5781_G1_IN_merged_sorted.flags.txt
+
+#  (The files are gzipped even though the extension is not present...)
+echo $(zcat 5781_G1_IN_merged.1.aligned | wc -l)/4 | bc  # 13436737
+echo $(zcat 5781_G1_IN_merged.2.aligned | wc -l)/4 | bc  # 13436737
+echo $(zcat 5781_G1_IN_merged.1.unaligned | wc -l)/4 | bc  # 552105
+echo $(zcat 5781_G1_IN_merged.2.unaligned | wc -l)/4 | bc  # 552105
+
+#  Do the above counts sum to 27977684?
+echo $(( 13436737 + 13436737 + 552105 + 552105 ))  # 27977684: Yes
+```
+
+###### [`head` through the `.bam` outfile from the *corrected* test run of `Bowtie 2`](#head-through-the-bam-outfile-from-the-corrected-test-run-of-bowtie-2)
+...to see if information for multimappers are present in the tags
+```bash
+cd "${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1101/exp_alignment_Bowtie_2/files_bams"
+
+samtools view -h 5781_G1_IN_merged_sorted.bam | less
+```
+
+Example output:
+```txt
+@HD     VN:1.0  SO:coordinate
+@SQ     SN:I    LN:230218
+@SQ     SN:II   LN:813184
+@SQ     SN:III  LN:316620
+@SQ     SN:IV   LN:1531933
+@SQ     SN:V    LN:576874
+@SQ     SN:VI   LN:270161
+@SQ     SN:VII  LN:1090940
+@SQ     SN:VIII LN:562643
+@SQ     SN:IX   LN:439888
+@SQ     SN:X    LN:745751
+@SQ     SN:XI   LN:666816
+@SQ     SN:XII  LN:1078177
+@SQ     SN:XIII LN:924431
+@SQ     SN:XIV  LN:784333
+@SQ     SN:XV   LN:1091291
+@SQ     SN:XVI  LN:948066
+@SQ     SN:Mito LN:85779
+@SQ     SN:A    LN:1062590
+@SQ     SN:B    LN:1320834
+@SQ     SN:C    LN:1753957
+@SQ     SN:D    LN:1715506
+@SQ     SN:E    LN:2234072
+@SQ     SN:F    LN:2602197
+@SQ     SN:20S  LN:2514
+@PG     ID:bowtie2      PN:bowtie2      VN:2.4.4        CL:"/app/software/Bowtie2/2.4.4-GCC-11.2.0/bin/bowtie2-align-s --wrapper basic-0 -p 8 -x /home/kalavatt/genomes/combined_SC_KL_20S/Bowtie2/combined_SC_KL_20S --local --very-sensitive-local --phred33 -I 10 -X 700 --
+@PG     ID:samtools     PN:samtools     PP:bowtie2      VN:1.16.1       CL:samtools sort -@ 8 -o ./exp_alignment_Bowtie_2/files_bams/5781_G1_IN_merged_sorted.bam -
+@PG     ID:samtools.1   PN:samtools     PP:samtools     VN:1.16.1       CL:samtools view -h 5781_G1_IN_merged_sorted.bam
+HISEQ:1007:HGV5NBCX3:1:1114:5228:88329  99      I       288     11      50M     =       522     280     CTACTCACCATACTGTTGTTCTACCCACCATATTGAAACGCTAACAAATG      GGGGGGGIIIIIIGIIIGGGIIIIIIIIIIIIGIGGIIIGIIIIIIIIIG      AS:i:93 XS:i:92 XN:i:0  XM:i:1  XO:i:0  XG:i:0  NM:i:1
+HISEQ:1007:HGV5NBCX3:1:1114:5228:88329  147     I       522     11      4S46M   =       288     -280    CTAGATGCACTCACATCATTATGCACGGCACTTGCCTCAGCGGTCTATAC      GGGGGGGAIGGGGGGGIGGIIIGGGGGGGGGGIGGIIGIGGGGGIGGGGG      AS:i:92 XS:i:100        XN:i:0  XM:i:0  XO:i:0  XG:i:0
+HISEQ:1007:HGV5NBCX3:1:2106:14749:35491 163     I       1663    1       7S43M   =       1730    124     TTTTTTTTTGATCAAATAGGTCTATAATATTAATATACATTTATATAATC      GGGGGIIII<GGGGGAGGGGGIIGIIGGGGGGGIIAGGGGGGGGAGGGGG      AS:i:86 XS:i:86 XN:i:0  XM:i:0  XO:i:0  XG:i:0  NM:i:0
+HISEQ:1007:HGV5NBCX3:1:2216:6220:25229  163     I       1663    14      7S43M   =       1701    95      TTTTTTTTTGGTCAAAAAGGTCTATAATATTAATAAAAATTTATATAATC      GGGGGIIIGAAG.<GG..<G<AAA.<A.<.G.<.<.<..<GGA#######      AS:i:64 XS:i:57 XN:i:0  XM:i:4  XO:i:0  XG:i:0  NM:i:4
+HISEQ:1007:HGV5NBCX3:1:2114:12240:15164 163     I       1673    11      50M     =       1867    244     AGGTCTATAATATTAATATACATTTATATAATCTACGGTATTTATATCAT      GAAGGIIIIGIIIIIGIIGIIIIIIGIIIGGGIGIIGGGIIGIIIIIIGG      AS:i:100        XS:i:100        XN:i:0  XM:i:0  XO:i:0
+HISEQ:1007:HGV5NBCX3:1:2216:6220:25229  83      I       1701    14      49M1S   =       1663    -95     TAATCTACGGTATTTATATCATCAAAAAAAAGTAGTTTTTTTATTTTATG      GGGGIIIIIGGIGGIIIGIGGAIGIGIIIIIIIGGIIIGIIGGGGGGAGG      AS:i:98 XS:i:90 XN:i:0  XM:i:0  XO:i:0  XG:i:0  NM:i:0
+HISEQ:1007:HGV5NBCX3:1:1113:16755:16657 81      I       1702    11      49M1S   XIV     415061  0       AATCTACGGTATTTATATCATCAAAAAAAAGTAGTTTTTTTTTTTTTTTG      IGG<GGGAAAAIGGAG<G.<<...<.<<...<..IIIIIGA.IGGG.GG<      AS:i:88 XN:i:0  XM:i:2  XO:i:0  XG:i:0  NM:i:2  MD:Z:4
+HISEQ:1007:HGV5NBCX3:1:2112:18005:41299 163     I       1707    11      50M     =       2074    417     ACGGTATTTATATCATCAAAAAAAAGTAGTTTTTTTATTTTATTTTGTTC      AAAAGAGGGIIIGGGGGGGIGIGGIIGGIIGGGGGGGGGGGGGGGIGIIG      AS:i:100        XS:i:92 XN:i:0  XM:i:0  XO:i:0  XG:i:0
+HISEQ:1007:HGV5NBCX3:1:2206:19349:73834 163     I       1707    33      50M     =       1842    185     ACGGTATTTATATCATCAAAAAAAAGTAGTTTTTTTATTTTATTTTGTTC      GGGGGIIIIIIGIIGGGGIIIIGIGIIIIIIIGGIIIIIIIIIGIIGIIG      AS:i:100        XS:i:70 XN:i:0  XM:i:0  XO:i:0  XG:i:0
+HISEQ:1007:HGV5NBCX3:1:2113:2817:14137  163     I       1730    14      50M     =       1859    179     AAGAAGTTTTTTTATTTTATTTTGTTCGTTAATTTTCAATGTCTATGGAA      GGAGGIIIIIIIIIIIIIIGIIIIIIIGIIIGGGGGIGGIIIIIIIIGII      AS:i:85 XS:i:93 XN:i:0  XM:i:2  XO:i:0  XG:i:0  NM:i:2
+HISEQ:1007:HGV5NBCX3:1:2106:14749:35491 83      I       1730    1       49M1S   =       1663    -124    AAGTAGTTTTTTTATTTTATTTTGTTCTTTAATTTTTAATGTCTATGGAG      GIGGGIIGIIIIIIIIIIIIIIIIIGIIGGGGGIIIIIIIIIIIIGGGGG      AS:i:74 XS:i:82 XN:i:0  XM:i:3  XO:i:0  XG:i:0  NM:i:3
+HISEQ:1007:HGV5NBCX3:1:2102:3746:13152  163     I       1744    1       1S49M   =       1940    247     TTTTTTTTTTGTTATTTAATTTTAAAGTTCTATGTAAGCCCGATCGTAAA      G#################################################      AS:i:66 XS:i:66 XN:i:0  XM:i:8  XO:i:0  XG:i:0  NM:i:8
+HISEQ:1007:HGV5NBCX3:1:1204:4745:12269  163     I       1837    1       50M     =       1942    155     GGATAGAGCACTGGAGATGGCTGGCTTTAATCTGCTGGAGTACCATGGAA      AGGGAGGIGGGIGIGIGIIGIIGGGAGGIIIIGGGGIGIIIGIIIIIIII      AS:i:100        XS:i:100        XN:i:0  XM:i:0  XO:i:0
+HISEQ:1007:HGV5NBCX3:1:2206:19349:73834 83      I       1842    33      50M     =       1707    -185    GAGCACTGGAGATGGCTGGCTTTAATCTGCTGGAGTACCATGGAACACCG      IIIIGGIIIIIIGIGIGIIIIIIIIIIIGIIGIIIIIGGIIIIGGGGGGG      AS:i:100        XS:i:100        XN:i:0  XM:i:0  XO:i:0
+HISEQ:1007:HGV5NBCX3:1:2204:14658:11161 163     I       1849    1       50M     =       1945    146     GGAGATGGCTGGCTTTAATCTGCTGGAGTACCATGGAACACCGGTGATCA      GAGAGGGGIIA.GGGGIGIGGIGGGGGGGGGGGGGGGGGGGGGGAGGGIG      AS:i:100        XS:i:100        XN:i:0  XM:i:0  XO:i:0
+HISEQ:1007:HGV5NBCX3:1:2113:2817:14137  83      I       1859    14      49M1S   =       1730    -179    GGCTTTAATCTGCTGGAGTACCATGGAACACCGGTGATCATTCTGGTCAG      IIIGIIIIIIGIGAGIIIIIIIIIGIIIIIIIIIIIIIIIIIIGIGGGGG      AS:i:98 XS:i:98 XN:i:0  XM:i:0  XO:i:0  XG:i:0  NM:i:0
+HISEQ:1007:HGV5NBCX3:1:2114:12240:15164 83      I       1867    11      50M     =       1673    -244    TCTGCTGGAGTACCATGGAACACCGGTGATCATTCTGGTCACTTGGTCTG      GIIIIIGIGGIIIIIIGIIGIIIGIIIGIIIIIIGIGIIIIIIGGAGGGG      AS:i:100        XS:i:100        XN:i:0  XM:i:0  XO:i:0
+HISEQ:1007:HGV5NBCX3:1:1115:5126:26256  163     I       1868    1       50M     =       2190    372     CTGCTGGAGTACCATGGAACACCGGTGATCATTCTGGTCACTTGGTCTGG      GGGGGGIIIIIIIIIIIIGIIIIIGIGIIGIIIIIIGIIIGIIGGGIIGI      AS:i:100        XS:i:100        XN:i:0  XM:i:0  XO:i:0
+HISEQ:1007:HGV5NBCX3:1:2116:5000:45130  163     I       1868    11      50M     =       2190    372     CTGCTGGAGTACCATGGAACACCGGTGATCATTCTGGTCACTTGGTCTGG      AAGGGIIIGGGIIIIIGIIIIIIIIIIIIIIIIIIIIIIGIIIIIIIIII      AS:i:100        XS:i:100        XN:i:0  XM:i:0  XO:i:0
+HISEQ:1007:HGV5NBCX3:1:2102:3746:13152  83      I       1940    1       48M2S   =       1744    -247    GTGAAGTCACCGTAGTTGAAAACGGCTTCAGCAACTTCGACTGGGTAGCG      GG<.G<A.GGGGAAGGAGGA<<.<<.IGGGA<...AG<<...GGGAAAGG      AS:i:96 XS:i:96 XN:i:0  XM:i:0  XO:i:0  XG:i:0  NM:i:0
+HISEQ:1007:HGV5NBCX3:1:1204:4745:12269  83      I       1942    1       49M1S   =       1837    -155    GAAGTCACCGTAGTTGAAAACGGCTTCAGCAACTTCGACTGGGTAGGTTG      GGIGG.GIIGGAGIGGGGG<<GGAIGGGGGGGAGGAGAGGGAGGGAGGGG      AS:i:98 XS:i:98 XN:i:0  XM:i:0  XO:i:0  XG:i:0  NM:i:0
+HISEQ:1007:HGV5NBCX3:1:2204:14658:11161 83      I       1945    1       50M     =       1849    -146    GTCACCGTAGTTGAAAACGGCTTCAGCAACTTCGACTGGGTAGGTTTCAG      GGGGGGIIGGGGGGGGGGGGGGGGGIGGIIIGGGGIIIGGIIGGGGGGGG      AS:i:100        XS:i:100        XN:i:0  XM:i:0  XO:i:0
+HISEQ:1007:HGV5NBCX3:1:2112:18005:41299 83      I       2074    11      50M     =       1707    -417    GTTGACTCTTTCGTCAGATTGAGCTAGAGTGGTGGTTGCGGAAGCAGTAG      IGGIIIIIIIGIGGIGIGGIIGIIIIGGIIIIIIIIIIIIIIIIIGGGGG      AS:i:92 XS:i:100        XN:i:0  XM:i:1  XO:i:0  XG:i:0
+HISEQ:1007:HGV5NBCX3:1:1114:8312:7074   163     I       2102    11      1S48M1S =       2335    284     GGTGGTGGTTGCAGAAGCAGTAGCAGCGATCGCAGCGACCCCAGACGCGC      .GGAG<..<GG#######################################      AS:i:80 XS:i:72 XN:i:0  XM:i:4  XO:i:0  XG:i:0  NM:i:4
+HISEQ:1007:HGV5NBCX3:1:1115:5126:26256  83      I       2190    1       49M1S   =       1868    -372    GTGCTGATATAAGCTTAACAGGAAAGAAAAGAATAAAGACATATTCTCAG      GIIIIIIIGGGGIIIGIIIGIIIIGIIIIIIIIIIGIIIIIIIIIGGGGG      AS:i:90 XS:i:98 XN:i:0  XM:i:1  XO:i:0  XG:i:0  NM:i:1
+HISEQ:1007:HGV5NBCX3:1:2116:5000:45130  83      I       2190    11      49M1S   =       1868    -372    GTGCTGATATAAGCTTAACAGGAAAGAAAAGAATAAAGACATATTCTCAG      IGIIIIGIIGGGIIIIIIIIIIIIIIGIIIIIIIGIGIIIIIGIIGGGGG      AS:i:91 XS:i:98 XN:i:0  XM:i:1  XO:i:0  XG:i:0  NM:i:1
+HISEQ:1007:HGV5NBCX3:1:2209:15800:37695 163     I       2276    41      47M3S   =       2425    199     CCCTCATGGGTTGTTGCTATTTAAACGATCGCTGACTGGCACCAGTTTCT      GGGGGIIIIIIIIIIIIIIIGIIIIIIIGIIIIIIIIGIIIIIIIIIIGG      AS:i:94 XN:i:0  XM:i:0  XO:i:0  XG:i:0  NM:i:0  MD:Z:4
+HISEQ:1007:HGV5NBCX3:1:1203:21227:75075 163     I       2291    41      49M1S   =       2527    279     GCTATTTAAACGATCGCTGACTGGCACCAGTTTCTCATCACATATTCTCC      GGGAGIGGGGIIIGGIGIIIIIIIGIGIGGGGIGGIIGGIIIGGGGAGGG      AS:i:82 XN:i:0  XM:i:2  XO:i:0  XG:i:0  NM:i:2  MD:Z:3
+HISEQ:1007:HGV5NBCX3:1:1114:8312:7074   83      I       2335    11      47M3S   =       2102    -284    TTCTCCATATCTCATCTTTCACACAATCTCATTATCTCTATGGAGATCAG      ####G.GA<...A.IGIIGGG<<...<.GG.GAGG<..GG.G.<...<..      AS:i:89 XS:i:94 XN:i:0  XM:i:1  XO:i:0  XG:i:0  NM:i:1
+HISEQ:1007:HGV5NBCX3:1:2209:15800:37695 83      I       2425    41      50M     =       2276    -199    ATGTGGAGTATTGTTTTATGGCACTCATGTGTATTCGTATGCGCAGAATG      IIIIIIGIIIIIIIIIIIGIIIIIIIIIIIIIIIIIIIIIIIIIGGGGGG      AS:i:76 XS:i:100        XN:i:0  XM:i:3  XO:i:0  XG:i:0
+```
+
+We won't find any multimappers in here because, by default, `Bowtie 2` "\[looks\] for multiple alignments, \[reports\] best, with MAPQ"
+- To see see what reads are multimappers, we have to include wither the the flag `-k <all>` or `-a/--all`
+```txt
+      -k <int>  report up to <int> alns per read; MAPQ not meaningful
+-a/--all        report all alignments; very slow, MAPQ not meaningful
+```
+
+# 2022-1109
+
+# Miscellaneous
+## [Figure out where to put this](#figure-out-where-to-put-this)
+### [Brief discussion with Toshi about yeast blacklists](#brief-discussion-with-toshi-about-yeast-blacklists)
 - He's not aware of any such blacklists for yeast
 - He suggested to reach out to Christine and Alison
 - He suggested that we could put together a blacklist from ChIP-seq input data
@@ -3820,19 +4186,56 @@ sbatch submit-Bowtie-2.test-2.sh \
 - `#TODO` Skim over the blacklist paper from Anshul Kundaje to understand precisely what the blacklist describes
     + e.g., `#QUESTION` Is it non-specific binding, and thus noise, because of something related to the reference, or is it because of something related to the wet-work behind the NGS data?
     + `#TODO` I think it is reference-related, but want to confirm
-- `#TODO` Look into [the one example of the use of a yeast black I found in the literature]((https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8407396/))
+- `#TODO` Look into [the one example of the use of a yeast blacklist I found in the literature]((https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8407396/))
 - Also, discussed the possibility of doing bench-work in the future
     + Mentioned how, after tackling the `Trinity` tasks, it'd be a fun and interesting bioinformatics experiment to compare yeast G2/M MicroC data (from the Koshland Lab) to the yeast Q MicroC data (from this lab)
     + From there, based on what we find, we could consider to design and perform wet experiments
+<br />
+<br />
 
-## Next steps
-`( Y ) #MONDAY` Pick up with fine-tuning the initial call to `Bowtie2`: *Shifting focus to STAR, a splice-aware aligner*
-`( Y ) #TUESDAY` Use the combined-reference .fasta, .gtf, and genome index files to try aligning one of the (symlinked) .fastq files using the parameters for *S. cerevisiae* you found on the `STAR` Google group
-    - First, sus out and describe the parameters (for example, are all of them needed, are the values appropriate, etc.?)
-    - Once this is done, move on to "filtering" the bam file, including isolating unmapped reads, and stripping away chromosomes that are not needed
-`( Y ) #TUESDAY` Do the same with `Bowtie 2`
-`(   ) #WEDNESDAT` Read over the biology-related papers sent by Alison, in particular her QE proposal
-`(   ) #WEDNESDAY` Pick up with the assessment of the Bowtie 2 alignment test #2 experiment: Need to know, from the alignments, what reads are unimappers, multimappers, etc.
-`(   ) #WEDNESDAY` Adjust `STAR` parameters based on the repetitive-element work you did in 2020 (bring your laptop to work tomorrow); for now, move on to `Bowtie 2` work
+## [Google searches and websites to follow up on](#google-searches-and-websites-to-follow-up-on)
+- ["add flag to multimapper"](https://www.google.com/search?q=add+flag+to+multimappers&oq=add+flag+to+multimappers&aqs=chrome..69i57j33i160l2.3704j0j7&sourceid=chrome&ie=UTF-8)
+    + ["SAM FLAG for primary alignments, secondary alignments, and what's their relationships to uniqueness of mapping"](https://www.biostars.org/p/206396/)
+- ["use star with trinity"](https://www.google.com/search?q=use+star+with+trinity&oq=use+star+with+trinity&aqs=chrome..69i57j33i160l2.2936j0j7&sourceid=chrome&ie=UTF-8)
+- ["ty elements cerevisiae"](https://www.google.com/search?q=ty+elements+cerevisiae&ei=hRJsY_jDKfDL0PEPy9CMqAE&ved=0ahUKEwi4moHt_KH7AhXwJTQIHUsoAxUQ4dUDCBA&uact=5&oq=ty+elements+cerevisiae&gs_lcp=Cgxnd3Mtd2l6LXNlcnAQAzIFCAAQogQyBQgAEKIEMgUIABCiBDIFCAAQogQ6CggAEEcQ1gQQsANKBAhNGAFKBAhBGABKBAhGGABQ9RtYpR1g1yFoAXABeACAAUSIAYYBkgEBMpgBAKABAcgBAsABAQ&sclient=gws-wiz-serp)
+    + [Ty Elements of the Yeast *Saccharomyces Cerevisiae*](https://www.tandfonline.com/doi/abs/10.1080/13102818.2005.10817272)
+    + [Transposable elements in yeasts](https://pubmed.ncbi.nlm.nih.gov/21819950/)
+- ["repeatmasker yeast"](https://www.google.com/search?q=repeatmasker+yeast&oq=repeatmasker+yeast&aqs=chrome..69i57j0i546l5.5324j0j7&sourceid=chrome&ie=UTF-8)
+    + [RepeatMasker for Fungi](https://www.biostars.org/p/171368/)
+- [Dfam](https://www.dfam.org/home)
+<br />
+<br />
+
+## [Next steps](#next-steps)
+`( Y ) #MONDAY` Pick up with fine-tuning the initial call to `Bowtie2`: *Shifting focus to STAR, a splice-aware aligner*  
+
+`( Y ) #TUESDAY` Use the combined-reference .fasta, .gtf, and genome index files to try aligning one of the (symlinked) .fastq files using the parameters for *S. cerevisiae* you found on the `STAR` Google group  
+- First, sus out and describe the parameters (for example, are all of them needed, are the values appropriate, etc.?)
+- Once this is done, move on to "filtering" the bam file, including isolating unmapped reads, and stripping away chromosomes that are not needed  
+
+`( Y ) #TUESDAY` Do the same with `Bowtie 2`  
+
+`( Y ) #WEDNESDAT` Read over and take notes on the qualifying exam and research update documents sent by Alison  
+
+`(...) #WEDNESDAY` Pick up with the assessment of the Bowtie 2 alignment test #2 experiment: Need to know, from the alignments, what reads are unimappers, multimappers, etc.  
+
+`(...) #WEDNESDAY` Adjust `STAR` parameters based on the repetitive-element work you did in 2020 (bring your laptop to work tomorrow); for now, move on to `Bowtie 2` work  
+
 `(   ) #WEDNESDAY` Read and take notes on [this paper sent by Alison](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-016-1406-x#Sec2), which makes use of `Trinity` for transcriptome assembly  
+
 `(   ) #WEDNESDAY` Continue to read and take notes on [Best Practices for De Novo Transcriptome Assembly with Trinity](https://informatics.fas.harvard.edu/best-practices-for-de-novo-transcriptome-assembly-with-trinity.html)  
+
+`(   ) #SOMETIME` Put together a "blacklist" for *S. cerevisiae*  
+- [Google search for "download bed file for telomere coordinates"](https://www.google.com/search?q=download+bed+file+for+telomere+coordinates&ei=89lrY6zaH8aO0PEPrsGseA&oq=download+telomere+coordinates&gs_lcp=Cgxnd3Mtd2l6LXNlcnAQAxgAMgsIIRDDBBCgARCLAzoKCAAQRxDWBBCwAzoNCCEQwwQQChCgARCLA0oECE0YAUoECEEYAEoECEYYAFClF1i0I2DnM2gBcAF4AIABS4gBzAOSAQE4mAEAoAEByAEIuAEDwAEB&sclient=gws-wiz-serp)
+- Christine has `.bed` files in her shared folder
+    + It seems she got them from the UCSC table browser
+    + `#TODO` Look into the possibility of getting them from Ensembl
+- Already have locations of rDNA from having run `picardmetrics`
+
+Sent message to Trinity Google group (see message above in a "Thoughts on..." post `#TODO` Organize all of this)
+Until I hear back, or if I don't hear back, go ahead and move forward with altered STAR parameters (so that we don't have flags in high hundreds and, instead, get readouts more similar to what we see with Bowtie 2 today (2022-1109))
+After that's done, compare the kinds of alignments we're getting between the two aligners and then pick one for subsequent use
+After that, move on to writing up code for filtering by chromosomes (build on/expand what you were working on before): Ultimately, we'll start by working with VII of S. cerevisiae
+From there, move on to reading and taking notes on the Harvard "best practices" document, which will inform you of the steps you need to take next
+<br />
+<br />
