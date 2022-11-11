@@ -3,6 +3,7 @@
 ##  Get another trial run of `Trinity` going
 Just to reacquaint yourself with things...
 ```bash
+#!/bin/bash
 #DONTRUN
 
 grabnode  # 1 node, default memory, 1 node, no GPU (default)
@@ -110,7 +111,7 @@ Builds on work [performed here](../2022-1025/readme.md#snippets-etc-from-searchi
     + To disable mixed mode, set the `--no-mixed` option.
     + `Bowtie 2` runs a little faster in `--no-mixed` mode, but <mark>will only consider alignment status of pairs *per se*, not individual mates</mark>.
     + ([reference](https://bowtie-bio.sourceforge.net/bowtie2/manual.shtml#mixed-mode-paired-where-possible-unpaired-otherwise))
-- Bowtie 2 is not a splice-aware aligner, so why are we using it for RNA-seq work?
+- `Bowtie 2` is not a splice-aware aligner, so why are we using it for RNA-seq work?
     + Very little splicing takes place in yeast
     + I discussed this with Toshi on 2022-1107
         * Categories of genes that undergo splicing
@@ -134,8 +135,7 @@ Builds on work [performed here](../2022-1025/readme.md#snippets-etc-from-searchi
         * Option #2: ***Do not include them*** with reads that mapped to *S. cerevisiae* in the *de novo* transcriptome assembly
     + And what about the parameters for calling `Bowtie2`? Here is how we're currently calling it:
 
-### [The pipeline (in progress)](#the-pipeline-in-progress)
-#### [In-progress steps of the pipeline](#in-progress-steps-of-the-pipeline)
+### [In-progress steps of the pipeline](#in-progress-steps-of-the-pipeline)
 0. Generate downsampled paired-end `.fastq` files for use in tests of preprocessing and *de novo* transcriptome assembly
 1. Run some kind of quality check on the `.fastq` files, e.g., `FastqQC` or `fastp`, paying attention to
     - adapter content
@@ -176,7 +176,7 @@ Builds on work [performed here](../2022-1025/readme.md#snippets-etc-from-searchi
     + Spoke with Toshi briefly about the existence of and use of blacklists in yeast NGS work; [details below](#brief-discussion-with-toshi-about-yeast-blacklists)
 10. ...
 
-##### [In-progress list of packages for the pipeline](#in-progress-list-of-packages-for-the-pipeline)
+### [In-progress list of packages for the pipeline](#in-progress-list-of-packages-for-the-pipeline)
 - Ongoing list packages for a `conda env` for doing the transcriptome-assembly work:
     + `Trinity`
         * [`conda`](https://anaconda.org/bioconda/trinity)
@@ -205,13 +205,26 @@ Builds on work [performed here](../2022-1025/readme.md#snippets-etc-from-searchi
     + etc.
 - Related resource: [Lessons on using Trinity from Brian Haas](https://bioinformaticsdotca.github.io/rnaseq_2018)
 
-#### [References for the experimental design/pipeline](#references-for-the-experimental-designpipeline)
-- [Best Practices for De Novo Transcriptome Assembly with Trinity](https://informatics.fas.harvard.edu/best-practices-for-de-novo-transcriptome-assembly-with-trinity.html)
+### [References for the experimental design/pipeline](#references-for-the-experimental-designpipeline)
 - [McIlwain et al. (Hittinger), *G3* 2016](https://academic.oup.com/g3journal/article/6/6/1757/6029942) ([notes below](#mcilwain-et-al-hittinger-g3-2016))
-- [Build a Comprehensive Transcriptome Database Using Genome-Guided and *De Novo* RNA-seq Assembly](https://github.com/PASApipeline/PASApipeline/wiki/PASA_comprehensive_db)
-    + Recommended by author/maintainer of `Trinity` to look into this (see [below](#more-thoughts-on-multimappers-2022-1109-1110))
-- [Leveraging RNA-seq by the `PASA` Pipeline](https://github.com/PASApipeline/PASApipeline/wiki/PASA_RNAseq)
-    + Necessary to understand and leverage the [above reference](https://github.com/PASApipeline/PASApipeline/wiki/PASA_comprehensive_db) recommended by Brian Haas
+    + [Notes](#mcilwain-et-al-hittinger-g3-2016)
+- [Blevins et al. (Mar Alba), bioRxiv 2019-0313](https://www.biorxiv.org/content/10.1101/575837v1.full)
+    + [Notes](#blevins-et-al-mar-alba-biorxiv-2019-0313)
+- `PASA` materials from Brian Haas
+    + [Build a Comprehensive Transcriptome Database Using Genome-Guided and *De Novo* RNA-seq Assembly](https://github.com/PASApipeline/PASApipeline/wiki/PASA_comprehensive_db)
+        * Recommended by author/maintainer of `Trinity` to look into this (see [below](#more-thoughts-on-multimappers-2022-1109-1110))
+        * [Notes](#build-a-comprehensive-transcriptome-database)
+    + [Leveraging RNA-seq by the `PASA` Pipeline](https://github.com/PASApipeline/PASApipeline/wiki/PASA_RNAseq)
+        * Necessary to understand and leverage the [above reference](https://github.com/PASApipeline/PASApipeline/wiki/PASA_comprehensive_db) recommended by Brian Haas
+        * [Notes](#leveraging-rna-seq-by-the-pasa-pipeline)
+    + [Running the `PASA` Alignment Assembly Pipeline](https://github.com/PASApipeline/PASApipeline/wiki/PASA_alignment_assembly)
+        * Necessary to understand and leverage the above two references
+            - [Build a Comprehensive Transcriptome Database Using Genome-Guided and *De Novo* RNA-seq Assembly](https://github.com/PASApipeline/PASApipeline/wiki/PASA_comprehensive_db)
+            - [Leveraging RNA-seq by the `PASA` Pipeline](https://github.com/PASApipeline/PASApipeline/wiki/PASA_RNAseq)
+        * [Notes](#running-the-pasa-alignment-assembly-pipeline)
+    + [Introduction to `PASA`](https://github.com/PASApipeline/PASApipeline/wiki#introduction)
+        * Necessary to understand and leverage the above three references
+        * [Notes](#introduction-to-pasa)
 - [Best Practices for *De Novo* Transcriptome Assembly with Trinity](https://informatics.fas.harvard.edu/best-practices-for-de-novo-transcriptome-assembly-with-trinity.html)
 
 `#TODO For the in-progress steps below, describe what material is from what reference above`
@@ -250,7 +263,7 @@ Visual comparison of the mapping results derived from the optimized and default-
 
 ...
 
-#### Blevins et al. (Mar Albà), bioRxiv 2019-0313
+#### [Blevins et al. (Mar Alba), bioRxiv 2019-0313](#blevins-et-al-mar-alba-biorxiv-2019-0313)
 [Link to paper](https://www.biorxiv.org/content/10.1101/575837v1.full); this is the study Alison referenced for the parameters [used here](#get-another-trial-run-of-trinity-going)
 
 ##### From *Results*
@@ -409,7 +422,7 @@ TDN_noMap                            no alignment to the genome reported (missin
 [Link to the resource](https://github.com/PASApipeline/PASApipeline/wiki/PASA_RNAseq), which is needed to understand and on the [above material](#build-a-comprehensive-transcriptome-database)
 
 ##### Leveraging RNA-seq by the `PASA` Pipeline
-*Copied from the link with my notes and questions interspersed (also edited for grammar, style):*  
+*Copied from the link with my notes and questions interspersed (also edited for grammar, style):*
 
 Illumina RNA-seq is quickly revolutionizing gene discovery and gene structure annotation in eukaryotes. Recent enhancements to the `PASA` pipeline, including advancements in RNA-seq *de novo* assembly, now enable it to make use of these data for gene structure annotation. It is now relatively straightforward to generate strand-specific RNA-seq data via Illumina. Given the great utility of strand-specific data in differentiating between sense and antisense transcription, plus given the great depth of transcriptome sequencing coverage and the great prevalence of antisense transcription, strand-specific RNA-seq data is highly preferred by the `PASA` pipeline. `PASA` can still be used quite effectively in the case of non-strand-specific RNA-seq, but the execution is quite different (see below). The dUTP strand-specific RNA-seq method by [Parkhomchuk et al., *NAR* 2009](http://www.ncbi.nlm.nih.gov/pubmed/19620212) is recommended. You can buy an off-the-shelf kit for doing stranded RNA-seq from Illumina such as the TruSeq stranded mRNA kit. For a comparison of strand-specific methods, see [Levin et al., *Nat Methods* 2010](https://pubmed.ncbi.nlm.nih.gov/20711195/).
 
@@ -462,6 +475,114 @@ $PASAHOME/Launch_PASA_pipeline.pl \
     -t Trinity.fasta \
     --ALIGNERS blat,gmap
 ```
+
+#### [Running the `PASA` Alignment Assembly Pipeline](#running-the-pasa-alignment-assembly-pipeline)
+[Link to the resource](https://github.com/PASApipeline/PASApipeline/wiki/PASA_alignment_assembly)
+
+##### Running the Alignment Assembly Pipeline
+*Copied from the link with my notes and questions interspersed (also edited for grammar, style):*
+
+As input to the command-line driven `PASA` pipeline, we need only two (potentially three) input files:
+- The genome sequence in a multiFasta file (i.e., `genome.fasta`)
+- The transcript sequences in a multiFasta file (ie. transcripts.fasta)
+- Optional: a file containing the list of accessions corresponding to full-length cDNAs (ie. FL_accs.txt)
+
+###### Step A: Cleaning the transcript sequences (optional)
+Have each of these files in the same 'working' directory. Then, run the `seqclean` utility on you transcripts like so:
+```bash
+${PASAHOME}/bin/seqclean transcripts.fasta
+```
+If you have a database of vector sequences (i.e., `UniVec`), you can screen for vector as part of the cleaning process by running the following instead:
+```bash
+${PASAHOME}/bin/seqclean transcripts.fasta -v /path/to/your/vectors.fasta
+```
+This will generate several output files including `transcripts.fasta.cln` and `transcripts.fasta.clean`. Both of these can be used as inputs to `PASA`.
+
+###### Step B: Walking Thru A Complete Example Using the Provided Sample Data
+Sample inputs are provided in the `${PASAHOME}/sample_data` directory. We'll use these inputs to demonstrate the breadth of the software application, including using sample DATA ADAPTERs to import existing gene annotations into the database, and tentative structural updates out.
+
+The `PASA` pipeline requires separate configuration files for the alignment assembly and later annotation comparison steps, and these are configured separately for each run of the `PASA` pipeline, setting parameters to be used by the various tools and processes executed within the `PASA` pipeline. Configuration file templates are provided as `${PASAHOME}/pasa_conf/pasa.alignAssembly.Template.txt` and `${PASAHOME}/pasa_conf/pasa.annotationCompare.Template.txt`, and these will be further described when used below.
+
+The next steps explain the current contents of the sample_data directory. You do NOT need to redo these operations:
+- I've copied the `${PASAHOME}/pasa_conf/pasa.alignAssembly.Template.txt` to `alignAssembly.config` and edited the `PASA` database name to `/tmp/sample_mydb_pasa`
+    + Note, if you set the database name to a fully qualified path (i.e., `/path/to/my/database.sqlite`), it will use SQLite for the relational database type
+    + If you simply specify a database name (i.e., `my_pasa_db`), it will default to using MySQL
+- My required input files exist as: `genome_sample.fasta`, `all_transcripts.fasta`, and since I have some full-length cDNAs, I'm including `FL_accs.txt` to identify these as such
+- I already ran `seqclean` to generate files: `all_transcripts.fasta.clean` and `all_transcripts.fasta.cln`
+
+The following steps, you must execute in order to demonstrate the software. (The impatient can execute the entire pipeline below by running `./run_sample_pipeline.pl`. If this is your first time through, it helps to walk through the steps below instead.)
+
+**Transcript alignments followed by alignment assembly**  
+Run the PASA alignment assembly pipeline like so:
+```bash
+${PASAHOME}/Launch_PASA_pipeline.pl \
+    -c alignAssembly.config \
+    -C \
+    -R \
+    -g genome_sample.fasta \
+    -t all_transcripts.fasta.clean \
+    -T \
+    -u all_transcripts.fasta \
+    -f FL_accs.txt \
+    --ALIGNERS blat,gmap,minimap2 \
+    --CPU 2
+```
+
+The `--ALIGNERS` can take values `gmap`, `blat`, `minimap2`, or some combination (i.e., `gmap,blat`), in which case both aligners will be executed in parallel. The CPU setting determines the number of threads to be split among each process. This is passed on to `GMAP` to indicate the thread count. In the case of `BLAT`, the new `pblat` utility is used for parallel processing.
+
+This executes the following operations, generating the corresponding output files:
+- aligns the `all_transcripts.fasta` file to `genome_sample.fasta` using the specified alignment tools; files generated include...
+    + `sample_mydb_pasa.validated_transcripts.gff3`, `.gtf`, `.bed`: the valid alignments
+    + `sample_mydb_pasa.failed_gmap_alignments.gff3`, `.gtf`, `.bed`: the alignments that fail validation test
+    + `alignment.validations.output`: tab-delimited format describing the alignment validation results
+- The valid alignments are clustered into piles based on genome alignment position, and piles are assembled using the `PASA` alignment assembler; files generated include...
+    + `sample_mydb_pasa.assemblies.fasta`: the PASA assemblies in FASTA format
+    + `sample_mydb_pasa.pasa_assemblies.gff3`, `.gtf`, `.bed`: the PASA assembly structures
+    + `sample_mydb_pasa.pasa_alignment_assembly_building.ascii_illustrations.out`: descriptions of alignment assemblies and how they were constructed from the underlying transcript alignments
+    + `sample_mydb_pasa.pasa_assemblies_described.txt`: tab-delimited format describing the contents of the PASA assemblies, including the identity of those transcripts that were assembled into the corresponding structure
+
+#### [Introduction to `PASA`](#introduction-to-pasa)
+[Link to the resource](https://github.com/PASApipeline/PASApipeline/wiki#introduction)
+
+*Copied from the link with my notes and questions interspersed (also edited for grammar, style):*  
+¶1  
+...
+
+¶2  
+Functions of `PASA` include:
+...
+
+¶3  
+`PASA` is composed of a pipeline of utilities that perform the following ordered set of tasks:
+- Clean the transcripts
+    + The `seqclean` utility, developed by the TIGR Gene Index group, is used to identify evidence of polyadenylation and strip the poly-A, trim vector, and discard low quality sequences
+- Map and align transcripts to the genome
+    + `GMAP` and/or `BLAT` is used to map and align the transcripts to the genome
+- Validate nearly perfect alignments
+    + `PASA` utilizes only near perfect alignments. These alignments are required to align with a specified percent identity (typically 95%) along a specified percent of the transcript length (typically 90%)
+    + Each alignment is required to have consensus splice sites at all inferred intron boundaries, including (GT/GC donor with an AG acceptor, or the AT-AC U12-type dinucleotide pairs)
+- Maximal assembly of spliced alignments
+    + The valid transcript alignments are clustered based on genome mapping location and assembled into gene structures that include the maximal number of compatible transcript alignments
+    + Compatible alignments are those that have identical gene structures in their region of overlap
+    + The products are termed `PASA` maximal alignment assemblies
+    + Those assemblies that contain at least one full-length cDNA are termed FL-assemblies; the rest are non-FL-assembles
+- Grouping alternatively spliced isoforms
+    + Alignment assemblies that map to the same genomic locus, significantly overlap, and are transcribed on the same strand, are grouped into clusters of assemblies
+- Automatic Genome Annotation
+    + Given a set of existing gene structure annotations, which may include the latest annotation for a given genome or the results of a single ab-initio gene finder, a comparison to the `PASA` alignment assemblies is performed
+        * Each alignment assembly is assigned a status identifier based on the results of the annotation comparison
+        * The status identifier indicates whether or not the update is sanctioned as likely to improve the annotation, and the type of update that the assembly provides
+        * There are over 40 different status identifiers (actually, about 20 since half correspond to FL-assemblies and the other half to non-FL-assemblies)
+    + In the absence of any preexisting gene annotations, novel genes and alternative splicing isoforms of novel genes can be modeled
+    + At any time, regardless of any existing annotations, users can obtain candidate gene structures based on the longest open reading frame (ORF) found within each `PASA` alignment assembly
+        * The output includes a `.fasta` file for the proteins and a `.gff3` file describing the gene structures
+        * This is useful when applied to a previously uncharacterized genome sequence, allowing one to rapidly obtaining a set of candidate gene structures for training various *ab-intio* gene prediction programs
+        * In the case of RNA-seq, `PASA` can generate a full transcriptome-based genome annotation, identifying likely coding and non-coding transcripts
+
+##### `PASA` in the Context of a Complete Eukaryotic Annotation Pipeline
+[Link to the resource](https://github.com/PASApipeline/PASApipeline/wiki#pasa-in-the-context-of-a-complete-eukaryotic-annotation-pipeline)
+
+...
 <br />
 <br />
 
@@ -561,6 +682,7 @@ bowtie2 \
 
 #### [Building a `STAR` genome index](#building-a-star-genome-index)
 ```bash
+#!/bin/bash
 #DONTRUN
 
 STAR \
@@ -617,6 +739,7 @@ Meaning of the parameters for `STAR --runMode genomeGenerate`:
 
 #### [How we should call `STAR`](#how-we-should-call-star)
 ```bash
+#!/bin/bash
 #DONTRUN
 
 STAR \
@@ -762,6 +885,7 @@ STAR \
 
 ##### [Preparing the `.fasta` and `.gff3` files for `STAR`](#preparing-the-fasta-and-gff3-files-for-star)
 ```bash
+#!/bin/bash
 #DONTRUN
 
 #  grabnode can be "on" or "off"
@@ -1477,6 +1601,7 @@ Seems to be OK...
 
 ##### [Getting the `.fastq` files of interest into one location](#getting-the-fastq-files-of-interest-into-one-location)
 ```bash
+#!/bin/bash
 #DONTRUN
 
 #  grabnode should be "on"
@@ -1561,6 +1686,7 @@ ls -1 ~/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1101/file
 
 ##### [Checking on the length of reads for each `.fastq` file](#checking-on-the-length-of-reads-for-each-fastq-file)
 ```bash
+#!/bin/bash
 #DONTRUN
 
 #  grabnode should be "on"
@@ -1644,6 +1770,7 @@ rm -r ./files_fastq_symlinks/FastQC/5781_G1_IN_merged_R1.bak
 
 #### [Run `STAR` genome generation](#run-star-genome-generation)
 ```bash
+#!/bin/bash
 #DONTRUN
 
 #  grabnode has been called with default/lowest settings
@@ -1753,6 +1880,7 @@ echo \
 
 #### [Run `STAR` alignment](#run-star-alignment)
 ```bash
+#!/bin/bash
 #DONTRUN
 
 #  grabnode has been called with default/lowest settings
@@ -2874,13 +3002,36 @@ An interpretation: It is unusual to use the non-genome-guided assembly approach 
 
 Perhaps I will set up an experiment to test (**a**) <u>genome-guided assembly using `PASA`</u> versus (**b**) <u>non-genome-guided assembly roughly following the approach of [McIlwain et al.](#mcilwain-et-al-hittinger-g3-2016)</u> (and this approach will also influence how I validate genome-guided assembly).
 
-`IMPORTANT` Include the materials at the link mentioned by Brian in the ["References for the experimental design/pipeline"](#references-for-the-experimental-designpipeline). Put your notes on the link materials up there too.
+`#IMPORTANT` Include the materials at the link mentioned by Brian in the ["References for the experimental design/pipeline"](#references-for-the-experimental-designpipeline). Put your notes on the link materials up there too.
+
+[My response and question](https://groups.google.com/g/trinityrnaseq-users/c/DWctG7wLNYY/m/sq6sV0biAwAJ) to Brian after having studied his suggestion and materials (see [above](#references-for-the-experimental-designpipeline); 2022-1110):
+```txt
+Thank you, yes, that helps, and I am studying up on what you suggested.
+
+Just to be clear, to take advantage of multimapper information when running genome-guided Trinity, I should use as a bam infile in which all multimappers are retained (for example, from calling Bowtie 2 with the -k <int> flag to keep <int> number of alignments per read)—is that correct?
+
+Best,
+Kris
+```
+
+[His response](#references-for-the-experimental-designpipeline) (2022-1110):
+```txt
+The genome-guided mode leverages multimapped reads and the main benefit is that it uses the genome to inform how to group the reads into loci-based clusters, instead of having to do it genome-free based on kmer composition, etc.
+
+For genome alignments, you'll want to use STAR or HISAT when using RNA-seq data as input.
+
+Best,
+
+~brian
+```
+He doesn't directly address the question, Should I use "a bam infile in which all multimappers are retained?" Answer seems to be yes, though.
+
 <br />
 <br />
 
-# Miscellaneous
-## [Figure out where to put this](#figure-out-where-to-put-this)
-### [Brief discussion with Toshi about yeast blacklists](#brief-discussion-with-toshi-about-yeast-blacklists)
+## Miscellaneous
+### [Figure out where to put this](#figure-out-where-to-put-this)
+#### [Brief discussion with Toshi about yeast blacklists](#brief-discussion-with-toshi-about-yeast-blacklists)
 - He's not aware of any such blacklists for yeast
 - He suggested to reach out to Christine and Alison
 - He suggested that we could put together a blacklist from ChIP-seq input data
@@ -2892,10 +3043,8 @@ Perhaps I will set up an experiment to test (**a**) <u>genome-guided assembly us
 - Also, discussed the possibility of doing bench-work in the future
     + Mentioned how, after tackling the `Trinity` tasks, it'd be a fun and interesting bioinformatics experiment to compare yeast G2/M MicroC data (from the Koshland Lab) to the yeast Q MicroC data (from this lab)
     + From there, based on what we find, we could consider to design and perform wet experiments
-<br />
-<br />
 
-## [Google searches and websites to follow up on](#google-searches-and-websites-to-follow-up-on)
+### [Google searches and websites to follow up on](#google-searches-and-websites-to-follow-up-on)
 - ["add flag to multimapper"](https://www.google.com/search?q=add+flag+to+multimappers&oq=add+flag+to+multimappers&aqs=chrome..69i57j33i160l2.3704j0j7&sourceid=chrome&ie=UTF-8)
     + ["SAM FLAG for primary alignments, secondary alignments, and what's their relationships to uniqueness of mapping"](https://www.biostars.org/p/206396/)
 - ["use star with trinity"](https://www.google.com/search?q=use+star+with+trinity&oq=use+star+with+trinity&aqs=chrome..69i57j33i160l2.2936j0j7&sourceid=chrome&ie=UTF-8)
@@ -2905,10 +3054,8 @@ Perhaps I will set up an experiment to test (**a**) <u>genome-guided assembly us
 - ["repeatmasker yeast"](https://www.google.com/search?q=repeatmasker+yeast&oq=repeatmasker+yeast&aqs=chrome..69i57j0i546l5.5324j0j7&sourceid=chrome&ie=UTF-8)
     + [RepeatMasker for Fungi](https://www.biostars.org/p/171368/)
 - [Dfam](https://www.dfam.org/home)
-<br />
-<br />
 
-## To be continued after the completion of `Trinity` work
+### To be continued after the completion of `Trinity` work
 Remember, the overarching goal is to have appropriately processed bam files for experiments to determine the best way(s) to call `Trinity`
 - `(...)` Continue the TPM work
     - `#DONE` Understand what needs to be run before/after what when working with the adapted code base from `slowkow` (the work started in early September, 2022)
@@ -2929,10 +3076,8 @@ Remember, the overarching goal is to have appropriately processed bam files for 
         * Asked the question on the [Biostars forum](https://www.biostars.org/p/9543809/); thus far, no response
 - `#DONE` Continue to put together a ["master list" of all of Alison's relevant file directories](#updated-list-of-alisons-paths-to-important-directories-and-files)
 - `#DONE` Collect information on the [RNA-seq kits used by Alison](#information-on-the-rna-seq-kits-used-by-alison) to generate the libraries
-<br />
-<br />
 
-## [Next steps](#next-steps)
+### [Next steps](#next-steps)
 - `( Y ) #MONDAY` Pick up with fine-tuning the initial call to `Bowtie2`: *Shifting focus to STAR, a splice-aware aligner*  
 - `( Y ) #TUESDAY` Use the combined-reference .fasta, .gtf, and genome index files to try aligning one of the (symlinked) .fastq files using the parameters for *S. cerevisiae* you found on the `STAR` Google group  
     + First, sus out and describe the parameters (for example, are all of them needed, are the values appropriate, etc.?)
@@ -2940,11 +3085,25 @@ Remember, the overarching goal is to have appropriately processed bam files for 
 - `( Y ) #TUESDAY` Do the same with `Bowtie 2`  
 - `( Y ) #WEDNESDAT` Read over and take notes on the qualifying exam and research update documents sent by Alison  
 - `( Y ) #WEDNESDAY` Pick up with the assessment of the `Bowtie 2` alignment test #2 experiment: Need to know, from the alignments, what reads are unimappers, multimappers, etc.  
-- `(...) #WEDNESDAY #THURSDAY` Adjust `STAR` parameters based on the repetitive-element work you did in 2020
+- `(...) #TOMORROW` Adjust `STAR` parameters based on the repetitive-element work you did in 2020
 - `( Y ) #THURSDAY` Organize all thoughts on multimappers, messages to/from Trinity Google group, etc.)  
 - `(   ) #STUDYFIRST` Until I hear back from Brian Haas, or if I don't hear back, go ahead and move forward with altered `STAR` parameters (so that we don't have flags in high hundreds and, instead, get readouts more similar to what we see with the `Bowtie 2` test run #2 on 2022-1109)  
     + `(   ) #STUDYFIRST` After that's done, compare the kinds of alignments we're getting between the two aligners and then pick one for subsequent use  
 - `(   ) #STUDYFIRST` After the alignment process is determined, implemented, and completed, move on to writing up code for filtering by chromosomes (build on/expand what you were working on before): Ultimately, we'll start by working with VII of S. cerevisiae  
+- `(   ) #TOMORROW` Continue reading and note-taking based on the messages with Brian Haas; this includes...
+    + Haas et al. (Wortman), Approaches to Fungal Genome Annotation, Mycology 2011-09, particularly the portions that pertain to
+        * "Gene structure annotation using transcriptome sequences (2.1.1)"
+        * Figure 2
+        * any mentions of PASA
+        * "2.7. Annotation of fungal genomes with few spliced genes"
+        * "2.8. Annotation of non-coding RNA genes"  `#MAYBE`
+        * "Summary"
+    + [Conversations related to "PASA" on the Trinity Google group](https://groups.google.com/g/trinityrnaseq-users/search?q=pasa), e.g.,
+        * "STAR option for DISCASM"
+        * "genome guided trinity vs other tools"
+        * "analysis biological replications" (linked from "Genome-guided Trinity - pooling vs. not pooling bam files?")
+        * `#TODO` Determine the others
+    + All (or nearly all) the material associated with the `PASA` wiki (but seems like I have covered most of the relevant material)
 - `(   ) #SOMETIME` From there, move on to reading and taking notes on [the Harvard "best practices" document](https://informatics.fas.harvard.edu/best-practices-for-de-novo-transcriptome-assembly-with-trinity.html), which will inform the steps you need to take next
 - `(   ) #SOMETIME` Read and take notes on [this paper sent by Alison](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-016-1406-x#Sec2), which makes use of `Trinity` for *de novo* transcriptome assembly  
 - `(   ) #SOMETIME` Put together a "blacklist" for *S. cerevisiae*  
