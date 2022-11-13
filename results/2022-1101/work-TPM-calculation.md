@@ -1,5 +1,17 @@
 
 # 2022-1101
+<details>
+<summary><b><font size="+2">Table of Contents</font></b></summary>
+<!-- MarkdownTOC -->
+
+1. [Implementing the proper calculation of TPM](#implementing-the-proper-calculation-of-tpm)
+    1. [Build out the script for calling `picardmetrics`](#build-out-the-script-for-calling-picardmetrics)
+
+<!-- /MarkdownTOC -->
+</details>
+<br />
+
+<a id="implementing-the-proper-calculation-of-tpm"></a>
 ## Implementing the proper calculation of TPM
 - The following steps were put together after having read, in particular, [the reponse from `slowkow` to this post](https://www.biostars.org/p/171766/); another post is also quite useful, [particularly the comment from Heng Li](https://www.biostars.org/p/216616/#216678)
 - Adapt [this script](https://gist.github.com/slowkow/8101509) to calculate the number of coding bases per gene
@@ -13,6 +25,7 @@
     - `.fasta` file for genome of interest, e.g., `~/genomes/sacCer3/Ensembl/108/DNA/Saccharomyces_cerevisiae.R64-1-1.dna.toplevel.chr-rename.fasta`
 - Adapt [this script](https://www.biostars.org/p/216616/#216678) to convert raw counts (from `subread featureCounts`, I think `#TODO Check on this`) to TPM
 
+<a id="build-out-the-script-for-calling-picardmetrics"></a>
 ### Build out the script for calling `picardmetrics`
 ...a necessary *(?)* step prior to calculating TPM
 - Calling `picardmetrics` is necessary for getting the mean fragment length per library
@@ -20,6 +33,7 @@
 - `#DONE` Before setting up the script, install `picardmetrics` on the FHCC cluster
     + See [notes on the installation (which was somewhat tricky) here](https://gist.github.com/kalavattam/74394ed83c542862e087658accbdbc38))
 ```bash
+#!/bin/bash
 #DONTRUN
 
 grabnode  # 1 core, default memory, 1 day, default GPU
@@ -473,6 +487,9 @@ ERROR: Failed to move '/loc/scratch/3151686/picardmetrics_kalavatt_18572//home/k
 
 Make a new `.fasta` file with *chr*-styled names:
 ```bash
+#!/bin/bash
+#DONTRUN
+
 #QUESTION What do the chromosomes look like in the bam file(s)? ---------------
 cd "${dir_infiles}"  # dir_infiles=${HOME}/tsukiyamalab/alisong/WTQvsG1/Project_ccucinot/S_cerevisiae_BamFiles/HTSeq
 ml SAMtools/1.16.1-GCC-11.2.0

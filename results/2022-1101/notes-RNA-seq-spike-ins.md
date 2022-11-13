@@ -1,7 +1,26 @@
 
 # 2022-11
+<details>
+<summary><b><font size="+2">Table of Contents</font></b></summary>
+<!-- MarkdownTOC -->
+
+1. [RNA-seq: Information on bamCoverage, spike-ins with DESeq2](#rna-seq-information-on-bamcoverage-spike-ins-with-deseq2)
+    1. [Looking into the use of bamCoverage with RNA-seq data](#looking-into-the-use-of-bamcoverage-with-rna-seq-data)
+1. [TODO Return to this line of thinking later; for now, focus on PCR deduplication using UMI-tools and the UMI-containing `.fastq` files from FHCC Bioinformatics](#todo-return-to-this-line-of-thinking-later-for-now-focus-on-pcr-deduplication-using-umi-tools-and-the-umi-containing-fastq-files-from-fhcc-bioinformatics)
+    1. [Looking into the use of spike-ins prior to running `DESeq2`](#looking-into-the-use-of-spike-ins-prior-to-running-deseq2)
+        1. [Related email from me to Alison](#related-email-from-me-to-alison)
+        1. [Moving forward](#moving-forward)
+            1. [Related email from me to Alison](#related-email-from-me-to-alison-1)
+
+<!-- /MarkdownTOC -->
+</details>
+<br />
+
+<a id="rna-seq-information-on-bamcoverage-spike-ins-with-deseq2"></a>
 ## RNA-seq: Information on bamCoverage, spike-ins with DESeq2
+<a id="looking-into-the-use-of-bamcoverage-with-rna-seq-data"></a>
 ### Looking into the use of bamCoverage with RNA-seq data
+<a id="todo-return-to-this-line-of-thinking-later-for-now-focus-on-pcr-deduplication-using-umi-tools-and-the-umi-containing-fastq-files-from-fhcc-bioinformatics"></a>
 #TODO Return to this line of thinking later; for now, focus on PCR deduplication using UMI-tools and the UMI-containing `.fastq` files from FHCC Bioinformatics
 - [Purpose of bamCoverage RPKM normalization methods](https://www.biostars.org/p/9474318/)
 - [bamCoverage and RNA-seq data](https://github.com/deeptools/deepTools/issues/401)
@@ -14,6 +33,7 @@
     + Also referenced in the above as "more details of the different normalization methods of bamCoverage": [Deeptools sample scaling](https://www.biostars.org/p/167950/)
     + Also referenced in the above is [bamCoverage and RNA-seq data](https://github.com/deeptools/deepTools/issues/401)
 
+<a id="looking-into-the-use-of-spike-ins-prior-to-running-deseq2"></a>
 ### Looking into the use of spike-ins prior to running `DESeq2`
 `#TODO (   ) Write up notes later`
 - [estimateSizeFactors](https://rdrr.io/bioc/DESeq2/man/estimateSizeFactors.html)
@@ -24,6 +44,7 @@
 - [Another Bioconductor post on how to call `controlGenes`](https://support.bioconductor.org/p/130660/)
 - [Nice, simple explanation of `controlGenes` and its purpose in this Biostars post](https://www.biostars.org/p/400532/#400543)
 
+<a id="related-email-from-me-to-alison"></a>
 #### Related email from me to Alison
 From: [Alavattam, Kris](kalavatt@fredhutch.org)  
 Date: Thursday, November 3, 2022 at 1:39 PM  
@@ -42,9 +63,11 @@ Let’s try it out! I’ll start working on it after my lunch.
  
 -Kris
 
+<a id="moving-forward"></a>
 #### Moving forward
 I sent these links to Alison, who will move forward with implementing this.
 
+<a id="related-email-from-me-to-alison-1"></a>
 ##### Related email from me to Alison
 From: [Alavattam, Kris](kalavatt@fredhutch.org)  
 Date: Thursday, November 3, 2022 at 2:32 PM  

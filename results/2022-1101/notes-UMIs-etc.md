@@ -1,5 +1,47 @@
 
 # 2022-11
+<details>
+<summary><b><font size="+2">Table of Contents</font></b></summary>
+<!-- MarkdownTOC -->
+
+1. [Looking into UMI-tools](#looking-into-umi-tools)
+	1. [Email chains between Alison and Matt Fitzgibbon, FHCC Bioinformatician](#email-chains-between-alison-and-matt-fitzgibbon-fhcc-bioinformatician)
+		1. [Chain #1](#chain-1)
+			1. [Message #1](#message-1)
+			1. [Message #2](#message-2)
+			1. [Message #3](#message-3)
+			1. [Message #4](#message-4)
+			1. [Message #5](#message-5)
+			1. [Message #6](#message-6)
+			1. [Message #7](#message-7)
+			1. [Message #8](#message-8)
+			1. [Message #9](#message-9)
+		1. [Chain #2](#chain-2)
+			1. [Message #1](#message-1-1)
+			1. [Message #2](#message-2-1)
+			1. [Message #3](#message-3-1)
+			1. [Message #4](#message-4-1)
+			1. [Message #5](#message-5-1)
+			1. [Message #6](#message-6-1)
+			1. [Message #7](#message-7-1)
+			1. [Message #8](#message-8-1)
+			1. [Message #9](#message-9-1)
+	1. [Notes, etc. on removing PCR duplicates from *bulk* RNA-seq data](#notes-etc-on-removing-pcr-duplicates-from-bulk-rna-seq-data)
+		1. [Should I remove PCR duplicates from my RNA-seq data?](#should-i-remove-pcr-duplicates-from-my-rna-seq-data)
+		1. [What are UMIs and why are they used in high-throughput sequencing?](#what-are-umis-and-why-are-they-used-in-high-throughput-sequencing)
+			1. [Notes, questions related to the above text](#notes-questions-related-to-the-above-text)
+		1. [Notes from reading the Biostars post, "Should We Remove Duplicated Reads In RNA-seq?"](#notes-from-reading-the-biostars-post-should-we-remove-duplicated-reads-in-rna-seq)
+		1. [The abstract of Parekh et al., *Sci Rep* 2016](#the-abstract-of-parekh-et-al-sci-rep-2016)
+			1. [Notes, questions related to the above text](#notes-questions-related-to-the-above-text-1)
+		1. [On "Elimination of PCR duplicates..." \(Fu et al., *BMC Genom* 2018\)](#on-elimination-of-pcr-duplicates-fu-et-al-bmc-genom-2018)
+			1. [Abstract](#abstract)
+			1. [Final paragraph of Introduction](#final-paragraph-of-introduction)
+
+<!-- /MarkdownTOC -->
+</details>
+<br />
+
+<a id="looking-into-umi-tools"></a>
 ## Looking into UMI-tools
 ...especially as it pertains to the removal of PCR duplicates
 
@@ -8,9 +50,12 @@
 - [GitHub page for UMI-tools](https://github.com/CGATOxford/UMI-tools)
 - [Read the Docs for UMI-tools](https://umi-tools.readthedocs.io/en/latest/index.html)
 
+<a id="email-chains-between-alison-and-matt-fitzgibbon-fhcc-bioinformatician"></a>
 ### Email chains between Alison and Matt Fitzgibbon, FHCC Bioinformatician
 ...regarding sequencing data and their demultiplexing, UMI information, etc.
+<a id="chain-1"></a>
 #### Chain #1
+<a id="message-1"></a>
 ##### Message #1
 From: [SR-Bioinformatics](no-reply@fredhutch.happyfox.com)  
 Sent: Wednesday, September 28, 2022 3:46 PM  
@@ -32,6 +77,7 @@ Thanks!
 
 Alison Greenlaw
 
+<a id="message-2"></a>
 ##### Message #2
 From: [Matt Fitzgibbon](bioinformatics@fredhutch.org)  
 Sent: Wednesday, September 28, 2022 4:03 PM  
@@ -61,6 +107,7 @@ Note that in this case, I happen to still have the raw binary dump from the sequ
 Thanks,  
 -Matt
 
+<a id="message-3"></a>
 ##### Message #3
 From: [SR-Bioinformatics](no-reply@fredhutch.happyfox.com)  
 Sent: Wednesday, September 28, 2022 4:14 PM  
@@ -79,6 +126,7 @@ This is a long shot, but there's some sequencing from 2020 that, if the UMI data
 Thanks so much for all your help!  
 Alison 
 
+<a id="message-4"></a>
 ##### Message #4
 From: [Fitzgibbon, Matthew](mfitzgib@fredhutch.org)  
 Sent: Wednesday, September 28, 2022 4:21 PM
@@ -95,6 +143,7 @@ I'm out of office today, but will get the `220414_VH00699_101_AAAWYTFM5` demux s
 Cheers,  
 -Matt
 
+<a id="message-5"></a>
 ##### Message #5
 From: [SR-Bioinformatics](no-reply@fredhutch.happyfox.com)  
 Sent: Wednesday, September 28, 2022 4:27 PM  
@@ -107,6 +156,7 @@ That's great to hear! Thank you so much!
 
 Alison 
 
+<a id="message-6"></a>
 ##### Message #6
 From: [Fitzgibbon, Matthew P](mfitzgib@fredhutch.org)  
 Sent: Thursday, September 29, 2022 1:11 AM  
@@ -130,6 +180,7 @@ Note that the data here are largely redundant with the original demultiplexing r
 Let me know how looks,  
 -Matt
 
+<a id="message-7"></a>
 ##### Message #7
 From: [Greenlaw, Alison C](agreenla@fredhutch.org)  
 Sent: Thursday, September 29, 2022 7:08 PM  
@@ -143,6 +194,7 @@ When you have a chance, I would still appreciate the UMI info from the 2020 run.
 Thanks!  
 Alison 
 
+<a id="message-8"></a>
 ##### Message #8
 From: [Fitzgibbon, Matthew P](mfitzgib@fredhutch.org)  
 Sent: Friday, September 30, 2022 11:27 PM  
@@ -166,6 +218,7 @@ Let me know if either of these flowcells are related to this project as well. Ot
 Best,  
 -Matt
 
+<a id="message-9"></a>
 ##### Message #9
 From: [Greenlaw, Alison C](agreenla@fredhutch.org)  
 Sent: Friday, September 30, 2022 11:32 PM  
@@ -178,7 +231,9 @@ Have a nice weekend!
 
 Alison 
 
+<a id="chain-2"></a>
 #### Chain #2
+<a id="message-1-1"></a>
 ##### Message #1
 From: [SR-Bioinformatics](no-reply@fredhutch.happyfox.com)  
 Sent: Tuesday, October 11, 2022 12:28 PM  
@@ -194,6 +249,7 @@ I just did some sequencing and the page on hutchbase says "Transfer process appe
 Thanks so much, 
 Alison Greenlaw
 
+<a id="message-2-1"></a>
 ##### Message #2
 From: [Matt Fitzgibbon](bioinformatics@fredhutch.org)  
 Sent: Tuesday, October 11, 2022 1:00 PM  
@@ -208,6 +264,7 @@ The systems group is having trouble with the storage systems. We are aware of th
 
 -Matt
 
+<a id="message-3-1"></a>
 ##### Message #3
 From: [SR-Bioinformatics](no-reply@fredhutch.happyfox.com)  
 Sent: Tuesday, October 11, 2022 1:17 PM
@@ -220,6 +277,7 @@ Thank you so much!
  
 Alison 
 
+<a id="message-4-1"></a>
 ##### Message #4
 From: [Matt Fitzgibbon](bioinformatics@fredhutch.org)  
 Sent: Tuesday, October 11, 2022 3:38 PM  
@@ -254,6 +312,7 @@ Cheers,
 | Undetermined                        | 26,509,156                          | 4.70%                               |
 | **Total**                           | **568,839,269**                     |                                     |
 <br />
+<a id="message-5-1"></a>
 ##### Message #5
 From: [Fitzgibbon, Matthew](mfitzgib@fredhutch.org)  
 Sent: Wednesday, October 12, 2022 11:18 AM
@@ -268,6 +327,7 @@ Were you able to access these data? Let us know if everything is looking as expe
 Best,  
 -Matt
 
+<a id="message-6-1"></a>
 ##### Message #6
 From: [Greenlaw, Alison C](agreenla@fredhutch.org)  
 Sent: Wednesday, October 12, 2022 12:46 PM
@@ -280,6 +340,7 @@ I was going to reply when everything started working but the server has been slo
  
 Alison
 
+<a id="message-7-1"></a>
 ##### Message #7
 From: [Greenlaw, Alison C](agreenla@fredhutch.org)  
 Date: Wednesday, October 26, 2022 at 3:38 PM  
@@ -297,6 +358,7 @@ Other UMI info in these Locations:
 ~/tsukiyamalab/alisong/Nab3_Nrd1_Depletion/Sequencing/Project_agreenla/6126_7716/UMI
 ```
 
+<a id="message-8-1"></a>
 ##### Message #8
 From: [Alavattam, Kris](kalavatt@fredhutch.org)  
 Sent: Wednesday, October 26, 2022 3:41 PM  
@@ -305,6 +367,7 @@ Subject: Re: New reply: : \[agreenla tsukiyama_t\]: Transfer Status Failed () #B
  
 Thanks, sounds good.
 
+<a id="message-9-1"></a>
 ##### Message #9
 From: [Greenlaw, Alison C](agreenla@fredhutch.org)  
 Sent: Wednesday, October 26, 2022 6:55 PM  
@@ -319,7 +382,9 @@ Let me know if you have any issues.
 
 Alison 
 
+<a id="notes-etc-on-removing-pcr-duplicates-from-bulk-rna-seq-data"></a>
 ### Notes, etc. on removing PCR duplicates from *bulk* RNA-seq data
+<a id="should-i-remove-pcr-duplicates-from-my-rna-seq-data"></a>
 #### [Should I remove PCR duplicates from my RNA-seq data?](https://dnatech.genomecenter.ucdavis.edu/faqs/should-i-remove-pcr-duplicates-from-my-rna-seq-data/)
 The short and generalized answer to the question “Should I remove PCR duplicates from my RNA-seq data?” is in most cases **NO**. For some scenarios, de-duplification can be helpful, but **only when using UMIs**. Please see the details below.
 
@@ -336,6 +401,7 @@ Please see the [discussion here](https://www.biostars.org/p/55648/) for details 
 
 *This [blog post](molecularecologist.com/2016/08/the-trouble-with-pcr-duplicates) offers a detailed analysis of the effect of increasing read numbers on the frequency of PCR duplicates as well as the occurrence of false-positive duplicate identifications on another type of Illumina sequencing data (RAD-seq). Please note that the library type studied is different from RNA-seq as are the potential effects of PCR duplicates for this type of analysis. In contrast to RNA-seq, PCR duplicates should be removed for most RAD-seq studies.*
 
+<a id="what-are-umis-and-why-are-they-used-in-high-throughput-sequencing"></a>
 #### [What are UMIs and why are they used in high-throughput sequencing?](https://dnatech.genomecenter.ucdavis.edu/faqs/what-are-umis-and-why-are-they-used-in-high-throughput-sequencing/)
 **UMI** is an acronym for **U**nique **M**olecular **I**dentifier. UMIs are complex indices added to sequencing libraries **before** any PCR amplification steps, enabling the accurate bioinformatic identification of PCR duplicates. UMIs are also known as “Molecular Barcodes” or “Random Barcodes”. The idea seems to have been first implemented in an iCLIP protocol ([König et al., 2010](https://www.nature.com/articles/nsmb.1838)).
 
@@ -354,6 +420,7 @@ The usage of **UMIs** is recommended primarily for three scenarios: very low inp
 The figure below displays the (simplified) principles of the UMI data analysis for quantitative and variant detection studies.  
 ![UMI figure](./readme/UMIs.png)
 
+<a id="notes-questions-related-to-the-above-text"></a>
 ##### Notes, questions related to the above text
 - `#TODO (   )` Look into how to use UMIs to detetermine the complexity of RNA-seq libraries
     + Can I do this with UMI-tools?
@@ -362,6 +429,7 @@ The figure below displays the (simplified) principles of the UMI data analysis f
     + Does UMI-tools automatically detect the UMIs when using, say, the `dedup` subcommand?
 - The above figure makes things very clear: great figure!
 
+<a id="notes-from-reading-the-biostars-post-should-we-remove-duplicated-reads-in-rna-seq"></a>
 #### Notes from reading the Biostars post, ["Should We Remove Duplicated Reads In RNA-seq?"](https://www.biostars.org/p/55648/)
 - [Top comment](https://www.biostars.org/p/55648/#55662): The general consensus seems to be to NOT remove duplicates from RNA-seq. Read the Biostar discussions:
     + [Duplicated reads in RNA-seq Experiment](https://www.biostars.org/p/14283/)
@@ -370,9 +438,11 @@ The figure below displays the (simplified) principles of the UMI data analysis f
     + and [this seqanswers thread](http://seqanswers.com/forums/showthread.php?t=6854) and the other threads it links to.
 - [Most interesting comment (sub-comment to the top comment)](https://www.biostars.org/p/55648/#55882): The general consensus I see from those discussions, [rather than "no"](https://www.biostars.org/p/55648/#55662), is "it depends". The first link: Malachi Griffith writes: *"Observing high rates of read duplicates in RNA-seq libraries is common. It may not be an indication of poor library complexity caused by low sample input or over-amplification. It might be caused by such problems but it is often because of very high abundance of a small number of genes."* Second link: Istvan Albert writes: *"My personal opinion is to investigate the duplication rates and remove them if there is indication that these are artificial ones."* Third link: Ketil writes: *"I think the number of duplicates depend on many factors, so it is hard to give any general and useful rules of thumb. Usually, duplicates are correlated with too little sample material, and/or difficulties in the lab."* And the seqanswers thread goes both ways.
 
+<a id="the-abstract-of-parekh-et-al-sci-rep-2016"></a>
 #### The abstract of [Parekh et al., *Sci Rep* 2016](https://www.nature.com/articles/srep25533)
 Currently, quantitative RNA-seq methods are pushed to work with increasingly small starting amounts of RNA that require amplification. However, it is unclear how much noise or bias amplification introduces and how this affects precision and accuracy of RNA quantification. To assess the effects of amplification, reads that originated from the same RNA molecule (PCR-duplicates) need to be identified. *Computationally, read duplicates are defined by their mapping position, which does not distinguish PCR from natural duplicates and hence it is unclear how to treat duplicated reads.* Here, we generate and analyse RNA-seq data sets prepared using three different protocols (Smart-Seq, TruSeq and UMI-seq). *We find that a large fraction of computationally identified read duplicates are not PCR duplicates and can be explained by sampling and fragmentation bias. Consequently, the computational removal of duplicates does *improve neither accuracy nor precision and can actually worsen the power and the False Discovery Rate (FDR) for differential gene expression.* Even when duplicates are experimentally identified by unique molecular identifiers (UMIs), power and FDR are only mildly improved. However, *the pooling of samples as made possible by the early barcoding of the UMI-protocol leads to an appreciable increase in the power to detect differentially expressed genes.*
 
+<a id="notes-questions-related-to-the-above-text-1"></a>
 ##### Notes, questions related to the above text
 - `#DONE` What kind of wet-lab RNA-seq protocol/kit/etc. did Alison use?
     + It will be helpful to read over and understand that
@@ -380,7 +450,9 @@ Currently, quantitative RNA-seq methods are pushed to work with increasingly sma
     + `#DONE` Add in the information sent by Alison in the email "RNA seq kit info," sent 2022-1102
     + See the section ["Information on the RNA-seq kits used by Alison"](#information-on-the-rna-seq-kits-used-by-alison) below
 
+<a id="on-elimination-of-pcr-duplicates-fu-et-al-bmc-genom-2018"></a>
 #### On ["Elimination of PCR duplicates..." (Fu et al., *BMC Genom* 2018)](https://bmcgenomics.biomedcentral.com/articles/10.1186/s12864-018-4933-1)
+<a id="abstract"></a>
 ##### Abstract
 **Background**  
 RNA-seq and small RNA-seq are powerful, quantitative tools to study gene regulation and function. Common high-throughput sequencing methods rely on polymerase chain reaction (PCR) to expand the starting material, but not every molecule amplifies equally, causing some to be overrepresented. Unique molecular identifiers (UMIs) can be used to distinguish undesirable PCR duplicates derived from a single molecule and identical but biologically meaningful reads from different molecules.
@@ -391,5 +463,6 @@ We have incorporated UMIs into RNA-seq and small RNA-seq protocols and developed
 **Conclusions**  
 Using simulated and real datasets, we demonstrate that our methods increase the reproducibility of RNA-seq and small RNA-seq data. Notably, *we find that the amount of starting material and sequencing depth, but not the number of PCR cycles, determine PCR duplicate frequency*. Finally, we show that *computational removal of PCR duplicates based only on their mapping coordinates introduces substantial bias into data analysis*.
 
+<a id="final-paragraph-of-introduction"></a>
 ##### Final paragraph of Introduction
 Here, we describe novel experimental protocols and computational methods to unambiguously identify PCR duplicates in RNA-seq and small RNA-seq data. We show that r*emoving PCR duplicates using UMI information is accurate, whereas removing PCR duplicates without UMIs is overly aggressive,* eliminating many biologically meaningful reads. Finally, we show that *the amount of starting materials and sequencing depth determine the level of PCR duplicates, without additional contribution from the extent of PCR amplification.*

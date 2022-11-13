@@ -1,15 +1,48 @@
 
 # 2022-11
+<details>
+<summary><b><font size="+2">Table of Contents</font></b></summary>
+<!-- MarkdownTOC -->
+
+1. [Updated list of Alison's paths to important directories and files](#updated-list-of-alisons-paths-to-important-directories-and-files)
+    1. [Locations of "processed `.bam` files"](#locations-of-processed-bam-files)
+        1. [WTQvsG1](#wtqvsg1)
+        1. [Nab3_Nrd1_Depletion](#nab3_nrd1_depletion)
+        1. [Email chain between me and Alison](#email-chain-between-me-and-alison)
+            1. [Message #1](#message-1)
+            1. [Message #2](#message-2)
+    1. [Locations of "raw `.fastq` files" and "UMI information"](#locations-of-raw-fastq-files-and-umi-information)
+        1. [WTQvsG1](#wtqvsg1-1)
+            1. [#1](#1)
+            1. [#2](#2)
+        1. [TRF4_SSRNA_April2022](#trf4_ssrna_april2022)
+        1. [Nab3_Nrd1_Depletion](#nab3_nrd1_depletion-1)
+                1. [#1](#1-1)
+                1. [#2](#2-1)
+        1. [Email chain between me and Alison](#email-chain-between-me-and-alison-1)
+            1. [Message #1](#message-1-1)
+            1. [Message #2](#message-2-1)
+    1. [Locations of other important files](#locations-of-other-important-files)
+        1. [Email from Alison, 2022-1020](#email-from-alison-2022-1020)
+
+<!-- /MarkdownTOC -->
+</details>
+<br />
+
+<a id="updated-list-of-alisons-paths-to-important-directories-and-files"></a>
 ## Updated list of Alison's paths to important directories and files
+<a id="locations-of-processed-bam-files"></a>
 ### Locations of "processed `.bam` files"
 ...i.e., those that are ready for use with `htseq-count` or `featurecounts`
 
+<a id="wtqvsg1"></a>
 #### WTQvsG1
 ```txt
 ~/tsukiyamalab/alisong/WTQvsG1/Project_ccucinot/S_cerevisiae_BamFiles/HTSeq
 ~/tsukiyamalab/alisong/WTQvsG1/Project_ccucinot/S_cerevisiae_BamFiles/HTSeq/bam_resort
 ```
 
+<a id="nab3_nrd1_depletion"></a>
 #### Nab3_Nrd1_Depletion
 ```txt
 ~/tsukiyamalab/alisong/Nab3_Nrd1_Depletion/Sequencing/Project_agreenla/SC_bams_all
@@ -20,7 +53,9 @@
 ~/tsukiyamalab/alisong/Nab3_Nrd1_Depletion/Sequencing/Project_agreenla/6126_7716/S_cerevisiae_BamFiles/bam_resort/feature_counts_7716_6126
 ```
 
+<a id="email-chain-between-me-and-alison"></a>
 #### Email chain between me and Alison
+<a id="message-1"></a>
 ##### Message #1
 From: [Greenlaw, Alison C](agreenla@fredhutch.org)
 Date: Tuesday, November 1, 2022 at 10:55 AM
@@ -42,6 +77,7 @@ I should be in in the next hour-ish so we can chat more then!
  
 Alison
 
+<a id="message-2"></a>
 ##### Message #2
 From: [Alavattam, Kris](kalavatt@fredhutch.org)  
 Sent: Tuesday, November 1, 2022 10:19 AM
@@ -55,9 +91,12 @@ In addition to Nab3_Nrd1_Depletion, was thinking to test my in-progress TPM code
 Thanks,  
 Kris
 
+<a id="locations-of-raw-fastq-files-and-umi-information"></a>
 ### Locations of "raw `.fastq` files" and "UMI information"
 Notes and summary based on an email chain between me and Alison, [shown below](#email-chain-between-me-and-alison) and [above](#email-chains-between-alison-and-matt-fitzgibbon-fhcc-bioinformatician)
+<a id="wtqvsg1-1"></a>
 #### WTQvsG1
+<a id="1"></a>
 ##### #1
 ```txt
 ~/tsukiyamalab/alisong/WTQvsG1/Unaligned_UMI/Project_ccucinot
@@ -71,6 +110,7 @@ Notes and summary based on an email chain between me and Alison, [shown below](#
 *_R3_001.fastq.gz
 ```
 
+<a id="2"></a>
 ##### #2
 ```txt
 ~/tsukiyamalab/alisong/WTQvsG1/Project_ccucinot/Sample_578*
@@ -88,6 +128,7 @@ Notes and summary based on an email chain between me and Alison, [shown below](#
 *_R2_004.fastq
 ```
 
+<a id="trf4_ssrna_april2022"></a>
 #### TRF4_SSRNA_April2022
 ```txt
 ~/tsukiyamalab/alisong/TRF4_SSRNA_April2022/UMI_information/Project_agreenla
@@ -95,7 +136,9 @@ Notes and summary based on an email chain between me and Alison, [shown below](#
 #QUESTION Is this a project we're working on now? 
 ```
 
+<a id="nab3_nrd1_depletion-1"></a>
 #### Nab3_Nrd1_Depletion
+<a id="1-1"></a>
 ###### #1
 ```txt
 ~/tsukiyamalab/alisong/Nab3_Nrd1_Depletion/Sequencing/Project_agreenla/{5782_7714,6125_7718,6126_7716}
@@ -109,6 +152,7 @@ Notes and summary based on an email chain between me and Alison, [shown below](#
 *_SteadyState_S8_R3_001.fastq
 ```
 
+<a id="2-1"></a>
 ###### #2
 ```txt
 ~/tsukiyamalab/alisong/Nab3_Nrd1_Depletion/Sequencing/Project_agreenla/5782_7714/UMI
@@ -122,9 +166,11 @@ Notes and summary based on an email chain between me and Alison, [shown below](#
     + `#TODO (   )` Reference with [the email chains between Alison and Matt](#email-chains-between-alison-and-matt-fitzgibbon-fhcc-bioinformatician)
 - How are these files different from the above?
 
+<a id="email-chain-between-me-and-alison-1"></a>
 #### Email chain between me and Alison
 ...on "raw" `.fastq` files and "UMI information"
 
+<a id="message-1-1"></a>
 ##### Message #1
 From: [Alavattam, Kris](kalavatt@fredhutch.org)  
 Sent: Thursday, October 27, 2022 2:43 PM  
@@ -165,6 +211,7 @@ Until I hear back from you, I will move forward with what I typed in question #3
 Thanks! And apologies for the questions while you’re off,
 Kris
 
+<a id="message-2-1"></a>
 ##### Message #2
 From: [Greenlaw, Alison C](agreenla@fredhutch.or )  
 Date: Thursday, October 27, 2022 at 2:58 PM  
@@ -214,8 +261,10 @@ Hopefully this is clarified for you! I think you are very much on the right trac
  
 Alison
 
+<a id="locations-of-other-important-files"></a>
 ### Locations of other important files
 
+<a id="email-from-alison-2022-1020"></a>
 #### Email from Alison, 2022-1020
 From: [Greenlaw, Alison C](agreenla@fredhutch.org)  
 Date: Thursday, October 20, 2022 at 5:56 PM  

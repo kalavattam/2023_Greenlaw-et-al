@@ -1,10 +1,51 @@
 
 # 2022-1109
+<details>
+<summary><b><font size="+2">Table of Contents</font></b></summary>
+<!-- MarkdownTOC -->
+
+1. [Reading and taking notes on the papers sent by Alison](#reading-and-taking-notes-on-the-papers-sent-by-alison)
+1. [Reading through Alison's qualifying exam \(QE\) proposal](#reading-through-alisons-qualifying-exam-qe-proposal)
+    1. [QE proposal *Introduction*](#qe-proposal-introduction)
+    1. [QE proposal *Aims*](#qe-proposal-aims)
+    1. [QE proposal *Background and Significance*](#qe-proposal-background-and-significance)
+    1. [QE proposal *Approach*](#qe-proposal-approach)
+        1. [Aim 1: Determine Function of Nuclear Exosome Cofactor *TRF4* in Quiescence Entry](#aim-1-determine-function-of-nuclear-exosome-cofactor-trf4-in-quiescence-entry)
+            1. [Aim 1.1: Which transcripts misregulated by TRF4 are most essential to Q entry?](#aim-11-which-transcripts-misregulated-by-trf4-are-most-essential-to-q-entry)
+                1. [Aim 1.1: Expected Outcomes](#aim-11-expected-outcomes)
+                1. [Aim 1.1: Pitfalls and Alternative Approaches](#aim-11-pitfalls-and-alternative-approaches)
+            1. [Aim 1.2: What are the consequences of undegraded RNAs in Q entry?](#aim-12-what-are-the-consequences-of-undegraded-rnas-in-q-entry)
+                1. [Aim 1.2: Expected Outcomes](#aim-12-expected-outcomes)
+                1. [Aim 1.2: Pitfalls and Alternative Approaches](#aim-12-pitfalls-and-alternative-approaches)
+            1. [Aim 1.3: What effect does *trf4Δ* have on transcription in Q entry?](#aim-13-what-effect-does-trf4%CE%94-have-on-transcription-in-q-entry)
+                1. [Aim 1.3: Expected Outcomes](#aim-13-expected-outcomes)
+                1. [Aim 1.3: Pitfalls and Alternative Approaches](#aim-13-pitfalls-and-alternative-approaches)
+        1. [Aim 2: Investigate Functional Antisense Transcription in Quiescence](#aim-2-investigate-functional-antisense-transcription-in-quiescence)
+            1. [Aim 2.1: Nascent RNA sequencing and Annotation of Quiescent Transcriptome](#aim-21-nascent-rna-sequencing-and-annotation-of-quiescent-transcriptome)
+                1. [Aim 2.1: Expected Outcomes](#aim-21-expected-outcomes)
+                1. [Aim 2.1: Pitfalls and Alternative approaches](#aim-21-pitfalls-and-alternative-approaches)
+            1. [Aim 2.2: Transcriptional interference in Quiescence](#aim-22-transcriptional-interference-in-quiescence)
+                1. [Aim 2.2: Expected Outcomes](#aim-22-expected-outcomes)
+                1. [Aim 2.2: Pitfalls and Alternative approaches](#aim-22-pitfalls-and-alternative-approaches)
+    1. [QE proposal *Future Directions*](#qe-proposal-future-directions)
+    1. [QE proposal *Rigor and Reproducibility*](#qe-proposal-rigor-and-reproducibility)
+    1. [QE proposal *Innovation*](#qe-proposal-innovation)
+1. [Reading through Alison's Research Summary, Spring 2022](#reading-through-alisons-research-summary-spring-2022)
+    1. [Role of Nuclear Exosome co-factor Trf4 in Quiescence Entry](#role-of-nuclear-exosome-co-factor-trf4-in-quiescence-entry)
+    1. [Nascent Transcription in Quiescence Project](#nascent-transcription-in-quiescence-project)
+
+<!-- /MarkdownTOC -->
+</details>
+<br />
+
+<a id="reading-and-taking-notes-on-the-papers-sent-by-alison"></a>
 ## Reading and taking notes on the papers sent by Alison
 `#TODO` Copy in email here
 
-## [Reading through Alison's qualifying exam (QE) proposal](#reading-through-alisons-qualifying-exam-qe-proposal)
-### [QE proposal *Introduction*](#qe-proposal-introduction)
+<a id="reading-through-alisons-qualifying-exam-qe-proposal"></a>
+## Reading through Alison's qualifying exam (QE) proposal
+<a id="qe-proposal-introduction"></a>
+### QE proposal *Introduction*
 ¶2  
 A conserved feature of the eukaryotic genomes from yeast to humans is pervasive transcription. In *S. cerevisiae* <mark>~75% of the genome is comprised of annotated genes</mark>, and <mark>at least 85% is transcribed</mark>.3 This results in <mark>noncoding transcription which is either in close proximity to or **overlaps** annotated genes</mark>, much of it using the antisense strand. However, many of the transcripts produced are <mark>rapidly degraded</mark>, therefore termed <mark>“cryptic”</mark>. These transcripts have largely been annotated and classified based on what factor was knocked out in order to stabilize them, but *comprehensive study of their biological function remains a challenge*. The extent to which cryptic transcription is functional remains a matter of debate. Antisense transcription has been found to be a weak regulator of protein levels – regulating ~25% of 188 genes tested.4
 
@@ -24,7 +65,8 @@ Cryptic transcription
 ¶4  
 Many noncoding RNAs are rapidly degraded. Much of this degradation is controlled by the nuclear exosome. The nuclear exosome has been linked to genetic disease and cancer.9 Additionally, RNA stability is highly regulated through the cell cycle10 and contribute to a fibroblast model of quiescence11. However, how RNA stability is regulated in Q entry has not been comprehensively studied. ...
 
-### [QE proposal *Aims*](#qe-proposal-aims)
+<a id="qe-proposal-aims"></a>
+### QE proposal *Aims*
 ¶1  
 **Aim 1: Determine Function of Nuclear Exosome Cofactor TRF4 in Quiescence Entry**  
 `#NOTE Per Alison, this aim is dead now; see the email in which she sent this write-up`  
@@ -34,7 +76,8 @@ Many noncoding RNAs are rapidly degraded. Much of this degradation is controlled
 **Aim 2: Investigate Functional Antisense Transcription in Quiescence**  
 In Aim 2, I will use nascent RNA sequencing as a discovery mechanism for functional antisense transcription in quiescence. In Aim 2.1, I will focus on the analysis of nascent RNA sequencing in Q and G1 arrested cells. The goal of which is to select several candidates to test for functionality in Aim 2.2. I will test 6 to 10 candidates for functionality using CRISPRi and RNA depletion via hammerhead ribozyme to target transcription and RNA level separately. This will determine if antisense transcription functions to repress sense transcription in Q.
 
-### [QE proposal *Background and Significance*](#qe-proposal-background-and-significance)
+<a id="qe-proposal-background-and-significance"></a>
+### QE proposal *Background and Significance*
 ¶1  
 ...
 
@@ -105,41 +148,54 @@ Also, "budding yeast" is a synonym for S. cerevisiae; see "Reproduction" in en.w
 ¶9  
 In Aim 1, I will <mark>determine how steady state RNA levels change though Q entry</mark>, and the essential role TRF4 plays in this process. In Aim 2, I will <mark>annotate unique noncoding and antisense transcripts in Quiescence</mark> and test candidates for functionality.
 
-### [QE proposal *Approach*](#qe-proposal-approach)
-#### [Aim 1: Determine Function of Nuclear Exosome Cofactor *TRF4* in Quiescence Entry]()
+<a id="qe-proposal-approach"></a>
+### QE proposal *Approach*
+<a id="aim-1-determine-function-of-nuclear-exosome-cofactor-trf4-in-quiescence-entry"></a>
+#### Aim 1: Determine Function of Nuclear Exosome Cofactor *TRF4* in Quiescence Entry
 ...
 
-##### [Aim 1.1: Which transcripts misregulated by TRF4 are most essential to Q entry?]()
+<a id="aim-11-which-transcripts-misregulated-by-trf4-are-most-essential-to-q-entry"></a>
+##### Aim 1.1: Which transcripts misregulated by TRF4 are most essential to Q entry?
 ...
 
-###### [Aim 1.1: Expected Outcomes]()
+<a id="aim-11-expected-outcomes"></a>
+###### Aim 1.1: Expected Outcomes
 ...
 
-###### [Aim 1.1: Pitfalls and Alternative Approaches]()
+<a id="aim-11-pitfalls-and-alternative-approaches"></a>
+###### Aim 1.1: Pitfalls and Alternative Approaches
 ...
 
-##### [Aim 1.2: What are the consequences of undegraded RNAs in Q entry?]()
+<a id="aim-12-what-are-the-consequences-of-undegraded-rnas-in-q-entry"></a>
+##### Aim 1.2: What are the consequences of undegraded RNAs in Q entry?
 ...
 
-###### [Aim 1.2: Expected Outcomes]()
+<a id="aim-12-expected-outcomes"></a>
+###### Aim 1.2: Expected Outcomes
 ...
 
-###### [Aim 1.2: Pitfalls and Alternative Approaches]()
+<a id="aim-12-pitfalls-and-alternative-approaches"></a>
+###### Aim 1.2: Pitfalls and Alternative Approaches
 ...
 
-##### [Aim 1.3: What effect does *trf4Δ* have on transcription in Q entry?]()
+<a id="aim-13-what-effect-does-trf4%CE%94-have-on-transcription-in-q-entry"></a>
+##### Aim 1.3: What effect does *trf4Δ* have on transcription in Q entry?
 ...
 
-###### [Aim 1.3: Expected Outcomes]()
+<a id="aim-13-expected-outcomes"></a>
+###### Aim 1.3: Expected Outcomes
 ...
 
-###### [Aim 1.3: Pitfalls and Alternative Approaches]()
+<a id="aim-13-pitfalls-and-alternative-approaches"></a>
+###### Aim 1.3: Pitfalls and Alternative Approaches
 ...
 
-#### [Aim 2: Investigate Functional Antisense Transcription in Quiescence]()
+<a id="aim-2-investigate-functional-antisense-transcription-in-quiescence"></a>
+#### Aim 2: Investigate Functional Antisense Transcription in Quiescence
 Functional antisense RNAs have been a challenge to find and characterize. Quiescence provides a unique cell state with the possibility of enriching for such functional transcripts. This is because antisense transcripts have repeatedly been linked to regulation of cell fate, and <mark>Q has widespread induction of antisense RNA</mark>. Further, antisense transcription regulation is a promising candidate for regulation of quiescence due to ties to metabolic and cell state, as well as evolutionary conservation. <mark>We have found in Q an increase in noncoding transcription in general, and antisense transcription specifically. I hypothesize that antisense transcription regulates key loci via transcriptional interference to help maintain quiescent genome off state</mark>.
 
-##### [Aim 2.1: Nascent RNA sequencing and Annotation of Quiescent Transcriptome]()
+<a id="aim-21-nascent-rna-sequencing-and-annotation-of-quiescent-transcriptome"></a>
+##### Aim 2.1: Nascent RNA sequencing and Annotation of Quiescent Transcriptome
 ¶1  
 In order to understand transcription in quiescence, I performed nascent RNA sequencing on quiescent and G1 arrested yeast. Q cells in water or G1 arrested cells in media were given 4tU for 6 minutes before being snap frozen. Labeled K. lactis cells were added at the time of RNA extraction as a spike-in. 40 ng of RNA was then conjugated to biotin, which preferentially binds with the sulfur on 4tU. Nascent RNA is then enriched for by bead pull down, which pulls down biotinylated nascent RNA. Both input (steady state) and pulled down (nascent) RNA were then library prepped and sequenced using the strand specific kit.
 
@@ -198,10 +254,12 @@ Here, Figure 3 is a mistake and means Figure 4, I think
 #QUESTION How to determine "antisense RNAs with unique pre-initiation complexes"? From the
           literature? Or the subsequent TFIIB thing? Both?
 ```
-###### [Aim 2.1: Expected Outcomes]()
+<a id="aim-21-expected-outcomes"></a>
+###### Aim 2.1: Expected Outcomes
 I expect to identify 6-10 strong candidate antisense RNAs based on the approach outlined above.
 
-###### [Aim 2.1: Pitfalls and Alternative approaches]()
+<a id="aim-21-pitfalls-and-alternative-approaches"></a>
+###### Aim 2.1: Pitfalls and Alternative approaches
 4tU sequencing data is high quality, and there is strong correlation between biological replicates and to similar data generated by former lab members. The biggest challenge is selecting candidate transcripts most likely to have regulatory functions. I have already identified some exciting loci. However, if further analysis suggests this phenomenon is not functional, I will shift focus to understand how the chromatin environment in Q results in a higher fraction of pervasive transcription (Future Directions).
 ```txt
 #QUESTION Do we have data on the quality of the 4tU datasets? My understanding is that these
@@ -210,35 +268,44 @@ I expect to identify 6-10 strong candidate antisense RNAs based on the approach 
           data from other lab members?
 ```
 
-##### [Aim 2.2: Transcriptional interference in Quiescence]()
+<a id="aim-22-transcriptional-interference-in-quiescence"></a>
+##### Aim 2.2: Transcriptional interference in Quiescence
 ...
 
-###### [Aim 2.2: Expected Outcomes]()
+<a id="aim-22-expected-outcomes"></a>
+###### Aim 2.2: Expected Outcomes
 ...
 
-###### [Aim 2.2: Pitfalls and Alternative approaches]()
+<a id="aim-22-pitfalls-and-alternative-approaches"></a>
+###### Aim 2.2: Pitfalls and Alternative approaches
 ...
 
-### [QE proposal *Future Directions*]()
+<a id="qe-proposal-future-directions"></a>
+### QE proposal *Future Directions*
 In the future, I would like to see when functional antisense RNAs come on in Q entry; this may be observable in RNA seq data generated in Aim 1 or via strand specific RT-qPCR at specific loci. Additionally, to further understand how the Q chromatin environment contributes to noncoding transcription, I will compare antisense transcripts to features already ChIPed by our lab and others to see how the chromatin environment in quiescence specifically promotes widespread antisense transcription. This along with additional bioinformatic analysis such as motif analysis, as well as analysis of gene orientation has the potential to reveal organizing principles of antisense transcription in Q.
 
-### [QE proposal *Rigor and Reproducibility*]()
+<a id="qe-proposal-rigor-and-reproducibility"></a>
+### QE proposal *Rigor and Reproducibility*
 ...
 
-### [QE proposal *Innovation*]()
+<a id="qe-proposal-innovation"></a>
+### QE proposal *Innovation*
 ...
 <br />
 <br />
 
-## [Reading through Alison's Research Summary, Spring 2022](#reading-through-alisons-research-summary-spring-2022)
-### [Role of Nuclear Exosome co-factor Trf4 in Quiescence Entry]()
+<a id="reading-through-alisons-research-summary-spring-2022"></a>
+## Reading through Alison's Research Summary, Spring 2022
+<a id="role-of-nuclear-exosome-co-factor-trf4-in-quiescence-entry"></a>
+### Role of Nuclear Exosome co-factor Trf4 in Quiescence Entry
 ¶1  
 I sequenced steady state RNA from *trf4∆* and parental strains through quiescence entry. Additionally, I grew *rrp6∆* strains in parallel. Since *RRP6* functions in the same pathway as *TRF4*, but with much less dramatic effects on Q entry, this provided a key control to understand which RNAs are most relevant to Q entry. Overall, the transcriptome between *trf4∆* and *rrp6∆* are much more similar to each other and to the parental control than I anticipated. I hypothesized that TRF4 functioned mainly to degrade growth mRNAs in Q entry, which was consistent with previous work done in rapid nutrient downshift. While hundreds of mRNAs are preferentially stabilized, those defects are less dramatic in *trf4∆* than *rrp6∆*, and don’t seem to target pathways that would affect Q. Instead, I have found a handful mRNAs which regulated phosphate and nitrogen metabolism are down in *trf4∆* two hours before the diauxic shift (DS). Coordinating the starvation response of multiple nutrients is necessary for entry into quiescence, so this is potentially explanatory of the phenotype we observed. By 24 hours after the DS, *trf4∆* overexpresses a number of glucose transporters despite having exhausted glucose 24 hours prior. My current working hypothesis is that failure to coordinate nutrient starvation response early in Q entry results in a cellular state incompatible with quiescence for *trf4∆*.
 
 ¶2  
 However, this opens a new line of questioning: how is the deletion of an RNA decay protein resulting in less transcript not more? My immediate next step is to use nascent RNAseq to understand if this is change in RNA abundance is being driven by more decay or less transcription in the absence of Trf4.
 
-### [Nascent Transcription in Quiescence Project]()
+<a id="nascent-transcription-in-quiescence-project"></a>
+### Nascent Transcription in Quiescence Project
 ¶1  
 Annotation of unique quiescent transcripts is complete, and I have identified 5447 transcripts. When compared to an annotation file with 14623 annotated yeast transcripts, 1699 transcripts had no overlap on the same strand with anything previously annotated. This annotation was therefore ~31% “totally unique”. Trinity, the program which performed the initial annotation, is very sensitive, so some of these 5000 transcripts are very low level, and some are fragmented. Using DeSeq2, with cut offs of log2 fold change >2 and adjusted p-value < .05, 61% of newly annotated transcripts are overexpressed in Q compared to G1 arrested cells.
 

@@ -1,6 +1,85 @@
 
-# 2022-1102-1110
-##  Get another trial run of `Trinity` going
+# 2022-1102-1113
+<details>
+<summary><b><font size="+2">Table of Contents</font></b></summary>
+<!-- MarkdownTOC -->
+
+1. [Get another trial run of `Trinity` going](#get-another-trial-run-of-trinity-going)
+    1. [Meaning of `Trinity` parameters used](#meaning-of-trinity-parameters-used)
+1. [Continued reading, studying regarding `Trinity`](#continued-reading-studying-regarding-trinity)
+    1. [Outstanding, ongoing questions, points, etc.](#outstanding-ongoing-questions-points-etc)
+    1. [In-progress steps of the pipeline](#in-progress-steps-of-the-pipeline)
+    1. [In-progress list of packages for the pipeline](#in-progress-list-of-packages-for-the-pipeline)
+    1. [References for the experimental design/pipeline](#references-for-the-experimental-designpipeline)
+    1. [Notes from the references listed above](#notes-from-the-references-listed-above)
+        1. [McIlwain et al. \(Hittinger\), *G3* 2016](#mcilwain-et-al-hittinger-g3-2016)
+            1. [From *Materials and Methods*](#from-materials-and-methods)
+            1. [From *File S1*](#from-file-s1)
+        1. [Blevins et al. \(Mar Alba\), bioRxiv 2019-0313](#blevins-et-al-mar-alba-biorxiv-2019-0313)
+            1. [From *Results*](#from-results)
+            1. [From *Supplementary Figure 1*](#from-supplementary-figure-1)
+            1. [From *Methods*](#from-methods)
+        1. [Build a Comprehensive Transcriptome Database](#build-a-comprehensive-transcriptome-database)
+            1. [Build a Comprehensive Transcriptome Database Using Genome-Guided and *De Novo* RNA-seq Assembly](#build-a-comprehensive-transcriptome-database-using-genome-guided-and-de-novo-rna-seq-assembly)
+        1. [Leveraging RNA-seq by the `PASA` Pipeline](#leveraging-rna-seq-by-the-pasa-pipeline)
+            1. [Leveraging RNA-seq by the `PASA` Pipeline](#leveraging-rna-seq-by-the-pasa-pipeline-1)
+                1. [Strand-specific RNA-seq](#strand-specific-rna-seq)
+                1. [Non-Strand-specific RNA-seq](#non-strand-specific-rna-seq)
+        1. [Running the `PASA` Alignment Assembly Pipeline](#running-the-pasa-alignment-assembly-pipeline)
+            1. [Running the Alignment Assembly Pipeline](#running-the-alignment-assembly-pipeline)
+                1. [Step A: Cleaning the transcript sequences \(optional\)](#step-a-cleaning-the-transcript-sequences-optional)
+                1. [Step B: Walking Thru A Complete Example Using the Provided Sample Data](#step-b-walking-thru-a-complete-example-using-the-provided-sample-data)
+        1. [Introduction to `PASA`](#introduction-to-pasa)
+            1. [`PASA` in the Context of a Complete Eukaryotic Annotation Pipeline](#pasa-in-the-context-of-a-complete-eukaryotic-annotation-pipeline)
+1. [Sussing out the alignment work for the pipeline](#sussing-out-the-alignment-work-for-the-pipeline)
+    1. [On calling `Bowtie 2`](#on-calling-bowtie-2)
+        1. [Meaning of `Bowtie 2` parameters](#meaning-of-bowtie-2-parameters)
+        1. [How we should call `Bowtie 2`](#how-we-should-call-bowtie-2)
+    1. [On calling `STAR`](#on-calling-star)
+        1. [Building a `STAR` genome index](#building-a-star-genome-index)
+        1. [Meaning of `STAR` parameters for `genomeGenerate`](#meaning-of-star-parameters-for-genomegenerate)
+        1. [How we should call `STAR`](#how-we-should-call-star)
+        1. [Meaning of `STAR` parameters for `alignReads`](#meaning-of-star-parameters-for-alignreads)
+    1. [Implementing the alignment steps with `STAR` and `Bowtie 2`](#implementing-the-alignment-steps-with-star-and-bowtie-2)
+        1. [Generating files needed for `STAR` alignment \(2022-1107\)](#generating-files-needed-for-star-alignment-2022-1107)
+            1. [Preparing the `.fasta` and `.gff3` files for `STAR`](#preparing-the-fasta-and-gff3-files-for-star)
+            1. [Getting the `.fastq` files of interest into one location](#getting-the-fastq-files-of-interest-into-one-location)
+            1. [Checking on the length of reads for each `.fastq` file](#checking-on-the-length-of-reads-for-each-fastq-file)
+        1. [Run `STAR` genome generation](#run-star-genome-generation)
+        1. [Run `STAR` alignment](#run-star-alignment)
+            1. [Alignment metrics for the test run of `STAR`](#alignment-metrics-for-the-test-run-of-star)
+                1. [Thoughts on the alignment metrics for `STAR`:](#thoughts-on-the-alignment-metrics-for-star)
+                1. [Examine the flags in the `.bam` outfile from the test run of `STAR`](#examine-the-flags-in-the-bam-outfile-from-the-test-run-of-star)
+                1. [Additional thoughts on the alignment metrics and flags from `STAR`](#additional-thoughts-on-the-alignment-metrics-and-flags-from-star)
+                1. [Do a little clean-up prior to running alignment with `Bowtie 2`](#do-a-little-clean-up-prior-to-running-alignment-with-bowtie-2)
+        1. [Generating files needed for `Bowtie 2` alignment \(2022-1108\)](#generating-files-needed-for-bowtie-2-alignment-2022-1108)
+            1. [Preparing the `.fasta` and `.gff3` files for `Bowtie 2`](#preparing-the-fasta-and-gff3-files-for-bowtie-2)
+            1. [On the location of the `.fastq` files](#on-the-location-of-the-fastq-files)
+            1. [Run `Bowtie 2` alignment](#run-bowtie-2-alignment)
+            1. [Alignment metrics for the test run of `Bowtie 2`](#alignment-metrics-for-the-test-run-of-bowtie-2)
+                1. [Thoughts on the alignment metrics for `Bowtie 2`](#thoughts-on-the-alignment-metrics-for-bowtie-2)
+                1. [Examine the flags in the `.bam` outfile from the test run of `Bowtie 2`](#examine-the-flags-in-the-bam-outfile-from-the-test-run-of-bowtie-2)
+            1. [Try re-running `Bowtie 2` alignment](#try-re-running-bowtie-2-alignment)
+            1. [Alignment metrics for the *corrected* test run of Bowtie 2](#alignment-metrics-for-the-corrected-test-run-of-bowtie-2)
+                1. [Thoughts on the alignment metrics for `Bowtie 2` \(*corrected*\)](#thoughts-on-the-alignment-metrics-for-bowtie-2-corrected)
+                1. [Examine the flags in the `.bam` outfile from the *corrected* test run of `Bowtie 2`](#examine-the-flags-in-the-bam-outfile-from-the-corrected-test-run-of-bowtie-2)
+                1. [Examine the `.fastq` outfiles from the *corrected* test run of `Bowtie 2`](#examine-the-fastq-outfiles-from-the-corrected-test-run-of-bowtie-2)
+                1. [`head` through the `.bam` outfile from the *corrected* test run of `Bowtie 2`](#head-through-the-bam-outfile-from-the-corrected-test-run-of-bowtie-2)
+        1. [More thoughts on multimappers \(2022-1109-1110\)](#more-thoughts-on-multimappers-2022-1109-1110)
+1. [Miscellaneous](#miscellaneous)
+    1. [Figure out where to put this](#figure-out-where-to-put-this)
+        1. [Brief discussion with Toshi about yeast blacklists](#brief-discussion-with-toshi-about-yeast-blacklists)
+    1. [Google searches and websites to follow up on](#google-searches-and-websites-to-follow-up-on)
+    1. [To be continued after the completion of `Trinity` work](#to-be-continued-after-the-completion-of-trinity-work)
+        1. [Discussion with Alison on what I should prioritize \(2022-1103\)](#discussion-with-alison-on-what-i-should-prioritize-2022-1103)
+    1. [Next steps](#next-steps)
+
+<!-- /MarkdownTOC -->
+</details>
+<br />
+
+<a id="get-another-trial-run-of-trinity-going"></a>
+## Get another trial run of `Trinity` going
 Just to reacquaint yourself with things...
 ```bash
 #!/bin/bash
@@ -92,10 +171,38 @@ mkdir -p exp_Trinity
 mv 5781_* 3299486* trinity_5781_* exp_Trinity/
 ```
 
+<a id="meaning-of-trinity-parameters-used"></a>
+### Meaning of `Trinity` parameters used
+- `--genome_guided_bam`: "If a genome sequence is available, Trinity offers a method whereby reads are first aligned to the genome, partitioned according to locus, followed by *de novo* transcriptome assembly at each locus" ([more info](https://github.com/trinityrnaseq/trinityrnaseq/wiki/Genome-Guided-Trinity-Transcriptome-Assembly))
+    - "In this use-case, the genome is only being used as a substrate for grouping overlapping reads into clusters that will then be separately fed into Trinity for *de novo* transcriptome assembly."
+    - "This is very much *unlike* typical genome-guided approaches (e.g., cufflinks) where aligned reads are stitched into transcript structures and where transcript sequences are reconstructed based on the reference genome sequence."
+    - "Here, transcripts are reconstructed based on the actual read sequences."
+- `--max_memory`: suggested max memory to use by Trinity, where limiting can be enabled
+- `--SS_lib_type`: if paired, RF or FR (dUTP method = RF); if single, F or R; this means that left-end reads are on the forward strand and right-end reads are on the reverse strand
+- `--normalize_max_read_cov`: defaults to 200, an *in silico* read normalization option
+    - `#QUESTION` Does it mean that it sets the maximum coverage to 200x?
+    - `#ANSWER` It means that "poorly covered regions \[are\] unchanged, but reads \[are\] down-sampled in high-coverage regions" (see slide 16 [here](https://biohpc.cornell.edu/lab/doc/Trinity_workshop.pdf))
+    - "May end up using just 20% of all reads reducing computational burden with no impact on assembly quality"
+    - `#NOTE` This normalization method has "mixed reviews" – \[it\] tends to skip whole genes
+- `--jaccard_clip`: set if you have paired reads and you expect high gene density with UTR overlap (use FASTQ input file format for reads)
+    - `#QUESTION`: Our input appears to be a bam; does this affect things?
+- `--genome_guided_max_intron`: "...use a maximum intron length that makes most sense given your targeted organism" ([more info](https://github.com/trinityrnaseq/trinityrnaseq/wiki/Genome-Guided-Trinity-Transcriptome-Assembly))
+- `--min_kmer_cov`: with a setting of 2, it means that singleton k-mers will not be included in initial Inchworm contigs (suggested by the Trinity team)
+- `--max_reads_per_graph`: maximum number of reads to anchor within a single graph (default: 200000)
+- `--min_glue`: min number of reads needed to glue two inchworm contigs together. (default: 2)
+- `--group_pairs_distance`: maximum length expected between fragment pairs (default: 500) (reads outside this distance are treated as single-end)
+- `--min_contig_length`: minimum assembled contig length to report (def=200, must be >= 100)
+- `--full_cleanup`: only retain the Trinity fasta file, rename as `${output_dir}.Trinity.fasta`
+- `--output`: name of directory for output (will be created if it doesn't already exist) default( your current working directory: `/usr/local/src/trinity_out_dir` note: must include 'trinity' in the name as a safety precaution! )
+<br />
+<br />
+
+<a id="continued-reading-studying-regarding-trinity"></a>
 ## Continued reading, studying regarding `Trinity`
 Builds on work [performed here](../2022-1025/readme.md#snippets-etc-from-searching-the-trinity-google-group)
 
-### [Outstanding, ongoing questions, points, etc.](#outstanding-ongoing-questions-points-etc)
+<a id="outstanding-ongoing-questions-points-etc"></a>
+### Outstanding, ongoing questions, points, etc.
 - When building a transcriptome with Trinity, should we use all `.fastq` (*de novo* assembly) or `.bam` (genome-guided assembly) files in one run? Would doing so build a transcriptome from that combined information?
 - What is *minimizing the sum of ranks* [described below](#from-file-s1)?
     + Does it mean summing the three metrics of interest&mdash;**Transcript Length Distribution Related Factors (when maximized)**, **Unweighted K-mer KL_A_to_M (when minimized)**, and **Unweighted_Pair_F1 (when maximized)**&mdash;and then taking the assembly with lowest sum?
@@ -135,7 +242,8 @@ Builds on work [performed here](../2022-1025/readme.md#snippets-etc-from-searchi
         * Option #2: ***Do not include them*** with reads that mapped to *S. cerevisiae* in the *de novo* transcriptome assembly
     + And what about the parameters for calling `Bowtie2`? Here is how we're currently calling it:
 
-### [In-progress steps of the pipeline](#in-progress-steps-of-the-pipeline)
+<a id="in-progress-steps-of-the-pipeline"></a>
+### In-progress steps of the pipeline
 0. Generate downsampled paired-end `.fastq` files for use in tests of preprocessing and *de novo* transcriptome assembly
 1. Run some kind of quality check on the `.fastq` files, e.g., `FastqQC` or `fastp`, paying attention to
     - adapter content
@@ -176,7 +284,8 @@ Builds on work [performed here](../2022-1025/readme.md#snippets-etc-from-searchi
     + Spoke with Toshi briefly about the existence of and use of blacklists in yeast NGS work; [details below](#brief-discussion-with-toshi-about-yeast-blacklists)
 10. ...
 
-### [In-progress list of packages for the pipeline](#in-progress-list-of-packages-for-the-pipeline)
+<a id="in-progress-list-of-packages-for-the-pipeline"></a>
+### In-progress list of packages for the pipeline
 - Ongoing list packages for a `conda env` for doing the transcriptome-assembly work:
     + `Trinity`
         * [`conda`](https://anaconda.org/bioconda/trinity)
@@ -205,7 +314,8 @@ Builds on work [performed here](../2022-1025/readme.md#snippets-etc-from-searchi
     + etc.
 - Related resource: [Lessons on using Trinity from Brian Haas](https://bioinformaticsdotca.github.io/rnaseq_2018)
 
-### [References for the experimental design/pipeline](#references-for-the-experimental-designpipeline)
+<a id="references-for-the-experimental-designpipeline"></a>
+### References for the experimental design/pipeline
 - [McIlwain et al. (Hittinger), *G3* 2016](https://academic.oup.com/g3journal/article/6/6/1757/6029942) ([notes below](#mcilwain-et-al-hittinger-g3-2016))
     + [Notes](#mcilwain-et-al-hittinger-g3-2016)
 - [Blevins et al. (Mar Alba), bioRxiv 2019-0313](https://www.biorxiv.org/content/10.1101/575837v1.full)
@@ -229,15 +339,19 @@ Builds on work [performed here](../2022-1025/readme.md#snippets-etc-from-searchi
 
 `#TODO For the in-progress steps below, describe what material is from what reference above`
 
-### [Notes from the references listed above](#notes-from-the-references-listed-above)
-#### [McIlwain et al. (Hittinger), *G3* 2016](#mcilwain-et-al-hittinger-g3-2016)
+<a id="notes-from-the-references-listed-above"></a>
+### Notes from the references listed above
+<a id="mcilwain-et-al-hittinger-g3-2016"></a>
+#### McIlwain et al. (Hittinger), *G3* 2016
 [Link to paper](https://academic.oup.com/g3journal/article/6/6/1757/6029942)
 
+<a id="from-materials-and-methods"></a>
 ##### From *Materials and Methods*
 ...
 
 We validated the predicted protein coding genes of Y22-3 using: 1) single-end RNA-seq data collected from four growth phases of Y22-3 grown on YP media containing 60 g/L dextrose and 30 g/L xylose (YPDX, equivalent sugar concentrations that mimic ACSH made with 6% glucan loading), 2) <mark>an optimized (Figure S1) *de novo* transcriptome assembled by Trinity (Grabherr et al. 2011) using paired-end RNA-seq data</mark> from clones derived from Y22-3 that were grown aerobically or anaerobically from four to six growth phases on YPDX and ACSH, and 3) proteomic data collected similarly to previous nanoflow liquid....
 
+<a id="from-file-s1"></a>
 ##### From [*File S1*](https://oup.silverchair-cdn.com/oup/backfile/Content_public/Journal/g3journal/6/6/10.1534_g3.116.029389/5/029389_files1.pdf?Expires=1670618915&Signature=4DEEu1wmL~iHD~Hpq-nTS9dJzWOHBV~jvWPaFFY-df6LV7nLBK45mN5h7MfOqxC5yDY8f8jpz9jcgsnBH6Q0a3NCotRUwvPcyQzo9VIX8fy4VSj7nibf9enwo-tyw5u4vQNtZXU4kjRgJZddXmvRE~73LEJdaFYQxBiRTNvskf5lCvmw64xLDeJPW8OGMVixRphDasc5zo~DNSQyNsbPxaZQCd4nNlNx2OMIc~RadavZBm-ZMPB81bPr4~oFeHEVr6WeLRtj0aJEVotV~PxzZYvAqleqMhLJUsuorvqVuz1sD4K~mJDcvweCBacBkAu5fgiBGAsdrTOoQ4RYmuKFNw__&Key-Pair-Id=APKAIE5G5CRDK6RD3PGA)
 **<mark>*De novo*</mark> transcriptome assembly (transcriptome method):**  
 ¶1  
@@ -263,9 +377,11 @@ Visual comparison of the mapping results derived from the optimized and default-
 
 ...
 
-#### [Blevins et al. (Mar Alba), bioRxiv 2019-0313](#blevins-et-al-mar-alba-biorxiv-2019-0313)
+<a id="blevins-et-al-mar-alba-biorxiv-2019-0313"></a>
+#### Blevins et al. (Mar Alba), bioRxiv 2019-0313
 [Link to paper](https://www.biorxiv.org/content/10.1101/575837v1.full); this is the study Alison referenced for the parameters [used here](#get-another-trial-run-of-trinity-going)
 
+<a id="from-results"></a>
 ##### From *Results*
 **Assembling novel transcripts from 11 yeast species**  
 ¶1  
@@ -274,6 +390,7 @@ We selected 10 species from the Saccharomycotina subphylum, including the model 
 ¶2  
 We performed high throughput RNA sequencing (RNA-seq) in normal and stress conditions for the 11 species, and <mark>[assembled *de novo* transcriptomes using Trinity (Grabherr et al. 2013)](#from-methods)</mark>. We combined the set of *de novo* assembled transcripts with the reference annotations to generate an inclusive and non-redundant set of transcripts for each species (Supplementary Figure 1). Our de novo assemblies contained an average of 770 novel (unannotated) transcripts for each species studied (Supplementary Table 2).
 
+<a id="from-supplementary-figure-1"></a>
 ##### From *Supplementary Figure 1*
 **Flow chart of our RNAseq analysis pipeline.**  
 We began our analysis with raw RNA-seq sequencing fastq files for each of the species both conditions.
@@ -295,6 +412,7 @@ Each transcript was used as a query in `BLAST` searches against all `BLAST` data
 
 `Salmon` was used to quantify the expression of each transcript in both conditions.
 
+<a id="from-methods"></a>
 ##### From *Methods*
 **Processing of RNA-seq data**  
 We trimmed the adapters and low quality bases with Trimmomatic (Bolger et al. 2014) with the following parameters:
@@ -330,10 +448,12 @@ We used `Transrate` (Smith-Unna et al. 2016) to evaluate the quality of each ass
 
 As `Trinity` does not use the reference genome directly to assemble transfrags, we used GMAP (Wu and Watanabe 2005) to map the assembled transcripts back to the reference genome. We used Cuffmerge from the Cufflinks suite version 2.2.0 (Trapnell et al. 2012) to combine the de novo assemblies from normal and stress conditions with the reference transcriptome. When we combined novel and annotated transcripts into a comprehensive transcriptome, novel transcripts from our assembly which overlapped the reference annotations were considered redundant and were excluded from most of the analysis; however, these transcripts were still included in the BLAST database during homology searches.
 
-#### [Build a Comprehensive Transcriptome Database](#build-a-comprehensive-transcriptome-database)
+<a id="build-a-comprehensive-transcriptome-database"></a>
+#### Build a Comprehensive Transcriptome Database
 - ...Using Genome-Guided and *De Novo* RNA-seq Assembly
 - [Link to the resource](https://github.com/PASApipeline/PASApipeline/wiki/PASA_comprehensive_db), which is recommended by the author/maintainer of `Trinity`, Brian Haas (see [below](#more-thoughts-on-multimappers-2022-1109-1110))
 
+<a id="build-a-comprehensive-transcriptome-database-using-genome-guided-and-de-novo-rna-seq-assembly"></a>
 ##### Build a Comprehensive Transcriptome Database Using Genome-Guided and *De Novo* RNA-seq Assembly
 *Copied from the link with my notes and questions interspersed (also edited for grammar, style):*
 
@@ -363,10 +483,16 @@ When applying `Trinity` to RNA-seq samples derived from microbial eukaryotes, us
 After generating the inputs according to their separate procedures linked above, you can run `PASA` according to the following steps:
 1. Concatenate the `Trinity.fasta` and `Trinity.GG.fasta` files into a single `transcripts.fasta` file:
 ```bash
+#!/bin/bash
+#DONTRUN
+
 cat Trinity.fasta Trinity.GG.fasta > transcripts.fasta
 ```
 2. Create a file containing the list of transcript accessions that correspond to the `Trinity` *de novo* assembly (full *de novo*, not genome-guided):
 ```bash
+#!/bin/bash
+#DONTRUN
+
 ${PASA_HOME}/misc_utilities/accession_extractor.pl < Trinity.fasta > tdn.accs
 ```
 3. Run `PASA` using RNA-seq-related options as described in the section above ([`GitHub` link](https://github.com/PASApipeline/PASApipeline/wiki/PASA_RNAseq), [my notes]()), but include the parameter setting `--TDN tdn.accs`. To (optionally) include `Cufflinks`-generated transcript structures, further include the parameter setting `--cufflinks_gtf cufflinks.gtf`. Note, `Cufflinks` may not be appropriate for gene-dense targets, such as in fungi; `Cufflinks` excels when applied to vertebrate genomes, so best to include when applying to mouse or human.
@@ -380,6 +506,9 @@ Back to the main text:
 ```
 4. After completing the `PASA` alignment assembly, generate the comprehensive transcriptome database via:
 ```bash
+#!/bin/bash
+#DONTRUN
+
 ${PASA_HOME}/scripts/build_comprehensive_transcriptome.dbi \
     -c alignAssembly.config \
     -t transcripts.fasta \
@@ -418,9 +547,11 @@ TDN_noMap                            no alignment to the genome reported (missin
                                      genome)
 ```
 
-#### [Leveraging RNA-seq by the `PASA` Pipeline](#leveraging-rna-seq-by-the-pasa-pipeline)
+<a id="leveraging-rna-seq-by-the-pasa-pipeline"></a>
+#### Leveraging RNA-seq by the `PASA` Pipeline
 [Link to the resource](https://github.com/PASApipeline/PASApipeline/wiki/PASA_RNAseq), which is needed to understand and on the [above material](#build-a-comprehensive-transcriptome-database)
 
+<a id="leveraging-rna-seq-by-the-pasa-pipeline-1"></a>
 ##### Leveraging RNA-seq by the `PASA` Pipeline
 *Copied from the link with my notes and questions interspersed (also edited for grammar, style):*
 
@@ -428,9 +559,13 @@ Illumina RNA-seq is quickly revolutionizing gene discovery and gene structure an
 
 The procedure for leveraging RNA-seq in the `PASA` pipeline is very straightforward. First, assemble the RNA-seq data using our new `Trinity` *de novo* RNA-seq assembly software. The RNA-seq assembly process can be performed in either a genome-guided (recommended) or genome-free way. Documentation for `Trinity` RNA-seq assembly (genome-guided or genome-free) is provided at http://trinityrnaseq.github.io. Instructions for assembly of strand-specific and non-strand-specific RNA-seq are provided.
 
+<a id="strand-specific-rna-seq"></a>
 ###### Strand-specific RNA-seq
 In the case of strand-specific RNA-seq, run `PASA` with the `Trinity` transcript assemblies as input, including the `--transcribed_is_aligned_orient` parameter, to indicate that the `Trinity` transcripts were directionally assembled:
 ```bash
+#!/bin/bash
+#DONTRUN
+
 ${PASAHOME}/Launch_PASA_pipeline.pl \
     -c alignAssembly.config \
     -C \
@@ -442,6 +577,9 @@ ${PASAHOME}/Launch_PASA_pipeline.pl \
 
 The above will cluster and assemble alignments with minimal overlap. If your gene density is high and you expect transcripts from neighboring genes to often overlap in their UTR regions, you can perform more stringent clustering of alignments like so:
 ```bash
+#!/bin/bash
+#DONTRUN
+
 ${PASAHOME}/Launch_PASA_pipeline.pl \
     -c alignAssembly.config \
     -C -R \
@@ -454,6 +592,9 @@ ${PASAHOME}/Launch_PASA_pipeline.pl \
 
 Also, as an alternative, if you have existing gene structure annotations that are reasonably accurate, you can cluster Trinity assemblies by locus (annotation-informed clustering) and further augment full-length transcript reconstruction from overlapping inchworm assemblies like so, with the alternative run command:
 ```bash
+#!/bin/bash
+#DONTRUN
+
 ${PASAHOME}/Launch_PASA_pipeline.pl \
     -c alignAssembly.config \
     -C -R \
@@ -465,9 +606,13 @@ ${PASAHOME}/Launch_PASA_pipeline.pl \
     --gene_overlap 50.0
 ```
 
+<a id="non-strand-specific-rna-seq"></a>
 ###### Non-Strand-specific RNA-seq
 In the case of non-strand-specific RNA-seq, simply exclude the `--transcribed_is_aligned_orient` parameter and run like so:
 ```bash
+#!/bin/bash
+#DONTRUN
+
 $PASAHOME/Launch_PASA_pipeline.pl \
     -c alignAssembly.config \
     -C -R \
@@ -476,9 +621,11 @@ $PASAHOME/Launch_PASA_pipeline.pl \
     --ALIGNERS blat,gmap
 ```
 
-#### [Running the `PASA` Alignment Assembly Pipeline](#running-the-pasa-alignment-assembly-pipeline)
+<a id="running-the-pasa-alignment-assembly-pipeline"></a>
+#### Running the `PASA` Alignment Assembly Pipeline
 [Link to the resource](https://github.com/PASApipeline/PASApipeline/wiki/PASA_alignment_assembly)
 
+<a id="running-the-alignment-assembly-pipeline"></a>
 ##### Running the Alignment Assembly Pipeline
 *Copied from the link with my notes and questions interspersed (also edited for grammar, style):*
 
@@ -487,17 +634,25 @@ As input to the command-line driven `PASA` pipeline, we need only two (potential
 - The transcript sequences in a multiFasta file (ie. transcripts.fasta)
 - Optional: a file containing the list of accessions corresponding to full-length cDNAs (ie. FL_accs.txt)
 
+<a id="step-a-cleaning-the-transcript-sequences-optional"></a>
 ###### Step A: Cleaning the transcript sequences (optional)
 Have each of these files in the same 'working' directory. Then, run the `seqclean` utility on you transcripts like so:
 ```bash
+#!/bin/bash
+#DONTRUN
+
 ${PASAHOME}/bin/seqclean transcripts.fasta
 ```
 If you have a database of vector sequences (i.e., `UniVec`), you can screen for vector as part of the cleaning process by running the following instead:
 ```bash
+#!/bin/bash
+#DONTRUN
+
 ${PASAHOME}/bin/seqclean transcripts.fasta -v /path/to/your/vectors.fasta
 ```
 This will generate several output files including `transcripts.fasta.cln` and `transcripts.fasta.clean`. Both of these can be used as inputs to `PASA`.
 
+<a id="step-b-walking-thru-a-complete-example-using-the-provided-sample-data"></a>
 ###### Step B: Walking Thru A Complete Example Using the Provided Sample Data
 Sample inputs are provided in the `${PASAHOME}/sample_data` directory. We'll use these inputs to demonstrate the breadth of the software application, including using sample DATA ADAPTERs to import existing gene annotations into the database, and tentative structural updates out.
 
@@ -515,6 +670,9 @@ The following steps, you must execute in order to demonstrate the software. (The
 **Transcript alignments followed by alignment assembly**  
 Run the PASA alignment assembly pipeline like so:
 ```bash
+#!/bin/bash
+#DONTRUN
+
 ${PASAHOME}/Launch_PASA_pipeline.pl \
     -c alignAssembly.config \
     -C \
@@ -541,7 +699,8 @@ This executes the following operations, generating the corresponding output file
     + `sample_mydb_pasa.pasa_alignment_assembly_building.ascii_illustrations.out`: descriptions of alignment assemblies and how they were constructed from the underlying transcript alignments
     + `sample_mydb_pasa.pasa_assemblies_described.txt`: tab-delimited format describing the contents of the PASA assemblies, including the identity of those transcripts that were assembled into the corresponding structure
 
-#### [Introduction to `PASA`](#introduction-to-pasa)
+<a id="introduction-to-pasa"></a>
+#### Introduction to `PASA`
 [Link to the resource](https://github.com/PASApipeline/PASApipeline/wiki#introduction)
 
 *Copied from the link with my notes and questions interspersed (also edited for grammar, style):*  
@@ -579,6 +738,7 @@ Functions of `PASA` include:
         * This is useful when applied to a previously uncharacterized genome sequence, allowing one to rapidly obtaining a set of candidate gene structures for training various *ab-intio* gene prediction programs
         * In the case of RNA-seq, `PASA` can generate a full transcriptome-based genome annotation, identifying likely coding and non-coding transcripts
 
+<a id="pasa-in-the-context-of-a-complete-eukaryotic-annotation-pipeline"></a>
 ##### `PASA` in the Context of a Complete Eukaryotic Annotation Pipeline
 [Link to the resource](https://github.com/PASApipeline/PASApipeline/wiki#pasa-in-the-context-of-a-complete-eukaryotic-annotation-pipeline)
 
@@ -586,10 +746,15 @@ Functions of `PASA` include:
 <br />
 <br />
 
-## [Sussing out the alignment work for the pipeline](#sussing-out-the-alignment-work-for-the-pipeline)
-### [On calling `Bowtie 2`](#on-calling-bowtie-2)
+<a id="sussing-out-the-alignment-work-for-the-pipeline"></a>
+## Sussing out the alignment work for the pipeline
+<a id="on-calling-bowtie-2"></a>
+### On calling `Bowtie 2`
 Section ties into the section immediately [above](#outstanding-ongoing-questions-points-etc) and [below](#in-progress-steps-of-the-pipeline)
 ```bash
+#!/bin/bash
+#DONTRUN
+
 bowtie2 \
     -p "${threads}" \
     -x "${reference_genome}" \
@@ -609,7 +774,8 @@ bowtie2 \
         | samtools sort -@ "${threads}" -o "${infiles[0]%_R1.fastq}_sorted.bam" -
 ```
 
-#### [Meaning of `Bowtie 2` parameters](#meaning-of-bowtie-2-parameters)
+<a id="meaning-of-bowtie-2-parameters"></a>
+#### Meaning of `Bowtie 2` parameters
 ```txt
 -p: threads
 -x: Bowtie2 indices, including path and root
@@ -653,9 +819,13 @@ When calling `Bowtie2` for [in-progress pipeline **step 3**](#in-progress-steps-
     --un-gz <path>, to gzip compress output, or add '-bz2' to bzip2 compress output.)
 ```
 
-#### [How we should call `Bowtie 2`](#how-we-should-call-bowtie-2)
+<a id="how-we-should-call-bowtie-2"></a>
+#### How we should call `Bowtie 2`
 Thus, we'll want to call `Bowtie 2` like this (also incorporates thoughts from sub-bullets for [**Step 3** below](#in-progress-steps-of-the-pipeline)):
 ```bash
+#!/bin/bash
+#DONTRUN
+
 bowtie2 \
     -p "${threads}" \
     -x "${reference_genome}" \
@@ -674,13 +844,15 @@ bowtie2 \
 #+ "${infiles[0]%_R1.fastq}.unaligned"
 ````
 
-### [On calling `STAR`](#on-calling-star)
+<a id="on-calling-star"></a>
+### On calling `STAR`
 - Section ties into the section immediately [above](#outstanding-ongoing-questions-points-etc) and [below](#in-progress-steps-of-the-pipeline)
 - Performing `STAR` "genome generation" (i.e., creating an indexed genome file with annotations) is based on the parameters described [here (example call)](https://groups.google.com/g/rna-star/c/TPTdAL7NNZ4), [here (on `--genomeSAindexNbases`)](https://groups.google.com/g/rna-star/c/08UtIdEFFmY/m/gU1eif_1KdwJ), and [here (on `--sjdbGTFfeatureExon CDS`)](https://groups.google.com/g/rna-star/c/IOJuxxONrKs/m/a0jV0kkCAQAJ)
 - Performing `STAR` alignment with *S. cerevisiae* data is based on the parameters described [here](https://groups.google.com/g/rna-star/c/hQeHTBbkc0c)
 - An [important consideration](https://groups.google.com/g/rna-star/c/08UtIdEFFmY/m/gU1eif_1KdwJ) for building the yeast genome index with `STAR`
 
-#### [Building a `STAR` genome index](#building-a-star-genome-index)
+<a id="building-a-star-genome-index"></a>
+#### Building a `STAR` genome index
 ```bash
 #!/bin/bash
 #DONTRUN
@@ -702,7 +874,8 @@ STAR \
 #+ files; thus, remove --sjdbGTFfeatureExon CDS from the call
 ```
 
-#### [Meaning of `STAR` parameters for `genomeGenerate`](#meaning-of-star-parameters-for-genomegenerate)
+<a id="meaning-of-star-parameters-for-genomegenerate"></a>
+#### Meaning of `STAR` parameters for `genomeGenerate`
 Meaning of the parameters for `STAR --runMode genomeGenerate`:
 ```txt
                     --runThreadN  number of threads to be used for genome generation
@@ -737,7 +910,8 @@ Meaning of the parameters for `STAR --runMode genomeGenerate`:
                                   equal to 7; for yeast, this is ~12
 ```
 
-#### [How we should call `STAR`](#how-we-should-call-star)
+<a id="how-we-should-call-star"></a>
+#### How we should call `STAR`
 ```bash
 #!/bin/bash
 #DONTRUN
@@ -786,7 +960,8 @@ STAR \
 #+       delete it and go with defaults for now
 ```
 
-#### [Meaning of `STAR` parameters for `alignReads`](#meaning-of-star-parameters-for-alignreads)
+<a id="meaning-of-star-parameters-for-alignreads"></a>
+#### Meaning of `STAR` parameters for `alignReads`
 ```txt
            --runThreadN  number of threads to run STAR
                          < format: int>0 >
@@ -879,11 +1054,14 @@ STAR \
                          < format: strings; default: SAM >
 ```
 
-### [Implementing the alignment steps with `STAR` and `Bowtie 2`](#implementing-the-alignment-steps-with-star-and-bowtie-2)
-#### [Generating files needed for `STAR` alignment (2022-1107)](#generating-files-needed-for-star-alignment-2022-1107)
+<a id="implementing-the-alignment-steps-with-star-and-bowtie-2"></a>
+### Implementing the alignment steps with `STAR` and `Bowtie 2`
+<a id="generating-files-needed-for-star-alignment-2022-1107"></a>
+#### Generating files needed for `STAR` alignment (2022-1107)
 ...to the combined reference genes (*S. cerevisiae*, *K. lactis*, and S20)
 
-##### [Preparing the `.fasta` and `.gff3` files for `STAR`](#preparing-the-fasta-and-gff3-files-for-star)
+<a id="preparing-the-fasta-and-gff3-files-for-star"></a>
+##### Preparing the `.fasta` and `.gff3` files for `STAR`
 ```bash
 #!/bin/bash
 #DONTRUN
@@ -1599,7 +1777,8 @@ There is 91 rna
 ```
 Seems to be OK...
 
-##### [Getting the `.fastq` files of interest into one location](#getting-the-fastq-files-of-interest-into-one-location)
+<a id="getting-the-fastq-files-of-interest-into-one-location"></a>
+##### Getting the `.fastq` files of interest into one location
 ```bash
 #!/bin/bash
 #DONTRUN
@@ -1684,7 +1863,8 @@ ls -1 ~/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1101/file
 #NOTE Per Alison, "IP" = Nascent, "IN" = SteadyState
 ```
 
-##### [Checking on the length of reads for each `.fastq` file](#checking-on-the-length-of-reads-for-each-fastq-file)
+<a id="checking-on-the-length-of-reads-for-each-fastq-file"></a>
+##### Checking on the length of reads for each `.fastq` file
 ```bash
 #!/bin/bash
 #DONTRUN
@@ -1768,7 +1948,8 @@ rm -r ./files_fastq_symlinks/FastQC/5781_G1_IN_merged_R1.bak
 #NOTE #IMPORTANT The read length is bp (at least for these "WTQvsG1" files)
 ````
 
-#### [Run `STAR` genome generation](#run-star-genome-generation)
+<a id="run-star-genome-generation"></a>
+#### Run `STAR` genome generation
 ```bash
 #!/bin/bash
 #DONTRUN
@@ -1878,7 +2059,8 @@ echo \
     >> readme.md
 ```
 
-#### [Run `STAR` alignment](#run-star-alignment)
+<a id="run-star-alignment"></a>
+#### Run `STAR` alignment
 ```bash
 #!/bin/bash
 #DONTRUN
@@ -1967,7 +2149,8 @@ sbatch submit-STAR-alignReads.sh \
     "${prefix}"
 ```
 
-##### [Alignment metrics for the test run of `STAR`](#alignment-metrics-for-the-test-run-of-star)
+<a id="alignment-metrics-for-the-test-run-of-star"></a>
+##### Alignment metrics for the test run of `STAR`
 ```txt
                                  Started job on |       Nov 08 10:28:26
                              Started mapping on |       Nov 08 10:28:27
@@ -2007,7 +2190,8 @@ sbatch submit-STAR-alignReads.sh \
                        Number of chimeric reads |       0
                             % of chimeric reads |       0.00%
 ```
-###### [Thoughts on the alignment metrics for `STAR`](#thoughts-on-the-alignment-metrics-for-star):
+<a id="thoughts-on-the-alignment-metrics-for-star"></a>
+###### Thoughts on the alignment metrics for `STAR`:
 - A lot of multi-mappers in the dataset...
 - `#DONE` Later, check what value I assigned to `--outFilterMultimapNmax` in my 4DN RNA-seq work; consider to replace the current value, `1`, with that other value
     + `#ANSWER` `--outFilterMultimapNmax 1000`
@@ -2017,7 +2201,8 @@ sbatch submit-STAR-alignReads.sh \
             - `#ANSWER` I would think so... What he says about potential paralogs seems like it holds true in this circumstance too
     + 2022-1110: The thinking here is continued and expanded [below](#more-thoughts-on-multimappers-2022-1109-1110)
 
-###### [Examine the flags in the `.bam` outfile from the test run of `STAR`](#examine-the-flags-in-the-bam-outfile-from-the-test-run-of-star)
+<a id="examine-the-flags-in-the-bam-outfile-from-the-test-run-of-star"></a>
+###### Examine the flags in the `.bam` outfile from the test run of `STAR`
 Use `samtools flagstat` and the bespoke function `list_tally_flags`:
 ```bash
 #!/bin/bash
@@ -2157,12 +2342,14 @@ What are the meanings of these flags? Use [this tool](https://broadinstitute.git
 | 675  | read paired (0x1), read mapped in proper pair (0x2), mate reverse strand (0x20), second in pair (0x80), read fails* (0x200) |
 | 595  | read paired (0x1), read mapped in proper pair (0x2), read reverse strand (0x10), first in pair (0x40), read fails* (0x200)  |
 
-###### [Additional thoughts on the alignment metrics and flags from `STAR`](#additional-thoughts-on-the-alignment-metrics-and-flags-from-star)
+<a id="additional-thoughts-on-the-alignment-metrics-and-flags-from-star"></a>
+###### Additional thoughts on the alignment metrics and flags from `STAR`
 - Because we want to use the multimappers in `Trinity` transcriptome assembly (rationale in ["Thoughts on the..."](#thoughts-on-the-alignment-metrics-for-star) above), it'd probably be good to have information for where `STAR` (and `Bowtie 2`) is aligning them in the bam file, instead of them being unmapped as above
 - Thus, we should adjust the parameters for how we call `STAR` to retain the multi-mappers
 - `(   ) #TODO #TOMORROW` Adjust `STAR` parameters based on the repetitive-element work you did in 2020 (bring your laptop to work tomorrow); for now, move on to `Bowtie 2` work
 
-###### [Do a little clean-up prior to running alignment with `Bowtie 2`](#do-a-little-clean-up-prior-to-running-alignment-with-bowtie-2)
+<a id="do-a-little-clean-up-prior-to-running-alignment-with-bowtie-2"></a>
+###### Do a little clean-up prior to running alignment with `Bowtie 2`
 ```bash
 #!/bin/bash
 #DONTRUN
@@ -2172,10 +2359,12 @@ cd "${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1101"
 mv files_bams/ exp_alignment_STAR/
 ```
 
-#### [Generating files needed for `Bowtie 2` alignment (2022-1108)](#generating-files-needed-for-bowtie-2-alignment-2022-1108)
+<a id="generating-files-needed-for-bowtie-2-alignment-2022-1108"></a>
+#### Generating files needed for `Bowtie 2` alignment (2022-1108)
 ...to the combined reference genes (*S. cerevisiae*, *K. lactis*, and S20)
 
-##### [Preparing the `.fasta` and `.gff3` files for `Bowtie 2`](#preparing-the-fasta-and-gff3-files-for-bowtie-2)
+<a id="preparing-the-fasta-and-gff3-files-for-bowtie-2"></a>
+##### Preparing the `.fasta` and `.gff3` files for `Bowtie 2`
 `Bowtie 2` indices were already generated: see [this link](../2022-1025/readme.md#create-bowtie-2-indices); but just checking on things before diving into things...
 ```bash
 #!/bin/bash
@@ -2276,10 +2465,12 @@ bowtie2-inspect --names ./Bowtie2/combined_SC_KL_20S
 # 20S
 ```
 
-##### [On the location of the `.fastq` files](#on-the-location-of-the-fastq-files)
+<a id="on-the-location-of-the-fastq-files"></a>
+##### On the location of the `.fastq` files
 See all the work done [here](#getting-the-fastq-files-of-interest-into-one-location)
 
-##### [Run `Bowtie 2` alignment](#run-bowtie-2-alignment)
+<a id="run-bowtie-2-alignment"></a>
+##### Run `Bowtie 2` alignment
 ```bash
 #!/bin/bash
 #DONTRUN
@@ -2366,7 +2557,8 @@ sbatch submit-Bowtie-2.sh \
     "${prefix}"
 ```
 
-##### [Alignment metrics for the test run of `Bowtie 2`](#alignment-metrics-for-the-test-run-of-bowtie-2)
+<a id="alignment-metrics-for-the-test-run-of-bowtie-2"></a>
+##### Alignment metrics for the test run of `Bowtie 2`
 ```txt
 13988842 reads; of these:
   13988842 (100.00%) were paired; of these:
@@ -2377,12 +2569,14 @@ sbatch submit-Bowtie-2.sh \
 [bam_sort_core] merging from 7 files and 1 in-memory blocks..
 ```
 
-###### [Thoughts on the alignment metrics for `Bowtie 2`](#thoughts-on-the-alignment-metrics-for-bowtie-2)
+<a id="thoughts-on-the-alignment-metrics-for-bowtie-2"></a>
+###### Thoughts on the alignment metrics for `Bowtie 2`
 - Approximately half are well-aligned
 - Approximately 7% of reads don't align at all
 - The rest, 43%, are discordant
 
-###### [Examine the flags in the `.bam` outfile from the test run of `Bowtie 2`](#examine-the-flags-in-the-bam-outfile-from-the-test-run-of-bowtie-2)
+<a id="examine-the-flags-in-the-bam-outfile-from-the-test-run-of-bowtie-2"></a>
+###### Examine the flags in the `.bam` outfile from the test run of `Bowtie 2`
 ```bash
 #!/bin/bash
 #DONTRUN
@@ -2510,6 +2704,7 @@ What are the meanings of these flags? Use [this tool](https://broadinstitute.git
 | 99   | read paired (0x1), read mapped in proper pair (0x2), mate reverse strand (0x20), first in pair (0x40)  |
 | 147  | read paired (0x1), read mapped in proper pair (0x2), read reverse strand (0x10), second in pair (0x80) |
 
+<a id="try-re-running-bowtie-2-alignment"></a>
 ##### Try re-running `Bowtie 2` alignment
 ...***without*** the flags for removing unaligned and discordant reads, which were mistakenly included in the first run
 ```bash
@@ -2604,7 +2799,8 @@ sbatch submit-Bowtie-2.test-2.sh \
     "${prefix}"
 ```
 
-##### [Alignment metrics for the *corrected* test run of Bowtie 2](#alignment-metrics-for-the-corrected-test-run-of-bowtie-2)
+<a id="alignment-metrics-for-the-corrected-test-run-of-bowtie-2"></a>
+##### Alignment metrics for the *corrected* test run of Bowtie 2
 Remember, *corrected* means `Bowtie 2` was called without flags for removing unaligned and discordant reads, both of which were present in the first run
 ```txt
 13988842 reads; of these:
@@ -2625,10 +2821,12 @@ Remember, *corrected* means `Bowtie 2` was called without flags for removing una
 [bam_sort_core] merging from 8 files and 8 in-memory blocks...
 ```
 
-###### [Thoughts on the alignment metrics for `Bowtie 2` (*corrected*)](#thoughts-on-the-alignment-metrics-for-bowtie-2-corrected)
+<a id="thoughts-on-the-alignment-metrics-for-bowtie-2-corrected"></a>
+###### Thoughts on the alignment metrics for `Bowtie 2` (*corrected*)
 - Very similar to the [previous run](#alignment-metrics-for-the-test-run-of-bowtie-2)...
 
-###### [Examine the flags in the `.bam` outfile from the *corrected* test run of `Bowtie 2`](#examine-the-flags-in-the-bam-outfile-from-the-corrected-test-run-of-bowtie-2)
+<a id="examine-the-flags-in-the-bam-outfile-from-the-corrected-test-run-of-bowtie-2"></a>
+###### Examine the flags in the `.bam` outfile from the *corrected* test run of `Bowtie 2`
 Again, remember that *corrected* means `Bowtie 2` was called without flags for removing unaligned and discordant reads, both of which were present in the first run
 ```bash
 #!/bin/bash
@@ -2815,6 +3013,9 @@ What are the meanings of these flags? Use [this tool](https://broadinstitute.git
 
 Do the above counts sum to 27977684?
 ```bash
+#!/bin/bash
+#DONTRUN
+
 echo $(( \
     7314425 + \
     7314425 + \
@@ -2844,8 +3045,12 @@ echo $(( \
 <br />
 <br />
 
-###### [Examine the `.fastq` outfiles from the *corrected* test run of `Bowtie 2`](#examine-the-fastq-outfiles-from-the-corrected-test-run-of-bowtie-2)
+<a id="examine-the-fastq-outfiles-from-the-corrected-test-run-of-bowtie-2"></a>
+###### Examine the `.fastq` outfiles from the *corrected* test run of `Bowtie 2`
 ```bash
+#!/bin/bash
+#DONTRUN
+
 cd "${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1101/exp_alignment_Bowtie_2/files_bams"
 
 ls -lhaFG
@@ -2870,9 +3075,13 @@ echo $(zcat 5781_G1_IN_merged.2.unaligned | wc -l)/4 | bc  # 552105
 echo $(( 13436737 + 13436737 + 552105 + 552105 ))  # 27977684: Yes
 ```
 
-###### [`head` through the `.bam` outfile from the *corrected* test run of `Bowtie 2`](#head-through-the-bam-outfile-from-the-corrected-test-run-of-bowtie-2)
+<a id="head-through-the-bam-outfile-from-the-corrected-test-run-of-bowtie-2"></a>
+###### `head` through the `.bam` outfile from the *corrected* test run of `Bowtie 2`
 ...to see if information for multimappers are present in the tags
 ```bash
+#!/bin/bash
+#DONTRUN
+
 cd "${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1101/exp_alignment_Bowtie_2/files_bams"
 
 samtools view -h 5781_G1_IN_merged_sorted.bam | less
@@ -2947,7 +3156,8 @@ We won't find any multimappers in here because, by default, `Bowtie 2` "\[looks\
 -a/--all        report all alignments; very slow, MAPQ not meaningful
 ```
 
-#### [More thoughts on multimappers (2022-1109-1110)](#more-thoughts-on-multimappers-2022-1109-1110)
+<a id="more-thoughts-on-multimappers-2022-1109-1110"></a>
+#### More thoughts on multimappers (2022-1109-1110)
 The work and thinking here builds on the notes under the heading ["Thoughts on the alignment metrics for `STAR`"](#thoughts-on-the-alignment-metrics-for-star)
 - `#DONE` What does the [`Trinity` Google Group](https://groups.google.com/g/trinityrnaseq-users) have to say about multimappers?
     + `#ANSWER` Per Brian Haas at [this post](https://groups.google.com/g/trinityrnaseq-users/c/L4hypoWSk_o/m/bTO2L8ssAQAJ): "If reads are mapped to multiple genomic locations, then `Trinity` will use those reads as substrates for *de novo* assembly at each of the locations. This is important to do in the case of paralogs that share sequences in common."
@@ -3025,13 +3235,15 @@ Best,
 ~brian
 ```
 He doesn't directly address the question, Should I use "a bam infile in which all multimappers are retained?" Answer seems to be yes, though.
-
 <br />
 <br />
 
+<a id="miscellaneous"></a>
 ## Miscellaneous
-### [Figure out where to put this](#figure-out-where-to-put-this)
-#### [Brief discussion with Toshi about yeast blacklists](#brief-discussion-with-toshi-about-yeast-blacklists)
+<a id="figure-out-where-to-put-this"></a>
+### Figure out where to put this
+<a id="brief-discussion-with-toshi-about-yeast-blacklists"></a>
+#### Brief discussion with Toshi about yeast blacklists
 - He's not aware of any such blacklists for yeast
 - He suggested to reach out to Christine and Alison
 - He suggested that we could put together a blacklist from ChIP-seq input data
@@ -3044,7 +3256,8 @@ He doesn't directly address the question, Should I use "a bam infile in which al
     + Mentioned how, after tackling the `Trinity` tasks, it'd be a fun and interesting bioinformatics experiment to compare yeast G2/M MicroC data (from the Koshland Lab) to the yeast Q MicroC data (from this lab)
     + From there, based on what we find, we could consider to design and perform wet experiments
 
-### [Google searches and websites to follow up on](#google-searches-and-websites-to-follow-up-on)
+<a id="google-searches-and-websites-to-follow-up-on"></a>
+### Google searches and websites to follow up on
 - ["add flag to multimapper"](https://www.google.com/search?q=add+flag+to+multimappers&oq=add+flag+to+multimappers&aqs=chrome..69i57j33i160l2.3704j0j7&sourceid=chrome&ie=UTF-8)
     + ["SAM FLAG for primary alignments, secondary alignments, and what's their relationships to uniqueness of mapping"](https://www.biostars.org/p/206396/)
 - ["use star with trinity"](https://www.google.com/search?q=use+star+with+trinity&oq=use+star+with+trinity&aqs=chrome..69i57j33i160l2.2936j0j7&sourceid=chrome&ie=UTF-8)
@@ -3055,6 +3268,7 @@ He doesn't directly address the question, Should I use "a bam infile in which al
     + [RepeatMasker for Fungi](https://www.biostars.org/p/171368/)
 - [Dfam](https://www.dfam.org/home)
 
+<a id="to-be-continued-after-the-completion-of-trinity-work"></a>
 ### To be continued after the completion of `Trinity` work
 Remember, the overarching goal is to have appropriately processed bam files for experiments to determine the best way(s) to call `Trinity`
 - `(...)` Continue the TPM work
@@ -3063,10 +3277,10 @@ Remember, the overarching goal is to have appropriately processed bam files for 
 - `(...)` Review notes (e.g., from previous meetings), steps, written-by-me code, and emails (incorporating some into this or another notebook where necessary) prior to Alison's arrival to the lab tomorrow; we-ll likely touch base to talk about things when she comes
 - `#DONE` Look into the detection of optical duplicates with `picardmetrics` or just `picard MarkDuplicates`
     - `#NOTE` Shouldn't do it with RNA-seq data: [reasoning here](https://gatk.broadinstitute.org/hc/en-us/articles/360036459932-MarkDuplicates-Picard-#--READ_NAME_REGEX)
-- `(TBC)` Began to troubleshoot error in which `picardmetrics` could not access the header for `5781_G1_IN_*.bam` in the initial bam directory; continue with this tomorrow
+- `(TBC)` Began to troubleshoot error in which `picardmetrics` could not access the header for `5781_G1_IN_*.bam` in the initial bam directory~~; continue with this tomorrow~~
     - Seems to have to do with this [line of code](https://github.com/slowkow/picardmetrics/blob/master/picardmetrics#L554)
 - `(TBC)` Look into the detection and removal of PCR duplicates with UMI-tools as suggested by Alison: Need to figure out what that entails
-    - Began to look into [this](https://umi-tools.readthedocs.io/en/latest/reference/dedup.html) at the end of the day; continue reading up on this tomorrow
+    - Began to look into [this](https://umi-tools.readthedocs.io/en/latest/reference/dedup.html) at the end of the day~~; continue reading up on this tomorrow~~
 - `(   )` Continue to build out the alignment and processing script you were working on at the end of last week
     + Functionize it
     + Get major modules into separate scripts, which are in-turn functionized
@@ -3077,7 +3291,32 @@ Remember, the overarching goal is to have appropriately processed bam files for 
 - `#DONE` Continue to put together a ["master list" of all of Alison's relevant file directories](#updated-list-of-alisons-paths-to-important-directories-and-files)
 - `#DONE` Collect information on the [RNA-seq kits used by Alison](#information-on-the-rna-seq-kits-used-by-alison) to generate the libraries
 
-### [Next steps](#next-steps)
+<a id="discussion-with-alison-on-what-i-should-prioritize-2022-1103"></a>
+#### Discussion with Alison on what I should prioritize (2022-1103)
+- Need to address the important question on **how best to call Trinity**
+    + For example...
+        * Are we giving `.bam` or `.fastq` files?
+        * Are we calling with the Jaccard option?
+        * Are we running in genome-guided mode?
+        * Are we running things on one chromosome at a time?
+- Downstream of `Trinity`
+    + "Match Trinity annotations with [Saccharomyces Genome Database (SGD)](https://www.yeastgenome.org/) annotations"
+        * If an annotation is shared between Trinity and SGD, favor the Trinity annotation  `#TODO Seems like some kind of typo here; clarify this`
+        * If the same, then discard the Trinity annotation, keeping only the Trinity annotation  `#TODO Some kind of typo here; clarify this`
+        * This entails a comparison of `.gtf` files with appropriate logic implemented in the code
+- Upstream of `Trinity`
+    + All lower priority and to be done later; e.g.,
+        * `.bam` file work (`split-bam-by-species.sh`, `split-bam-by-strand.sh`, `bamCoverage`, etc.)
+        * `.fastq` work (UMI-tools, etc.)
+        * TPM work
+        * QC work (e.g., `picardmetrics`)
+        * etc.
+- Parameter that will likely need to change on a per-dataset basis (Alison's thinking)
+    + "Linker k-mer number may vary from dataset to dataset"
+        * Could be read-depth dependent
+
+<a id="next-steps"></a>
+### Next steps
 - `( Y ) #MONDAY` Pick up with fine-tuning the initial call to `Bowtie2`: *Shifting focus to STAR, a splice-aware aligner*  
 - `( Y ) #TUESDAY` Use the combined-reference .fasta, .gtf, and genome index files to try aligning one of the (symlinked) .fastq files using the parameters for *S. cerevisiae* you found on the `STAR` Google group  
     + First, sus out and describe the parameters (for example, are all of them needed, are the values appropriate, etc.?)
