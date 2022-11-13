@@ -464,7 +464,10 @@ Depending on the genome and transcriptome samples under study, the genome may pr
 
 The transcripts are identified and included along with the `PASA` assemblies yielding a more comprehensive transcriptome database to be used for downstream investigations into expressed gene content and differential expression analyses.
 
-Our system for building the comprehensive transcriptome database requires multiple sources of inputs: 1. [`Trinity` *de novo*](https://github.com/trinityrnaseq/trinityrnaseq/wiki) RNA-seq assemblies (e.g., `Trinity.fasta`), 2. [`Trinity` genome-guided](https://github.com/trinityrnaseq/trinityrnaseq/wiki/Genome-Guided-Trinity-Transcriptome-Assembly) RNA-seq assemblies (e.g., `Trinity.GG.fasta`), and (optionally) 3. [`Cufflinks`](https://github.com/cole-trapnell-lab/cufflinks) or [`StringTie`](https://ccb.jhu.edu/software/stringtie/) transcript structures (e.g., `cufflinks.gtf`).
+Our system for building the comprehensive transcriptome database requires multiple sources of inputs:
+1. [`Trinity` *de novo*](https://github.com/trinityrnaseq/trinityrnaseq/wiki) RNA-seq assemblies (e.g., `Trinity.fasta`),
+2. [`Trinity` genome-guided](https://github.com/trinityrnaseq/trinityrnaseq/wiki/Genome-Guided-Trinity-Transcriptome-Assembly) RNA-seq assemblies (e.g., `Trinity.GG.fasta`),
+3. and (optionally) [`Cufflinks`](https://github.com/cole-trapnell-lab/cufflinks) or [`StringTie`](https://ccb.jhu.edu/software/stringtie/) transcript structures (e.g., `cufflinks.gtf`).
 
 ```txt
 Notes from me:

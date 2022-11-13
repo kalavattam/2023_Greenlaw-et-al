@@ -40,6 +40,11 @@
     + Non-shortcut way: `File` > `Split View`
 - https://github.com/randy3k/SendCode#sendcode-for-sublime-text
 - https://www.reddit.com/r/SublimeText/comments/gwcug3/how_to_run_only_selected_lines_of_code_in_sublime/
+- [How to see installed packages](https://forum.sublimetext.com/t/sublime-text3-how-to-see-installed-packages/21939/2)
+    + `Package Control: List Packages`
+- [How to uninstall packages](https://superuser.com/questions/840527/how-to-uninstall-remove-package-control-from-sublime-text-3)
+    + `Package Control: Remove Package`
+- [How to change the theme](https://www.technipages.com/how-to-change-the-theme-in-sublime-text-3)
 
 <a id="on-making-sublime-plugins"></a>
 #### On making Sublime plugins
