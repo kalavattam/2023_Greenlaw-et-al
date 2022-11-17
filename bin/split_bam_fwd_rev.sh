@@ -58,11 +58,11 @@ Dependencies:
 
 Arguments:
   -h  print this help message and exit
-  -u  use safe mode: \"TRUE\" or \"FALSE\" <logical; default: FALSE>
+  -u  use safe mode: \"TRUE\" or \"FALSE\" <lgl; default: FALSE>
   -i  infile, including path <chr>
   -o  outfile directory, including path; if not found, will be mkdir'd <chr>
   -t  number of threads <int >= 1>
-  -c  remove bams for flags 147, 99, 83, and 163: \"TRUE\" or \"FALSE\" <logical; default: TRUE>
+  -c  remove bams for flags 147, 99, 83, and 163: \"TRUE\" or \"FALSE\" <lgl; default: TRUE>
 """
 
 while getopts "h:u:i:o:t:c:" opt; do

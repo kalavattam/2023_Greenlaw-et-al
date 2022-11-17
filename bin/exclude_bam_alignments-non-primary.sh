@@ -1,49 +1,17 @@
 #!/bin/bash
 
-#  exclude_bam_non-primary-alignments.sh
+#  exclude_bam_alignments-non-primary.sh
 #  KA
 
 
 #  Source functions into environment ------------------------------------------
-check_dependency() {
-    # Check if program is available in "${PATH}"; exit if not
-    #
-    # :param 1: program to be checked (chr)
-    command -v "${1}" &>/dev/null ||
-        {
-            echo "Exiting: ${1} not found. Install ${1}."
-            exit 1
-        }
-}
-
-
-check_exit() {
-    # Check the exit code of a child process
-    #
-    # :param 1:
-    # :param 2:
-    if [ "${1}" == "0" ]; then
-        echo "[done] ${2} $(date)"
-    else
-        err "[error] ${2} returned exit code ${1}"
-    fi
-}
-
-
-err() {
-    # Print an error meassage, then exit with code 1
-    #
-    # :param 1:
-    echo "${1} exited unexpectedly"
+functions="$(dirname "${BASH_SOURCE}")/functions.sh"
+if [[ -f "${functions}" ]]; then
+    source "${functions}"
+else
+    printf "%s\n" "Exiting: functions.sh not found."
     exit 1
-}
-
-
-print_usage() {
-    # Print the help message and exit
-    echo "${help}"
-    exit 1
-}
+fi
 
 
 #  Handle arguments, assign variables -----------------------------------------
@@ -51,14 +19,16 @@ help="""
 ${0}:
 Exclude non-primary alignments from bam infile. Name of bam outfile will be
 derived from the infile.
+
 Dependencies:
   - samtools >= #TBD
+
 Arguments:
   -h  print this help message and exit
-  -u  use safe mode: \"TRUE\" or \"FALSE\" <logical; default: FALSE>
+  -u  use safe mode: \"TRUE\" or \"FALSE\" <lgl; default: FALSE>
   -i  bam infile, including path <chr>
   -o  path for outfiles <chr>
-  -f  run samtools flagstat on bams: \"TRUE\" or \"FALSE\" <logical>
+  -f  run samtools flagstat on bams: \"TRUE\" or \"FALSE\" <lgl>
   -p  number of cores for parallelization <int >= 1; default: 1>
 """
 
@@ -98,7 +68,6 @@ case "$(echo "${safe_mode}" | tr '[:upper:]' '[:lower:]')" in
 esac
 
 #  Check for necessary dependencies; exit if not found
-module load samtools/1.14
 check_dependency samtools
 
 #  Check that "${infile}" exists

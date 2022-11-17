@@ -98,7 +98,10 @@
             1. [Alignment metrics for the test run of `STAR` \(multi-hit mode\)](#alignment-metrics-for-the-test-run-of-star-multi-hit-mode)
                 1. [Thoughts on the alignment metrics for `STAR` \(multi-hit mode\)](#thoughts-on-the-alignment-metrics-for-star-multi-hit-mode)
                 1. [Examine the flags in the `.bam` outfile from the test run of `STAR` \(multi-hit mode\)](#examine-the-flags-in-the-bam-outfile-from-the-test-run-of-star-multi-hit-mode)
-        1. [Use `split_bam_by_species.sh` to get VII and *K. lactis* chromosomes from `.bam` files \(2022-1116\)](#use-split_bam_by_speciessh-to-get-vii-and-k-lactis-chromosomes-from-bam-files-2022-1116)
+        1. [Writing and testing `split_bam_by_species.sh`](#writing-and-testing-split_bam_by_speciessh)
+            1. [Use `split_bam_by_species.sh` to get VII and *K. lactis* chromosomes from `.bam` files \(2022-1116\)](#use-split_bam_by_speciessh-to-get-vii-and-k-lactis-chromosomes-from-bam-files-2022-1116)
+            1. [Having updated and "function-ized" `split_bam_by_species.sh`, test it \(2022-1117\)](#having-updated-and-function-ized-split_bam_by_speciessh-test-it-2022-1117)
+        1. [Writing and testing `exclude_bam_reads-unmapped.sh` \(2022-1117\)](#writing-and-testing-exclude_bam_reads-unmappedsh-2022-1117)
 1. [Miscellaneous](#miscellaneous)
     1. [Figure out where to put this](#figure-out-where-to-put-this)
         1. [Brief discussion with Toshi about yeast blacklists](#brief-discussion-with-toshi-about-yeast-blacklists)
@@ -2513,20 +2516,20 @@ echo $(( 13988842 + 13988842 ))
 #  The numbers of records in the .bam and .fastq files are equivalent
 ```
 
-Contents of outfile from running `list_tally_flags`...
+Contents of outfile from running `list_tally_flags` (with some format edits and additions from me)...
 ```txt
-5276715 77
-5276715 141
-4691235 99
-4691235 147
-3755353 83
-3755353 163
- 152761 653
- 152761 589
-  62364 659
-  62364 611
-  50414 675
-  50414 595
+5276715    77     unmapped (read, mate)
+5276715    141    unmapped (read, mate)
+4691235    99
+4691235    147
+3755353    83
+3755353    163
+ 152761    653    unmapped (read, mate)    read fails
+ 152761    589    unmapped (read, mate)    read fails
+  62364    659    read fails
+  62364    611    read fails
+  50414    675    read fails
+  50414    595    read fails
 ```
 What are the meanings of these flags? Use [this tool](https://broadinstitute.github.io/picard/explain-flags.html) to check:
 | flag | meaning                                                                                                                     |
@@ -2890,12 +2893,12 @@ echo "27977684*0.9353" | bc
 #  The numbers of records in the .bam and .fastq files are not equivalent
 ```
 
-Contents of outfile from running `list_tally_flags`...
+Contents of outfile from running `list_tally_flags` (with some format edits)...
 ```txt
-7070153 83
-7070153 163
-6013774 99
-6013774 147
+7070153    83
+7070153    163
+6013774    99
+6013774    147
 ```
 
 What are the meanings of these flags? Use [this tool](https://broadinstitute.github.io/picard/explain-flags.html) to check:
@@ -3162,30 +3165,30 @@ echo "27977684*0.9862" | bc
 #+ Great!
 ```
 
-Contents of outfile from running `list_tally_flags` (with notes from me)...
+Contents of outfile from running `list_tally_flags` (with format edits and notes from me)...
 ```txt
-7314425 83
-7314425 163
-6122312 99
-6122312 147
- 139372 97
- 139372 145
- 122807 77
- 122807 141
-  96792 81
-  96792 161
-  42776 89
-  42776 165
-  40407 73
-  40407 133
-  33323 65
-  33323 129
-  31296 153 unmapped
-  31296 101 unmapped
-  26508 69 unmapped
-  26508 137 unmapped
-  18824 177
-  18824 113
+7314425    83
+7314425    163
+6122312    99
+6122312    147
+ 139372    97
+ 139372    145
+ 122807    77     unmapped (read, mate)
+ 122807    141    unmapped (read, mate)
+  96792    81
+  96792    161
+  42776    89     unmapped (mate)
+  42776    165    unmapped (read)
+  40407    73     unmapped (mate)
+  40407    133    unmapped (read)
+  33323    65
+  33323    129
+  31296    153    unmapped (mate)
+  31296    101    unmapped (read)
+  26508    69     unmapped (read)
+  26508    137    unmapped (mate)
+  18824    177    on different chromosomes
+  18824    113    on different chromosomes
 ```
 What are the meanings of these flags? Use [this tool](https://broadinstitute.github.io/picard/explain-flags.html) to check:
 | flag | meaning                                                                                                |
@@ -4323,7 +4326,7 @@ echo $(( 13988842 + 13988842 ))
 #  The numbers of records in the .bam and .fastq files are equivalent
 ```
 
-Contents of outfile from running `list_tally_flags` (including some edits/additions from me)...
+Contents of outfile from running `list_tally_flags` (including some format edits and notes from me)...
 ```txt
 19948030    419    not primary alignment 
 19948030    339    not primary alignment 
@@ -4333,16 +4336,16 @@ Contents of outfile from running `list_tally_flags` (including some edits/additi
  7217590    163    primary alignment
  6168754    99     primary alignment
  6168754    147    primary alignment
-  336959    77     unmapped              
-  336959    141    unmapped
+  336959    77     unmapped (read, mate)
+  336959    141    unmapped (read, mate)
   248080    931    not primary alignment    read fails
   248080    851    not primary alignment    read fails
   213908    915    not primary alignment    read fails
   213908    867    not primary alignment    read fails
    94722    675    read fails
    94722    595    read fails
-   91403    653    unmapped                 read fails
-   91403    589    unmapped                 read fails
+   91403    653    unmapped (read, mate)    read fails
+   91403    589    unmapped (read, mate)    read fails
    79414    659    read fails
    79414    611    read fails
 ```
@@ -4374,19 +4377,62 @@ What are the meanings of these flags? Use [this tool](https://broadinstitute.git
 
 Click [here](#thoughts-on-the-alignment-metrics-for-star) for thoughts and comments from the previous test run of `STAR` (['rna-star' parameters](#examine-the-flags-in-the-bam-outfile-from-the-test-run-of-star-multi-hit-mode))
 
+Also, a little bit of cleanup
+```bash
+#!/bin/bash
+#DONTRUN
+
+#  grabnode has been called with default/lowest settings; samtools is loaded
+cd "${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1101"
+
+ls -lhaFG
+total 1.9M
+# drwxrws--- 10 kalavatt  967 Nov 17 12:41 ./
+# drwxrws---  7 kalavatt  135 Nov 17 12:38 ../
+# -rw-rw----  1 kalavatt    0 Nov 16 12:34 4016030.err.txt
+# -rw-rw----  1 kalavatt  986 Nov 16 12:37 4016030.out.txt
+# drwxrws---  3 kalavatt  160 Nov  9 15:23 exp_alignment_Bowtie_2/
+# drwxrws---  3 kalavatt  150 Nov 16 16:13 exp_alignment_STAR/
+# drwxrws---  3 kalavatt   84 Nov 16 16:12 exp_alignment_STAR_multi-hit/
+# drwxrws---  2 kalavatt 1.1K Nov  7 15:27 exp_FastQC/
+# drwxrws---  2 kalavatt  854 Nov  7 14:31 exp_picardmetrics/
+# drwxrws---  3 kalavatt  317 Nov  7 14:44 exp_Trinity/
+# drwxrws---  3 kalavatt  720 Nov  8 10:03 files_fastq_symlinks/
+# -rw-rw----  1 kalavatt  14K Nov 16 12:23 notes-Alison-files-locations.md
+# -rw-rw----  1 kalavatt  29K Nov 16 12:23 notes-Alison-papers.md
+# -rw-rw----  1 kalavatt 1.3K Nov 16 12:23 notes-Alison-RNA-seq-kits.md
+# -rw-rw----  1 kalavatt 6.6K Nov 17 09:27 notes-miscellaneous-links.md
+# -rw-rw----  1 kalavatt 5.7K Nov 16 12:23 notes-RNA-seq-spike-ins.md
+# -rw-rw----  1 kalavatt  35K Nov 16 12:23 notes-UMIs-etc.md
+# drwxrws---  2 kalavatt   26 Nov 10 12:33 readme/
+# -rw-rw----  1 kalavatt  617 Nov  8 14:43 submit-Bowtie-2.test-1.sh
+# -rw-rw----  1 kalavatt  642 Nov  8 16:16 submit-Bowtie-2.test-2.sh
+# -rw-rw----  1 kalavatt  300 Nov  7 14:58 submit-FastQC.sh
+# -rw-rw----  1 kalavatt  871 Nov 16 12:34 submit-STAR-alignReads-multi-hit.sh
+# -rw-rw----  1 kalavatt  694 Nov  3 17:41 submit-Trinity.sh
+# -rw-rw----  1 kalavatt  23K Nov 16 12:23 work-TPM-calculation.md
+# -rw-rw----  1 kalavatt 236K Nov 17 12:47 work-Trinity.md
+
+#  Move SLURM stdout and stderr to the appropriate directory
+mv 4016030.* ./exp_alignment_STAR_multi-hit/
+```
+
+<a id="writing-and-testing-split_bam_by_speciessh"></a>
+#### Writing and testing `split_bam_by_species.sh`
+`#DEKHO`
 <a id="use-split_bam_by_speciessh-to-get-vii-and-k-lactis-chromosomes-from-bam-files-2022-1116"></a>
-#### Use `split_bam_by_species.sh` to get VII and *K. lactis* chromosomes from `.bam` files (2022-1116)
+##### Use `split_bam_by_species.sh` to get VII and *K. lactis* chromosomes from `.bam` files (2022-1116)
 ```bash
 #!/bin/bash
 #DONTRUN
 
 grabnode  # Lowest/default settings
-cd "${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1101/"
+cd "${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction"
 
 module load SAMtools/1.16.1-GCC-11.2.0
 
 samtools index \
-    ./results/2022-1101/exp_STAR_alignment/files_bams/5781_G1_IN_mergedAligned.sortedByCoord.out.bam
+    ./results/2022-1101/exp_alignment_STAR/files_bams/5781_G1_IN_mergedAligned.sortedByCoord.out.bam
 
 bash bin/split_bam_by_species.sh
 # Take user-input .bam files containing alignments to S. cerevisiae, K. lactis,
@@ -4440,19 +4486,19 @@ bash bin/split_bam_by_species.sh
 
 bash bin/split_bam_by_species.sh \
     -u TRUE \
-    -i ./results/2022-1101/exp_STAR_alignment/files_bams/5781_G1_IN_mergedAligned.sortedByCoord.out.bam \
-    -o ./results/2022-1101/exp_STAR_alignment/files_bams \
+    -i ./results/2022-1101/exp_alignment_STAR/files_bams/5781_G1_IN_mergedAligned.sortedByCoord.out.bam \
+    -o ./results/2022-1101/exp_alignment_STAR/files_bams \
     -s SC_VII \
     -t 1
 
 bash bin/split_bam_by_species.sh \
     -u FALSE \
-    -i ./results/2022-1101/exp_STAR_alignment/files_bams/5781_G1_IN_mergedAligned.sortedByCoord.out.bam \
-    -o ./results/2022-1101/exp_STAR_alignment/files_bams \
+    -i ./results/2022-1101/exp_alignment_STAR/files_bams/5781_G1_IN_mergedAligned.sortedByCoord.out.bam \
+    -o ./results/2022-1101/exp_alignment_STAR/files_bams \
     -s KL_all \
     -t 1
 
-cd ./results/2022-1101/exp_STAR_alignment/files_bams
+cd ./results/2022-1101/exp_alignment_STAR/files_bams
 
 samtools view -h \
     5781_G1_IN_mergedAligned.sortedByCoord.out.split_SC_VII.bam \
@@ -4468,6 +4514,527 @@ samtools view -h \
 #TODO 2/2 which it was called
 ```
 
+<a id="having-updated-and-function-ized-split_bam_by_speciessh-test-it-2022-1117"></a>
+##### Having updated and "function-ized" `split_bam_by_species.sh`, test it (2022-1117)
+```bash
+#!/bin/bash
+#DONTRUN
+
+grabnode  # Lowest/default settings
+cd "${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1101/"
+
+module load SAMtools/1.16.1-GCC-11.2.0
+
+dir_abbrev="./exp_alignment_STAR/files_bams"
+if [[ ! -f "${dir_abbrev}/5781_G1_IN_mergedAligned.sortedByCoord.out.bam.bai" ]]; then
+    samtools index "${dir_abbrev}/5781_G1_IN_mergedAligned.sortedByCoord.out.bam"
+fi
+
+bash ../../bin/split_bam_by_species.sh
+# split_bam_by_species.sh
+# -----------------------
+# Take user-input .bam files containing alignments to S. cerevisiae, K. lactis,
+# and 20 S narnavirus, and split them into distinct .bam files for each species,
+# with three splits for S. cerevisiae: all S. cerevisiae chromosomes not
+# including chromosome M, all S. cerevisiae including chromosome M, and S.
+# cerevisiae chromosome M only.
+#
+# Names of chromosomes in .bam infiles must be in the following format:
+#   - S. cerevisiae (SC)
+#     - I
+#     - II
+#     - III
+#     - IV
+#     - V
+#     - VI
+#     - VII
+#     - VIII
+#     - IX
+#     - X
+#     - XI
+#     - XII
+#     - XIII
+#     - XIV
+#     - XV
+#     - XVI
+#     - Mito
+#
+#   - K. lactis (KL)
+#     - A
+#     - B
+#     - C
+#     - D
+#     - E
+#
+#   - 20 S narnavirus
+#     - 20S
+#
+# The split .bam files are saved to a user-defined out directory.
+#
+# Dependencies:
+#   - samtools >= #TBD
+#
+# Arguments:
+#   -h  print this help message and exit
+#   -u  use safe mode: "TRUE" or "FALSE" <lgl; default: FALSE>
+#   -i  infile, including path <chr>
+#   -o  outfile directory, including path; if not found, will be mkdir'd <chr>
+#   -s  what to split out; options: SC_all, SC_no_Mito, SC_VII, SC_XII,
+#       SC_VII_XII, SC_Mito, KL_all, virus_20S <chr; default: SC_all>
+#
+#             SC_all  return all SC chromosomes, including Mito (default)
+#         SC_no_Mito  return all SC chromosomes, excluding Mito
+#             SC_VII  return only SC chromosome VII
+#             SC_XII  return only SC chromosome XII
+#         SC_VII_XII  return only SC chromosomes VII and XII
+#            SC_Mito  return only SC chromosome Mito
+#             KL_all  return all KL chromosomes
+#          virus_20S  return only 20 S narnavirus
+#
+#   -t  number of threads <int >= 1; default: 1>
+
+if [[ -f "./exp_alignment_STAR/files_bams/5781_G1_IN_mergedAligned.sortedByCoord.out.split_SC_VII_XII.bam" ]]; then
+    rm "./exp_alignment_STAR/files_bams/5781_G1_IN_mergedAligned.sortedByCoord.out.split_SC_VII_XII.bam"
+fi
+
+bash ../../bin/split_bam_by_species.sh \
+    -u TRUE \
+    -i ${dir_abbrev}/5781_G1_IN_mergedAligned.sortedByCoord.out.bam \
+    -o ${dir_abbrev} \
+    -s SC_VII_XII \
+    -t 1
+
+#  It works!
+```
+
+Safe mode: Information printed to screen
+<details>
+<summary><i>Click here to expand</i></summary>
+
+```txt
+Running ../../bin/split_bam_by_species.sh...
+-u: "Safe mode" is TRUE.
++ check_exists_file ./exp_alignment_STAR/files_bams/5781_G1_IN_mergedAligned.sortedByCoord.out.bam
++ what='
+    check_exists_file()
+    -------------------
+    Check that a file exists; exit if it doesn'\''t
+
+    :param 1: file, including path <chr>
+    :return: NA
+    '
++ [[ -z ./exp_alignment_STAR/files_bams/5781_G1_IN_mergedAligned.sortedByCoord.out.bam ]]
++ [[ ! -f ./exp_alignment_STAR/files_bams/5781_G1_IN_mergedAligned.sortedByCoord.out.bam ]]
++ :
++ check_exists_directory TRUE ./exp_alignment_STAR/files_bams
++ what='
+    check_exists_directory()
+    ------------------------
+    Check that a directory exists; if it doesn'\''t, then either make it or exit
+
+    :param 1: create directory if not found: TRUE or FALSE
+              <lgl; default: FALSE>
+    :param 2: directory, including path <chr>
+    '
++ case "$(convert_chr_lower "${1}")" in
+++ convert_chr_lower TRUE
+++ what='
+    convert_chr_lower()
+    -----------------------
+    Convert alphabetical characters in a string to lowercase letters
+
+    :param 1: string <chr>
+    :return: converted string <stdout>
+    '
+++ [[ -z TRUE ]]
+++ string_in=TRUE
++++ tr '[:upper:]' '[:lower:]'
++++ printf %s TRUE
+++ string_out=true
+++ echo true
++ [[ -f ./exp_alignment_STAR/files_bams ]]
++ printf '%s\n' './exp_alignment_STAR/files_bams doesn'\''t exist; mkdir'\''ing it.'
+./exp_alignment_STAR/files_bams doesn't exist; mkdir'ing it.
++ mkdir -p ./exp_alignment_STAR/files_bams
++ case "$(echo "${split}" | tr '[:upper:]' '[:lower:]')" in
+++ tr '[:upper:]' '[:lower:]'
+++ echo SC_VII_XII
++ :
++ echo ''
+
+++ basename ./exp_alignment_STAR/files_bams/5781_G1_IN_mergedAligned.sortedByCoord.out.bam
++ base=5781_G1_IN_mergedAligned.sortedByCoord.out.bam
++ name=5781_G1_IN_mergedAligned.sortedByCoord.out
++ SC_all=./exp_alignment_STAR/files_bams/5781_G1_IN_mergedAligned.sortedByCoord.out.split_SC_all.bam
++ SC_no_Mito=./exp_alignment_STAR/files_bams/5781_G1_IN_mergedAligned.sortedByCoord.out.split_SC_no_Mito.bam
++ SC_VII=./exp_alignment_STAR/files_bams/5781_G1_IN_mergedAligned.sortedByCoord.out.split_SC_VII.bam
++ SC_XII=./exp_alignment_STAR/files_bams/5781_G1_IN_mergedAligned.sortedByCoord.out.split_SC_XII.bam
++ SC_VII_XII=./exp_alignment_STAR/files_bams/5781_G1_IN_mergedAligned.sortedByCoord.out.split_SC_VII_XII.bam
++ SC_Mito=./exp_alignment_STAR/files_bams/5781_G1_IN_mergedAligned.sortedByCoord.out.split_SC_Mito.bam
++ KL_all=./exp_alignment_STAR/files_bams/5781_G1_IN_mergedAligned.sortedByCoord.out.split_KL_all.bam
++ virus_20S=./exp_alignment_STAR/files_bams/5781_G1_IN_mergedAligned.sortedByCoord.out.split_20S.bam
++++ convert_chr_lower SC_VII_XII
++++ what='
+    convert_chr_lower()
+    -----------------------
+    Convert alphabetical characters in a string to lowercase letters
+
+    :param 1: string <chr>
+    :return: converted string <stdout>
+    '
++++ [[ -z SC_VII_XII ]]
++++ string_in=SC_VII_XII
+++++ tr '[:upper:]' '[:lower:]'
+++++ printf %s SC_VII_XII
++++ string_out=sc_vii_xii
++++ echo sc_vii_xii
+++ echo sc_vii_xii
++ [[ sc_vii_xii == \s\c\_\a\l\l ]]
++++ convert_chr_lower SC_VII_XII
++++ what='
+    convert_chr_lower()
+    -----------------------
+    Convert alphabetical characters in a string to lowercase letters
+
+    :param 1: string <chr>
+    :return: converted string <stdout>
+    '
++++ [[ -z SC_VII_XII ]]
++++ string_in=SC_VII_XII
+++++ tr '[:upper:]' '[:lower:]'
+++++ printf %s SC_VII_XII
++++ string_out=sc_vii_xii
++++ echo sc_vii_xii
+++ echo sc_vii_xii
++ [[ sc_vii_xii == \s\c\_\n\o\_\m\i\t\o ]]
++++ convert_chr_lower SC_VII_XII
++++ what='
+    convert_chr_lower()
+    -----------------------
+    Convert alphabetical characters in a string to lowercase letters
+
+    :param 1: string <chr>
+    :return: converted string <stdout>
+    '
++++ [[ -z SC_VII_XII ]]
++++ string_in=SC_VII_XII
+++++ tr '[:upper:]' '[:lower:]'
+++++ printf %s SC_VII_XII
++++ string_out=sc_vii_xii
++++ echo sc_vii_xii
+++ echo sc_vii_xii
++ [[ sc_vii_xii == \s\c\_\v\i\i ]]
++++ convert_chr_lower SC_VII_XII
++++ what='
+    convert_chr_lower()
+    -----------------------
+    Convert alphabetical characters in a string to lowercase letters
+
+    :param 1: string <chr>
+    :return: converted string <stdout>
+    '
++++ [[ -z SC_VII_XII ]]
++++ string_in=SC_VII_XII
+++++ tr '[:upper:]' '[:lower:]'
+++++ printf %s SC_VII_XII
++++ string_out=sc_vii_xii
++++ echo sc_vii_xii
+++ echo sc_vii_xii
++ [[ sc_vii_xii == \s\c\_\x\i\i ]]
++++ convert_chr_lower SC_VII_XII
++++ what='
+    convert_chr_lower()
+    -----------------------
+    Convert alphabetical characters in a string to lowercase letters
+
+    :param 1: string <chr>
+    :return: converted string <stdout>
+    '
++++ [[ -z SC_VII_XII ]]
++++ string_in=SC_VII_XII
+++++ tr '[:upper:]' '[:lower:]'
+++++ printf %s SC_VII_XII
++++ string_out=sc_vii_xii
++++ echo sc_vii_xii
+++ echo sc_vii_xii
++ [[ sc_vii_xii == \s\c\_\v\i\i\_\x\i\i ]]
++ chr='VII XII'
++ split_with_samtools 1 ./exp_alignment_STAR/files_bams/5781_G1_IN_mergedAligned.sortedByCoord.out.bam 'VII XII' ./exp_alignment_STAR/files_bams/5781_G1_IN_mergedAligned.sortedByCoord.out.split_SC_all.bam
++ what='
+    split_with_samtools()
+    ---------------------
+    Use samtools to filter a bam file such that it contains only chromosome(s)
+    specified with ../../bin/split_bam_by_species.sh argument -s
+
+    :param 1: threads <int >= 1>
+    :param 2: bam infile, including path <chr>
+    :param 3: chromosomes to retain <chr>
+    :param 4: bam outfile, including path <chr>
+    :return: :param 2: filtered to include only :param 3: in :param 4:
+    '
++ samtools view -@ 1 -h ./exp_alignment_STAR/files_bams/5781_G1_IN_mergedAligned.sortedByCoord.out.bam VII XII -o ./exp_alignment_STAR/files_bams/5781_G1_IN_mergedAligned.sortedByCoord.out.split_SC_all.bam
+```
+</details>
+
+What does the output look like when running the script with `-u FALSE`?
+```bash
+#!/bin/bash
+#DONTRUN
+
+if [[ -f "${dir_abbrev}/5781_G1_IN_mergedAligned.sortedByCoord.out.split_KL_all.bam" ]]; then
+    rm "${dir_abbrev}/5781_G1_IN_mergedAligned.sortedByCoord.out.split_KL_all.bam"
+fi
+
+bash ../../bin/split_bam_by_species.sh \
+    -u FALSE \
+    -i ${dir_abbrev}/5781_G1_IN_mergedAligned.sortedByCoord.out.bam \
+    -o ${dir_abbrev} \
+    -s KL_all \
+    -t 1
+```
+
+<a id="writing-and-testing-exclude_bam_reads-unmappedsh-2022-1117"></a>
+#### Writing and testing `exclude_bam_reads-unmapped.sh` (2022-1117)
+```bash
+#!/bin/bash
+#DONTRUN
+
+grabnode  # Lowest/default settings
+cd "${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1101/"
+
+module load SAMtools/1.16.1-GCC-11.2.0
+
+dir_abbrev="./exp_alignment_STAR/files_bams"
+if [[ ! -f "${dir_abbrev}/5781_G1_IN_mergedAligned.sortedByCoord.out.bam.bai" ]]; then
+    samtools index "${dir_abbrev}/5781_G1_IN_mergedAligned.sortedByCoord.out.bam"
+fi
+
+bash ../../bin/exclude_bam_reads-unmapped.sh
+# exclude_bam_alignments-unmapped.sh
+# ----------------------------------
+# Exclude unmapped alignments from bam infile. Name of bam outfile will be
+# derived from the infile.
+#
+# Dependencies:
+#   - samtools >= #TBD
+#
+# Arguments:
+#   -h  print this help message and exit
+#   -u  use safe mode: "TRUE" or "FALSE" <lgl; default: FALSE>
+#   -i  bam infile, including path <chr>
+#   -o  outfile directory, including path; if not found, will be mkdir'd <chr>
+#   -f  run samtools flagstat on bams: "TRUE" or "FALSE" <lgl>
+#   -t  number of threads <int >= 1; default: 1>
+
+bash ../../bin/exclude_bam_reads-unmapped.sh \
+    -u TRUE \
+    -i "${dir_abbrev}/5781_G1_IN_mergedAligned.sortedByCoord.out.bam" \
+    -o "${dir_abbrev}" \
+    -f FALSE \
+    -t 1
+```
+
+Text printed to terminal from running `-u TRUE`
+<details>
+<summary><i>Click here to expand</i></summary>
+
+```txt
+Running ../../bin/exclude_bam_reads-unmapped.sh...
+-u: "Safe mode" is TRUE.
++ check_exists_file ./exp_alignment_STAR/files_bams/5781_G1_IN_mergedAligned.sortedByCoord.out.bam
++ what='
+    check_exists_file()
+    -------------------
+    Check that a file exists; exit if it doesn'\''t
+
+    :param 1: file, including path <chr>
+    :return: NA
+    '
++ [[ -z ./exp_alignment_STAR/files_bams/5781_G1_IN_mergedAligned.sortedByCoord.out.bam ]]
++ [[ ! -f ./exp_alignment_STAR/files_bams/5781_G1_IN_mergedAligned.sortedByCoord.out.bam ]]
++ :
++ check_exists_directory TRUE ./exp_alignment_STAR/files_bams
++ what='
+    check_exists_directory()
+    ------------------------
+    Check that a directory exists; if it doesn'\''t, then either make it or exit
+
+    :param 1: create directory if not found: TRUE or FALSE
+              <lgl; default: FALSE>
+    :param 2: directory, including path <chr>
+    '
++ case "$(convert_chr_lower "${1}")" in
+++ convert_chr_lower TRUE
+++ what='
+    convert_chr_lower()
+    -------------------
+    Convert alphabetical characters in a string to lowercase letters
+
+    :param 1: string <chr>
+    :return: converted string <stdout>
+    '
+++ [[ -z TRUE ]]
+++ string_in=TRUE
++++ tr '[:upper:]' '[:lower:]'
++++ printf %s TRUE
+++ string_out=true
+++ echo true
++ [[ -f ./exp_alignment_STAR/files_bams ]]
++ printf '%s\n' './exp_alignment_STAR/files_bams doesn'\''t exist; mkdir'\''ing it.'
+./exp_alignment_STAR/files_bams doesn't exist; mkdir'ing it.
++ mkdir -p ./exp_alignment_STAR/files_bams
++ check_argument_flagstat
++ case "$(echo "$(convert_chr_lower "${flagstat}")")" in
++++ convert_chr_lower FALSE
++++ what='
+    convert_chr_lower()
+    -------------------
+    Convert alphabetical characters in a string to lowercase letters
+
+    :param 1: string <chr>
+    :return: converted string <stdout>
+    '
++++ [[ -z FALSE ]]
++++ string_in=FALSE
+++++ tr '[:upper:]' '[:lower:]'
+++++ printf %s FALSE
++++ string_out=false
++++ echo false
+++ echo false
++ flagstat=0
++ echo -e '-f: "Run samtools flagstat" is FALSE.'
+-f: "Run samtools flagstat" is FALSE.
++ check_argument_threads
++ what='
+    check_argument_threads()
+    ---------------
+    Check the value assigned to "${threads}" in script; assumes variable
+    "${threads}" is defined
+
+    :param "${threads}": value assigned to variable within script <int >= 1>
+    :return: NA
+
+    #TODO Checks...
+    '
++ case "${threads}" in
++ :
++ echo ''
+
+++ basename ./exp_alignment_STAR/files_bams/5781_G1_IN_mergedAligned.sortedByCoord.out.bam
++ base=5781_G1_IN_mergedAligned.sortedByCoord.out.bam
++ outfile=5781_G1_IN_mergedAligned.sortedByCoord.out.primary.bam
++ echo 'Filtering out unmapped...'
+Filtering out unmapped...
++ samtools view -@ 1 -b -f 0x4 -f 0x8 ./exp_alignment_STAR/files_bams/5781_G1_IN_mergedAligned.sortedByCoord.out.bam -o ./exp_alignment_STAR/files_bams/5781_G1_IN_mergedAligned.sortedByCoord.out.primary.bam
++ check_exit 0 samtools
++ what='
+    check_exit()
+    ------------
+    Check the exit code of a child process
+
+    :param 1: exit code <int >= 0>
+    :param 2: program/package <chr>
+
+    #TODO Check that params are not empty or inappropriate formats or strings
+    '
++ [[ 0 == \0 ]]
+++ date
++ echo 'samtools completed: Thu Nov 17 15:05:46 PST 2022'
+samtools completed: Thu Nov 17 15:05:46 PST 2022
++ [[ 0 -eq 1 ]]
+```
+</details>
+
+Did the filtering work correctly? Check the alignment counts and flag tallies
+```bash
+samtools view -c "${dir_abbrev}/5781_G1_IN_mergedAligned.sortedByCoord.out.bam"
+# 27977684
+
+samtools view -c "${dir_abbrev}/5781_G1_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.bam"
+# 10858952
+
+calculate_run_time() {
+    # Calculate run time for chunk of code
+    #
+    # :param 1: start time in $(date +%s) format
+    # :param 2: end time in $(date +%s) format
+    # :param 3: message to be displayed when printing the run time (chr)
+    run_time="$(echo "${2}" - "${1}" | bc -l)"
+    
+    echo ""
+    echo "${3}"
+    printf 'Run time: %dh:%dm:%ds\n' \
+    $(( run_time/3600 )) $(( run_time%3600/60 )) $(( run_time%60 ))
+    echo ""
+}
+
+
+display_spinning_icon() {
+    # Display "spinning icon" while a background process runs
+    #
+    # :param 1: PID of the last program the shell ran in the background (int)
+    # :param 2: message to be displayed next to the spinning icon (chr)
+    spin="/|\\–"
+    i=0
+    while kill -0 "${1}" 2> /dev/null; do
+        i=$(( (i + 1) % 4 ))
+        printf "\r${spin:$i:1} %s" "${2}"
+        sleep .15
+    done
+}
+
+
+list_tally_flags() {
+    # List and tally flags in a bam infile; function acts on a bam infile to
+    # perform piped commands (samtools view, cut, sort, uniq -c, sort -nr) that
+    # list and tally flags; function writes the results to a txt outfile, the
+    # name of which is derived from the txt infile
+    #
+    # :param 1: name of bam infile, including path (chr)
+    start="$(date +%s)"
+    
+    samtools view "${1}" \
+        | cut -d$'\t' -f 2 \
+        | sort \
+        | uniq -c \
+        | sort -nr \
+        > "${1/.bam/.flags.txt}" &
+    display_spinning_icon $! \
+    "Running piped commands (samtools view, cut, sort, uniq -c, sort -nr) on $(basename "${1}")... "
+        
+    end="$(date +%s)"
+    echo ""
+    calculate_run_time "${start}" "${end}"  \
+    "List and tally flags in $(basename "${1}")."
+}
+
+list_tally_flags "${dir_abbrev}/5781_G1_IN_mergedAligned.sortedByCoord.out.bam"
+list_tally_flags "${dir_abbrev}/5781_G1_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.bam"
+```
+Contents of `list_tally_flags` for `*.out.bam`
+```txt
+5276715 77
+5276715 141
+4691235 99
+4691235 147
+3755353 83
+3755353 163
+ 152761 653
+ 152761 589
+  62364 659
+  62364 611
+  50414 675
+  50414 595
+```
+Contents of `list_tally_flags` for `*.out.exclude-unmapped.bam`
+```txt
+5276715 77
+5276715 141
+ 152761 653
+ 152761 589
+```
+
+`#NOTE` Cleary, there's an issue in which only the unmapped reads were retained, so probably need to change -f to -F
 <br />
 <br />
 

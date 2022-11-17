@@ -59,7 +59,7 @@ Dependencies:
 
 Arguments:
   -h  print this help message and exit
-  -u  use safe mode: \"TRUE\" or \"FALSE\" <logical; default: FALSE>
+  -u  use safe mode: \"TRUE\" or \"FALSE\" <lgl; default: FALSE>
   -i  directory containing infiles, including path <chr>
   -p  prefix for paired-end fastq infiles used with Linux find <chr>
   -b  directory containing Bowtie 2 indices, including path <chr>

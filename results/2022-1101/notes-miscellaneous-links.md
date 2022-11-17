@@ -6,6 +6,7 @@
 
 1. [Links on how to do miscellaneous things](#links-on-how-to-do-miscellaneous-things)
     1. [System](#system)
+    1. [Bash](#bash)
     1. [Sublime](#sublime)
         1. [On making Sublime plugins](#on-making-sublime-plugins)
     1. [Markdown](#markdown)
@@ -25,6 +26,15 @@
 <a id="system"></a>
 ### System
 - [How to shut off auto-period with double space](https://stackoverflow.com/questions/42566449/avoid-auto-period-character-after-quick-type-space-in-sublime-text-3) (in particular, see comment #2, which gives a command-line input answer)
+- [Check if file exists relative to current script](https://stackoverflow.com/questions/69418076/check-if-file-exist-relative-to-current-script-one-level-up)
+- [On listing functions defined in shell](https://stackoverflow.com/questions/4471364/how-do-i-list-the-functions-defined-in-my-shell)
+    + `declare -F`
+- [On using printf](https://linuxize.com/post/bash-printf-command/)
+
+<a id="bash"></a>
+### Bash
+- [Choosing between $0 and $BASH_SOURCE](https://stackoverflow.com/questions/35006457/choosing-between-0-and-bash-source)
+- 
 
 <a id="sublime"></a>
 ### Sublime
