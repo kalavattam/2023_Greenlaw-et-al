@@ -66,7 +66,8 @@
 - [Get underlined text with Markdown](https://stackoverflow.com/questions/3003476/get-underlined-text-with-markdown)
 - [Set up spellcheck for files with `.md` extension](https://stackoverflow.com/questions/28986782/sublime-text-spell-check-but-only-certain-file-extensions)
 - [Quickly generate a TOC](https://stackoverflow.com/questions/11948245/markdown-to-create-pages-and-table-of-contents)
-- https://facelessuser.github.io/MarkdownPreview/usage/
+- [Markdown Preview Documentation](https://facelessuser.github.io/MarkdownPreview/usage/)
+- [Add a collapsible header to Markdown](https://stackoverflow.com/questions/31562552/collapsible-header-in-markdown-to-html)
 
 <a id="html"></a>
 ### HTML

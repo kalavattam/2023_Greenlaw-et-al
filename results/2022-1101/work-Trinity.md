@@ -1,7 +1,7 @@
 
 # 2022-1102-1113
 <details>
-<summary><b><font size="+2">Table of Contents</font></b></summary>
+<summary><b><font size="+2"><i>Table of contents</i></font></b></summary>
 <!-- MarkdownTOC -->
 
 1. [Get another trial run of `Trinity` going](#get-another-trial-run-of-trinity-going)
@@ -39,7 +39,13 @@
         1. [Building a `STAR` genome index](#building-a-star-genome-index)
         1. [Meaning of `STAR` parameters for `genomeGenerate`](#meaning-of-star-parameters-for-genomegenerate)
         1. [How we should call `STAR`](#how-we-should-call-star)
-        1. [Meaning of `STAR` parameters for `alignReads`](#meaning-of-star-parameters-for-alignreads)
+            1. [Meaning of `STAR` parameters for `alignReads`](#meaning-of-star-parameters-for-alignreads)
+            1. [Rationale behind parameters based on pertinent 'rna-star' Google group conversation](#rationale-behind-parameters-based-on-pertinent-rna-star-google-group-conversation)
+                1. [Post #1, Marco, 2016-0502](#post-1-marco-2016-0502)
+                1. [Post #2, Alex, 2016-0503](#post-2-alex-2016-0503)
+                1. [Post #3, Marco, 2016-0504](#post-3-marco-2016-0504)
+                1. [Post #4, Marco, 2016-0504](#post-4-marco-2016-0504)
+                1. [Post #5, Marco, 2016-0504](#post-5-marco-2016-0504)
     1. [Implementing the alignment steps with `STAR` and `Bowtie 2`](#implementing-the-alignment-steps-with-star-and-bowtie-2)
         1. [Generating files needed for `STAR` alignment \(2022-1107\)](#generating-files-needed-for-star-alignment-2022-1107)
             1. [Preparing the `.fasta` and `.gff3` files for `STAR`](#preparing-the-fasta-and-gff3-files-for-star)
@@ -65,7 +71,34 @@
                 1. [Examine the flags in the `.bam` outfile from the *corrected* test run of `Bowtie 2`](#examine-the-flags-in-the-bam-outfile-from-the-corrected-test-run-of-bowtie-2)
                 1. [Examine the `.fastq` outfiles from the *corrected* test run of `Bowtie 2`](#examine-the-fastq-outfiles-from-the-corrected-test-run-of-bowtie-2)
                 1. [`head` through the `.bam` outfile from the *corrected* test run of `Bowtie 2`](#head-through-the-bam-outfile-from-the-corrected-test-run-of-bowtie-2)
-        1. [More thoughts on multimappers \(2022-1109-1110\)](#more-thoughts-on-multimappers-2022-1109-1110)
+        1. [More thoughts on multimappers \(2022-1109-1110, 1115\)](#more-thoughts-on-multimappers-2022-1109-1110-1115)
+            1. [Conversation with Brian Haas, author/maintainer of Trinity](#conversation-with-brian-haas-authormaintainer-of-trinity)
+            1. [Material on multimappers from the `STAR` documentation](#material-on-multimappers-from-the-star-documentation)
+                1. [4.1 Multimappers.](#41-multimappers)
+                1. [5.2.1 Multimappers.](#521-multimappers)
+            1. [Mapping parameters used in Teissandier et al., *Mobile DNA* 2019](#mapping-parameters-used-in-teissandier-et-al-mobile-dna-2019)
+                1. [Unique mode](#unique-mode)
+                1. [Random mode](#random-mode)
+                1. [Multi-hit mode](#multi-hit-mode)
+            1. [Meaning of the `STAR` parameters for Teissandier-styled alignment](#meaning-of-the-star-parameters-for-teissandier-styled-alignment)
+            1. [How we called `STAR` previously \(based on 'rna-star' post, not retaining multimappers\) vs. multi-hit mode](#how-we-called-star-previously-based-on-rna-star-post-not-retaining-multimappers-vs-multi-hit-mode)
+                1. [Previous \(based on 'rna-star' post\):](#previous-based-on-rna-star-post)
+                1. [Multi-hit mode:](#multi-hit-mode-1)
+                1. [Going through the parameters, making comparisons between the two approaches:](#going-through-the-parameters-making-comparisons-between-the-two-approaches)
+                1. [Assessing the "ingredients"](#assessing-the-ingredients)
+            1. [How we should call `STAR` taking into account 'rna-star' and multi-hit mode parameters](#how-we-should-call-star-taking-into-account-rna-star-and-multi-hit-mode-parameters)
+            1. [How are other groups calling `STAR` with *S. cerevisiae*?](#how-are-other-groups-calling-star-with-s-cerevisiae)
+                1. [Dorfel et al. \(Lyon\), Yeast 2017](#dorfel-et-al-lyon-yeast-2017)
+                1. [Jensen et al. \(Jensen\), *Nat Comm* 2022](#jensen-et-al-jensen-nat-comm-2022)
+                1. [Software and parameter settings used by OneStopRNAseq v1.0.0](#software-and-parameter-settings-used-by-onestoprnaseq-v100)
+                1. [Mendoza et al., *Sci Adv* 2022](#mendoza-et-al-sci-adv-2022)
+                1. [VELCRO-IP RNA-seq Data Analysis: Read Alignment and Quantification](#velcro-ip-rna-seq-data-analysis-read-alignment-and-quantification)
+                1. [Osman et al. \(Cramer\), *JBC* 202100523-8/pdf)](#osman-et-al-cramer-jbc-202100523-8pdf)
+        1. [Run `STAR` alignment, retaining multimappers \(2022-1115-1116\)](#run-star-alignment-retaining-multimappers-2022-1115-1116)
+            1. [Alignment metrics for the test run of `STAR` \(multi-hit mode\)](#alignment-metrics-for-the-test-run-of-star-multi-hit-mode)
+                1. [Thoughts on the alignment metrics for `STAR` \(multi-hit mode\)](#thoughts-on-the-alignment-metrics-for-star-multi-hit-mode)
+                1. [Examine the flags in the `.bam` outfile from the test run of `STAR` \(multi-hit mode\)](#examine-the-flags-in-the-bam-outfile-from-the-test-run-of-star-multi-hit-mode)
+        1. [Use `split_bam_by_species.sh` to get VII and *K. lactis* chromosomes from `.bam` files \(2022-1116\)](#use-split_bam_by_speciessh-to-get-vii-and-k-lactis-chromosomes-from-bam-files-2022-1116)
 1. [Miscellaneous](#miscellaneous)
     1. [Figure out where to put this](#figure-out-where-to-put-this)
         1. [Brief discussion with Toshi about yeast blacklists](#brief-discussion-with-toshi-about-yeast-blacklists)
@@ -851,8 +884,8 @@ bowtie2 \
 ### On calling `STAR`
 - Section ties into the section immediately [above](#outstanding-ongoing-questions-points-etc) and [below](#in-progress-steps-of-the-pipeline)
 - Performing `STAR` "genome generation" (i.e., creating an indexed genome file with annotations) is based on the parameters described [here (example call)](https://groups.google.com/g/rna-star/c/TPTdAL7NNZ4), [here (on `--genomeSAindexNbases`)](https://groups.google.com/g/rna-star/c/08UtIdEFFmY/m/gU1eif_1KdwJ), and [here (on `--sjdbGTFfeatureExon CDS`)](https://groups.google.com/g/rna-star/c/IOJuxxONrKs/m/a0jV0kkCAQAJ)
-- Performing `STAR` alignment with *S. cerevisiae* data is based on the parameters described [here](https://groups.google.com/g/rna-star/c/hQeHTBbkc0c)
 - An [important consideration](https://groups.google.com/g/rna-star/c/08UtIdEFFmY/m/gU1eif_1KdwJ) for building the yeast genome index with `STAR`
+- Performing `STAR` alignment with *S. cerevisiae* data is based on the parameters described [here in the rna-star Google group](https://groups.google.com/g/rna-star/c/hQeHTBbkc0c)
 
 <a id="building-a-star-genome-index"></a>
 #### Building a `STAR` genome index
@@ -964,10 +997,11 @@ STAR \
 ```
 
 <a id="meaning-of-star-parameters-for-alignreads"></a>
-#### Meaning of `STAR` parameters for `alignReads`
+##### Meaning of `STAR` parameters for `alignReads`
 ```txt
            --runThreadN  number of threads to run STAR
                          < format: int>0 >
+
        --outSAMunmapped  output of unmapped reads in the SAM format
                              1st word:
                                  None   ... no output
@@ -979,70 +1013,92 @@ STAR \
                                                to its mapped mate; only affects multi-mapping
                                                reads
                          < string(s) >
+
             --genomeDir  path to the directory where genome files are stored (for --runMode
                          alignReads) or will be generated (for --runMode generateGenome)
                          < format: ./GenomeDir/ >
+
           --readFilesIn  paths to files that contain input read1 (and, if needed, read2)
                          < format: string(s); format: Read1 Read2 >
+
     --outFileNamePrefix  output files name prefix (including full or relative path)
                          < format: string; format: ./ >
+
      --readFilesCommand  command line to execute for each of the input file; this command
                          should generate FASTA or FASTQ text and send it to stdout; for
                          example, 'zcat' to uncompress .gz files, 'bzcat' to uncompress .bz2
                          files, etc.
                          < string(s) >
+
             --quantMode  types of quantification requested
                              -                ... none
                              TranscriptomeSAM ... output SAM/BAM alignments to transcriptome
                                                   into a separate file
                              GeneCounts       ... count reads per gene
                          < string(s) >
+
       --limitBAMsortRAM  maximum available RAM (bytes) for sorting BAM; if =0, it will be set
                          to the genome index size; 0 value can only be used with --genomeLoad
                          NoSharedMemory option < int>=0 >
+
         --outFilterType  type of filtering
                              Normal  ... standard filtering using only current alignment
                              BySJout ... keep only those reads that contain junctions that
                                          passed filtering into SJ.out.tab
                          < format: string; default: Normal >
+
 --outFilterMultimapNmax  maximum number of loci the read is allowed to map to; alignments
                          (all of them) will be output only if the read maps to no more loci
                          than this value; otherwise no alignments will be output, and the
                          read will be counted as "mapped to too many loci" in the
                          Log.final.out
                          < format: int; default: 10 >
-   --alignSJoverhangMin  minimum overhang (i.e. block size) for spliced alignments
+
+   --alignSJoverhangMin  minimum overhang (i.alignIntronMine. block size) for spliced alignments
                          < format: int>0; default: 5 >
+
  --alignSJDBoverhangMin  minimum overhang (i.e. block size) for annotated (sjdb) spliced
                          alignments
                          < format: int>0; default: 3 >
+
 --outFilterMismatchNmax  alignment will be output only if it has no more mismatches than this
                          value
                          < format: int; default: 10 >
+
        --alignIntronMin  minimum intron size: genomic gap is considered intron if its
                          length>=alignIntronMin, otherwise it is considered Deletion
                          < default: 21 >
+
        --alignIntronMax  maximum intron size, if 0, max intron size will be determined by
-                         (2^winBinNbits)*winAnchorDistNbins < default: 0 >
+                         (2^winBinNbits)*winAnchorDistNbins
+                         < default: 0 >
+
           --winBinNbits  =log2(winBin), where winBin is the size of the bin for the
                          windows/clustering, each window will occupy an integer number of
                          bins
                          < int>0; default: 16 >
+
    --winAnchorDistNbins  max number of bins between two anchors that allows aggregation of
                          anchors into one window
                          < int>0; default: 9 >
+
      --alignMatesGapMax  maximum gap between two mates, if 0, max intron gap will be
-                         determined by (2^winBinNbits)*winAnchorDistNbins < default: 0 >
+                         determined by (2^winBinNbits)*winAnchorDistNbins
+                         < default: 0 >
+
             --outTmpDir  path to a directory that will be used as temporary by STAR; all
                          contents of this directory will be removed; the temp directory will
                          default to outFileNamePrefix_STARtmp
                          < format: string >
+
     --outSAMattrIHstart  start value for the IH attribute; 0 may be required by some
                          downstream software, such as Cufflinks or StringTie
                          < int>=0; default: 1 >
+
      --outSAMattributes  a string of desired SAM attributes, in the order desired for the
                          output SAM; tags can be listed in any combination/order
                          < format: string; default: Standard >
+
            --outSAMtype  type of SAM/BAM output
                              1st word:
                                  BAM  ... output BAM without sorting
@@ -1057,6 +1113,126 @@ STAR \
                          < format: strings; default: SAM >
 ```
 
+<a id="rationale-behind-parameters-based-on-pertinent-rna-star-google-group-conversation"></a>
+##### Rationale behind parameters based on [pertinent 'rna-star' Google group conversation](https://groups.google.com/g/rna-star/c/hQeHTBbkc0c)
+<a id="post-1-marco-2016-0502"></a>
+###### [Post #1, Marco, 2016-0502](https://groups.google.com/g/rna-star/c/hQeHTBbkc0c/m/o7jPGuYfBQAJ)
+```txt
+Hi,
+
+which is the set of parameters to use for mapping RNA-seq data of S cerevisiae?
+
+Thanks,
+Marco
+```
+
+<a id="post-2-alex-2016-0503"></a>
+###### [Post #2, Alex, 2016-0503](https://groups.google.com/g/rna-star/c/hQeHTBbkc0c/m/2tgQSP9vBQAJ)
+```txt
+Hi Marco,
+
+this is what I would recommend for the first run:
+
+at the genome generation stage:
+--genomeSAindexNbases 10
+at the mappings stage:
+--alignIntronMin   <minimum expected intron size> --alignIntronMax <maximum expected intron size>
+
+You can estimate expected intron size distribution from the annotated junctions. I would increase the range compared to the annotations to allow for detection of short and long novel introns.
+
+Cheers
+Alex
+```
+
+<a id="post-3-marco-2016-0504"></a>
+###### [Post #3, Marco, 2016-0504](https://groups.google.com/g/rna-star/c/hQeHTBbkc0c/m/2tgQSP9vBQAJ)
+```txt
+Hi Alex,
+
+Thanks for your reply. This is the first time I do this kind of analysis, so I will be pedantic to be sure that I'm implementing it correctly.
+I ask you to check the next lines and tell me if they look reasonable to you.
+
+At the genome generation stage, I use the command:
+
+STAR --runMode genomeGenerate --runThreadN 8 --genomeDir . --genomeFastaFiles Saccharomyces_cerevisiae.R64-1-1.dna.chromosome.fa --sjdbGTFfile Saccharomyces_cerevisiae.R64-1-1.81.gtf --outFileNamePrefix Saccharomyces_cerevisiae.R64-1-1.81.list_of_transcripts --genomeSAindexNbases 10
+
+
+
+which should implement your suggestion.
+
+To set the mapping stage, I estimate the expected intron size distribution looking at the file sjdbList.out.tab. 
+I Run the commands:
+
+
+cat sjdbList.out.tab | awk '{print sqrt(($2-$3)*($2-$3))}' | sort -k 1n | head -1
+
+0
+
+cat sjdbList.out.tab | awk '{print sqrt(($2-$3)*($2-$3))}' | sort -k 1n | tail -1
+
+2482
+
+
+So my first guess for the command --alignIntronMin   <minimum expected intron size> --alignIntronMax <maximum expected intron size>
+is
+--alignIntronMin 0 --alignIntronMax 5000
+
+because the average gene size in S cerevisiae is about 1000 (estimated looking at the average region spanned by the loci annotated in the
+.gtf file).
+
+STAR --runThreadN 12 --outSAMunmapped Within --genomeDir . --readFilesIn XXXread1XXX XXXread2XXX --outFileNamePrefix XXXoutputXXX --readFilesCommand zcat --quantMode TranscriptomeSAM --limitBAMsortRAM 4000000000 --outFilterType BySJout --outFilterMultimapNmax 1 --alignSJoverhangMin 8 --alignSJDBoverhangMin 1 --outFilterMismatchNmax 999 --alignIntronMin 0 --alignIntronMax 5000 --alignMatesGapMax 2000 --outTmpDir $TMPDIR/STAR_ --outSAMattrIHstart 0 --outSAMattributes NH HI NM MD AS nM --outSAMtype BAM Unsorted SortedByCoordinate 
+
+
+I left the rest of the parameters to be the default ones
+
+I'm analysing 42 samples. The results are summarised in the attached file. I provide the average (Min = Max =) per field.
+
+
+
+Thanks a lot,
+Marco
+```
+
+<a id="post-4-marco-2016-0504"></a>
+###### [Post #4, Marco, 2016-0504](https://groups.google.com/g/rna-star/c/hQeHTBbkc0c/m/21okPLXQBQAJ)
+```txt
+Hi Marco,
+
+your parameters look reasonable.
+I would use at least 4 for --alignIntronMin , I do not think the very small introns in the annotations are real https://groups.google.com/d/msg/rna-star/LqxVCE34464/GBordrd6AQAJ.
+I would increase --alignMatesGapMax to at least --alignIntronMin since the gap between mates may contain a splice junction.
+
+The mapping stats look good on average. 68% of unique mappers for the worst sample is on the low inside, and same for the 92 bases mapped out of 98.
+Since you used --outFilterMultimapNmax 1, all multi-mappers map "too many times", so you have high % of reads mapped to too many loci 
+
+Cheers
+Alex
+```
+
+<a id="post-5-marco-2016-0504"></a>
+###### [Post #5, Marco, 2016-0504](https://groups.google.com/g/rna-star/c/hQeHTBbkc0c/m/qc0r-9vWBQAJ)
+```txt
+Hi Alex,
+
+I run the analysis, following your suggestions:
+
+--alignIntronMin               10
+--alignMatesGapMax  5000
+
+obtaining very similar results wrt to the previous analysis (see attached file).
+The case in which are found only 68% of uniquely mapped reads is still there, but it is the only case below 75%.
+
+I'm already happy with these parameters. 
+Just for curiosity, a part from increasing --outFilterMultimapNmax 1, are there other parameters that I could tune to try to increase this percentage?
+(Log.final.out file in attachment)
+
+
+Thanks,
+Marco
+```
+
+Additional comments omitted.
+
 <a id="implementing-the-alignment-steps-with-star-and-bowtie-2"></a>
 ### Implementing the alignment steps with `STAR` and `Bowtie 2`
 <a id="generating-files-needed-for-star-alignment-2022-1107"></a>
@@ -1065,6 +1241,9 @@ STAR \
 
 <a id="preparing-the-fasta-and-gff3-files-for-star"></a>
 ##### Preparing the `.fasta` and `.gff3` files for `STAR`
+<details>
+<summary><i>Click here to expand</i></summary>
+
 ```bash
 #!/bin/bash
 #DONTRUN
@@ -1779,6 +1958,7 @@ There is 13166 exon
 There is 91 rna
 ```
 Seems to be OK...
+</details>
 
 <a id="getting-the-fastq-files-of-interest-into-one-location"></a>
 ##### Getting the `.fastq` files of interest into one location
@@ -2102,7 +2282,6 @@ echo "${genome_dir}"
 echo "${read_1}"
 echo "${read_2}"
 echo "${prefix}"
-
 #NOTE #REMEMBER "IP" = Nascent, "IN" = SteadyState
 
 #  Run the alignment
@@ -2193,9 +2372,10 @@ sbatch submit-STAR-alignReads.sh \
                        Number of chimeric reads |       0
                             % of chimeric reads |       0.00%
 ```
+
 <a id="thoughts-on-the-alignment-metrics-for-star"></a>
 ###### Thoughts on the alignment metrics for `STAR`:
-- A lot of multi-mappers in the dataset...
+- A lot of multimappers in the dataset...
 - `#DONE` Later, check what value I assigned to `--outFilterMultimapNmax` in my 4DN RNA-seq work; consider to replace the current value, `1`, with that other value
     + `#ANSWER` `--outFilterMultimapNmax 1000`
 - `#DONE` What does the [`Trinity` Google Group](https://groups.google.com/g/trinityrnaseq-users) have to say about multimappers?
@@ -2211,12 +2391,12 @@ Use `samtools flagstat` and the bespoke function `list_tally_flags`:
 #!/bin/bash
 #DONTRUN
 
+#  grabnode has been called with default/lowest settings; samtools is loaded
+cd "${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1101"
+
 samtools flagstat \
     ./files_bams/5781_G1_IN_mergedAligned.sortedByCoord.out.bam \
     > ./files_bams/5781_G1_IN_mergedAligned.sortedByCoord.out.flagstat.txt
-
-#  grabnode has been called with default/lowest settings; samtools is loaded
-cd "${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1101"
 
 less ./files_bams/5781_G1_IN_mergedAligned.sortedByCoord.out.flagstat.txt
 # 27446606 + 531078 in total (QC-passed reads + QC-failed reads)
@@ -2348,8 +2528,8 @@ What are the meanings of these flags? Use [this tool](https://broadinstitute.git
 <a id="additional-thoughts-on-the-alignment-metrics-and-flags-from-star"></a>
 ###### Additional thoughts on the alignment metrics and flags from `STAR`
 - Because we want to use the multimappers in `Trinity` transcriptome assembly (rationale in ["Thoughts on the..."](#thoughts-on-the-alignment-metrics-for-star) above), it'd probably be good to have information for where `STAR` (and `Bowtie 2`) is aligning them in the bam file, instead of them being unmapped as above
-- Thus, we should adjust the parameters for how we call `STAR` to retain the multi-mappers
-- `(   ) #TODO #TOMORROW` Adjust `STAR` parameters based on the repetitive-element work you did in 2020 (bring your laptop to work tomorrow); for now, move on to `Bowtie 2` work
+- Thus, we should adjust the parameters for how we call `STAR` to retain the multimappers
+- `#DONE` Adjust `STAR` parameters based on the repetitive-element work you did in 2020 (bring your laptop to work tomorrow); for now, move on to `Bowtie 2` work
 
 <a id="do-a-little-clean-up-prior-to-running-alignment-with-bowtie-2"></a>
 ###### Do a little clean-up prior to running alignment with `Bowtie 2`
@@ -3159,8 +3339,8 @@ We won't find any multimappers in here because, by default, `Bowtie 2` "\[looks\
 -a/--all        report all alignments; very slow, MAPQ not meaningful
 ```
 
-<a id="more-thoughts-on-multimappers-2022-1109-1110"></a>
-#### More thoughts on multimappers (2022-1109-1110)
+<a id="more-thoughts-on-multimappers-2022-1109-1110-1115"></a>
+#### More thoughts on multimappers (2022-1109-1110, 1115)
 The work and thinking here builds on the notes under the heading ["Thoughts on the alignment metrics for `STAR`"](#thoughts-on-the-alignment-metrics-for-star)
 - `#DONE` What does the [`Trinity` Google Group](https://groups.google.com/g/trinityrnaseq-users) have to say about multimappers?
     + `#ANSWER` Per Brian Haas at [this post](https://groups.google.com/g/trinityrnaseq-users/c/L4hypoWSk_o/m/bTO2L8ssAQAJ): "If reads are mapped to multiple genomic locations, then `Trinity` will use those reads as substrates for *de novo* assembly at each of the locations. This is important to do in the case of paralogs that share sequences in common."
@@ -3170,6 +3350,8 @@ The work and thinking here builds on the notes under the heading ["Thoughts on t
             - Actually, reach out to the `Trinity` Google group to ask about it
         * `#CONCLUSION` ***Don't*** keep the multimappers and ***don't*** use them in draft-free *de novo* assembly of the transcriptome; consider using them in genome-guided assembly `#TBD`
 
+<a id="conversation-with-brian-haas-authormaintainer-of-trinity"></a>
+##### Conversation with Brian Haas, author/maintainer of Trinity
 [Message that I sent to the Trinity Google group (2022-1109)](https://groups.google.com/g/trinityrnaseq-users/c/DWctG7wLNYY/m/F4LmzJKyAQAJ):
 ```txt
 Hi all,
@@ -3238,6 +3420,1035 @@ Best,
 ~brian
 ```
 He doesn't directly address the question, Should I use "a bam infile in which all multimappers are retained?" Answer seems to be yes, though.
+
+<a id="material-on-multimappers-from-the-star-documentation"></a>
+##### Material on multimappers from the `STAR` documentation
+<a id="41-multimappers"></a>
+###### 4.1 Multimappers.
+The output of multimappers (i.e., reads mapping to multiple loci) is controlled by `--outFilterMultimapNmax N`. By default, `N=10`. If a read maps to *less than or equal to `N` loci*, it will be output; otherwise, it will be considered unmapped and reported as "Multimapping: mapped to too many loci" in the `Log.final.out` summary statistics file.
+
+The detection of multimappers is controlled by `--winAnchorMultimapNmax` option, `=50` by default. <mark>This parameter should be set to at least the number of multimapping loci, i.e. `--winAnchorMultimapNmax` should be greater than or equal to  `--outFilterMultimapNmax`</mark>. Note that <mark>this parameter also controls the overall sensitivity of mapping</mark>: increasing it will change (improve) the mapping of unique mappers as well, though at the cost of slower speed.
+
+<a id="521-multimappers"></a>
+###### 5.2.1 Multimappers.
+The number of loci `Nmap` a read maps to is given by `NH:i:Nmap` field. Value of 1 corresponds to unique mappers, while values >1 corresponds to multimappers. `HI` attributes enumerates multiple alignments of a read starting with 1 (this can be changed with the `--outSAMattrIHstart`; setting it to 0 may be required for compatibility with downstream software such as `Cufflinks`).
+
+The mapping quality `MAPQ` (column 5) is `255` for uniquely mapping reads, and int(-10\*log10(1 - 1/`Nmap`)) for multi-mapping reads. This scheme is same as the one used by `TopHat` and is compatible with `Cufflinks`. The default `MAPQ=255` for the unique mappers may be changed with `--outSAMmapqUnique` parameter (integer 0 to 255) to ensure compatibility with downstream tools such as `GATK`.
+
+For multimappers, all alignments except one are marked with `0x100` (secondary alignment) in the `FLAG` (column 2 of the SAM). <mark>The unmarked alignment is selected from the best ones (i.e., highest scoring)</mark>. This default behavior can be changed with the `--outSAMprimaryFlag AllBestScore` option, which will output all alignments with the best score as primary alignments (i.e., `0x100` bit in the `FLAG` unset).
+
+By default, the order of the multi-mapping alignments for each read is not truly random. The `--outMultimapperOrder Random` option outputs multiple alignments for each read in random order, and also also randomizes the choice of the primary alignment from the highest scoring alignments. Parameter `--runRNGseed` can be used to set the random generator seed. With this option, the ordering of multi-mapping alignments of each read, and the choice of the primary alignment will vary from run to run, unless only one thread is used and the seed is kept constant.
+
+The `--outSAMmultNmax` parameter limits the number of output alignments (SAM lines) for multimappers. For instance, --outSAMmultNmax 1 will output exactly one SAM line for each mapped read. Note that `NH:i:` tag in STAR will still report the actual number of loci that the reads map to, while the the number of reported alignments for a read in the SAM file is `min(NH,--outSAMmultNMax)`. If `--outSAMmultNmax` is equal to `-1`, all the alignments are output according to the order specified in the `--outMultimapperOrder` option. If `--outSAMmultNmax` is not equal to `-1`, then top-scoring alignments will always be output first, even for the default `--outMultimapperOrder Old 2.4` option.
+
+<a id="mapping-parameters-used-in-teissandier-et-al-mobile-dna-2019"></a>
+##### Mapping parameters used in [Teissandier et al., *Mobile DNA* 2019](https://mobilednajournal.biomedcentral.com/articles/10.1186/s13100-019-0192-1)
+<a id="unique-mode"></a>
+###### Unique mode
+```bash
+--runThreadN 4 \
+--outSAMtype BAM SortedByCoordinate \
+--runMode alignReads \
+--outFilterMultimapNmax 1 \
+--outFilterMismatchNmax 3 \
+--alignEndsType EndToEnd \
+--alignIntronMax 1 \
+--alignMatesGapMax 350
+```
+
+<a id="random-mode"></a>
+###### Random mode
+```bash
+--runThreadN 4 \
+--outSAMtype BAM SortedByCoordinate \
+--runMode alignReads \
+--outFilterMultimapNmax 1000 \
+--outSAMmultNmax 1 \
+--outFilterMismatchNmax 3 \
+--outMultimapperOrder Random \
+--winAnchorMultimapNmax 1000 \
+--alignEndsType EndToEnd \
+--alignIntronMax 1 \
+--alignMatesGapMax 350
+```
+
+<a id="multi-hit-mode"></a>
+###### Multi-hit mode
+```bash
+--runThreadN 4 \
+--outSAMtype BAM SortedByCoordinate \
+--runMode alignReads \
+--outFilterMultimapNmax 1000 \
+--outFilterMismatchNmax 3 \
+--outMultimapperOrder Random \
+--winAnchorMultimapNmax 1000 \
+--alignEndsType EndToEnd \
+--alignIntronMax 1 \
+--alignMatesGapMax 350
+```
+
+<a id="meaning-of-the-star-parameters-for-teissandier-styled-alignment"></a>
+##### Meaning of the `STAR` parameters for Teissandier-styled alignment
+```txt
+--runThreadN
+            option defines the number of threads to be used for genome generation, it has to
+            be set to the number of available cores on the server node
+
+            int: number of threads to run STAR
+
+--outSAMtype BAM Unsorted
+            output unsorted Aligned.out.bam file. The paired ends of an alignment are always
+            adjacent, and multiple alignments of a read are adjacent as well; this ”unsorted”
+            file can be directly used with downstream software such as HTseq, without the
+            need of name sorting; the order of the reads will match that of the input
+            FASTQ(A) files only if one thread is used --runThread 1, and --outFilterType
+            --BySJout is not used
+
+--outSAMtype BAM SortedByCoordinate
+            output sorted by coordinate Aligned.sortedByCoord.out.bam file, similar to
+            samtools sort command; if this option causes problems, it is recommended to
+            reduce --outBAMsortingThreadN from the default 6 to lower values (as low as 1)
+
+--outSAMtype BAM Unsorted SortedByCoordinate
+            output both unsorted and sorted files
+
+            default: SAM
+
+            strings: type of SAM/BAM output
+            
+                1st word:
+                    BAM
+                        output of BAM without sorting
+                    SAM
+                        output of SAM without sorting 
+                    None
+                        no SAM/BAM output
+
+                2nd, 3rd:
+                    Unsorted
+                        standard unsorted
+                    SortedByCoordinate
+                        sorted by coordinate; this option will allocate extra memory for
+                        sorting which can be specified by --limitBAMsortRAM
+
+--runMode alignReads
+            default: alignReads
+
+            string: type of the run
+
+                alignReads
+                    map reads
+                genomeGenerate
+                    generate genome files
+                inputAlignmentsFromBAM
+                    input alignments from BAM; presently only works with --outWigType and
+                    --bamRemoveDuplicates options
+                liftOver
+                    lift-over of GTF files (-–sjdbGTFfile) between genome assemblies using
+                    chain file(s) from -–genomeChainFiles
+                soloCellFiltering </path/to/raw/count/dir/> </path/to/output/prefix>
+                    STARsolo cell filtering (”calling”) without remapping, followed by the path
+                    to raw count directory and output (filtered) prefix
+
+--outFilterMultimapNmax
+            max number of multiple alignments allowed for a read: if exceeded, the read is
+            considered unmapped
+
+            default: 10
+
+            int: maximum number of loci the read is allowed to map to; alignments (all of
+            them) will be output only if the read maps to no more loci than this value
+
+--outSAMmultNmax
+            default: -1
+            
+            int: max number of multiple alignments for a read that will be output to the
+            SAM/BAM files; note that if this value is not equal to -1, the top scoring
+            alignment will be output first
+            
+            all alignments (up to -–outFilterMultimapNmax) will be output
+
+--outFilterMismatchNmax
+            maximum number of mismatches per pair, large number switches off this filter
+
+            default: 10
+
+            int: alignment will be output only if it has no more mismatches than this value.
+
+--outMultimapperOrder
+            default: Old 2.4
+
+            string: order of multimapping alignments in the output files
+
+                Old_2.4
+                    quasi-random order used before 2.5.0
+                Random
+                    random order of alignments for each multimapper; read mates (pairs) are
+                    always adjacent, and all alignment for each read stay together; this
+                    option will become default in the future releases
+
+--winAnchorMultimapNmax
+            default: 50
+
+            int>0: max number of loci anchors are allowed to map to
+
+--alignEndsType
+            default: Local
+
+            string: type of read ends alignment
+
+                Local
+                    standard local alignment with soft-clipping allowed
+                EndToEnd
+                    force end-to-end read alignment, do not soft-clip
+                Extend5pOfRead1
+                    fully extend only the 5p of the read1, all other ends: local alignment
+                Extend5pOfReads12
+                    fully extend only the 5p of the both read1 and read2, all other ends:
+                    local alignment
+
+--alignIntronMax 
+            maximum intron length
+
+            default: 0
+
+            maximum intron size, if 0, max intron size will be determined by
+            (2^winBinNbits)*winAnchorDistNbins
+
+--alignMatesGapMax
+            maximum genomic distance between mates
+
+            default: 0
+
+            maximum gap between two mates, if 0, max intron gap will be determined by
+            (2^winBinNbits)*winAnchorDistNbins
+
+
+#  Parameters related to '--outFilterMultimapNmax', --alignIntronMax, --alignMatesGapMax ------
+--limitOutSAMoneReadBytes
+            default: 100000
+
+            int>0: max size of the SAM record (bytes) for one read. Recommended value:
+            >(2*(LengthMate1+LengthMate2+100)*outFilterMultimapNmax
+
+--outSJfilterIntronMaxVsReadN
+            default: 50000 100000 200000
+
+            N integers>=0: maximum gap allowed for junctions supported by 1,2,3,,,N reads
+
+            i.e. by default junctions supported by 1 read can have gaps <=50000b, by 2 reads:
+            <=100000b, by 3 reads: <=200000. by >=4 reads any gap <=alignIntronMax
+
+            does not apply to annotated junctions
+
+--winBinNbits
+            default: 16
+            
+            int>0: =log2(winBin), where winBin is the size of the bin for the
+            windows/clustering, each window will occupy an integer number of bins
+
+--winAnchorDistNbins
+            default: 9
+
+            int>0: max number of bins between two anchors that allows aggregation of anchors
+            into one window
+```
+
+<a id="how-we-called-star-previously-based-on-rna-star-post-not-retaining-multimappers-vs-multi-hit-mode"></a>
+##### How we called `STAR` previously (based on ['rna-star' post](https://groups.google.com/g/rna-star/c/hQeHTBbkc0c), not retaining multimappers) vs. multi-hit mode
+<a id="previous-based-on-rna-star-post"></a>
+###### Previous (based on ['rna-star' post](https://groups.google.com/g/rna-star/c/hQeHTBbkc0c)):
+```bash
+STAR \
+    --runThreadN "${SLURM_CPUS_ON_NODE}" \
+    --outSAMtype BAM SortedByCoordinate \
+    --outSAMunmapped Within \
+    --genomeDir "${genome_dir}" \
+    --readFilesIn "${read_1}" "${read_2}" \
+    --outFileNamePrefix "${prefix}" \
+    --limitBAMsortRAM 4000000000 \
+    --outFilterMultimapNmax 1 \
+    --alignSJoverhangMin 8 \
+    --alignSJDBoverhangMin 1 \
+    --outFilterMismatchNmax 999 \
+    --alignIntronMin 4 \
+    --alignIntronMax 5000 \
+    --alignMatesGapMax 5000
+```
+
+<a id="multi-hit-mode-1"></a>
+###### Multi-hit mode:
+```bash
+--runThreadN 4 \
+--outSAMtype BAM SortedByCoordinate \
+--runMode alignReads \
+--outFilterMultimapNmax 1000 \
+--outFilterMismatchNmax 3 \
+--outMultimapperOrder Random \
+--winAnchorMultimapNmax 1000 \
+--alignEndsType EndToEnd \
+--alignIntronMax 1 \
+--alignMatesGapMax 350
+```
+
+<a id="going-through-the-parameters-making-comparisons-between-the-two-approaches"></a>
+###### Going through the parameters, making comparisons between the two approaches:
+```txt
+--outFilterMultimapNmax
+    # ---------------------------------------------------
+             'rna-star' parameters  1
+                    multi-hit mode  1000
+    # ---------------------------------------------------
+    maximum number of loci the read is allowed to map to; alignments (all of them) will be
+    output only if the read maps to no more loci than this value; otherwise no alignments will
+    be output, and the read will be counted as "mapped to too many loci" in the Log.final.out
+    
+    < format: int; default: 10 >
+
+
+--alignSJoverhangMin
+    # ---------------------------------------------------
+             'rna-star' parameters  8
+                    multi-hit mode  5 (default)
+    # ---------------------------------------------------
+    minimum overhang (i.e. block size) for spliced alignments
+
+    < format: int>0; default: 5 >
+
+
+--alignSJDBoverhangMin
+    # ---------------------------------------------------
+             'rna-star' parameters  1
+                    multi-hit mode  3 (default)
+    # ---------------------------------------------------
+    minimum overhang (i.e., block size) for annotated (sjdb) spliced alignments
+    
+    < format: int>0; default: 3 >
+
+
+--outFilterMismatchNmax
+    # ---------------------------------------------------
+             'rna-star' parameters  999
+                    multi-hit mode  3
+    # ---------------------------------------------------
+    alignment will be output only if it has no more mismatches than this value
+    
+    < format: int; default: 10 >
+
+
+--outMultimapperOrder
+    # ---------------------------------------------------
+             'rna-star' parameters  Old_2.4 (default)
+                    multi-hit mode  Random
+    # ---------------------------------------------------
+    order of multimapping alignments in the output files
+
+    < default: Old_2.4 >
+
+
+--winAnchorMultimapNmax
+    # ---------------------------------------------------
+             'rna-star' parameters  50 (default)
+                    multi-hit mode  1000*
+
+    *(set to the same value as --outFilterMultimapNmax)
+    # ---------------------------------------------------
+
+
+--alignEndsType
+    # ---------------------------------------------------
+             'rna-star' parameters  Local* (default)
+                    multi-hit mode  EndToEnd*
+
+    *(Local: standard local alignment with soft-clipping allowed)
+    *(EndToEnd: force end-to-end read alignment, do not soft-clip)
+    # ---------------------------------------------------
+    string: type of read ends alignment
+        Local
+            standard local alignment with soft-clipping allowed
+        EndToEnd
+            force end-to-end read alignment, do not soft-clip
+        Extend5pOfRead1
+            fully extend only the 5p of the read1, all other ends: local alignment
+        Extend5pOfReads12
+            fully extend only the 5p of the both read1 and read2, all other ends: local
+            alignment
+
+    < default: Local >
+
+
+--alignIntronMin
+    # ---------------------------------------------------
+             'rna-star' parameters  4
+                    multi-hit mode  21 (default)
+    # ---------------------------------------------------
+    minimum intron size: genomic gap is considered intron if its length>=alignIntronMin,
+    otherwise it is considered Deletion
+
+    < default: 21 >
+
+
+--alignIntronMax
+    # ---------------------------------------------------
+             'rna-star' parameters  5000
+                    multi-hit mode  0 (default)
+    # ---------------------------------------------------
+    maximum intron size, if 0, max intron size will be determined by
+    (2^winBinNbits)*winAnchorDistNbins
+    
+    < default: 0 >
+
+
+--alignMatesGapMax
+    # ---------------------------------------------------
+             'rna-star' parameters  5000
+                    multi-hit mode  350
+    # ---------------------------------------------------
+    maximum gap between two mates, if 0, max intron gap will be determined by
+    (2^winBinNbits)*winAnchorDistNbins
+    
+    < default: 0 >
+```
+
+<a id="assessing-the-ingredients"></a>
+###### Assessing the "ingredients"
+```txt
+--outFilterMultimapNmax
+    # ---------------------------------------------------
+             'rna-star' parameters  1
+                    multi-hit mode  1000
+    # ---------------------------------------------------
+
+--alignSJoverhangMin
+    # ---------------------------------------------------
+             'rna-star' parameters  8
+                    multi-hit mode  5 (default)
+    # ---------------------------------------------------
+
+--alignSJDBoverhangMin
+    # ---------------------------------------------------
+             'rna-star' parameters  1
+                    multi-hit mode  3 (default)
+    # ---------------------------------------------------
+
+--outFilterMismatchNmax
+    # ---------------------------------------------------
+             'rna-star' parameters  999
+                    multi-hit mode  3
+    # ---------------------------------------------------
+
+--outMultimapperOrder
+    # ---------------------------------------------------
+             'rna-star' parameters  Old_2.4 (default)
+                    multi-hit mode  Random
+    # ---------------------------------------------------
+
+--winAnchorMultimapNmax
+    # ---------------------------------------------------
+             'rna-star' parameters  50 (default)
+                    multi-hit mode  1000*
+
+    *(set to the same value as --outFilterMultimapNmax)
+    # ---------------------------------------------------
+
+--alignEndsType
+    # ---------------------------------------------------
+             'rna-star' parameters  Local* (default)
+                    multi-hit mode  EndToEnd*
+
+    *(Local: standard local alignment with soft-clipping allowed)
+    *(EndToEnd: force end-to-end read alignment, do not soft-clip)
+    # ---------------------------------------------------
+
+--alignIntronMin
+    # ---------------------------------------------------
+             'rna-star' parameters  4
+                    multi-hit mode  21 (default)
+    # ---------------------------------------------------
+
+--alignIntronMax
+    # ---------------------------------------------------
+             'rna-star' parameters  5000
+                    multi-hit mode  0 (default)
+    # ---------------------------------------------------
+
+--alignMatesGapMax
+    # ---------------------------------------------------
+             'rna-star' parameters  5000
+                    multi-hit mode  350
+    # ---------------------------------------------------
+```
+
+<a id="how-we-should-call-star-taking-into-account-rna-star-and-multi-hit-mode-parameters"></a>
+##### How we should call `STAR` taking into account 'rna-star' and multi-hit mode parameters
+```bash
+#  Combination of Teissandier et al. multi-hit mode and 'rna-star' parameters
+#+ for aligning yeast paired-end reads to S. cerevisiae and/or a combined-
+#+ reference genome made up of S. cerevisiae, K. lactis, and S20 references
+STAR \
+    --runMode alignReads \
+    --runThreadN "${SLURM_CPUS_ON_NODE}" \
+    --outSAMtype BAM SortedByCoordinate \
+    --outSAMunmapped Within \
+    --genomeDir "${genome_dir}" \
+    --readFilesIn "${read_1}" "${read_2}" \
+    --outFileNamePrefix "${prefix}" \
+    --limitBAMsortRAM 4000000000 \
+    --outFilterMultimapNmax 1000 \
+    --winAnchorMultimapNmax 1000 \
+    --alignSJoverhangMin 8 \
+    --alignSJDBoverhangMin 1 \
+    --outFilterMismatchNmax 999 \
+    --outMultimapperOrder Random \
+    --alignEndsType EndToEnd \
+    --alignIntronMin 4 \
+    --alignIntronMax 5000 \
+    --alignMatesGapMax 5000
+```
+
+<a id="how-are-other-groups-calling-star-with-s-cerevisiae"></a>
+##### How are other groups calling `STAR` with *S. cerevisiae*?
+One thing that is weird about [the 'rna-star' approach](https://groups.google.com/g/rna-star/c/hQeHTBbkc0c) is the very liberal allowance of mismatches: `--outFilterMismatchNmax 999`; why?
+
+From the `STAR` manual: `int: alignment will be output only if its ratio of mismatches to mapped length is less than this value`; also, in the ENCODE RNA-seq mapping pipeline, `--outFilterMismatchNmax 999`; essentially, they don't want to filter out alignments (at least, at this stage) based on mismatches
+
+I did a [Google search for "outFilterMismatchNmax yeast"](https://www.google.com/search?q=outFilterMismatchNmax+yeast&oq=outFilterMismatchNmax+yeast&aqs=chrome..69i57j33i160l2.1850j0j7&sourceid=chrome&ie=UTF-8) and found `STAR` parameters for *S. cerevisiae* in several publications:
+
+<a id="dorfel-et-al-lyon-yeast-2017"></a>
+###### [Dorfel et al. (Lyon), Yeast 2017](https://onlinelibrary.wiley.com/doi/full/10.1002/yea.3211)
+**RNA-Seq**  
+Total RNA was purified according to the RiboZero Gold Kit (Epicentre) and the RNA Clean and Concentration Kit (Zymo Resaearch). Libraries were generated, PCR amplified, purified using the Agencourt AMPure XP system (Beckman Coulter) and characterized on a high-sensitivity DNA assay (Agilent). The libraries were sequenced on the Illumina NextSeq platform in high-output mode, resulting in 76 single-end reads. For quality control, we used `FastQC (v0.11.3)` to generate diagnostic statistics of the data and used `Fastx (version 0.1)` to remove low-quality reads. Then we used `cutadapt (v1.7.1)` to identify and remove 3' adapter sequence (AGATCGGAAGAGCACACGTCT) from the reads, and clip the first base from the 5' end (options: `-O 6` `-m 25` `-n 1` `-e 0.15` `--cut 1`). `Bowtie (v1.1-1)` was used to identify and remove rRNA reads (option: `--seedlen = 23`). We used `STAR (v2.4.0j)` to align the RNA-Seq reads to the *S. cerevisiae* reference genome S288C (release R64-2-1) (options for `STAR`: `--outSAMstrandField intronMotif` `--outSAMunmapped Within` `--outFilterType BySJout` `--outFilterMultimapNmax 20` `--alignSJoverhangMin 8` `--alignSJDBoverhangMin 1` `--outFilterMismatchNmax 999` `--outFilterMismatchNoverLmax 0.04` `--alignIntronMin 0` `--alignIntronMax 5000` `--alignMatesGapMax 5000` `--outSAMattributes NH HI AS NM MD` `--outSAMtype BAM SortedByCoordinate` `--outFilterIntronMotifs RemoveNoncanonical`). `Cufflinks (v2.2.1)` was used to quantify RNA abundance at the gene level. We used `DESeq2` to perform differential expression analysis, comparing the following combinations: knock-out vs. wild type (WT), hNAA10 vs. WT, and hNAA10S37P vs. WT. Only genes with Benjamini–Hochberg-adjusted p-values <0.05 and log2 fold changes >1 or −1 are considered significantly differentially expressed. Telomeric regions are defined by taking the distal 40 kb regions of either end of the chromosomes.
+```txt
+--outSAMstrandField intronMotif \
+--outSAMunmapped Within \
+--outFilterType BySJout \
+--outFilterMultimapNmax 20 \
+--alignSJoverhangMin 8 \
+--alignSJDBoverhangMin 1 \
+--outFilterMismatchNmax 999 \
+--outFilterMismatchNoverLmax 0.04 \
+--alignIntronMin 0 \
+--alignIntronMax 5000 \
+--alignMatesGapMax 5000 \
+--outSAMattributes NH HI AS NM MD \
+--outSAMtype BAM SortedByCoordinate \
+--outFilterIntronMotifs RemoveNoncanonical
+```
+```txt
+My notes on the above: Above parameters are similar to the 'rna-star' parameters
+
+         --outSAMstrandField  intronMotif; see pp. 13, 20, 35
+
+     --outFilterType BySJout  reduces the number of "spurious" junctions; one of the options
+                              used in the ENCODE RNA-seq pipeline; see p. 9 of STAR manual
+
+                              manual, p. 42:
+                               Normal  standard filtering using only current alignment
+                              BySJout  keep only those reads that contain junctions that passed
+                                       filtering into SJ.out.tab
+
+--outFilterMismatchNoverLmax  real: alignment will be output only if its ratio of mismatches to
+                              *mapped* length is less than or equal to this value <default:
+                              0.3>
+
+     --outFilterIntronMotifs  RemoveNoncanonical is recommended Cufflinks usage; more info on
+                              pp. 43-44 of the STAR manual
+
+          --outSAMattributes  NH HI AS NM MD
+                          NH  number of loci the reads maps to: = 1 for unique mappers, > 1 for
+                              multimappers; standard SAM tag
+                          HI  multiple alignment index, starts with -–outSAMattrIHstart (= 1 by
+                              default); standard SAM tag
+                          AS  local alignment score, +1/ − 1 for matches/mismateches, score
+                              penalties for indels and gaps; for PE reads, total score for two
+                              mates; standard SAM tag
+                          NM  edit distance to the reference (number of mismatched + inserted +
+                              deleted bases) for each mate; standard SAM tag
+                          MD  string encoding mismatched and deleted reference bases (see
+                              standard SAM specifications); standard SAM tag
+```
+<a id="jensen-et-al-jensen-nat-comm-2022"></a>
+###### [Jensen et al. (Jensen), *Nat Comm* 2022](https://www.nature.com/articles/s41467-022-33961-y)
+**Transcriptome analysis**  
+All the raw sequencing reads were trimmed using `Trimmomatic` (46) to filter sequencing adapters and low-quality reads. The clean reads were aligned against yeast reference genome using `STAR` (47) with the parameters: "`--outFilterMultimapNmax 100` `--alignSJoverhangMin 8` `--alignSJDBoverhangMin 1` `--outFilterMismatchNmax 999` `--alignIntronMax 5000` `--alignMatesGapMax 5000` `--outSAMtype BAM Unsorted`". The genome reference and gene annotations of *Saccharomyces cerevisiae* (R64-1-1) were obtained from Ensembl. We used `HTSeq-count` (48) to calculate raw counts for each yeast gene, with the parameter "`-s reverse`" to specify the strand information of reads. We applied the TMM (trimmed mean of M values) method (49) implemented in `edgeR` package to normalize gene expressions. The TMM normalized RPKM (Reads Per Kilobase of transcript, per Million mapped reads) values were further log2 transformed to generate heatmaps and other plots using `pheatmap` and `ggplot2` (50).
+```txt
+--outFilterMultimapNmax 100 \
+--alignSJoverhangMin 8 \
+--alignSJDBoverhangMin 1 \
+--outFilterMismatchNmax 999 \
+--alignIntronMax 5000 \
+--alignMatesGapMax 5000 \
+--outSAMtype BAM Unsorted
+```
+
+```txt
+My notes on the above: Above parameters are similar to the 'rna-star' parameters
+```
+<a id="software-and-parameter-settings-used-by-onestoprnaseq-v100"></a>
+###### [Software and parameter settings used by OneStopRNAseq v1.0.0](https://mccb.umassmed.edu/OneStopRNAseq/about.php)
+`#NOTE` An interesting site; e.g., provides parameters for `rMATS`, `GSEA`, `deepTools bamCoverage`, etc.; keep an eye on this...
+```bash
+STAR \
+    --runThreadN {threads} \
+    --genomeDir {INDEX} \
+    --sjdbGTFfile {gtf} \
+    --readFilesCommand zcat \
+    --readFilesIn {reads} \
+    --outFileNamePrefix {name} \
+    --outFilterType BySJout \
+    --outMultimapperOrder Random \
+    --outFilterMultimapNmax 200 \
+    --alignSJoverhangMin 8 \
+    --alignSJDBoverhangMin 3 \
+    --outFilterMismatchNmax 999 \
+    --outFilterMismatchNoverReadLmax 0.05 \
+    --alignIntronMin 20 \
+    --alignIntronMax 1000000 \
+    --outFilterIntronMotifs RemoveNoncanonicalUnannotated \
+    --outSAMstrandField None \
+    --outSAMtype BAM Unsorted \
+    --quantMode GeneCounts \
+    --outReadsUnmapped Fastx
+```
+```txt
+--outReadsUnmapped Fastx  outputs unmapped reads into separate file(s) Unmapped.out.mate1[2],
+                          formatted the same way as input read files (i.e. FASTQ or FASTA); for
+                          paired-end reads, if a read maps as a whole, but one of the mates
+                          does not map, both mates will also be output in Unmapped.out.mate1/2
+                          files; to indicate the mapping status of the read mates, the
+                          following tags are appended to the read name:
+                              00  mates were not mapped;
+                              10  1st mate mapped, 2nd unmapped
+                              01  1st mate unmapped, 2nd mapped
+```
+<a id="mendoza-et-al-sci-adv-2022"></a>
+###### [Mendoza et al., *Sci Adv* 2022](https://www.science.org/doi/10.1126/sciadv.abj5688?url_ver=Z39.88-2003&rfr_id=ori:rid:crossref.org&rfr_dat=cr_pub%20%200pubmed)
+**RNA-seq analysis**  
+All RNA-seq data were prepared for analysis as follows. `NextSeq` sequencing data were demultiplexed using native applications on `BaseSpace`. Demultiplexed FASTQs were aligned by `RNA-STAR v.2.5.2` to the assembly `sacCer3` (parameters `--outFilterType BySJout` `--outFilterMultimapNmax 20` `--alignSJoverhangMin 8` `--alignSJDBoverhangMin 1` `--outFilterMismatchNmax 999` `--alignIntronMin 20` `--alignIntronMax 1000000`). Aligned reads were mapped to genomic features using `HTSeq v.0.6.1` after merging lanes of `NextSeq` (parameters `-r pos` `-s no` `-t exon` `-i gene_id`). Quantification, library size adjustment, and analysis of differential gene expression were done using DESeq2 and Wald’s test. Overlaps between lists of genes were tested for significance using a hypergeometric test (`phyper()` in R).
+```txt
+--outFilterType BySJout \
+--outFilterMultimapNmax 20 \
+--alignSJoverhangMin 8 \
+--alignSJDBoverhangMin 1 \
+--outFilterMismatchNmax 999 \
+--alignIntronMin 20 \
+--alignIntronMax 1000000
+```
+<a id="velcro-ip-rna-seq-data-analysis-read-alignment-and-quantification"></a>
+###### [VELCRO-IP RNA-seq Data Analysis: Read Alignment and Quantification](https://bio-protocol.org/exchange/minidetail?type=30&id=10130019&utm_source=miniprotocol)
+First, for removal of adaptor sequences, low quality bases, and short reads, we use `cutadapt` (Martin, 2011) to trim Illumina adaptor sequences and < Q20 bases. Reads < 40 nt were removed. Parameters: `cutadapt` `-m 40` `-a AGATCGGAAGAGCACACGTCTGAACTCCAGTCAC` `-A AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTAGATCTCGGTGGTCGCCGTATCATT` `–nextseq-trim=20`. Next, for UMI extraction, we used `umi_tools` (Smith et al., 2017) to extract the UMI region (first 8 bases). Parameters: `umi_tools` `extract` `-–bc-pattern=NNNNNNNN` `-–bc-pattern2=NNNNNNNN`. We additionally remove 1 base from 5' end of the reads, which is the A/T nucleotide overhang from the ligation reaction during library preparation. For splice-aware alignment using `STAR` (Dobin et al., 2013), we used `STAR` to align the reads to a reference genome/transcriptome. `STAR` reference is built using a combination of yeast genome (sacCer3), mouse genome (mm10), mouse rDNA sequence (GenBank: GU372691), and mouse transcript annotations (GENCODE vM18). Only uniquely mapped reads were retained. Parameters: `STAR` `--sjdbOverhang 66` `--outFilterMultimapNmax 1` `--alignEndsType EndToEnd` `--alignIntronMax 1000000` `--alignMatesGapMax 1000000` `--alignIntronMin 20` `--outFilterMismatchNmax 999` `--alignSJDBoverhangMin 1` `--alignSJoverhangMin 8` `--outFilterType BySJout`. While the majority of the reads mapped to yeast mRNAs that we believe reflect background binding from the initial ribosome-IP (~20 million reads), 1–3% mapped to mouse mRNAs which corresponds to ~500,000 reads per sample. For deduplication using UMI, we used `umi_tools` to deduplicate the alignments. Deduplicated alignments are re-aligned using `STAR` and the same parameters as before. Parameters: `umi_tools` `dedup` `-–paired` `-–buffer-whole-contig`. For read quantification, we used `bedtools` (Quinlan and Hall, 2010) to count alignments over 200 nt sliding windows with step size of 100 nt across mouse genome.
+
+<a id="osman-et-al-cramer-jbc-202100523-8pdf"></a>
+###### [Osman et al. (Cramer), *JBC* 2021](https://www.jbc.org/article/S0021-9258(21)00523-8/pdf)
+**4tU-seq and bioinformatics analysis**  
+... Cultures were then divided into four smaller cultures of 40 ml each and treated with either 1-NA-PP1 (40 mM in DMSO) to a final concentration of 6μM (two replicates), or an equal volume of DMSO (two replicates), and incubated for 12 min, followed by 5 min of 4tU labeling. 4tU labeling and subsequent extraction of labeled RNA was performed as described (82). For the heat shock experiment, a 300 ml culture was grown in the same way. The culture was then divided into two 140 ml cultures, to which either 1-NA-PP1 or DMSO was added in the same way as described for the steady-state growth experiment and incubated for 12 min. About 100 ml from each culture was diluted with 100 ml of 37 C warm media to exert heat shock. About 80 ml were extracted after 12 min of heat shock and labeled with 4tU for 5 min. The entire experiment was carried out in the same way twice to obtain two replicates. 4tU-Seq data analysis was performed (82) but with minor modifications. Briefly, the raw `fastq` files of paired-end 75 base reads (for steady-state experiment) and 42 base reads (for heat shock experiment) with additional six base reads of barcodes were obtained for each of the samples. Reads were demultiplexed, and low-quality bases (\<Q20) removed using `Cutadapt (version 1.9.1)` with parameters `−q 20,20 −o 12 −m 25` (83). Reads were then mapped to the *S. cerevisiae* genome (sacCer3, version 64.2.1) using `STAR 2.5.2b` (84) with parameters `--outFilterMismatchNmax 2 --outFilterMultimapScoreRange 0`. `Samtools` (85) was used to quality filter SAM files. Alignments with `MAPQ` smaller than 7 (`−q 7`) were skipped, and only proper pairs (`−f 2`) were selected. We used a spike-in (RNAs) normalization strategy (86) to allow for observation of global changes in the 4tU-Seq signal. Sequencing depth from spike-in RNAs was calculated for each sample j according to 
+
+*(see calculation in `.pdf` file)*
+
+with read counts *k_ij* for the labeled spike-ins *i* in sample *j* and *l_i* for the length of labeled spike-ins *i* for the 4tU-seq samples.
+
+<a id="run-star-alignment-retaining-multimappers-2022-1115-1116"></a>
+#### Run `STAR` alignment, retaining multimappers (2022-1115-1116)
+`#DEKHO`
+```bash
+#!/bin/bash
+#DONTRUN
+
+#  grabnode has been called with default/lowest settings
+cd "${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1101"
+mkdir -p exp_alignment_STAR_multi-hit/files_bams
+
+#  Find and list .fastq files; designate the 'prefix' and other variables
+unset infiles
+typeset -a infiles
+while IFS=" " read -r -d $'\0'; do
+    infiles+=( "${REPLY}" )
+done < <(\
+    find . \
+        -type l \
+        -name *578*merged*.fastq \
+        -print0 \
+            | sort -z \
+)
+#  Some checks...
+for i in "${infiles[@]}"; do echo "${i}"; done && echo ""
+for i in "${infiles[@]}"; do echo "$(basename "${i}")"; done && echo
+for i in "${infiles[@]}"; do echo "$(basename "${i%_R?.fastq}")"; done && echo ""
+
+echo "${infiles[0]}" && echo ""
+echo "${infiles[1]}" && echo ""
+echo "$(basename "${infiles[0]%_R?.fastq}")" && echo ""
+
+read_1="${infiles[0]}"
+read_2="${infiles[1]}"
+prefix="./exp_alignment_STAR_multi-hit/files_bams/$(basename "${read_1%_R?.fastq}")"
+genome_dir="${HOME}/genomes/combined_SC_KL_20S/STAR"
+
+echo "${genome_dir}"
+echo "${read_1}"
+echo "${read_2}"
+echo "${prefix}"
+#NOTE #REMEMBER "IP" = Nascent, "IN" = SteadyState
+
+#  Run the alignment
+if [[ -f "./submit-STAR-alignReads-multi-hit.sh" ]]; then
+    rm "./submit-STAR-alignReads-multi-hit.sh"
+fi
+
+cat << script > "./submit-STAR-alignReads-multi-hit.sh"
+#!/bin/bash
+
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=8
+#SBATCH --error=./%J.err.txt
+#SBATCH --output=./%J.out.txt
+
+#  submit-STAR-alignReads-multi-hit.sh
+#  KA
+
+module load STAR/2.7.9a-GCC-11.2.0
+
+genome_dir="\${1}"
+read_1="\${2}"
+read_2="\${3}"
+prefix="\${4}"
+
+STAR \\
+    --runMode alignReads \\
+    --runThreadN "\${SLURM_CPUS_ON_NODE}" \\
+    --outSAMtype BAM SortedByCoordinate \\
+    --outSAMunmapped Within \\
+    --genomeDir "\${genome_dir}" \\
+    --readFilesIn "\${read_1}" "\${read_2}" \\
+    --outFileNamePrefix "\${prefix}" \\
+    --limitBAMsortRAM 4000000000 \\
+    --outFilterMultimapNmax 1000 \\
+    --winAnchorMultimapNmax 1000 \\
+    --alignSJoverhangMin 8 \\
+    --alignSJDBoverhangMin 1 \\
+    --outFilterMismatchNmax 999 \\
+    --outMultimapperOrder Random \\
+    --alignEndsType EndToEnd \\
+    --alignIntronMin 4 \\
+    --alignIntronMax 5000 \\
+    --alignMatesGapMax 5000
+script
+
+sbatch submit-STAR-alignReads-multi-hit.sh \
+    "${genome_dir}" \
+    "${read_1}" \
+    "${read_2}" \
+    "${prefix}"
+```
+
+<a id="alignment-metrics-for-the-test-run-of-star-multi-hit-mode"></a>
+##### Alignment metrics for the test run of `STAR` (multi-hit mode)
+```txt
+                                 Started job on |       Nov 16 12:34:59
+                             Started mapping on |       Nov 16 12:35:03
+                                    Finished on |       Nov 16 12:37:27
+       Mapping speed, Million of reads per hour |       349.72
+
+                          Number of input reads |       13988842
+                      Average input read length |       100
+                                    UNIQUE READS:
+                   Uniquely mapped reads number |       8547569
+                        Uniquely mapped reads % |       61.10%
+                          Average mapped length |       99.99
+                       Number of splices: Total |       356914
+            Number of splices: Annotated (sjdb) |       288451
+                       Number of splices: GT/AG |       321878
+                       Number of splices: GC/AG |       238
+                       Number of splices: AT/AC |       2360
+               Number of splices: Non-canonical |       32438
+                      Mismatch rate per base, % |       1.87%
+                         Deletion rate per base |       0.01%
+                        Deletion average length |       1.21
+                        Insertion rate per base |       0.01%
+                       Insertion average length |       1.25
+                             MULTI-MAPPING READS:
+        Number of reads mapped to multiple loci |       5012911
+             % of reads mapped to multiple loci |       35.84%
+        Number of reads mapped to too many loci |       5
+             % of reads mapped to too many loci |       0.00%
+                                  UNMAPPED READS:
+  Number of reads unmapped: too many mismatches |       0
+       % of reads unmapped: too many mismatches |       0.00%
+            Number of reads unmapped: too short |       419109
+                 % of reads unmapped: too short |       3.00%
+                Number of reads unmapped: other |       9248
+                     % of reads unmapped: other |       0.07%
+                                  CHIMERIC READS:
+                       Number of chimeric reads |       0
+                            % of chimeric reads |       0.00%
+```
+Click [here](#alignment-metrics-for-the-test-run-of-star) for alignment metrics for the previous test run of `STAR` (['rna-star' parameters](#alignment-metrics-for-the-test-run-of-star))
+
+<a id="thoughts-on-the-alignment-metrics-for-star-multi-hit-mode"></a>
+###### Thoughts on the alignment metrics for `STAR` (multi-hit mode)
+- Interesting how, even with `--outFilterMultimapNmax 1000` and `--winAnchorMultimapNmax 1000`, there are still 5 reads for `Number of reads mapped to too many loci`
+- On `Number of reads unmapped: too short`, a [comment from Alex Dobin](https://github.com/alexdobin/STAR/issues/164#issuecomment-226828834), author of `STAR`: '"too short" literally means "alignment too short".'
+- On `...`, another [comment from Dobin](https://github.com/alexdobin/STAR/issues/506#issuecomment-432274359): 'The unmapped-other indeed means unmapped for reasons other than "too short" or "too many mismatches". Most commonly in this category, `STAR` cannot find good seeds, i.e., all seeds map too many times (50 by default), which can also be thought of as all seeds being too short. This may be caused by reads coming from highly repetitive regions of the genomes, but also can be caused by contamination with unrelated species.'
+
+Click [here](#thoughts-on-the-alignment-metrics-for-star) for thoughts and comments from the previous test run of `STAR` (['rna-star' parameters](#alignment-metrics-for-the-test-run-of-star))
+
+<a id="examine-the-flags-in-the-bam-outfile-from-the-test-run-of-star-multi-hit-mode"></a>
+###### Examine the flags in the `.bam` outfile from the test run of `STAR` (multi-hit mode)
+Use `samtools flagstat` and the bespoke function `list_tally_flags`:
+```bash
+#!/bin/bash
+#DONTRUN
+
+#  grabnode has been called with default/lowest settings; samtools is loaded
+cd "${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1101"
+
+module load SAMtools/1.16.1-GCC-11.2.0
+
+samtools flagstat \
+    ./exp_alignment_STAR_multi-hit/files_bams/5781_G1_IN_mergedAligned.sortedByCoord.out.bam \
+    > ./exp_alignment_STAR_multi-hit/files_bams/5781_G1_IN_mergedAligned.sortedByCoord.out.flagstat.txt
+
+less ./exp_alignment_STAR_multi-hit/files_bams/5781_G1_IN_mergedAligned.sortedByCoord.out.flagstat.txt
+# 27446606 + 531078 primary
+# 75080564 + 923976 secondary
+# 0 + 0 supplementary
+# 0 + 0 duplicates
+# 0 + 0 primary duplicates
+# 101853252 + 1272248 mapped (99.34% : 87.44%)
+# 26772688 + 348272 primary mapped (97.54% : 65.58%)
+# 27446606 + 531078 paired in sequencing
+# 13723303 + 265539 read1
+# 13723303 + 265539 read2
+# 26772688 + 348272 properly paired (97.54% : 65.58%)
+# 26772688 + 348272 with itself and mate mapped
+# 0 + 0 singletons (0.00% : 0.00%)
+# 0 + 0 with mate mapped to a different chr
+# 0 + 0 with mate mapped to a different chr (mapQ>=5)
+echo $(( 27446606 + 531078 ))  # 27977684
+
+cd ./exp_alignment_STAR_multi-hit/files_bams
+
+calculate_run_time() {
+    # Calculate run time for chunk of code
+    #
+    # :param 1: start time in $(date +%s) format
+    # :param 2: end time in $(date +%s) format
+    # :param 3: message to be displayed when printing the run time (chr)
+    run_time="$(echo "${2}" - "${1}" | bc -l)"
+    
+    echo ""
+    echo "${3}"
+    printf 'Run time: %dh:%dm:%ds\n' \
+    $(( run_time/3600 )) $(( run_time%3600/60 )) $(( run_time%60 ))
+    echo ""
+}
+
+
+display_spinning_icon() {
+    # Display "spinning icon" while a background process runs
+    #
+    # :param 1: PID of the last program the shell ran in the background (int)
+    # :param 2: message to be displayed next to the spinning icon (chr)
+    spin="/|\\–"
+    i=0
+    while kill -0 "${1}" 2> /dev/null; do
+        i=$(( (i + 1) % 4 ))
+        printf "\r${spin:$i:1} %s" "${2}"
+        sleep .15
+    done
+}
+
+
+list_tally_flags() {
+    # List and tally flags in a bam infile; function acts on a bam infile to
+    # perform piped commands (samtools view, cut, sort, uniq -c, sort -nr) that
+    # list and tally flags; function writes the results to a txt outfile, the
+    # name of which is derived from the txt infile
+    #
+    # :param 1: name of bam infile, including path (chr)
+    start="$(date +%s)"
+    
+    samtools view "${1}" \
+        | cut -d$'\t' -f 2 \
+        | sort \
+        | uniq -c \
+        | sort -nr \
+        > "${1/.bam/.flags.txt}" &
+    display_spinning_icon $! \
+    "Running piped commands (samtools view, cut, sort, uniq -c, sort -nr) on $(basename "${1}")... "
+        
+    end="$(date +%s)"
+    echo ""
+    calculate_run_time "${start}" "${end}"  \
+    "List and tally flags in $(basename "${1}")."
+}
+
+
+list_tally_flags 5781_G1_IN_mergedAligned.sortedByCoord.out.bam
+
+#  Numbers of records in the .bam file
+samtools view -c \
+    5781_G1_IN_mergedAligned.sortedByCoord.out.bam
+# 103982224 (27977684 fr/initial test ('rna-star' parameters))
+
+#  Numbers of records in the *_R{1,2}.fastq files
+cd ..
+echo $(cat ./files_fastq_symlinks/5781_G1_IN_merged_R1.fastq | wc -l)/4 | bc
+# 13988842
+echo $(cat ./files_fastq_symlinks/5781_G1_IN_merged_R2.fastq | wc -l)/4 | bc
+# 13988842
+
+echo $(( 13988842 + 13988842 ))
+# 27977684
+
+#  The numbers of records in the .bam and .fastq files are equivalent
+```
+
+Contents of outfile from running `list_tally_flags` (including some edits/additions from me)...
+```txt
+19948030    419    not primary alignment 
+19948030    339    not primary alignment 
+17592252    403    not primary alignment
+17592252    355    not primary alignment
+ 7217590    83     primary alignment
+ 7217590    163    primary alignment
+ 6168754    99     primary alignment
+ 6168754    147    primary alignment
+  336959    77     unmapped              
+  336959    141    unmapped
+  248080    931    not primary alignment    read fails
+  248080    851    not primary alignment    read fails
+  213908    915    not primary alignment    read fails
+  213908    867    not primary alignment    read fails
+   94722    675    read fails
+   94722    595    read fails
+   91403    653    unmapped                 read fails
+   91403    589    unmapped                 read fails
+   79414    659    read fails
+   79414    611    read fails
+```
+What are the meanings of these flags? Use [this tool](https://broadinstitute.github.io/picard/explain-flags.html) to check:
+| flag | meaning                                                                                                                     |
+| :--- | :-------------------------------------------------------------------------------------------------------------------------- |
+| 419  | 0x1, read mapped in proper pair (0x2), mate reverse strand (0x20), second in pair (0x80), not primary alignment (0x100)     |
+| 339  | 0x1, read mapped in proper pair (0x2), read reverse strand (0x10), first in pair (0x40), not primary alignment (0x100)      |
+| 403  | 0x1, read mapped in proper pair (0x2), read reverse strand (0x10), second in pair (0x80), not primary alignment (0x100)     |
+| 355  | 0x1, read mapped in proper pair (0x2), mate reverse strand (0x20), first in pair (0x40), not primary alignment (0x100)      |
+| 83   | read paired (0x1), read mapped in proper pair (0x2), read reverse strand (0x10), first in pair (0x40)                       |
+| 163  | read paired (0x1), read mapped in proper pair (0x2), mate reverse strand (0x20), second in pair (0x80)                      |
+| 99   | read paired (0x1), read mapped in proper pair (0x2), mate reverse strand (0x20), first in pair (0x40)                       |
+| 147  | read paired (0x1), read mapped in proper pair (0x2), read reverse strand (0x10), second in pair (0x80)                      |
+| 77   | read paired (0x1), read unmapped (0x4), mate unmapped (0x8), first in pair (0x40)                                           |
+| 141  | read paired (0x1), read unmapped (0x4), mate unmapped (0x8), second in pair (0x80)                                          |
+| 931  | 0x1, 0x2, mate reverse strand (0x20), second in pair (0x80), not primary alignment (0x100), read fails* (0x200)             |
+| 851  | 0x1, 0x2, read reverse strand (0x10), first in pair (0x40), not primary alignment (0x100), read fails* (0x200)              |
+| 915  | 0x1, 0x2, read reverse strand (0x10), second in pair (0x80), not primary alignment (0x100), read fails* (0x200)             |
+| 867  | 0x1, 0x2, mate reverse strand (0x20), first in pair (0x40), not primary alignment (0x100), read fails* (0x200)              |
+| 675  | read paired (0x1), read mapped in proper pair (0x2), mate reverse strand (0x20), second in pair (0x80), read fails* (0x200) |
+| 595  | read paired (0x1), read mapped in proper pair (0x2), read reverse strand (0x10), first in pair (0x40), read fails* (0x200)  |
+| 653  | read paired (0x1), read unmapped (0x4), mate unmapped (0x8), second in pair (0x80), read fails* (0x200)                     |
+| 589  | read paired (0x1), read unmapped (0x4), mate unmapped (0x8), first in pair (0x40), read fails* (0x200)                      |
+| 659  | read paired (0x1), read mapped in proper pair (0x2), read reverse strand (0x10), second in pair (0x80), read fails* (0x200) |
+| 611  | read paired (0x1), read mapped in proper pair (0x2), mate reverse strand (0x20), first in pair (0x40), read fails* (0x200)  |
+
+<br />    
+
+Click [here](#thoughts-on-the-alignment-metrics-for-star) for thoughts and comments from the previous test run of `STAR` (['rna-star' parameters](#examine-the-flags-in-the-bam-outfile-from-the-test-run-of-star-multi-hit-mode))
+
+<a id="use-split_bam_by_speciessh-to-get-vii-and-k-lactis-chromosomes-from-bam-files-2022-1116"></a>
+#### Use `split_bam_by_species.sh` to get VII and *K. lactis* chromosomes from `.bam` files (2022-1116)
+```bash
+#!/bin/bash
+#DONTRUN
+
+grabnode  # Lowest/default settings
+cd "${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1101/"
+
+module load SAMtools/1.16.1-GCC-11.2.0
+
+samtools index \
+    ./results/2022-1101/exp_STAR_alignment/files_bams/5781_G1_IN_mergedAligned.sortedByCoord.out.bam
+
+bash bin/split_bam_by_species.sh
+# Take user-input .bam files containing alignments to S. cerevisiae, K. lactis,
+# and 20 S narnavirus, and split them into distinct .bam files for each species,
+# with three splits for S. cerevisiae: all S. cerevisiae chromosomes not
+# including chromosome M, all S. cerevisiae including chromosome M, and S.
+# cerevisiae chromosome M only.
+#
+# Names of chromosomes in .bam infiles must be in the following format:
+#   - S. cerevisiae
+#     - I
+#     - II
+#     - III
+#     - IV
+#     - V
+#     - VI
+#     - VII
+#     - VIII
+#     - IX
+#     - X
+#     - XI
+#     - XII
+#     - XIII
+#     - XIV
+#     - XV
+#     - XVI
+#
+#   - K. lactis
+#     - A
+#     - B
+#     - C
+#     - D
+#     - E
+#
+#   - 20 S narnavirus
+#     - 20S
+#
+# The split .bam files are saved to a user-defined out directory.
+#
+# Dependencies:
+#   - samtools >= 1.9
+#
+# Arguments:
+#   -h  print this help message and exit
+#   -u  use safe mode: "TRUE" or "FALSE" <lgl; default: FALSE>
+#   -i  infile, including path <chr>
+#   -o  outfile directory, including path; if not found, will be mkdir'd <chr>
+#   -s  what to split out; options: SC_all, SC_no_Mito, SC_VII, SC_XII,
+#       SC_VII_XII, SC_Mito, KL_all, virus_20S <chr; default: SC_all>
+#   -t  number of threads <int >= 1>
+
+bash bin/split_bam_by_species.sh \
+    -u TRUE \
+    -i ./results/2022-1101/exp_STAR_alignment/files_bams/5781_G1_IN_mergedAligned.sortedByCoord.out.bam \
+    -o ./results/2022-1101/exp_STAR_alignment/files_bams \
+    -s SC_VII \
+    -t 1
+
+bash bin/split_bam_by_species.sh \
+    -u FALSE \
+    -i ./results/2022-1101/exp_STAR_alignment/files_bams/5781_G1_IN_mergedAligned.sortedByCoord.out.bam \
+    -o ./results/2022-1101/exp_STAR_alignment/files_bams \
+    -s KL_all \
+    -t 1
+
+cd ./results/2022-1101/exp_STAR_alignment/files_bams
+
+samtools view -h \
+    5781_G1_IN_mergedAligned.sortedByCoord.out.split_SC_VII.bam \
+        | less
+
+samtools view -h \
+    5781_G1_IN_mergedAligned.sortedByCoord.out.split_KL_all.bam \
+        | less
+
+#  It works!
+
+#TODO 1/2 Need to write the script so that it inherits the environment from
+#TODO 2/2 which it was called
+```
+
 <br />
 <br />
 
@@ -3285,8 +4496,8 @@ Remember, the overarching goal is to have appropriately processed bam files for 
 - `(TBC)` Look into the detection and removal of PCR duplicates with UMI-tools as suggested by Alison: Need to figure out what that entails
     - Began to look into [this](https://umi-tools.readthedocs.io/en/latest/reference/dedup.html) at the end of the day~~; continue reading up on this tomorrow~~
 - `(   )` Continue to build out the alignment and processing script you were working on at the end of last week
-    + Functionize it
-    + Get major modules into separate scripts, which are in-turn functionized
+    + Function-ize it
+    + Get major modules into separate scripts, which are in-turn function-ized
     + get the main work into some kind of driver script
     + Etc.
     + `(...)` Get an answer to the question, "When splitting a bam from an RNA-seq experiment by strand for visualization (two separate bw files, one for the forward strand, the other for the reverse strand), should the bam be normalized (for example, using one of the normalization options provided by deepTools' `bamCoverage --normalizeUsing`) before or after the split?"
@@ -3332,7 +4543,7 @@ Remember, the overarching goal is to have appropriately processed bam files for 
 - `(   ) #STUDYFIRST` Until I hear back from Brian Haas, or if I don't hear back, go ahead and move forward with altered `STAR` parameters (so that we don't have flags in high hundreds and, instead, get readouts more similar to what we see with the `Bowtie 2` test run #2 on 2022-1109)  
     + `(   ) #STUDYFIRST` After that's done, compare the kinds of alignments we're getting between the two aligners and then pick one for subsequent use  
 - `(   ) #STUDYFIRST` After the alignment process is determined, implemented, and completed, move on to writing up code for filtering by chromosomes (build on/expand what you were working on before): Ultimately, we'll start by working with VII of S. cerevisiae  
-- `(   ) #TOMORROW` Continue reading and note-taking based on the messages with Brian Haas; this includes...
+- `(   ) #SOMETIME` Continue reading and note-taking based on the messages with Brian Haas; this includes...
     + Haas et al. (Wortman), Approaches to Fungal Genome Annotation, Mycology 2011-09, particularly the portions that pertain to
         * "Gene structure annotation using transcriptome sequences (2.1.1)"
         * Figure 2
@@ -3354,5 +4565,8 @@ Remember, the overarching goal is to have appropriately processed bam files for 
         * It seems she got them from the UCSC table browser
         * `#TODO` Look into the possibility of getting them from Ensembl
     + Already have locations of rDNA from having run `picardmetrics`
+- `( Y ) #DONE` Pick up with the comparison between the 'rna-star' Google group calling of STAR and multi-hit mode calling of STAR
+    + Then, get line-by-line CL-call code written and running for a version of multi-hit mode adapted for yeast
+    + Also, see how many mismatches Alison et al. are allowing when they call with Bowtie2: Use the info if you can
 <br />
 <br />
