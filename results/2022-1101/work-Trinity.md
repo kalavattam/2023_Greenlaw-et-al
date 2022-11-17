@@ -113,6 +113,9 @@
 
 <a id="get-another-trial-run-of-trinity-going"></a>
 ## Get another trial run of `Trinity` going
+<details>
+<summary><i>Click here to expand</i></summary>
+
 Just to reacquaint yourself with things...
 ```bash
 #!/bin/bash
@@ -229,6 +232,7 @@ mv 5781_* 3299486* trinity_5781_* exp_Trinity/
 - `--output`: name of directory for output (will be created if it doesn't already exist) default( your current working directory: `/usr/local/src/trinity_out_dir` note: must include 'trinity' in the name as a safety precaution! )
 <br />
 <br />
+</details>
 
 <a id="continued-reading-studying-regarding-trinity"></a>
 ## Continued reading, studying regarding `Trinity`
@@ -376,6 +380,9 @@ Builds on work [performed here](../2022-1025/readme.md#snippets-etc-from-searchi
 ### Notes from the references listed above
 <a id="mcilwain-et-al-hittinger-g3-2016"></a>
 #### McIlwain et al. (Hittinger), *G3* 2016
+<details>
+<summary><i>Click here to expand</i></summary>
+
 [Link to paper](https://academic.oup.com/g3journal/article/6/6/1757/6029942)
 
 <a id="from-materials-and-methods"></a>
@@ -409,9 +416,13 @@ Our preliminary applications of DETONATE to smaller-size assemblies, combined wi
 Visual comparison of the mapping results derived from the optimized and default-parameter assemblies [(Figure S1)](https://oup.silverchair-cdn.com/oup/backfile/Content_public/Journal/g3journal/6/6/10.1534_g3.116.029389/5/029389_figures1.pdf?Expires=1670618835&Signature=EYS-mn5bLPlI~Wa3u7B8J8J-2Vm1yZ08An4f35VKyef4qyT~T1LaBSdQkKJtKbYfggQciXpi30thpgSUXdx~S3I9MHUyUBpZFr-JGC4YdMg1c-IdMqWBbczfmPdinQx9pFMrlqty9lHf1oxA5Jmc4vbAdJVoJU3AHt4kIRChviV8PyelyFsFQkIYNRIpLclSVODM180ebZ~jiIMquHHdA3fbS4z~p7lLqMCAmCdnMmp6-dJbpCt9JSz10BSztduUZSjfbOoF9sKMxhTuH2rUHEHH-ONMu3NeRg0YJcR~rcJV4Pnkaw3QY4Xx~-L3G--IzRoGTkLfkNqd7WYIUHZPJA__&Key-Pair-Id=APKAIE5G5CRDK6RD3PGA) revealed that cases of artificial both-strand coverage by predicted transcripts, which were abundant in the default assembly, were essentially eliminated in the optimized assembly, without sacrificing sensitivity (seen as coverage of the genomic features predicted at DNA level).
 
 ...
+</details>
 
 <a id="blevins-et-al-mar-alba-biorxiv-2019-0313"></a>
 #### Blevins et al. (Mar Alba), bioRxiv 2019-0313
+<details>
+<summary><i>Click here to expand</i></summary>
+
 [Link to paper](https://www.biorxiv.org/content/10.1101/575837v1.full); this is the study Alison referenced for the parameters [used here](#get-another-trial-run-of-trinity-going)
 
 <a id="from-results"></a>
@@ -480,6 +491,7 @@ In this mode, `Trinity` works with mapped reads, but it does not use the referen
 We used `Transrate` (Smith-Unna et al. 2016) to evaluate the quality of each assembly and refined the parameters of Trinity to achieve a high-quality de novo assembly.
 
 As `Trinity` does not use the reference genome directly to assemble transfrags, we used GMAP (Wu and Watanabe 2005) to map the assembled transcripts back to the reference genome. We used Cuffmerge from the Cufflinks suite version 2.2.0 (Trapnell et al. 2012) to combine the de novo assemblies from normal and stress conditions with the reference transcriptome. When we combined novel and annotated transcripts into a comprehensive transcriptome, novel transcripts from our assembly which overlapped the reference annotations were considered redundant and were excluded from most of the analysis; however, these transcripts were still included in the BLAST database during homology searches.
+</details>
 
 <a id="build-a-comprehensive-transcriptome-database"></a>
 #### Build a Comprehensive Transcriptome Database
@@ -1115,6 +1127,9 @@ STAR \
 
 <a id="rationale-behind-parameters-based-on-pertinent-rna-star-google-group-conversation"></a>
 ##### Rationale behind parameters based on [pertinent 'rna-star' Google group conversation](https://groups.google.com/g/rna-star/c/hQeHTBbkc0c)
+<details>
+<summary><i>Click here to expand</i></summary>
+
 <a id="post-1-marco-2016-0502"></a>
 ###### [Post #1, Marco, 2016-0502](https://groups.google.com/g/rna-star/c/hQeHTBbkc0c/m/o7jPGuYfBQAJ)
 ```txt
@@ -1232,6 +1247,7 @@ Marco
 ```
 
 Additional comments omitted.
+</details>
 
 <a id="implementing-the-alignment-steps-with-star-and-bowtie-2"></a>
 ### Implementing the alignment steps with `STAR` and `Bowtie 2`
@@ -1529,8 +1545,10 @@ zcat ./combined_SC_KL_20S/gff3/combined_SC_KL.gff3.gz \
 
 #NOTE #IMPORTANT Chromosome names are consistent
 ```
-
 Call to [AGAT](https://www.biostars.org/p/413510/) `agat_sp_merge_annotations.pl` printed the following to screen (`STDERR`):
+<details>
+<summary><i>Click here to expand</i></summary>
+
 ```txt
 ********************************************************************************
 *                              - Start parsing -                               *
@@ -1958,6 +1976,7 @@ There is 13166 exon
 There is 91 rna
 ```
 Seems to be OK...
+</details>
 </details>
 
 <a id="getting-the-fastq-files-of-interest-into-one-location"></a>

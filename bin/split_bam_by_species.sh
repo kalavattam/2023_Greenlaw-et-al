@@ -49,6 +49,7 @@ print_usage() {
 
 #  Handle arguments, assign variables -----------------------------------------
 help="""
+${0}
 Take user-input .bam files containing alignments to S. cerevisiae, K. lactis,
 and 20 S narnavirus, and split them into distinct .bam files for each species,
 with three splits for S. cerevisiae: all S. cerevisiae chromosomes not
@@ -73,6 +74,7 @@ Names of chromosomes in .bam infiles must be in the following format:
     - XIV
     - XV
     - XVI
+    - Mito
 
   - K. lactis
     - A
