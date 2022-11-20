@@ -90,17 +90,17 @@ done
 [[ -z "${dir_indices}" ]] && print_usage
 [[ -z "${prefix_indices}" ]] && print_usage
 [[ -z "${outdir}" ]] && print_usage
-[[ -z "${script}" ]] && script="${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/bin/split_bam_paired_end.sh"  #TODO Address this
+[[ -z "${script}" ]] && script="${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/bin/split_bam_paired_end.sh"  #TODO Address this
 [[ -z "${threads}" ]] && threads=16
 
 #  Assignments for tests (to be commented out)
 safe_mode=FALSE
-dir_infiles="${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1025/fastq"
+dir_infiles="${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1025/fastq"
 prefix_infiles="5781_G1_IN_merged"
 dir_indices="${HOME}/genomes/combined_SC_KL_20S/Bowtie2"
 prefix_indices="combined_SC_KL_20S"
-script="${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/bin/split_bam_fwd_rev.sh"
-outdir="${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1025/align_process_fastqs"
+script="${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/bin/split_bam_fwd_rev.sh"
+outdir="${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1025/align_process_fastqs"
 threads=1
 
 echo "${safe_mode}"

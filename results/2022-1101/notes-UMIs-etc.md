@@ -418,7 +418,7 @@ The usage of **UMIs** is recommended primarily for three scenarios: very low inp
 - For **conventional RNA-seq and DNA sequencing applications**, you will specifically have to request UMIs on the submission form. The default library preparations will NOT use UMIs. The UMIs will be located in-line with the insert sequences for conventional RNA-seq, genomic DNA-sequencing, or ChIP-seq. *The first twelve bases of both forward and reverse reads will represent UMIs and associated linker sequences (7 nt UMI sequence followed by a 5 nt spacer "TGACT"; UMIs of forward and reverse read are independent, resulting in a combined UMI length of 14 nt)*. UMIs and spacers are then followed by the biological insert sequences (for paired-end data, a total of 22 bp will be dedicated to the UMIs instead of the inserts). The UMI and spacer sequences are usually trimmed off and the information transferred into the read ID header with software utilities like UMI-Tools or FASTP.
 
 The figure below displays the (simplified) principles of the UMI data analysis for quantitative and variant detection studies.  
-![UMI figure](./readme/UMIs.png)
+![UMI figure](./notebook/UMIs.png)
 
 <a id="notes-questions-related-to-the-above-text"></a>
 ##### Notes, questions related to the above text

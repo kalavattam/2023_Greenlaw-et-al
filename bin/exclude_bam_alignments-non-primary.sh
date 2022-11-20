@@ -2,9 +2,12 @@
 
 #  exclude_bam_alignments-non-primary.sh
 #  KA
+#UNTESTED
 
 
-#  Source functions into environment ------------------------------------------
+#  ------------------------------------
+#  Source external, internal functions into environment
+#  ------------------------------------
 functions="$(dirname "${BASH_SOURCE}")/functions.sh"
 if [[ -f "${functions}" ]]; then
     source "${functions}"
@@ -14,139 +17,155 @@ else
 fi
 
 
-#  Handle arguments, assign variables -----------------------------------------
+check_argument_flagstat() {
+    case "$(echo "$(convert_chr_lower "${flagstat}")")" in
+        true | t) \
+            flagstat=1
+            printf "%s\n" "\"Run samtools flagstat\" is TRUE."
+            ;;
+        false | f) \
+            flagstat=0
+            printf "%s\n" "\"Run samtools flagstat\" is FALSE."
+            ;;
+        *) \
+            printf "%s\n\n" "Exiting: \"flagstat\" argument must be TRUE or FALSE.\n"
+            # exit 1
+            ;;
+    esac
+}
+
+
+check_etc() {
+    #  ------------------------------------
+    #  Check depencies, and check and make variable assignments 
+    #  ------------------------------------
+    #  Check for necessary dependencies; exit if not found
+    check_dependency samtools
+
+    #  Evaluate "${safe_mode}"
+    check_argument_safe_mode
+
+    #  Check that "${infile}" exists
+    check_exists_file "${infile}"
+
+    #  If TRUE exist, then make "${outdir}" if it does not exist; if FALSE,
+    #+ then exit if "${outdir}" does not exist
+    check_exists_directory TRUE "${outdir}"  #TODO Fix this function
+
+    #  Check on value assigned to "${flagstat}"
+    check_argument_flagstat
+
+    #  Check on value assigned to "${threads}"
+    check_argument_threads
+
+    # [[ ! "${threads}" =~ ^[0-9]+$ ]] &&
+    #     {
+    #         echo -e "Exiting: -p \"threads\" argument must be an integer.\n"
+    #         exit 1
+    #     }
+    #
+    # [[ ! $((threads)) -ge 1 ]] &&
+    #     {
+    #         echo -e "Exiting: -p \"threads\" argument must be an integer >= 1.\n"
+    #         exit 1
+    #     }
+    
+    echo ""
+
+    #  Make additional variable assignments from the arguments
+    base="$(basename "${infile}")"
+    outfile="${base%.bam}.exclude-unmapped.bam"
+
+    #  Make additional variable assignments from the arguments
+    base="$(basename "${infile}")"
+    outfile="${base%.bam}.exclude-unmapped.bam"
+}
+
+
+
+main() {
+    #  ------------------------------------
+    #  Run samtools to exclude non-primary alignments from .bam infile
+    #  ------------------------------------
+    echo ""
+    echo "Running ${0}... "
+
+    echo "Filtering out non-primary alignments..."
+
+    samtools view \
+        -@ "${threads}" \
+        -b -F 256 \
+        "${infile}" \
+        -o "${outdir}/${outfile}"
+    check_exit $? "samtools"
+
+
+    #  ------------------------------------
+    #  Run flagstat on primary alignment-filtered .bam outfile (optional)
+    #  ------------------------------------
+    if [[ $((flagstat)) -eq 1 ]]; then
+        samtools flagstat \
+            -@ "${threads}" \
+            "${outdir}/${outfile}" \
+                > "${outdir}/${outfile%.bam}.flagstat.txt" &
+        check_exit $? "samtools"
+
+        wait
+    fi
+}
+
+
+#  ------------------------------------
+#  Handle arguments
+#  ------------------------------------
 help="""
-${0}:
-Exclude non-primary alignments from bam infile. Name of bam outfile will be
-derived from the infile.
+exclude_bam_alignments-non-primary.sh
+-------------------------------------
+Exclude non-primary alignments from .bam infile. Optionally, run samtools
+flagstat on the filtered .bam outfile.
+
+
+
+Name of outfile(s) will be derived from the infile.
 
 Dependencies:
   - samtools >= #TBD
 
 Arguments:
   -h  print this help message and exit
-  -u  use safe mode: \"TRUE\" or \"FALSE\" <lgl; default: FALSE>
+  -u  use safe mode <lgl; default: FALSE>
   -i  bam infile, including path <chr>
-  -o  path for outfiles <chr>
-  -f  run samtools flagstat on bams: \"TRUE\" or \"FALSE\" <lgl>
-  -p  number of cores for parallelization <int >= 1; default: 1>
+  -o  outfile directory, including path; if not found, will be mkdir'd <chr>  #TODO
+  -f  run samtools flagstat on bams <lgl; default: FALSE>
+  -t  number of threads <int >= 1; default: 1>
 """
 
-while getopts "h:u:i:o:f:p:" opt; do
+while getopts "h:u:i:o:f:t:" opt; do
     case "${opt}" in
-        h) echo "${help}" ;;
+        h) echo "${help}" && exit ;;
         u) safe_mode="${OPTARG}" ;;
         i) infile="${OPTARG}" ;;
-        o) outpath="${OPTARG}" ;;
+        o) outdir="${OPTARG}" ;;
         f) flagstat="${OPTARG}" ;;
-        p) parallelize="${OPTARG}" ;;
+        t) threads="${OPTARG}" ;;
         *) print_usage ;;
     esac
 done
 
 [[ -z "${safe_mode}" ]] && safe_mode=FALSE
 [[ -z "${infile}" ]] && print_usage
-[[ -z "${outpath}" ]] && print_usage
-[[ -z "${flagstat}" ]] && print_usage
-[[ -z "${parallelize}" ]] && parallelize=1
+[[ -z "${outdir}" ]] && print_usage
+[[ -z "${flagstat}" ]] && flagstat=FALSE
+[[ -z "${threads}" ]] && threads=1
 
 
-#  Check variable assignments -------------------------------------------------
-echo ""
-echo "Running ${0}... "
-
-#  Evaluate "${safe_mode}"
-case "$(echo "${safe_mode}" | tr '[:upper:]' '[:lower:]')" in
-    true | t) \
-        echo -e "-u: \"Safe mode\" is TRUE." && set -Eeuxo pipefail ;;
-    false | f) \
-        echo -e "-u: \"Safe mode\" is FALSE." ;;
-    *) \
-        echo -e "Exiting: -u \"safe mode\" argument must be TRUE or FALSE.\n"
-        exit 1
-        ;;
-esac
-
-#  Check for necessary dependencies; exit if not found
-check_dependency samtools
-
-#  Check that "${infile}" exists
-[[ -f "${infile}" ]] ||
-    {
-        echo -e "Exiting: -i ${infile} does not exist.\n"
-        exit 1
-    }
-
-#  Make "${outpath}" if it doesn't exist
-[[ -d "${outpath}" ]] ||
-    {
-        echo -e "-o: Directory ${outpath} does not exist; making the directory.\n"
-        mkdir -p "${outpath}"
-    }
-
-#  Evaluate "${flagstat}"
-case "$(echo "${flagstat}" | tr '[:upper:]' '[:lower:]')" in
-    true | t) \
-        flagstat=1
-        echo -e "-f: \"Run samtools flagstat\" is TRUE."
-        ;;
-    false | f) \
-        flagstat=0
-        echo -e "-f: \"Run samtools flagstat\" is FALSE."
-        ;;
-    *) \
-        echo -e "Exiting: -f \"flagstat\" argument must be TRUE or FALSE.\n"
-        exit 1
-        ;;
-esac
-
-#  Check "${parallelize}"
-[[ ! "${parallelize}" =~ ^[0-9]+$ ]] &&
-    {
-        echo -e "Exiting: -p \"parallelize\" argument must be an integer.\n"
-        exit 1
-    }
-
-[[ ! $((parallelize)) -ge 1 ]] &&
-    {
-        echo -e "Exiting: -p \"parallelize\" argument must be an integer >= 1.\n"
-        exit 1
-    }
-
-echo ""
+#  ------------------------------------
+#  Check depencies, and check and make variable assignments 
+#  ------------------------------------
+check_etc
 
 
-#  Assign variables needed for the pipeline -----------------------------------
-base="$(basename "${infile}")"
-outfile="${base%.bam}.primary.bam"
-
-
-#  Make subdirectories for primary-alignment outfiles -------------------------
-mkdir -p "${outpath}"
-
-
-#  Exclude primary alignments from a bam infile; write a bam outfile ----------
-echo "[info] Separating bam files..."
-
-samtools view \
--@ "${parallelize}" \
--b -F 256 "${infile}" \
--o "${outpath}/${outfile}"
-check_exit $? "samtools"
-
-
-#  Run flagstat on primary alignment bam outfiles -----------------------------
-if [[ $((flagstat)) -eq 1 ]]; then
-    #  Make subdirectories
-    flag_m="${outpath}/flagstat"
-    mkdir -p "${flag_m}"
-
-    #  Mapped
-    samtools flagstat \
-    -@ "${parallelize}" \
-    "${outpath}/${outfile}" \
-        > "${flag_m}/${outfile%.bam}.flagstat.txt" &
-    check_exit $? "samtools"
-
-    wait
-fi
+#  ------------------------------------
+#  Run samtools to exclude unmapped alignments from .bam infile, etc.
+#  ------------------------------------
+main

@@ -16,7 +16,7 @@ else
 fi
 
 
-check_define_variables_etc() {
+check_etc() {
     #  ------------------------------------
     #  Check and make variable assignments 
     #  ------------------------------------
@@ -111,8 +111,6 @@ main() {
 
     echo ""
     echo "Running ${0}... "
-
-    check_define_variables_etc
 
     # #TEST
     # threads=1
@@ -233,8 +231,8 @@ done
 
 # #TEST
 # safe_mode=FALSE
-# infile="${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1025/align_process_fastqs/bam/5781_G1_IN_merged.bam"
-# outdir="${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1025/align_process_fastqs/bam"
+# infile="${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1025/align_process_fastqs/bam/5781_G1_IN_merged.bam"
+# outdir="${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1025/align_process_fastqs/bam"
 # split="SC_all"
 # threads=1
 #
@@ -247,5 +245,8 @@ done
 # ls -lhaFG "${infile}"
 # ls -lhaFG "${outdir}"
 
-#  Run the functions
+
+check_etc
+
+
 main

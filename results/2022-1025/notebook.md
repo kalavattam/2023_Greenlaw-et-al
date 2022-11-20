@@ -1,7 +1,7 @@
 
 # 2022-1025-1101
 <details>
-<summary><b><font size="+2">Table of Contents</font></b></summary>
+<summary><b><font size="+2"><i>Table of contents</i></font></b></summary>
 <!-- MarkdownTOC -->
 
 1. [2022-1025](#2022-1025)

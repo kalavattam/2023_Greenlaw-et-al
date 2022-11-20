@@ -1,7 +1,7 @@
 
 # 2022-1021-1024
 <details>
-<summary><b><font size="+2">Table of Contents</font></b></summary>
+<summary><b><font size="+2"><i>Table of contents</i></font></b></summary>
 <!-- MarkdownTOC -->
 
 1. [2022-1021-1023](#2022-1021-1023)
@@ -66,7 +66,7 @@ Work with this file, `5781_Q_IP_sorted.bam`, at this location, `/home/kalavatt/t
 #DONTRUN
 
 dir_from="/home/kalavatt/tsukiyamalab/alisong/WTQvsG1/automation_of_annotation/test1"
-dir_to="/home/kalavatt/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1021"
+dir_to="/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1021"
 file="5781_Q_IP_sorted.bam"
 
 cp "${dir_from}/${file}" "${dir_to}/${file}"
@@ -301,7 +301,7 @@ gmap \
     --format="gff3_gene" "samse" \
     	> "${d_Kris}/${d_proj}/${d_exp}/${fasta%.fasta}.GMAP.gff"
 ```
-Save the above contents to `submit-gmap_chrVII.sh` in `${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1021`
+Save the above contents to `submit-gmap_chrVII.sh` in `${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1021`
 
 `#DONE` Also, make a version of the script for the full genome, i.e., not just chrVII
 

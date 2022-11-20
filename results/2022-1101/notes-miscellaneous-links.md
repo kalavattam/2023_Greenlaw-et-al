@@ -7,6 +7,7 @@
 1. [Links on how to do miscellaneous things](#links-on-how-to-do-miscellaneous-things)
     1. [System](#system)
     1. [Bash](#bash)
+    1. [Vi/Vim](#vivim)
     1. [Sublime](#sublime)
         1. [On making Sublime plugins](#on-making-sublime-plugins)
     1. [Markdown](#markdown)
@@ -35,6 +36,11 @@
 ### Bash
 - [Choosing between $0 and $BASH_SOURCE](https://stackoverflow.com/questions/35006457/choosing-between-0-and-bash-source)
 - 
+
+<a id="vivim"></a>
+### Vi/Vim
+- [Searching and replacing](https://docs.oracle.com/cd/E19253-01/806-7612/editorvi-62/index.html)
+- [Page up/down keystrokes](https://alvinalexander.com/linux-unix/vi-vim-page-up-page-down-keys-keystrokes/)
 
 <a id="sublime"></a>
 ### Sublime
@@ -69,7 +75,7 @@
 - [Sublime MarkdownEditing](MarkdownEditing)
 - [Markdown Extended Syntax](https://www.markdownguide.org/extended-syntax)
 - [How to add new line in markdown presentation](https://stackoverflow.com/questions/33191744/how-to-add-new-line-in-markdown-presentation)
-- [How do I display local image in markdown?](https://stackoverflow.com/questions/41604263/how-do-i-display-local-image-in-markdown)
+- [How do I display local image in Markdown?](https://stackoverflow.com/questions/41604263/how-do-i-display-local-image-in-markdown)
 - [How to link to headers](https://stackoverflow.com/questions/51221730/markdown-link-to-header)
 - [How to reference a section in another file](https://stackoverflow.com/questions/51187658/markdown-reference-to-section-from-another-file)
 - [How to highlight text in a Markdown document](https://stackoverflow.com/questions/25104738/text-highlight-in-markdown)

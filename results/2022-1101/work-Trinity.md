@@ -1,5 +1,5 @@
 
-# 2022-1102-1113
+# 2022-1102-1118
 <details>
 <summary><b><font size="+2"><i>Table of contents</i></font></b></summary>
 <!-- MarkdownTOC -->
@@ -15,11 +15,12 @@
         1. [McIlwain et al. \(Hittinger\), *G3* 2016](#mcilwain-et-al-hittinger-g3-2016)
             1. [From *Materials and Methods*](#from-materials-and-methods)
             1. [From *File S1*](#from-file-s1)
+        1. [*TBD*, Best Practices for *De Novo* Transcriptome Assembly..., Harvard FAS Informatics 2021-0305](#tbd-best-practices-for-de-novo-transcriptome-assembly-harvard-fas-informatics-2021-0305)
         1. [Blevins et al. \(Mar Alba\), bioRxiv 2019-0313](#blevins-et-al-mar-alba-biorxiv-2019-0313)
             1. [From *Results*](#from-results)
             1. [From *Supplementary Figure 1*](#from-supplementary-figure-1)
             1. [From *Methods*](#from-methods)
-        1. [Build a Comprehensive Transcriptome Database](#build-a-comprehensive-transcriptome-database)
+        1. [Haas, Build a Comprehensive Transcriptome Database..., GitHub *TBD*](#haas-build-a-comprehensive-transcriptome-database-github-tbd)
             1. [Build a Comprehensive Transcriptome Database Using Genome-Guided and *De Novo* RNA-seq Assembly](#build-a-comprehensive-transcriptome-database-using-genome-guided-and-de-novo-rna-seq-assembly)
         1. [Leveraging RNA-seq by the `PASA` Pipeline](#leveraging-rna-seq-by-the-pasa-pipeline)
             1. [Leveraging RNA-seq by the `PASA` Pipeline](#leveraging-rna-seq-by-the-pasa-pipeline-1)
@@ -87,13 +88,13 @@
                 1. [Going through the parameters, making comparisons between the two approaches:](#going-through-the-parameters-making-comparisons-between-the-two-approaches)
                 1. [Assessing the "ingredients"](#assessing-the-ingredients)
             1. [How we should call `STAR` taking into account 'rna-star' and multi-hit mode parameters](#how-we-should-call-star-taking-into-account-rna-star-and-multi-hit-mode-parameters)
-            1. [How are other groups calling `STAR` with *S. cerevisiae*?](#how-are-other-groups-calling-star-with-s-cerevisiae)
-                1. [Dorfel et al. \(Lyon\), Yeast 2017](#dorfel-et-al-lyon-yeast-2017)
-                1. [Jensen et al. \(Jensen\), *Nat Comm* 2022](#jensen-et-al-jensen-nat-comm-2022)
-                1. [Software and parameter settings used by OneStopRNAseq v1.0.0](#software-and-parameter-settings-used-by-onestoprnaseq-v100)
-                1. [Mendoza et al., *Sci Adv* 2022](#mendoza-et-al-sci-adv-2022)
-                1. [VELCRO-IP RNA-seq Data Analysis: Read Alignment and Quantification](#velcro-ip-rna-seq-data-analysis-read-alignment-and-quantification)
-                1. [Osman et al. \(Cramer\), *JBC* 202100523-8/pdf)](#osman-et-al-cramer-jbc-202100523-8pdf)
+        1. [How are other groups calling `STAR` with *S. cerevisiae*?](#how-are-other-groups-calling-star-with-s-cerevisiae)
+            1. [Dorfel et al. \(Lyon\), Yeast 2017](#dorfel-et-al-lyon-yeast-2017)
+            1. [Jensen et al. \(Jensen\), *Nat Comm* 2022](#jensen-et-al-jensen-nat-comm-2022)
+            1. [Software and parameter settings used by OneStopRNAseq v1.0.0](#software-and-parameter-settings-used-by-onestoprnaseq-v100)
+            1. [Mendoza et al., *Sci Adv* 2022](#mendoza-et-al-sci-adv-2022)
+            1. [VELCRO-IP RNA-seq Data Analysis: Read Alignment and Quantification](#velcro-ip-rna-seq-data-analysis-read-alignment-and-quantification)
+            1. [Osman et al. \(Cramer\), *JBC* 2021](#osman-et-al-cramer-jbc-2021)
         1. [Run `STAR` alignment, retaining multimappers \(2022-1115-1116\)](#run-star-alignment-retaining-multimappers-2022-1115-1116)
             1. [Alignment metrics for the test run of `STAR` \(multi-hit mode\)](#alignment-metrics-for-the-test-run-of-star-multi-hit-mode)
                 1. [Thoughts on the alignment metrics for `STAR` \(multi-hit mode\)](#thoughts-on-the-alignment-metrics-for-star-multi-hit-mode)
@@ -102,11 +103,24 @@
             1. [Use `split_bam_by_species.sh` to get VII and *K. lactis* chromosomes from `.bam` files \(2022-1116\)](#use-split_bam_by_speciessh-to-get-vii-and-k-lactis-chromosomes-from-bam-files-2022-1116)
             1. [Having updated and "function-ized" `split_bam_by_species.sh`, test it \(2022-1117\)](#having-updated-and-function-ized-split_bam_by_speciessh-test-it-2022-1117)
         1. [Writing and testing `exclude_bam_reads-unmapped.sh` \(2022-1117\)](#writing-and-testing-exclude_bam_reads-unmappedsh-2022-1117)
+            1. [Testing the updated, corrected `exclude_bam_reads-unmapped.sh` \(2022-1118\)](#testing-the-updated-corrected-exclude_bam_reads-unmappedsh-2022-1118)
+            1. [Run the updated, corrected `exclude_bam_reads-unmapped.sh` on the "multi-hit mode" `.bam`](#run-the-updated-corrected-exclude_bam_reads-unmappedsh-on-the-multi-hit-mode-bam)
+        1. [Another look at the metrics and flags from the two `STAR` alignment approaches \(2022-1118\)](#another-look-at-the-metrics-and-flags-from-the-two-star-alignment-approaches-2022-1118)
+            1. [Some readouts for the 'rna-star' and 'multi-hit-mode' `.bam` files](#some-readouts-for-the-rna-star-and-multi-hit-mode-bam-files)
+            1. [Some readouts for the 'rna-star' and 'multi-hit-mode' `.bam` files filtered with `exclude_bam_reads-unmapped.sh`](#some-readouts-for-the-rna-star-and-multi-hit-mode-bam-files-filtered-with-exclude_bam_reads-unmappedsh)
+    1. [Rerun `STAR` alignment approaches and metric-checks while collecting all tags in `.bam` files](#rerun-star-alignment-approaches-and-metric-checks-while-collecting-all-tags-in-bam-files)
+    1. [Establishing how to call `Trinity` in genome-free and -guided modes](#establishing-how-to-call-trinity-in-genome-free-and--guided-modes)
+        1. [How Allison called `Trinity` in genome-guided mode](#how-allison-called-trinity-in-genome-guided-mode)
+        1. [Parameters called out by name in McIlwain et al., *G3* 2016](#parameters-called-out-by-name-in-mcilwain-et-al-g3-2016)
+            1. [trinityrnaseq-users Google Group post on the above](#trinityrnaseq-users-google-group-post-on-the-above)
+        1. [`Trinity --show_full_usage_info`](#trinity---show_full_usage_info)
 1. [Miscellaneous](#miscellaneous)
     1. [Figure out where to put this](#figure-out-where-to-put-this)
         1. [Brief discussion with Toshi about yeast blacklists](#brief-discussion-with-toshi-about-yeast-blacklists)
     1. [Google searches and websites to follow up on](#google-searches-and-websites-to-follow-up-on)
+    1. [Try to get a clear answer on maximum intron length in *S. cerevisiae* \(2022-1120\)](#try-to-get-a-clear-answer-on-maximum-intron-length-in-s-cerevisiae-2022-1120)
     1. [To be continued after the completion of `Trinity` work](#to-be-continued-after-the-completion-of-trinity-work)
+    1. [Priorities](#priorities)
         1. [Discussion with Alison on what I should prioritize \(2022-1103\)](#discussion-with-alison-on-what-i-should-prioritize-2022-1103)
     1. [Next steps](#next-steps)
 
@@ -239,7 +253,7 @@ mv 5781_* 3299486* trinity_5781_* exp_Trinity/
 
 <a id="continued-reading-studying-regarding-trinity"></a>
 ## Continued reading, studying regarding `Trinity`
-Builds on work [performed here](../2022-1025/readme.md#snippets-etc-from-searching-the-trinity-google-group)
+Builds on work [performed here](../2022-1025/notebook.md#snippets-etc-from-searching-the-trinity-google-group)
 
 <a id="outstanding-ongoing-questions-points-etc"></a>
 ### Outstanding, ongoing questions, points, etc.
@@ -358,6 +372,7 @@ Builds on work [performed here](../2022-1025/readme.md#snippets-etc-from-searchi
 ### References for the experimental design/pipeline
 - [McIlwain et al. (Hittinger), *G3* 2016](https://academic.oup.com/g3journal/article/6/6/1757/6029942) ([notes below](#mcilwain-et-al-hittinger-g3-2016))
     + [Notes](#mcilwain-et-al-hittinger-g3-2016)
+- [Best Practices for *De Novo* Transcriptome Assembly with Trinity](https://informatics.fas.harvard.edu/best-practices-for-de-novo-transcriptome-assembly-with-trinity.html)
 - [Blevins et al. (Mar Alba), bioRxiv 2019-0313](https://www.biorxiv.org/content/10.1101/575837v1.full)
     + [Notes](#blevins-et-al-mar-alba-biorxiv-2019-0313)
 - `PASA` materials from Brian Haas
@@ -375,12 +390,12 @@ Builds on work [performed here](../2022-1025/readme.md#snippets-etc-from-searchi
     + [Introduction to `PASA`](https://github.com/PASApipeline/PASApipeline/wiki#introduction)
         * Necessary to understand and leverage the above three references
         * [Notes](#introduction-to-pasa)
-- [Best Practices for *De Novo* Transcriptome Assembly with Trinity](https://informatics.fas.harvard.edu/best-practices-for-de-novo-transcriptome-assembly-with-trinity.html)
 
 `#TODO For the in-progress steps below, describe what material is from what reference above`
 
 <a id="notes-from-the-references-listed-above"></a>
 ### Notes from the references listed above
+`#DEKHO`
 <a id="mcilwain-et-al-hittinger-g3-2016"></a>
 #### McIlwain et al. (Hittinger), *G3* 2016
 <details>
@@ -420,6 +435,11 @@ Visual comparison of the mapping results derived from the optimized and default-
 
 ...
 </details>
+
+
+<a id="tbd-best-practices-for-de-novo-transcriptome-assembly-harvard-fas-informatics-2021-0305"></a>
+#### *TBD*, Best Practices for *De Novo* Transcriptome Assembly..., Harvard FAS Informatics 2021-0305
+... `#TODO` `#DEKHO`  
 
 <a id="blevins-et-al-mar-alba-biorxiv-2019-0313"></a>
 #### Blevins et al. (Mar Alba), bioRxiv 2019-0313
@@ -496,8 +516,8 @@ We used `Transrate` (Smith-Unna et al. 2016) to evaluate the quality of each ass
 As `Trinity` does not use the reference genome directly to assemble transfrags, we used GMAP (Wu and Watanabe 2005) to map the assembled transcripts back to the reference genome. We used Cuffmerge from the Cufflinks suite version 2.2.0 (Trapnell et al. 2012) to combine the de novo assemblies from normal and stress conditions with the reference transcriptome. When we combined novel and annotated transcripts into a comprehensive transcriptome, novel transcripts from our assembly which overlapped the reference annotations were considered redundant and were excluded from most of the analysis; however, these transcripts were still included in the BLAST database during homology searches.
 </details>
 
-<a id="build-a-comprehensive-transcriptome-database"></a>
-#### Build a Comprehensive Transcriptome Database
+<a id="haas-build-a-comprehensive-transcriptome-database-github-tbd"></a>
+#### Haas, Build a Comprehensive Transcriptome Database..., GitHub *TBD*
 - ...Using Genome-Guided and *De Novo* RNA-seq Assembly
 - [Link to the resource](https://github.com/PASApipeline/PASApipeline/wiki/PASA_comprehensive_db), which is recommended by the author/maintainer of `Trinity`, Brian Haas (see [below](#more-thoughts-on-multimappers-2022-1109-1110))
 
@@ -664,7 +684,7 @@ In the case of non-strand-specific RNA-seq, simply exclude the `--transcribed_is
 #!/bin/bash
 #DONTRUN
 
-$PASAHOME/Launch_PASA_pipeline.pl \
+${PASAHOME}/Launch_PASA_pipeline.pl \
     -c alignAssembly.config \
     -C -R \
     -g genome_sample.fasta \
@@ -2485,7 +2505,7 @@ list_tally_flags() {
         | sort \
         | uniq -c \
         | sort -nr \
-        > "${1/.bam/.flags.txt}" &
+            > "${1/.bam/.flags.txt}" &
     display_spinning_icon $! \
     "Running piped commands (samtools view, cut, sort, uniq -c, sort -nr) on $(basename "${1}")... "
         
@@ -2570,7 +2590,7 @@ mv files_bams/ exp_alignment_STAR/
 
 <a id="preparing-the-fasta-and-gff3-files-for-bowtie-2"></a>
 ##### Preparing the `.fasta` and `.gff3` files for `Bowtie 2`
-`Bowtie 2` indices were already generated: see [this link](../2022-1025/readme.md#create-bowtie-2-indices); but just checking on things before diving into things...
+`Bowtie 2` indices were already generated: see [this link](../2022-1025/notebook.md#create-bowtie-2-indices); but just checking on things before diving into things...
 ```bash
 #!/bin/bash
 #DONTRUN
@@ -2859,7 +2879,7 @@ list_tally_flags() {
         | sort \
         | uniq -c \
         | sort -nr \
-        > "${1/.bam/.flags.txt}" &
+            > "${1/.bam/.flags.txt}" &
     display_spinning_icon $! \
     "Running piped commands (samtools view, cut, sort, uniq -c, sort -nr) on $(basename "${1}")... "
         
@@ -3929,7 +3949,7 @@ STAR \
 ```
 
 <a id="how-are-other-groups-calling-star-with-s-cerevisiae"></a>
-##### How are other groups calling `STAR` with *S. cerevisiae*?
+#### How are other groups calling `STAR` with *S. cerevisiae*?
 One thing that is weird about [the 'rna-star' approach](https://groups.google.com/g/rna-star/c/hQeHTBbkc0c) is the very liberal allowance of mismatches: `--outFilterMismatchNmax 999`; why?
 
 From the `STAR` manual: `int: alignment will be output only if its ratio of mismatches to mapped length is less than this value`; also, in the ENCODE RNA-seq mapping pipeline, `--outFilterMismatchNmax 999`; essentially, they don't want to filter out alignments (at least, at this stage) based on mismatches
@@ -3937,7 +3957,7 @@ From the `STAR` manual: `int: alignment will be output only if its ratio of mism
 I did a [Google search for "outFilterMismatchNmax yeast"](https://www.google.com/search?q=outFilterMismatchNmax+yeast&oq=outFilterMismatchNmax+yeast&aqs=chrome..69i57j33i160l2.1850j0j7&sourceid=chrome&ie=UTF-8) and found `STAR` parameters for *S. cerevisiae* in several publications:
 
 <a id="dorfel-et-al-lyon-yeast-2017"></a>
-###### [Dorfel et al. (Lyon), Yeast 2017](https://onlinelibrary.wiley.com/doi/full/10.1002/yea.3211)
+##### [Dorfel et al. (Lyon), Yeast 2017](https://onlinelibrary.wiley.com/doi/full/10.1002/yea.3211)
 **RNA-Seq**  
 Total RNA was purified according to the RiboZero Gold Kit (Epicentre) and the RNA Clean and Concentration Kit (Zymo Resaearch). Libraries were generated, PCR amplified, purified using the Agencourt AMPure XP system (Beckman Coulter) and characterized on a high-sensitivity DNA assay (Agilent). The libraries were sequenced on the Illumina NextSeq platform in high-output mode, resulting in 76 single-end reads. For quality control, we used `FastQC (v0.11.3)` to generate diagnostic statistics of the data and used `Fastx (version 0.1)` to remove low-quality reads. Then we used `cutadapt (v1.7.1)` to identify and remove 3' adapter sequence (AGATCGGAAGAGCACACGTCT) from the reads, and clip the first base from the 5' end (options: `-O 6` `-m 25` `-n 1` `-e 0.15` `--cut 1`). `Bowtie (v1.1-1)` was used to identify and remove rRNA reads (option: `--seedlen = 23`). We used `STAR (v2.4.0j)` to align the RNA-Seq reads to the *S. cerevisiae* reference genome S288C (release R64-2-1) (options for `STAR`: `--outSAMstrandField intronMotif` `--outSAMunmapped Within` `--outFilterType BySJout` `--outFilterMultimapNmax 20` `--alignSJoverhangMin 8` `--alignSJDBoverhangMin 1` `--outFilterMismatchNmax 999` `--outFilterMismatchNoverLmax 0.04` `--alignIntronMin 0` `--alignIntronMax 5000` `--alignMatesGapMax 5000` `--outSAMattributes NH HI AS NM MD` `--outSAMtype BAM SortedByCoordinate` `--outFilterIntronMotifs RemoveNoncanonical`). `Cufflinks (v2.2.1)` was used to quantify RNA abundance at the gene level. We used `DESeq2` to perform differential expression analysis, comparing the following combinations: knock-out vs. wild type (WT), hNAA10 vs. WT, and hNAA10S37P vs. WT. Only genes with Benjamini–Hochberg-adjusted p-values <0.05 and log2 fold changes >1 or −1 are considered significantly differentially expressed. Telomeric regions are defined by taking the distal 40 kb regions of either end of the chromosomes.
 ```txt
@@ -3990,7 +4010,7 @@ My notes on the above: Above parameters are similar to the 'rna-star' parameters
                               standard SAM specifications); standard SAM tag
 ```
 <a id="jensen-et-al-jensen-nat-comm-2022"></a>
-###### [Jensen et al. (Jensen), *Nat Comm* 2022](https://www.nature.com/articles/s41467-022-33961-y)
+##### [Jensen et al. (Jensen), *Nat Comm* 2022](https://www.nature.com/articles/s41467-022-33961-y)
 **Transcriptome analysis**  
 All the raw sequencing reads were trimmed using `Trimmomatic` (46) to filter sequencing adapters and low-quality reads. The clean reads were aligned against yeast reference genome using `STAR` (47) with the parameters: "`--outFilterMultimapNmax 100` `--alignSJoverhangMin 8` `--alignSJDBoverhangMin 1` `--outFilterMismatchNmax 999` `--alignIntronMax 5000` `--alignMatesGapMax 5000` `--outSAMtype BAM Unsorted`". The genome reference and gene annotations of *Saccharomyces cerevisiae* (R64-1-1) were obtained from Ensembl. We used `HTSeq-count` (48) to calculate raw counts for each yeast gene, with the parameter "`-s reverse`" to specify the strand information of reads. We applied the TMM (trimmed mean of M values) method (49) implemented in `edgeR` package to normalize gene expressions. The TMM normalized RPKM (Reads Per Kilobase of transcript, per Million mapped reads) values were further log2 transformed to generate heatmaps and other plots using `pheatmap` and `ggplot2` (50).
 ```txt
@@ -4007,7 +4027,7 @@ All the raw sequencing reads were trimmed using `Trimmomatic` (46) to filter seq
 My notes on the above: Above parameters are similar to the 'rna-star' parameters
 ```
 <a id="software-and-parameter-settings-used-by-onestoprnaseq-v100"></a>
-###### [Software and parameter settings used by OneStopRNAseq v1.0.0](https://mccb.umassmed.edu/OneStopRNAseq/about.php)
+##### [Software and parameter settings used by OneStopRNAseq v1.0.0](https://mccb.umassmed.edu/OneStopRNAseq/about.php)
 `#NOTE` An interesting site; e.g., provides parameters for `rMATS`, `GSEA`, `deepTools bamCoverage`, etc.; keep an eye on this...
 ```bash
 STAR \
@@ -4044,7 +4064,7 @@ STAR \
                               01  1st mate unmapped, 2nd mapped
 ```
 <a id="mendoza-et-al-sci-adv-2022"></a>
-###### [Mendoza et al., *Sci Adv* 2022](https://www.science.org/doi/10.1126/sciadv.abj5688?url_ver=Z39.88-2003&rfr_id=ori:rid:crossref.org&rfr_dat=cr_pub%20%200pubmed)
+##### [Mendoza et al., *Sci Adv* 2022](https://www.science.org/doi/10.1126/sciadv.abj5688?url_ver=Z39.88-2003&rfr_id=ori:rid:crossref.org&rfr_dat=cr_pub%20%200pubmed)
 **RNA-seq analysis**  
 All RNA-seq data were prepared for analysis as follows. `NextSeq` sequencing data were demultiplexed using native applications on `BaseSpace`. Demultiplexed FASTQs were aligned by `RNA-STAR v.2.5.2` to the assembly `sacCer3` (parameters `--outFilterType BySJout` `--outFilterMultimapNmax 20` `--alignSJoverhangMin 8` `--alignSJDBoverhangMin 1` `--outFilterMismatchNmax 999` `--alignIntronMin 20` `--alignIntronMax 1000000`). Aligned reads were mapped to genomic features using `HTSeq v.0.6.1` after merging lanes of `NextSeq` (parameters `-r pos` `-s no` `-t exon` `-i gene_id`). Quantification, library size adjustment, and analysis of differential gene expression were done using DESeq2 and Wald’s test. Overlaps between lists of genes were tested for significance using a hypergeometric test (`phyper()` in R).
 ```txt
@@ -4057,11 +4077,12 @@ All RNA-seq data were prepared for analysis as follows. `NextSeq` sequencing dat
 --alignIntronMax 1000000
 ```
 <a id="velcro-ip-rna-seq-data-analysis-read-alignment-and-quantification"></a>
-###### [VELCRO-IP RNA-seq Data Analysis: Read Alignment and Quantification](https://bio-protocol.org/exchange/minidetail?type=30&id=10130019&utm_source=miniprotocol)
+##### [VELCRO-IP RNA-seq Data Analysis: Read Alignment and Quantification](https://bio-protocol.org/exchange/minidetail?type=30&id=10130019&utm_source=miniprotocol)
 First, for removal of adaptor sequences, low quality bases, and short reads, we use `cutadapt` (Martin, 2011) to trim Illumina adaptor sequences and < Q20 bases. Reads < 40 nt were removed. Parameters: `cutadapt` `-m 40` `-a AGATCGGAAGAGCACACGTCTGAACTCCAGTCAC` `-A AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTAGATCTCGGTGGTCGCCGTATCATT` `–nextseq-trim=20`. Next, for UMI extraction, we used `umi_tools` (Smith et al., 2017) to extract the UMI region (first 8 bases). Parameters: `umi_tools` `extract` `-–bc-pattern=NNNNNNNN` `-–bc-pattern2=NNNNNNNN`. We additionally remove 1 base from 5' end of the reads, which is the A/T nucleotide overhang from the ligation reaction during library preparation. For splice-aware alignment using `STAR` (Dobin et al., 2013), we used `STAR` to align the reads to a reference genome/transcriptome. `STAR` reference is built using a combination of yeast genome (sacCer3), mouse genome (mm10), mouse rDNA sequence (GenBank: GU372691), and mouse transcript annotations (GENCODE vM18). Only uniquely mapped reads were retained. Parameters: `STAR` `--sjdbOverhang 66` `--outFilterMultimapNmax 1` `--alignEndsType EndToEnd` `--alignIntronMax 1000000` `--alignMatesGapMax 1000000` `--alignIntronMin 20` `--outFilterMismatchNmax 999` `--alignSJDBoverhangMin 1` `--alignSJoverhangMin 8` `--outFilterType BySJout`. While the majority of the reads mapped to yeast mRNAs that we believe reflect background binding from the initial ribosome-IP (~20 million reads), 1–3% mapped to mouse mRNAs which corresponds to ~500,000 reads per sample. For deduplication using UMI, we used `umi_tools` to deduplicate the alignments. Deduplicated alignments are re-aligned using `STAR` and the same parameters as before. Parameters: `umi_tools` `dedup` `-–paired` `-–buffer-whole-contig`. For read quantification, we used `bedtools` (Quinlan and Hall, 2010) to count alignments over 200 nt sliding windows with step size of 100 nt across mouse genome.
 
-<a id="osman-et-al-cramer-jbc-202100523-8pdf"></a>
-###### [Osman et al. (Cramer), *JBC* 2021](https://www.jbc.org/article/S0021-9258(21)00523-8/pdf)
+<a id="osman-et-al-cramer-jbc-2021"></a>
+##### Osman et al. (Cramer), *JBC* 2021
+[Link to the paper](https://www.jbc.org/article/S0021-9258(21)00523-8/pdf)  
 **4tU-seq and bioinformatics analysis**  
 ... Cultures were then divided into four smaller cultures of 40 ml each and treated with either 1-NA-PP1 (40 mM in DMSO) to a final concentration of 6μM (two replicates), or an equal volume of DMSO (two replicates), and incubated for 12 min, followed by 5 min of 4tU labeling. 4tU labeling and subsequent extraction of labeled RNA was performed as described (82). For the heat shock experiment, a 300 ml culture was grown in the same way. The culture was then divided into two 140 ml cultures, to which either 1-NA-PP1 or DMSO was added in the same way as described for the steady-state growth experiment and incubated for 12 min. About 100 ml from each culture was diluted with 100 ml of 37 C warm media to exert heat shock. About 80 ml were extracted after 12 min of heat shock and labeled with 4tU for 5 min. The entire experiment was carried out in the same way twice to obtain two replicates. 4tU-Seq data analysis was performed (82) but with minor modifications. Briefly, the raw `fastq` files of paired-end 75 base reads (for steady-state experiment) and 42 base reads (for heat shock experiment) with additional six base reads of barcodes were obtained for each of the samples. Reads were demultiplexed, and low-quality bases (\<Q20) removed using `Cutadapt (version 1.9.1)` with parameters `−q 20,20 −o 12 −m 25` (83). Reads were then mapped to the *S. cerevisiae* genome (sacCer3, version 64.2.1) using `STAR 2.5.2b` (84) with parameters `--outFilterMismatchNmax 2 --outFilterMultimapScoreRange 0`. `Samtools` (85) was used to quality filter SAM files. Alignments with `MAPQ` smaller than 7 (`−q 7`) were skipped, and only proper pairs (`−f 2`) were selected. We used a spike-in (RNAs) normalization strategy (86) to allow for observation of global changes in the 4tU-Seq signal. Sequencing depth from spike-in RNAs was calculated for each sample j according to 
 
@@ -4071,7 +4092,6 @@ with read counts *k_ij* for the labeled spike-ins *i* in sample *j* and *l_i* fo
 
 <a id="run-star-alignment-retaining-multimappers-2022-1115-1116"></a>
 #### Run `STAR` alignment, retaining multimappers (2022-1115-1116)
-`#DEKHO`
 ```bash
 #!/bin/bash
 #DONTRUN
@@ -4419,7 +4439,6 @@ mv 4016030.* ./exp_alignment_STAR_multi-hit/
 
 <a id="writing-and-testing-split_bam_by_speciessh"></a>
 #### Writing and testing `split_bam_by_species.sh`
-`#DEKHO`
 <a id="use-split_bam_by_speciessh-to-get-vii-and-k-lactis-chromosomes-from-bam-files-2022-1116"></a>
 ##### Use `split_bam_by_species.sh` to get VII and *K. lactis* chromosomes from `.bam` files (2022-1116)
 ```bash
@@ -4776,23 +4795,6 @@ Running ../../bin/split_bam_by_species.sh...
 ```
 </details>
 
-What does the output look like when running the script with `-u FALSE`?
-```bash
-#!/bin/bash
-#DONTRUN
-
-if [[ -f "${dir_abbrev}/5781_G1_IN_mergedAligned.sortedByCoord.out.split_KL_all.bam" ]]; then
-    rm "${dir_abbrev}/5781_G1_IN_mergedAligned.sortedByCoord.out.split_KL_all.bam"
-fi
-
-bash ../../bin/split_bam_by_species.sh \
-    -u FALSE \
-    -i ${dir_abbrev}/5781_G1_IN_mergedAligned.sortedByCoord.out.bam \
-    -o ${dir_abbrev} \
-    -s KL_all \
-    -t 1
-```
-
 <a id="writing-and-testing-exclude_bam_reads-unmappedsh-2022-1117"></a>
 #### Writing and testing `exclude_bam_reads-unmapped.sh` (2022-1117)
 ```bash
@@ -4839,6 +4841,13 @@ Text printed to terminal from running `-u TRUE`
 <summary><i>Click here to expand</i></summary>
 
 ```txt
+# ❯ bash ../../bin/exclude_bam_reads-unmapped.sh \
+#     -u TRUE \
+#     -i "${dir_abbrev}/5781_G1_IN_mergedAligned.sortedByCoord.out.bam" \
+#     -o "${dir_abbrev}" \
+#     -f FALSE \
+#     -t 1
+
 Running ../../bin/exclude_bam_reads-unmapped.sh...
 -u: "Safe mode" is TRUE.
 + check_exists_file ./exp_alignment_STAR/files_bams/5781_G1_IN_mergedAligned.sortedByCoord.out.bam
@@ -4945,8 +4954,12 @@ samtools completed: Thu Nov 17 15:05:46 PST 2022
 ```
 </details>
 
-Did the filtering work correctly? Check the alignment counts and flag tallies
+Did the filtering work correctly? Check the alignment counts and flag tallies...
 ```bash
+#!/bin/bash
+#DONTRUN
+
+#  loggin in (grabnode), loading module(s), cd'ing, etc. in previous chunk
 samtools view -c "${dir_abbrev}/5781_G1_IN_mergedAligned.sortedByCoord.out.bam"
 # 27977684
 
@@ -4998,7 +5011,7 @@ list_tally_flags() {
         | sort \
         | uniq -c \
         | sort -nr \
-        > "${1/.bam/.flags.txt}" &
+            > "${1/.bam/.flags.txt}" &
     display_spinning_icon $! \
     "Running piped commands (samtools view, cut, sort, uniq -c, sort -nr) on $(basename "${1}")... "
         
@@ -5011,30 +5024,1219 @@ list_tally_flags() {
 list_tally_flags "${dir_abbrev}/5781_G1_IN_mergedAligned.sortedByCoord.out.bam"
 list_tally_flags "${dir_abbrev}/5781_G1_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.bam"
 ```
-Contents of `list_tally_flags` for `*.out.bam`
+
+Contents of `list_tally_flags` for `*.out.flags.txt`
 ```txt
-5276715 77
-5276715 141
-4691235 99
-4691235 147
-3755353 83
-3755353 163
- 152761 653
- 152761 589
-  62364 659
-  62364 611
-  50414 675
-  50414 595
-```
-Contents of `list_tally_flags` for `*.out.exclude-unmapped.bam`
-```txt
-5276715 77
-5276715 141
- 152761 653
- 152761 589
+5276715    77
+5276715    141
+4691235    99
+4691235    147
+3755353    83
+3755353    163
+ 152761    653
+ 152761    589
+  62364    659
+  62364    611
+  50414    675
+  50414    595
 ```
 
-`#NOTE` Cleary, there's an issue in which only the unmapped reads were retained, so probably need to change -f to -F
+Contents of `list_tally_flags` for `*.out.exclude-unmapped.flags.txt`
+```txt
+5276715    77
+5276715    141
+ 152761    653
+ 152761    589
+```
+
+Clearly, there's an issue in which only the unmapped reads were retained, so probably need to change `-f` to `-F` (2022-1117).
+
+After looking into things, that's indeed the case; I ended up filtering out all but unmapped reads, and this is because we called `samtools view` with argument `-f` and not `-F` (2022-1118).
+```bash
+#!/bin/bash
+#DONTRUN
+
+#  This is incorrect
+samtools view \
+    -@ "${threads}" \
+    -b -f 0x4 -f 0x8 \
+    "${infile}" \
+    -o "${outdir}/${outfile}"
+    check_exit $? "samtools"
+
+#  This is correct
+samtools view \
+    -@ "${threads}" \
+    -b -F 0x4 -F 0x8 \
+    "${infile}" \
+    -o "${outdir}/${outfile}"
+    check_exit $? "samtools"
+
+#  From help for `samtools view`
+#+ -f, --require-flags FLAG   ...have all of the FLAGs present
+#+ -F, --excl[ude]-flags FLAG ...have none of the FLAGs present
+```
+
+<a id="testing-the-updated-corrected-exclude_bam_reads-unmappedsh-2022-1118"></a>
+##### Testing the updated, corrected `exclude_bam_reads-unmapped.sh` (2022-1118)
+Have updated `exclude_bam_reads-unmapped.sh` appropriately. Now, rerun things:
+```bash
+#!/bin/bash
+#DONTRUN
+
+grabnode  # Lowest/default settings
+cd "${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1101/"
+
+module load SAMtools/1.16.1-GCC-11.2.0
+
+dir_abbrev="./exp_alignment_STAR/files_bams"
+
+if [[ -f "${dir_abbrev}/5781_G1_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.flags.txt" ]]; then
+    rm "${dir_abbrev}/5781_G1_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.flags.txt"
+fi
+
+if [[ ! -f "${dir_abbrev}/5781_G1_IN_mergedAligned.sortedByCoord.out.bam.bai" ]]; then
+    samtools index "${dir_abbrev}/5781_G1_IN_mergedAligned.sortedByCoord.out.bam"
+fi
+
+bash ../../bin/exclude_bam_reads-unmapped.sh
+# exclude_bam_alignments-unmapped.sh
+# ----------------------------------
+# Filter out unmapped alignments from a bam infile. Optionally, run samtools
+# flagstat on the filtered bam.
+
+# Name(s) of outfile(s) will be derived from the infile.
+
+# Dependencies:
+#   - samtools >= #TBD
+
+# Arguments:
+#   -h  print this help message and exit
+#   -u  use safe mode: "TRUE" or "FALSE" <lgl; default: FALSE>
+#   -i  bam infile, including path <chr>
+#   -o  outfile directory, including path; if not found, will be mkdir'd <chr>
+#   -f  run samtools flagstat on bams: "TRUE" or "FALSE" <lgl>
+#   -t  number of threads <int >= 1; default: 1>
+
+bash ../../bin/exclude_bam_reads-unmapped.sh \
+    -u TRUE \
+    -i "${dir_abbrev}/5781_G1_IN_mergedAligned.sortedByCoord.out.bam" \
+    -o "${dir_abbrev}" \
+    -f FALSE \
+    -t 1
+```
+
+Text printed to terminal from running `-u TRUE`
+<details>
+<summary><i>Click here to expand</i></summary>
+
+```txt
+# ❯ bash ../../bin/exclude_bam_reads-unmapped.sh \
+#     -u TRUE \
+#     -i "${dir_abbrev}/5781_G1_IN_mergedAligned.sortedByCoord.out.bam" \
+#     -o "${dir_abbrev}" \
+#     -f FALSE \
+#     -t 1
+
+-u: "Safe mode" is TRUE.
++ check_exists_file ./exp_alignment_STAR/files_bams/5781_G1_IN_mergedAligned.sortedByCoord.out.bam
++ what='
+    check_exists_file()
+    -------------------
+    Check that a file exists; exit if it doesn'\''t
+
+    :param 1: file, including path <chr>
+    :return: NA
+    '
++ [[ -z ./exp_alignment_STAR/files_bams/5781_G1_IN_mergedAligned.sortedByCoord.out.bam ]]
++ [[ ! -f ./exp_alignment_STAR/files_bams/5781_G1_IN_mergedAligned.sortedByCoord.out.bam ]]
++ :
++ check_exists_directory TRUE ./exp_alignment_STAR/files_bams
++ what='
+    check_exists_directory()
+    ------------------------
+    Check that a directory exists; if it doesn'\''t, then either make it or exit
+
+    :param 1: create directory if not found: TRUE or FALSE
+              <lgl; default: FALSE>
+    :param 2: directory, including path <chr>
+    '
++ case "$(convert_chr_lower "${1}")" in
+++ convert_chr_lower TRUE
+++ what='
+    convert_chr_lower()
+    -------------------
+    Convert alphabetical characters in a string to lowercase letters
+
+    :param 1: string <chr>
+    :return: converted string <stdout>
+    '
+++ [[ -z TRUE ]]
+++ string_in=TRUE
++++ tr '[:upper:]' '[:lower:]'
++++ printf %s TRUE
+++ string_out=true
+++ echo true
++ [[ -f ./exp_alignment_STAR/files_bams ]]
++ printf '%s\n' './exp_alignment_STAR/files_bams doesn'\''t exist; mkdir'\''ing it.'
+./exp_alignment_STAR/files_bams doesn't exist; mkdir'ing it.
++ mkdir -p ./exp_alignment_STAR/files_bams
++ check_argument_flagstat
++ case "$(echo "$(convert_chr_lower "${flagstat}")")" in
++++ convert_chr_lower FALSE
++++ what='
+    convert_chr_lower()
+    -------------------
+    Convert alphabetical characters in a string to lowercase letters
+
+    :param 1: string <chr>
+    :return: converted string <stdout>
+    '
++++ [[ -z FALSE ]]
++++ string_in=FALSE
+++++ tr '[:upper:]' '[:lower:]'
+++++ printf %s FALSE
++++ string_out=false
++++ echo false
+++ echo false
++ flagstat=0
++ printf '%s\n' '"Run samtools flagstat" is FALSE.'
+"Run samtools flagstat" is FALSE.
++ check_argument_threads
++ what='
+    check_argument_threads()
+    ---------------
+    Check the value assigned to "${threads}" in script; assumes variable
+    "${threads}" is defined
+
+    :param "${threads}": value assigned to variable within script <int >= 1>
+    :return: NA
+
+    #TODO Checks...
+    '
++ case "${threads}" in
++ :
++ echo ''
+
+++ basename ./exp_alignment_STAR/files_bams/5781_G1_IN_mergedAligned.sortedByCoord.out.bam
++ base=5781_G1_IN_mergedAligned.sortedByCoord.out.bam
++ outfile=5781_G1_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.bam
++ main
++ echo ''
+
++ echo 'Running ../../bin/exclude_bam_reads-unmapped.sh... '
+Running ../../bin/exclude_bam_reads-unmapped.sh...
++ echo 'Filtering out unmapped...'
+Filtering out unmapped...
++ samtools view -@ 1 -b -F 0x4 -F 0x8 ./exp_alignment_STAR/files_bams/5781_G1_IN_mergedAligned.sortedByCoord.out.bam -o ./exp_alignment_STAR/files_bams/5781_G1_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.bam
++ check_exit 0 samtools
++ what='
+    check_exit()
+    ------------
+    Check the exit code of a child process
+
+    :param 1: exit code <int >= 0>
+    :param 2: program/package <chr>
+
+    #TODO Check that params are not empty or inappropriate formats or strings
+    '
++ [[ 0 == \0 ]]
+++ date
++ echo 'samtools completed: Fri Nov 18 10:19:34 PST 2022'
+samtools completed: Fri Nov 18 10:19:34 PST 2022
++ [[ 0 -eq 1 ]]
+```
+</details>
+
+Now, check the alignment counts and flag tallies again...
+
+Related to this, have added `calculate_run_time()`, `display_spinning_icon()`, and `list_tally_flags()` to `./2022_transcriptome-construction/bin/functions.sh`; from here on out, will source this to run those functions
+
+```bash
+#!/bin/bash
+#DONTRUN
+
+grabnode  # Lowest/default settings
+cd "${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1101"
+
+module load SAMtools/1.16.1-GCC-11.2.0
+
+source ../../bin/functions.sh
+# declare -F  # Yes, they're loaded into the environment
+
+dir_abbrev="./exp_alignment_STAR/files_bams"
+
+list_tally_flags "${dir_abbrev}/5781_G1_IN_mergedAligned.sortedByCoord.out.bam"
+list_tally_flags "${dir_abbrev}/5781_G1_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.bam"
+```
+
+Contents of `list_tally_flags` for `*.out.flags.txt`
+```txt
+5276715    77
+5276715    141
+4691235    99
+4691235    147
+3755353    83
+3755353    163
+ 152761    653
+ 152761    589
+  62364    659
+  62364    611
+  50414    675
+  50414    595
+```
+
+Contents of `list_tally_flags` for `*.out.exclude-unmapped.flags.txt`
+```txt
+4691235    99
+4691235    147
+3755353    83
+3755353    163
+  62364    659
+  62364    611
+  50414    675
+  50414    595
+```
+It works!
+
+<a id="run-the-updated-corrected-exclude_bam_reads-unmappedsh-on-the-multi-hit-mode-bam"></a>
+##### Run the updated, corrected `exclude_bam_reads-unmapped.sh` on the "multi-hit mode" `.bam`
+```bash
+#!/bin/bash
+#DONTRUN
+
+grabnode  # Lowest/default settings
+cd "${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1101/"
+
+source ../../bin/functions.sh
+
+module load SAMtools/1.16.1-GCC-11.2.0
+
+dir_abbrev="./exp_alignment_STAR_multi-hit/files_bams"
+
+if [[ -f "${dir_abbrev}/5781_G1_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.flags.txt" ]]; then
+    rm "${dir_abbrev}/5781_G1_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.flags.txt"
+fi
+
+if [[ ! -f "${dir_abbrev}/5781_G1_IN_mergedAligned.sortedByCoord.out.bam.bai" ]]; then
+    samtools index "${dir_abbrev}/5781_G1_IN_mergedAligned.sortedByCoord.out.bam"
+fi
+
+bash ../../bin/exclude_bam_reads-unmapped.sh \
+    -u FALSE \
+    -i "${dir_abbrev}/5781_G1_IN_mergedAligned.sortedByCoord.out.bam" \
+    -o "${dir_abbrev}" \
+    -f TRUE \
+    -t 1
+```
+
+Printed to screen while running the above:
+```txt
+# ❯ bash ../../bin/exclude_bam_reads-unmapped.sh \
+#     -u FALSE \
+#     -i "${dir_abbrev}/5781_G1_IN_mergedAligned.sortedByCoord.out.bam" \
+#     -o "${dir_abbrev}" \
+#     -f TRUE \
+#     -t 1
+
+"Safe mode" is FALSE.
+./exp_alignment_STAR_multi-hit/files_bams doesn't exist; mkdir'ing it.
+"Run samtools flagstat" is TRUE.
+
+
+Running ../../bin/exclude_bam_reads-unmapped.sh...
+Filtering out unmapped reads...
+samtools completed: Fri Nov 18 12:20:58 PST 2022
+samtools completed: Fri Nov 18 12:20:58 PST 2022
+```
+`#TODO` Need to fix the `./exp_alignment_STAR_multi-hit/files_bams doesn't exist; mkdir'ing it.` message
+
+<a id="another-look-at-the-metrics-and-flags-from-the-two-star-alignment-approaches-2022-1118"></a>
+#### Another look at the metrics and flags from the two `STAR` alignment approaches (2022-1118)
+<a id="some-readouts-for-the-rna-star-and-multi-hit-mode-bam-files"></a>
+##### Some readouts for the 'rna-star' and 'multi-hit-mode' `.bam` files
+*'rna-star'*
+![Metrics: 'rna-star'](./notebook/alignment.rna-star-parameters.metrics.png)
+*'multi-hit mode'*
+![Metrics: 'multi-hit mode'](./notebook/alignment.multi-hit-mode-parameters.metrics.png)
+*'rna-star'*
+![Flag tallies: 'rna-star'](./notebook/alignment.rna-star-parameters.list-tally-flags.png)
+*'multi-hit mode'*
+![Flag tallies: 'multi-hit mode'](./notebook/alignment.multi-hit-mode-parameters.list-tally-flags.png)
+
+```bash
+#!bin/bash
+#DONTRUN
+
+grabnode  # Lowest/default settings
+cd "${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1101/"
+
+module load SAMtools/1.16.1-GCC-11.2.0
+
+samtools view -c \
+    exp_alignment_STAR_multi-hit/files_bams/5781_G1_IN_mergedAligned.sortedByCoord.out.bam
+# 103982224
+
+samtools view -c \
+    exp_alignment_STAR/files_bams/5781_G1_IN_mergedAligned.sortedByCoord.out.bam
+# 27977684
+```
+
+<a id="some-readouts-for-the-rna-star-and-multi-hit-mode-bam-files-filtered-with-exclude_bam_reads-unmappedsh"></a>
+##### Some readouts for the 'rna-star' and 'multi-hit-mode' `.bam` files filtered with `exclude_bam_reads-unmapped.sh`
+```bash
+#!bin/bash
+#DONTRUN
+
+grabnode  # Lowest/default settings
+cd "${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1101/"
+
+source ../../bin/functions.sh
+
+module load SAMtools/1.16.1-GCC-11.2.0
+
+bam="5781_G1_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.bam"
+bam_rna_star="./exp_alignment_STAR/files_bams/${bam}"
+bam_multi_hit="./exp_alignment_STAR_multi-hit/files_bams/${bam}"
+
+
+#  Counting the numbers of alignments -----------------------------------------
+samtools view -c "${bam_rna_star}"
+# Pre-filtering: 27977684
+# Post-filtering: 17118732
+echo $(( 27977684 - 17118732 ))  # 10858952
+
+samtools view -c "${bam_multi_hit}"
+# Pre-filtering: 103982224
+# Post-filtering: 103125500
+echo $(( 103982224 - 103125500 ))  # 856724
+
+
+#  Collecting flag stats ------------------------------------------------------
+samtools flagstat "${bam_rna_star}" > "${bam_rna_star%.bam}.flagstat.txt"
+# 16893176 + 225556 in total (QC-passed reads + QC-failed reads)
+# 16893176 + 225556 primary
+# 0 + 0 secondary
+# 0 + 0 supplementary
+# 0 + 0 duplicates
+# 0 + 0 primary duplicates
+# 16893176 + 225556 mapped (100.00% : 100.00%)
+# 16893176 + 225556 primary mapped (100.00% : 100.00%)
+# 16893176 + 225556 paired in sequencing
+# 8446588 + 112778 read1
+# 8446588 + 112778 read2
+# 16893176 + 225556 properly paired (100.00% : 100.00%)
+# 16893176 + 225556 with itself and mate mapped
+# 0 + 0 singletons (0.00% : 0.00%)
+# 0 + 0 with mate mapped to a different chr
+# 0 + 0 with mate mapped to a different chr (mapQ>=5)
+echo $(( 16893176 + 225556 ))  # 17118732
+
+samtools flagstat "${bam_multi_hit}" > "${bam_multi_hit%.bam}.flagstat.txt"
+# 101853252 + 1272248 in total (QC-passed reads + QC-failed reads)
+# 26772688 + 348272 primary
+# 75080564 + 923976 secondary
+# 0 + 0 supplementary
+# 0 + 0 duplicates
+# 0 + 0 primary duplicates
+# 101853252 + 1272248 mapped (100.00% : 100.00%)
+# 26772688 + 348272 primary mapped (100.00% : 100.00%)
+# 26772688 + 348272 paired in sequencing
+# 13386344 + 174136 read1
+# 13386344 + 174136 read2
+# 26772688 + 348272 properly paired (100.00% : 100.00%)
+# 26772688 + 348272 with itself and mate mapped
+# 0 + 0 singletons (0.00% : 0.00%)
+# 0 + 0 with mate mapped to a different chr
+# 0 + 0 with mate mapped to a different chr (mapQ>=5)
+echo $(( 26772688 + 348272 ))  # 27120960
+
+
+#  List and tally the flags ---------------------------------------------------
+list_tally_flags "${bam_rna_star}"
+#  4691235    99     primary alignment
+#  4691235    147    primary alignment
+#  3755353    83     primary alignment
+#  3755353    163    primary alignment
+#    62364    659    read fails
+#    62364    611    read fails
+#    50414    675    read fails
+#    50414    595    read fails
+
+list_tally_flags "${bam_multi_hit}"
+# 19948030    419    not primary alignment
+# 19948030    339    not primary alignment
+# 17592252    403    not primary alignment
+# 17592252    355    not primary alignment
+#  7217590    83     primary alignment
+#  7217590    163    primary alignment
+#  6168754    99     primary alignment
+#  6168754    147    primary alignment
+#   248080    931    not primary alignment    read fails
+#   248080    851    not primary alignment    read fails
+#   213908    915    not primary alignment    read fails
+#   213908    867    not primary alignment    read fails
+#    94722    675    read fails
+#    94722    595    read fails
+#    79414    659    read fails
+#    79414    611    read fails
+```
+
+<a id="rerun-star-alignment-approaches-and-metric-checks-while-collecting-all-tags-in-bam-files"></a>
+### Rerun `STAR` alignment approaches and metric-checks while collecting all tags in `.bam` files
+```bash
+#!/bin/bash
+#DONTRUN
+
+
+#  Get started ----------------------------------------------------------------
+grabnode  # Lowest/default settings
+cd "${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1101/"
+mkdir -p exp_alignment_STAR_tags/{rna-star,multi-hit-mode}/files_bams
+
+module load STAR/2.7.9a-GCC-11.2.0
+module load SAMtools/1.16.1-GCC-11.2.0
+
+#  Find and list .fastq files; designate the 'prefix' and other variables
+unset infiles
+typeset -a infiles
+while IFS=" " read -r -d $'\0'; do
+    infiles+=( "${REPLY}" )
+done < <(\
+    find . \
+        -type l \
+        -name *578*merged*.fastq \
+        -print0 \
+            | sort -z \
+)
+
+
+
+#  'rna-star' -----------------------------------------------------------------
+read_1="${infiles[0]}"
+read_2="${infiles[1]}"
+genome_dir="${HOME}/genomes/combined_SC_KL_20S/STAR"
+prefix="./exp_alignment_STAR_tags/rna-star/files_bams/$(basename "${read_1%_R?.fastq}")"
+echo "${prefix}"
+
+#  Run the alignment
+if [[ -f "./submit-STAR-alignReads.tags.rna-star.sh" ]]; then
+    rm "./submit-STAR-alignReads.tags.rna-star.sh"
+fi
+
+cat << script > "./submit-STAR-alignReads.tags.rna-star.sh"
+#!/bin/bash
+
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=8
+#SBATCH --error=./%J.err.txt
+#SBATCH --output=./%J.out.txt
+
+#  submit-STAR-alignReads.tags.rna-star.sh
+#  KA
+
+genome_dir="\${1}"
+read_1="\${2}"
+read_2="\${3}"
+prefix="\${4}"
+
+#IMPORTANT 1/2 --alignEndsType defaults to "Local"; when we run STAR alignment
+#IMPORTANT 2/2 in multi-hit mode, --alignEndsType is set to "EndToEnd"
+
+#  From the STAR manual:
+# --alignEndsType
+#
+#    default: Local
+#
+#    string: type of read ends alignment
+#
+#       Local
+#           standard local alignment with soft-clipping allowed
+#       EndToEnd
+#           force end-to-end read alignment, do not soft-clip
+#       Extend5pOfRead1
+#           fully extend only the 5p of the read1, all other ends: local alignment
+#       Extend5pOfReads12
+#           fully extend only the 5p of the both read1 and read2, all other ends: local alignment
+
+STAR \\
+    --runMode alignReads \\
+    --runThreadN "\${SLURM_CPUS_ON_NODE}" \\
+    --outSAMtype BAM SortedByCoordinate \\
+    --outSAMunmapped Within \\
+    --outSAMattributes All \\
+    --genomeDir "\${genome_dir}" \\
+    --readFilesIn "\${read_1}" "\${read_2}" \\
+    --outFileNamePrefix "\${prefix}" \\
+    --limitBAMsortRAM 4000000000 \\
+    --outFilterMultimapNmax 1 \\
+    --alignSJoverhangMin 8 \\
+    --alignSJDBoverhangMin 1 \\
+    --outFilterMismatchNmax 999 \\
+    --alignIntronMin 4 \\
+    --alignIntronMax 5000 \\
+    --alignMatesGapMax 5000
+script
+
+sbatch ./submit-STAR-alignReads.tags.rna-star.sh \
+    "${genome_dir}" \
+    "${read_1}" \
+    "${read_2}" \
+    "${prefix}"
+
+
+#  'multi-hit mode' -----------------------------------------------------------
+read_1="${infiles[0]}"
+read_2="${infiles[1]}"
+genome_dir="${HOME}/genomes/combined_SC_KL_20S/STAR"
+prefix="./exp_alignment_STAR_tags/multi-hit-mode/files_bams/$(basename "${read_1%_R?.fastq}")"
+echo "${read_1}"
+echo "${read_2}"
+echo "${genome_dir}"
+echo "${prefix}"
+
+#  Run the alignment
+if [[ -f "./submit-STAR-alignReads.tags.multi-hit-mode.sh" ]]; then
+    rm "./submit-STAR-alignReads.tags.multi-hit-mode.sh"
+fi
+
+cat << script > "./submit-STAR-alignReads.tags.multi-hit-mode.sh"
+#!/bin/bash
+
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=8
+#SBATCH --error=./%J.err.txt
+#SBATCH --output=./%J.out.txt
+
+#  submit-STAR-alignReads.tags.multi-hit-mode.sh
+#  KA
+
+genome_dir="\${1}"
+read_1="\${2}"
+read_2="\${3}"
+prefix="\${4}"
+
+STAR \\
+    --runMode alignReads \\
+    --runThreadN "\${SLURM_CPUS_ON_NODE}" \\
+    --outSAMtype BAM SortedByCoordinate \\
+    --outSAMunmapped Within \\
+    --outSAMattributes All \\
+    --genomeDir "\${genome_dir}" \\
+    --readFilesIn "\${read_1}" "\${read_2}" \\
+    --outFileNamePrefix "\${prefix}" \\
+    --limitBAMsortRAM 4000000000 \\
+    --outFilterMultimapNmax 1000 \\
+    --winAnchorMultimapNmax 1000 \\
+    --alignSJoverhangMin 8 \\
+    --alignSJDBoverhangMin 1 \\
+    --outFilterMismatchNmax 999 \\
+    --outMultimapperOrder Random \\
+    --alignEndsType EndToEnd \\
+    --alignIntronMin 4 \\
+    --alignIntronMax 5000 \\
+    --alignMatesGapMax 5000
+script
+
+sbatch submit-STAR-alignReads.tags.multi-hit-mode.sh \
+    "${genome_dir}" \
+    "${read_1}" \
+    "${read_2}" \
+    "${prefix}"
+
+
+#  Filtering out unmapped reads -----------------------------------------------
+bam_unfilt="5781_G1_IN_mergedAligned.sortedByCoord.out.bam"
+bam_rna_star_unfilt="./exp_alignment_STAR_tags/rna-star/files_bams/${bam_unfilt}"
+bam_multi_hit_unfilt="./exp_alignment_STAR_tags/multi-hit-mode/files_bams/${bam_unfilt}"
+
+samtools index "${bam_rna_star_unfilt}"
+samtools index "${bam_multi_hit_unfilt}"
+
+for i in "${bam_rna_star_unfilt}" "${bam_multi_hit_unfilt}"; do
+    bash ../../bin/exclude_bam_reads-unmapped.sh \
+        -u FALSE \
+        -i "${i}" \
+        -o "$(dirname ${i})" \
+        -f TRUE \
+        -t 1
+done
+
+
+#  Collect metrics for unfiltered and filtered bam files ----------------------
+source ../../bin/functions.sh
+
+for i in \
+    "${bam_rna_star_unfilt}" "${bam_multi_hit_unfilt}" \
+    "${bam_rna_star_unfilt%.bam}.exclude-unmapped.bam" \
+    "${bam_multi_hit_unfilt%.bam}.exclude-unmapped.bam";
+do
+    echo "Working with ${i}"
+    samtools view -c "${i}"
+
+    list_tally_flags "${i}"
+    echo ""
+done
+
+cd exp_alignment_STAR_tags/multi-hit-mode/files_bams
+samtools flagstat \
+    "5781_G1_IN_mergedAligned.sortedByCoord.out.bam" \
+        > "5781_G1_IN_mergedAligned.sortedByCoord.out.flagstat.txt"
+
+cd ../../rna-star/files_bams
+samtools flagstat \
+    "5781_G1_IN_mergedAligned.sortedByCoord.out.bam" \
+        > "5781_G1_IN_mergedAligned.sortedByCoord.out.flagstat.txt"
+
+```
+
+Metrics for unfiltered and filtered `.bam` files
+```txt
+rna-star/5781_G1_IN_mergedAligned.sortedByCoord.out.bam -----------------------
+counts: 27977684
+
+ 5276715    77
+ 5276715    141
+ 4691235    99
+ 4691235    147
+ 3755353    83
+ 3755353    163
+  152761    653
+  152761    589
+   62364    659
+   62364    611
+   50414    675
+   50414    595
+
+27446606 + 531078 in total (QC-passed reads + QC-failed reads)
+27446606 + 531078 primary
+0 + 0 secondary
+0 + 0 supplementary
+0 + 0 duplicates
+0 + 0 primary duplicates
+16893176 + 225556 mapped (61.55% : 42.47%)
+16893176 + 225556 primary mapped (61.55% : 42.47%)
+27446606 + 531078 paired in sequencing
+13723303 + 265539 read1
+13723303 + 265539 read2
+16893176 + 225556 properly paired (61.55% : 42.47%)
+16893176 + 225556 with itself and mate mapped
+0 + 0 singletons (0.00% : 0.00%)
+0 + 0 with mate mapped to a different chr
+0 + 0 with mate mapped to a different chr (mapQ>=5)
+
+
+multi-hit-mode/5781_G1_IN_mergedAligned.sortedByCoord.out.bam -----------------
+counts: 103982224
+
+19947904    419
+19947904    339
+17592378    403
+17592378    355
+ 7217716    83
+ 7217716    163
+ 6168628    99
+ 6168628    147
+  336959    77
+  336959    141
+  248130    931
+  248130    851
+  213858    915
+  213858    867
+   94672    675
+   94672    595
+   91403    653
+   91403    589
+   79464    659
+   79464    611
+
+102527170 + 1455054 in total (QC-passed reads + QC-failed reads)
+27446606 + 531078 primary
+75080564 + 923976 secondary
+0 + 0 supplementary
+0 + 0 duplicates
+0 + 0 primary duplicates
+101853252 + 1272248 mapped (99.34% : 87.44%)
+26772688 + 348272 primary mapped (97.54% : 65.58%)
+27446606 + 531078 paired in sequencing
+13723303 + 265539 read1
+13723303 + 265539 read2
+26772688 + 348272 properly paired (97.54% : 65.58%)
+26772688 + 348272 with itself and mate mapped
+0 + 0 singletons (0.00% : 0.00%)
+0 + 0 with mate mapped to a different chr
+0 + 0 with mate mapped to a different chr (mapQ>=5)
+
+
+rna-star/5781_G1_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.bam ------
+counts: 17118732
+
+ 4691235    99
+ 4691235    147
+ 3755353    83
+ 3755353    163
+   62364    659
+   62364    611
+   50414    675
+   50414    595
+
+16893176 + 225556 in total (QC-passed reads + QC-failed reads)
+16893176 + 225556 primary
+0 + 0 secondary
+0 + 0 supplementary
+0 + 0 duplicates
+0 + 0 primary duplicates
+16893176 + 225556 mapped (100.00% : 100.00%)
+16893176 + 225556 primary mapped (100.00% : 100.00%)
+16893176 + 225556 paired in sequencing
+8446588 + 112778 read1
+8446588 + 112778 read2
+16893176 + 225556 properly paired (100.00% : 100.00%)
+16893176 + 225556 with itself and mate mapped
+0 + 0 singletons (0.00% : 0.00%)
+0 + 0 with mate mapped to a different chr
+0 + 0 with mate mapped to a different chr (mapQ>=5)
+
+
+rna-star/5781_G1_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.bam ------
+counts: 103125500
+
+19947904    419
+19947904    339
+17592378    403
+17592378    355
+ 7217716    83
+ 7217716    163
+ 6168628    99
+ 6168628    147
+  248130    931
+  248130    851
+  213858    915
+  213858    867
+   94672    675
+   94672    595
+   79464    659
+   79464    611
+
+101853252 + 1272248 in total (QC-passed reads + QC-failed reads)
+26772688 + 348272 primary
+75080564 + 923976 secondary
+0 + 0 supplementary
+0 + 0 duplicates
+0 + 0 primary duplicates
+101853252 + 1272248 mapped (100.00% : 100.00%)
+26772688 + 348272 primary mapped (100.00% : 100.00%)
+26772688 + 348272 paired in sequencing
+13386344 + 174136 read1
+13386344 + 174136 read2
+26772688 + 348272 properly paired (100.00% : 100.00%)
+26772688 + 348272 with itself and mate mapped
+0 + 0 singletons (0.00% : 0.00%)
+0 + 0 with mate mapped to a different chr
+0 + 0 with mate mapped to a different chr (mapQ>=5)
+```
+
+<a id="establishing-how-to-call-trinity-in-genome-free-and--guided-modes"></a>
+### Establishing how to call `Trinity` in genome-free and -guided modes
+`#DEKHO`
+
+<a id="how-allison-called-trinity-in-genome-guided-mode"></a>
+#### How Allison called `Trinity` in genome-guided mode
+```bash
+Trinity \
+    --genome_guided_bam "\${file}" \
+    --CPU "\${SLURM_CPUS_ON_NODE}" \
+    --max_memory 50G \
+    --SS_lib_type FR \
+    --normalize_max_read_cov 200 \
+    --jaccard_clip \
+    --genome_guided_max_intron 1002 \
+    --min_kmer_cov 2 \
+    --max_reads_per_graph 500000 \
+    --min_glue 2 \
+    --group_pairs_distance 700 \
+    --min_contig_length 200 \
+    --full_cleanup \
+    --output "./trinity_\${file%.bam}"
+```
+
+Meaning of parameters (copied from my notes [here](#meaning-of-trinity-parameters-used) and expanded upon):
+- `--genome_guided_bam`: "If a genome sequence is available, `Trinity` offers a method whereby reads are first aligned to the genome, partitioned according to locus, followed by *de novo* transcriptome assembly at each locus" ([more info](https://github.com/trinityrnaseq/trinityrnaseq/wiki/Genome-Guided-Trinity-Transcriptome-Assembly))
+    - "In this use-case, the genome is only being used as a substrate for grouping overlapping reads into clusters that will then be separately fed into Trinity for *de novo* transcriptome assembly."
+    - "This is very much *unlike* typical genome-guided approaches (e.g., cufflinks) where aligned reads are stitched into transcript structures and where transcript sequences are reconstructed based on the reference genome sequence."
+    - "Here, transcripts are reconstructed based on the actual read sequences."
+- `--max_memory`: suggested max memory to use by Trinity, where limiting can be enabled
+- `--SS_lib_type`: if paired, RF or FR (dUTP method = RF); if single, F or R; this means that left-end reads are on the forward strand and right-end reads are on the reverse strand
+- `--normalize_max_read_cov`: defaults to 200, an *in silico* read normalization option
+    - `#QUESTION` Does it mean that it sets the maximum coverage to 200x?
+    - `#ANSWER` It means that <mark>"poorly covered regions \[are\] unchanged, but reads \[are\] down-sampled in high-coverage regions"</mark> (see slide 16 [here](https://biohpc.cornell.edu/lab/doc/Trinity_workshop.pdf))
+    - "May end up using just 20% of all reads reducing computational burden with no impact on assembly quality"
+    - `#NOTE` This normalization method has "mixed reviews" – \[it\] tends to skip whole genes
+- `--jaccard_clip`: set if you have paired reads and you expect high gene density with UTR overlap (use `.fastq` input file format for reads)
+    - `#QUESTION` Our input appears to be a bam; does this affect things?
+    - `#ANSWER` Forget where I saw the answer (probably recorded it somewhere in here or a previous notebook), but the answer is --jaccard_clip is applicable to the `.bam` infile in genome-guided mode 
+- `--genome_guided_max_intron`: "...use a maximum intron length that makes most sense given your targeted organism" ([more info](https://github.com/trinityrnaseq/trinityrnaseq/wiki/Genome-Guided-Trinity-Transcriptome-Assembly))
+- `--min_kmer_cov`: with a setting of 2, it means that singleton k-mers will not be included in initial Inchworm contigs (suggested by the Trinity team)
+- `--max_reads_per_graph`: maximum number of reads to anchor within a single graph (default: 200000)
+- `--min_glue`: min number of reads needed to glue two inchworm contigs together. (default: 2)
+- `--group_pairs_distance`: maximum length expected between fragment pairs (default: 500) (reads outside this distance are treated as single-end)
+- `--min_contig_length`: minimum assembled contig length to report (def=200, must be >= 100)
+- `--full_cleanup`: only retain the Trinity fasta file, rename as `${output_dir}.Trinity.fasta`
+- `--output`: name of directory for output (will be created if it doesn't already exist) default( your current working directory: `/usr/local/src/trinity_out_dir` note: must include 'trinity' in the name as a safety precaution! )
+
+<a id="parameters-called-out-by-name-in-mcilwain-et-al-g3-2016"></a>
+#### Parameters called out by name in McIlwain et al., *G3* 2016
+```txt
+--min_kmer_cov 32  # Inchworm stage
+--min_glue 4
+--min_iso_ratio 0.01
+--glue_factor 0.01  # Chrysalis stage
+```
+Meaning of parameters (in some cases, again)
+- `--min_kmer_cov`: with a setting of 2, it means that singleton k-mers will not be included in initial Inchworm contigs (suggested by the Trinity team)
+- `--min_glue`: min number of reads needed to glue two inchworm contigs together. (default: 2)
+- `--min_iso_ratio`
+    + `#QUESTION` It looks like `--min_iso_ratio` is no longer a tunable parameter, or is it just a hidden parameter?
+    + `#ANSWER` It looks like it's a hidden parameter (or accidentally not shown) parameter per line 135 of Trinity: `my $min_iso_ratio = 0.05;`
+
+<a id="trinityrnaseq-users-google-group-post-on-the-above"></a>
+##### trinityrnaseq-users Google Group post on the above
+Careful explanation of the above three parameters at [this link](https://groups.google.com/g/trinityrnaseq-users/c/WXgkAFWdNyY/m/1zngojPWAAAJ)
+
+<a id="trinity---show_full_usage_info"></a>
+#### `Trinity --show_full_usage_info`
+
+```txt
+###############################################################################
+#
+
+     ______  ____   ____  ____   ____  ______  __ __
+    |      ||    \ |    ||    \ |    ||      ||  |  |
+    |      ||  D  ) |  | |  _  | |  | |      ||  |  |
+    |_|  |_||    /  |  | |  |  | |  | |_|  |_||  ~  |
+      |  |  |    \  |  | |  |  | |  |   |  |  |___, |
+      |  |  |  .  \ |  | |  |  | |  |   |  |  |     |
+      |__|  |__|\_||____||__|__||____|  |__|  |____/
+
+    Trinity-v2.12.0
+
+
+#
+#
+# Required:
+#
+#  --seqType <string>      :type of reads: ('fa' or 'fq')
+#
+#  --max_memory <string>      :suggested max memory to use by Trinity where limiting can be enabled. (jellyfish, sorting, etc)
+#                            provided in Gb of RAM, ie.  '--max_memory 10G'
+#
+#  If paired reads:
+#      --left  <string>    :left reads, one or more file names (separated by commas, no spaces)
+#      --right <string>    :right reads, one or more file names (separated by commas, no spaces)
+#
+#  Or, if unpaired reads:
+#      --single <string>   :single reads, one or more file names, comma-delimited (note, if single file contains pairs, can use flag: --run_as_paired )
+#
+#  Or,
+#      --samples_file <string>         tab-delimited text file indicating biological replicate relationships.
+#                                   ex.
+#                                        cond_A    cond_A_rep1    A_rep1_left.fq    A_rep1_right.fq
+#                                        cond_A    cond_A_rep2    A_rep2_left.fq    A_rep2_right.fq
+#                                        cond_B    cond_B_rep1    B_rep1_left.fq    B_rep1_right.fq
+#                                        cond_B    cond_B_rep2    B_rep2_left.fq    B_rep2_right.fq
+#
+#                      # if single-end instead of paired-end, then leave the 4th column above empty.
+#
+####################################
+##  Misc:  #########################
+#
+#  --include_supertranscripts      :yield supertranscripts fasta and gtf files as outputs.
+#
+#  --SS_lib_type <string>          :Strand-specific RNA-Seq read orientation.
+#                                   if paired: RF or FR,
+#                                   if single: F or R.   (dUTP method = RF)
+#                                   See web documentation.
+#
+#  --CPU <int>                     :number of CPUs to use, default: 2
+#  --min_contig_length <int>       :minimum assembled contig length to report
+#                                   (def=200)
+#
+#  --long_reads <string>           :fasta file containing error-corrected or circular consensus (CCS) pac bio reads
+#                                   (** note: experimental parameter **, this functionality continues to be under development)
+#
+#  --genome_guided_bam <string>    :genome guided mode, provide path to coordinate-sorted bam file.
+#                                   (see genome-guided param section under --show_full_usage_info)
+#
+#  --long_reads_bam <string>       :long reads to include for genome-guided Trinity
+#                                  (bam file consists of error-corrected or circular consensus (CCS) pac bio read aligned to the genome)
+#
+#  --jaccard_clip                  :option, set if you have paired reads and
+#                                   you expect high gene density with UTR
+#                                   overlap (use FASTQ input file format
+#                                   for reads).
+#                                   (note: jaccard_clip is an expensive
+#                                   operation, so avoid using it unless
+#                                   necessary due to finding excessive fusion
+#                                   transcripts w/o it.)
+#
+#  --trimmomatic                   :run Trimmomatic to quality trim reads
+#                                        see '--quality_trimming_params' under full usage info for tailored settings.
+#
+#  --output <string>               :name of directory for output (will be
+#                                   created if it doesn't already exist)
+#                                   default( your current working directory: "/fh/fast/tsukiyama_t/grp/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101/trinity_out_dir"
+#                                    note: must include 'trinity' in the name as a safety precaution! )
+#
+#  --full_cleanup                  :only retain the Trinity fasta file, rename as ${output_dir}.Trinity.fasta
+#
+#  --cite                          :show the Trinity literature citation
+#
+#  --verbose                       :provide additional job status info during the run.
+#
+#  --version                       :reports Trinity version (Trinity-v2.12.0) and exits.
+#
+#  --show_full_usage_info          :show the many many more options available for running Trinity (expert usage).
+
+#
+#  --no_super_reads                :turn off super-reads mode
+#
+#  --prep                          :Only prepare files (high I/O usage) and stop before kmer counting.
+#
+#  --no_cleanup                    :retain all intermediate input files.
+#
+#  --no_version_check              :dont run a network check to determine if software updates are available.
+#
+#  --monitoring                    :use collectl to monitor all steps of Trinity
+#     --monitor_sec <int>          : number of seconds for each interval of runtime monitoring (default: 60)
+#
+#  --no_distributed_trinity_exec   :do not run Trinity phase 2 (assembly of partitioned reads), and stop after generating command list.
+#
+#  --workdir <string>              :where Trinity phase-2 assembly computation takes place (defaults to --output setting).
+#                                  (can set this to a node-local drive or RAM disk)
+#
+####################################################
+# Inchworm and K-mer counting-related options: #####
+#
+#  --min_kmer_cov <int>           :min count for K-mers to be assembled by
+#                                  Inchworm (default: 1)
+#  --inchworm_cpu <int>           :number of CPUs to use for Inchworm, default is min(6, --CPU option)
+#
+#  --no_run_inchworm              :stop after running jellyfish, before inchworm. (phase 1, read clustering only)
+#
+###################################
+# Chrysalis-related options: ######
+#
+#  --max_reads_per_graph <int>    :maximum number of reads to anchor within
+#                                  a single graph (default: 200000)
+#  --min_glue <int>               :min number of reads needed to glue two inchworm contigs
+#                                  together. (default: 2)
+#
+#  --max_chrysalis_cluster_size <int>  :max number of Inchworm contigs to be included in a single Chrysalis cluster. (default: 25)
+#
+#  --no_bowtie                    :dont run bowtie to use pair info in chrysalis clustering.
+#
+#  --no_run_chrysalis             :stop after running inchworm, before chrysalis. (phase 1, read clustering only)
+#
+#####################################
+###  Butterfly-related options:  ####
+#
+#  --bfly_algorithm <string>       : assembly algorithm to use. Options: ORIGINAL PASAFLY
+#
+#  --bfly_opts <string>            :additional parameters to pass through to butterfly
+#                                   (see butterfly options: java -jar Butterfly.jar ).
+#                                   (note: only for expert or experimental use.  Commonly used parameters are exposed through this Trinity menu here).
+#
+#
+#  Butterfly read-pair grouping settings (used to define 'pair paths'):
+#
+#  --group_pairs_distance <int>    :maximum length expected between fragment pairs (default: 500)
+#                                   (reads outside this distance are treated as single-end)
+#
+#  ///////////////////////////////////////////////
+#  Butterfly default reconstruction mode settings.
+#
+#  --path_reinforcement_distance <int>   :minimum overlap of reads with growing transcript
+#                                         path (default: PE: 25, SE: 25)
+#                                         Set to 1 for the most lenient path extension requirements.
+#
+#
+#  /////////////////////////////////////////
+#  Butterfly transcript reduction settings:
+#
+#  --no_path_merging            : all final transcript candidates are output (including SNP variations, however, some SNPs may be unphased)
+#
+#  By default, alternative transcript candidates are merged (in reality, discarded) if they are found to be too similar, according to the following logic:
+#
+#  (identity=(numberOfMatches/shorterLen) > 98.0% or if we have <= 2 mismatches) and if we have internal gap lengths <= 10
+#
+#  with parameters as:
+#
+#      --min_per_id_same_path <int>          default: 98     min percent identity for two paths to be merged into single paths
+#      --max_diffs_same_path <int>           default: 2      max allowed differences encountered between path sequences to combine them
+#      --max_internal_gap_same_path <int>    default: 10     maximum number of internal consecutive gap characters allowed for paths to be merged into single paths.
+#
+#      If, in a comparison between two alternative transcripts, they are found too similar, the transcript with the greatest cumulative
+#      compatible read (pair-path) support is retained, and the other is discarded.
+#
+#
+#  //////////////////////////////////////////////
+#  Butterfly Java and parallel execution settings.
+#
+#  --bflyHeapSpaceMax <string>     :java max heap space setting for butterfly
+#                                   (default: 10G) => yields command
+#                  'java -Xmx10G -jar Butterfly.jar ... $bfly_opts'
+#  --bflyHeapSpaceInit <string>    :java initial heap space settings for
+#                                   butterfly (default: 1G) => yields command
+#                  'java -Xms1G -jar Butterfly.jar ... $bfly_opts'
+#  --bflyGCThreads <int>           :threads for garbage collection
+#                                   (default: 2))
+#  --bflyCPU <int>                 :CPUs to use (default will be normal
+#                                   number of CPUs; e.g., 2)
+#  --bflyCalculateCPU              :Calculate CPUs based on 80% of max_memory
+#                                   divided by maxbflyHeapSpaceMax
+#
+#  --bfly_jar <string>             : /path/to/Butterfly.jar, otherwise default
+#                                    Trinity-installed version is used.
+#
+#
+################################################################################
+#### Quality Trimming Options ####
+#
+#  --quality_trimming_params <string>   defaults to: "ILLUMINACLIP:/app/software/Trinity/2.12.0-foss-2020b/trinityrnaseq-v2.12.0/trinity-plugins/Trimmomatic/adapters/TruSeq3-PE.fa:2:30:10 SLIDINGWINDOW:4:5 LEADING:5 TRAILING:5 MINLEN:25"
+#
+################################################################################
+####  In silico Read Normalization Options ###
+#
+#  --normalize_max_read_cov <int>       defaults to 200
+#  --normalize_by_read_set              run normalization separate for each pair of fastq files,
+#                                       then one final normalization that combines the individual normalized reads.
+#                                       Consider using this if RAM limitations are a consideration.
+#
+#  --just_normalize_reads               stop after performing read normalization
+#
+#  --no_normalize_reads            :Do *not* run in silico normalization of reads. Defaults to max. read coverage of 200.
+#                                       see '--normalize_max_read_cov' under full usage info for tailored settings.
+#                                       (Note, as of Sept 21, 2016, normalization is on by default)
+#                                       (*Turning off normalization is not recommended for most applications)
+#
+#  --no_parallel_norm_stats            :Do not try to run the high-mem normalization stats generator in parallel for paired-end fastqs.
+#
+###############################################################################
+#### Genome-guided de novo assembly
+#
+#  * required:
+#
+# --genome_guided_max_intron <int>     :maximum allowed intron length (also maximum fragment span on genome)
+#
+#  * optional:
+#
+# --genome_guided_min_coverage <int>   :minimum read coverage for identifying and expressed region of the genome. (default: 1)
+#
+# --genome_guided_min_reads_per_partition <int>   :default min of 10 reads per partition
+#
+#
+#######################################################################
+# Trinity phase 2 (parallel assembly of read clusters) Options: #######
+#
+#  --grid_exec <string>                 :your command-line utility for submitting jobs to the grid.
+#                                        This should be a command line tool that accepts a single parameter:
+#                                        ${your_submission_tool} /path/to/file/containing/commands.txt
+#                                        and this submission tool should exit(0) upon successful
+#                                        completion of all commands.
+#
+#  --grid_node_CPU <int>                number of threads for each parallel process to leverage. (default: 1)
+#
+#  --grid_node_max_memory <string>         max memory targeted for each grid node. (default: 1G)
+#
+#            The --grid_node_CPU and --grid_node_max_memory are applied as
+#              the --CPU and --max_memory parameters for the Trinity jobs run in
+#              Trinity Phase 2 (assembly of read clusters)
+#
+#  --FORCE                               ignore failed commands from earlier run, continue on.
+#                                          (Note, this should only be used after you've
+#                                           already dealt with these failed commands directly as needed)
+#
+    #
+#
+###############################################################################
+#
+#  *Note, a typical Trinity command might be:
+#
+#        Trinity --seqType fq --max_memory 50G --left reads_1.fq  --right reads_2.fq --CPU 6
+#
+#            (if you have multiple samples, use --samples_file ... see above for details)
+#
+#    and for Genome-guided Trinity, provide a coordinate-sorted bam:
+#
+#        Trinity --genome_guided_bam rnaseq_alignments.csorted.bam --max_memory 50G
+#                --genome_guided_max_intron 10000 --CPU 6
+#
+#     see: /app/software/Trinity/2.12.0-foss-2020b/trinityrnaseq-v2.12.0/sample_data/test_Trinity_Assembly/
+#          for sample data and 'runMe.sh' for example Trinity execution
+#
+#     For more details, visit: http://trinityrnaseq.github.io
+#
+###############################################################################
+```
+Additional parameters from the `Trinity` perl script (in the repo base directory)  
+For example, from looking here: `vi /app/software/Trinity/2.12.0-foss-2020b/trinityrnaseq-v2.12.0/Trinity`
+```txt
+ 517 my $advanced_usage =  <<_ADVANCEDUSAGE_;
+ 518 ###################################################################################
+ 519      ## Not intended for users, instead for experimentation by developers ##
+ 520 ###################################################################################
+ 521 #
+ 522 #
+ 523 #  Inchworm-related options:
+ 524 #
+ 525 #  --INCHWORM_CUSTOM_PARAMS <string>     :additional parameters to be passed on to Inchworm
+ 526 #  --FORCE_INCHWORM_KMER_METHOD          :uses inchworm built-in kmer cataloger instead of jellyfish (not recommended)
+ 527 #  --NO_PARALLEL_IWORM                : turn off parallel iworm assembly
+ 528 #  --iworm_opts <string>              : options for inchworm
+ 529 #
+ 530 #  --iworm_cdhit                      : perform iworm contig database reduction using cdhit
+ 531 #  --__KMER_SIZE <int>                : default $KMER_SIZE  (do not change unless for experimental usage)
+ 532 #
+ 533 #
+ 534 #  Chyrsalis-related options:
+ 535 #
+ 536 #  --min_pcnt_read_iworm_kmers <int>      :min percentage of a read sequence that must be composed of inchworm kmers to be pursued
+ 537 #                                           by chrysalis (default: $min_percent_read_iworm_kmers)  note: off if < 0
+ 538 #
+ 539 #  --min_iso_ratio <float>        :min fraction of average kmer coverage between two iworm contigs
+ 540 #                                  required for gluing.  (default: $min_iso_ratio)
+ 541 #  --glue_factor <float>          :fraction of max (iworm pair coverage) for read glue support (default: $glue_factor)
+ 542 #
+ 543 #  --max_reads_per_loop <int>     :maximum number of reads to read into
+ 544 #                                  memory at once (default: $max_reads_per_loop)
+ 545 #  --min_pct_read_mapping <int>   :minimum percent of a reads kmers that must map to an
+ 546 #                                  inchworm bundle (aka. component)  default: $min_pct_read_mapping
+ 547 #
+ 548 #  --bowtie_components            :use bowtie2 to generate readsToTranscripts mappings
+ 549 #
+ 550 #
+ 551 #  Other:
+ 552 #
+ 553 #  --bypass_java_version_check     : skip check for required java version 1.$JAVA_VERSION_REQUIRED
+ 554 #
+ 555 #  --java_opts <string>       : can include any additional custom options to the java command.
+ 556 #                                    ie.  -Djava.io.tmpdir=/path/to/my/custom/tmpdir
+ 557 #  --no_salmon                : remove salmon expression filtering
+ 558 #     --min_eff_read_cov <int>   : minimum effective read coverage for reconstructed transcript (default: $min_eff_read_cov)
+ 559 #
+ 560 #  --long_reads_mode               : run in long reads mode (requires --single and the long reads integrated with LR$| accession prefixes.
+ 561 #
+ 562 #  --no_check_coordsorted_bam      : in genome-guided mode, won't test the bam file for coordinate-sortedness#
+ 563 #
+ 564 #  --stomp_snps                    : stomp snps out of kmers before inchworm assembly
+ 565 #
+ 566 #  --NO_SUPERTRANS                 : disable supertranscripts
+ 567 #
+ 568 #  --NO_SEQTK                      :disable seqtk for fq->fa conversions, instead use slower perl code
+ 569 #
+ 570
+ 571 _ADVANCEDUSAGE_
+```
 <br />
 <br />
 
@@ -5067,6 +6269,100 @@ Contents of `list_tally_flags` for `*.out.exclude-unmapped.bam`
 - ["repeatmasker yeast"](https://www.google.com/search?q=repeatmasker+yeast&oq=repeatmasker+yeast&aqs=chrome..69i57j0i546l5.5324j0j7&sourceid=chrome&ie=UTF-8)
     + [RepeatMasker for Fungi](https://www.biostars.org/p/171368/)
 - [Dfam](https://www.dfam.org/home)
+- []()  `#NOTE What was I looking for here? I think it's using StringTie to build a yeast transcriptome...`
+    + [Bidirectional terminators in Saccharomyces cerevisiae prevent cryptic transcription from invading neighboring genes](https://academic.oup.com/nar/article/45/11/6417/3106044#119455736)
+        * In particular, see section *Methods* subsection "Identification of intragenic antisense cryptic transcripts"
+
+<a id="try-to-get-a-clear-answer-on-maximum-intron-length-in-s-cerevisiae-2022-1120"></a>
+### Try to get a clear answer on maximum intron length in *S. cerevisiae* (2022-1120)
+Use [this script from Nathan Weeks](https://github.com/nathanweeks/scripts/blob/master/intron-length.awk) to calculate some summary statistics for introns in *S. cerevisiae*
+- Downloaded the script and stored it in `2022_transcriptome-assembly/bin` as `intron-length.awk`
+- The script takes as input a `.gff3` file, e.g., `"${HOME}/genomes/sacCer3/Ensembl/108/gff3"`
+- More details on the script, looking up intron length [here](https://www.biostars.org/p/212533/#212541)
+```bash
+#!/bin/bash
+#DONTRUN
+
+grabnode  # Lowest and default settings
+
+cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101"
+
+gff="${HOME}/genomes/sacCer3/Ensembl/108/gff3/Saccharomyces_cerevisiae.R64-1-1.108.gff3.gz"
+bin="${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/bin"
+
+chmod +x "${bin}/intron-length.awk"
+
+
+#  w/respect to 'CDS'
+zcat "${gff}" \
+    | "${bin}/intron-length.awk" TYPE=CDS SHOW_FLANKING=1 \
+        > >(tee -a intron-length.type-CDS.stdout.txt) \
+        2> >(tee -a intron-length.type-CDS.stderr.txt >&2)
+# 1   2483    11279
+# min intron (1):
+# XV  sgd CDS 784857  785687  .   +   0   ID=CDS:YOR239W;Parent=transcript:YOR239W_mRNA;protein_id=YOR239W
+# XV  sgd CDS 785689  786744  .   +   0   ID=CDS:YOR239W;Parent=transcript:YOR239W_mRNA;protein_id=YOR239W
+# max intron (2483):
+# Mito    sgd CDS 16435   16470   .   +   2   ID=CDS:Q0060;Parent=transcript:Q0060_mRNA;protein_id=Q0060
+# Mito    sgd CDS 18954   19996   .   +   2   ID=CDS:Q0060;Parent=transcript:Q0060_mRNA;protein_id=Q0060
+
+
+#  w/respect to 'exon'
+zcat "${gff}" \
+    | "${bin}/intron-length.awk" TYPE=exon SHOW_FLANKING=1 \
+        > >(tee -a intron-length.type-exon.stdout.txt) \
+        2> >(tee -a intron-length.type-exon.stderr.txt >&2)
+
+# 1   7635    11279
+# min intron (1):
+# XV  sgd exon    784857  785687  .   +   .   Parent=transcript:YOR239W_mRNA;Name=YOR239W_mRNA-E1;constitutive=1;ensembl_end_phase=0;ensembl_phase=0;exon_id=YOR239W_mRNA-E1;rank=1
+# XV  sgd exon    785689  786744  .   +   .   Parent=transcript:YOR239W_mRNA;Name=YOR239W_mRNA-E2;constitutive=1;ensembl_end_phase=0;ensembl_phase=0;exon_id=YOR239W_mRNA-E2;rank=2
+# max intron (7635):
+# XIV sgd exon    560693  560765  .   -   .   Parent=transcript:tT(AGU)N2_tRNA;Name=tT(AGU)N2_tRNA-E1;constitutive=1;ensembl_end_phase=-1;ensembl_phase=-1;exon_id=tT(AGU)N2_tRNA-E1;rank=1
+# XIV sgd exon    568115  568150  .   +   .   Parent=transcript:tP(UGG)N2_tRNA;Name=tP(UGG)N2_tRNA-E1;constitutive=1;ensembl_end_phase=-1;ensembl_phase=-1;exon_id=tP(UGG)N2_tRNA-E1;rank=1
+
+#  From the documentation:
+# ...
+# 
+# DESCRIPTION
+#     Reports the minimum intron length, maximum intron length, and the
+#     maximum sum-of-intron-lengths among all mRNA features. Intron lengths
+#     are calculated from gaps between features of type TYPE.
+#
+# OPTIONS
+#     TYPE
+#         GFF3 type (3rd-column); valid values are "CDS" and "exon" (default).
+#         Introns are calculated as gaps between features if this type.
+#
+#     SHOW_FLANKING
+#         If set to 1, the features of type TYPE flanking the smallest &
+#         largest introns are output to stderr. The first detected flanking
+#         features for the given intron size are reported.
+#
+#     WARN_INTRON_LESS_THAN=min_intron_length
+#         Issue a warning & print flanking features to stderr if an intron
+#         smaller than min_intron_length is detected. Does not affect the
+#         reported minimum intron size.
+#
+#     WARN_INTRON_GREATER_THAN=max_intron_length
+#         Issue a warning & print flanking features to stderr if an intron
+#         longer than max_intron_length is detected. Does not affect the
+#         reported maximum intron size.
+# 
+# ...
+# 
+# STDOUT
+#     Three tab-separated integers:
+#         MINIMUM_INTRON_LENGTH MAXIMUM_INTRON_LENGTH MAXIMUM_SUM_INTRON_LENGTHS
+# 
+# APPLICATION USAGE
+#     The output can be used to supply values to the the gmap
+#     --min-intronlength, --intronlength, and --totallength options.
+
+#  Clean up
+mkdir -p exp_intron-length
+mv *.std{err,out}.txt exp_intron-length/
+```
 
 <a id="to-be-continued-after-the-completion-of-trinity-work"></a>
 ### To be continued after the completion of `Trinity` work
@@ -5091,6 +6387,8 @@ Remember, the overarching goal is to have appropriately processed bam files for 
 - `#DONE` Continue to put together a ["master list" of all of Alison's relevant file directories](#updated-list-of-alisons-paths-to-important-directories-and-files)
 - `#DONE` Collect information on the [RNA-seq kits used by Alison](#information-on-the-rna-seq-kits-used-by-alison) to generate the libraries
 
+<a id="priorities"></a>
+### Priorities
 <a id="discussion-with-alison-on-what-i-should-prioritize-2022-1103"></a>
 #### Discussion with Alison on what I should prioritize (2022-1103)
 - Need to address the important question on **how best to call Trinity**
@@ -5126,7 +6424,7 @@ Remember, the overarching goal is to have appropriately processed bam files for 
 - `( Y ) #WEDNESDAY` Pick up with the assessment of the `Bowtie 2` alignment test #2 experiment: Need to know, from the alignments, what reads are unimappers, multimappers, etc.  
 - `(...) #TOMORROW` Adjust `STAR` parameters based on the repetitive-element work you did in 2020
 - `( Y ) #THURSDAY` Organize all thoughts on multimappers, messages to/from Trinity Google group, etc.)  
-- `(   ) #STUDYFIRST` Until I hear back from Brian Haas, or if I don't hear back, go ahead and move forward with altered `STAR` parameters (so that we don't have flags in high hundreds and, instead, get readouts more similar to what we see with the `Bowtie 2` test run #2 on 2022-1109)  
+- `(   ) #STUDYFIRST` Until I hear back from Brian Haas, or if I don't hear back, go ahead and move forward with altered `STAR` parameters (so that we don't have flags in high hundreds and, instead, get readouts more similar to what we see with the `Bowtie 2` test run #2 on 2022-1109)
     + `(   ) #STUDYFIRST` After that's done, compare the kinds of alignments we're getting between the two aligners and then pick one for subsequent use  
 - `(   ) #STUDYFIRST` After the alignment process is determined, implemented, and completed, move on to writing up code for filtering by chromosomes (build on/expand what you were working on before): Ultimately, we'll start by working with VII of S. cerevisiae  
 - `(   ) #SOMETIME` Continue reading and note-taking based on the messages with Brian Haas; this includes...
@@ -5154,5 +6452,6 @@ Remember, the overarching goal is to have appropriately processed bam files for 
 - `( Y ) #DONE` Pick up with the comparison between the 'rna-star' Google group calling of STAR and multi-hit mode calling of STAR
     + Then, get line-by-line CL-call code written and running for a version of multi-hit mode adapted for yeast
     + Also, see how many mismatches Alison et al. are allowing when they call with Bowtie2: Use the info if you can
+- `(   ) #TODO` Make a separate notebook for Hi-C/MicroC-related things
 <br />
 <br />
