@@ -112,8 +112,11 @@
     1. [Establishing how to call `Trinity` in genome-free and -guided modes](#establishing-how-to-call-trinity-in-genome-free-and--guided-modes)
         1. [How Allison called `Trinity` in genome-guided mode](#how-allison-called-trinity-in-genome-guided-mode)
         1. [Parameters called out by name in McIlwain et al., *G3* 2016](#parameters-called-out-by-name-in-mcilwain-et-al-g3-2016)
-            1. [trinityrnaseq-users Google Group post on the above](#trinityrnaseq-users-google-group-post-on-the-above)
+            1. [trinityrnaseq-users Google Group post on the parameters in question](#trinityrnaseq-users-google-group-post-on-the-parameters-in-question)
         1. [`Trinity --show_full_usage_info`](#trinity---show_full_usage_info)
+    1. [Practice runs of `Trinity` genome-free and -guided, then running `PASA`](#practice-runs-of-trinity-genome-free-and--guided-then-running-pasa)
+        1. [The genome-guided run](#the-genome-guided-run)
+        1. [The genome-free run](#the-genome-free-run)
 1. [Miscellaneous](#miscellaneous)
     1. [Figure out where to put this](#figure-out-where-to-put-this)
         1. [Brief discussion with Toshi about yeast blacklists](#brief-discussion-with-toshi-about-yeast-blacklists)
@@ -141,7 +144,7 @@ Just to reacquaint yourself with things...
 grabnode  # 1 node, default memory, 1 node, no GPU (default)
 
 #  cd into the work directory
-results="${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results"
+results="${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results"
 cd "${results}/2022-1101"
 
 #  Make a directory for the results from the previous picardmetrics test (see
@@ -218,7 +221,7 @@ sbatch ./submit-Trinity.sh
 
 #  Clean up Trinity outfiles
 pwd
-# "${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1101"
+# "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101"
 
 mkdir -p exp_Trinity
 mv 5781_* 3299486* trinity_5781_* exp_Trinity/
@@ -226,6 +229,7 @@ mv 5781_* 3299486* trinity_5781_* exp_Trinity/
 
 <a id="meaning-of-trinity-parameters-used"></a>
 ### Meaning of `Trinity` parameters used
+`#DEKHO` `#TODO` *Delete the following and link to the updated version below*
 - `--genome_guided_bam`: "If a genome sequence is available, Trinity offers a method whereby reads are first aligned to the genome, partitioned according to locus, followed by *de novo* transcriptome assembly at each locus" ([more info](https://github.com/trinityrnaseq/trinityrnaseq/wiki/Genome-Guided-Trinity-Transcriptome-Assembly))
     - "In this use-case, the genome is only being used as a substrate for grouping overlapping reads into clusters that will then be separately fed into Trinity for *de novo* transcriptome assembly."
     - "This is very much *unlike* typical genome-guided approaches (e.g., cufflinks) where aligned reads are stitched into transcript structures and where transcript sequences are reconstructed based on the reference genome sequence."
@@ -238,13 +242,13 @@ mv 5781_* 3299486* trinity_5781_* exp_Trinity/
     - "May end up using just 20% of all reads reducing computational burden with no impact on assembly quality"
     - `#NOTE` This normalization method has "mixed reviews" – \[it\] tends to skip whole genes
 - `--jaccard_clip`: set if you have paired reads and you expect high gene density with UTR overlap (use FASTQ input file format for reads)
-    - `#QUESTION`: Our input appears to be a bam; does this affect things?
+    - `#QUESTION`: Our input appears to be a `.bam`; does this affect things?
 - `--genome_guided_max_intron`: "...use a maximum intron length that makes most sense given your targeted organism" ([more info](https://github.com/trinityrnaseq/trinityrnaseq/wiki/Genome-Guided-Trinity-Transcriptome-Assembly))
 - `--min_kmer_cov`: with a setting of 2, it means that singleton k-mers will not be included in initial Inchworm contigs (suggested by the Trinity team)
 - `--max_reads_per_graph`: maximum number of reads to anchor within a single graph (default: 200000)
-- `--min_glue`: min number of reads needed to glue two inchworm contigs together. (default: 2)
-- `--group_pairs_distance`: maximum length expected between fragment pairs (default: 500) (reads outside this distance are treated as single-end)
-- `--min_contig_length`: minimum assembled contig length to report (def=200, must be >= 100)
+- `--min_glue`: min number of reads needed to glue two inchworm contigs together (default: 2)
+- `--group_pairs_distance`: maximum length expected between fragment pairs (default: 500; reads outside this distance are treated as single-end)
+- `--min_contig_length`: minimum assembled contig length to report (default: 200, must be >= 100)
 - `--full_cleanup`: only retain the Trinity fasta file, rename as `${output_dir}.Trinity.fasta`
 - `--output`: name of directory for output (will be created if it doesn't already exist) default( your current working directory: `/usr/local/src/trinity_out_dir` note: must include 'trinity' in the name as a safety precaution! )
 <br />
@@ -2059,15 +2063,15 @@ for i in "${infiles[@]}"; do echo "${i}"; done  # Check
 for i in "${infiles[@]}"; do echo "$(basename "${i}")"; done  # Check
 
 #  Make symlinks to the .fastq files in 2022_transcriptome-contructions results
-mkdir -p ~/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1101/files_fastq_symlinks
+mkdir -p ~/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101/files_fastq_symlinks
 
 for i in "${infiles[@]}"; do
     ln -s \
         ${i} \
-        ~/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1101/files_fastq_symlinks/$(basename ${i})
+        ~/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101/files_fastq_symlinks/$(basename ${i})
 done
 
-ls -1 ~/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1101/files_fastq_symlinks
+ls -1 ~/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101/files_fastq_symlinks
 # 5781_G1_IN_merged_R1.fastq
 # 5781_G1_IN_merged_R2.fastq
 # 5781_G1_IP_merged_R1.fastq
@@ -2096,7 +2100,7 @@ ls -1 ~/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1101/file
 
 #  grabnode should be "on"
 
-cd ~/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1101
+cd ~/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101
 
 #  Prepare for and run FastQC
 mkdir -p files_fastq_symlinks/FastQC
@@ -2291,7 +2295,7 @@ echo \
 #DONTRUN
 
 #  grabnode has been called with default/lowest settings
-cd "${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1101"
+cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101"
 mkdir -p {exp_alignment_STAR,files_bams}
 
 #  Find and list .fastq files; designate the 'prefix' and other variables
@@ -2434,7 +2438,7 @@ Use `samtools flagstat` and the bespoke function `list_tally_flags`:
 #DONTRUN
 
 #  grabnode has been called with default/lowest settings; samtools is loaded
-cd "${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1101"
+cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101"
 
 samtools flagstat \
     ./files_bams/5781_G1_IN_mergedAligned.sortedByCoord.out.bam \
@@ -2579,7 +2583,7 @@ What are the meanings of these flags? Use [this tool](https://broadinstitute.git
 #!/bin/bash
 #DONTRUN
 
-cd "${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1101"
+cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101"
 
 mv files_bams/ exp_alignment_STAR/
 ```
@@ -2701,7 +2705,7 @@ See all the work done [here](#getting-the-fastq-files-of-interest-into-one-locat
 #DONTRUN
 
 #  Have called grabnode with lowest/default settings
-cd "${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1101"
+cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101"
 
 mkdir -p exp_alignment_Bowtie_2/files_bams
 
@@ -2807,7 +2811,7 @@ sbatch submit-Bowtie-2.sh \
 #DONTRUN
 
 #  Have called grabnode with default/lowest settings
-cd "${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1101"
+cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101"
 
 #  First, a bit of clean-up
 mv *.txt exp_alignment_Bowtie_2/
@@ -2937,7 +2941,7 @@ What are the meanings of these flags? Use [this tool](https://broadinstitute.git
 #DONTRUN
 
 #  Have called grabnode with lowest/default settings
-cd "${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1101"
+cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101"
 
 #  Remove the bams and other files from the "first test"
 rm -r exp_alignment_Bowtie_2/
@@ -3058,7 +3062,7 @@ Again, remember that *corrected* means `Bowtie 2` was called without flags for r
 #DONTRUN
 
 #  Have called grabnode with default/lowest settings
-cd "${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1101"
+cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101"
 
 #  First, a bit of clean-up
 mv *.txt exp_alignment_Bowtie_2/
@@ -3276,7 +3280,7 @@ echo $(( \
 #!/bin/bash
 #DONTRUN
 
-cd "${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1101/exp_alignment_Bowtie_2/files_bams"
+cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101/exp_alignment_Bowtie_2/files_bams"
 
 ls -lhaFG
 # total 2.5G
@@ -3307,7 +3311,7 @@ echo $(( 13436737 + 13436737 + 552105 + 552105 ))  # 27977684: Yes
 #!/bin/bash
 #DONTRUN
 
-cd "${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1101/exp_alignment_Bowtie_2/files_bams"
+cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101/exp_alignment_Bowtie_2/files_bams"
 
 samtools view -h 5781_G1_IN_merged_sorted.bam | less
 ```
@@ -4097,7 +4101,7 @@ with read counts *k_ij* for the labeled spike-ins *i* in sample *j* and *l_i* fo
 #DONTRUN
 
 #  grabnode has been called with default/lowest settings
-cd "${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1101"
+cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101"
 mkdir -p exp_alignment_STAR_multi-hit/files_bams
 
 #  Find and list .fastq files; designate the 'prefix' and other variables
@@ -4242,7 +4246,7 @@ Use `samtools flagstat` and the bespoke function `list_tally_flags`:
 #DONTRUN
 
 #  grabnode has been called with default/lowest settings; samtools is loaded
-cd "${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1101"
+cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101"
 
 module load SAMtools/1.16.1-GCC-11.2.0
 
@@ -4403,7 +4407,7 @@ Also, a little bit of cleanup
 #DONTRUN
 
 #  grabnode has been called with default/lowest settings; samtools is loaded
-cd "${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1101"
+cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101"
 
 ls -lhaFG
 total 1.9M
@@ -4446,7 +4450,7 @@ mv 4016030.* ./exp_alignment_STAR_multi-hit/
 #DONTRUN
 
 grabnode  # Lowest/default settings
-cd "${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction"
+cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction"
 
 module load SAMtools/1.16.1-GCC-11.2.0
 
@@ -4540,7 +4544,7 @@ samtools view -h \
 #DONTRUN
 
 grabnode  # Lowest/default settings
-cd "${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1101/"
+cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101/"
 
 module load SAMtools/1.16.1-GCC-11.2.0
 
@@ -4802,7 +4806,7 @@ Running ../../bin/split_bam_by_species.sh...
 #DONTRUN
 
 grabnode  # Lowest/default settings
-cd "${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1101/"
+cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101/"
 
 module load SAMtools/1.16.1-GCC-11.2.0
 
@@ -5085,7 +5089,7 @@ Have updated `exclude_bam_reads-unmapped.sh` appropriately. Now, rerun things:
 #DONTRUN
 
 grabnode  # Lowest/default settings
-cd "${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1101/"
+cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101/"
 
 module load SAMtools/1.16.1-GCC-11.2.0
 
@@ -5257,7 +5261,7 @@ Related to this, have added `calculate_run_time()`, `display_spinning_icon()`, a
 #DONTRUN
 
 grabnode  # Lowest/default settings
-cd "${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1101"
+cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101"
 
 module load SAMtools/1.16.1-GCC-11.2.0
 
@@ -5306,7 +5310,7 @@ It works!
 #DONTRUN
 
 grabnode  # Lowest/default settings
-cd "${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1101/"
+cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101/"
 
 source ../../bin/functions.sh
 
@@ -5369,7 +5373,7 @@ samtools completed: Fri Nov 18 12:20:58 PST 2022
 #DONTRUN
 
 grabnode  # Lowest/default settings
-cd "${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1101/"
+cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101/"
 
 module load SAMtools/1.16.1-GCC-11.2.0
 
@@ -5389,7 +5393,7 @@ samtools view -c \
 #DONTRUN
 
 grabnode  # Lowest/default settings
-cd "${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1101/"
+cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101/"
 
 source ../../bin/functions.sh
 
@@ -5491,7 +5495,7 @@ list_tally_flags "${bam_multi_hit}"
 
 #  Get started ----------------------------------------------------------------
 grabnode  # Lowest/default settings
-cd "${HOME}/tsukiyamalab/Kris/2022_transcriptome-construction/results/2022-1101/"
+cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101/"
 mkdir -p exp_alignment_STAR_tags/{rna-star,multi-hit-mode}/files_bams
 
 module load STAR/2.7.9a-GCC-11.2.0
@@ -5872,7 +5876,7 @@ Meaning of parameters (copied from my notes [here](#meaning-of-trinity-parameter
     - `#ANSWER` It means that <mark>"poorly covered regions \[are\] unchanged, but reads \[are\] down-sampled in high-coverage regions"</mark> (see slide 16 [here](https://biohpc.cornell.edu/lab/doc/Trinity_workshop.pdf))
     - "May end up using just 20% of all reads reducing computational burden with no impact on assembly quality"
     - `#NOTE` This normalization method has "mixed reviews" – \[it\] tends to skip whole genes
-- `--jaccard_clip`: set if you have paired reads and you expect high gene density with UTR overlap (use `.fastq` input file format for reads)
+- `--jaccard_clip`: set if you have paired reads and you expect high gene density with UTR overlap ~~(use `.fastq` input file format for reads)~~
     - `#QUESTION` Our input appears to be a bam; does this affect things?
     - `#ANSWER` Forget where I saw the answer (probably recorded it somewhere in here or a previous notebook), but the answer is --jaccard_clip is applicable to the `.bam` infile in genome-guided mode 
 - `--genome_guided_max_intron`: "...use a maximum intron length that makes most sense given your targeted organism" ([more info](https://github.com/trinityrnaseq/trinityrnaseq/wiki/Genome-Guided-Trinity-Transcriptome-Assembly))
@@ -5888,8 +5892,8 @@ Meaning of parameters (copied from my notes [here](#meaning-of-trinity-parameter
 #### Parameters called out by name in McIlwain et al., *G3* 2016
 ```txt
 --min_kmer_cov 32  # Inchworm stage
---min_glue 4
---min_iso_ratio 0.01
+--min_glue 4  # Inchworm stage
+--min_iso_ratio 0.01  # Inchworm stage
 --glue_factor 0.01  # Chrysalis stage
 ```
 Meaning of parameters (in some cases, again)
@@ -5899,9 +5903,10 @@ Meaning of parameters (in some cases, again)
     + `#QUESTION` It looks like `--min_iso_ratio` is no longer a tunable parameter, or is it just a hidden parameter?
     + `#ANSWER` It looks like it's a hidden parameter (or accidentally not shown) parameter per line 135 of Trinity: `my $min_iso_ratio = 0.05;`
 
-<a id="trinityrnaseq-users-google-group-post-on-the-above"></a>
-##### trinityrnaseq-users Google Group post on the above
-Careful explanation of the above three parameters at [this link](https://groups.google.com/g/trinityrnaseq-users/c/WXgkAFWdNyY/m/1zngojPWAAAJ)
+<a id="trinityrnaseq-users-google-group-post-on-the-parameters-in-question"></a>
+##### trinityrnaseq-users Google Group post on the parameters in question
+Careful explanation of the parameters `--min_kmer_cov`, `--min_glue`, and `--min_iso_ratio` at [this link](https://groups.google.com/g/trinityrnaseq-users/c/WXgkAFWdNyY/m/1zngojPWAAAJ)  
+`#TODO` Copy in the relevant text
 
 <a id="trinity---show_full_usage_info"></a>
 #### `Trinity --show_full_usage_info`
@@ -6178,7 +6183,7 @@ Careful explanation of the above three parameters at [this link](https://groups.
 #
 ###############################################################################
 ```
-Additional parameters from the `Trinity` perl script (in the repo base directory)  
+Additional parameters from the `Trinity`  source code (perl script in the GitHub repository base directory)  
 For example, from looking here: `vi /app/software/Trinity/2.12.0-foss-2020b/trinityrnaseq-v2.12.0/Trinity`
 ```txt
  517 my $advanced_usage =  <<_ADVANCEDUSAGE_;
@@ -6237,6 +6242,85 @@ For example, from looking here: `vi /app/software/Trinity/2.12.0-foss-2020b/trin
  570
  571 _ADVANCEDUSAGE_
 ```
+
+<a id="practice-runs-of-trinity-genome-free-and--guided-then-running-pasa"></a>
+### Practice runs of `Trinity` genome-free and -guided, then running `PASA`
+Installing Trinity, PASA, etc.
+- Use Singularity to run the [most up-to-date version of Trinity (Docker or Singularity image)](https://data.broadinstitute.org/Trinity/TRINITY_SINGULARITY/)
+- Likewise, use Singularity to [run the Docker image of the PASA pipeline](https://github.com/PASApipeline/PASApipeline/wiki/PASA_Docker)
+- Information at the following links for running Docker images with Singularity:
+    + [FHCC sciwiki: Compute environments section on Docker](https://sciwiki.fredhutch.org/scicomputing/compute_environments/#using-docker-at-fred-hutch)
+    + [FHCC sciwiki: Singularity](https://sciwiki.fredhutch.org/compdemos/Singularity/)
+
+<a id="the-genome-guided-run"></a>
+#### The genome-guided run
+```bash
+#!/bin/bash
+#DONTRUN
+
+grabnode # Lowest and default settings
+
+d_work="${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101"
+cd "${d_work}" || echo "Error: cd'ing failed; check on this"
+
+f_guided="exp_alignment_STAR_tags/multi-hit-mode/files_bams/5781_G1_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.bam"
+#QUESTION #TODO Have I filtered out alignments to K. lactis and 20 S narnavirus yet?
+
+Trinity \
+    --max_memory 50G \
+    --CPU "\${SLURM_CPUS_ON_NODE}" \
+    --SS_lib_type FR \
+    --genome_guided_bam "\${f_guided}" \
+    --genome_guided_max_intron 1002 \
+    --jaccard_clip \
+    --output "./trinity_genome-guided_\${f_guided%.bam}" \
+    --full_cleanup \
+    --min_kmer_cov \# \
+    --min_iso_ratio \# \
+    --min_glue \# \
+    --glue_factor \# \
+    --max_reads_per_graph \# \
+    --normalize_max_read_cov 200 \
+    --group_pairs_distance 700 \
+    --min_contig_length 200
+    
+    
+
+
+
+```
+
+<a id="the-genome-free-run"></a>
+#### The genome-free run
+```bash
+grabnode # Lowest and default settings
+
+d_work="${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101"
+cd "${d_work}" || echo "Error: cd'ing failed; check on this"
+
+# f_free_l="files_fastq_symlinks/5781_G1_IN_merged_R1.fastq"  #TODO ∆ to file fr/bamToFastq (bedtools)
+# f_free_r="files_fastq_symlinks/5781_G1_IN_merged_R2.fastq"  #TODO ∆ to file fr/bamToFastq (bedtools)
+
+Trinity \
+    --max_memory 50G \
+    --CPU "\${SLURM_CPUS_ON_NODE}" \
+    --SS_lib_type FR \
+    --genome_guided_bam "\${f_guided}" \
+    --genome_guided_max_intron 1002 \
+    --jaccard_clip \
+    --output "./trinity_genome-guided_\${f_guided%.bam}" \
+    --full_cleanup \
+    --min_kmer_cov \# \
+    --min_iso_ratio \# \
+    --min_glue \# \
+    --glue_factor \# \
+    --max_reads_per_graph \# \
+    --normalize_max_read_cov 200 \
+    --group_pairs_distance 700 \
+    --min_contig_length 200
+
+```
+
 <br />
 <br />
 

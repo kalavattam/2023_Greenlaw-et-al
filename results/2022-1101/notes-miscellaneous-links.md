@@ -17,6 +17,7 @@
     1. [Yeast genomics](#yeast-genomics)
     1. [Python](#python)
     1. [SLURM](#slurm)
+    1. [FHCC Data Science](#fhcc-data-science)
 
 <!-- /MarkdownTOC -->
 </details>
@@ -117,3 +118,9 @@
         * Then, when you are happy with the output, you can set it as the value of the `SQUEUE_FORMAT` variable in your `.bash_profile` or `.bashrc`
         * e.g., `export SQUEUE_FORMAT='%.18i %.9P %.8j %.8u %.2t %.10M %.6D %R %c'`
     + See the `squeue` man page for more details
+
+<a id="fhcc-data-science"></a>
+### FHCC Data Science
+- [Information on computing environments and containers](https://sciwiki.fredhutch.org/scicomputing/compute_environments/)
+- [Leave issues at this repo to install or change packages on the HPC](https://github.com/FredHutch/easybuild-life-sciences)
+- 
