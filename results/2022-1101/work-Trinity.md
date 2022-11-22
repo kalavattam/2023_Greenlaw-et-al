@@ -1,5 +1,5 @@
 
-# 2022-1102-1118
+# 2022-1102-1122
 <details>
 <summary><b><font size="+2"><i>Table of contents</i></font></b></summary>
 <!-- MarkdownTOC -->
@@ -121,7 +121,7 @@
     1. [Figure out where to put this](#figure-out-where-to-put-this)
         1. [Brief discussion with Toshi about yeast blacklists](#brief-discussion-with-toshi-about-yeast-blacklists)
     1. [Google searches and websites to follow up on](#google-searches-and-websites-to-follow-up-on)
-    1. [Try to get a clear answer on maximum intron length in *S. cerevisiae* \(2022-1120\)](#try-to-get-a-clear-answer-on-maximum-intron-length-in-s-cerevisiae-2022-1120)
+    1. [Determining maximum intron length in *S. cerevisiae* \(2022-1120\)](#determining-maximum-intron-length-in-s-cerevisiae-2022-1120)
     1. [To be continued after the completion of `Trinity` work](#to-be-continued-after-the-completion-of-trinity-work)
     1. [Priorities](#priorities)
         1. [Discussion with Alison on what I should prioritize \(2022-1103\)](#discussion-with-alison-on-what-i-should-prioritize-2022-1103)
@@ -6254,6 +6254,7 @@ Installing Trinity, PASA, etc.
 
 <a id="the-genome-guided-run"></a>
 #### The genome-guided run
+`#DEKHO`
 ```bash
 #!/bin/bash
 #DONTRUN
@@ -6265,6 +6266,7 @@ cd "${d_work}" || echo "Error: cd'ing failed; check on this"
 
 f_guided="exp_alignment_STAR_tags/multi-hit-mode/files_bams/5781_G1_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.bam"
 #QUESTION #TODO Have I filtered out alignments to K. lactis and 20 S narnavirus yet?
+#ANSWER As of 2022-1122, yes
 
 Trinity \
     --max_memory 50G \
@@ -6357,8 +6359,8 @@ Trinity \
     + [Bidirectional terminators in Saccharomyces cerevisiae prevent cryptic transcription from invading neighboring genes](https://academic.oup.com/nar/article/45/11/6417/3106044#119455736)
         * In particular, see section *Methods* subsection "Identification of intragenic antisense cryptic transcripts"
 
-<a id="try-to-get-a-clear-answer-on-maximum-intron-length-in-s-cerevisiae-2022-1120"></a>
-### Try to get a clear answer on maximum intron length in *S. cerevisiae* (2022-1120)
+<a id="determining-maximum-intron-length-in-s-cerevisiae-2022-1120"></a>
+### Determining maximum intron length in *S. cerevisiae* (2022-1120)
 Use [this script from Nathan Weeks](https://github.com/nathanweeks/scripts/blob/master/intron-length.awk) to calculate some summary statistics for introns in *S. cerevisiae*
 - Downloaded the script and stored it in `2022_transcriptome-assembly/bin` as `intron-length.awk`
 - The script takes as input a `.gff3` file, e.g., `"${HOME}/genomes/sacCer3/Ensembl/108/gff3"`
@@ -6377,7 +6379,7 @@ bin="${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/bin"
 chmod +x "${bin}/intron-length.awk"
 
 
-#  w/respect to 'CDS'
+#  w/respect to 'CDS' -----------------
 zcat "${gff}" \
     | "${bin}/intron-length.awk" TYPE=CDS SHOW_FLANKING=1 \
         > >(tee -a intron-length.type-CDS.stdout.txt) \
@@ -6391,7 +6393,7 @@ zcat "${gff}" \
 # Mito    sgd CDS 18954   19996   .   +   2   ID=CDS:Q0060;Parent=transcript:Q0060_mRNA;protein_id=Q0060
 
 
-#  w/respect to 'exon'
+#  w/respect to 'exon' ----------------
 zcat "${gff}" \
     | "${bin}/intron-length.awk" TYPE=exon SHOW_FLANKING=1 \
         > >(tee -a intron-length.type-exon.stdout.txt) \
