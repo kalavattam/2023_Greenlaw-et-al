@@ -1,28 +1,33 @@
 
-
-
-
-
 `#TODO` Organizae or delete this later
 
 Couldn't really find much on super-reads mode and --no_super_reads: super-reads mode seems to be something happening by default according to the source code
 
 Potentially interesting link/resource (from Google search for "cerevisiae trinity assembly")
-- https://ycl6.gitbook.io/rna-seq-data-analysis/de_novo_assembly_using_trinity/compare_de_novo_reconstructed_transcripts_to_reference_annotations
-- https://southgreenplatform.github.io/trainings/trinityTrinotate/TP-trinity/#practice-2
-- https://academic.oup.com/dnaresearch/article/25/3/297/4838783#supplementary-data  #They don't mention params in this study; lame
-- https://ressources.france-bioinformatique.fr/sites/default/files/A01_Galaxy_RNASeq_denovo_ITMO2016_0.pdf  #Training from BH, interesting explanations of parameters, especially for butterfly stage  #TODO Study this later
-- This study use standard parameters for trinity: https://www.sciencedirect.com/science/article/pii/S0888754321000288#ec0005
-- Using StringTie with yeast: https://www.biostars.org/p/296555/
-- What does N50 mean? https://www.biostars.org/p/723/
+- [Compare *de novo* reconstructed transcripts to reference annotations](https://ycl6.gitbook.io/rna-seq-data-analysis/de_novo_assembly_using_trinity/compare_de_novo_reconstructed_transcripts_to_reference_annotations)
+- [Assessing transcriptome assembly quality](https://southgreenplatform.github.io/trainings/trinityTrinotate/TP-trinity/#practice-3)
+	+ Getting basic Assembly metrics with the trinity script TrinityStats.pl
+	+ Reads mapping back rate and abundance estimation using the trinity script align_and_estimate_abundance.pl
+	+ Expression matrix construction
+	+ Compute N50 based on the top-most highly expressed transcripts (Ex50)
+	+ Quantifying completness using BUSCO
+	+ BLASTX comparison to known protein sequences database
+	+ *Other sections before and after the above*
+- [Assemblage de-novo de transcriptome Trinity](https://ressources.france-bioinformatique.fr/sites/default/files/A01_Galaxy_RNASeq_denovo_ITMO2016_0.pdf)
+	+ Training from Ecole ITMO 2016
+	+ Contains a lot of useful information; for example, info for preprocessing
+	+ Interesting explanations of parameters, especially for butterfly stage  `#TODO` Study this later
+- [Example of a yeast study using standard parameters for `Trinity`](https://www.sciencedirect.com/science/article/pii/S0888754321000288#ec0005)
+- [An example of using StringTie with yeast](https://www.biostars.org/p/296555/)
+- [On the meaning of N50](https://www.biostars.org/p/723/)
 
-Before we even start tooling with the parameters, it can be more important to clean the data
-- see FAS Informatics document
-- pertinent slide in A01_Galaxy_RNASeq_denovo_ITMO2016_0.pdf
+Before we even start tooling with the parameters, it is likely more important to clean the data
+- See the FAS Informatics [*Best Practices* document]()
+- See also the pertinent slides [here](https://ressources.france-bioinformatique.fr/sites/default/files/A01_Galaxy_RNASeq_denovo_ITMO2016_0.pdf)
 
-~~Should I get cutadapt set up now...?~~
+~~Should I get cutadapt set up now...?~~ No, use Trim Galore (following the FAS Informatics [*Best Practices* document]())
 
-are forward reads left and reverse reads right? I don't know--probably
+`#QUESTION` Are forward reads left and reverse reads right? I don't know--probably
 
 Create an environment for `Trinity` and related work; so many failures
 ```bash
@@ -150,20 +155,24 @@ Trinity --version
 #  Delete the environment and try installing Trinity and PASA using Singularity
 ```
 
-conda packages to install for environment Trinity_env, which will be used with Singularity imges for Trinity and PASA
-Trim Galore
-rCorrector
-STAR  #MAYBE
-FastQC
-rCorrector
-bedtools
+`conda` packages to install for environment `Trinity_env`, which will be used with pipeline implementation including Singularity images for Trinity and PASA
+- `Trim Galore`
+- `rCorrector`
+- `STAR`  `#MAYBE`
+- `FastQC`
+- `rCorrector`
+- `bedtools`
 
 Determine what to do with these and add this to links .md file: https://stackoverflow.com/questions/14675913/changing-image-size-in-markdown
 
-<img src="notebook/jpg_2022-1120_TODO.jpg" alt="drawing" width="1000">
+TODO list written on 2022-1120; has been put on hold until I get hands-on experience with preprocessing, Trinity-PASA, etc.
+<img src="notebook/TODO.2022-1120.jpg" alt="drawing" width="750">
 
-<!-- ![TODO from Sunday]()   -->
-![pipelines: preprocessing (rough draft)](./notebook/jpg_2022-1121_pipelines_preprocessing-rough.jpg)  
-![pipelines: both preprocessing and Trinity-PASA (subsequent draft)](./notebook/jpg_2022-1121_pipelines_preprocessing_Trinity.jpg)  
+Preprocessing pipeline rough draft, 2022-1121
+<img src="notebook/pipelines.2022-1121.preprocessing-rough.jpg" alt="drawing" width="750">
 
+Subsequent pipeline draft, 2022-1121; include preprocessing and Trinity-PASA work
+<img src="notebook/pipelines.2022-1121.preprocessing_Trinity.jpg" alt="drawing" width="750">
+
+Excel file...  
 [Excel file for Trinity parameters to use and potentially test](notebook/trinity-parameters.xlsx)
