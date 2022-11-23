@@ -251,9 +251,9 @@ mv 5781_* 3299486* trinity_5781_* exp_Trinity/
 - `--min_contig_length`: minimum assembled contig length to report (default: 200, must be >= 100)
 - `--full_cleanup`: only retain the Trinity fasta file, rename as `${output_dir}.Trinity.fasta`
 - `--output`: name of directory for output (will be created if it doesn't already exist) default( your current working directory: `/usr/local/src/trinity_out_dir` note: must include 'trinity' in the name as a safety precaution! )
-<br />
-<br />
 </details>
+<br />
+<br />
 
 <a id="continued-reading-studying-regarding-trinity"></a>
 ## Continued reading, studying regarding `Trinity`

@@ -38,7 +38,7 @@ check_etc() {
         sc_all | sc_no_mito | sc_vii | sc_xii | sc_vii_xii | sc_mito | \
         kl_all | virus_20s) \
             :
-            ;;  # Do nothing and move on
+            ;;
         *) \
             message="""
             Exiting: -s \"\${split}\" must be one of the following:
@@ -140,7 +140,11 @@ main() {
         # exit 1
     fi
 
-    split_with_samtools "${threads}" "${infile}" "${chr}" "${SC_all}"
+    split_with_samtools \
+        "${threads}" \
+        "${infile}" \
+        "${chr}" \
+        "${infile%.bam}.${split}.bam"
 }
 
 
@@ -245,8 +249,6 @@ done
 # ls -lhaFG "${infile}"
 # ls -lhaFG "${outdir}"
 
-
 check_etc
-
 
 main

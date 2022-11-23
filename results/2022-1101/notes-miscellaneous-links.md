@@ -18,6 +18,7 @@
     1. [Python](#python)
     1. [SLURM](#slurm)
     1. [FHCC Data Science](#fhcc-data-science)
+    1. [`Singularity`, `Docker`](#singularity-docker)
 
 <!-- /MarkdownTOC -->
 </details>
@@ -85,6 +86,7 @@
 - [Quickly generate a TOC](https://stackoverflow.com/questions/11948245/markdown-to-create-pages-and-table-of-contents)
 - [Markdown Preview Documentation](https://facelessuser.github.io/MarkdownPreview/usage/)
 - [Add a collapsible header to Markdown](https://stackoverflow.com/questions/31562552/collapsible-header-in-markdown-to-html)
+- [Changing the sizes of embedded images](https://stackoverflow.com/questions/14675913/changing-image-size-in-markdown)
 
 <a id="html"></a>
 ### HTML
@@ -123,4 +125,10 @@
 ### FHCC Data Science
 - [Information on computing environments and containers](https://sciwiki.fredhutch.org/scicomputing/compute_environments/)
 - [Leave issues at this repo to install or change packages on the HPC](https://github.com/FredHutch/easybuild-life-sciences)
-- 
+- [Using Singularity containers](https://sciwiki.fredhutch.org/compdemos/Singularity/)
+- [Running workflows on Gizmo](https://sciwiki.fredhutch.org/hdc/workflows/running/on_gizmo/)
+- [Background on workflows](https://sciwiki.fredhutch.org/hdc/workflows/workflow_background/)
+
+<a id="singularity-docker"></a>
+### `Singularity`, `Docker`
+- [How to build a `Singularity` container from a `dockerfile`](https://stackoverflow.com/questions/60314664/how-to-build-singularity-container-from-dockerfile)
