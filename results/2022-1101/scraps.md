@@ -12,6 +12,7 @@
 1. [Do a trial run of `Trinity` genome-guided mode \(2022-1122\)](#do-a-trial-run-of-trinity-genome-guided-mode-2022-1122)
 1. [Convert "rna-star" filtered `.bam` files back to `.fastq` files \(2022-1122\)](#convert-rna-star-filtered-bam-files-back-to-fastq-files-2022-1122)
 1. [Do a trial run of `Trinity` genome-guided mode \(2022-1122\)](#do-a-trial-run-of-trinity-genome-guided-mode-2022-1122-1)
+1. [Organizing the `*.{err,out}.txt` from the trial runs](#organizing-the-errouttxt-from-the-trial-runs)
 1. [Learning to use `Singularity` \(2022-1123\)](#learning-to-use-singularity-2022-1123)
 	1. [Notes from FHCC Bioinformatics' *"Using `Singularity` Containers"*](#notes-from-fhcc-bioinformatics-using-singularity-containers)
 	1. [Introduction](#introduction)
@@ -50,7 +51,10 @@
 			1. [Docker using SQLite](#docker-using-sqlite)
 			1. [MySQL internally within Docker](#mysql-internally-within-docker)
 			1. [Local MySQL outside Docker Container](#local-mysql-outside-docker-container)
-1. [On how to handle file input/output with `Singularity`](#on-how-to-handle-file-inputoutput-with-singularity)
+1. [On handling file access with `Singularity`](#on-handling-file-access-with-singularity)
+	1. [Testing system-defined bind paths in `Singularity`](#testing-system-defined-bind-paths-in-singularity)
+	1. [Try mounting some datasets needed for running `PASA` \(`Singularity`\)](#try-mounting-some-datasets-needed-for-running-pasa-singularity)
+1. [Try a trial run of `Singularity` `PASA`](#try-a-trial-run-of-singularity-pasa)
 
 <!-- /MarkdownTOC -->
 </details>
@@ -1192,6 +1196,21 @@ bash "${script}" "${f_free_1}" "${f_free_2}" "${d_exp}" "${prefix}"
 #+ The outdirectory contains stuff... Clean it out and then run on SLURM
 sbatch "${script}" "${f_free_1}" "${f_free_2}" "${d_exp}" "${prefix}"
 #  It seems to be running successfully
+```
+<br />
+<br />
+
+<a id="organizing-the-errouttxt-from-the-trial-runs"></a>
+## Organizing the `*.{err,out}.txt` from the trial runs
+```bash
+#!/bin/bash
+#DONTRUN
+
+grabnode  # Default and lowest settings
+
+cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101"
+
+mv *.{err,out}.txt exp_Trinity_trial/
 ```
 <br />
 <br />
@@ -2487,11 +2506,519 @@ docker run --rm -it \
             	--ALIGNER gmap -g genome_sample.fasta -t all_transcripts.fasta.clean'
 ```
 
-<a id="on-how-to-handle-file-inputoutput-with-singularity"></a>
-## On how to handle file input/output with `Singularity`
+<a id="on-handling-file-access-with-singularity"></a>
+## On handling file access with `Singularity`
 - [Binding file in singularity](https://stackoverflow.com/questions/45755512/binding-file-in-singularity)
 - [Nice breakdowns of running Singularity on cluster from Harvard FAS](https://docs.rc.fas.harvard.edu/kb/singularity-on-the-cluster/)
 - See the [FHCC Bioinformatics' Singularity Access to Storage section](#access-to-storage)
 - [Sylabs documentation on "Bind Paths and Mounts"](https://docs.sylabs.io/guides/3.0/user-guide/bind_paths_and_mounts.html)
 	+ This seems to have the answer  `#TODO` Study and test this
 - [Google search results "singularity mount directory"](https://www.google.com/search?q=singularity+mount+directory&oq=mount+directory+singu&aqs=chrome.1.69i57j0i22i30.5454j0j7&sourceid=chrome&ie=UTF-8)
+
+<a id="testing-system-defined-bind-paths-in-singularity"></a>
+### Testing system-defined bind paths in `Singularity`
+<details>
+<summary><i>Checking the engine, kicking the tires...</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN
+
+grabnode  # Default and lowest settings
+
+ml Singularity/3.5.3
+
+cd ~/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101 \
+	|| echo "cd'ing failed; check on this"
+
+cd ~
+ls -lhaFG singularity-docker-etc
+
+#  Activate shell within/coming from the container
+singularity shell ~/singularity-docker-etc/PASA.sif
+
+ls -lhaFG
+# Singularity> ls -lhaFG
+# total 1.5M
+# drwxr-x--- 18 kalavatt  805 Nov 24 12:48 ./
+# drwxr-xr-x  1 kalavatt   60 Nov 24 12:50 ../
+# -rw-------  1 kalavatt   50 Nov 17 15:27 .Xauthority
+# -rw-rw----  1 kalavatt 4.0K Nov 21 12:33 .bash_aliases
+# -rw-rw----  1 kalavatt 3.2K Nov 20 13:21 .bash_functions
+# -rw-------  1 kalavatt 570K Nov 24 12:50 .bash_history
+# -rw-rw----  1 kalavatt  308 Oct 20 11:18 .bash_profile
+# -rw-rw----  1 kalavatt 6.0K Nov  7 15:05 .bashrc
+# drwx------  4 kalavatt   87 Oct 20 11:42 .cache/
+# drwxr-x---  2 kalavatt   34 Oct 20 10:28 .conda/
+# drwxrwx---  5 kalavatt   75 Oct 28 15:14 .config/
+# -rw-rw----  1 kalavatt   88 Oct 21 14:04 .gitconfig
+# drwx------  3 kalavatt   35 Oct 17 10:57 .gnupg/
+# drwxrwx---  3 kalavatt   23 Nov  7 15:06 .java/
+# drwx------  7 kalavatt  113 Nov  1 09:09 .local/
+# drwxr-x--- 15 kalavatt  524 Oct 20 09:57 .oh-my-bash/
+# drwxrwx---  2 kalavatt   44 Nov  1 12:54 .oracle_jre_usage/
+# -rw-r-----  1 kalavatt   17 Nov 17 08:49 .osh-update
+# -rw-r-----  1 kalavatt    0 Nov 24 12:25 .sdirs
+# drwx------  3 kalavatt   52 Nov 23 08:33 .singularity/
+# drwx------  2 kalavatt   62 Oct 20 13:03 .ssh/
+# -rw-------  1 kalavatt  28K Nov 23 11:51 .viminfo
+# -rw-rw----  1 kalavatt  215 Oct 20 10:33 .wget-hsts
+# drwxrwx---  3 kalavatt   23 Oct 20 11:42 Downloads/
+# drwxrwx---  9 kalavatt 6.4K Oct  5 17:22 bbmap/
+# drwxrwx--- 10 kalavatt  335 Nov  7 13:14 genomes/
+# drwxr-x--- 20 kalavatt  570 Nov 23 11:34 miniconda3/
+# -rw-rw----  1 kalavatt  726 Nov  1 09:20 picardmetrics.conf
+# drwxrwx---  3 kalavatt  227 Nov 23 12:35 singularity-docker-etc/
+# drwxrwx---  6 kalavatt  148 Nov  1 09:09 src/
+# lrwxrwxrwx  1 root       37 Oct 17 10:44 tsukiyamalab -> /fh/fast/tsukiyama_t/grp/tsukiyamalab
+
+ls -lhaFG /
+# total 152K
+# drwxr-xr-x   1 kalavatt   60 Nov 24 12:50 ./
+# drwxr-xr-x   1 kalavatt   60 Nov 24 12:50 ../
+# lrwxrwxrwx   1 root       27 Nov 23 12:12 .exec -> .singularity.d/actions/exec*
+# lrwxrwxrwx   1 root       26 Nov 23 12:12 .run -> .singularity.d/actions/run*
+# lrwxrwxrwx   1 root       28 Nov 23 12:12 .shell -> .singularity.d/actions/shell*
+# drwxr-xr-x   5 root      127 Nov 23 12:12 .singularity.d/
+# lrwxrwxrwx   1 root       27 Nov 23 12:12 .test -> .singularity.d/actions/test*
+# lrwxrwxrwx   1 root        7 Jul 23  2021 bin -> usr/bin/
+# drwxr-xr-x   2 root        3 Apr 15  2020 boot/
+# drwxr-xr-x  18 root     4.1K Nov 23 16:19 dev/
+# lrwxrwxrwx   1 root       36 Nov 23 12:12 environment -> .singularity.d/env/90-environment.sh*
+# drwxr-xr-x  53 root     1.8K Aug  6  2021 etc/
+# drwxr-xr-x   1 kalavatt   60 Nov 24 12:50 home/
+# lrwxrwxrwx   1 root        7 Jul 23  2021 lib -> usr/lib/
+# lrwxrwxrwx   1 root        9 Jul 23  2021 lib32 -> usr/lib32/
+# lrwxrwxrwx   1 root        9 Jul 23  2021 lib64 -> usr/lib64/
+# lrwxrwxrwx   1 root       10 Jul 23  2021 libx32 -> usr/libx32/
+# drwxr-xr-x   2 root        3 Jul 23  2021 media/
+# drwxr-xr-x   2 root        3 Jul 23  2021 mnt/
+# drwxr-xr-x   2 root        3 Jul 23  2021 opt/
+# dr-xr-xr-x 494 root        0 Nov  9 06:59 proc/
+# drwx------   3 root       90 Feb  3  2022 root/
+# drwxr-xr-x   8 root      124 Aug  6  2021 run/
+# lrwxrwxrwx   1 root        8 Jul 23  2021 sbin -> usr/sbin/
+# lrwxrwxrwx   1 root       24 Nov 23 12:12 singularity -> .singularity.d/runscript*
+# drwxr-xr-x   2 root        3 Jul 23  2021 srv/
+# dr-xr-xr-x  13 root        0 Nov  9 06:59 sys/
+# drwxrwxrwt  18 root     148K Nov 24 12:52 tmp/
+# drwxr-xr-x  14 root      241 Aug  6  2021 usr/
+# drwxr-xr-x  11 root      172 Jul 23  2021 var/
+
+alias .,="ls -lhaFG"
+
+., /bin
+# lrwxrwxrwx 1 root 7 Jul 23  2021 /bin -> usr/bin/
+
+cd /bin && .,
+# ... (a lot)
+
+cd ..
+., /dev
+# ... (a lot)
+
+., /etc
+# ... (a lot)
+
+., /lib
+# lrwxrwxrwx 1 root 7 Jul 23  2021 /lib -> usr/lib/
+
+., /mnt
+# total 0
+# drwxr-xr-x 2 root      3 Jul 23  2021 ./
+# drwxr-xr-x 1 kalavatt 60 Nov 24 12:50 ../
+
+., /opt
+# total 0
+# drwxr-xr-x 2 root      3 Jul 23  2021 ./
+# drwxr-xr-x 1 kalavatt 60 Nov 24 12:50 ../
+
+., /proc
+# ... (a lot)
+
+., /root
+# ls: cannot open directory '/root': Permission denied
+
+., /run
+# total 512
+# drwxr-xr-x  8 root     124 Aug  6  2021 ./
+# drwxr-xr-x  1 kalavatt  60 Nov 24 12:50 ../
+# drwxrwxrwt  3 root      29 Aug  6  2021 lock/
+# drwxr-xr-x  2 root       3 Aug  6  2021 log/
+# drwxr-xr-x  2 root       3 Jul 23  2021 mount/
+# drwxr-xr-x  2 root       3 Aug  6  2021 sendsigs.omit.d/
+# lrwxrwxrwx  1 root       8 Aug  6  2021 shm -> /dev/shm/
+# drwxr-xr-x 10 root     154 Aug  6  2021 systemd/
+# drwxr-xr-x  2 root       3 Aug  6  2021 user/
+# -rw-rw-r--  1 root       0 Jul 23  2021 utmp
+
+., /srv
+# drwxr-xr-x 2 root      3 Jul 23  2021 ./
+# drwxr-xr-x 1 kalavatt 60 Nov 24 12:50 ../
+
+., /sys
+total 0
+# dr-xr-xr-x  13 root      0 Nov 24 12:53 ./
+# drwxr-xr-x   1 kalavatt 60 Nov 24 12:50 ../
+# drwxr-xr-x   2 root      0 Nov  9 06:59 block/
+# drwxr-xr-x  45 root      0 Nov  9 06:59 bus/
+# drwxr-xr-x  66 root      0 Nov  9 06:59 class/
+# drwxr-xr-x   4 root      0 Nov  9 06:59 dev/
+# drwxr-xr-x  71 root      0 Nov  9 06:59 devices/
+# drwxr-xr-x   5 root      0 Nov  9 06:59 firmware/
+# drwxr-xr-x   9 root      0 Nov  9 06:59 fs/
+# drwxr-xr-x   2 root      0 Nov  9 06:59 hypervisor/
+# drwxr-xr-x  14 root      0 Nov  9 06:59 kernel/
+# drwxr-xr-x 180 root      0 Nov  9 06:59 module/
+# drwxr-xr-x   2 root      0 Nov  9 06:59 power/
+
+., /tmp
+# total 216K
+# drwxrwxrwt 18 root     148K Nov 24 13:00 ./
+# drwxr-xr-x  1 kalavatt   60 Nov 24 12:50 ../
+# drwxrwxrwt  2 root     4.0K Nov  9 07:00 .ICE-unix/
+# drwxrwxrwt  2 root     4.0K Nov  9 07:00 .Test-unix/
+# drwxrwxrwt  2 root     4.0K Nov  9 07:00 .X11-unix/
+# drwxrwxrwt  2 root     4.0K Nov  9 07:00 .XIM-unix/
+# drwxrwxrwt  2 root     4.0K Nov  9 07:00 .font-unix/
+# drwx------  2    73778 4.0K Nov 23 17:33 Rtmp2N7h2a/
+# drwxr-xr-x  3    74026 4.0K Nov  9 14:15 build/
+# drwxr-x---  2    42037 4.0K Nov 23 00:06 hsperfdata_apaguiri/
+# drwxr-x---  2    72966 4.0K Nov 21 00:08 hsperfdata_azimmer/
+# drwxr-x---  2    71540 4.0K Nov 17 19:31 hsperfdata_madil/
+# drwxr-x---  2    61501 4.0K Nov 18 16:55 hsperfdata_nahmed/
+# drwxrwxrw-  2    71540 4.0K Nov 17 19:31 madil/
+# drwx------  3 root     4.0K Nov 11 00:25 systemd-private-318ce31389ba4b1dbadc92a7cc2f39f6-ntp.service-VEcyVu/
+# drwx------  3 root     4.0K Nov  9 07:00 systemd-private-318ce31389ba4b1dbadc92a7cc2f39f6-systemd-resolved.service-JgDtTj/
+# drwxrwxrwt  2    60495 4.0K Nov 17 17:35 tmp/
+# drwxrwxrwt  2    60495 4.0K Nov 16 16:59 var_tmp/
+
+., /usr
+# total 0
+# drwxr-xr-x 14 root      241 Aug  6  2021 ./
+# drwxr-xr-x  1 kalavatt   60 Nov 24 12:50 ../
+# drwxr-xr-x  2 root      11K Aug  6  2021 bin/
+# drwxr-xr-x  2 root        3 Apr 15  2020 games/
+# drwxr-xr-x 42 root     2.9K Aug  6  2021 include/
+# drwxr-xr-x 39 root      759 Aug  6  2021 lib/
+# drwxr-xr-x  3 root     2.0K Aug  6  2021 lib32/
+# drwxr-xr-x  2 root       43 Jul 23  2021 lib64/
+# drwxr-xr-x  2 root       58 Aug  6  2021 libexec/
+# drwxr-xr-x  3 root     2.1K Aug  6  2021 libx32/
+# drwxr-xr-x 10 root      135 Jul 23  2021 local/
+# drwxr-xr-x  2 root     2.3K Aug  6  2021 sbin/
+# drwxr-xr-x 66 root     1.2K Aug  6  2021 share/
+# drwxr-xr-x  2 root        3 Apr 15  2020 src/
+
+., /var
+# total 5.0K
+# drwxr-xr-x 11 root      172 Jul 23  2021 ./
+# drwxr-xr-x  1 kalavatt   60 Nov 24 12:50 ../
+# drwxr-xr-x  2 root        3 Apr 15  2020 backups/
+# drwxr-xr-x  7 root      102 Aug  6  2021 cache/
+# drwxr-xr-x 18 root      271 Aug  6  2021 lib/
+# drwxrwsr-x  2 root        3 Apr 15  2020 local/
+# lrwxrwxrwx  1 root        9 Jul 23  2021 lock -> /run/lock/
+# drwxr-xr-x  6 root      184 Aug  6  2021 log/
+# drwxrwsr-x  2 root        3 Jul 23  2021 mail/
+# drwxr-xr-x  2 root        3 Jul 23  2021 opt/
+# lrwxrwxrwx  1 root        4 Jul 23  2021 run -> /run/
+# drwxr-xr-x  2 root       27 Jul 23  2021 spool/
+# drwxrwxrwt  6 root     4.0K Nov 24 12:48 tmp/
+
+#  This isn't the same as my /, right? Exit Singularity shell and check
+exit
+ls -lhaFG /
+# total 312K
+# drwxr-xr-x  30 root 4.0K Sep 10 13:51 ./
+# drwxr-xr-x  30 root 4.0K Sep 10 13:51 ../
+# drwxrwsr-x  15 root  312 May 10  2022 app/
+# -rw-r--r--   1 root    0 Jul  9  2020 .autorelabel
+# drwxr-xr-x   2 root 4.0K Nov 11 00:25 bin/
+# drwxr-xr-x   3 root 4.0K Nov 11 00:26 boot/
+# drwxr-xr-x   3 root 4.0K Feb 11  2022 .bundle/
+# drwxr-xr-x  18 root 4.1K Nov 23 16:19 dev/
+# drwxr-xr-x 114 root  12K Nov 24 12:48 etc/
+# dr-xr-xr-x   7 root 4.0K May 10  2021 fh/
+# drwx------   2 root 4.0K Jul  9  2020 .gnupg/
+# dr-xr-xr-x   2 root 4.0K Nov  2  2020 goodtimes_NFS/
+# drwxr-xr-x   7 root    0 Nov 24 12:58 home/
+# lrwxrwxrwx   1 root   34 Sep 10 13:51 initrd.img -> boot/initrd.img-4.15.0-192-generic
+# lrwxrwxrwx   1 root   34 Sep 10 13:51 initrd.img.old -> boot/initrd.img-4.15.0-101-generic
+# dr-xr-xr-x   2 root 4.0K May 10  2021 install/
+# drwxr-xr-x  20 root 4.0K Sep 10 13:41 lib/
+# drwxr-xr-x   2 root 4.0K Sep 10 13:41 lib64/
+# drwxr-xr-x   4 root 4.0K Jul  9  2020 loc/
+# drwx------   2 root  16K Jul  9  2020 lost+found/
+# drwxr-xr-x   2 root 4.0K Jul  9  2020 media/
+# drwxr-xr-x   9 root 4.0K Mar 20  2022 mnt/
+# drwxr-xr-x   7 root 4.0K Mar  4  2021 opt/
+# dr-xr-xr-x 508 root    0 Nov  9 06:59 proc/
+# drwx------   7 root 4.0K Oct 24 14:56 root/
+# drwxr-xr-x  30 root 1.4K Nov 24 13:02 run/
+# drwxr-xr-x   2 root  12K Nov 11 00:25 sbin/
+# dr-xr-xr-x  17 root 4.0K Sep 10 08:22 shared/
+# drwxr-xr-x   2 root 4.0K Jul  9  2020 srv/
+# dr-xr-xr-x  13 root    0 Nov 24 12:53 sys/
+# drwxrwxrwt  18 root 148K Nov 24 13:02 tmp/
+# drwxr-xr-x  10 root 4.0K Jul  9  2020 usr/
+# drwxr-xr-x  15 root 4.0K Jul  9  2020 var/
+# lrwxrwxrwx   1 root   31 Sep 10 13:51 vmlinuz -> boot/vmlinuz-4.15.0-192-generic
+# lrwxrwxrwx   1 root   31 Sep 10 13:51 vmlinuz.old -> boot/vmlinuz-4.15.0-101-generic
+
+cd /mnt && ls -lhaFG
+# total 29K
+# drwxr-xr-x  9 root 4.0K Mar 20  2022 ./
+# drwxr-xr-x 30 root 4.0K Sep 10 13:51 ../
+# drwxr-xr-x  2 root 4.0K Feb  7  2022 app/
+# drwxr-xr-x  2 root    0 Nov  9 07:00 campbell-data/
+# dr-xr-xr-x  3 root 4.0K Nov  2  2020 scdata/
+# dr-xr-xr-x  2 root 4.0K Nov 20 06:41 silver/
+# dr-xr-xr-x  2 root 4.0K May 10  2021 stortest/
+# drwxr-xr-x  2 root 4.0K Mar 20  2022 test-1/
+# drwxrwxrwx  3 root    1 Oct  2  2021 thorium/
+
+#  It's different based on my /, I think; the image maps its directories some
+#+ of the directories in /, I think
+```
+</details>
+<br />
+
+The `*.sif` containers maps many of its directories to directories in my local `/`, I think...
+
+<a id="try-mounting-some-datasets-needed-for-running-pasa-singularity"></a>
+### Try mounting some datasets needed for running `PASA` (`Singularity`)
+```bash
+#!/bin/bash
+#DONTRUN
+
+grabnode  # Default and lowest settings
+
+ml Singularity/3.5.3
+
+cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101" \
+	|| echo "cd'ing failed; check on this"
+
+mkdir -p exp_PASA_trial
+
+cd exp_PASA_trial
+
+ln -s \
+	"${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101/exp_Trinity_trial/exp_Trinity_trial_genome-free_SC_all/Trinity_trial_genome-free_SC_all.Trinity.fasta" \
+	genome-free_SC_all.Trinity.fasta
+
+ln -s \
+	"${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101/exp_Trinity_trial/exp_Trinity_trial_genome-guided_SC_all/Trinity_trial_genome-guided_SC_all/Trinity-GG.fasta" \
+	genome-guided_SC_all.Trinity.fasta
+
+ls -lhaFG
+# total 99K
+# drwxrws---  2 kalavatt  102 Nov 24 13:26 ./
+# drwxrws--- 14 kalavatt 1.2K Nov 24 13:15 ../
+# lrwxrwxrwx  1 kalavatt  188 Nov 24 13:23 genome-free_SC_all.Trinity.fasta -> /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101/exp_Trinity_trial/exp_Trinity_trial_genome-free_SC_all/Trinity_trial_genome-free_SC_all.Trinity.fasta
+# lrwxrwxrwx  1 kalavatt  195 Nov 24 13:26 genome-guided_SC_all.Trinity.fasta -> /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101/exp_Trinity_trial/exp_Trinity_trial_genome-guided_SC_all/Trinity_trial_genome-guided_SC_all/Trinity-GG.fasta
+
+#  Check the symbolic links
+head genome-free_SC_all.Trinity.fasta  # It works
+head genome-guided_SC_all.Trinity.fasta  # It works
+
+#  Anything assigned to this environmental variable for Singularity?
+echo "${SINGULARITY_BIND}"  # Empty
+
+pwd
+# /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101/exp_PASA_trial
+
+export SINGULARITY_BIND=/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101/exp_PASA_trial:/mnt/data
+echo "${SINGULARITY_BIND}"
+# /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101/exp_PASA_trial
+
+#  Now try activating the singularity shell
+singularity shell ~/singularity-docker-etc/PASA.sif
+# WARNING: Bind mount '/home/kalavatt => /home/kalavatt' overlaps container CWD /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101/exp_PASA_trial, may not be available
+
+ls -lhaFG /mnt/data
+# total 67K
+# drwxrws--- 2 kalavatt 102 Nov 24 13:26 ./
+# drwxr-xr-x 1 kalavatt  60 Nov 24 13:31 ../
+# lrwxrwxrwx 1 kalavatt 188 Nov 24 13:23 genome-free_SC_all.Trinity.fasta -> /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101/exp_Trinity_trial/exp_Trinity_trial_genome-free_SC_all/Trinity_trial_genome-free_SC_all.Trinity.fasta
+# lrwxrwxrwx 1 kalavatt 195 Nov 24 13:26 genome-guided_SC_all.Trinity.fasta -> /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101/exp_Trinity_trial/exp_Trinity_trial_genome-guided_SC_all/Trinity_trial_genome-guided_SC_all/Trinity-GG.fasta
+
+#  It seems to have worked
+```
+
+<a id="try-a-trial-run-of-singularity-pasa"></a>
+## Try a trial run of `Singularity` `PASA`
+We have successfully mounted data for use with `Singularity` `PASA`; let's try running `Singularity` `PASA` following the comprehensive-transcriptome-database approach described [here](https://github.com/PASApipeline/PASApipeline/wiki/PASA_comprehensive_db)
+
+```bash
+#!/bin/bash
+#DONTRUN
+
+grabnode  # Default and lowest settings
+
+ml Singularity/3.5.3
+
+cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101/exp_PASA_trial" \
+	|| echo "cd'ing failed; check on this"
+
+ls -1
+# genome-free_SC_all.Trinity.fasta
+# genome-guided_SC_all.Trinity.fasta
+
+#  1. Concatenate the Trinity.fasta and Trinity.GG.fasta files into a single
+#+    transcripts.fasta file
+cat genome-free_SC_all.Trinity.fasta genome-guided_SC_all.Trinity.fasta > transcripts.fasta
+
+#  2. Create a file containing the list of transcript accessions that
+#+    correspond to the Trinity de novo assembly (full de novo, not genome-guided)
+export SINGULARITY_BIND=/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101/exp_PASA_trial:/mnt/data
+echo "${SINGULARITY_BIND}"
+
+#  See this link to learn more about singularity run:
+#+ docs.sylabs.io/guides/3.1/user-guide/cli/singularity_run.html
+if [[ -f tdn.accs ]]; then rm tdn.accs; fi
+singularity run ~/singularity-docker-etc/PASA.sif \
+	${PASA_HOME}/misc_utilities/accession_extractor.pl \
+	< genome-free_SC_all.Trinity.fasta \
+	> tdn.accs
+# WARNING: Bind mount '/home/kalavatt => /home/kalavatt' overlaps container CWD /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101/exp_PASA_trial, may not be available
+# /.singularity.d/runscript: 39: exec: /misc_utilities/accession_extractor.pl: not found
+
+#  ${PASA_HOME} is /usr/local/src/PASApipeline, so try that out...
+if [[ -f tdn.accs ]]; then rm tdn.accs; fi
+singularity run ~/singularity-docker-etc/PASA.sif \
+	/usr/local/src/PASApipeline/misc_utilities/accession_extractor.pl \
+	< genome-free_SC_all.Trinity.fasta \
+	> tdn.accs
+# WARNING: Bind mount '/home/kalavatt => /home/kalavatt' overlaps container CWD /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101/exp_PASA_trial, may not be available
+# perl: warning: Setting locale failed.
+# perl: warning: Please check that your locale settings:
+# 	LANGUAGE = "en_US:",
+# 	LC_ALL = (unset),
+# 	LC_CTYPE = "en_US.UTF-8",
+# 	LANG = "en_US.UTF-8"
+#     are supported and installed on your system.
+# perl: warning: Falling back to the standard locale ("C").
+
+#  It works!
+
+
+#  3. Run PASA using RNA-seq-related options as described in the section above,
+#+    but include the parameter setting --TDN tdn.accs
+export PASAHOME=/usr/local/src/PASApipeline
+echo "${PASAHOME}"
+
+#  First, need to do things described in these two links:
+#+ - github.com/PASApipeline/PASApipeline/wiki/PASA_alignment_assembly
+#+ - github.com/PASApipeline/PASApipeline/wiki/PASA_RNAseq
+
+#  3a. Clean the transcript sequences (PASA_alignment_assembly)
+cp transcripts.fasta bak.transcripts.fasta
+
+singularity run ~/singularity-docker-etc/PASA.sif \
+	${PASAHOME}/bin/seqclean  transcripts.fasta
+# WARNING: Bind mount '/home/kalavatt => /home/kalavatt' overlaps container CWD /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101/exp_PASA_trial, may not be available
+# perl: warning: Setting locale failed.
+# perl: warning: Please check that your locale settings:
+# 	LANGUAGE = "en_US:",
+# 	LC_ALL = (unset),
+# 	LC_CTYPE = "en_US.UTF-8",
+# 	LANG = "en_US.UTF-8"
+#     are supported and installed on your system.
+# perl: warning: Falling back to the standard locale ("C").
+# seqclean running options:
+# seqclean transcripts.fasta
+#  Standard log file: seqcl_transcripts.fasta.log
+#  Error log file:    err_seqcl_transcripts.fasta.log
+#  Using 1 CPUs for cleaning
+# -= Rebuilding transcripts.fasta cdb index =-
+#  Launching actual cleaning process:
+#  psx -p 1  -n 1000  -i transcripts.fasta -d cleaning -C '/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101/exp_PASA_trial/transcripts.fasta:ANLMS100:::11:0' -c '/usr/local/src/PASApipeline/bin/seqclean.psx'
+# Collecting cleaning reports
+#
+# **************************************************
+# Sequences analyzed:     19435
+# -----------------------------------
+#                    valid:     19435  (5441 trimmed)
+#                  trashed:         0
+# **************************************************
+# Output file containing only valid and trimmed sequences: transcripts.fasta.clean
+# For trimming and trashing details see cleaning report  : transcripts.fasta.cln
+# --------------------------------------------------
+# seqclean (transcripts.fasta) finished on machine
+#  in /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101/exp_PASA_trial, without a detectable error.
+
+alias .,="ls -lhaFG"
+# total 69M
+# drwxrws---  3 kalavatt  479 Nov 24 14:12 ./
+# drwxrws--- 14 kalavatt 1.2K Nov 24 13:15 ../
+# -rw-rw----  1 kalavatt  19M Nov 24 14:12 bak.transcripts.fasta
+# drwxr-s---  2 kalavatt  970 Nov 24 14:12 cleaning_1/
+# -rw-rw-r--  1 kalavatt 6.9K Nov 24 14:12 err_seqcl_transcripts.fasta.log
+# lrwxrwxrwx  1 kalavatt  188 Nov 24 13:23 genome-free_SC_all.Trinity.fasta -> /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101/exp_Trinity_trial/exp_Trinity_trial_genome-free_SC_all/Trinity_trial_genome-free_SC_all.Trinity.fasta
+# lrwxrwxrwx  1 kalavatt  195 Nov 24 13:26 genome-guided_SC_all.Trinity.fasta -> /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101/exp_Trinity_trial/exp_Trinity_trial_genome-guided_SC_all/Trinity_trial_genome-guided_SC_all/Trinity-GG.fasta
+# -rw-rw-r--  1 kalavatt  880 Nov 24 14:12 outparts_cln.sort
+# -rw-rw-r--  1 kalavatt 1002 Nov 24 14:12 seqcl_transcripts.fasta.log
+# -rw-rw----  1 kalavatt 218K Nov 24 13:58 tdn.accs
+# -rw-rw----  1 kalavatt  19M Nov 24 13:50 transcripts.fasta
+# -rw-rw-r--  1 kalavatt 1.1M Nov 24 14:12 transcripts.fasta.cidx
+# -rw-rw-r--  1 kalavatt  19M Nov 24 14:12 transcripts.fasta.clean
+# -rw-rw-r--  1 kalavatt 1.3M Nov 24 14:12 transcripts.fasta.cln
+```
+
+From following the instructions at [PASA_alignment_assembl](github.com/PASApipeline/PASApipeline/wiki/PASA_alignment_assembly), we see,
+> The `PASA` pipeline requires separate configuration files for the alignment assembly and later annotation comparison steps, and these are configured separately for each run of the `PASA` pipeline, setting parameters to be used by the various tools and processes executed within the `PASA` pipeline. Configuration file templates are provided as '`$PASAHOME/pasa_conf/pasa.alignAssembly.Template.txt`' and '`$PASAHOME/pasa_conf/pasa.annotationCompare.Template.txt`', and these will be further described when used below. 
+
+`#TODO` Pick up with this tomorrow; basically, I'm trying to understand what I need to do to run something like what's shown on [this page](https://github.com/PASApipeline/PASApipeline/wiki/PASA_RNAseq), all in keeping with (i.e., following) instruction #3 on [this page](https://github.com/PASApipeline/PASApipeline/wiki/PASA_comprehensive_db):
+```bash
+#!/bin/bash
+#EXAMPLE
+$PASAHOME/Launch_PASA_pipeline.pl \
+	-c alignAssembly.config \
+	-C \
+	-R -g genome_sample.fasta \
+	--ALIGNERS blat,gmap \
+	-t Trinity.fasta \
+	--transcribed_is_aligned_orient
+```
+`#TODO` I need to understand what are appropriate contents/values for the `alignAssembly.config` file; once that's done, I need to get something like the above running with `Singularity` `PASA` (making use of the clean `trinity.fasta` file(s)) and then move on to subsequent steps [here](https://github.com/PASApipeline/PASApipeline/wiki/PASA_comprehensive_db)
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+singularity shell ~/singularity-docker-etc/PASA.sif
+cd "${PASAHOME}"
+alias .,="ls -lhaFG"
+# total 55K
+# drwxr-xr-x 20 root  541 Feb 10  2022 ./
+# drwxr-xr-x  7 root  246 Feb 10  2022 ../
+# drwxr-xr-x  9 root  211 Feb 10  2022 .git/
+# -rw-r--r--  1 root  383 Feb 10  2022 .gitmodules
+# -rw-r--r--  1 root  11K Feb 10  2022 Changelog.txt
+# drwxr-xr-x  2 root  232 Feb 10  2022 Docker/
+# -rw-r--r--  1 root 1.5K Feb 10  2022 LICENSE
+# -rwxr-xr-x  1 root  36K Feb 10  2022 Launch_PASA_pipeline.pl*
+# -rw-r--r--  1 root 1.1K Feb 10  2022 Makefile
+# drwxr-xr-x  4 root  474 Feb 10  2022 PASApipeline.wiki/
+# drwxr-xr-x  5 root   73 Feb 10  2022 PasaWeb/
+# drwxr-xr-x  2 root   45 Feb 10  2022 PasaWeb.conf/
+# drwxr-xr-x  8 root 1.6K Feb 10  2022 PerlLib/
+# drwxr-xr-x  2 root   45 Feb 10  2022 PyLib/
+# -rw-r--r--  1 root  299 Feb 10  2022 README
+# -rw-r--r--  1 root  790 Feb 10  2022 README.md
+# drwxr-xr-x  4 root   38 Feb 10  2022 SAMPLE_HOOKS/
+# drwxr-xr-x  2 root  165 Feb 10  2022 bin/
+# drwxr-xr-x  4 root  276 Feb 10  2022 docs/
+# drwxr-xr-x  3 root 5.5K Feb 10  2022 misc_utilities/
+# -rw-r--r--  1 root   60 Feb 10  2022 notes
+# drwxr-xr-x  6 root   94 Feb 10  2022 pasa-plugins/
+# drwxr-xr-x  2 root  184 Feb 10  2022 pasa_conf/
+# drwxr-xr-x  2 root 1023 Feb 10  2022 pasa_cpp/
+# drwxr-xr-x  4 root  304 Feb 10  2022 pasapipeline.github.io/
+# -rwxr-xr-x  1 root 2.0K Feb 10  2022 run_PasaWeb.pl*
+# drwxr-xr-x  5 root  574 Feb 10  2022 sample_data/
+# drwxr-xr-x  3 root  274 Feb 10  2022 schema/
+# drwxr-xr-x  4 root 3.6K Feb 10  2022 scripts/
+
+```
