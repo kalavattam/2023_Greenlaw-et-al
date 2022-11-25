@@ -8,7 +8,7 @@
 1. [Attempts to set up an environment for `Trinity`, etc.](#attempts-to-set-up-an-environment-for-trinity-etc)
 	1. [Attempt #1 \(2022-1121\)](#attempt-1-2022-1121)
 	1. [Attempt #2 \(2022-1122\)](#attempt-2-2022-1122)
-1. [Filtering `.bam` files to retain only alignments to *S. cerevisiae* \(2022-1122\)](#filtering-bam-files-to-retain-only-alignments-to-s-cerevisiae-2022-1122)
+1. [Filtering `.bam`s to retain only *S. cerevisiae* alignments \(2022-1122\)](#filtering-bams-to-retain-only-s-cerevisiae-alignments-2022-1122)
 1. [Do a trial run of `Trinity` genome-guided mode \(2022-1122\)](#do-a-trial-run-of-trinity-genome-guided-mode-2022-1122)
 1. [Convert "rna-star" filtered `.bam` files back to `.fastq` files \(2022-1122\)](#convert-rna-star-filtered-bam-files-back-to-fastq-files-2022-1122)
 1. [Do a trial run of `Trinity` genome-guided mode \(2022-1122\)](#do-a-trial-run-of-trinity-genome-guided-mode-2022-1122-1)
@@ -376,13 +376,13 @@ Trinity_env  # It works because already present in .bash_aliases (yesterday)
 <br />
 <br />
 
-<a id="filtering-bam-files-to-retain-only-alignments-to-s-cerevisiae-2022-1122"></a>
-## Filtering `.bam` files to retain only alignments to *S. cerevisiae* (2022-1122)
-`#QUESTION` Haven't I done this yet? I wrote `split_bam_by_species.sh`, but have I run it with respect to the "rna-star" and "multi-hit-mode" `.bam` files yet?
+<a id="filtering-bams-to-retain-only-s-cerevisiae-alignments-2022-1122"></a>
+## Filtering `.bam`s to retain only *S. cerevisiae* alignments (2022-1122)
+`#QUESTION` Haven't I done this yet? I wrote `split_bam_by_species.sh`, but have I run it with respect to the "rna-star" and "multi-hit-mode" `.bam` files yet?  
 `#ANSWER` I have run a few tests in which most of the outfiles were `rm`'d
-    - One outfile for a `.bam` composed of only *S. cerevisiae* chromosomes is present in `"${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101/exp_alignment_STAR/files_bams"`
-    - There are no such `.bam` files in the subdirectories of `"${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101/exp_alignment_STAR_tags"`
-    - ∴ Do this work for the two `{multi-hit-mode,rna-star}/files_bams/*.exclude-unmapped.bam` files in `/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101/exp_alignment_STAR_tags`
+- One outfile for a `.bam` composed of only *S. cerevisiae* chromosomes is present in `"${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101/exp_alignment_STAR/files_bams"`
+- There are no such `.bam` files in the subdirectories of `"${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101/exp_alignment_STAR_tags"`
+- ∴ Do this work for the two `{multi-hit-mode,rna-star}/files_bams/*.exclude-unmapped.bam` files in `/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101/exp_alignment_STAR_tags`
 
 ```bash
 #!/bin/bash
@@ -2870,7 +2870,8 @@ ls -1
 cat genome-free_SC_all.Trinity.fasta genome-guided_SC_all.Trinity.fasta > transcripts.fasta
 
 #  2. Create a file containing the list of transcript accessions that
-#+    correspond to the Trinity de novo assembly (full de novo, not genome-guided)
+#+    correspond to the Trinity de novo assembly (full de novo, not genome-
+#+    guided)
 export SINGULARITY_BIND=/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101/exp_PASA_trial:/mnt/data
 echo "${SINGULARITY_BIND}"
 
@@ -2973,52 +2974,294 @@ From following the instructions at [PASA_alignment_assembl](github.com/PASApipel
 ```bash
 #!/bin/bash
 #EXAMPLE
-$PASAHOME/Launch_PASA_pipeline.pl \
+
+#  github.com/PASApipeline/PASApipeline/wiki/PASA_RNAseq#strand-specific-rna-seq
+#+
+#+ If your gene density is high and you expect transcripts from neighboring
+#+ genes to often overlap in their UTR regions, you can perform more stringent
+#+ clustering of alignments like so:
+${PASAHOME}/Launch_PASA_pipeline.pl \
 	-c alignAssembly.config \
 	-C \
 	-R -g genome_sample.fasta \
 	--ALIGNERS blat,gmap \
 	-t Trinity.fasta \
-	--transcribed_is_aligned_orient
+	--transcribed_is_aligned_orient \
+    --stringent_alignment_overlap 30.0
 ```
 `#TODO` I need to understand what are appropriate contents/values for the `alignAssembly.config` file; once that's done, I need to get something like the above running with `Singularity` `PASA` (making use of the clean `trinity.fasta` file(s)) and then move on to subsequent steps [here](https://github.com/PASApipeline/PASApipeline/wiki/PASA_comprehensive_db)
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
+#DONTRUN
 
-singularity shell ~/singularity-docker-etc/PASA.sif
-cd "${PASAHOME}"
+grabnode  # Default and lowest settings
+
+ml Singularity/3.5.3
+
+cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101/exp_PASA_trial" \
+	|| echo "cd'ing failed; check on this"
+
 alias .,="ls -lhaFG"
-# total 55K
-# drwxr-xr-x 20 root  541 Feb 10  2022 ./
-# drwxr-xr-x  7 root  246 Feb 10  2022 ../
-# drwxr-xr-x  9 root  211 Feb 10  2022 .git/
-# -rw-r--r--  1 root  383 Feb 10  2022 .gitmodules
-# -rw-r--r--  1 root  11K Feb 10  2022 Changelog.txt
-# drwxr-xr-x  2 root  232 Feb 10  2022 Docker/
-# -rw-r--r--  1 root 1.5K Feb 10  2022 LICENSE
-# -rwxr-xr-x  1 root  36K Feb 10  2022 Launch_PASA_pipeline.pl*
-# -rw-r--r--  1 root 1.1K Feb 10  2022 Makefile
-# drwxr-xr-x  4 root  474 Feb 10  2022 PASApipeline.wiki/
-# drwxr-xr-x  5 root   73 Feb 10  2022 PasaWeb/
-# drwxr-xr-x  2 root   45 Feb 10  2022 PasaWeb.conf/
-# drwxr-xr-x  8 root 1.6K Feb 10  2022 PerlLib/
-# drwxr-xr-x  2 root   45 Feb 10  2022 PyLib/
-# -rw-r--r--  1 root  299 Feb 10  2022 README
-# -rw-r--r--  1 root  790 Feb 10  2022 README.md
-# drwxr-xr-x  4 root   38 Feb 10  2022 SAMPLE_HOOKS/
-# drwxr-xr-x  2 root  165 Feb 10  2022 bin/
-# drwxr-xr-x  4 root  276 Feb 10  2022 docs/
-# drwxr-xr-x  3 root 5.5K Feb 10  2022 misc_utilities/
-# -rw-r--r--  1 root   60 Feb 10  2022 notes
-# drwxr-xr-x  6 root   94 Feb 10  2022 pasa-plugins/
-# drwxr-xr-x  2 root  184 Feb 10  2022 pasa_conf/
-# drwxr-xr-x  2 root 1023 Feb 10  2022 pasa_cpp/
-# drwxr-xr-x  4 root  304 Feb 10  2022 pasapipeline.github.io/
-# -rwxr-xr-x  1 root 2.0K Feb 10  2022 run_PasaWeb.pl*
-# drwxr-xr-x  5 root  574 Feb 10  2022 sample_data/
-# drwxr-xr-x  3 root  274 Feb 10  2022 schema/
-# drwxr-xr-x  4 root 3.6K Feb 10  2022 scripts/
+.,
+
+#  Copied from
+#+ github.com/PASApipeline/PASApipeline/blob/master/sample_data/mysql.confs/alignAssembly.config
+cat << alignAssembly > "./alignAssembly.config"
+
+## templated variables to be replaced exist as <__var_name__>
+
+# Pathname of an SQLite database
+# If the environment variable DSN_DRIVER=mysql then it is the name of a MySQL database
+DATABASE=sample_mydb_pasa
+
+
+#######################################################
+# Parameters to specify to specific scripts in pipeline
+# create a key = "script_name" + ":" + "parameter" 
+# assign a value as done above.
+
+#script validate_alignments_in_db.dbi
+validate_alignments_in_db.dbi:--MIN_PERCENT_ALIGNED=75
+validate_alignments_in_db.dbi:--MIN_AVG_PER_ID=95
+validate_alignments_in_db.dbi:--NUM_BP_PERFECT_SPLICE_BOUNDARY=0
+
+#script subcluster_builder.dbi
+subcluster_builder.dbi:-m=50
+
+alignAssembly
+# vi alignAssembly.config
+
+
+#  What are the options for ${PASAHOME}/Launch_PASA_pipeline.pl?
+export PASAHOME=/usr/local/src/PASApipeline
+echo "${PASAHOME}"
+
+singularity run ~/singularity-docker-etc/PASA.sif \
+	${PASAHOME}/Launch_PASA_pipeline.pl
+
+```
+
+Documentation for `Launch_PASA_pipeline.pl`
+<details>
+<summary><i>Click here to expand</i></summary>
+
+```txt
+WARNING: Bind mount '/home/kalavatt => /home/kalavatt' overlaps container CWD /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101/exp_PASA_trial, may not be available
+perl: warning: Setting locale failed.
+perl: warning: Please check that your locale settings:
+	LANGUAGE = "en_US:",
+	LC_ALL = (unset),
+	LC_CTYPE = "en_US.UTF-8",
+	LANG = "en_US.UTF-8"
+    are supported and installed on your system.
+perl: warning: Falling back to the standard locale ("C").
+perl: warning: Setting locale failed.
+perl: warning: Please check that your locale settings:
+	LANGUAGE = "en_US:",
+	LC_ALL = (unset),
+	LC_CTYPE = "en_US.UTF-8",
+	LANG = "en_US.UTF-8"
+    are supported and installed on your system.
+perl: warning: Falling back to the standard locale ("C").
+
+############################# Options ###############################
+#
+#   * indicates required
+#
+#
+# --config|-c * <filename>  alignment assembly configuration file
+#
+# // spliced alignment settings
+# --ALIGNERS <string>   aligners (available options include: gmap, blat, minimap2... can run using several, ie. 'gmap,blat,minimap2')
+# -N <int>              max number of top scoring alignments (default: 1)
+# --MAX_INTRON_LENGTH|-I  <int>         (max intron length parameter passed to GMAP or BLAT)  (default: 100000)
+# --IMPORT_CUSTOM_ALIGNMENTS_GFF3 <filename> :only using the alignments supplied in the corresponding GFF3 file.
+# --trans_gtf <filename>      :incorporate cufflinks or stringtie--generated transcripts
+#
+#
+# // actions
+# --create|-C               flag, create database
+# --replace|-r               flag, drop database if -C is also given. This will DELETE all your data and it is irreversible.
+# --run|-R               flag, run alignment/assembly pipeline.
+# --annot_compare|-A               (see section below; can use with opts -L and --annots)  compare to annotated genes.
+# --ALT_SPLICE     flag, run alternative splicing analysis
+
+# // input files
+# --genome|-g * <filename>  genome sequence FASTA file (should contain annot db asmbl_id as header accession.)
+# --transcripts|-t * <filename>  transcript db
+# -f <filename>    file containing a list of fl-cdna accessions.
+# --TDN <filename> file containing a list of accessions corresponding to Trinity (full) de novo assemblies (not genome-guided)
+#
+# // polyAdenylation site identification  ** highly recommended **
+# -T               flag,transcript db were trimmed using the TGI seqclean tool.
+#    -u <filename>   value, transcript db containing untrimmed sequences (input to seqclean)
+#                  <a filename with a .cln extension should also exist, generated by seqclean.>
+#
+#
+#
+# Misc:
+# --TRANSDECODER   flag, run transdecoder to identify candidate full-length coding transcripts
+# --CPU <int>      multithreading (default: 2)
+# --PASACONF <string> path to a user-defined pasa.conf file containing mysql connection info
+#                      (used in place of the $PASAHOME/pasa_conf/conf.txt file)
+#                      (and allows for users to have their own unique mysql connection info)
+#                      (instead of the pasa role account)
+#
+# -d               flag, Debug
+# -h               flag, print this option menu and quit
+#
+#########
+#
+# // Transcript alignment clustering options (clusters are fed into the PASA assembler):
+#
+#       By default, clusters together transcripts based on any overlap (even 1 base!).
+#
+#    Alternatives:
+#
+#        --stringent_alignment_overlap <float>  (suggested: 30.0)  overlapping transcripts must have this min % overlap to be clustered.
+#
+#        --gene_overlap <float>  (suggested: 50.0)  transcripts overlapping existing gene annotations are clustered.  Intergenic alignments are clustered by default mechanism.
+#               * if --gene_overlap, must also specify --annots  with annotations in recognizable format (gtf, gff3, or data adapted) (just examines 'gene' rows, though).
+#
+#
+#
+# --INVALIDATE_SINGLE_EXON_ESTS    :invalidates single exon ests so that none can be built into pasa assemblies.
+#
+#
+# --transcribed_is_aligned_orient   flag for strand-specific RNA-Seq assemblies, the aligned orientation should correspond to the transcribed orientation.
+#
+#
+################
+#
+#  // Annotation comparison options (used in conjunction with -A at top).
+#
+#  -L   load annotations (use in conjunction with --annots)
+#  --annots <filename>  existing gene annotations in recognized format (gtf, gff3, or custom adapted).
+#  --GENETIC_CODE (default: universal, options: Euplotes, Tetrahymena, Candida, Acetabularia)
+#
+###################### Process Args and Options #####################
+```
+</details>
+<br />
+
+On calling `Launch_PASA_pipeline.pl`
+```bash
+#!/bin/bash
+#DONTRUN
+
+tmux  # Rename the session to 'PASA'
+grabnode  # Default and lowest settings, except 2 threads
+echo "${SLURM_CPUS_ON_NODE}"  # 2
+
+ml Singularity/3.5.3
+
+cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101/exp_PASA_trial" \
+	|| echo "cd'ing failed; check on this"
+
+export SINGULARITY_BIND=${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101/exp_PASA_trial:/mnt/data
+echo "${SINGULARITY_BIND}"
+# /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101/exp_PASA_trial:/mnt/data
+
+export PASAHOME=/usr/local/src/PASApipeline
+echo "${PASAHOME}"
+# /usr/local/src/PASApipeline
+
+singularity run ~/singularity-docker-etc/PASA.sif \
+	${PASAHOME}/Launch_PASA_pipeline.pl \
+		-c alignAssembly.config \
+		-I 1002 \
+		-C \
+		-R \
+		-g "${HOME}/genomes/sacCer3/Ensembl/108/DNA/Saccharomyces_cerevisiae.R64-1-1.dna.toplevel.chr-rename.fasta" \
+		-t transcripts.fasta.clean \
+		-T \
+		-u transcripts.fasta \
+		--transcribed_is_aligned_orient \
+	    --stringent_alignment_overlap 30.0 \
+	    --TDN tdn.accs \
+	    --ALIGNERS blat,gmap \
+	    --CPU "${SLURM_CPUS_ON_NODE}"
+
+#  Building the above command from...
+#+ - 1. github.com/PASApipeline/PASApipeline/wiki/PASA_alignment_assembly#transcript-alignments-followed-by-alignment-assembly
+#+      (code chunk below the header)
+#+
+#+      ${PASAHOME}/Launch_PASA_pipeline.pl \
+#+  	    -c alignAssembly.config \
+#+  	    -C \
+#+  	    -R \
+#+  	    -g genome_sample.fasta \
+#+  	    -t all_transcripts.fasta.clean \
+#+  	    -T \
+#+  	    -u all_transcripts.fasta \
+#+  	    -f FL_accs.txt \
+#+  	    --ALIGNERS blat,gmap,minimap2 \
+#+  	    --CPU 2
+#+
+#+ - 2. github.com/PASApipeline/PASApipeline/wiki/PASA_RNAseq#strand-specific-rna-seq
+#+      (second of three code chunks below the header)
+#+
+#+      ${PASAHOME}/Launch_PASA_pipeline.pl \
+#+      	-c alignAssembly.config \
+#+      	-C -R \
+#+      	-g genome_sample.fasta \
+#+      	--ALIGNERS blat,gmap\
+#+      	-t Trinity.fasta \
+#+      	--transcribed_is_aligned_orient \
+#+      	--stringent_alignment_overlap 30.0
+
+# -connecting to MySQL db: sample_mydb_pasa
+# -*** Running PASA pipeine:
+# * [Thu Nov 24 20:10:06 2022] Running CMD: /usr/local/src/PASApipeline/scripts/create_mysql_cdnaassembly_db.dbi -c alignAssembly.config -S '/usr/local/src/PASApipeline/schema/cdna_alignment_mysqlschema'
+# perl: warning: Falling back to the standard locale ("C").
+# DBI connect('database=;host=localhost','root',...) failed: Can't connect to local MySQL server through socket '/var/run/mysqld/mysqld.sock' (2) at /usr/local/src/PASApipeline/PerlLib/DB_connect.pm line 72.
+# Cannot connect to : Can't connect to local MySQL server through socket '/var/run/mysqld/mysqld.sock' (2) at /usr/local/src/PASApipeline/scripts/create_mysql_cdnaassembly_db.dbi line 57.
+# Error, cmd: /usr/local/src/PASApipeline/scripts/create_mysql_cdnaassembly_db.dbi -c alignAssembly.config -S '/usr/local/src/PASApipeline/schema/cdna_alignment_mysqlschema' died with ret 65280 No such file or directory at /usr/local/src/PASApipeline/PerlLib/Pipeliner.pm line 187.
+#         Pipeliner::run(Pipeliner=HASH(0x55de4ede1b48)) called at /usr/local/src/PASApipeline/Launch_PASA_pipeline.pl line 1047
+
+#  Try changing the name of the database
+mv alignAssembly.config bak.alignAssembly.config
+
+cat << alignAssembly > "./alignAssembly.config"
+
+## templated variables to be replaced exist as <__var_name__>
+
+# Pathname of an SQLite database
+# If the environment variable DSN_DRIVER=mysql then it is the name of a MySQL database
+DATABASE=PASA
+
+
+#######################################################
+# Parameters to specify to specific scripts in pipeline
+# create a key = "script_name" + ":" + "parameter" 
+# assign a value as done above.
+
+#script validate_alignments_in_db.dbi
+validate_alignments_in_db.dbi:--MIN_PERCENT_ALIGNED=75
+validate_alignments_in_db.dbi:--MIN_AVG_PER_ID=95
+validate_alignments_in_db.dbi:--NUM_BP_PERFECT_SPLICE_BOUNDARY=0
+
+#script subcluster_builder.dbi
+subcluster_builder.dbi:-m=50
+
+alignAssembly
+# vi alignAssembly.config
+
+singularity run ~/singularity-docker-etc/PASA.sif \
+	${PASAHOME}/Launch_PASA_pipeline.pl \
+		-c alignAssembly.config \
+		-I 1002 \
+		-C \
+		-R \
+		-g "${HOME}/genomes/sacCer3/Ensembl/108/DNA/Saccharomyces_cerevisiae.R64-1-1.dna.toplevel.chr-rename.fasta" \
+		-t transcripts.fasta.clean \
+		-T \
+		-u transcripts.fasta \
+		--transcribed_is_aligned_orient \
+	    --stringent_alignment_overlap 30.0 \
+	    --TDN tdn.accs \
+	    --ALIGNERS blat,gmap \
+	    --CPU "${SLURM_CPUS_ON_NODE}"
 
 ```
