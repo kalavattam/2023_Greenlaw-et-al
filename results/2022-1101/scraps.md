@@ -55,6 +55,16 @@
 	1. [Testing system-defined bind paths in `Singularity`](#testing-system-defined-bind-paths-in-singularity)
 	1. [Try mounting some datasets needed for running `PASA` \(`Singularity`\)](#try-mounting-some-datasets-needed-for-running-pasa-singularity)
 1. [Try a trial run of `Singularity` `PASA`](#try-a-trial-run-of-singularity-pasa)
+	1. [Working through the first few steps of `PASA` Wiki \(2022-1124\)](#working-through-the-first-few-steps-of-pasa-wiki-2022-1124)
+		1. [Documentation, details for `PASA`'s' `Launch_PASA_pipeline.pl`, including `*.config`](#documentation-details-for-pasas-launch_pasa_pipelinepl-including-config)
+	1. [Attempt to call `Launch_PASA_pipeline.pl` \(2022-1124\)](#attempt-to-call-launch_pasa_pipelinepl-2022-1124)
+		1. [Troubleshooting the errors from calling `Launch_PASA_pipeline.pl`](#troubleshooting-the-errors-from-calling-launch_pasa_pipelinepl)
+			1. [Message from me \(2022-1124\)](#message-from-me-2022-1124)
+			1. [Response from Brian Haas \(2022-1125\)](#response-from-brian-haas-2022-1125)
+	1. [Attempt to call `Launch_PASA_pipeline.pl` following Brian Haas' advice \(2022-1125\)](#attempt-to-call-launch_pasa_pipelinepl-following-brian-haas-advice-2022-1125)
+		1. [Again, troubleshooting the errors from calling `Launch_PASA_pipeline.pl`](#again-troubleshooting-the-errors-from-calling-launch_pasa_pipelinepl)
+			1. [Subsequent message to Brian after encountering another error \(2022-1125\)](#subsequent-message-to-brian-after-encountering-another-error-2022-1125)
+1. [Setting up the preprocessing pipeline for `Trinity`](#setting-up-the-preprocessing-pipeline-for-trinity)
 
 <!-- /MarkdownTOC -->
 </details>
@@ -2845,10 +2855,14 @@ ls -lhaFG /mnt/data
 
 #  It seems to have worked
 ```
+<br />
+<br />
 
 <a id="try-a-trial-run-of-singularity-pasa"></a>
 ## Try a trial run of `Singularity` `PASA`
-We have successfully mounted data for use with `Singularity` `PASA`; let's try running `Singularity` `PASA` following the comprehensive-transcriptome-database approach described [here](https://github.com/PASApipeline/PASApipeline/wiki/PASA_comprehensive_db)
+<a id="working-through-the-first-few-steps-of-pasa-wiki-2022-1124"></a>
+### Working through the first few steps of `PASA` Wiki (2022-1124)
+We have successfully mounted data for use with `Singularity` `PASA`; let's try running `Singularity` `PASA` following the comprehensive-transcriptome-database approach described [here](https://github.com/PASApipeline/PASApipeline/wiki/PASA_comprehensive_db).
 
 ```bash
 #!/bin/bash
@@ -2970,7 +2984,7 @@ alias .,="ls -lhaFG"
 From following the instructions at [PASA_alignment_assembl](github.com/PASApipeline/PASApipeline/wiki/PASA_alignment_assembly), we see,
 > The `PASA` pipeline requires separate configuration files for the alignment assembly and later annotation comparison steps, and these are configured separately for each run of the `PASA` pipeline, setting parameters to be used by the various tools and processes executed within the `PASA` pipeline. Configuration file templates are provided as '`$PASAHOME/pasa_conf/pasa.alignAssembly.Template.txt`' and '`$PASAHOME/pasa_conf/pasa.annotationCompare.Template.txt`', and these will be further described when used below. 
 
-`#TODO` Pick up with this tomorrow; basically, I'm trying to understand what I need to do to run something like what's shown on [this page](https://github.com/PASApipeline/PASApipeline/wiki/PASA_RNAseq), all in keeping with (i.e., following) instruction #3 on [this page](https://github.com/PASApipeline/PASApipeline/wiki/PASA_comprehensive_db):
+`#DONE` Pick up with this tomorrow; basically, I'm trying to understand what I need to do to run something like what's shown on [this page](https://github.com/PASApipeline/PASApipeline/wiki/PASA_RNAseq), all in keeping with (i.e., following) instruction #3 on [this page](https://github.com/PASApipeline/PASApipeline/wiki/PASA_comprehensive_db):
 ```bash
 #!/bin/bash
 #EXAMPLE
@@ -2989,8 +3003,10 @@ ${PASAHOME}/Launch_PASA_pipeline.pl \
 	--transcribed_is_aligned_orient \
     --stringent_alignment_overlap 30.0
 ```
-`#TODO` I need to understand what are appropriate contents/values for the `alignAssembly.config` file; once that's done, I need to get something like the above running with `Singularity` `PASA` (making use of the clean `trinity.fasta` file(s)) and then move on to subsequent steps [here](https://github.com/PASApipeline/PASApipeline/wiki/PASA_comprehensive_db)
+`#DONE` I need to understand what are appropriate contents/values for the `alignAssembly.config` file; once that's done, I need to get something like the above running with `Singularity` `PASA` (making use of the clean `trinity.fasta` file(s)) and then move on to subsequent steps [here](https://github.com/PASApipeline/PASApipeline/wiki/PASA_comprehensive_db)
 
+<a id="documentation-details-for-pasas-launch_pasa_pipelinepl-including-config"></a>
+#### Documentation, details for `PASA`'s' `Launch_PASA_pipeline.pl`, including `*.config`
 ```bash
 #!/bin/bash
 #DONTRUN
@@ -3145,6 +3161,8 @@ perl: warning: Falling back to the standard locale ("C").
 </details>
 <br />
 
+<a id="attempt-to-call-launch_pasa_pipelinepl-2022-1124"></a>
+### Attempt to call `Launch_PASA_pipeline.pl` (2022-1124)
 On calling `Launch_PASA_pipeline.pl`
 ```bash
 #!/bin/bash
@@ -3263,5 +3281,676 @@ singularity run ~/singularity-docker-etc/PASA.sif \
 	    --TDN tdn.accs \
 	    --ALIGNERS blat,gmap \
 	    --CPU "${SLURM_CPUS_ON_NODE}"
+```
+
+<a id="troubleshooting-the-errors-from-calling-launch_pasa_pipelinepl"></a>
+#### Troubleshooting the errors from calling `Launch_PASA_pipeline.pl`
+The call results in an error (see below), so I left a message on the [Trinity forum](https://groups.google.com/g/trinityrnaseq-users) and am now awaiting a response from Brian Haas:
+
+<a id="message-from-me-2022-1124"></a>
+##### Message from me (2022-1124)
+Hi,
+
+Following the advice [here](https://groups.google.com/g/trinityrnaseq-users/c/DWctG7wLNYY/m/RGn6ZH_fAQAJ, I am trying to run `PASA` `Launch_PASA_pipeline.pl` for a comprehensive transcriptome database. I'm not sure how to interpret an error message I get quickly after calling the script. Can you help me to understand the error and let me know any potential steps to resolve it?
+
+Here's how I'm calling `Launch_PASA_pipeline.pl` (I worked out the call from info [here](http://github.com/PASApipeline/PASApipeline/wiki/PASA_alignment_assembly#transcript-alignments-followed-by-alignment-assembly) (code chunk below the header) and [here](http://github.com/PASApipeline/PASApipeline/wiki/PASA_RNAseq#strand-specific-rna-seq) (second of three code chunks below the header)&mdash;please let me know if you see anything problematic):
+
+```bash
+export SINGULARITY_BIND=${HOME}/2022_transcriptome-construction/results/2022-1101/exp_PASA_trial:/mnt/data
+
+export PASAHOME=/usr/local/src/PASApipeline
+
+singularity run ~/singularity-docker-etc/PASA.sif \
+    ${PASAHOME}/Launch_PASA_pipeline.pl \
+        -c alignAssembly.config \
+        -I 1002 \
+        -C \
+        -R \
+        -g "${HOME}/genomes/sacCer3/Ensembl/108/DNA/Saccharomyces_cerevisiae.R64-1-1.dna.toplevel.chr-rename.fasta" \
+        -t transcripts.fasta.clean \
+        -T \
+        -u transcripts.fasta \
+        --transcribed_is_aligned_orient \
+        --stringent_alignment_overlap 30.0 \
+        --TDN tdn.accs \
+        --ALIGNERS blat,gmap \
+        --CPU "${SLURM_CPUS_ON_NODE}"
+```
+
+And here's the error message:
+```txt
+perl: warning: Setting locale failed.
+perl: warning: Please check that your locale settings:
+        LANGUAGE = "en_US:",
+        LC_ALL = (unset),
+        LC_CTYPE = "en_US.UTF-8",
+        LANG = "en_US.UTF-8"
+    are supported and installed on your system.
+perl: warning: Falling back to the standard locale ("C").
+perl: warning: Setting locale failed.
+perl: warning: Please check that your locale settings:
+        LANGUAGE = "en_US:",
+        LC_ALL = (unset),
+        LC_CTYPE = "en_US.UTF-8",
+        LANG = "en_US.UTF-8"
+    are supported and installed on your system.
+perl: warning: Falling back to the standard locale ("C").
+-connecting to MySQL db: PASA
+-*** Running PASA pipeine:
+* [Thu Nov 24 20:23:06 2022] Running CMD: /usr/local/src/PASApipeline/scripts/create_mysql_cdnaassembly_db.dbi -c alignAssembly.config -S '/usr/local/src/PASApipeline/schema/cdna_alignment_mysqlschema'
+perl: warning: Setting locale failed.
+perl: warning: Please check that your locale settings:
+        LANGUAGE = "en_US:",
+        LC_ALL = (unset),
+        LC_CTYPE = "en_US.UTF-8",
+        LANG = "en_US.UTF-8"
+    are supported and installed on your system.
+perl: warning: Falling back to the standard locale ("C").
+perl: warning: Setting locale failed.
+perl: warning: Please check that your locale settings:
+        LANGUAGE = "en_US:",
+        LC_ALL = (unset),
+        LC_CTYPE = "en_US.UTF-8",
+        LANG = "en_US.UTF-8"
+    are supported and installed on your system.
+perl: warning: Falling back to the standard locale ("C").
+DBI connect('database=;host=localhost','root',...) failed: Can't connect to local MySQL server through socket '/var/run/mysqld/mysqld.sock' (2) at /usr/local/src/PASApipeline/PerlLib/DB_connect.pm line 72.
+Cannot connect to : Can't connect to local MySQL server through socket '/var/run/mysqld/mysqld.sock' (2) at /usr/local/src/PASApipeline/scripts/create_mysql_cdnaassembly_db.dbi line 57.
+Error, cmd: /usr/local/src/PASApipeline/scripts/create_mysql_cdnaassembly_db.dbi -c alignAssembly.config -S '/usr/local/src/PASApipeline/schema/cdna_alignment_mysqlschema' died with ret 65280 No such file or directory at /usr/local/src/PASApipeline/PerlLib/Pipeliner.pm line 187.
+        Pipeliner::run(Pipeliner=HASH(0x55c7998992b8)) called at /usr/local/src/PASApipeline/Launch_PASA_pipeline.pl line 1047
+```
+
+Here are the contents of `alignAssembly.conf`:
+```bash
+cat << alignAssembly > "./alignAssembly.config"
+
+## templated variables to be replaced exist as <__var_name__>
+
+# Pathname of an SQLite database
+# If the environment variable DSN_DRIVER=mysql then it is the name of a MySQL database
+DATABASE=PASA
+
+
+#######################################################
+# Parameters to specify to specific scripts in pipeline
+# create a key = "script_name" + ":" + "parameter"
+# assign a value as done above.
+
+#script validate_alignments_in_db.dbi
+validate_alignments_in_db.dbi:--MIN_PERCENT_ALIGNED=75
+validate_alignments_in_db.dbi:--MIN_AVG_PER_ID=95
+validate_alignments_in_db.dbi:--NUM_BP_PERFECT_SPLICE_BOUNDARY=0
+
+#script subcluster_builder.dbi
+subcluster_builder.dbi:-m=50
+
+alignAssembly
+```
+
+I also called the `Perl` script with an `alignAssembly.conf` that has` DATABASE=sample_mydb_pasa`, like the example in the `PASA` repo. That call resulted in the same error message.
+
+Thanks,
+Kris
+
+<a id="response-from-brian-haas-2022-1125"></a>
+##### Response from Brian Haas (2022-1125)
+Hi Kris,
+
+In your `alignAssembly.conf` file, set the
+`DATABASE=/exact/path/to/your/working/directory/sample_mydb_pasa.sqlite`
+
+which will use the `sqlite` backend instead of `mysql`
+
+then just rerun your original command.
+
+hope this helps,
+
+~b
+
+<a id="attempt-to-call-launch_pasa_pipelinepl-following-brian-haas-advice-2022-1125"></a>
+### Attempt to call `Launch_PASA_pipeline.pl` following Brian Haas' advice (2022-1125)
+Rerun the call to `Launch_PASA_pipeline.pl` based on advice from Brian Haas:
+```bash
+#!/bin/bash
+#DONTRUN
+
+tmux  # Rename the session to 'PASA'
+grabnode  # Default and lowest settings, except 2 threads
+echo "${SLURM_CPUS_ON_NODE}"  # 2
+
+ml Singularity/3.5.3
+
+cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101/exp_PASA_trial" \
+	|| echo "cd'ing failed; check on this"
+
+export SINGULARITY_BIND=${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101/exp_PASA_trial:/mnt/data
+echo "${SINGULARITY_BIND}"
+# /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101/exp_PASA_trial:/mnt/data
+
+export PASAHOME=/usr/local/src/PASApipeline
+echo "${PASAHOME}"
+# /usr/local/src/PASApipeline
+
+pwd
+# /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101/exp_PASA_trial
+
+if [[ -f alignAssembly.config ]]; then rm alignAssembly.config; fi
+cat << alignAssembly > "./alignAssembly.config"
+
+## templated variables to be replaced exist as <__var_name__>
+
+# Pathname of an SQLite database
+# If the environment variable DSN_DRIVER=mysql then it is the name of a MySQL database
+DATABASE=/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101/exp_PASA_trial/sample_mydb_pasa.sqlite
+
+
+#######################################################
+# Parameters to specify to specific scripts in pipeline
+# create a key = "script_name" + ":" + "parameter" 
+# assign a value as done above.
+
+#script validate_alignments_in_db.dbi
+validate_alignments_in_db.dbi:--MIN_PERCENT_ALIGNED=75
+validate_alignments_in_db.dbi:--MIN_AVG_PER_ID=95
+validate_alignments_in_db.dbi:--NUM_BP_PERFECT_SPLICE_BOUNDARY=0
+
+#script subcluster_builder.dbi
+subcluster_builder.dbi:-m=50
+
+alignAssembly
+# vi alignAssembly.config
+
+singularity run ~/singularity-docker-etc/PASA.sif \
+	${PASAHOME}/Launch_PASA_pipeline.pl \
+		-c alignAssembly.config \
+		-I 1002 \
+		-C \
+		-R \
+		-g "${HOME}/genomes/sacCer3/Ensembl/108/DNA/Saccharomyces_cerevisiae.R64-1-1.dna.toplevel.chr-rename.fasta" \
+		-t transcripts.fasta.clean \
+		-T \
+		-u transcripts.fasta \
+		--transcribed_is_aligned_orient \
+	    --stringent_alignment_overlap 30.0 \
+	    --TDN tdn.accs \
+	    --ALIGNERS blat,gmap \
+	    --CPU "${SLURM_CPUS_ON_NODE}" \
+	    	> >(tee -a stdout.log.txt) \
+	    	2> >(tee -a stderr.log.txt >&2)
+
+#  Great! It's running; stopped to adjust the above so that STDERR and STDOUT is saved to files (a lot of information is printed to the screen)
+```
+
+This resulted in an error involving the pipeline's call to script `assemble_clusters.dbi`; thus, submitted another message on the [Trinity forum](https://groups.google.com/g/trinityrnaseq-users) and am now awaiting a response from Brian Haas:
+
+<a id="again-troubleshooting-the-errors-from-calling-launch_pasa_pipelinepl"></a>
+#### Again, troubleshooting the errors from calling `Launch_PASA_pipeline.pl`
+
+<a id="subsequent-message-to-brian-after-encountering-another-error-2022-1125"></a>
+##### Subsequent message to Brian after encountering another error (2022-1125)
+Thank you, Brian.
+
+`Launch_PASA_pipeline.pl` ran for a good bit before failing with an error; this error is associated with the pipeline's call to `assemble_clusters.dbi`. Do you have any insights or advice for this?
+
+Below, I've pasted what was printed to `STDERR`, and I've attached the `STDERR` log too (for better readability, I removed Perl warnings about my locale settings). I've also included how I called Launch_PASA_pipeline.pl (I'm calling it with two threads) and the contents of alignAssembly.config. Also, I've printed the contents of my work directory so you can see what files have been generated by the pipeline so far.
+
+I appreciate your help. Thanks again,
+Kris
+
+The error messages associated with `alignAssembly.config`:
+```txt
+* [Fri Nov 25 10:47:03 2022] Running CMD: /usr/local/src/PASApipeline/scripts/assemble_clusters.dbi -G /home/kalavatt/genomes/sacCer3/Ensembl/108/DNA/Saccharomyces_cerevisiae.R64-1-1.dna.toplevel.chr-rename.fasta  -M '/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101/exp_PASA_trial/sample_mydb_pasa.sqlite'  -T 2  > sample_mydb_pasa.sqlite.pasa_alignment_assembly_building.ascii_illustrations.out
+
+Thread 2 terminated abnormally: Can't open file /loc/scratch/4593262/pasa.1669402024-0.841504182973043.+.in at /usr/local/src/PASApipeline/PerlLib/CDNA/PASA_alignment_assembler.pm line 232, <$fh> line 13555.
+Thread 3 terminated abnormally: Can't open file /loc/scratch/4593262/pasa.1669402024-0.821881816563295.+.in at /usr/local/src/PASApipeline/PerlLib/CDNA/PASA_alignment_assembler.pm line 232, <$fh> line 5278.
+Thread 1 terminated abnormally: Can't open file /loc/scratch/4593262/pasa.1669402024-0.401388888320984.+.in at /usr/local/src/PASApipeline/PerlLib/CDNA/PASA_alignment_assembler.pm line 232, <$fh> line 3838.
+ERROR, thread 1 exited with error Can't open file /loc/scratch/4593262/pasa.1669402024-0.401388888320984.+.in at /usr/local/src/PASApipeline/PerlLib/CDNA/PASA_alignment_assembler.pm line 232, <$fh> line 3838.
+
+ERROR, thread 2 exited with error Can't open file /loc/scratch/4593262/pasa.1669402024-0.841504182973043.+.in at /usr/local/src/PASApipeline/PerlLib/CDNA/PASA_alignment_assembler.pm line 232, <$fh> line 13555.
+
+ERROR, thread 3 exited with error Can't open file /loc/scratch/4593262/pasa.1669402024-0.821881816563295.+.in at /usr/local/src/PASApipeline/PerlLib/CDNA/PASA_alignment_assembler.pm line 232, <$fh> line 5278.
+
+Thread 5 terminated abnormally: Can't open file /loc/scratch/4593262/pasa.1669402025-0.580776268922822.+.in at /usr/local/src/PASApipeline/PerlLib/CDNA/PASA_alignment_assembler.pm line 232, <$fh> line 7333.
+Thread 4 terminated abnormally: Can't open file /loc/scratch/4593262/pasa.1669402025-0.448308551059203.+.in at /usr/local/src/PASApipeline/PerlLib/CDNA/PASA_alignment_assembler.pm line 232, <$fh> line 25534.
+Thread 6 terminated abnormally: Can't open file /loc/scratch/4593262/pasa.1669402025-0.567081061731191.+.in at /usr/local/src/PASApipeline/PerlLib/CDNA/PASA_alignment_assembler.pm line 232, <$fh> line 1430.
+ERROR, thread 4 exited with error Can't open file /loc/scratch/4593262/pasa.1669402025-0.448308551059203.+.in at /usr/local/src/PASApipeline/PerlLib/CDNA/PASA_alignment_assembler.pm line 232, <$fh> line 25534.
+
+ERROR, thread 5 exited with error Can't open file /loc/scratch/4593262/pasa.1669402025-0.580776268922822.+.in at /usr/local/src/PASApipeline/PerlLib/CDNA/PASA_alignment_assembler.pm line 232, <$fh> line 7333.
+
+ERROR, thread 6 exited with error Can't open file /loc/scratch/4593262/pasa.1669402025-0.567081061731191.+.in at /usr/local/src/PASApipeline/PerlLib/CDNA/PASA_alignment_assembler.pm line 232, <$fh> line 1430.
+
+Thread 8 terminated abnormally: Can't open file /loc/scratch/4593262/pasa.1669402026-0.365538701488735.+.in at /usr/local/src/PASApipeline/PerlLib/CDNA/PASA_alignment_assembler.pm line 232, <$fh> line 4504.
+Thread 7 terminated abnormally: Can't open file /loc/scratch/4593262/pasa.1669402026-0.910045815006928.+.in at /usr/local/src/PASApipeline/PerlLib/CDNA/PASA_alignment_assembler.pm line 232, <$fh> line 9616.
+Thread 9 terminated abnormally: Can't open file /loc/scratch/4593262/pasa.1669402026-0.752270791986124.+.in at /usr/local/src/PASApipeline/PerlLib/CDNA/PASA_alignment_assembler.pm line 232, <$fh> line 18184.
+ERROR, thread 7 exited with error Can't open file /loc/scratch/4593262/pasa.1669402026-0.910045815006928.+.in at /usr/local/src/PASApipeline/PerlLib/CDNA/PASA_alignment_assembler.pm line 232, <$fh> line 9616.
+
+ERROR, thread 8 exited with error Can't open file /loc/scratch/4593262/pasa.1669402026-0.365538701488735.+.in at /usr/local/src/PASApipeline/PerlLib/CDNA/PASA_alignment_assembler.pm line 232, <$fh> line 4504.
+
+ERROR, thread 9 exited with error Can't open file /loc/scratch/4593262/pasa.1669402026-0.752270791986124.+.in at /usr/local/src/PASApipeline/PerlLib/CDNA/PASA_alignment_assembler.pm line 232, <$fh> line 18184.
+
+Thread 10 terminated abnormally: Can't open file /loc/scratch/4593262/pasa.1669402027-0.789667837861092.+.in at /usr/local/src/PASApipeline/PerlLib/CDNA/PASA_alignment_assembler.pm line 232, <$fh> line 9379.
+Thread 11 terminated abnormally: Can't open file /loc/scratch/4593262/pasa.1669402027-0.572378615689562.+.in at /usr/local/src/PASApipeline/PerlLib/CDNA/PASA_alignment_assembler.pm line 232, <$fh> line 12431.
+Thread 12 terminated abnormally: Can't open file /loc/scratch/4593262/pasa.1669402027-0.987498708841489.+.in at /usr/local/src/PASApipeline/PerlLib/CDNA/PASA_alignment_assembler.pm line 232, <$fh> line 11115.
+ERROR, thread 10 exited with error Can't open file /loc/scratch/4593262/pasa.1669402027-0.789667837861092.+.in at /usr/local/src/PASApipeline/PerlLib/CDNA/PASA_alignment_assembler.pm line 232, <$fh> line 9379.
+
+ERROR, thread 11 exited with error Can't open file /loc/scratch/4593262/pasa.1669402027-0.572378615689562.+.in at /usr/local/src/PASApipeline/PerlLib/CDNA/PASA_alignment_assembler.pm line 232, <$fh> line 12431.
+
+ERROR, thread 12 exited with error Can't open file /loc/scratch/4593262/pasa.1669402027-0.987498708841489.+.in at /usr/local/src/PASApipeline/PerlLib/CDNA/PASA_alignment_assembler.pm line 232, <$fh> line 11115.
+
+Thread 14 terminated abnormally: Can't open file /loc/scratch/4593262/pasa.1669402028-0.0183860194674743.+.in at /usr/local/src/PASApipeline/PerlLib/CDNA/PASA_alignment_assembler.pm line 232, <$fh> line 15409.
+Thread 13 terminated abnormally: Can't open file /loc/scratch/4593262/pasa.1669402028-0.816049709756957.+.in at /usr/local/src/PASApipeline/PerlLib/CDNA/PASA_alignment_assembler.pm line 232, <$fh> line 17971.
+Thread 15 terminated abnormally: Can't open file /loc/scratch/4593262/pasa.1669402028-0.198708701952459.+.in at /usr/local/src/PASApipeline/PerlLib/CDNA/PASA_alignment_assembler.pm line 232, <$fh> line 13074.
+ERROR, thread 13 exited with error Can't open file /loc/scratch/4593262/pasa.1669402028-0.816049709756957.+.in at /usr/local/src/PASApipeline/PerlLib/CDNA/PASA_alignment_assembler.pm line 232, <$fh> line 17971.
+
+ERROR, thread 14 exited with error Can't open file /loc/scratch/4593262/pasa.1669402028-0.0183860194674743.+.in at /usr/local/src/PASApipeline/PerlLib/CDNA/PASA_alignment_assembler.pm line 232, <$fh> line 15409.
+
+ERROR, thread 15 exited with error Can't open file /loc/scratch/4593262/pasa.1669402028-0.198708701952459.+.in at /usr/local/src/PASApipeline/PerlLib/CDNA/PASA_alignment_assembler.pm line 232, <$fh> line 13074.
+
+Thread 16 terminated abnormally: Can't open file /loc/scratch/4593262/pasa.1669402029-0.0687543715621395.+.in at /usr/local/src/PASApipeline/PerlLib/CDNA/PASA_alignment_assembler.pm line 232, <$fh> line 18190.
+ERROR, thread 16 exited with error Can't open file /loc/scratch/4593262/pasa.1669402029-0.0687543715621395.+.in at /usr/local/src/PASApipeline/PerlLib/CDNA/PASA_alignment_assembler.pm line 232, <$fh> line 18190.
+
+Thread 17 terminated abnormally: Can't open file /loc/scratch/4593262/pasa.1669402029-0.304084447519021.+.in at /usr/local/src/PASApipeline/PerlLib/CDNA/PASA_alignment_assembler.pm line 232, <$fh> line 15803.
+ERROR, thread 17 exited with error Can't open file /loc/scratch/4593262/pasa.1669402029-0.304084447519021.+.in at /usr/local/src/PASApipeline/PerlLib/CDNA/PASA_alignment_assembler.pm line 232, <$fh> line 15803.
+
+Error, 17 threads failed.
+Error, cmd: /usr/local/src/PASApipeline/scripts/assemble_clusters.dbi -G /home/kalavatt/genomes/sacCer3/Ensembl/108/DNA/Saccharomyces_cerevisiae.R64-1-1.dna.toplevel.chr-rename.fasta  -M '/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101/exp_PASA_trial/sample_mydb_pasa.sqlite'  -T 2  > sample_mydb_pasa.sqlite.pasa_alignment_assembly_building.ascii_illustrations.out died with ret 7424 No such file or directory at /usr/local/src/PASApipeline/PerlLib/Pipeliner.pm line 187.
+    Pipeliner::run(Pipeliner=HASH(0x556e467dd2e8)) called at /usr/local/src/PASApipeline/Launch_PASA_pipeline.pl line 1047
+```
+
+Here's how I'm calling `Launch_PASA_pipeline.pl` (`--CPU 2`):
+```bash
+
+singularity run ~/singularity-docker-etc/PASA.sif \
+    ${PASAHOME}/Launch_PASA_pipeline.pl \
+        -c alignAssembly.config \
+        -I 1002 \
+        -C \
+        -R \
+        -g "${HOME}/genomes/sacCer3/Ensembl/108/DNA/Saccharomyces_cerevisiae.R64-1-1.dna.toplevel.chr-rename.fasta" \
+        -t transcripts.fasta.clean \
+        -T \
+        -u transcripts.fasta \
+        --transcribed_is_aligned_orient \
+        --stringent_alignment_overlap 30.0 \
+        --TDN tdn.accs \
+        --ALIGNERS blat,gmap \
+        --CPU "${SLURM_CPUS_ON_NODE}" \
+            > >(tee -a stdout.log.txt) \
+            2> >(tee -a stderr.log.txt >&2)
+```
+
+And here are the contents of `alignAssembly.config`:
+```bash
+cat << alignAssembly > "./alignAssembly.config"
+
+## templated variables to be replaced exist as <__var_name__>
+
+# Pathname of an SQLite database
+# If the environment variable DSN_DRIVER=mysql then it is the name of a MySQL database
+DATABASE=/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101/exp_PASA_trial/sample_mydb_pasa.sqlite
+
+
+
+#######################################################
+# Parameters to specify to specific scripts in pipeline
+# create a key = "script_name" + ":" + "parameter"
+# assign a value as done above.
+
+#script validate_alignments_in_db.dbi
+validate_alignments_in_db.dbi:--MIN_PERCENT_ALIGNED=75
+validate_alignments_in_db.dbi:--MIN_AVG_PER_ID=95
+validate_alignments_in_db.dbi:--NUM_BP_PERFECT_SPLICE_BOUNDARY=0
+
+#script subcluster_builder.dbi
+subcluster_builder.dbi:-m=50
+
+alignAssembly
+```
+
+Contents of work directory (`ls -lhaFG`):
+```bash
+total 131M
+drwxrws---  7 kalavatt 2.1K Nov 25 11:39 ./
+drwxrws--- 14 kalavatt 1.4K Nov 25 11:11 ../
+-rw-r--r--  1 kalavatt    8 Nov 25 10:03 11.ooc
+-rw-rw----  1 kalavatt  788 Nov 25 09:50 alignAssembly.config
+-rw-r--r--  1 kalavatt 5.2M Nov 25 10:11 alignment.validations.output
+drwxr-sr-x  2 kalavatt    0 Nov 25 10:47 assemblies/
+-rw-rw----  1 kalavatt  679 Nov 24 19:07 bak.alignAssembly.config
+-rw-rw----  1 kalavatt  19M Nov 24 14:12 bak.transcripts.fasta
+lrwxrwxrwx  1 kalavatt   52 Nov 25 10:03 blat.spliced_alignments.gff3 -> pblat_outdir/transcripts.fasta.clean.pslx.top_1.gff3
+drwxr-s---  2 kalavatt  970 Nov 24 19:24 cleaning_1/
+-rw-rw-r--  1 kalavatt 6.9K Nov 24 14:12 err_seqcl_transcripts.fasta.log
+lrwxrwxrwx  1 kalavatt  188 Nov 24 13:23 genome-free_SC_all.Trinity.fasta -> /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101/exp_Trinity_trial/exp_Trinity_trial_genome-free_SC_all/Trinity_trial_genome-free_SC_all.Trinity.fasta
+lrwxrwxrwx  1 kalavatt  195 Nov 24 13:26 genome-guided_SC_all.Trinity.fasta -> /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101/exp_Trinity_trial/exp_Trinity_trial_genome-guided_SC_all/Trinity_trial_genome-guided_SC_all/Trinity-GG.fasta
+-rw-r--r--  1 kalavatt 4.6M Nov 25 10:03 gmap.spliced_alignments.gff3
+-rw-r--r--  1 kalavatt    0 Nov 25 10:03 gmap.spliced_alignments.gff3.completed
+-rw-rw-r--  1 kalavatt  880 Nov 24 14:12 outparts_cln.sort
+drwxr-sr-x  2 kalavatt  223 Nov 25 10:46 pasa_run.log.dir/
+drwxr-sr-x  2 kalavatt 1.2K Nov 25 10:47 __pasa_sample_mydb_pasa.sqlite_SQLite_chkpts/
+-rw-r--r--  1 kalavatt 6.9K Nov 25 10:47 __pasa_sample_mydb_pasa.sqlite_SQLite_chkpts.cmds_log
+drwxr-sr-x  3 kalavatt  134 Nov 25 11:39 pblat_outdir/
+-rw-r--r--  1 kalavatt  16M Nov 25 10:47 sample_mydb_pasa.sqlite
+-rw-r--r--  1 kalavatt 155K Nov 25 10:19 sample_mydb_pasa.sqlite.failed_blat_alignments.gff3
+-rw-r--r--  1 kalavatt 321K Nov 25 10:20 sample_mydb_pasa.sqlite.failed_blat_alignments.gtf
+-rw-r--r--  1 kalavatt  82K Nov 25 10:27 sample_mydb_pasa.sqlite.failed_gmap_alignments.gff3
+-rw-r--r--  1 kalavatt 187K Nov 25 10:27 sample_mydb_pasa.sqlite.failed_gmap_alignments.gtf
+-rw-r--r--  1 kalavatt 8.1K Nov 25 10:47 sample_mydb_pasa.sqlite.pasa_alignment_assembly_building.ascii_illustrations.out
+-rw-r--r--  1 kalavatt 546K Nov 25 10:36 sample_mydb_pasa.sqlite.polyAsites.fasta
+-rw-r--r--  1 kalavatt 1.8M Nov 25 10:15 sample_mydb_pasa.sqlite.valid_blat_alignments.bed
+-rw-r--r--  1 kalavatt 2.3M Nov 25 10:13 sample_mydb_pasa.sqlite.valid_blat_alignments.gff3
+-rw-r--r--  1 kalavatt 6.2M Nov 25 10:19 sample_mydb_pasa.sqlite.valid_blat_alignments.gtf
+-rw-r--r--  1 kalavatt 1.9M Nov 25 10:23 sample_mydb_pasa.sqlite.valid_gmap_alignments.bed
+-rw-r--r--  1 kalavatt 2.3M Nov 25 10:21 sample_mydb_pasa.sqlite.valid_gmap_alignments.gff3
+-rw-r--r--  1 kalavatt 6.5M Nov 25 10:27 sample_mydb_pasa.sqlite.valid_gmap_alignments.gtf
+-rw-rw-r--  1 kalavatt 1002 Nov 24 14:12 seqcl_transcripts.fasta.log
+-rw-rw----  1 kalavatt  40K Nov 25 11:19 stderr.log.clean.txt
+-rw-rw----  1 kalavatt  55K Nov 25 10:47 stderr.log.txt
+-rw-rw----  1 kalavatt  682 Nov 25 10:04 stdout.log.txt
+-rw-rw----  1 kalavatt 218K Nov 24 13:58 tdn.accs
+-rw-r--r--  1 kalavatt    0 Nov 25 10:03 tmp-5937-85746-out
+-rw-r--r--  1 kalavatt    0 Nov 25 10:03 tmp-5937-85746-out.tmp.1
+-rw-rw----  1 kalavatt  19M Nov 24 13:50 transcripts.fasta
+-rw-rw-r--  1 kalavatt 1.1M Nov 24 14:12 transcripts.fasta.cidx
+-rw-rw-r--  1 kalavatt  19M Nov 24 14:12 transcripts.fasta.clean
+-rw-r--r--  1 kalavatt 1.1M Nov 25 10:04 transcripts.fasta.clean.cidx
+-rw-r--r--  1 kalavatt 816K Nov 25 09:58 transcripts.fasta.clean.fai
+-rw-rw-r--  1 kalavatt 1.3M Nov 24 14:12 transcripts.fasta.cln
+```
+<br />
+<br />
+
+<a id="setting-up-the-preprocessing-pipeline-for-trinity"></a>
+## Setting up the preprocessing pipeline for `Trinity`
+...for genome-free transcriptome assembly (will also influence *at least* one step of genome-guided transcriptome assembly); draws on material presented [here](https://informatics.fas.harvard.edu/best-practices-for-de-novo-transcriptome-assembly-with-trinity.html)
+```bash
+#!/bin/bash
+#DONTRUN
+
+grabnode  # Lowest and default settings
+
+cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101" \
+    || echo "cd'ing failed; check on this"
+
+Trinity_env
+
+conda list
+```
+
+<details>
+<summary><i>Printed to terminal:</i></summary>
+
+```txt
+# packages in environment at /home/kalavatt/miniconda3/envs/Trinity_env:
+#
+# Name                    Version                   Build  Channel
+_libgcc_mutex             0.1                 conda_forge    conda-forge
+_openmp_mutex             4.5                       2_gnu    conda-forge
+bedtools                  2.30.0               h7d7f7ad_2    bioconda
+bz2file                   0.98             py37h06a4308_1
+bzip2                     1.0.8                h7b6447c_0
+ca-certificates           2022.10.11           h06a4308_0
+certifi                   2022.9.24        py37h06a4308_0
+cutadapt                  2.6              py37h516909a_0    bioconda
+dbus                      1.13.18              hb2f20db_0
+dnaio                     0.3              py37h14c3975_1    bioconda
+expat                     2.4.9                h6a678d5_0
+fastqc                    0.11.9               hdfd78af_1    bioconda
+font-ttf-dejavu-sans-mono 2.37                 hd3eb1b0_0
+fontconfig                2.13.1               hef1e5e3_1
+freetype                  2.12.1               h4a9f257_0
+gdbm                      1.18                 hd4cb3f1_4
+gettext                   0.21.1               h27087fc_0    conda-forge
+glib                      2.70.2               h780b84a_4    conda-forge
+glib-tools                2.70.2               h780b84a_4    conda-forge
+icu                       58.2                 he6710b0_3
+kmer-jellyfish            2.3.0                h9f5acd7_3    bioconda
+ld_impl_linux-64          2.38                 h1181459_1
+libffi                    3.4.2                h7f98852_5    conda-forge
+libgcc-ng                 12.2.0              h65d4601_19    conda-forge
+libglib                   2.70.2               h174f98d_4    conda-forge
+libgomp                   12.2.0              h65d4601_19    conda-forge
+libiconv                  1.17                 h166bdaf_0    conda-forge
+libnsl                    2.0.0                h7f98852_0    conda-forge
+libpng                    1.6.37               hbc83047_0
+libstdcxx-ng              11.2.0               h1234567_1
+libuuid                   1.41.5               h5eee18b_0
+libxcb                    1.15                 h7f8727e_0
+libxml2                   2.9.14               h74e7548_0
+libzlib                   1.2.13               h166bdaf_4    conda-forge
+ncurses                   6.3                  h5eee18b_3
+openjdk                   11.0.13              h87a67e3_0
+openssl                   3.0.7                h166bdaf_0    conda-forge
+pcre                      8.45                 h295c915_0
+perl                      5.34.0               h5eee18b_2
+pigz                      2.6                  h27cfd23_0
+pip                       22.2.2           py37h06a4308_0
+python                    3.7.12          hf930737_100_cpython    conda-forge
+rcorrector                1.0.4                h2e03b76_2    bioconda
+readline                  8.2                  h5eee18b_0
+semver                    2.13.0             pyh9f0ad1d_0    conda-forge
+setuptools                65.5.0           py37h06a4308_0
+spython                   0.2.14             pyhd8ed1ab_0    conda-forge
+sqlite                    3.39.3               h5082296_0
+star                      2.7.10b              h9ee0642_0    bioconda
+tk                        8.6.12               h1ccaba5_0
+trim-galore               0.6.7                hdfd78af_0    bioconda
+wheel                     0.37.1             pyhd3eb1b0_0
+xopen                     0.7.3                      py_0    bioconda
+xz                        5.2.6                h5eee18b_0
+zlib                      1.2.13               h166bdaf_4    conda-forge
+``` 
+</details>
+<br />
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+mamba install -c conda-forge parallel
+
+mkdir -p exp_preprocessing/{01_fastqc,02_trim_galore,03_fastqc}
+
+
+#  1. FastQC ------------------------------------------------------------------
+if [[ -f submit-fastqc-preprocessing.sh ]]; then
+	rm submit-fastqc-preprocessing.sh
+fi
+cat << script > "./submit-fastqc-preprocessing.sh"
+#!/bin/bash
+
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=4
+#SBATCH --error=./%J.err.txt
+#SBATCH --output=./%J.out.txt
+
+infile="\${1}"
+outdir="\${2}"
+
+fastqc \\
+    --threads "\${SLURM_CPUS_ON_NODE}" \\
+    --outdir "\${outdir}" \\
+    "\${infile}"
+script
+# vi submit-fastqc-preprocessing.sh
+
+unset infiles
+typeset -a infiles
+while IFS=" " read -r -d $'\0'; do
+    infiles+=( "${REPLY}" )
+done < <(\
+    find "files_fastq_symlinks" \
+        -type l \
+        -name *_Q_IN_* \
+        -print0 \
+            | sort -z \
+)
+for i in "${infiles[@]}"; do echo "${i}"; done
+# files_fastq_symlinks/5781_Q_IN_merged_R1.fastq
+# files_fastq_symlinks/5781_Q_IN_merged_R2.fastq
+# files_fastq_symlinks/5782_Q_IN_merged_R1.fastq
+# files_fastq_symlinks/5782_Q_IN_merged_R2.fastq
+
+for i in "${infiles[@]}"; do
+	echo "Working with ${i}..."
+	sbatch submit-fastqc-preprocessing.sh \
+		"${i}" \
+		"exp_preprocessing/01_fastqc/"
+done
+
+
+#  2. Trim Galore -------------------------------------------------------------
+unset infiles
+unset instrings
+unset intermediate
+unset duplicates
+
+typeset -a infiles
+typeset -a instrings
+typeset -a intermediate
+typeset -A duplicates
+
+while IFS=" " read -r -d $'\0'; do
+    infiles+=( "${REPLY}" )
+done < <(\
+    find "files_fastq_symlinks" \
+        -type l \
+        -name *_Q_IN_* \
+        -print0 \
+            | sort -z \
+)
+# for i in "${infiles[@]}"; do echo "${i}"; done
+# # files_fastq_symlinks/5781_Q_IN_merged_R1.fastq
+# # files_fastq_symlinks/5781_Q_IN_merged_R2.fastq
+# # files_fastq_symlinks/5782_Q_IN_merged_R1.fastq
+# # files_fastq_symlinks/5782_Q_IN_merged_R2.fastq
+
+for i in "${infiles[@]}"; do
+	intermediate+=( "${i%_R?.fastq}" )
+done
+# for i in "${intermediate[@]}"; do echo "${i}"; done
+# # files_fastq_symlinks/5781_Q_IN_merged
+# # files_fastq_symlinks/5781_Q_IN_merged
+# # files_fastq_symlinks/5782_Q_IN_merged
+# # files_fastq_symlinks/5782_Q_IN_merged
+
+for i in "${intermediate[@]}"; do
+	if [[ -z "${duplicates[$i]}" ]]; then
+        instrings+=( "${i}" )
+    fi
+    duplicates["${i}"]=1
+done
+
+# echo "Duplicates..."
+# for i in "${!duplicates[@]}"; do echo "${i}"; done
+# # files_fastq_symlinks/5782_Q_IN_merged
+# # files_fastq_symlinks/5781_Q_IN_merged
+# echo ""
+unset duplicates
+
+# echo "Instrings..."
+# for i in "${instrings[@]}"; do echo "${i}"; done
+# # files_fastq_symlinks/5781_Q_IN_merged
+# # files_fastq_symlinks/5782_Q_IN_merged
+# echo ""
+
+if [[ -f submit-trim_galore-preprocessing.sh ]]; then
+	rm submit-trim_galore-preprocessing.sh
+fi
+cat << script > "./submit-trim_galore-preprocessing.sh"
+#!/bin/bash
+
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=1
+#SBATCH --error=./%J.err.txt
+#SBATCH --output=./%J.out.txt
+
+instring="\${1}"
+outdir="\${2}"
+
+#  Echo test
+parallel --header : --colsep " " -k -j 1 echo \\
+"trim_galore \\
+	--paired \\
+	--retain_unpaired \\
+	--phred33 \\
+	--output_dir {outdir} \\
+	--length 36 \\
+	--quality 5 \\
+	--stringency 1 \\
+	-e 0.1 \\
+	{sample}_R1.fastq \\
+	{sample}_R2.fastq" \\
+::: sample "\${instring}" \\
+::: outdir "\${outdir}"
+
+parallel --header : --colsep " " -k -j 1 \\
+"trim_galore \\
+	--paired \\
+	--retain_unpaired \\
+	--phred33 \\
+	--output_dir {outdir} \\
+	--length 36 \\
+	--quality 5 \\
+	--stringency 1 \\
+	-e 0.1 \\
+	{sample}_R1.fastq \\
+	{sample}_R2.fastq" \\
+::: sample "\${instring}" \\
+::: outdir "\${outdir}"
+
+echo ""
+script
+# vi submit-trim_galore-preprocessing.sh
+
+#  Does it work?
+for i in "${instrings[@]}"; do
+	sbatch submit-trim_galore-preprocessing.sh \
+		"${i}" \
+		"exp_preprocessing/02_trim_galore/"
+done
+
+
+#  3. FastQC ------------------------------------------------------------------
+unset infiles_trimmed
+typeset -a infiles_trimmed
+while IFS=" " read -r -d $'\0'; do
+    infiles_trimmed+=( "${REPLY}" )
+done < <(\
+    find "exp_preprocessing/02_trim_galore" \
+        -type f \
+        -name *val*.fq \
+        -print0 \
+            | sort -z \
+)
+# for i in "${infiles_trimmed[@]}"; do echo "${i}"; done
+# # exp_preprocessing/02_trim_galore/5781_Q_IN_merged_R1_val_1.fq
+# # exp_preprocessing/02_trim_galore/5781_Q_IN_merged_R2_val_2.fq
+# # exp_preprocessing/02_trim_galore/5782_Q_IN_merged_R1_val_1.fq
+# # exp_preprocessing/02_trim_galore/5782_Q_IN_merged_R2_val_2.fq
+
+for i in "${infiles_trimmed[@]}"; do
+	echo "Working with ${i}..."
+	sbatch submit-fastqc-preprocessing.sh \
+		"${i}" \
+		"exp_preprocessing/03_fastqc/"
+done
+
+
+#  4. STAR --------------------------------------------------------------------
+# which STAR
+# # /home/kalavatt/miniconda3/envs/Trinity_env/bin/STAR
+
+# STAR --version
+# # 2.7.10b
+
+#  4a. For genome-free assembly -------
+
+
+#  4b. For genome-guided assembly ----
 
 ```
+
+`#TODO #TOMORROW` Pick up with alignment for the two approaches, including bam-to-fastq conversion, then move on to implementing calls to `rCorrector`  
+`#TODO #TOMORROW` Copy in the responses from Brian Haas to my questions (copy those in as well)  
+`#TODO #TOMORROW` Move forward with the `PASA` pipeline taking into account Brian's suggestions  
