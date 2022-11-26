@@ -1,5 +1,5 @@
 
-# 2022-1102-1122
+# 2022-1102-1126
 <details>
 <summary><b><font size="+2"><i>Table of contents</i></font></b></summary>
 <!-- MarkdownTOC -->
@@ -108,7 +108,7 @@
         1. [Another look at the metrics and flags from the two `STAR` alignment approaches \(2022-1118\)](#another-look-at-the-metrics-and-flags-from-the-two-star-alignment-approaches-2022-1118)
             1. [Some readouts for the 'rna-star' and 'multi-hit-mode' `.bam` files](#some-readouts-for-the-rna-star-and-multi-hit-mode-bam-files)
             1. [Some readouts for the 'rna-star' and 'multi-hit-mode' `.bam` files filtered with `exclude_bam_reads-unmapped.sh`](#some-readouts-for-the-rna-star-and-multi-hit-mode-bam-files-filtered-with-exclude_bam_reads-unmappedsh)
-    1. [Rerun `STAR` alignment approaches and metric-checks while collecting all tags in `.bam` files](#rerun-star-alignment-approaches-and-metric-checks-while-collecting-all-tags-in-bam-files)
+    1. [Rerun `STAR` alignment approaches and metric checks while collecting all tags in `.bam`s](#rerun-star-alignment-approaches-and-metric-checks-while-collecting-all-tags-in-bams)
     1. [Establishing how to call `Trinity` in genome-free and -guided modes](#establishing-how-to-call-trinity-in-genome-free-and--guided-modes)
         1. [How Allison called `Trinity` in genome-guided mode](#how-allison-called-trinity-in-genome-guided-mode)
         1. [Parameters called out by name in McIlwain et al., *G3* 2016](#parameters-called-out-by-name-in-mcilwain-et-al-g3-2016)
@@ -5486,8 +5486,10 @@ list_tally_flags "${bam_multi_hit}"
 #    79414    611    read fails
 ```
 
-<a id="rerun-star-alignment-approaches-and-metric-checks-while-collecting-all-tags-in-bam-files"></a>
-### Rerun `STAR` alignment approaches and metric-checks while collecting all tags in `.bam` files
+<a id="rerun-star-alignment-approaches-and-metric-checks-while-collecting-all-tags-in-bams"></a>
+### Rerun `STAR` alignment approaches and metric checks while collecting all tags in `.bam`s
+`#DEKHO`  
+`#REMEMBER` Per Alison, "IP" = Nascent, "IN" = SteadyState
 ```bash
 #!/bin/bash
 #DONTRUN
@@ -5513,7 +5515,6 @@ done < <(\
         -print0 \
             | sort -z \
 )
-
 
 
 #  'rna-star' -----------------------------------------------------------------
@@ -6245,10 +6246,10 @@ For example, from looking here: `vi /app/software/Trinity/2.12.0-foss-2020b/trin
 
 <a id="practice-runs-of-trinity-genome-free-and--guided-then-running-pasa"></a>
 ### Practice runs of `Trinity` genome-free and -guided, then running `PASA`
-Installing Trinity, PASA, etc.
-- Use Singularity to run the [most up-to-date version of Trinity (Docker or Singularity image)](https://data.broadinstitute.org/Trinity/TRINITY_SINGULARITY/)
-- Likewise, use Singularity to [run the Docker image of the PASA pipeline](https://github.com/PASApipeline/PASApipeline/wiki/PASA_Docker)
-- Information at the following links for running Docker images with Singularity:
+Installing `Trinity`, `PASA`, etc.
+- Use `Singularity` to run the [most up-to-date version of `Trinity` (`Docker` or `Singularity` image)](https://data.broadinstitute.org/Trinity/TRINITY_SINGULARITY/)
+- Likewise, use `Singularity` to [run the `Docker` image of the `PASA` pipeline](https://github.com/PASApipeline/PASApipeline/wiki/PASA_Docker)
+- Information at the following links for running `Docker` images with `Singularity`:
     + [FHCC sciwiki: Compute environments section on Docker](https://sciwiki.fredhutch.org/scicomputing/compute_environments/#using-docker-at-fred-hutch)
     + [FHCC sciwiki: Singularity](https://sciwiki.fredhutch.org/compdemos/Singularity/)
 
@@ -6277,19 +6278,14 @@ Trinity \
     --jaccard_clip \
     --output "./trinity_genome-guided_\${f_guided%.bam}" \
     --full_cleanup \
-    --min_kmer_cov \# \
-    --min_iso_ratio \# \
-    --min_glue \# \
-    --glue_factor \# \
-    --max_reads_per_graph \# \
+    --min_kmer_cov "${N}" \
+    --min_iso_ratio "${N}" \
+    --min_glue "${N}" \
+    --glue_factor "${N}" \
+    --max_reads_per_graph "${N}" \
     --normalize_max_read_cov 200 \
     --group_pairs_distance 700 \
     --min_contig_length 200
-    
-    
-
-
-
 ```
 
 <a id="the-genome-free-run"></a>
@@ -6312,17 +6308,15 @@ Trinity \
     --jaccard_clip \
     --output "./trinity_genome-guided_\${f_guided%.bam}" \
     --full_cleanup \
-    --min_kmer_cov \# \
-    --min_iso_ratio \# \
-    --min_glue \# \
-    --glue_factor \# \
-    --max_reads_per_graph \# \
+    --min_kmer_cov "${N}" \
+    --min_iso_ratio "${N}" \
+    --min_glue "${N}" \
+    --glue_factor "${N}" \
+    --max_reads_per_graph "${N}" \
     --normalize_max_read_cov 200 \
     --group_pairs_distance 700 \
     --min_contig_length 200
-
 ```
-
 <br />
 <br />
 
