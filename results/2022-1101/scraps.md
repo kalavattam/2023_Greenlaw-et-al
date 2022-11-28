@@ -78,7 +78,12 @@
 	1. [Set up the STAR alignment steps and sub-steps \(2022-1126\)](#set-up-the-star-alignment-steps-and-sub-steps-2022-1126)
 		1. [Set up STAR alignment for genome-free assembly \(2022-1126\)](#set-up-star-alignment-for-genome-free-assembly-2022-1126)
 		1. [Set up STAR alignment for genome-guided assembly \(2022-1126\)](#set-up-star-alignment-for-genome-guided-assembly-2022-1126)
-	1. [Filter `.bam`s to retain only *S. cerevisiae* alignments \(2022-1126\)](#filter-bams-to-retain-only-s-cerevisiae-alignments-2022-1126)
+	1. [Filter `.bam`s to retain only *S. cerevisiae* alignments \(2022-1128\)](#filter-bams-to-retain-only-s-cerevisiae-alignments-2022-1128)
+	1. [Perform another quality check with `FastQC` \(2022-1128\)](#perform-another-quality-check-with-fastqc-2022-1128)
+	1. [Convert the species-filtered `.bam`s from genome-free alignment to `.fastq`s](#convert-the-species-filtered-bams-from-genome-free-alignment-to-fastqs)
+	1. [Perform a `FastQC` quality check for the new `.fastq` files \(2022-1128\)](#perform-a-fastqc-quality-check-for-the-new-fastq-files-2022-1128)
+	1. [Remove erroneous k-mers from paired-end reads with `rCorrector`](#remove-erroneous-k-mers-from-paired-end-reads-with-rcorrector)
+		1. [Discard `rcorrector`-processed read pairs for which one read is deemed unfixable](#discard-rcorrector-processed-read-pairs-for-which-one-read-is-deemed-unfixable)
 
 <!-- /MarkdownTOC -->
 </details>
@@ -1377,7 +1382,6 @@ The error about container verification is not necessarily critical&mdash;if you 
 <a id="using-docker-containers-with-singularity"></a>
 ### Using Docker Containers with Singularity
 ¶1  
-`#DEKHO`  
 As indicated earlier, `Singularity` can run `Docker` container images. However, <mark>`Docker` container images must first be converted to be usable by `Singularity`</mark>.
 
 ¶2  
@@ -2536,7 +2540,7 @@ docker run --rm -it \
 - [Nice breakdowns of running Singularity on cluster from Harvard FAS](https://docs.rc.fas.harvard.edu/kb/singularity-on-the-cluster/)
 - See the [FHCC Bioinformatics' Singularity Access to Storage section](#access-to-storage)
 - [Sylabs documentation on "Bind Paths and Mounts"](https://docs.sylabs.io/guides/3.0/user-guide/bind_paths_and_mounts.html)
-	+ This seems to have the answer  `#TODO` Study and test this
+	+ This seems to have the answer  ~~`#DONE` Study and test this~~
 - [Google search results "singularity mount directory"](https://www.google.com/search?q=singularity+mount+directory&oq=mount+directory+singu&aqs=chrome.1.69i57j0i22i30.5454j0j7&sourceid=chrome&ie=UTF-8)
 
 <a id="testing-system-defined-bind-paths-in-singularity"></a>
@@ -3706,8 +3710,8 @@ Yes, should pick up where it left off.
 
 best of luck!
 
-`#DONE` Copy in the responses from Brian Haas to my questions (copy those in as well)  
-`#TODO #TOMORROW` Move forward with the `PASA` pipeline taking into account Brian's suggestions  
+~~`#DONE` Copy in the responses from Brian Haas to my questions (copy those in as well)~~  
+~~`#DONE` Move forward with the `PASA` pipeline taking into account Brian's suggestions~~
 
 <a id="attempt-to-continue-launch_pasa_pipelinepl-following-brian-haas-advice-2022-1126"></a>
 ### Attempt to continue `Launch_PASA_pipeline.pl` following Brian Haas' advice (2022-1126)
@@ -4110,7 +4114,7 @@ Trinity_env
 mamba install -c conda-forge parallel
 mamba install -c bioconda samtools
 
-mkdir -p exp_preprocessing/{01_fastqc,02_trim_galore,03_fastqc,04a_star-genome-free,04b_star-genome-guided}
+mkdir -p exp_preprocessing/{01_fastqc,02_trim_galore,03_fastqc,04a_star-genome-free,04b_star-genome-guided,05a_fastqc,05b_fastqc,06_bam-to-fastq,07_fastqc,08_rcorrector}
 
 
 #  1. FastQC ------------------------------------------------------------------
@@ -4124,6 +4128,11 @@ cat << script > "./submit-preprocessing-fastqc.sh"
 #SBATCH --cpus-per-task=4
 #SBATCH --error=./exp_preprocessing/submit-preprocessing-fastqc.%J.err.txt
 #SBATCH --output=./exp_preprocessing/submit-preprocessing-fastqc.%J.out.txt
+
+#  submit-preprocessing-fastqc.sh
+#  KA
+#  $(date '+%Y-%m%d')
+
 
 infile="\${1}"
 outdir="\${2}"
@@ -4229,6 +4238,11 @@ cat << script > "./submit-preprocessing-trim_galore.sh"
 #SBATCH --cpus-per-task=1
 #SBATCH --error=./exp_preprocessing/submit-preprocessing-trim_galore.%J.err.txt
 #SBATCH --output=./exp_preprocessing/submit-preprocessing-trim_galore.%J.out.txt
+
+#  submit-preprocessing-trim_galore.sh
+#  KA
+#  $(date '+%Y-%m%d')
+
 
 instring="\${1}"
 outdir="\${2}"
@@ -4459,6 +4473,8 @@ cat << script > "./submit-preprocessing-star-genome-free.sh"
 
 #  submit-preprocessing-star-genome-free.sh
 #  KA
+#  $(date '+%Y-%m%d')
+
 
 read_1="\${1}"
 read_2="\${2}"
@@ -4565,6 +4581,7 @@ cat << script > "./submit-preprocessing-exclude-bam-reads-unmapped.sh"
 #  submit-preprocessing-index-bam.sh
 #  KA
 #  $(date '+%Y-%m%d')
+
 
 infile="\${1}"
 outdir="\${2}"
@@ -4675,6 +4692,8 @@ cat << script > "./submit-preprocessing-star-genome-guided.sh"
 
 #  submit-preprocessing-star-genome-guided.sh
 #  KA
+#  $(date '+%Y-%m%d')
+
 
 read_1="\${1}"
 read_2="\${2}"
@@ -4708,7 +4727,7 @@ for i in "${instrings[@]}"; do
 	sbatch ./submit-preprocessing-star-genome-guided.sh \
 	    "${i}_R1_val_1.fq" \
 	    "${i}_R2_val_2.fq" \
-	    "exp_preprocessing/04a_star-genome-guided/$(basename "${i}")"
+	    "exp_preprocessing/04a_star-genome-free/$(basename "${i}")"
 	sleep 0.25
 	echo ""
 done
@@ -4750,6 +4769,7 @@ cat << script > "./submit-preprocessing-index-bam.sh"
 #  KA
 #  $(date '+%Y-%m%d')
 
+
 bam="\${1}"
 
 samtools index -@ ${threads} "\${bam}"
@@ -4779,13 +4799,14 @@ cat << script > "./submit-preprocessing-exclude-bam-reads-unmapped.sh"
 #SBATCH --error=./exp_preprocessing/submit-preprocessing-exclude-bam-reads-unmapped.%J.err.txt
 #SBATCH --output=./exp_preprocessing/submit-preprocessing-exclude-bam-reads-unmapped.%J.out.txt
 
-#  submit-preprocessing-index-bam.sh
+#  submit-preprocessing-exclude-bam-reads-unmapped-bam.sh
 #  KA
 #  $(date '+%Y-%m%d')
 
 infile="\${1}"
 outdir="\${2}"
 outfile="\${3}"
+
 
 samtools view \\
     -@ "${threads}" \\
@@ -4822,24 +4843,1268 @@ for i in "${infiles_aligned[@]}"; do
 done
 ```
 
-<a id="filter-bams-to-retain-only-s-cerevisiae-alignments-2022-1126"></a>
-### Filter `.bam`s to retain only *S. cerevisiae* alignments (2022-1126)
+<a id="filter-bams-to-retain-only-s-cerevisiae-alignments-2022-1128"></a>
+### Filter `.bam`s to retain only *S. cerevisiae* alignments (2022-1128)
+`#TODO #INPROGRESS` Pick up with alignment for the two approaches, including bam-to-fastq conversion, then move on to implementing calls to `rCorrector`  
+`#NOTETOSELF #THINKING #20221128` We completed the genome-free and genome-guided styles of `STAR` alignment; next step is to review my handwritten notes and then implement filtering-by-species scripts (genome-free, genome-guided) and bam-to-fastq scripts (genome-free)... and then what?  
+`#NOTETOSELF #THINKING #20221128` Also, want to get some kind of rename/organization script in place for the `.bam`s output by `STAR`
+
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
+#DONTRUN
 
+grabnode  # Lowest and default settings
+
+#  Alias: 'cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction"'
+#+ is "transcriptome"
+transcriptome
+pwd
+# /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction
+
+cd "./results/2022-1101" || echo "cd'ing failed; check on this"
+pwd
+# /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101
+
+#  Activate the conda environment for Trinity work
+#+ Alias: 'conda activate Trinity_env' is 'Trinity_env'
+Trinity_env
+
+#  Alias: 'ls -lhaFG' is '.,'
+.,
+# total 2.6M
+# drwxrws--- 15 kalavatt 1.6K Nov 28 07:49 ./
+# drwxrws---  7 kalavatt  191 Nov 28 07:30 ../
+# drwxrws---  3 kalavatt  160 Nov  9 15:23 exp_alignment_Bowtie_2/
+# drwxrws---  3 kalavatt   94 Nov 20 11:06 exp_alignment_STAR/
+# drwxrws---  3 kalavatt   94 Nov 18 13:04 exp_alignment_STAR_multi-hit/
+# drwxrws---  4 kalavatt  190 Nov 21 12:22 exp_alignment_STAR_tags/
+# drwxrws---  2 kalavatt 1.1K Nov  7 15:27 exp_FastQC/
+# drwxrws---  2 kalavatt  206 Nov 20 13:40 exp_intron-length/
+# drwxrws---  6 kalavatt 2.6K Nov 26 10:21 exp_PASA_trial/
+# drwxrws---  2 kalavatt  854 Nov  7 14:31 exp_picardmetrics/
+# drwxrws---  7 kalavatt 5.0K Nov 28 07:49 exp_preprocessing/
+# drwxrws---  3 kalavatt  317 Nov  7 14:44 exp_Trinity/
+# drwxrws---  4 kalavatt  242 Nov 24 12:27 exp_Trinity_trial/
+# drwxrws---  3 kalavatt  720 Nov  8 10:03 files_fastq_symlinks/
+# drwxrws---  2 kalavatt  726 Nov 23 15:37 notebook/
+# -rw-rw----  1 kalavatt  14K Nov 16 12:23 notes-Alison-files-locations.md
+# -rw-rw----  1 kalavatt  29K Nov 16 12:23 notes-Alison-papers.md
+# -rw-rw----  1 kalavatt 1.3K Nov 16 12:23 notes-Alison-RNA-seq-kits.md
+# -rw-rw----  1 kalavatt 8.0K Nov 25 10:11 notes-miscellaneous-links.md
+# -rw-rw----  1 kalavatt 5.7K Nov 16 12:23 notes-RNA-seq-spike-ins.md
+# -rw-rw----  1 kalavatt  35K Nov 18 11:33 notes-UMIs-etc.md
+# -rw-rw----  1 kalavatt 209K Nov 28 07:43 scraps.md
+# -rw-rw----  1 kalavatt  617 Nov  8 14:43 submit-Bowtie-2.test-1.sh
+# -rw-rw----  1 kalavatt  642 Nov  8 16:16 submit-Bowtie-2.test-2.sh
+# -rw-rw----  1 kalavatt  300 Nov  7 14:58 submit-FastQC.sh
+# -rw-rw----  1 kalavatt  450 Nov 26 14:00 submit-preprocessing-exclude-bam-reads-unmapped.sh
+# -rw-rw----  1 kalavatt  330 Nov 26 10:55 submit-preprocessing-fastqc.sh
+# -rw-rw----  1 kalavatt  313 Nov 26 14:00 submit-preprocessing-index-bam.sh
+# -rw-rw----  1 kalavatt  892 Nov 26 12:21 submit-preprocessing-star-genome-free.sh
+# -rw-rw----  1 kalavatt 1002 Nov 26 13:52 submit-preprocessing-star-genome-guided.sh
+# -rw-rw----  1 kalavatt  917 Nov 26 11:00 submit-preprocessing-trim_galore.sh
+# -rw-rw----  1 kalavatt  871 Nov 18 14:52 submit-STAR-alignReads-multi-hit.sh
+# -rw-rw----  1 kalavatt  874 Nov 18 14:53 submit-STAR-alignReads.tags.multi-hit-mode.sh
+# -rw-rw----  1 kalavatt 1.4K Nov 18 14:38 submit-STAR-alignReads.tags.rna-star.sh
+# -rw-rw----  1 kalavatt  694 Nov  3 17:41 submit-Trinity.sh
+# -rw-rw----  1 kalavatt 1.2K Nov 22 14:54 submit-Trinity-trial-genome-free.sh
+# -rw-rw----  1 kalavatt 1.2K Nov 22 10:47 submit-Trinity-trial-genome-guided.sh
+# -rw-rw----  1 kalavatt  23K Nov 16 12:23 work-TPM-calculation.md
+# -rw-rw----  1 kalavatt 310K Nov 26 10:41 work-Trinity.md
+
+
+#  Set up a function for quickly checking the contents of arrays
+echoTest() { for i in "${@:-*}"; do echo "${i}"; done; }
+
+
+#  Create an array for .bam files of interest
 unset infiles_mapped
 while IFS=" " read -r -d $'\0'; do
     infiles_mapped+=( "${REPLY}" )
 done < <(\
-    find exp_preprocessing/04?_star- \
+    find exp_preprocessing/04?_star-* \
         -type f \
         -name *out.bam \
         -print0 \
             | sort -z \
 )
+echoTest "${infiles_mapped[@]}"
+# exp_preprocessing/04a_star-genome-free/5781_Q_IN_mergedAligned.sortedByCoord.out.bam
+# exp_preprocessing/04a_star-genome-free/5782_Q_IN_mergedAligned.sortedByCoord.out.bam
+# exp_preprocessing/04b_star-genome-guided/5781_Q_IN_mergedAligned.sortedByCoord.out.bam
+# exp_preprocessing/04b_star-genome-guided/5782_Q_IN_mergedAligned.sortedByCoord.out.bam
 
 
+# #  Set up function to split .bam files by species, etc.
+# split_with_samtools() {
+#     what="""
+#     split_with_samtools()
+#     ---------------------
+#     Use samtools to filter a bam file such that it contains only chromosome(s)
+#     specified with ${0} argument -s
+# 
+#     :param 1: threads <int >= 1>
+#     :param 2: bam infile, including path <chr>
+#     :param 3: chromosomes to retain <chr>
+#     :param 4: bam outfile, including path <chr>
+#     :return: param 2 filtered to include only param 3 in param 4
+#     """
+#     samtools view -@ "${1}" -h "${2}" ${3} -o "${4}"
+# }
+# 
+# 
+# #  Note that...
+# #+ ...names of chromosomes in .bam infiles must be in the following format:
+# #+   - S. cerevisiae (SC)
+# #+     - I
+# #+     - II
+# #+     - III
+# #+     - IV
+# #+     - V
+# #+     - VI
+# #+     - VII
+# #+     - VIII
+# #+     - IX
+# #+     - X
+# #+     - XI
+# #+     - XII
+# #+     - XIII
+# #+     - XIV
+# #+     - XV
+# #+     - XVI
+# #+     - Mito
+# #+
+# #+   - K. lactis (KL)
+# #+     - A
+# #+     - B
+# #+     - C
+# #+     - D
+# #+     - E
+# #+
+# #+   - 20 S narnavirus
+# #+     - 20S
+# #+
+# #+ (They're in that format already.)
+# 
+# #  Finally, split .bam files by species, etc.
+# threads=1
+# chr="I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI Mito"
+# split="sc_all"
+# 
+# for i in "${infiles_mapped[@]}"; do
+# 	echo "Working with ${i}..."
+# 	split_with_samtools \
+# 	    "${threads}" \
+# 	    "${i}" \
+# 	    "${chr}" \
+# 	    "${i%.bam}.${split}.bam"
+# 	echo ""
+# done
+# 
+# 
+# #  Get split_with_samtools into jobs that are submitted to SLURM --------------
+# #  First, remove the outfiles from the above for loop
+# for i in "${infiles_mapped[@]}"; do
+# 	., "${i%.bam}.${split}.bam"
+# done
+# # -rw-rw---- 1 kalavatt 525M Nov 28 08:51 exp_preprocessing/04a_star-genome-free/5781_Q_IN_mergedAligned.sortedByCoord.out.sc_all.bam
+# # -rw-rw---- 1 kalavatt 435M Nov 28 08:52 exp_preprocessing/04a_star-genome-free/5782_Q_IN_mergedAligned.sortedByCoord.out.sc_all.bam
+# # -rw-rw---- 1 kalavatt 1.2G Nov 28 08:53 exp_preprocessing/04b_star-genome-guided/5781_Q_IN_mergedAligned.sortedByCoord.out.sc_all.bam
+# # -rw-rw---- 1 kalavatt 878M Nov 28 08:54 exp_preprocessing/04b_star-genome-guided/5782_Q_IN_mergedAligned.sortedByCoord.out.sc_all.bam
+# 
+# for i in "${infiles_mapped[@]}"; do
+# 	rm "${i%.bam}.${split}.bam"
+# done
+# 
+# for i in "${infiles_mapped[@]}"; do
+# 	., "${i%.bam}.${split}.bam"
+# done
+# # ls: cannot access 'exp_preprocessing/04a_star-genome-free/5781_Q_IN_mergedAligned.sortedByCoord.out.sc_all.bam': No such file or directory
+# # ls: cannot access 'exp_preprocessing/04a_star-genome-free/5782_Q_IN_mergedAligned.sortedByCoord.out.sc_all.bam': No such file or directory
+# # ls: cannot access 'exp_preprocessing/04b_star-genome-guided/5781_Q_IN_mergedAligned.sortedByCoord.out.sc_all.bam': No such file or directory
+# # ls: cannot access 'exp_preprocessing/04b_star-genome-guided/5782_Q_IN_mergedAligned.sortedByCoord.out.sc_all.bam': No such file or directory
+
+
+#  Prepare the job-submission script for splitting .bam files by species ------
+if [[ -f submit-preprocessing-split-bam-species.sh ]]; then
+	rm submit-preprocessing-split-bam-species.sh
+fi
+cat << script > "./submit-preprocessing-split-bam-species.sh"
+#!/bin/bash
+
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=${threads}
+#SBATCH --error=./exp_preprocessing/submit-preprocessing-split-bam-species.%J.err.txt
+#SBATCH --output=./exp_preprocessing/submit-preprocessing-split-bam-species.%J.out.txt
+
+#  submit-preprocessing-split-bam-species.sh
+#  KA
+#  $(date '+%Y-%m%d')
+
+
+split_with_samtools() {
+    what="""
+    split_with_samtools()
+    ---------------------
+    Use samtools to filter a bam file such that it contains only specified
+    chromosome(s)
+
+    :param 1: threads <int >= 1>
+    :param 2: bam infile, including path <chr>
+    :param 3: chromosomes to retain <chr>
+    :param 4: bam outfile, including path <chr>
+    :return: param 2 filtered to include only param 3 in param 4
+    """
+    samtools view -@ "\${1}" -h "\${2}" \${3} -o "\${4}"
+}
+
+
+infile="\${1}"
+outfile="\${2}"
+chromosomes="\${3}"
+threads="\${4}"
+
+split_with_samtools \\
+    "\${threads}" \\
+    "\${infile}" \\
+    "\${chromosomes}" \\
+    "\${outfile}"
+script
+vi submit-preprocessing-split-bam-species.sh
+
+
+#  Submit jobs to split .bam files by species ---------------------------------
+threads=4
+chr="I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI Mito"
+split="sc_all"
+for i in "${infiles_mapped[@]}"; do
+	echo "Submitting job for ${i}..."
+	echo " - chromosomes to retain are ${chr}"
+	echo " - outfile is ${i%.bam}.${split}.bam"
+	echo " - running samtools with ${threads} threads"
+	echo "Submission:"
+
+	echo -e "sbatch ./submit-preprocessing-split-bam-species.sh \\ \n\
+		\"${i}\" \\ \n\
+		\"${i%.bam}.${split}.bam\" \\ \n\
+		\"${chr}\" \\ \n\
+		\"${threads}\""
+
+	sbatch ./submit-preprocessing-split-bam-species.sh \
+		"${i}" \
+		"${i%.bam}.${split}.bam" \
+		"${chr}" \
+		"${threads}"
+	sleep 0.25
+	echo ""
+done
 ```
 
-`#TODO #TOMORROW` Pick up with alignment for the two approaches, including bam-to-fastq conversion, then move on to implementing calls to `rCorrector`  
+<details>
+<summary><i>sbatch ./submit-preprocessing-split-bam-species.sh, messages printed to terminal:</i></summary>
+
+```txt
+Submitting job for exp_preprocessing/04a_star-genome-free/5781_Q_IN_mergedAligned.sortedByCoord.out.bam...
+ - chromosomes to retain are I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI Mito
+ - outfile is exp_preprocessing/04a_star-genome-free/5781_Q_IN_mergedAligned.sortedByCoord.out.sc_all.bam
+ - running samtools with 4 threads
+Submission:
+sbatch ./submit-preprocessing-split-bam-species.sh \
+        "exp_preprocessing/04a_star-genome-free/5781_Q_IN_mergedAligned.sortedByCoord.out.bam" \
+        "exp_preprocessing/04a_star-genome-free/5781_Q_IN_mergedAligned.sortedByCoord.out.sc_all.bam" \
+        "I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI Mito" \
+        "4"
+Submitted batch job 4714601
+
+Submitting job for exp_preprocessing/04a_star-genome-free/5782_Q_IN_mergedAligned.sortedByCoord.out.bam...
+ - chromosomes to retain are I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI Mito
+ - outfile is exp_preprocessing/04a_star-genome-free/5782_Q_IN_mergedAligned.sortedByCoord.out.sc_all.bam
+ - running samtools with 4 threads
+Submission:
+sbatch ./submit-preprocessing-split-bam-species.sh \
+        "exp_preprocessing/04a_star-genome-free/5782_Q_IN_mergedAligned.sortedByCoord.out.bam" \
+        "exp_preprocessing/04a_star-genome-free/5782_Q_IN_mergedAligned.sortedByCoord.out.sc_all.bam" \
+        "I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI Mito" \
+        "4"
+Submitted batch job 4714602
+
+Submitting job for exp_preprocessing/04b_star-genome-guided/5781_Q_IN_mergedAligned.sortedByCoord.out.bam...
+ - chromosomes to retain are I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI Mito
+ - outfile is exp_preprocessing/04b_star-genome-guided/5781_Q_IN_mergedAligned.sortedByCoord.out.sc_all.bam
+ - running samtools with 4 threads
+Submission:
+sbatch ./submit-preprocessing-split-bam-species.sh \
+        "exp_preprocessing/04b_star-genome-guided/5781_Q_IN_mergedAligned.sortedByCoord.out.bam" \
+        "exp_preprocessing/04b_star-genome-guided/5781_Q_IN_mergedAligned.sortedByCoord.out.sc_all.bam" \
+        "I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI Mito" \
+        "4"
+Submitted batch job 4714603
+
+Submitting job for exp_preprocessing/04b_star-genome-guided/5782_Q_IN_mergedAligned.sortedByCoord.out.bam...
+ - chromosomes to retain are I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI Mito
+ - outfile is exp_preprocessing/04b_star-genome-guided/5782_Q_IN_mergedAligned.sortedByCoord.out.sc_all.bam
+ - running samtools with 4 threads
+Submission:
+sbatch ./submit-preprocessing-split-bam-species.sh \
+        "exp_preprocessing/04b_star-genome-guided/5782_Q_IN_mergedAligned.sortedByCoord.out.bam" \
+        "exp_preprocessing/04b_star-genome-guided/5782_Q_IN_mergedAligned.sortedByCoord.out.sc_all.bam" \
+        "I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI Mito" \
+        "4"
+Submitted batch job 4714604
+```
+</details>
+<br />
+
+The jobs completed successfully
+
+<a id="perform-another-quality-check-with-fastqc-2022-1128"></a>
+### Perform another quality check with `FastQC` (2022-1128)
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+pwd
+# /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101
+
+.,
+#  Looks fine and submit-preprocessing-fastqc.sh is present
+
+for i in "${infiles_mapped[@]}"; do
+	., "${i%.bam}.${split}.bam"
+done
+# -rw-rw---- 1 kalavatt 525M Nov 28 09:20 exp_preprocessing/04a_star-genome-free/5781_Q_IN_mergedAligned.sortedByCoord.out.sc_all.bam
+# -rw-rw---- 1 kalavatt 435M Nov 28 09:20 exp_preprocessing/04a_star-genome-free/5782_Q_IN_mergedAligned.sortedByCoord.out.sc_all.bam
+# -rw-rw---- 1 kalavatt 1.2G Nov 28 09:20 exp_preprocessing/04b_star-genome-guided/5781_Q_IN_mergedAligned.sortedByCoord.out.sc_all.bam
+# -rw-rw---- 1 kalavatt 878M Nov 28 09:20 exp_preprocessing/04b_star-genome-guided/5782_Q_IN_mergedAligned.sortedByCoord.out.sc_all.bam
+
+#  See answer #1 here:
+#+ stackoverflow.com/questions/13648410/how-can-i-get-unique-values-from-an-array-in-bash
+#+ (...which is way more efficient that what I did above)
+unset infiles_mapped_bases
+typeset -a infiles_mapped_bases
+for i in "${infiles_mapped[@]}"; do
+	infiles_mapped_bases+=( "$(basename "${i%.bam}.${split}.bam")" )
+done
+echo "w/duplicates..."
+echoTest "${infiles_mapped_bases[@]}" 
+
+IFS=" " read -r -a infiles_mapped_bases \
+	<<< "$(\
+		tr ' ' '\n' \
+			<<< "${infiles_mapped_bases[@]}" \
+				| sort -u \
+				| tr '\n' ' '\
+	)"
+echo "w/o duplicates..."
+echoTest "${infiles_mapped_bases[@]}" && echo ""
+
+unset infiles_mapped_dirs
+typeset -a infiles_mapped_dirs
+for i in "${infiles_mapped[@]}"; do
+	infiles_mapped_dirs+=( "$(dirname "${i%.bam}.${split}.bam")" )
+done
+echo "w/duplicates..."
+echoTest "${infiles_mapped_dirs[@]}"
+
+IFS=" " read -r -a infiles_mapped_dirs \
+	<<< "$(\
+		tr ' ' '\n' \
+			<<< "${infiles_mapped_dirs[@]}" \
+				| sort -u \
+				| tr '\n' ' '\
+	)"
+echo "w/o duplicates..."
+echoTest "${infiles_mapped_dirs[@]}" && echo ""
+
+
+for i in "${infiles_mapped_dirs[@]}"; do
+	# i="${infiles_mapped_dirs[0]}"
+	step_no="$(\
+		echo "${i}" \
+			| awk -F _ '{ print $2 }' \
+			| awk -F / '{ print $2 }'\
+		)"
+	if [[ "${step_no}" == "04a" ]]; then
+		for j in "${infiles_mapped_bases[@]}"; do
+			outdir="exp_preprocessing/05a_fastqc"
+			echo "Working with ${i}..."
+			echo "    - infile: ${i}/${j}"
+			echo "    - outdir: ${outdir}"
+			echo ""
+
+			echo -e "sbatch submit-preprocessing-fastqc.sh \\ \n\
+	            \"${i}/${j}\" \\ \n\
+	            \"${outdir}\""
+
+		    sbatch submit-preprocessing-fastqc.sh \
+		        "${i}/${j}" \
+		        "${outdir}"
+
+	        sleep 0.25
+	        echo "" && echo ""
+		done
+	elif [[ "${step_no}" == "04b" ]]; then
+		for j in "${infiles_mapped_bases[@]}"; do
+			outdir="exp_preprocessing/05b_fastqc"
+			echo "Working with ${i}..."
+			echo "    - infile: ${i}/${j}"
+			echo "    - outdir: ${outdir}"
+			echo ""
+
+			echo -e "sbatch submit-preprocessing-fastqc.sh \\ \n\
+	            \"${i}/${j}\" \\ \n\
+	            \"${outdir}\""
+
+		    sbatch submit-preprocessing-fastqc.sh \
+		        "${i}/${j}" \
+		        "${outdir}"
+
+		    sleep 0.25
+            echo "" && echo ""
+		done
+	else
+		echo "Exiting: Problem encountered processing in- and outfiles"
+		# exit 1
+	fi
+done
+```
+
+<details>
+<summary><i>sbatch ./submit-preprocessing-fastqc.sh, messages printed to terminal:</i></summary>
+
+```txt
+Working with exp_preprocessing/04a_star-genome-free...
+    - infile: exp_preprocessing/04a_star-genome-free/5781_Q_IN_mergedAligned.sortedByCoord.out.sc_all.bam
+    - outdir: exp_preprocessing/05a_fastqc
+
+sbatch submit-preprocessing-fastqc.sh \
+                "exp_preprocessing/04a_star-genome-free/5781_Q_IN_mergedAligned.sortedByCoord.out.sc_all.bam" \
+                "exp_preprocessing/05a_fastqc"
+Submitted batch job 4715418
+
+
+Working with exp_preprocessing/04a_star-genome-free...
+    - infile: exp_preprocessing/04a_star-genome-free/5782_Q_IN_mergedAligned.sortedByCoord.out.sc_all.bam
+    - outdir: exp_preprocessing/05a_fastqc
+
+sbatch submit-preprocessing-fastqc.sh \
+                "exp_preprocessing/04a_star-genome-free/5782_Q_IN_mergedAligned.sortedByCoord.out.sc_all.bam" \
+                "exp_preprocessing/05a_fastqc"
+Submitted batch job 4715419
+
+
+Working with exp_preprocessing/04b_star-genome-guided...
+    - infile: exp_preprocessing/04b_star-genome-guided/5781_Q_IN_mergedAligned.sortedByCoord.out.sc_all.bam
+    - outdir: exp_preprocessing/05b_fastqc
+
+sbatch submit-preprocessing-fastqc.sh \
+                "exp_preprocessing/04b_star-genome-guided/5781_Q_IN_mergedAligned.sortedByCoord.out.sc_all.bam" \
+                "exp_preprocessing/05b_fastqc"
+Submitted batch job 4715420
+
+
+Working with exp_preprocessing/04b_star-genome-guided...
+    - infile: exp_preprocessing/04b_star-genome-guided/5782_Q_IN_mergedAligned.sortedByCoord.out.sc_all.bam
+    - outdir: exp_preprocessing/05b_fastqc
+
+sbatch submit-preprocessing-fastqc.sh \
+                "exp_preprocessing/04b_star-genome-guided/5782_Q_IN_mergedAligned.sortedByCoord.out.sc_all.bam" \
+                "exp_preprocessing/05b_fastqc"
+Submitted batch job 4715421
+```
+</details>
+<br />
+
+The jobs completed successfully
+
+<a id="convert-the-species-filtered-bams-from-genome-free-alignment-to-fastqs"></a>
+### Convert the species-filtered `.bam`s from genome-free alignment to `.fastq`s
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+#  Check where we are
+pwd
+# /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101
+
+#  Check what's in the working directory
+.,
+#  Looks fine and submit-preprocessing-fastqc.sh is present
+
+#  Check that we're using samtools from Trinity_env
+which samtools
+# /home/kalavatt/miniconda3/envs/Trinity_env/bin/samtools
+
+
+#  Make an array for files of interest ----------------------------------------
+#  Remember, split="sc_all", assigned above
+unset bams_filtered
+typeset -a bams_filtered
+while IFS=" " read -r -d $'\0'; do
+    bams_filtered+=( "${REPLY}" )
+done < <(\
+    find "exp_preprocessing/04a_star-genome-free" \
+        -type f \
+        -name *${split}.bam \
+        -print0 \
+            | sort -z \
+)
+echoTest "${bams_filtered[@]}"
+
+
+#  Prep the SLURM script for converting filtered .bams to .fastqs -------------
+if [[ -f submit-preprocessing-convert-bam-fastq.sh ]]; then
+	rm submit-preprocessing-convert-bam-fastq.sh
+fi
+cat << script > "./submit-preprocessing-convert-bam-fastq.sh"
+#!/bin/bash
+
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=${threads}
+#SBATCH --error=./exp_preprocessing/submit-preprocessing-convert-bam-fastq.%J.err.txt
+#SBATCH --output=./exp_preprocessing/submit-preprocessing-convert-bam-fastq.%J.out.txt
+
+#  submit-preprocessing-convert-bam-fastq.sh
+#  KA
+#  $(date '+%Y-%m%d')
+
+
+infile="\${1}"
+outprefix="\${2}"
+threads="\${3}"
+
+if [[ ! -f "\${infile}.bai" ]]; then
+	echo "Indexing \${infile}"
+	samtools index -@ "\${threads}" "\${infile}"
+fi
+
+if [[ ! -f "\${infile%.bam}.sort-n.bam" ]]; then
+	echo "QNAME-sorting \${infile}"
+	samtools sort -n -@ "\${threads}" "\${infile}" \\
+		> "\${infile%.bam}.sort-n.bam"
+fi
+
+echo "Converting QNAME-sorted bam to fastq files"
+if [[ -f "\${infile%.bam}.sort-n.bam" ]]; then
+	samtools fastq \\
+	    -@ "\${threads}" \\
+	    -1 "\${outprefix}.1.fq.gz" \\
+	    -2 "\${outprefix}.2.fq.gz" \\
+	    "\${infile%.bam}.sort-n.bam"
+else
+	echo "\${infile%.bam}.sort-n.bam is NOT present; check on this..."
+fi
+script
+# vi submit-preprocessing-convert-bam-fastq.sh
+
+
+#  Submit jobs for converting filtered .bams to .fastqs -----------------------
+threads=1
+for i in "${bams_filtered[@]}"; do
+	# i="${bams_filtered[0]}"
+	step_no="$(\
+		echo "${i}" \
+			| awk -F _ '{ print $2 }' \
+			| awk -F / '{ print $2 }'\
+		)"
+	if [[ "${step_no}" == "04a" ]]; then
+		prefix="$(dirname $(dirname "${i}"))"
+		suffix="06_bam-to-fastq"
+
+		echo "Submitting job for ${i}..."
+		echo " -    inpath: $(dirname "${i}")"
+		echo " -    infile: ${i}"
+		echo " -   outpath: ${prefix}/${suffix}"
+		echo " - outprefix: ${prefix}/${suffix}/$(basename "${i%.bam}")"
+		echo "Submission:"
+
+		echo -e "sbatch ./submit-preprocessing-convert-bam-fastq.sh \\ \n\
+			\"${i}\" \\ \n\
+			\"${prefix}/${suffix}/$(basename "${i%.bam}")\" \\ \n\
+			\"${threads}\""
+
+		sbatch ./submit-preprocessing-convert-bam-fastq.sh \
+			"${i}" \
+			"${prefix}/${suffix}/$(basename "${i%.bam}")" \
+			"${threads}"
+
+		sleep 0.25
+		echo ""
+	else
+		echo "Exiting: Problem encountered processing in- and outfiles"
+		# exit 1
+	fi
+done
+```
+
+<a id="perform-a-fastqc-quality-check-for-the-new-fastq-files-2022-1128"></a>
+### Perform a `FastQC` quality check for the new `.fastq` files (2022-1128)
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+pwd
+# /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101
+
+.,
+#  Looks fine and submit-preprocessing-fastqc.sh is present
+
+
+#  Make an array for files of interest ----------------------------------------
+unset fastqs_from_bams
+typeset -a fastqs_from_bams
+while IFS=" " read -r -d $'\0'; do
+    fastqs_from_bams+=( "${REPLY}" )
+done < <(\
+    find "exp_preprocessing/06_bam-to-fastq" \
+        -type f \
+        -name *.gz \
+        -print0 \
+            | sort -z \
+)
+echoTest "${fastqs_from_bams[@]}"
+
+
+#  Submit jobs for QC of .bams converted to .fastqs ---------------------------
+for i in "${fastqs_from_bams[@]}"; do
+    outdir="exp_preprocessing/07_fastqc"
+    echo "Working with ${i}..."
+    echo "    - infile: ${i}"
+    echo "    - outdir: ${outdir}"
+    echo ""
+
+    echo -e "sbatch submit-preprocessing-fastqc.sh \\ \n\
+        \"${i}\" \\ \n\
+        \"${outdir}\""
+
+    sbatch submit-preprocessing-fastqc.sh \
+        "${i}" \
+        "${outdir}"
+
+    sleep 0.25
+    echo "" && echo ""
+done
+```
+
+<a id="remove-erroneous-k-mers-from-paired-end-reads-with-rcorrector"></a>
+### Remove erroneous k-mers from paired-end reads with `rCorrector`
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+pwd
+# /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101
+
+.,
+#  Looks fine and submit-preprocessing-fastqc.sh is present
+
+#  Remember that we're still in Trinity_env; check that we have rcorrector installed
+which rcorrector
+# /home/kalavatt/miniconda3/envs/Trinity_env/bin/rcorrector
+
+
+#  Make an array for files of interest ----------------------------------------
+unset fastqs_from_bams
+typeset -a fastqs_from_bams
+while IFS=" " read -r -d $'\0'; do
+    fastqs_from_bams+=( "${REPLY%.?.fq.gz}" )
+done < <(\
+    find "exp_preprocessing/06_bam-to-fastq" \
+        -type f \
+        -name *.gz \
+        -print0 \
+            | sort -z \
+)
+echo "w/duplicates..."
+echoTest "${fastqs_from_bams[@]}"
+
+IFS=" " read -r -a fastqs_from_bams \
+    <<< "$(\
+        tr ' ' '\n' \
+            <<< "${fastqs_from_bams[@]}" \
+                | sort -u \
+                | tr '\n' ' '\
+    )"
+echo "w/o duplicates..."
+echoTest "${fastqs_from_bams[@]}" && echo ""
+
+
+#  Perform a test run of rcorrector -------------------------------------------
+threads=1
+i="${fastqs_from_bams[0]}"
+
+run_rcorrector.pl
+# Usage: perl ./run_rcorrector.pl [OPTIONS]
+# OPTIONS:
+# Required parameters:
+# 	-s seq_files: comma separated files for single-end data sets
+# 	-1 seq_files_left: comma separated files for the first mate in the paried-end data sets
+# 	-2 seq_files_right: comma separated files for the second mate in the paired-end data sets
+# 	-i seq_files_interleaved: comma sperated files for interleaved paired-end data sets
+# Other parameters:
+# 	-k kmer_length (<=32, default: 23)
+# 	-od output_file_directory (default: ./)
+# 	-t number_of_threads (default: 1)
+# 	-maxcorK INT: the maximum number of correction within k-bp window (default: 4)
+# 	-wk FLOAT: the proportion of kmers that are used to estimate weak kmer count threshold, lower for more divergent genome (default: 0.95)
+# 	-ek expected_number_of_kmers: does not affect the correctness of program but affect the memory usage (default: 100000000)
+# 	-stdout: output the corrected reads to stdout (default: not used)
+# 	-verbose: output some correction information to stdout (default: not used)
+# 	-stage INT: start from which stage (default: 0)
+# 		0-start from begining(storing kmers in bloom filter);
+# 		1-start from count kmers showed up in bloom filter;
+# 		2-start from dumping kmer counts into a jf_dump file;
+# 		3-start from error correction.
+
+run_rcorrector.pl \
+	-t "${threads}" \
+	-1 "${i}.1.fq.gz" \
+	-2 "${i}.2.fq.gz" \
+	-od "exp_preprocessing/08_rcorrector"
+```
+
+<details>
+<summary><i>Call to run_rcorrector.pl, messages printed to terminal:</i></summary>
+
+```txt
+Put the kmers into bloom filter
+jellyfish bc -m 23 -s 100000000 -C -t 1 -o tmp_39ba89fb652788a14b68b806e39757da.bc <(gzip -cd exp_preprocessing/06_bam-to-fastq/5781_Q_IN_mergedAligned.sortedByCoord.out.sc_all.1.fq.gz) <(gzip -cd exp_preprocessing/06_bam-to-fastq/5781_Q_IN_mergedAligned.sortedByCoord.out.sc_all.2.fq.gz)
+Count the kmers in the bloom filter
+jellyfish count -m 23 -s 100000 -C -t 1 --bc tmp_39ba89fb652788a14b68b806e39757da.bc -o tmp_39ba89fb652788a14b68b806e39757da.mer_counts <(gzip -cd exp_preprocessing/06_bam-to-fastq/5781_Q_IN_mergedAligned.sortedByCoord.out.sc_all.1.fq.gz) <(gzip -cd exp_preprocessing/06_bam-to-fastq/5781_Q_IN_mergedAligned.sortedByCoord.out.sc_all.2.fq.gz)
+Dump the kmers
+jellyfish dump -L 2 tmp_39ba89fb652788a14b68b806e39757da.mer_counts > tmp_39ba89fb652788a14b68b806e39757da.jf_dump
+Error correction
+/home/kalavatt/miniconda3/envs/Trinity_env/bin/rcorrector -t 1 -od exp_preprocessing/08_rcorrector  -p exp_preprocessing/06_bam-to-fastq/5781_Q_IN_mergedAligned.sortedByCoord.out.sc_all.1.fq.gz exp_preprocessing/06_bam-to-fastq/5781_Q_IN_mergedAligned.sortedByCoord.out.sc_all.2.fq.gz -c tmp_39ba89fb652788a14b68b806e39757da.jf_dump
+Stored 13606816 kmers
+Weak kmer threshold rate: 0.024658 (estimated from 0.950/1 of the chosen kmers)
+Bad quality threshold is '@'
+Processed 15069524 reads
+	Corrected 5442342 bases.
+```
+</details>
+<br />
+
+The command completed successfully; however, it's quite slow using only one thread  
+`#TODO` Formal `run_rcorrector.pl` job submissions to `SLURM`
+
+<a id="discard-rcorrector-processed-read-pairs-for-which-one-read-is-deemed-unfixable"></a>
+#### Discard `rcorrector`-processed read pairs for which one read is deemed unfixable
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+pwd
+# /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101
+
+.,
+#  Looks fine and submit-preprocessing-fastqc.sh is present
+
+which python
+# /home/kalavatt/miniconda3/envs/Trinity_env/bin/python
+
+python --version
+# Python 3.7.15
+
+
+#  Generate the requisite script for processing rcorrector-treated reads ------
+#  The following script is taken from
+#+ github.com/harvardinformatics/TranscriptomeAssemblyTools/blob/master/FilterUncorrectabledPEfastq.py
+#+
+#+ ...and is used following the guidelines (specifically steps 3 and 4) here:
+#+ informatics.fas.harvard.edu/best-practices-for-de-novo-transcriptome-assembly-with-trinity.html
+cat << script > "./submit-preprocessing-filter-uncorrectable-fastq.py"
+"""
+author: adam h freedman
+afreedman405 at gmail.com
+data: Fri Aug 26 10:55:18 EDT 2016
+
+This script takes as an input Rcorrector error corrected Illumina paired-reads
+in fastq format and:
+
+1. Removes any reads that Rcorrector indentifes as containing an error,
+but can't be corrected, typically low complexity sequences. For these,
+the header contains 'unfixable'.
+
+2. Strips the ' cor' from headers of reads that Rcorrector fixed, to avoid
+issues created by certain header formats for downstream tools.
+
+3. Write a log with counts of (a) read pairs that were removed because one end
+was unfixable, (b) corrected left and right reads, (c) total number of
+read pairs containing at least one corrected read.
+
+Currently, this script only handles paired-end data, and handle either unzipped
+or gzipped files on the fly, so long as the gzipped files end with 'gz'.
+"""
+
+import sys        
+import gzip
+from itertools import izip,izip_longest
+import argparse
+from os.path import basename
+
+def get_input_streams(r1file,r2file):
+    if r1file[-2:]=='gz':
+        r1handle=gzip.open(r1file,'rb')
+        r2handle=gzip.open(r2file,'rb')
+    else:
+        r1handle=open(r1file,'r')
+        r2handle=open(r2file,'r')
+    
+    return r1handle,r2handle
+        
+        
+def grouper(iterable, n, fillvalue=None):
+    "Collect data into fixed-length chunks or blocks"
+    # grouper('ABCDEFG', 3, 'x') --> ABC DEF Gxx
+    args = [iter(iterable)] * n
+    return izip_longest(fillvalue=fillvalue, *args)  
+    
+
+if __name__=="__main__": 
+    parser = argparse.ArgumentParser(
+    	description="options for filtering and logging rCorrector fastq outputs"
+    )
+    parser.add_argument(
+    	'-1','--left_reads',dest='leftreads',type=str,help='R1 fastq file'
+    )
+    parser.add_argument(
+    	'-2','--right_reads',dest='rightreads',type=str,help='R2 fastq file'
+    )
+    parser.add_argument(
+    	'-s','--sample_id',dest='id',type=str,help='sample name to write to log file'
+    )
+    opts = parser.parse_args()
+
+    r1out=open('unfixrm_%s' % basename(opts.leftreads).replace('.gz',''),'w')
+    r2out=open('unfixrm_%s' % basename(opts.rightreads).replace('.gz','') ,'w')
+
+    r1_cor_count=0
+    r2_cor_count=0
+    pair_cor_count=0
+    unfix_r1_count=0
+    unfix_r2_count=0
+    unfix_both_count=0   
+
+    r1_stream,r2_stream=get_input_streams(opts.leftreads,opts.rightreads)
+
+    with r1_stream as f1, r2_stream as f2:
+        R1=grouper(f1,4)
+        R2=grouper(f2,4)
+        counter=0
+        for entry in R1:
+            counter+=1
+            if counter%100000==0:
+                print "%s reads processed" % counter
+        
+            head1,seq1,placeholder1,qual1=[i.strip() for i in entry]
+            head2,seq2,placeholder2,qual2=[j.strip() for j in R2.next()]
+            
+            if 'unfixable' in head1 and 'unfixable' not in head2:
+                unfix_r1_count+=1
+            elif 'unfixable' in head2 and 'unfixable' not in head1:
+                unfix_r2_count+=1
+            elif 'unfixable' in head1 and 'unfixable' in head2:
+                unfix_both_count+=1
+            else:
+                if 'cor' in head1:
+                    r1_cor_count+=1
+                if 'cor' in head2:
+                    r2_cor_count+=1
+                if 'cor' in head1 or 'cor' in head2:
+                    pair_cor_count+=1
+                
+                head1=head1.split('l:')[0][:-1] 
+                head2=head2.split('l:')[0][:-1]
+                r1out.write('%s\n' % '\n'.join([head1,seq1,placeholder1,qual1]))
+                r2out.write('%s\n' % '\n'.join([head2,seq2,placeholder2,qual2]))
+    
+    total_unfixable = unfix_r1_count+unfix_r2_count+unfix_both_count
+    total_retained = counter - total_unfixable
+
+    unfix_log=open('rmunfixable_%s.log' % opts.id,'w')
+    unfix_log.write('total PE reads:%s\nremoved PE reads:%s\nretained PE reads:%s\nR1 corrected:%s\nR2 corrected:%s\npairs corrected:%s\nR1 unfixable:%s\nR2 unfixable:%s\nboth reads unfixable:%s\n' % (counter,total_unfixable,total_retained,r1_cor_count,r2_cor_count,pair_cor_count,unfix_r1_count,unfix_r2_count,unfix_both_count))
+            
+    r1out.close()
+    r2out.close() 
+    unfix_log.close()
+script
+
+
+#  Make an array for files of interest ----------------------------------------
+unset fastqs_rcorrected
+typeset -a fastqs_rcorrected
+while IFS=" " read -r -d $'\0'; do
+    fastqs_rcorrected+=( "${REPLY%.?.cor.fq.gz}" )
+done < <(\
+    find "exp_preprocessing/08_rcorrector" \
+        -type f \
+        -name *.gz \
+        -print0 \
+            | sort -z \
+)
+echo "w/duplicates..."
+echoTest "${fastqs_rcorrected[@]}"
+
+IFS=" " read -r -a fastqs_rcorrected \
+    <<< "$(\
+        tr ' ' '\n' \
+            <<< "${fastqs_rcorrected[@]}" \
+                | sort -u \
+                | tr '\n' ' '\
+    )"
+echo "w/o duplicates..."
+echoTest "${fastqs_rcorrected[@]}" && echo ""
+
+
+#  Perform a test run of *filter-uncorrectable-fastq.py -----------------------
+i="${fastqs_rcorrected[0]}"
+python ./submit-preprocessing-filter-uncorrectable-fastq.py \
+	-1 "${i}.1.cor.fq.gz" \
+	-2 "${i}.2.cor.fq.gz" \
+	-s "${i}"
+#   File "./submit-preprocessing-filter-uncorrectable-fastq.py", line 82
+#     print "%s reads processed" % counter
+#                              ^
+# SyntaxError: Missing parentheses in call to 'print'. Did you mean print("%s reads processed" % counter)?
+
+
+#  Make sense of the error using 2to3 -----------------------------------------
+#  It looks like the script is written in Python 2; install 2to3 and convert
+#+ *filter-uncorrectable-fastq.py to Python 3 formatting
+pip install 2to3
+# Collecting 2to3
+#   Downloading 2to3-1.0-py3-none-any.whl (1.7 kB)
+# Installing collected packages: 2to3
+# Successfully installed 2to3-1.0
+
+which 2to3
+# /home/kalavatt/miniconda3/envs/Trinity_env/bin/2to3
+
+2to3 ./submit-preprocessing-filter-uncorrectable-fastq.py
+```
+<details>
+<summary><i>Results of 2to3 \*filter-uncorrectable-fastq.py printed to terminal:</i></summary>
+
+```txt
+RefactoringTool: Skipping optional fixer: buffer
+RefactoringTool: Skipping optional fixer: idioms
+RefactoringTool: Skipping optional fixer: set_literal
+RefactoringTool: Skipping optional fixer: ws_comma
+RefactoringTool: Refactored ./submit-preprocessing-filter-uncorrectable-fastq.py
+--- ./submit-preprocessing-filter-uncorrectable-fastq.py	(original)
++++ ./submit-preprocessing-filter-uncorrectable-fastq.py	(refactored)
+@@ -23,7 +23,7 @@
+
+ import sys
+ import gzip
+-from itertools import izip,izip_longest
++from itertools importzip_longest
+ import argparse
+ from os.path import basename
+
+@@ -42,7 +42,7 @@
+     "Collect data into fixed-length chunks or blocks"
+     # grouper('ABCDEFG', 3, 'x') --> ABC DEF Gxx
+     args = [iter(iterable)] * n
+-    return izip_longest(fillvalue=fillvalue, *args)
++    return zip_longest(fillvalue=fillvalue, *args)
+
+
+ if __name__=="__main__":
+@@ -79,10 +79,10 @@
+         for entry in R1:
+             counter+=1
+             if counter%100000==0:
+-                print "%s reads processed" % counter
++                print("%s reads processed" % counter)
+
+             head1,seq1,placeholder1,qual1=[i.strip() for i in entry]
+-            head2,seq2,placeholder2,qual2=[j.strip() for j in R2.next()]
++            head2,seq2,placeholder2,qual2=[j.strip() for j in next(R2)]
+
+             if 'unfixable' in head1 and 'unfixable' not in head2:
+                 unfix_r1_count+=1
+RefactoringTool: Files that need to be modified:
+RefactoringTool: ./submit-preprocessing-filter-uncorrectable-fastq.py
+```
+</details>
+<br />
+
+`#DONE` Make the edits directly to the script  
+
+Try rerunning things:
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+
+#  Make an array for files of interest ----------------------------------------
+unset fastqs_rcorrected
+typeset -a fastqs_rcorrected
+while IFS=" " read -r -d $'\0'; do
+    fastqs_rcorrected+=( "${REPLY%.?.cor.fq.gz}" )
+done < <(\
+    find "exp_preprocessing/08_rcorrector" \
+        -type f \
+        -name *.gz \
+        -print0 \
+            | sort -z \
+)
+echo "w/duplicates..."
+echoTest "${fastqs_rcorrected[@]}"
+
+IFS=" " read -r -a fastqs_rcorrected \
+    <<< "$(\
+        tr ' ' '\n' \
+            <<< "${fastqs_rcorrected[@]}" \
+                | sort -u \
+                | tr '\n' ' '\
+    )"
+echo "w/o duplicates..."
+echoTest "${fastqs_rcorrected[@]}" && echo ""
+
+
+#  Perform a test run of *filter-uncorrectable-fastq.py -----------------------
+i="${fastqs_rcorrected[0]}"
+python ./submit-preprocessing-filter-uncorrectable-fastq.py \
+	-1 "${i}.1.cor.fq.gz" \
+	-2 "${i}.2.cor.fq.gz" \
+	-s "${i}"
+# Traceback (most recent call last):
+#   File "./submit-preprocessing-filter-uncorrectable-fastq.py", line 87, in <module>
+#     if 'unfixable' in head1 and 'unfixable' not in head2:
+# TypeError: a bytes-like object is required, not 'str'
+```
+
+`#TODO` Going to need to load this script into an IDE and step through things to resolve this error  
+`#DONE` Install `jupyterlab`
+`#TODO` Troubleshoot difficulties connecting a local browser to jupyterlab initialized from the HPC
+`#TODO` Or do the troubleshooting locally by, e.g., temporarily copying pertinent files and scripts to local (would require a local installation of `jupyterlab`, which would be good to have anyway)
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+#  Install jupyterlab to Trinity_env
+mamba install -c conda-forge jupyterlab
+```
+
+<details>
+<summary><i>Messages from installation of jupyterlab printed to terminal:</i></summary>
+
+```txt
+Transaction
+
+  Prefix: /home/kalavatt/miniconda3/envs/Trinity_env
+
+  Updating specs:
+
+   - jupyterlab
+   - ca-certificates
+   - certifi
+   - openssl
+
+
+  Package                              Version  Build              Channel                    Size
+────────────────────────────────────────────────────────────────────────────────────────────────────
+  Install:
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+  + anyio                                3.6.2  pyhd8ed1ab_0       conda-forge/noarch        83 KB
+  + argon2-cffi                         21.3.0  pyhd8ed1ab_0       conda-forge/noarch        15 KB
+  + argon2-cffi-bindings                21.2.0  py37h540881e_2     conda-forge/linux-64      34 KB
+  + attrs                               22.1.0  pyh71513ae_1       conda-forge/noarch        48 KB
+  + babel                               2.11.0  pyhd8ed1ab_0       conda-forge/noarch         7 MB
+  + backcall                             0.2.0  pyh9f0ad1d_0       conda-forge/noarch        13 KB
+  + backports                              1.0  pyhd8ed1ab_3       conda-forge/noarch         6 KB
+  + backports.functools_lru_cache        1.6.4  pyhd8ed1ab_0       conda-forge/noarch         9 KB
+  + beautifulsoup4                      4.11.1  pyha770c72_0       conda-forge/noarch        96 KB
+  + bleach                               5.0.1  pyhd8ed1ab_0       conda-forge/noarch       124 KB
+  + brotlipy                             0.7.0  py37h540881e_1004  conda-forge/linux-64     342 KB
+  + cffi                                1.15.1  py37h43b0acd_1     conda-forge/linux-64     227 KB
+  + charset-normalizer                   2.1.1  pyhd8ed1ab_0       conda-forge/noarch        36 KB
+  + cryptography                        38.0.2  py37h38fbfac_1     conda-forge/linux-64       2 MB
+  + debugpy                              1.6.0  py37hd23a5d3_0     conda-forge/linux-64       2 MB
+  + decorator                            5.1.1  pyhd8ed1ab_0       conda-forge/noarch        12 KB
+  + defusedxml                           0.7.1  pyhd8ed1ab_0       conda-forge/noarch        23 KB
+  + entrypoints                            0.4  pyhd8ed1ab_0       conda-forge/noarch         9 KB
+  + flit-core                            3.8.0  pyhd8ed1ab_0       conda-forge/noarch        45 KB
+  + idna                                   3.4  pyhd8ed1ab_0       conda-forge/noarch        55 KB
+  + importlib-metadata                  4.11.4  py37h89c1867_0     conda-forge/linux-64      33 KB
+  + importlib_resources                 5.10.0  pyhd8ed1ab_0       conda-forge/noarch        29 KB
+  + ipykernel                           6.16.2  pyh210e3f2_0       conda-forge/noarch       100 KB
+  + ipython                             7.33.0  py37h89c1867_0     conda-forge/linux-64       1 MB
+  + ipython_genutils                     0.2.0  py_1               conda-forge/noarch        21 KB
+  + jedi                                0.18.2  pyhd8ed1ab_0       conda-forge/noarch       786 KB
+  + jinja2                               3.1.2  pyhd8ed1ab_1       conda-forge/noarch        99 KB
+  + json5                                0.9.5  pyh9f0ad1d_0       conda-forge/noarch        20 KB
+  + jsonschema                          4.17.1  pyhd8ed1ab_0       conda-forge/noarch        69 KB
+  + jupyter_client                       7.4.7  pyhd8ed1ab_0       conda-forge/noarch        92 KB
+  + jupyter_core                        4.11.1  py37h89c1867_0     conda-forge/linux-64      81 KB
+  + jupyter_server                      1.23.3  pyhd8ed1ab_0       conda-forge/noarch       233 KB
+  + jupyterlab                           3.5.0  pyhd8ed1ab_0       conda-forge/noarch         6 MB
+  + jupyterlab_pygments                  0.2.2  pyhd8ed1ab_0       conda-forge/noarch        17 KB
+  + jupyterlab_server                   2.16.3  pyhd8ed1ab_0       conda-forge/noarch        50 KB
+  + libsodium                           1.0.18  h36c2ea0_1         conda-forge/linux-64     366 KB
+  + markupsafe                           2.1.1  py37h540881e_1     conda-forge/linux-64      22 KB
+  + matplotlib-inline                    0.1.6  pyhd8ed1ab_0       conda-forge/noarch        12 KB
+  + mistune                              2.0.4  pyhd8ed1ab_0       conda-forge/noarch        67 KB
+  + nbclassic                            0.4.8  pyhd8ed1ab_0       conda-forge/noarch         8 MB
+  + nbclient                             0.7.0  pyhd8ed1ab_0       conda-forge/noarch        65 KB
+  + nbconvert                            7.2.5  pyhd8ed1ab_0       conda-forge/noarch         6 KB
+  + nbconvert-core                       7.2.5  pyhd8ed1ab_0       conda-forge/noarch       193 KB
+  + nbconvert-pandoc                     7.2.5  pyhd8ed1ab_0       conda-forge/noarch         5 KB
+  + nbformat                             5.7.0  pyhd8ed1ab_0       conda-forge/noarch       106 KB
+  + nest-asyncio                         1.5.6  pyhd8ed1ab_0       conda-forge/noarch        10 KB
+  + notebook                             6.5.2  pyha770c72_1       conda-forge/noarch       267 KB
+  + notebook-shim                        0.2.2  pyhd8ed1ab_0       conda-forge/noarch        15 KB
+  + packaging                             21.3  pyhd8ed1ab_0       conda-forge/noarch        36 KB
+  + pandoc                              2.19.2  h32600fe_1         conda-forge/linux-64      30 MB
+  + pandocfilters                        1.5.0  pyhd8ed1ab_0       conda-forge/noarch        11 KB
+  + parso                                0.8.3  pyhd8ed1ab_0       conda-forge/noarch        69 KB
+  + pexpect                              4.8.0  py37hc8dfbb8_1     conda-forge/linux-64      79 KB
+  + pickleshare                          0.7.5  py37hc8dfbb8_1002  conda-forge/linux-64      13 KB
+  + pkgutil-resolve-name                1.3.10  pyhd8ed1ab_0       conda-forge/noarch         9 KB
+  + prometheus_client                   0.15.0  pyhd8ed1ab_0       conda-forge/noarch        50 KB
+  + prompt-toolkit                      3.0.33  pyha770c72_0       conda-forge/noarch       259 KB
+  + psutil                               5.9.3  py37h540881e_0     conda-forge/linux-64     348 KB
+  + ptyprocess                           0.7.0  pyhd3deb0d_0       conda-forge/noarch        16 KB
+  + pycparser                             2.21  pyhd8ed1ab_0       conda-forge/noarch       100 KB
+  + pygments                            2.13.0  pyhd8ed1ab_0       conda-forge/noarch       821 KB
+  + pyopenssl                           22.1.0  pyhd8ed1ab_0       conda-forge/noarch       122 KB
+  + pyparsing                            3.0.9  pyhd8ed1ab_0       conda-forge/noarch        79 KB
+  + pyrsistent                          0.18.1  py37h540881e_1     conda-forge/linux-64      91 KB
+  + pysocks                              1.7.1  py37h89c1867_5     conda-forge/linux-64      28 KB
+  + python-dateutil                      2.8.2  pyhd8ed1ab_0       conda-forge/noarch       240 KB
+  + python-fastjsonschema               2.16.2  pyhd8ed1ab_0       conda-forge/noarch       242 KB
+  + python_abi                             3.7  2_cp37m            conda-forge/linux-64       4 KB
+  + pytz                                2022.6  pyhd8ed1ab_0       conda-forge/noarch       235 KB
+  + pyzmq                               23.0.0  py37h0c0c2a8_0     conda-forge/linux-64     474 KB
+  + requests                            2.28.1  pyhd8ed1ab_1       conda-forge/noarch        53 KB
+  + send2trash                           1.8.0  pyhd8ed1ab_0       conda-forge/noarch        17 KB
+  + six                                 1.16.0  pyh6c4a22f_0       conda-forge/noarch        14 KB
+  + sniffio                              1.3.0  pyhd8ed1ab_0       conda-forge/noarch        14 KB
+  + soupsieve                      2.3.2.post1  pyhd8ed1ab_0       conda-forge/noarch        34 KB
+  + terminado                           0.17.0  pyh41d4057_0       conda-forge/noarch        19 KB
+  + tinycss2                             1.2.1  pyhd8ed1ab_0       conda-forge/noarch        23 KB
+  + tomli                                2.0.1  pyhd8ed1ab_0       conda-forge/noarch        16 KB
+  + tornado                                6.2  py37h540881e_0     conda-forge/linux-64     651 KB
+  + traitlets                            5.5.0  pyhd8ed1ab_0       conda-forge/noarch        85 KB
+  + typing_extensions                    4.4.0  pyha770c72_0       conda-forge/noarch        29 KB
+  + urllib3                            1.26.13  pyhd8ed1ab_0       conda-forge/noarch       108 KB
+  + wcwidth                              0.2.5  pyh9f0ad1d_2       conda-forge/noarch        33 KB
+  + webencodings                         0.5.1  py_1               conda-forge/noarch        12 KB
+  + websocket-client                     1.4.2  pyhd8ed1ab_0       conda-forge/noarch        43 KB
+  + zeromq                               4.3.4  h9c3ff4c_1         conda-forge/linux-64     351 KB
+  + zipp                                3.11.0  pyhd8ed1ab_0       conda-forge/noarch        15 KB
+
+  Change:
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+  - openssl                             1.1.1s  h7f8727e_0         installed
+  + openssl                             1.1.1s  h166bdaf_0         conda-forge/linux-64     Cached
+
+  Summary:
+
+  Install: 87 packages
+  Change: 1 packages
+
+  Total download: 64 MB
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+Confirm changes: [Y/n] Y
+Finished pysocks                              (00m:00s)              28 KB    310 KB/s
+Finished pyrsistent                           (00m:00s)              91 KB    841 KB/s
+Finished libsodium                            (00m:00s)             366 KB      3 MB/s
+Finished zeromq                               (00m:00s)             351 KB      3 MB/s
+Finished traitlets                            (00m:00s)              85 KB    607 KB/s
+Finished backcall                             (00m:00s)              13 KB     90 KB/s
+Finished python_abi                           (00m:00s)               4 KB     26 KB/s
+Finished send2trash                           (00m:00s)              17 KB     96 KB/s
+Finished python-fastjsonschema                (00m:00s)             242 KB      1 MB/s
+Finished pyparsing                            (00m:00s)              79 KB    402 KB/s
+Finished pandocfilters                        (00m:00s)              11 KB     56 KB/s
+Finished backports                            (00m:00s)               6 KB     27 KB/s
+Finished idna                                 (00m:00s)              55 KB    239 KB/s
+Finished zipp                                 (00m:00s)              15 KB     64 KB/s
+Finished charset-normalizer                   (00m:00s)              36 KB    141 KB/s
+Finished matplotlib-inline                    (00m:00s)              12 KB     47 KB/s
+Finished six                                  (00m:00s)              14 KB     51 KB/s
+Finished terminado                            (00m:00s)              19 KB     68 KB/s
+Finished tinycss2                             (00m:00s)              23 KB     74 KB/s
+Finished bleach                               (00m:00s)             124 KB    390 KB/s
+Finished jupyter_core                         (00m:00s)              81 KB    252 KB/s
+Finished cffi                                 (00m:00s)             227 KB    647 KB/s
+Finished brotlipy                             (00m:00s)             342 KB    941 KB/s
+Finished jsonschema                           (00m:00s)              69 KB    180 KB/s
+Finished nbclient                             (00m:00s)              65 KB    164 KB/s
+Finished ipykernel                            (00m:00s)             100 KB    250 KB/s
+Finished notebook-shim                        (00m:00s)              15 KB     34 KB/s
+Finished notebook                             (00m:00s)             267 KB    610 KB/s
+Finished nbconvert-pandoc                     (00m:00s)               5 KB     11 KB/s
+Finished tornado                              (00m:00s)             651 KB      1 MB/s
+Finished backports.functools_lru_cache        (00m:00s)               9 KB     18 KB/s
+Finished decorator                            (00m:00s)              12 KB     23 KB/s
+Finished websocket-client                     (00m:00s)              43 KB     81 KB/s
+Finished ipython_genutils                     (00m:00s)              21 KB     39 KB/s
+Finished webencodings                         (00m:00s)              12 KB     21 KB/s
+Finished entrypoints                          (00m:00s)               9 KB     16 KB/s
+Finished flit-core                            (00m:00s)              45 KB     78 KB/s
+Finished attrs                                (00m:00s)              48 KB     81 KB/s
+Finished jinja2                               (00m:00s)              99 KB    164 KB/s
+Finished packaging                            (00m:00s)              36 KB     58 KB/s
+Finished wcwidth                              (00m:00s)              33 KB     52 KB/s
+Finished importlib-metadata                   (00m:00s)              33 KB     51 KB/s
+Finished argon2-cffi                          (00m:00s)              15 KB     20 KB/s
+Finished argon2-cffi-bindings                 (00m:00s)              34 KB     44 KB/s
+Finished requests                             (00m:00s)              53 KB     69 KB/s
+Finished nbconvert                            (00m:00s)               6 KB      8 KB/s
+Finished markupsafe                           (00m:00s)              22 KB     27 KB/s
+Finished ptyprocess                           (00m:00s)              16 KB     19 KB/s
+Finished pygments                             (00m:00s)             821 KB    957 KB/s
+Finished mistune                              (00m:00s)              67 KB     75 KB/s
+Finished pkgutil-resolve-name                 (00m:00s)               9 KB      9 KB/s
+Finished pytz                                 (00m:00s)             235 KB    258 KB/s
+Finished debugpy                              (00m:00s)               2 MB      2 MB/s
+Finished babel                                (00m:00s)               7 MB      8 MB/s
+Finished pandoc                               (00m:00s)              30 MB     46 MB/s
+Finished anyio                                (00m:00s)              83 KB     86 KB/s
+Finished pexpect                              (00m:00s)              79 KB     82 KB/s
+Finished jedi                                 (00m:00s)             786 KB    795 KB/s
+Finished nbclassic                            (00m:00s)               8 MB      8 MB/s
+Finished cryptography                         (00m:00s)               2 MB      2 MB/s
+Finished jupyterlab_server                    (00m:00s)              50 KB     49 KB/s
+Finished urllib3                              (00m:00s)             108 KB    107 KB/s
+Finished prometheus_client                    (00m:00s)              50 KB     48 KB/s
+Finished defusedxml                           (00m:00s)              23 KB     23 KB/s
+Finished sniffio                              (00m:00s)              14 KB     13 KB/s
+Finished jupyterlab_pygments                  (00m:00s)              17 KB     16 KB/s
+Finished jupyter_client                       (00m:00s)              92 KB     85 KB/s
+Finished nbconvert-core                       (00m:00s)             193 KB    178 KB/s
+Finished importlib_resources                  (00m:00s)              29 KB     26 KB/s
+Finished soupsieve                            (00m:00s)              34 KB     30 KB/s
+Finished pickleshare                          (00m:00s)              13 KB     12 KB/s
+Finished parso                                (00m:00s)              69 KB     61 KB/s
+Finished python-dateutil                      (00m:00s)             240 KB    212 KB/s
+Finished jupyterlab                           (00m:00s)               6 MB      5 MB/s
+Finished tomli                                (00m:00s)              16 KB     13 KB/s
+Finished prompt-toolkit                       (00m:00s)             259 KB    222 KB/s
+Finished typing_extensions                    (00m:00s)              29 KB     25 KB/s
+Finished pyopenssl                            (00m:00s)             122 KB    104 KB/s
+Finished ipython                              (00m:00s)               1 MB    979 KB/s
+Finished psutil                               (00m:00s)             348 KB    288 KB/s
+Finished json5                                (00m:00s)              20 KB     17 KB/s
+Finished nest-asyncio                         (00m:00s)              10 KB      8 KB/s
+Finished nbformat                             (00m:00s)             106 KB     87 KB/s
+Finished jupyter_server                       (00m:00s)             233 KB    190 KB/s
+Finished beautifulsoup4                       (00m:00s)              96 KB     77 KB/s
+Finished pycparser                            (00m:00s)             100 KB     79 KB/s
+Finished pyzmq                                (00m:00s)             474 KB    288 KB/s
+Downloading  [====================================================================================================] (00m:12s)   38.44 MB/s
+Extracting   [====================================================================================================] (02m:12s)      87 / 87
+Preparing transaction: done
+Verifying transaction: done
+Executing transaction: done
+```
+</details>

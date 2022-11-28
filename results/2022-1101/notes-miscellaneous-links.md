@@ -20,6 +20,7 @@
     1. [FHCC Data Science](#fhcc-data-science)
     1. [`Singularity`, `Docker`](#singularity-docker)
     1. [Tmux](#tmux)
+    1. [Awk](#awk)
 
 <!-- /MarkdownTOC -->
 </details>
@@ -137,3 +138,10 @@
 <a id="tmux"></a>
 ### Tmux
 - [How to scroll in tmux](https://superuser.com/questions/209437/how-do-i-scroll-in-tmux)
+
+<a id="awk"></a>
+### Awk
+- https://stackoverflow.com/questions/2961635/using-awk-to-print-all-columns-from-the-nth-to-the-last
+- https://stackoverflow.com/questions/11312359/awk-printing-characters-between-fields
+- https://stackoverflow.com/questions/10776679/how-to-split-string-on-forward-slash-in-bash
+- 

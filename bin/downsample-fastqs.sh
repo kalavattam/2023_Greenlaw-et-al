@@ -57,31 +57,32 @@ check_etc() {
     echo ""
 }
 
+
+main() {
+    # :param 1: infile_1 <chr>
+    # :param 2: infile_2 <chr>
+    # :param 3: outfile_1 <chr>
+    # :param 4: outfile_2 <chr>
+    # :param 5: sample <chr>
+
+    reformat.sh \
+        in1="${infile_1}" \
+        in2="${infile_2}" \
+        out1="${outfile_1}" \
+        out2="${outfile_2}" \
+        samplereadstarget="${sample}"
+}
+
+#TODO  Named arguments and a parser
+
 infile_1="${1}"
 infile_2="${2}"
-samp="${3}"  # e.g., "50k"
+sample="${3}"  # e.g., "50k"
 dir_out="${4}"
 
-if [[ "${infile_1}" == *"fastq.gz" ]]; then
-    extension="fastq.gz"
-elif [[ "${infile_1}" == *"fastq" ]]; then
-    extension="fastq"
-elif [[ "${infile_1}" == *"fq.gz" ]]; then
-    extension="fq.gz"
-elif [[ "${infile_1}" == *"fq" ]]; then
-    extension="fq"
-else
-    echo "Exiting: Infile $(basename "${infile_1}") does not appear to be a .fastq file"
-    # exit 1
-fi
+check_etc
 
-outfile_1="$(basename "${infile_1%.fastq.gz}.${samp}.${extension}")"
-outfile_2="$(basename "${infile_2%.fastq.gz}.${samp}.${extension}")"
+outfile_1="${dir_out}/$(basename "${infile_1%.fastq.gz}.${sample}.${extension}")"
+outfile_2="${dir_out}/$(basename "${infile_2%.fastq.gz}.${sample}.${extension}")"
 
-#  Be sensitive to whether the extension is "fastq.gz" or "fastq"
-reformat.sh \
-	in1="${infile_1}" \
-	in2="${infile_2}" \
-	out1="${dir_out}/${outfile_1}" \
-	out2="${dir_out}/${outfile_2}" \
-	samplereadstarget="${samp}"
+main_etc
