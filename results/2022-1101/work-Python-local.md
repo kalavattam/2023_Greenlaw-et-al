@@ -904,7 +904,8 @@ Shutdown this Jupyter server (y/[n])? y
 #NOTE Did not copy it in
 ```
 </details>
+<br />
 
 `#NOTE` Determined that it will be easier to use a full Python IDE (e.g., `Spyder`) to do this work, so deleted the `.ipynb` file in which I was attempting to do this step-through work  
-`#NOTE` Still, setting up and customizing `jupyterlab` was still valuable and worth the time; I can see myself bouncing between notebooks and the full IDE when coding in Python in the future, based on the requirements and goals of the project
-`#NOTE` The work to update the rCorrector-correction script can seen by comparing GitHub commits
+`#NOTE` Still, setting up and customizing `jupyterlab` was still valuable and worth the time; I can see myself bouncing between notebooks and the full IDE when coding in Python in the future, based on the requirements and goals of the project  
+`#NOTE` The work to update the `rCorrector`-correction script can seen by comparing GitHub commits

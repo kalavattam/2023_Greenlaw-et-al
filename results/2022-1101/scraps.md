@@ -84,7 +84,9 @@
 	1. [Perform a `FastQC` quality check for the new `.fastq` files \(2022-1128\)](#perform-a-fastqc-quality-check-for-the-new-fastq-files-2022-1128)
 	1. [Remove erroneous k-mers from paired-end reads with `rCorrector`](#remove-erroneous-k-mers-from-paired-end-reads-with-rcorrector)
 		1. [Discard `rcorrector`-processed read pairs for which one read is deemed unfixable](#discard-rcorrector-processed-read-pairs-for-which-one-read-is-deemed-unfixable)
-			1. [Troubleshoot errors associated with the `rcorrector`-correction scripts](#troubleshoot-errors-associated-with-the-rcorrector-correction-scripts)
+			1. [Troubleshoot errors associated with the `rcorrector`-correction scripts \(2022-1128-1129\)](#troubleshoot-errors-associated-with-the-rcorrector-correction-scripts-2022-1128-1129)
+		1. [Continue work to discard `rcorrector`-processed read pairs that are "unfixable" \(2022-1129\)](#continue-work-to-discard-rcorrector-processed-read-pairs-that-are-unfixable-2022-1129)
+			1. [Next steps following the successful completion of `rCorrector` treatment and correction \(2022-1129\)](#next-steps-following-the-successful-completion-of-rcorrector-treatment-and-correction-2022-1129)
 
 <!-- /MarkdownTOC -->
 </details>
@@ -5769,8 +5771,8 @@ python ./submit-preprocessing-filter-uncorrectable-fastq.py \
 # SyntaxError: Missing parentheses in call to 'print'. Did you mean print("%s reads processed" % counter)?
 ```
 
-<a id="troubleshoot-errors-associated-with-the-rcorrector-correction-scripts"></a>
-##### Troubleshoot errors associated with the `rcorrector`-correction scripts
+<a id="troubleshoot-errors-associated-with-the-rcorrector-correction-scripts-2022-1128-1129"></a>
+##### Troubleshoot errors associated with the `rcorrector`-correction scripts (2022-1128-1129)
 ```bash
 #!/bin/bash
 #DONTRUN #CONTINUE
@@ -6116,4 +6118,165 @@ Executing transaction: done
 </details>
 <br />
 
-For details on the resolution of these errors, see...
+For details on the resolution of these errors (2022-1129), see [`work-Python-local.md`](./work-Python-local.md) and [`filter_rCorrector-treated-fastqs.py`](../../bin/filter_rCorrector-treated-fastqs.py) (in particular, the GitHub commits for this `.py` file in `bin/`)
+
+<a id="continue-work-to-discard-rcorrector-processed-read-pairs-that-are-unfixable-2022-1129"></a>
+#### Continue work to discard `rcorrector`-processed read pairs that are "unfixable" (2022-1129)
+```bash
+#!/bin/bash
+#DONTRUN
+
+grabnode  # Lowest and default settings
+
+Trinity_env
+
+cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101" ||
+	echo "cd'ing failed; check on this"
+
+pwd
+
+which python
+# /home/kalavatt/miniconda3/envs/Trinity_env/bin/python
+
+python --version
+# Python 3.7.15
+
+.,
+# total 3.6M
+# drwxrws--- 15 kalavatt 1.9K Nov 29 15:00 ./
+# drwxrws---  7 kalavatt  191 Nov 29 14:49 ../
+# drwxrws---  3 kalavatt  160 Nov  9 15:23 exp_alignment_Bowtie_2/
+# drwxrws---  3 kalavatt   94 Nov 20 11:06 exp_alignment_STAR/
+# drwxrws---  3 kalavatt   94 Nov 18 13:04 exp_alignment_STAR_multi-hit/
+# drwxrws---  4 kalavatt  190 Nov 28 13:03 exp_alignment_STAR_tags/
+# drwxrws---  2 kalavatt 1.1K Nov  7 15:27 exp_FastQC/
+# drwxrws---  2 kalavatt  206 Nov 20 13:40 exp_intron-length/
+# drwxrws---  6 kalavatt 2.6K Nov 26 10:21 exp_PASA_trial/
+# drwxrws---  2 kalavatt  854 Nov  7 14:31 exp_picardmetrics/
+# drwxrws--- 12 kalavatt 8.3K Nov 29 14:42 exp_preprocessing/
+# drwxrws---  3 kalavatt  317 Nov  7 14:44 exp_Trinity/
+# drwxrws---  4 kalavatt  242 Nov 24 12:27 exp_Trinity_trial/
+# drwxrws---  3 kalavatt  720 Nov  8 10:03 files_fastq_symlinks/
+# drwxrws---  2 kalavatt  778 Nov 29 14:09 notebook/
+# -rw-rw----  1 kalavatt  14K Nov 16 12:23 notes-Alison-files-locations.md
+# -rw-rw----  1 kalavatt  29K Nov 16 12:23 notes-Alison-papers.md
+# -rw-rw----  1 kalavatt 1.3K Nov 16 12:23 notes-Alison-RNA-seq-kits.md
+# -rw-rw----  1 kalavatt 8.3K Nov 28 10:05 notes-miscellaneous-links.md
+# -rw-rw----  1 kalavatt 5.7K Nov 16 12:23 notes-RNA-seq-spike-ins.md
+# -rw-rw----  1 kalavatt  35K Nov 18 11:33 notes-UMIs-etc.md
+# -rw-rw----  1 kalavatt 264K Nov 29 14:57 scraps.md
+# -rw-rw----  1 kalavatt  617 Nov  8 14:43 submit-Bowtie-2.test-1.sh
+# -rw-rw----  1 kalavatt  642 Nov  8 16:16 submit-Bowtie-2.test-2.sh
+# -rw-rw----  1 kalavatt  300 Nov  7 14:58 submit-FastQC.sh
+# -rw-rw----  1 kalavatt 1.2K Nov 28 12:48 submit-preprocessing-convert-bam-fastq.sh
+# -rw-rw----  1 kalavatt  450 Nov 26 14:00 submit-preprocessing-exclude-bam-reads-unmapped.sh
+# -rw-rw----  1 kalavatt  330 Nov 26 10:55 submit-preprocessing-fastqc.sh
+# -rw-rw----  1 kalavatt 4.3K Nov 29 06:52 submit-preprocessing-filter-uncorrectable-fastq.py
+# -rw-rw----  1 kalavatt  313 Nov 26 14:00 submit-preprocessing-index-bam.sh
+# -rw-rw----  1 kalavatt  942 Nov 28 09:18 submit-preprocessing-split-bam-species.sh
+# -rw-rw----  1 kalavatt  892 Nov 26 12:21 submit-preprocessing-star-genome-free.sh
+# -rw-rw----  1 kalavatt 1002 Nov 26 13:52 submit-preprocessing-star-genome-guided.sh
+# -rw-rw----  1 kalavatt  917 Nov 26 11:00 submit-preprocessing-trim_galore.sh
+# -rw-rw----  1 kalavatt  871 Nov 18 14:52 submit-STAR-alignReads-multi-hit.sh
+# -rw-rw----  1 kalavatt  874 Nov 18 14:53 submit-STAR-alignReads.tags.multi-hit-mode.sh
+# -rw-rw----  1 kalavatt 1.4K Nov 18 14:38 submit-STAR-alignReads.tags.rna-star.sh
+# -rw-rw----  1 kalavatt  694 Nov 28 07:50 submit-Trinity.sh
+# -rw-rw----  1 kalavatt 1.2K Nov 22 14:54 submit-Trinity-trial-genome-free.sh
+# -rw-rw----  1 kalavatt 1.2K Nov 22 10:47 submit-Trinity-trial-genome-guided.sh
+# -rw-rw----  1 kalavatt  45K Nov 29 14:09 work-Python-local.key-bindings-system.json
+# -rw-rw----  1 kalavatt 1.7K Nov 29 14:09 work-Python-local.key-bindings-user.json
+# -rw-rw----  1 kalavatt  53K Nov 29 14:52 work-Python-local.md
+# -rw-rw----  1 kalavatt  23K Nov 16 12:23 work-TPM-calculation.md
+# -rw-rw----  1 kalavatt 310K Nov 26 10:41 work-Trinity.md
+
+
+#  Get together the script for correcting rCorrected .fastq files -------------
+rm submit-preprocessing-filter-uncorrectable-fastq.py
+cp \
+	../../bin/filter_rCorrector-treated-fastqs.py \
+	submit-preprocessing-filter-uncorrectable-fastq.py
+# '../../bin/filter_rCorrector-treated-fastqs.py' -> 'submit-preprocessing-filter-uncorrectable-fastq.py'
+
+# vi submit-preprocessing-filter-uncorrectable-fastq.py
+
+
+#  Make an array for files of interest ----------------------------------------
+unset fastqs_rcorrected
+typeset -a fastqs_rcorrected
+while IFS=" " read -r -d $'\0'; do
+    fastqs_rcorrected+=( "${REPLY%.?.cor.fq.gz}" )
+done < <(\
+    find "exp_preprocessing/08_rcorrector" \
+        -type f \
+        -name *.gz \
+        -print0 \
+            | sort -z \
+)
+echo "w/duplicates..."
+echoTest "${fastqs_rcorrected[@]}"
+
+IFS=" " read -r -a fastqs_rcorrected \
+    <<< "$(\
+        tr ' ' '\n' \
+            <<< "${fastqs_rcorrected[@]}" \
+                | sort -u \
+                | tr '\n' ' '\
+    )"
+echo "w/o duplicates..."
+echoTest "${fastqs_rcorrected[@]}" && echo ""
+
+#  Perform a test run of *filter-uncorrectable-fastq.py -----------------------
+python submit-preprocessing-filter-uncorrectable-fastq.py --help
+# usage: submit-preprocessing-filter-uncorrectable-fastq.py [-h] [-1 READS_LEFT]
+#                                                           [-2 READS_RIGHT]
+#                                                           [-s SAMPLE_ID]
+#                                                           [-o DIR_OUT]
+#                                                           [-g GZIP_OUT]
+#
+# Options for filtering, logging rCorrector fastq output
+#
+# optional arguments:
+#   -h, --help            show this help message and exit
+#   -1 READS_LEFT, --reads_left READS_LEFT
+#                         R1 fastq infile (gzipped or not), including path
+#   -2 READS_RIGHT, --reads_right READS_RIGHT
+#                         R2 fastq infile (gzipped or not), including path
+#   -s SAMPLE_ID, --sample_id SAMPLE_ID
+#                         sample name to write to log file
+#   -o DIR_OUT, --dir_out DIR_OUT
+#                         outfile directory, including path
+#   -g GZIP_OUT, --gzip_out GZIP_OUT
+#                         write gzipped fastq outfiles (True or False)
+
+i="${fastqs_rcorrected[0]}"
+# echo "${i}"
+
+python submit-preprocessing-filter-uncorrectable-fastq.py \
+    -1 "${i}.1.cor.fq.gz" \
+    -2 "${i}.2.cor.fq.gz" \
+    -s "${i}" \
+    -o "exp_preprocessing/08_rcorrector" \
+    -g True
+# Traceback (most recent call last):
+#   File "submit-preprocessing-filter-uncorrectable-fastq.py", line 169, in <module>
+#     unfix_log = open(opts.dir_out + '/rm_unfixable.%s.log' % opts.sample_id, 'w')
+# FileNotFoundError: [Errno 2] No such file or directory: 'exp_preprocessing/08_rcorrector/rm_unfixable.exp_preprocessing/08_rcorrector/5781_Q_IN_mergedAligned.sortedByCoord.out.sc_all.log'
+```
+
+Nice! It's working!  
+...well, until just the end, it seems  
+
+`#TODO` Fix this error `#TOMORROW`; it should be straightforward: remove `opts.dir_out + ` from lines `169` and `194`
+
+<a id="next-steps-following-the-successful-completion-of-rcorrector-treatment-and-correction-2022-1129"></a>
+##### Next steps following the successful completion of `rCorrector` treatment and correction (2022-1129)
+- `#TODO` The next step is to get SLURM submission scripts set up for...  
+	+ the initial use of `rCorrector`
+	+ the "correction" of `rCorrector`-treated files  
+- `#TODO` Also, need to get a couple of FastQC readout in there,  
+	+ one after the initial use of `rCorrector`
+	+ one after the use of the correction script
+- After that, I'll want to run `Trinity` (`v2.12` for consistency; however, after this experiment, we'll move on to using `Trinity v2.14`) using the output from `04b` (genome-guided) and `08` (genome-free; `unfixrm.*`)
+- Once that's done, I'll use the `.fasta` files as input to the `PASA` (`Singularity`) pipeline, generating outfiles that can be compared to the first run (*in which no preprocessing was performed*)
+- `#TODO` Learn how to read and make sense of the outfiles, and then determine the next steps, which include loading the data to `IGV` and or running `DETONATE`, etc.
+- `#GOAL` Determine whether preprocessing makes an impact (positive or negative) on transcriptome assembly

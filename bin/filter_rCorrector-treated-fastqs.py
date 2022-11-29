@@ -93,8 +93,8 @@ if __name__=="__main__":
         '--gzip_out',
         dest='gzip_out',
         default=True,
+        type=bool,
         help='write gzipped fastq outfiles (True or False)',
-        action=argparse.BooleanOptionalAction
     )
     opts = parser.parse_args()
 
@@ -157,10 +157,10 @@ if __name__=="__main__":
                 head1=head1.split('l:')[0][:-1] 
                 head2=head2.split('l:')[0][:-1]
                 r1out.write('%s\n' % '\n'.join(
-                    [head1,seq1,placeholder1,qual1]
+                    [head1, seq1, placeholder1, qual1]
                 ))
                 r2out.write('%s\n' % '\n'.join(
-                    [head2,seq2,placeholder2,qual2]
+                    [head2, seq2, placeholder2, qual2]
                 ))
 
     total_unfixable = unfix_r1_count + unfix_r2_count + unfix_both_count
