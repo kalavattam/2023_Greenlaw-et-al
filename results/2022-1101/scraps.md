@@ -84,6 +84,7 @@
 	1. [Perform a `FastQC` quality check for the new `.fastq` files \(2022-1128\)](#perform-a-fastqc-quality-check-for-the-new-fastq-files-2022-1128)
 	1. [Remove erroneous k-mers from paired-end reads with `rCorrector`](#remove-erroneous-k-mers-from-paired-end-reads-with-rcorrector)
 		1. [Discard `rcorrector`-processed read pairs for which one read is deemed unfixable](#discard-rcorrector-processed-read-pairs-for-which-one-read-is-deemed-unfixable)
+			1. [Troubleshoot errors associated with the `rcorrector`-correction scripts](#troubleshoot-errors-associated-with-the-rcorrector-correction-scripts)
 
 <!-- /MarkdownTOC -->
 </details>
@@ -5766,8 +5767,13 @@ python ./submit-preprocessing-filter-uncorrectable-fastq.py \
 #     print "%s reads processed" % counter
 #                              ^
 # SyntaxError: Missing parentheses in call to 'print'. Did you mean print("%s reads processed" % counter)?
+```
 
-
+<a id="troubleshoot-errors-associated-with-the-rcorrector-correction-scripts"></a>
+##### Troubleshoot errors associated with the `rcorrector`-correction scripts
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
 #  Make sense of the error using 2to3 -----------------------------------------
 #  It looks like the script is written in Python 2; install 2to3 and convert
 #+ *filter-uncorrectable-fastq.py to Python 3 formatting
@@ -5876,10 +5882,10 @@ python ./submit-preprocessing-filter-uncorrectable-fastq.py \
 # TypeError: a bytes-like object is required, not 'str'
 ```
 
-`#TODO` Going to need to load this script into an IDE and step through things to resolve this error  
-`#DONE` Install `jupyterlab`
-`#TODO` Troubleshoot difficulties connecting a local browser to jupyterlab initialized from the HPC
-`#TODO` Or do the troubleshooting locally by, e.g., temporarily copying pertinent files and scripts to local (would require a local installation of `jupyterlab`, which would be good to have anyway)
+`#DONE` Going to need to load this script into an IDE and step through things to resolve this error  
+`#DONE` Install `jupyterlab`  
+~~`#SKIP` Troubleshoot difficulties connecting a local browser to jupyterlab initialized from the HPC~~  
+`#DONE` Or do the troubleshooting locally by, e.g., temporarily copying pertinent files and scripts to local (would require a local installation of `jupyterlab`, which would be good to have anyway)
 
 ```bash
 #!/bin/bash
@@ -5890,7 +5896,7 @@ mamba install -c conda-forge jupyterlab
 ```
 
 <details>
-<summary><i>Messages from installation of jupyterlab printed to terminal:</i></summary>
+<summary><i>Messages from installation of ` printed to terminal:</i></summary>
 
 ```txt
 Transaction
@@ -6108,3 +6114,6 @@ Verifying transaction: done
 Executing transaction: done
 ```
 </details>
+<br />
+
+For details on the resolution of these errors, see...
