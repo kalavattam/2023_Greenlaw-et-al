@@ -82,11 +82,15 @@
 	1. [Perform another quality check with `FastQC` \(2022-1128\)](#perform-another-quality-check-with-fastqc-2022-1128)
 	1. [Convert the species-filtered `.bam`s from genome-free alignment to `.fastq`s](#convert-the-species-filtered-bams-from-genome-free-alignment-to-fastqs)
 	1. [Perform a `FastQC` quality check for the new `.fastq` files \(2022-1128\)](#perform-a-fastqc-quality-check-for-the-new-fastq-files-2022-1128)
-	1. [Remove erroneous k-mers from paired-end reads with `rCorrector`](#remove-erroneous-k-mers-from-paired-end-reads-with-rcorrector)
+	1. [Remove erroneous k-mers from reads with `rCorrector` and "correct" the outfiles](#remove-erroneous-k-mers-from-reads-with-rcorrector-and-correct-the-outfiles)
+		1. [Remove erroneous k-mers from paired-end reads with rCorrector](#remove-erroneous-k-mers-from-paired-end-reads-with-rcorrector)
 		1. [Discard `rcorrector`-processed read pairs for which one read is deemed unfixable](#discard-rcorrector-processed-read-pairs-for-which-one-read-is-deemed-unfixable)
 			1. [Troubleshoot errors associated with the `rcorrector`-correction scripts \(2022-1128-1129\)](#troubleshoot-errors-associated-with-the-rcorrector-correction-scripts-2022-1128-1129)
 		1. [Continue work to discard `rcorrector`-processed read pairs that are "unfixable" \(2022-1129\)](#continue-work-to-discard-rcorrector-processed-read-pairs-that-are-unfixable-2022-1129)
 			1. [Next steps following the successful completion of `rCorrector` treatment and correction \(2022-1129\)](#next-steps-following-the-successful-completion-of-rcorrector-treatment-and-correction-2022-1129)
+		1. [Get `SLURM` submission scripts set up for `rCorrector` and "correction of `rCorrector`" \(2022-1130\)](#get-slurm-submission-scripts-set-up-for-rcorrector-and-correction-of-rcorrector-2022-1130)
+			1. [...for `rCorrector`](#for-rcorrector)
+			1. [...for "correction of `rCorrector`"](#for-correction-of-rcorrector)
 
 <!-- /MarkdownTOC -->
 </details>
@@ -5489,8 +5493,10 @@ for i in "${fastqs_from_bams[@]}"; do
 done
 ```
 
+<a id="remove-erroneous-k-mers-from-reads-with-rcorrector-and-correct-the-outfiles"></a>
+### Remove erroneous k-mers from reads with `rCorrector` and "correct" the outfiles
 <a id="remove-erroneous-k-mers-from-paired-end-reads-with-rcorrector"></a>
-### Remove erroneous k-mers from paired-end reads with `rCorrector`
+#### Remove erroneous k-mers from paired-end reads with rCorrector
 ```bash
 #!/bin/bash
 #DONTRUN #CONTINUE
@@ -6225,6 +6231,7 @@ IFS=" " read -r -a fastqs_rcorrected \
 echo "w/o duplicates..."
 echoTest "${fastqs_rcorrected[@]}" && echo ""
 
+
 #  Perform a test run of *filter-uncorrectable-fastq.py -----------------------
 python submit-preprocessing-filter-uncorrectable-fastq.py --help
 # usage: submit-preprocessing-filter-uncorrectable-fastq.py [-h] [-1 READS_LEFT]
@@ -6266,17 +6273,258 @@ python submit-preprocessing-filter-uncorrectable-fastq.py \
 Nice! It's working!  
 ...well, until just the end, it seems  
 
-`#TODO` Fix this error `#TOMORROW`; it should be straightforward: remove `opts.dir_out + ` from lines `169` and `194`
+~~`#DONE` Fix this error `#TOMORROW`; it should be straightforward: remove `opts.dir_out + ` from lines `169` and `194`~~
 
 <a id="next-steps-following-the-successful-completion-of-rcorrector-treatment-and-correction-2022-1129"></a>
 ##### Next steps following the successful completion of `rCorrector` treatment and correction (2022-1129)
-- `#TODO` The next step is to get SLURM submission scripts set up for...  
+- `#TODO` The next step is to get `SLURM` submission scripts set up for...  
 	+ the initial use of `rCorrector`
 	+ the "correction" of `rCorrector`-treated files  
-- `#TODO` Also, need to get a couple of FastQC readout in there,  
+- `#TODO` Also, need to get a couple of `FastQC` readouts in there,  
 	+ one after the initial use of `rCorrector`
 	+ one after the use of the correction script
 - After that, I'll want to run `Trinity` (`v2.12` for consistency; however, after this experiment, we'll move on to using `Trinity v2.14`) using the output from `04b` (genome-guided) and `08` (genome-free; `unfixrm.*`)
 - Once that's done, I'll use the `.fasta` files as input to the `PASA` (`Singularity`) pipeline, generating outfiles that can be compared to the first run (*in which no preprocessing was performed*)
 - `#TODO` Learn how to read and make sense of the outfiles, and then determine the next steps, which include loading the data to `IGV` and or running `DETONATE`, etc.
 - `#GOAL` Determine whether preprocessing makes an impact (positive or negative) on transcriptome assembly
+
+```bash
+#!/bin/bash
+#DONTRUN
+
+grabnode  # Lowest and default settings
+
+Trinity_env
+
+cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101" ||
+	echo "cd'ing failed; check on this"
+
+
+#  Get together the script for correcting rCorrected .fastq files -------------
+#  Make the changes to filter_rCorrector-treated-fastqs.py described above...
+rm submit-preprocessing-filter-uncorrectable-fastq.py
+cp \
+	../../bin/filter_rCorrector-treated-fastqs.py \
+	submit-preprocessing-filter-uncorrectable-fastq.py
+# '../../bin/filter_rCorrector-treated-fastqs.py' -> 'submit-preprocessing-filter-uncorrectable-fastq.py'
+
+# vi submit-preprocessing-filter-uncorrectable-fastq.py
+
+
+#  Make an array for files of interest ----------------------------------------
+unset fastqs_rcorrected
+typeset -a fastqs_rcorrected
+while IFS=" " read -r -d $'\0'; do
+    fastqs_rcorrected+=( "${REPLY%.?.cor.fq.gz}" )
+done < <(\
+    find "exp_preprocessing/08_rcorrector" \
+        -type f \
+        -name *.gz \
+        -print0 \
+            | sort -z \
+)
+echo "w/duplicates..."
+echoTest "${fastqs_rcorrected[@]}"
+
+IFS=" " read -r -a fastqs_rcorrected \
+    <<< "$(\
+        tr ' ' '\n' \
+            <<< "${fastqs_rcorrected[@]}" \
+                | sort -u \
+                | tr '\n' ' '\
+    )"
+echo "w/o duplicates..."
+echoTest "${fastqs_rcorrected[@]}" && echo ""
+
+
+#  Perform a test run of *filter-uncorrectable-fastq.py -----------------------
+# python submit-preprocessing-filter-uncorrectable-fastq.py --help
+
+i="${fastqs_rcorrected[0]}"
+# echo "${i}"
+
+python submit-preprocessing-filter-uncorrectable-fastq.py \
+    -1 "${i}.1.cor.fq.gz" \
+    -2 "${i}.2.cor.fq.gz" \
+    -s "${i}" \
+    -o "exp_preprocessing/08_rcorrector" \
+    -g True
+# Traceback (most recent call last):
+#   File "submit-preprocessing-filter-uncorrectable-fastq.py", line 169, in <module>
+#     unfix_log = open(opts.dir_out + '/rm_unfixable.%s.log' % opts.sample_id, 'w')
+# FileNotFoundError: [Errno 2] No such file or directory: 'exp_preprocessing/08_rcorrector/rm_unfixable.exp_preprocessing/08_rcorrector/5781_Q_IN_mergedAligned.sortedByCoord.out.sc_all.log'
+```
+
+<a id="get-slurm-submission-scripts-set-up-for-rcorrector-and-correction-of-rcorrector-2022-1130"></a>
+#### Get `SLURM` submission scripts set up for `rCorrector` and "correction of `rCorrector`" (2022-1130)
+<a id="for-rcorrector"></a>
+##### ...for `rCorrector`
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+Trinity_env
+
+cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101" ||
+	echo "cd'ing failed; check on this"
+
+pwd
+# /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101
+
+which rcorrector
+# /home/kalavatt/miniconda3/envs/Trinity_env/bin/rcorrector
+
+which parallel
+# /home/kalavatt/miniconda3/envs/Trinity_env/bin/parallel
+
+
+#  Make an array for files of interest ----------------------------------------
+unset fastqs_from_bams
+typeset -a fastqs_from_bams
+while IFS=" " read -r -d $'\0'; do
+    fastqs_from_bams+=( "${REPLY%.?.fq.gz}" )
+done < <(\
+    find "exp_preprocessing/06_bam-to-fastq" \
+        -type f \
+        -name *.gz \
+        -print0 \
+            | sort -z \
+)
+echo "w/duplicates..."
+echoTest "${fastqs_from_bams[@]}"
+# exp_preprocessing/06_bam-to-fastq/5781_Q_IN_mergedAligned.sortedByCoord.out.sc_all
+# exp_preprocessing/06_bam-to-fastq/5781_Q_IN_mergedAligned.sortedByCoord.out.sc_all
+# exp_preprocessing/06_bam-to-fastq/5782_Q_IN_mergedAligned.sortedByCoord.out.sc_all
+# exp_preprocessing/06_bam-to-fastq/5782_Q_IN_mergedAligned.sortedByCoord.out.sc_all
+
+IFS=" " read -r -a fastqs_from_bams \
+    <<< "$(\
+        tr ' ' '\n' \
+            <<< "${fastqs_from_bams[@]}" \
+                | sort -u \
+                | tr '\n' ' '\
+    )"
+echo "w/o duplicates..."
+echoTest "${fastqs_from_bams[@]}" && echo ""
+# exp_preprocessing/06_bam-to-fastq/5781_Q_IN_mergedAligned.sortedByCoord.out.sc_all
+# exp_preprocessing/06_bam-to-fastq/5782_Q_IN_mergedAligned.sortedByCoord.out.sc_all
+
+
+#  Prep the SLURM script for running rcorrector -------------------------------
+threads=8
+outdir="exp_preprocessing/08_rcorrector"
+
+if [[ -f submit-preprocessing-rcorrector.sh ]]; then
+    rm submit-preprocessing-rcorrector.sh
+fi
+cat << script > "./submit-preprocessing-rcorrector.sh"
+#!/bin/bash
+
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=${threads}
+#SBATCH --error=./exp_preprocessing/submit-preprocessing-rcorrector.%J.err.txt
+#SBATCH --output=./exp_preprocessing/submit-preprocessing-rcorrector.%J.out.txt
+
+#  submit-preprocessing-rcorrector.sh
+#  KA
+#  $(date '+%Y-%m%d')
+
+
+instring="\${1}"
+outdir="\${2}"
+threads="\${3}"
+
+parallel --header : --colsep " " -k -j 1 echo \\
+"run_rcorrector.pl \\
+    -t {threads} \\
+    -1 {instring}.1.fq.gz \\
+    -2 {instring}.2.fq.gz \\
+    -od {outdir}" \\
+::: threads "\${threads}" \\
+::: instring "\${instring}" \\
+::: outdir "\${outdir}"
+
+parallel --header : --colsep " " -k -j 1 \\
+run_rcorrector.pl \\
+    -t {threads} \\
+    -1 {instring}.1.fq.gz \\
+    -2 {instring}.2.fq.gz \\
+    -od {outdir} \\
+::: threads "\${threads}" \\
+::: instring "\${instring}" \\
+::: outdir "\${outdir}"
+script
+vi submit-preprocessing-rcorrector.sh
+
+
+#  Submit jobs for running rcorrector -----------------------------------------
+for i in "${fastqs_from_bams[@]}"; do
+    # i="${fastqs_from_bams[0]}"
+    echo "Working with ${i}..."
+    sbatch ./submit-preprocessing-rcorrector.sh \
+        "${i}" \
+        "${outdir}" \
+        "${threads}"
+
+    sleep 0.25
+    echo ""
+done
+```
+
+<a id="for-correction-of-rcorrector"></a>
+##### ...for "correction of `rCorrector`"
+`#DEKO`
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+Trinity_env
+
+cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101" ||
+	echo "cd'ing failed; check on this"
+
+pwd
+# /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101
+
+which rcorrector
+# /home/kalavatt/miniconda3/envs/Trinity_env/bin/rcorrector
+
+which parallel
+# /home/kalavatt/miniconda3/envs/Trinity_env/bin/parallel
+
+
+#  Make an array for files of interest ----------------------------------------
+unset fastqs_rcorrected
+typeset -a fastqs_rcorrected
+while IFS=" " read -r -d $'\0'; do
+    fastqs_rcorrected+=( "${REPLY%.?.cor.fq.gz}" )
+done < <(\
+    find "exp_preprocessing/08_rcorrector" \
+        -type f \
+        -name *.gz \
+        -print0 \
+            | sort -z \
+)
+echo "w/duplicates..."
+echoTest "${fastqs_rcorrected[@]}"
+# exp_preprocessing/08_rcorrector/5781_Q_IN_mergedAligned.sortedByCoord.out.sc_all
+# exp_preprocessing/08_rcorrector/5781_Q_IN_mergedAligned.sortedByCoord.out.sc_all
+# exp_preprocessing/08_rcorrector/5782_Q_IN_mergedAligned.sortedByCoord.out.sc_all
+# exp_preprocessing/08_rcorrector/5782_Q_IN_mergedAligned.sortedByCoord.out.sc_all
+
+IFS=" " read -r -a fastqs_rcorrected \
+    <<< "$(\
+        tr ' ' '\n' \
+            <<< "${fastqs_rcorrected[@]}" \
+                | sort -u \
+                | tr '\n' ' '\
+    )"
+echo "w/o duplicates..."
+echoTest "${fastqs_rcorrected[@]}" && echo ""
+# exp_preprocessing/08_rcorrector/5781_Q_IN_mergedAligned.sortedByCoord.out.sc_all
+# exp_preprocessing/08_rcorrector/5782_Q_IN_mergedAligned.sortedByCoord.out.sc_all
+
+```
+
+Opposite to what we saw before
+IN = Input, steady-state; IP = Nascent, immunoprecipitation (should be using IP, not IN; but IN is fine)

@@ -166,7 +166,7 @@ if __name__=="__main__":
     total_unfixable = unfix_r1_count + unfix_r2_count + unfix_both_count
     total_retained = counter - total_unfixable
 
-    unfix_log = open(opts.dir_out + '/rm_unfixable.%s.log' % opts.sample_id, 'w')
+    unfix_log = open(opts.sample_id + '.counts.txt', 'w')
     unfix_log.write(
         (
          'total PE reads\t%s\n'
@@ -191,7 +191,7 @@ if __name__=="__main__":
         )
     )
 
-    unfix_pct=open(opts.dir_out + '/rm_unfixable.pct.%s.log' % opts.sample_id,'w')
+    unfix_pct=open(opts.sample_id + '.proportions.txt', 'w')
     unfix_pct.write(
         (
          'total PE reads\t%s\n'
