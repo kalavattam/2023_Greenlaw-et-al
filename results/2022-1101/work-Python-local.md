@@ -11,6 +11,8 @@
   1. [Update keyboard shortcut bindings](#update-keyboard-shortcut-bindings)
   1. [Install a variable inspector for `jupyterlab`](#install-a-variable-inspector-for-jupyterlab)
   1. [Install a linter for `jupyterlab`](#install-a-linter-for-jupyterlab)
+  1. [Opening the console for a notebook](#opening-the-console-for-a-notebook)
+  1. [Cool layout for `Jupyter Lab`](#cool-layout-for-jupyter-lab)
 1. [Step through portions of `*-filter-uncorrectable-fastq.py*`](#step-through-portions-of--filter-uncorrectable-fastqpy)
 
 <!-- /MarkdownTOC -->
@@ -538,7 +540,8 @@ jupyter lab
 4. Actually, go ahead and disable the use of `control enter` for `"command": "notebook:run-cell"` too
 5. Following the advice at this [link](https://stackoverflow.com/questions/56460834/how-to-run-a-single-line-or-selected-code-in-a-jupyter-notebook-or-jupyterlab-ce), insert a new command into the `JSON` file (line `746`) for running highlighted code: `"notebook:run-in-console"`
 
-<i> Custom keyboard settings </i>
+<details>
+<summary><i> Custom keyboard settings </i></summary>
 
 ```json
 {
@@ -605,8 +608,11 @@ jupyter lab
     ]
 }
 ```
+</details>
+
 6. `#TODO` Later, determine appropriate keyboard shortcuts for `"notebook:run-cell-and-insert-below"` and `"notebook:run-cell"`
 7. For the above (and more), saved the default key bindings and custom key bindings in separate `.json` files (to be included in the `results/2022-1101/` directory)
+
 <details>
 <summary><i>jupyter lab messages printed to terminal:</i></summary>
 
@@ -828,6 +834,19 @@ Executing transaction: done
 ```
 </details>
 
+<a id="opening-the-console-for-a-notebook"></a>
+### Opening the console for a notebook
+Right click on the notebook and select `New Console for Notebook`
+
+<a id="cool-layout-for-jupyter-lab"></a>
+### Cool layout for `Jupyter Lab`
+- Top right: Variable Explorer
+- Top left: Notebbok
+- Bottom right: Show Contextual Help (and possibly other things)
+- Bottom left: Console(s) (and possibly other things)
+<br />
+<br />
+
 <a id="step-through-portions-of--filter-uncorrectable-fastqpy"></a>
 ## Step through portions of `*-filter-uncorrectable-fastq.py*`
 `#DONE` Copy `08_rcorrector/` (~754.5 MB) in `exp_preprocessing/` from remote (FHCC `rhino`/`gizmo`) to local, Apple M1 Max
@@ -906,6 +925,8 @@ Shutdown this Jupyter server (y/[n])? y
 </details>
 <br />
 
-`#NOTE` Determined that it will be easier to use a full Python IDE (e.g., `Spyder`) to do this work, so deleted the `.ipynb` file in which I was attempting to do this step-through work  
+`#NOTE` Determined that it will be easier to use a full `Python` IDE (e.g., `Spyder`) to do this work, so deleted the `.ipynb` file in which I was attempting to do this step-through work  
 `#NOTE` Still, setting up and customizing `jupyterlab` was still valuable and worth the time; I can see myself bouncing between notebooks and the full IDE when coding in Python in the future, based on the requirements and goals of the project  
-`#NOTE` The work to update the `rCorrector`-correction script can seen by comparing GitHub commits
+`#NOTE` The work to update the `rCorrector`-correction script can seen by comparing `GitHub` commits
+
+
