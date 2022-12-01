@@ -11,7 +11,7 @@
 1. [Filtering `.bam`s to retain only *S. cerevisiae* alignments \(2022-1122\)](#filtering-bams-to-retain-only-s-cerevisiae-alignments-2022-1122)
 1. [Do a trial run of `Trinity` genome-guided mode \(2022-1122\)](#do-a-trial-run-of-trinity-genome-guided-mode-2022-1122)
 1. [Convert "rna-star" filtered `.bam` files back to `.fastq` files \(2022-1122\)](#convert-rna-star-filtered-bam-files-back-to-fastq-files-2022-1122)
-1. [Do a trial run of `Trinity` genome-guided mode \(2022-1122\)](#do-a-trial-run-of-trinity-genome-guided-mode-2022-1122-1)
+1. [Do a trial run of `Trinity` genome-free mode \(2022-1122\)](#do-a-trial-run-of-trinity-genome-free-mode-2022-1122)
 1. [Organizing the `*.{err,out}.txt` from the trial runs](#organizing-the-errouttxt-from-the-trial-runs)
 1. [Learning to use `Singularity` \(2022-1123\)](#learning-to-use-singularity-2022-1123)
 	1. [Notes from FHCC Bioinformatics' *"Using `Singularity` Containers"*](#notes-from-fhcc-bioinformatics-using-singularity-containers)
@@ -76,8 +76,8 @@
 1. [Setting up the preprocessing pipeline for `Trinity`](#setting-up-the-preprocessing-pipeline-for-trinity)
 	1. [Getting started \(2022-1125, 2022-1126\)](#getting-started-2022-1125-2022-1126)
 	1. [Set up the STAR alignment steps and sub-steps \(2022-1126\)](#set-up-the-star-alignment-steps-and-sub-steps-2022-1126)
-		1. [Set up STAR alignment for genome-free assembly \(2022-1126\)](#set-up-star-alignment-for-genome-free-assembly-2022-1126)
-		1. [Set up STAR alignment for genome-guided assembly \(2022-1126\)](#set-up-star-alignment-for-genome-guided-assembly-2022-1126)
+		1. [Set up `STAR` alignment for genome-free assembly \(2022-1126\)](#set-up-star-alignment-for-genome-free-assembly-2022-1126)
+		1. [Set up `STAR` alignment for genome-guided assembly \(2022-1126\)](#set-up-star-alignment-for-genome-guided-assembly-2022-1126)
 	1. [Filter `.bam`s to retain only *S. cerevisiae* alignments \(2022-1128\)](#filter-bams-to-retain-only-s-cerevisiae-alignments-2022-1128)
 	1. [Perform another quality check with `FastQC` \(2022-1128\)](#perform-another-quality-check-with-fastqc-2022-1128)
 	1. [Convert the species-filtered `.bam`s from genome-free alignment to `.fastq`s](#convert-the-species-filtered-bams-from-genome-free-alignment-to-fastqs)
@@ -90,7 +90,9 @@
 			1. [Next steps following the successful completion of `rCorrector` treatment and correction \(2022-1129\)](#next-steps-following-the-successful-completion-of-rcorrector-treatment-and-correction-2022-1129)
 		1. [Get `SLURM` submission scripts set up for `rCorrector` and "correction of `rCorrector`" \(2022-1130\)](#get-slurm-submission-scripts-set-up-for-rcorrector-and-correction-of-rcorrector-2022-1130)
 			1. [...for `rCorrector`](#for-rcorrector)
-			1. [...for "correction of `rCorrector`"](#for-correction-of-rcorrector)
+			1. [...for "correction of `rCorrector`" \(2022-1130-1201\)](#for-correction-of-rcorrector-2022-1130-1201)
+	1. [Run `FastQC` on the `.fastq`s from `rCorrector` and "`rCorrector` correction"](#run-fastqc-on-the-fastqs-from-rcorrector-and-rcorrector-correction)
+1. [Notes, thoughts, and next steps, 2022-1201](#notes-thoughts-and-next-steps-2022-1201)
 
 <!-- /MarkdownTOC -->
 </details>
@@ -1097,8 +1099,8 @@ head -12 files_fastq_symlinks/5781_G1_IN_merged_R2.fastq
 <br />
 <br />
 
-<a id="do-a-trial-run-of-trinity-genome-guided-mode-2022-1122-1"></a>
-## Do a trial run of `Trinity` genome-guided mode (2022-1122)
+<a id="do-a-trial-run-of-trinity-genome-free-mode-2022-1122"></a>
+## Do a trial run of `Trinity` genome-free mode (2022-1122)
 ...using the "rna-star" *S. cerevisiae*-only `.bam`-to-`.fastq` files
 ```bash
 #!/bin/bash
@@ -4121,7 +4123,7 @@ Trinity_env
 mamba install -c conda-forge parallel
 mamba install -c bioconda samtools
 
-mkdir -p exp_preprocessing/{01_fastqc,02_trim_galore,03_fastqc,04a_star-genome-free,04b_star-genome-guided,05a_fastqc,05b_fastqc,06_bam-to-fastq,07_fastqc,08_rcorrector}
+mkdir -p exp_preprocessing/{01_fastqc,02_trim_galore,03_fastqc,04a_star-genome-free,04b_star-genome-guided,05a_fastqc,05b_fastqc,06_bam-to-fastq,07_fastqc,08_rcorrector,09_fastqc}
 
 
 #  1. FastQC ------------------------------------------------------------------
@@ -4399,23 +4401,19 @@ unset infiles_trimmed_unpaired
 ```
 
 <a id="set-up-star-alignment-for-genome-free-assembly-2022-1126"></a>
-#### Set up STAR alignment for genome-free assembly (2022-1126)
+#### Set up `STAR` alignment for genome-free assembly (2022-1126)
+Edited and reran (portions) on 2022-1201; this was done to correct a bug that is described in `results/2022-1201/work_Trinity-PASA_unprocessed-vs-preprocessed.md`
 ```bash
 #!/bin/bash
 #DONTRUN
 
+cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101" ||
+	echo "cd'ing failed; check on this"
 
-#  Get the files into an array --------
+
+#  Get the files into an array ------------------------------------------------
 unset infiles_trimmed
-unset intermediate
-unset duplicates
-unset instrings
-
 typeset -a infiles_trimmed
-typeset -a intermediate
-typeset -A duplicates
-typeset -a instrings
-
 while IFS=" " read -r -d $'\0'; do
     infiles_trimmed+=( "${REPLY}" )
 done < <(\
@@ -4431,6 +4429,8 @@ done < <(\
 # # exp_preprocessing/02_trim_galore/5782_Q_IN_merged_R1_val_1.fq
 # # exp_preprocessing/02_trim_galore/5782_Q_IN_merged_R2_val_2.fq
 
+unset intermediate
+typeset -a intermediate
 for i in "${infiles_trimmed[@]}"; do
 	intermediate+=( "${i%_R?_val_?.fq}" )
 done
@@ -4440,6 +4440,10 @@ done
 # # exp_preprocessing/02_trim_galore/5782_Q_IN_merged
 # # exp_preprocessing/02_trim_galore/5782_Q_IN_merged
 
+unset duplicates
+typeset -A duplicates
+unset instrings
+typeset -a instrings
 for i in "${intermediate[@]}"; do
 	if [[ -z "${duplicates[$i]}" ]]; then
         instrings+=( "${i}" )
@@ -4460,10 +4464,7 @@ done
 # echo ""
 
 
-#  4a. For genome-free assembly -------
-unset genome_dir
-unset threads
-
+#  4a. Generate .bams for genome-free assembly --------------------------------
 genome_dir="${HOME}/genomes/combined_SC_KL_20S/STAR"
 threads=8
 
@@ -4518,11 +4519,9 @@ for i in "${instrings[@]}"; do
 done
 
 
-# -----------------
-#  Filter out unmapped reads
+#  Filter out unmapped reads --------------------------------------------------
 unset infiles_aligned
 typeset -a infiles_aligned
-
 while IFS=" " read -r -d $'\0'; do
     infiles_aligned+=( "${REPLY}" )
 done < <(\
@@ -4536,8 +4535,8 @@ done < <(\
 # # exp_preprocessing/04a_star-genome-free/5781_Q_IN_mergedAligned.sortedByCoord.out.bam
 # # exp_preprocessing/04a_star-genome-free/5782_Q_IN_mergedAligned.sortedByCoord.out.bam
 
-# -------
-#  First index the bam files
+
+#  First index the bam files ----------
 unset threads
 typeset threads=2
 
@@ -4569,10 +4568,10 @@ for i in "${infiles_aligned[@]}"; do
 	echo ""
 done
 
-# -------
-#  Now, filter the bam files to exclude unmapped reads
-unset threads
-typeset threads=4
+
+#  Now, filter the bam files... -------
+#+ ...to exclude unmapped reads
+threads=4
 
 if [[ -f submit-preprocessing-exclude-bam-reads-unmapped.sh ]]; then
 	rm submit-preprocessing-exclude-bam-reads-unmapped.sh
@@ -4605,48 +4604,46 @@ script
 for i in "${infiles_aligned[@]}"; do
 	echo "Working with ${i}..."
 	echo " - outdir is $(dirname "${i}")"
-	echo " - outfile is $(basename "${i}" ".bam").unmapped.bam"
+	echo " - outfile is $(basename "${i}" ".bam").exclude-unmapped.bam"
+	echo " - threads is ${threads}"
 
 	sbatch ./submit-preprocessing-exclude-bam-reads-unmapped.sh \
 		"${i}" \
 		"$(dirname "${i}")" \
-		"$(basename "${i}" ".bam").unmapped.bam"
+		"$(basename "${i}" ".bam").exclude-unmapped.bam"
 	sleep 0.25
 	echo ""
 done
 
 
-# -----------------
-#  Now, index the filtered bam files
-unset threads
-typeset threads=2
-
+#  Now, index the filtered bam files --
+threads=2
 for i in "${infiles_aligned[@]}"; do
 	echo "Working with ${i%.bam}.unmapped.bam..."
-	sbatch ./submit-preprocessing-index-bam.sh "${i%.bam}.unmapped.bam"
+
+	sbatch ./submit-preprocessing-index-bam.sh \
+		"${i%.bam}.exclude-unmapped.bam"
 	sleep 0.25
 	echo ""
 done
 ```
 
 <a id="set-up-star-alignment-for-genome-guided-assembly-2022-1126"></a>
-#### Set up STAR alignment for genome-guided assembly (2022-1126)
+#### Set up `STAR` alignment for genome-guided assembly (2022-1126)
 ```bash
 #!/bin/bash
-#DONTRUN
+#DONTRUN #CONTINUE
 
 
-#  Get the files into an array --------
+#  Get the files of interest into an array ------------------------------------
 unset infiles_trimmed
 unset intermediate
 unset duplicates
 unset instrings
-
 typeset -a infiles_trimmed
 typeset -a intermediate
 typeset -A duplicates
 typeset -a instrings
-
 while IFS=" " read -r -d $'\0'; do
     infiles_trimmed+=( "${REPLY}" )
 done < <(\
@@ -4679,10 +4676,7 @@ done
 # echo ""
 
 
-#  4b. For genome-guided assembly -------
-unset genome_dir
-unset threads
-
+#  4b. Generate .bams genome-guided assembly ----------------------------------
 genome_dir="${HOME}/genomes/combined_SC_KL_20S/STAR"
 threads=8
 
@@ -4740,11 +4734,9 @@ for i in "${instrings[@]}"; do
 done
 
 
-# -----------------
-#  Filter out unmapped reads
+#  Filter out unmapped reads ----------
 unset infiles_aligned
 typeset -a infiles_aligned
-
 while IFS=" " read -r -d $'\0'; do
     infiles_aligned+=( "${REPLY}" )
 done < <(\
@@ -4756,9 +4748,8 @@ done < <(\
 )
 # for i in "${infiles_aligned[@]}"; do echo "${i}"; done
 
-# -------
-#  First index the bam files
-unset threads
+
+#  First index the bam files ----------
 typeset threads=2
 
 if [[ -f submit-preprocessing-index-bam.sh ]]; then
@@ -4790,10 +4781,10 @@ for i in "${infiles_aligned[@]}"; do
 	echo ""
 done
 
-# -------
-#  Now, filter the bam files to exclude unmapped reads
-unset threads
-typeset threads=4
+
+#  Now, filter the bam files ----------
+#+ ...to exclude unmapped reads
+threads=4
 
 if [[ -f submit-preprocessing-exclude-bam-reads-unmapped.sh ]]; then
 	rm submit-preprocessing-exclude-bam-reads-unmapped.sh
@@ -4826,25 +4817,24 @@ script
 for i in "${infiles_aligned[@]}"; do
 	echo "Working with ${i}..."
 	echo " - outdir is $(dirname "${i}")"
-	echo " - outfile is $(basename "${i}" ".bam").unmapped.bam"
+	echo " - outfile is $(basename "${i}" ".bam").exclude-unmapped.bam"
+	echo " - threads is ${threads}"
 
 	sbatch ./submit-preprocessing-exclude-bam-reads-unmapped.sh \
 		"${i}" \
 		"$(dirname "${i}")" \
-		"$(basename "${i}" ".bam").unmapped.bam"
+		"$(basename "${i}" ".bam").exclude-unmapped.bam"
 	sleep 0.25
 	echo ""
 done
 
 
-# -----------------
-#  Now, index the filtered bam files
-unset threads
-typeset threads=2
+#  Now, index the filtered bam files --
+threads=2
 
 for i in "${infiles_aligned[@]}"; do
 	echo "Working with ${i%.bam}.unmapped.bam..."
-	sbatch ./submit-preprocessing-index-bam.sh "${i%.bam}.unmapped.bam"
+	sbatch ./submit-preprocessing-index-bam.sh "${i%.bam}.exclude-unmapped.bam"
 	sleep 0.25
 	echo ""
 done
@@ -4852,9 +4842,9 @@ done
 
 <a id="filter-bams-to-retain-only-s-cerevisiae-alignments-2022-1128"></a>
 ### Filter `.bam`s to retain only *S. cerevisiae* alignments (2022-1128)
-`#TODO #INPROGRESS` Pick up with alignment for the two approaches, including bam-to-fastq conversion, then move on to implementing calls to `rCorrector`  
-`#NOTETOSELF #THINKING #20221128` We completed the genome-free and genome-guided styles of `STAR` alignment; next step is to review my handwritten notes and then implement filtering-by-species scripts (genome-free, genome-guided) and bam-to-fastq scripts (genome-free)... and then what?  
-`#NOTETOSELF #THINKING #20221128` Also, want to get some kind of rename/organization script in place for the `.bam`s output by `STAR`
+- `#DONE` Pick up with alignment for the two approaches, including `bam`-to-`fastq` conversion, then move on to implementing calls to `rCorrector`
+- #DONE` We completed the genome-free and genome-guided styles of `STAR` alignment; next step is to review my handwritten notes and then implement filtering-by-species scripts (genome-free, genome-guided) and `bam`-to-`fastq` scripts (genome-free)... and then what?
+- `#DONE` Also, want to get some kind of rename/organization script in place for the `.bam`s output by `STAR`
 
 ```bash
 #!/bin/bash
@@ -4931,7 +4921,7 @@ while IFS=" " read -r -d $'\0'; do
 done < <(\
     find exp_preprocessing/04?_star-* \
         -type f \
-        -name *out.bam \
+        -name *out.exclude-unmapped.bam \
         -print0 \
             | sort -z \
 )
@@ -5108,7 +5098,7 @@ done
 ```
 
 <details>
-<summary><i>sbatch ./submit-preprocessing-split-bam-species.sh, messages printed to terminal:</i></summary>
+<summary><i>sbatch ./submit-preprocessing-split-bam-species.sh messages printed to terminal:</i></summary>
 
 ```txt
 Submitting job for exp_preprocessing/04a_star-genome-free/5781_Q_IN_mergedAligned.sortedByCoord.out.bam...
@@ -5192,7 +5182,7 @@ typeset -a infiles_mapped_bases
 for i in "${infiles_mapped[@]}"; do
 	infiles_mapped_bases+=( "$(basename "${i%.bam}.${split}.bam")" )
 done
-echo "w/duplicates..."
+echo "w/duplicates (in the array)..."
 echoTest "${infiles_mapped_bases[@]}" 
 
 IFS=" " read -r -a infiles_mapped_bases \
@@ -5202,7 +5192,7 @@ IFS=" " read -r -a infiles_mapped_bases \
 				| sort -u \
 				| tr '\n' ' '\
 	)"
-echo "w/o duplicates..."
+echo "w/o duplicates (in the array)..."
 echoTest "${infiles_mapped_bases[@]}" && echo ""
 
 unset infiles_mapped_dirs
@@ -5210,7 +5200,7 @@ typeset -a infiles_mapped_dirs
 for i in "${infiles_mapped[@]}"; do
 	infiles_mapped_dirs+=( "$(dirname "${i%.bam}.${split}.bam")" )
 done
-echo "w/duplicates..."
+echo "w/duplicates (in the array)..."
 echoTest "${infiles_mapped_dirs[@]}"
 
 IFS=" " read -r -a infiles_mapped_dirs \
@@ -5220,7 +5210,7 @@ IFS=" " read -r -a infiles_mapped_dirs \
 				| sort -u \
 				| tr '\n' ' '\
 	)"
-echo "w/o duplicates..."
+echo "w/o duplicates (in the array)..."
 echoTest "${infiles_mapped_dirs[@]}" && echo ""
 
 
@@ -5524,7 +5514,7 @@ done < <(\
         -print0 \
             | sort -z \
 )
-echo "w/duplicates..."
+echo "w/duplicates (in the array)..."
 echoTest "${fastqs_from_bams[@]}"
 
 IFS=" " read -r -a fastqs_from_bams \
@@ -5534,7 +5524,7 @@ IFS=" " read -r -a fastqs_from_bams \
                 | sort -u \
                 | tr '\n' ' '\
     )"
-echo "w/o duplicates..."
+echo "w/o duplicates (in the array)..."
 echoTest "${fastqs_from_bams[@]}" && echo ""
 
 
@@ -5751,7 +5741,7 @@ done < <(\
         -print0 \
             | sort -z \
 )
-echo "w/duplicates..."
+echo "w/duplicates (in the array)..."
 echoTest "${fastqs_rcorrected[@]}"
 
 IFS=" " read -r -a fastqs_rcorrected \
@@ -5761,7 +5751,7 @@ IFS=" " read -r -a fastqs_rcorrected \
                 | sort -u \
                 | tr '\n' ' '\
     )"
-echo "w/o duplicates..."
+echo "w/o duplicates (in the array)..."
 echoTest "${fastqs_rcorrected[@]}" && echo ""
 
 
@@ -5864,7 +5854,7 @@ done < <(\
         -print0 \
             | sort -z \
 )
-echo "w/duplicates..."
+echo "w/duplicates (in the array)..."
 echoTest "${fastqs_rcorrected[@]}"
 
 IFS=" " read -r -a fastqs_rcorrected \
@@ -5874,7 +5864,7 @@ IFS=" " read -r -a fastqs_rcorrected \
                 | sort -u \
                 | tr '\n' ' '\
     )"
-echo "w/o duplicates..."
+echo "w/o duplicates (in the array)..."
 echoTest "${fastqs_rcorrected[@]}" && echo ""
 
 
@@ -5904,7 +5894,7 @@ mamba install -c conda-forge jupyterlab
 ```
 
 <details>
-<summary><i>Messages from installation of ` printed to terminal:</i></summary>
+<summary><i>Messages from installation of jupyterlab printed to terminal:</i></summary>
 
 ```txt
 Transaction
@@ -6218,7 +6208,7 @@ done < <(\
         -print0 \
             | sort -z \
 )
-echo "w/duplicates..."
+echo "w/duplicates (in the array)..."
 echoTest "${fastqs_rcorrected[@]}"
 
 IFS=" " read -r -a fastqs_rcorrected \
@@ -6228,7 +6218,7 @@ IFS=" " read -r -a fastqs_rcorrected \
                 | sort -u \
                 | tr '\n' ' '\
     )"
-echo "w/o duplicates..."
+echo "w/o duplicates (in the array)..."
 echoTest "${fastqs_rcorrected[@]}" && echo ""
 
 
@@ -6277,7 +6267,7 @@ Nice! It's working!
 
 <a id="next-steps-following-the-successful-completion-of-rcorrector-treatment-and-correction-2022-1129"></a>
 ##### Next steps following the successful completion of `rCorrector` treatment and correction (2022-1129)
-- `#TODO` The next step is to get `SLURM` submission scripts set up for...  
+- `#DONE` The next step is to get `SLURM` submission scripts set up for...  
 	+ the initial use of `rCorrector`
 	+ the "correction" of `rCorrector`-treated files  
 - `#TODO` Also, need to get a couple of `FastQC` readouts in there,  
@@ -6285,7 +6275,7 @@ Nice! It's working!
 	+ one after the use of the correction script
 - After that, I'll want to run `Trinity` (`v2.12` for consistency; however, after this experiment, we'll move on to using `Trinity v2.14`) using the output from `04b` (genome-guided) and `08` (genome-free; `unfixrm.*`)
 - Once that's done, I'll use the `.fasta` files as input to the `PASA` (`Singularity`) pipeline, generating outfiles that can be compared to the first run (*in which no preprocessing was performed*)
-- `#TODO` Learn how to read and make sense of the outfiles, and then determine the next steps, which include loading the data to `IGV` and or running `DETONATE`, etc.
+- `#TODO` Learn how to read and make sense of the outfiles, and then determine the next steps, which include running `Trinity` again and loading the data to `IGV` and or running `DETONATE`, etc.
 - `#GOAL` Determine whether preprocessing makes an impact (positive or negative) on transcriptome assembly
 
 ```bash
@@ -6323,7 +6313,7 @@ done < <(\
         -print0 \
             | sort -z \
 )
-echo "w/duplicates..."
+echo "w/duplicates (in the array)..."
 echoTest "${fastqs_rcorrected[@]}"
 
 IFS=" " read -r -a fastqs_rcorrected \
@@ -6333,7 +6323,7 @@ IFS=" " read -r -a fastqs_rcorrected \
                 | sort -u \
                 | tr '\n' ' '\
     )"
-echo "w/o duplicates..."
+echo "w/o duplicates (in the array)..."
 echoTest "${fastqs_rcorrected[@]}" && echo ""
 
 
@@ -6354,6 +6344,8 @@ python submit-preprocessing-filter-uncorrectable-fastq.py \
 #     unfix_log = open(opts.dir_out + '/rm_unfixable.%s.log' % opts.sample_id, 'w')
 # FileNotFoundError: [Errno 2] No such file or directory: 'exp_preprocessing/08_rcorrector/rm_unfixable.exp_preprocessing/08_rcorrector/5781_Q_IN_mergedAligned.sortedByCoord.out.sc_all.log'
 ```
+
+`#NOTE` 2022-1201: Fixed this error on 2022-1130 while working on the below; for information on this, see the [changes committed to the repo on 2022-1130](https://github.com/kalavattam/2022_transcriptome-construction/commit/170329dfcd5abe1ad7c510c15b290d1b6bed3a04)
 
 <a id="get-slurm-submission-scripts-set-up-for-rcorrector-and-correction-of-rcorrector-2022-1130"></a>
 #### Get `SLURM` submission scripts set up for `rCorrector` and "correction of `rCorrector`" (2022-1130)
@@ -6390,7 +6382,7 @@ done < <(\
         -print0 \
             | sort -z \
 )
-echo "w/duplicates..."
+echo "w/duplicates (in the array)..."
 echoTest "${fastqs_from_bams[@]}"
 # exp_preprocessing/06_bam-to-fastq/5781_Q_IN_mergedAligned.sortedByCoord.out.sc_all
 # exp_preprocessing/06_bam-to-fastq/5781_Q_IN_mergedAligned.sortedByCoord.out.sc_all
@@ -6404,7 +6396,7 @@ IFS=" " read -r -a fastqs_from_bams \
                 | sort -u \
                 | tr '\n' ' '\
     )"
-echo "w/o duplicates..."
+echo "w/o duplicates (in the array)..."
 echoTest "${fastqs_from_bams[@]}" && echo ""
 # exp_preprocessing/06_bam-to-fastq/5781_Q_IN_mergedAligned.sortedByCoord.out.sc_all
 # exp_preprocessing/06_bam-to-fastq/5782_Q_IN_mergedAligned.sortedByCoord.out.sc_all
@@ -6471,9 +6463,9 @@ for i in "${fastqs_from_bams[@]}"; do
 done
 ```
 
-<a id="for-correction-of-rcorrector"></a>
-##### ...for "correction of `rCorrector`"
-`#DEKO`
+<a id="for-correction-of-rcorrector-2022-1130-1201"></a>
+##### ...for "correction of `rCorrector`" (2022-1130-1201)
+`#DEKHO`
 ```bash
 #!/bin/bash
 #DONTRUN #CONTINUE
@@ -6505,7 +6497,7 @@ done < <(\
         -print0 \
             | sort -z \
 )
-echo "w/duplicates..."
+echo "w/duplicates (in the array)..."
 echoTest "${fastqs_rcorrected[@]}"
 # exp_preprocessing/08_rcorrector/5781_Q_IN_mergedAligned.sortedByCoord.out.sc_all
 # exp_preprocessing/08_rcorrector/5781_Q_IN_mergedAligned.sortedByCoord.out.sc_all
@@ -6519,12 +6511,197 @@ IFS=" " read -r -a fastqs_rcorrected \
                 | sort -u \
                 | tr '\n' ' '\
     )"
-echo "w/o duplicates..."
+echo "w/o duplicates (in the array)..."
 echoTest "${fastqs_rcorrected[@]}" && echo ""
 # exp_preprocessing/08_rcorrector/5781_Q_IN_mergedAligned.sortedByCoord.out.sc_all
 # exp_preprocessing/08_rcorrector/5782_Q_IN_mergedAligned.sortedByCoord.out.sc_all
 
+
+#  Prep the SLURM script for running "rcorrector corrector" -------------------
+threads=1
+outdir="exp_preprocessing/08_rcorrector"
+
+if [[ -f submit-preprocessing-rcorrector-corrector.sh ]]; then
+    rm submit-preprocessing-rcorrector-corrector.sh
+fi
+cat << script > "./submit-preprocessing-rcorrector-corrector.sh"
+#!/bin/bash
+
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=${threads}
+#SBATCH --error=./exp_preprocessing/submit-preprocessing-rcorrector-corrector.%J.err.txt
+#SBATCH --output=./exp_preprocessing/submit-preprocessing-rcorrector-corrector.%J.out.txt
+
+#  submit-preprocessing-rcorrector-corrector.sh
+#  KA
+#  $(date '+%Y-%m%d')
+
+
+instring="\${1}"
+outdir="\${2}"
+
+parallel --header : --colsep " " -k -j 1 echo \\
+"python ./submit-preprocessing-filter-uncorrectable-fastq.py \\
+     -1 {instring}.1.cor.fq.gz \\
+     -2 {instring}.2.cor.fq.gz \\
+     -s {instring} \\
+     -o {outdir} \\
+     -g True" \\
+::: instring \${instring} \\
+::: outdir \${outdir}
+
+parallel --header : --colsep " " -k -j 1 \\
+python ./submit-preprocessing-filter-uncorrectable-fastq.py \\
+     -1 {instring}.1.cor.fq.gz \\
+     -2 {instring}.2.cor.fq.gz \\
+     -s {instring} \\
+     -o {outdir} \\
+     -g True \\
+::: instring \${instring} \\
+::: outdir \${outdir}
+script
+vi submit-preprocessing-rcorrector-corrector.sh
+
+
+#  Submit jobs for running "rcorrector corrector" -----------------------------
+for i in "${fastqs_rcorrected[@]}"; do
+    echo "Working with ${i}..."
+    sbatch ./submit-preprocessing-rcorrector-corrector.sh \
+        "${i}" \
+        "${outdir}"
+
+    sleep 0.25
+    echo ""
+done
 ```
 
-Opposite to what we saw before
-IN = Input, steady-state; IP = Nascent, immunoprecipitation (should be using IP, not IN; but IN is fine)
+<details>
+<summary><i>Echo test for bash ./submit-preprocessing-rcorrector-corrector.sh: Messages printed to terminal:</i></summary>
+
+```txt
+Working with exp_preprocessing/08_rcorrector/5781_Q_IN_mergedAligned.sortedByCoord.out.sc_all...
+python ./submit-preprocessing-filter-uncorrectable-fastq.py \
+	-1 exp_preprocessing/08_rcorrector/5781_Q_IN_mergedAligned.sortedByCoord.out.sc_all.1.cor.fq.gz \
+	-2 exp_preprocessing/08_rcorrector/5781_Q_IN_mergedAligned.sortedByCoord.out.sc_all.2.cor.fq.gz \
+	-s exp_preprocessing/08_rcorrector/5781_Q_IN_mergedAligned.sortedByCoord.out.sc_all \
+	-o exp_preprocessing/08_rcorrector \
+	-g True
+
+Working with exp_preprocessing/08_rcorrector/5782_Q_IN_mergedAligned.sortedByCoord.out.sc_all...
+python ./submit-preprocessing-filter-uncorrectable-fastq.py \
+	-1 exp_preprocessing/08_rcorrector/5782_Q_IN_mergedAligned.sortedByCoord.out.sc_all.1.cor.fq.gz \
+	-2 exp_preprocessing/08_rcorrector/5782_Q_IN_mergedAligned.sortedByCoord.out.sc_all.2.cor.fq.gz \
+	-s exp_preprocessing/08_rcorrector/5782_Q_IN_mergedAligned.sortedByCoord.out.sc_all \
+	-o exp_preprocessing/08_rcorrector \
+	-g True
+```
+</details>
+<br />
+
+<a id="run-fastqc-on-the-fastqs-from-rcorrector-and-rcorrector-correction"></a>
+### Run `FastQC` on the `.fastq`s from `rCorrector` and "`rCorrector` correction"
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+unset infiles
+typeset -a infiles
+while IFS=" " read -r -d $'\0'; do
+    infiles+=( "${REPLY}" )
+done < <(\
+    find "./exp_preprocessing/08_rcorrector" \
+        -type f \
+        -name *.fq.gz \
+        -print0 \
+            | sort -z \
+)
+echoTest "${infiles[@]}"
+# ./exp_preprocessing/08_rcorrector/5781_Q_IN_mergedAligned.sortedByCoord.out.sc_all.1.cor.fq.gz
+# ./exp_preprocessing/08_rcorrector/5781_Q_IN_mergedAligned.sortedByCoord.out.sc_all.2.cor.fq.gz
+# ./exp_preprocessing/08_rcorrector/5782_Q_IN_mergedAligned.sortedByCoord.out.sc_all.1.cor.fq.gz
+# ./exp_preprocessing/08_rcorrector/5782_Q_IN_mergedAligned.sortedByCoord.out.sc_all.2.cor.fq.gz
+# ./exp_preprocessing/08_rcorrector/unfixrm.5781_Q_IN_mergedAligned.sortedByCoord.out.sc_all.1.cor.fq.gz
+# ./exp_preprocessing/08_rcorrector/unfixrm.5781_Q_IN_mergedAligned.sortedByCoord.out.sc_all.2.cor.fq.gz
+# ./exp_preprocessing/08_rcorrector/unfixrm.5782_Q_IN_mergedAligned.sortedByCoord.out.sc_all.1.cor.fq.gz
+# ./exp_preprocessing/08_rcorrector/unfixrm.5782_Q_IN_mergedAligned.sortedByCoord.out.sc_all.2.cor.fq.gz
+
+threads=4
+outdir="exp_preprocessing/09_fastqc"
+
+mkdir -p "${outdir}"
+
+if [[ -f submit-preprocessing-fastqc.sh ]]; then
+	rm submit-preprocessing-fastqc.sh
+fi
+cat << script > "./submit-preprocessing-fastqc.sh"
+#!/bin/bash
+
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=${threads}
+#SBATCH --error=./exp_preprocessing/submit-preprocessing-fastqc.%J.err.txt
+#SBATCH --output=./exp_preprocessing/submit-preprocessing-fastqc.%J.out.txt
+
+#  submit-preprocessing-fastqc.sh
+#  KA
+#  $(date '+%Y-%m%d')
+
+
+infile="\${1}"
+outdir="\${2}"
+threads="\${3}"
+
+fastqc \\
+    --threads "\${threads}" \\
+    --outdir "\${outdir}" \\
+    "\${infile}"
+script
+# vi submit-preprocessing-fastqc.sh
+
+#  Submit jobs
+for i in "${infiles[@]}"; do
+	echo "Working with ${i}..."
+	sbatch submit-preprocessing-fastqc.sh \
+		"${i}" \
+		"${outdir}"
+	sleep 0.25
+	echo ""
+done
+```
+<br />
+<br />
+
+<a id="notes-thoughts-and-next-steps-2022-1201"></a>
+## Notes, thoughts, and next steps, 2022-1201
+0. Now, we need to run `Trinity` on the preprocessed data twice:
+	- genome-free `Trinity` 
+	- genome-guided `Trinity`
+1. We need to set up a separate directory in `results/`, `2022-1201/`, that symlinks to the `Trinity` infiles, both unprocessed and those processed in `2022-1101/exp_preprocessing/`
+2. Run `PASA` with `Trinity` outfiles from <b>(a) running Trinity on unprocessed data</b> and <b>(b) running Trinity on preprocessed data</b>, that is, <i>(1) the genome-guided aligned files</i> and <i>(2) the genome-free unaligned files from those two runs</i>; for example, in `2022-1201/data/`, there are symbolic links to...
+	- <b>a</b><i>1</i>
+	- <b>a</b><i>2</i>
+	- <b>b</b><i>1</i>
+	- <b>b</b><i>2</i>
+3. Then, we need to determine which outfiles are appropriate to use for visual comparisons of results in `IGV`
+4. Load those to `IGV` and then make visual comparisons: Does Alison know of individual regions we can focus on for making assessments?
+
+- So, it seems that I need to...
+    - review Alison's heuristics (what she wants to categorize as a result of this (and the info leading up to this which describes the data she's going to use for categorization))
+    - my notes from the last time we discussed the issues she was seeing in her run of Trinity
+
+- Separate but related to the above:
+	- Need a carefully defined, curated list of issues that we see with thew results from transcriptome assembly
+	- What do we see and how does that compare to what we expect?
+	- I will put these together for a discussion with Brian Haas, who can guide in what parts of the pipeline to change and/or what program parameters to tune
+
+- Questions for Alison
+    - Did she try running Trinity with other parameters? Did she record any of those experiments, save the outfiles, take notes on the issues from those, etc.?
+    - What do you see and how does that compare to what you expect to see?
+
+`#DUSRA` `IMPORTANT`  
+- Understanding of these abbreviations is opposite to what I recorded before:
+	+ IN = input, steady-state
+	+ IP = nascent, immunoprecipitation
+
+Apparently, we should be using IP (I thought we were), not IN; however, IN is fine for the test we're running now
+<br />
+<br />
