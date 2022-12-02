@@ -65,6 +65,7 @@
 - [How to uninstall packages](https://superuser.com/questions/840527/how-to-uninstall-remove-package-control-from-sublime-text-3)
     + `Package Control: Remove Package`
 - [How to change the theme](https://www.technipages.com/how-to-change-the-theme-in-sublime-text-3)
+- [Getting Sublime kitted out](https://rowannicholls.github.io/sublime_text.html)
 
 <a id="on-making-sublime-plugins"></a>
 #### On making Sublime plugins

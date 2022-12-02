@@ -83,7 +83,7 @@
 	1. [Convert the species-filtered `.bam`s from genome-free alignment to `.fastq`s](#convert-the-species-filtered-bams-from-genome-free-alignment-to-fastqs)
 	1. [Perform a `FastQC` quality check for the new `.fastq` files \(2022-1128\)](#perform-a-fastqc-quality-check-for-the-new-fastq-files-2022-1128)
 	1. [Remove erroneous k-mers from reads with `rCorrector` and "correct" the outfiles](#remove-erroneous-k-mers-from-reads-with-rcorrector-and-correct-the-outfiles)
-		1. [Remove erroneous k-mers from paired-end reads with rCorrector](#remove-erroneous-k-mers-from-paired-end-reads-with-rcorrector)
+		1. [Remove erroneous k-mers from paired-end reads with `rCorrector`](#remove-erroneous-k-mers-from-paired-end-reads-with-rcorrector)
 		1. [Discard `rcorrector`-processed read pairs for which one read is deemed unfixable](#discard-rcorrector-processed-read-pairs-for-which-one-read-is-deemed-unfixable)
 			1. [Troubleshoot errors associated with the `rcorrector`-correction scripts \(2022-1128-1129\)](#troubleshoot-errors-associated-with-the-rcorrector-correction-scripts-2022-1128-1129)
 		1. [Continue work to discard `rcorrector`-processed read pairs that are "unfixable" \(2022-1129\)](#continue-work-to-discard-rcorrector-processed-read-pairs-that-are-unfixable-2022-1129)
@@ -92,7 +92,7 @@
 			1. [...for `rCorrector`](#for-rcorrector)
 			1. [...for "correction of `rCorrector`" \(2022-1130-1201\)](#for-correction-of-rcorrector-2022-1130-1201)
 	1. [Run `FastQC` on the `.fastq`s from `rCorrector` and "`rCorrector` correction"](#run-fastqc-on-the-fastqs-from-rcorrector-and-rcorrector-correction)
-1. [Notes, thoughts, and next steps, 2022-1201](#notes-thoughts-and-next-steps-2022-1201)
+1. [Notes, thoughts, and next steps, 2022-1201-1202](#notes-thoughts-and-next-steps-2022-1201-1202)
 
 <!-- /MarkdownTOC -->
 </details>
@@ -3688,6 +3688,7 @@ drwxr-sr-x  3 kalavatt  134 Nov 25 11:39 pblat_outdir/
 -rw-rw-r--  1 kalavatt 1.3M Nov 24 14:12 transcripts.fasta.cln
 ```
 </details>
+<br />
 
 <a id="response-from-brian-2022-1125"></a>
 ##### Response from Brian (2022-1125)
@@ -4402,7 +4403,7 @@ unset infiles_trimmed_unpaired
 
 <a id="set-up-star-alignment-for-genome-free-assembly-2022-1126"></a>
 #### Set up `STAR` alignment for genome-free assembly (2022-1126)
-Edited and reran (portions) on 2022-1201; this was done to correct a bug that is described in `results/2022-1201/work_Trinity-PASA_unprocessed-vs-preprocessed.md`
+*Edited and reran (portions) on 2022-1201; this was done to correct a bug that is described in `results/2022-1201/work_preprocessing_fix-errors.md`*
 ```bash
 #!/bin/bash
 #DONTRUN
@@ -4630,9 +4631,16 @@ done
 
 <a id="set-up-star-alignment-for-genome-guided-assembly-2022-1126"></a>
 #### Set up `STAR` alignment for genome-guided assembly (2022-1126)
+*Edited and reran (portions) on 2022-1201-1202; this was done to correct a bug that is described in `results/2022-1201/work_preprocessing_fix-errors.md`*
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
+#DONTRUN
+
+# Alias to cd to 2022_transcriptome-construction directory
+transcriptome
+cd "results/2022-1101" || echo "cd'ing failed; check on this"
+
+Trinity_env
 
 
 #  Get the files of interest into an array ------------------------------------
@@ -4838,12 +4846,24 @@ for i in "${infiles_aligned[@]}"; do
 	sleep 0.25
 	echo ""
 done
+
+#  Now, index the filtered bam files --
+threads=2
+for i in "${infiles_aligned[@]}"; do
+	echo "Working with ${i%.bam}.unmapped.bam..."
+
+	sbatch ./submit-preprocessing-index-bam.sh \
+		"${i%.bam}.exclude-unmapped.bam"
+	sleep 0.25
+	echo ""
+done
 ```
 
 <a id="filter-bams-to-retain-only-s-cerevisiae-alignments-2022-1128"></a>
 ### Filter `.bam`s to retain only *S. cerevisiae* alignments (2022-1128)
+*Edited and reran (portions) on 2022-1202; this was done to correct a bug that is described in `results/2022-1201/work_preprocessing_fix-errors.md`*
 - `#DONE` Pick up with alignment for the two approaches, including `bam`-to-`fastq` conversion, then move on to implementing calls to `rCorrector`
-- #DONE` We completed the genome-free and genome-guided styles of `STAR` alignment; next step is to review my handwritten notes and then implement filtering-by-species scripts (genome-free, genome-guided) and `bam`-to-`fastq` scripts (genome-free)... and then what?
+- `#DONE` We completed the genome-free and genome-guided styles of `STAR` alignment; next step is to review my handwritten notes and then implement filtering-by-species scripts (genome-free, genome-guided) and `bam`-to-`fastq` scripts (genome-free)... and then what?
 - `#DONE` Also, want to get some kind of rename/organization script in place for the `.bam`s output by `STAR`
 
 ```bash
@@ -4910,11 +4930,12 @@ Trinity_env
 # -rw-rw----  1 kalavatt 310K Nov 26 10:41 work-Trinity.md
 
 
+
+#  Create an array for .bam files of interest ---------------------------------
 #  Set up a function for quickly checking the contents of arrays
 echoTest() { for i in "${@:-*}"; do echo "${i}"; done; }
 
 
-#  Create an array for .bam files of interest
 unset infiles_mapped
 while IFS=" " read -r -d $'\0'; do
     infiles_mapped+=( "${REPLY}" )
@@ -4930,9 +4951,18 @@ echoTest "${infiles_mapped[@]}"
 # exp_preprocessing/04a_star-genome-free/5782_Q_IN_mergedAligned.sortedByCoord.out.bam
 # exp_preprocessing/04b_star-genome-guided/5781_Q_IN_mergedAligned.sortedByCoord.out.bam
 # exp_preprocessing/04b_star-genome-guided/5782_Q_IN_mergedAligned.sortedByCoord.out.bam
+#NOTE 2022-1202 1/N: Looking at what was printed to terminal on 2022-1128, it's
+#NOTE 2022-1202 2/N: clear that I just missed that we weren't working with
+#NOTE 2022-1202 3/N: unmapped-excluded .bams
+
+#  2022-1202 results of echoTest
+# exp_preprocessing/04a_star-genome-free/5781_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.bam
+# exp_preprocessing/04a_star-genome-free/5782_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.bam
+# exp_preprocessing/04b_star-genome-guided/5781_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.bam
+# exp_preprocessing/04b_star-genome-guided/5782_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.bam
 
 
-# #  Set up function to split .bam files by species, etc.
+# #  Set up function to split .bam files by species, etc. ---------------------
 # split_with_samtools() {
 #     what="""
 #     split_with_samtools()
@@ -5023,6 +5053,9 @@ echoTest "${infiles_mapped[@]}"
 
 
 #  Prepare the job-submission script for splitting .bam files by species ------
+#  2022-1202: Need to do this again with the *.exclude-unmapped.bam files
+threads=4
+
 if [[ -f submit-preprocessing-split-bam-species.sh ]]; then
 	rm submit-preprocessing-split-bam-species.sh
 fi
@@ -5067,11 +5100,10 @@ split_with_samtools \\
     "\${chromosomes}" \\
     "\${outfile}"
 script
-vi submit-preprocessing-split-bam-species.sh
+# vi submit-preprocessing-split-bam-species.sh
 
 
 #  Submit jobs to split .bam files by species ---------------------------------
-threads=4
 chr="I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI Mito"
 split="sc_all"
 for i in "${infiles_mapped[@]}"; do
@@ -5095,11 +5127,21 @@ for i in "${infiles_mapped[@]}"; do
 	sleep 0.25
 	echo ""
 done
+
+
+#  Submit jobs to index split-by-species .bam files  --------------------------
+for i in "${infiles_mapped[@]}"; do
+    echo "Working with ${i%.bam}.${split}.bam..."
+    sbatch ./submit-preprocessing-index-bam.sh "${i%.bam}.${split}.bam"
+    sleep 0.25
+    echo ""
+done
 ```
 
 <details>
 <summary><i>sbatch ./submit-preprocessing-split-bam-species.sh messages printed to terminal:</i></summary>
 
+2022-1128
 ```txt
 Submitting job for exp_preprocessing/04a_star-genome-free/5781_Q_IN_mergedAligned.sortedByCoord.out.bam...
  - chromosomes to retain are I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI Mito
@@ -5149,6 +5191,57 @@ sbatch ./submit-preprocessing-split-bam-species.sh \
         "4"
 Submitted batch job 4714604
 ```
+
+2022-1202
+```txt
+Submitting job for exp_preprocessing/04a_star-genome-free/5781_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.bam...
+ - chromosomes to retain are I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI Mito
+ - outfile is exp_preprocessing/04a_star-genome-free/5781_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all.bam
+ - running samtools with 4 threads
+Submission:
+sbatch ./submit-preprocessing-split-bam-species.sh \
+        "exp_preprocessing/04a_star-genome-free/5781_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.bam" \
+        "exp_preprocessing/04a_star-genome-free/5781_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all.bam" \
+        "I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI Mito" \
+        "4"
+Submitted batch job 5144927
+
+Submitting job for exp_preprocessing/04a_star-genome-free/5782_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.bam...
+ - chromosomes to retain are I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI Mito
+ - outfile is exp_preprocessing/04a_star-genome-free/5782_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all.bam
+ - running samtools with 4 threads
+Submission:
+sbatch ./submit-preprocessing-split-bam-species.sh \
+        "exp_preprocessing/04a_star-genome-free/5782_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.bam" \
+        "exp_preprocessing/04a_star-genome-free/5782_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all.bam" \
+        "I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI Mito" \
+        "4"
+Submitted batch job 5144928
+
+Submitting job for exp_preprocessing/04b_star-genome-guided/5781_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.bam...
+ - chromosomes to retain are I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI Mito
+ - outfile is exp_preprocessing/04b_star-genome-guided/5781_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all.bam
+ - running samtools with 4 threads
+Submission:
+sbatch ./submit-preprocessing-split-bam-species.sh \
+        "exp_preprocessing/04b_star-genome-guided/5781_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.bam" \
+        "exp_preprocessing/04b_star-genome-guided/5781_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all.bam" \
+        "I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI Mito" \
+        "4"
+Submitted batch job 5144929
+
+Submitting job for exp_preprocessing/04b_star-genome-guided/5782_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.bam...
+ - chromosomes to retain are I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI Mito
+ - outfile is exp_preprocessing/04b_star-genome-guided/5782_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all.bam
+ - running samtools with 4 threads
+Submission:
+sbatch ./submit-preprocessing-split-bam-species.sh \
+        "exp_preprocessing/04b_star-genome-guided/5782_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.bam" \
+        "exp_preprocessing/04b_star-genome-guided/5782_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all.bam" \
+        "I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI Mito" \
+        "4"
+Submitted batch job 5144930
+```
 </details>
 <br />
 
@@ -5156,6 +5249,7 @@ The jobs completed successfully
 
 <a id="perform-another-quality-check-with-fastqc-2022-1128"></a>
 ### Perform another quality check with `FastQC` (2022-1128)
+*Edited and reran (portions) on 2022-1202; this was done to correct a bug that is described in `results/2022-1201/work_preprocessing_fix-errors.md`*
 ```bash
 #!/bin/bash
 #DONTRUN #CONTINUE
@@ -5174,6 +5268,12 @@ done
 # -rw-rw---- 1 kalavatt 1.2G Nov 28 09:20 exp_preprocessing/04b_star-genome-guided/5781_Q_IN_mergedAligned.sortedByCoord.out.sc_all.bam
 # -rw-rw---- 1 kalavatt 878M Nov 28 09:20 exp_preprocessing/04b_star-genome-guided/5782_Q_IN_mergedAligned.sortedByCoord.out.sc_all.bam
 
+#  2022-1202
+# -rw-rw---- 1 kalavatt 525M Dec  2 08:29 exp_preprocessing/04a_star-genome-free/5781_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all.bam
+# -rw-rw---- 1 kalavatt 435M Dec  2 08:29 exp_preprocessing/04a_star-genome-free/5782_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all.bam
+# -rw-rw---- 1 kalavatt 1.2G Dec  2 08:30 exp_preprocessing/04b_star-genome-guided/5781_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all.bam
+# -rw-rw---- 1 kalavatt 878M Dec  2 08:30 exp_preprocessing/04b_star-genome-guided/5782_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all.bam
+
 #  See answer #1 here:
 #+ stackoverflow.com/questions/13648410/how-can-i-get-unique-values-from-an-array-in-bash
 #+ (...which is way more efficient that what I did above)
@@ -5183,7 +5283,12 @@ for i in "${infiles_mapped[@]}"; do
 	infiles_mapped_bases+=( "$(basename "${i%.bam}.${split}.bam")" )
 done
 echo "w/duplicates (in the array)..."
-echoTest "${infiles_mapped_bases[@]}" 
+echoTest "${infiles_mapped_bases[@]}"
+#  2022-1202
+# 5781_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all.bam
+# 5782_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all.bam
+# 5781_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all.bam
+# 5782_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all.bam
 
 IFS=" " read -r -a infiles_mapped_bases \
 	<<< "$(\
@@ -5194,6 +5299,9 @@ IFS=" " read -r -a infiles_mapped_bases \
 	)"
 echo "w/o duplicates (in the array)..."
 echoTest "${infiles_mapped_bases[@]}" && echo ""
+#  2022-1202
+# 5781_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all.bam
+# 5782_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all.bam
 
 unset infiles_mapped_dirs
 typeset -a infiles_mapped_dirs
@@ -5202,6 +5310,11 @@ for i in "${infiles_mapped[@]}"; do
 done
 echo "w/duplicates (in the array)..."
 echoTest "${infiles_mapped_dirs[@]}"
+#  2022-1202
+# exp_preprocessing/04a_star-genome-free
+# exp_preprocessing/04a_star-genome-free
+# exp_preprocessing/04b_star-genome-guided
+# exp_preprocessing/04b_star-genome-guided
 
 IFS=" " read -r -a infiles_mapped_dirs \
 	<<< "$(\
@@ -5212,7 +5325,9 @@ IFS=" " read -r -a infiles_mapped_dirs \
 	)"
 echo "w/o duplicates (in the array)..."
 echoTest "${infiles_mapped_dirs[@]}" && echo ""
-
+#  2022-1202
+# exp_preprocessing/04a_star-genome-free
+# exp_preprocessing/04b_star-genome-guided
 
 for i in "${infiles_mapped_dirs[@]}"; do
 	# i="${infiles_mapped_dirs[0]}"
@@ -5269,6 +5384,7 @@ done
 <details>
 <summary><i>sbatch ./submit-preprocessing-fastqc.sh, messages printed to terminal:</i></summary>
 
+2022-1128
 ```txt
 Working with exp_preprocessing/04a_star-genome-free...
     - infile: exp_preprocessing/04a_star-genome-free/5781_Q_IN_mergedAligned.sortedByCoord.out.sc_all.bam
@@ -5309,6 +5425,48 @@ sbatch submit-preprocessing-fastqc.sh \
                 "exp_preprocessing/05b_fastqc"
 Submitted batch job 4715421
 ```
+
+2022-1202
+```txt
+Working with exp_preprocessing/04a_star-genome-free...
+    - infile: exp_preprocessing/04a_star-genome-free/5781_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all.bam
+    - outdir: exp_preprocessing/05a_fastqc
+
+sbatch submit-preprocessing-fastqc.sh \
+                "exp_preprocessing/04a_star-genome-free/5781_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all.bam" \
+                "exp_preprocessing/05a_fastqc"
+Submitted batch job 5144942
+
+
+Working with exp_preprocessing/04a_star-genome-free...
+    - infile: exp_preprocessing/04a_star-genome-free/5782_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all.bam
+    - outdir: exp_preprocessing/05a_fastqc
+
+sbatch submit-preprocessing-fastqc.sh \
+                "exp_preprocessing/04a_star-genome-free/5782_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all.bam" \
+                "exp_preprocessing/05a_fastqc"
+Submitted batch job 5144943
+
+
+Working with exp_preprocessing/04b_star-genome-guided...
+    - infile: exp_preprocessing/04b_star-genome-guided/5781_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all.bam
+    - outdir: exp_preprocessing/05b_fastqc
+
+sbatch submit-preprocessing-fastqc.sh \
+                "exp_preprocessing/04b_star-genome-guided/5781_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all.bam" \
+                "exp_preprocessing/05b_fastqc"
+Submitted batch job 5144944
+
+
+Working with exp_preprocessing/04b_star-genome-guided...
+    - infile: exp_preprocessing/04b_star-genome-guided/5782_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all.bam
+    - outdir: exp_preprocessing/05b_fastqc
+
+sbatch submit-preprocessing-fastqc.sh \
+                "exp_preprocessing/04b_star-genome-guided/5782_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all.bam" \
+                "exp_preprocessing/05b_fastqc"
+Submitted batch job 5144945
+```
 </details>
 <br />
 
@@ -5316,6 +5474,7 @@ The jobs completed successfully
 
 <a id="convert-the-species-filtered-bams-from-genome-free-alignment-to-fastqs"></a>
 ### Convert the species-filtered `.bam`s from genome-free alignment to `.fastq`s
+*Edited and reran (portions) on 2022-1202; this was done to correct a bug that is described in `results/2022-1201/work_preprocessing_fix-errors.md`*
 ```bash
 #!/bin/bash
 #DONTRUN #CONTINUE
@@ -5342,14 +5501,19 @@ while IFS=" " read -r -d $'\0'; do
 done < <(\
     find "exp_preprocessing/04a_star-genome-free" \
         -type f \
-        -name *${split}.bam \
+        -name *.exclude-unmapped.${split}.bam \
         -print0 \
             | sort -z \
 )
 echoTest "${bams_filtered[@]}"
+#  2022-1202
+# exp_preprocessing/04a_star-genome-free/5781_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all.bam
+# exp_preprocessing/04a_star-genome-free/5782_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all.bam
 
 
 #  Prep the SLURM script for converting filtered .bams to .fastqs -------------
+threads=4
+
 if [[ -f submit-preprocessing-convert-bam-fastq.sh ]]; then
 	rm submit-preprocessing-convert-bam-fastq.sh
 fi
@@ -5396,7 +5560,6 @@ script
 
 
 #  Submit jobs for converting filtered .bams to .fastqs -----------------------
-threads=1
 for i in "${bams_filtered[@]}"; do
 	# i="${bams_filtered[0]}"
 	step_no="$(\
@@ -5434,8 +5597,41 @@ for i in "${bams_filtered[@]}"; do
 done
 ```
 
+<details>
+<summary><i>Jobs submission details printed to terminal</i></summary>
+
+2022-1202
+```txt
+Submitting job for exp_preprocessing/04a_star-genome-free/5781_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all.bam...
+ -    inpath: exp_preprocessing/04a_star-genome-free
+ -    infile: exp_preprocessing/04a_star-genome-free/5781_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all.bam
+ -   outpath: exp_preprocessing/06_bam-to-fastq
+ - outprefix: exp_preprocessing/06_bam-to-fastq/5781_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all
+Submission:
+sbatch ./submit-preprocessing-convert-bam-fastq.sh \
+            "exp_preprocessing/04a_star-genome-free/5781_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all.bam" \
+            "exp_preprocessing/06_bam-to-fastq/5781_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all" \
+            "4"
+Submitted batch job 5145157
+
+Submitting job for exp_preprocessing/04a_star-genome-free/5782_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all.bam...
+ -    inpath: exp_preprocessing/04a_star-genome-free
+ -    infile: exp_preprocessing/04a_star-genome-free/5782_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all.bam
+ -   outpath: exp_preprocessing/06_bam-to-fastq
+ - outprefix: exp_preprocessing/06_bam-to-fastq/5782_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all
+Submission:
+sbatch ./submit-preprocessing-convert-bam-fastq.sh \
+            "exp_preprocessing/04a_star-genome-free/5782_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all.bam" \
+            "exp_preprocessing/06_bam-to-fastq/5782_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all" \
+            "4"
+Submitted batch job 5145158
+```
+</details>
+<br />
+
 <a id="perform-a-fastqc-quality-check-for-the-new-fastq-files-2022-1128"></a>
 ### Perform a `FastQC` quality check for the new `.fastq` files (2022-1128)
+*Edited and reran (portions) on 2022-1202; this was done to correct a bug that is described in `results/2022-1201/work_preprocessing_fix-errors.md`*
 ```bash
 #!/bin/bash
 #DONTRUN #CONTINUE
@@ -5455,11 +5651,16 @@ while IFS=" " read -r -d $'\0'; do
 done < <(\
     find "exp_preprocessing/06_bam-to-fastq" \
         -type f \
-        -name *.gz \
+        -name *.exclude-unmapped.*.gz \
         -print0 \
             | sort -z \
 )
 echoTest "${fastqs_from_bams[@]}"
+#  2022-1202
+# exp_preprocessing/06_bam-to-fastq/5781_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all.1.fq.gz
+# exp_preprocessing/06_bam-to-fastq/5781_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all.2.fq.gz
+# exp_preprocessing/06_bam-to-fastq/5782_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all.1.fq.gz
+# exp_preprocessing/06_bam-to-fastq/5782_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all.2.fq.gz
 
 
 #  Submit jobs for QC of .bams converted to .fastqs ---------------------------
@@ -5483,10 +5684,57 @@ for i in "${fastqs_from_bams[@]}"; do
 done
 ```
 
+<details>
+<summary><i>Details of job submission printed to terminal:</i></summary>
+
+```txt
+Working with exp_preprocessing/06_bam-to-fastq/5781_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all.1.fq.gz...
+    - infile: exp_preprocessing/06_bam-to-fastq/5781_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all.1.fq.gz
+    - outdir: exp_preprocessing/07_fastqc
+
+sbatch submit-preprocessing-fastqc.sh \
+        "exp_preprocessing/06_bam-to-fastq/5781_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all.1.fq.gz" \
+        "exp_preprocessing/07_fastqc"
+Submitted batch job 5145299
+
+
+Working with exp_preprocessing/06_bam-to-fastq/5781_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all.2.fq.gz...
+    - infile: exp_preprocessing/06_bam-to-fastq/5781_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all.2.fq.gz
+    - outdir: exp_preprocessing/07_fastqc
+
+sbatch submit-preprocessing-fastqc.sh \
+        "exp_preprocessing/06_bam-to-fastq/5781_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all.2.fq.gz" \
+        "exp_preprocessing/07_fastqc"
+Submitted batch job 5145300
+
+
+Working with exp_preprocessing/06_bam-to-fastq/5782_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all.1.fq.gz...
+    - infile: exp_preprocessing/06_bam-to-fastq/5782_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all.1.fq.gz
+    - outdir: exp_preprocessing/07_fastqc
+
+sbatch submit-preprocessing-fastqc.sh \
+        "exp_preprocessing/06_bam-to-fastq/5782_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all.1.fq.gz" \
+        "exp_preprocessing/07_fastqc"
+Submitted batch job 5145301
+
+
+Working with exp_preprocessing/06_bam-to-fastq/5782_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all.2.fq.gz...
+    - infile: exp_preprocessing/06_bam-to-fastq/5782_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all.2.fq.gz
+    - outdir: exp_preprocessing/07_fastqc
+
+sbatch submit-preprocessing-fastqc.sh \
+        "exp_preprocessing/06_bam-to-fastq/5782_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all.2.fq.gz" \
+        "exp_preprocessing/07_fastqc"
+Submitted batch job 5145302
+```
+</details>
+<br />
+
 <a id="remove-erroneous-k-mers-from-reads-with-rcorrector-and-correct-the-outfiles"></a>
 ### Remove erroneous k-mers from reads with `rCorrector` and "correct" the outfiles
+*Edited and reran (portions) on 2022-1202; this was done to correct a bug that is described in `results/2022-1201/work_preprocessing_fix-errors.md`*
 <a id="remove-erroneous-k-mers-from-paired-end-reads-with-rcorrector"></a>
-#### Remove erroneous k-mers from paired-end reads with rCorrector
+#### Remove erroneous k-mers from paired-end reads with `rCorrector`
 ```bash
 #!/bin/bash
 #DONTRUN #CONTINUE
@@ -5584,7 +5832,7 @@ Processed 15069524 reads
 <br />
 
 The command completed successfully; however, it's quite slow using only one thread  
-`#TODO` Formal `run_rcorrector.pl` job submissions to `SLURM`
+`#DONE` Formal `run_rcorrector.pl` job submissions to `SLURM`
 
 <a id="discard-rcorrector-processed-read-pairs-for-which-one-read-is-deemed-unfixable"></a>
 #### Discard `rcorrector`-processed read pairs for which one read is deemed unfixable
@@ -5772,6 +6020,8 @@ python ./submit-preprocessing-filter-uncorrectable-fastq.py \
 ```bash
 #!/bin/bash
 #DONTRUN #CONTINUE
+
+
 #  Make sense of the error using 2to3 -----------------------------------------
 #  It looks like the script is written in Python 2; install 2to3 and convert
 #+ *filter-uncorrectable-fastq.py to Python 3 formatting
@@ -5834,7 +6084,7 @@ RefactoringTool: ./submit-preprocessing-filter-uncorrectable-fastq.py
 </details>
 <br />
 
-`#DONE` Make the edits directly to the script  
+`#DONE` Make the edits directly to the script
 
 Try rerunning things:
 ```bash
@@ -6130,6 +6380,7 @@ cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1
 	echo "cd'ing failed; check on this"
 
 pwd
+# /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1101
 
 which python
 # /home/kalavatt/miniconda3/envs/Trinity_env/bin/python
@@ -6378,7 +6629,7 @@ while IFS=" " read -r -d $'\0'; do
 done < <(\
     find "exp_preprocessing/06_bam-to-fastq" \
         -type f \
-        -name *.gz \
+        -name *.exclude-unmapped.*.gz \
         -print0 \
             | sort -z \
 )
@@ -6388,6 +6639,12 @@ echoTest "${fastqs_from_bams[@]}"
 # exp_preprocessing/06_bam-to-fastq/5781_Q_IN_mergedAligned.sortedByCoord.out.sc_all
 # exp_preprocessing/06_bam-to-fastq/5782_Q_IN_mergedAligned.sortedByCoord.out.sc_all
 # exp_preprocessing/06_bam-to-fastq/5782_Q_IN_mergedAligned.sortedByCoord.out.sc_all
+
+#  2022-1202
+# exp_preprocessing/06_bam-to-fastq/5781_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all
+# exp_preprocessing/06_bam-to-fastq/5781_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all
+# exp_preprocessing/06_bam-to-fastq/5782_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all
+# exp_preprocessing/06_bam-to-fastq/5782_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all
 
 IFS=" " read -r -a fastqs_from_bams \
     <<< "$(\
@@ -6400,6 +6657,10 @@ echo "w/o duplicates (in the array)..."
 echoTest "${fastqs_from_bams[@]}" && echo ""
 # exp_preprocessing/06_bam-to-fastq/5781_Q_IN_mergedAligned.sortedByCoord.out.sc_all
 # exp_preprocessing/06_bam-to-fastq/5782_Q_IN_mergedAligned.sortedByCoord.out.sc_all
+
+#  2022-1202
+# exp_preprocessing/06_bam-to-fastq/5781_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all
+# exp_preprocessing/06_bam-to-fastq/5782_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all
 
 
 #  Prep the SLURM script for running rcorrector -------------------------------
@@ -6446,7 +6707,7 @@ run_rcorrector.pl \\
 ::: instring "\${instring}" \\
 ::: outdir "\${outdir}"
 script
-vi submit-preprocessing-rcorrector.sh
+# vi submit-preprocessing-rcorrector.sh
 
 
 #  Submit jobs for running rcorrector -----------------------------------------
@@ -6463,12 +6724,40 @@ for i in "${fastqs_from_bams[@]}"; do
 done
 ```
 
+<details>
+<summary><i>Results of rCorrector echo test</i></summary>
+
+2022-1202
+```txt
+Working with exp_preprocessing/06_bam-to-fastq/5781_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all...
+run_rcorrector.pl -t 8 -1 exp_preprocessing/06_bam-to-fastq/5781_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all.1.fq.gz -2 exp_preprocessing/06_bam-to-fastq/5781_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all.2.fq.gz -od exp_preprocessing/08_rcorrector
+
+Working with exp_preprocessing/06_bam-to-fastq/5782_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all...
+run_rcorrector.pl -t 8 -1 exp_preprocessing/06_bam-to-fastq/5782_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all.1.fq.gz -2 exp_preprocessing/06_bam-to-fastq/5782_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all.2.fq.gz -od exp_preprocessing/08_rcorrector
+```
+</details>
+<br />
+
+<details>
+<summary><i>rCorrector job submission messages printed to terminal</i></summary>
+
+2022-1202
+```txt
+Working with exp_preprocessing/06_bam-to-fastq/5781_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all...
+Submitted batch job 5147145
+
+Working with exp_preprocessing/06_bam-to-fastq/5782_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all...
+Submitted batch job 5147146
+```
+</details>
+<br />
+
 <a id="for-correction-of-rcorrector-2022-1130-1201"></a>
 ##### ...for "correction of `rCorrector`" (2022-1130-1201)
 `#DEKHO`
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
+#DONTRUN
 
 Trinity_env
 
@@ -6493,7 +6782,7 @@ while IFS=" " read -r -d $'\0'; do
 done < <(\
     find "exp_preprocessing/08_rcorrector" \
         -type f \
-        -name *.gz \
+        -name *.exclude-unmapped.*.gz \
         -print0 \
             | sort -z \
 )
@@ -6503,6 +6792,12 @@ echoTest "${fastqs_rcorrected[@]}"
 # exp_preprocessing/08_rcorrector/5781_Q_IN_mergedAligned.sortedByCoord.out.sc_all
 # exp_preprocessing/08_rcorrector/5782_Q_IN_mergedAligned.sortedByCoord.out.sc_all
 # exp_preprocessing/08_rcorrector/5782_Q_IN_mergedAligned.sortedByCoord.out.sc_all
+
+#  2022-1202
+# exp_preprocessing/08_rcorrector/5781_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all
+# exp_preprocessing/08_rcorrector/5781_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all
+# exp_preprocessing/08_rcorrector/5782_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all
+# exp_preprocessing/08_rcorrector/5782_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all
 
 IFS=" " read -r -a fastqs_rcorrected \
     <<< "$(\
@@ -6515,6 +6810,10 @@ echo "w/o duplicates (in the array)..."
 echoTest "${fastqs_rcorrected[@]}" && echo ""
 # exp_preprocessing/08_rcorrector/5781_Q_IN_mergedAligned.sortedByCoord.out.sc_all
 # exp_preprocessing/08_rcorrector/5782_Q_IN_mergedAligned.sortedByCoord.out.sc_all
+
+#  2022-1202
+# exp_preprocessing/08_rcorrector/5781_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all
+# exp_preprocessing/08_rcorrector/5782_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all
 
 
 #  Prep the SLURM script for running "rcorrector corrector" -------------------
@@ -6560,7 +6859,7 @@ python ./submit-preprocessing-filter-uncorrectable-fastq.py \\
 ::: instring \${instring} \\
 ::: outdir \${outdir}
 script
-vi submit-preprocessing-rcorrector-corrector.sh
+# vi submit-preprocessing-rcorrector-corrector.sh
 
 
 #  Submit jobs for running "rcorrector corrector" -----------------------------
@@ -6578,6 +6877,7 @@ done
 <details>
 <summary><i>Echo test for bash ./submit-preprocessing-rcorrector-corrector.sh: Messages printed to terminal:</i></summary>
 
+2022-1128
 ```txt
 Working with exp_preprocessing/08_rcorrector/5781_Q_IN_mergedAligned.sortedByCoord.out.sc_all...
 python ./submit-preprocessing-filter-uncorrectable-fastq.py \
@@ -6600,6 +6900,8 @@ python ./submit-preprocessing-filter-uncorrectable-fastq.py \
 
 <a id="run-fastqc-on-the-fastqs-from-rcorrector-and-rcorrector-correction"></a>
 ### Run `FastQC` on the `.fastq`s from `rCorrector` and "`rCorrector` correction"
+*Edited and reran (portions) on 2022-1202; this was done to correct a bug that is described in `results/2022-1201/work_preprocessing_fix-errors.md`*
+`#DEKHO`
 ```bash
 #!/bin/bash
 #DONTRUN #CONTINUE
@@ -6611,7 +6913,7 @@ while IFS=" " read -r -d $'\0'; do
 done < <(\
     find "./exp_preprocessing/08_rcorrector" \
         -type f \
-        -name *.fq.gz \
+        -name *.exclude-unmapped.*.fq.gz \
         -print0 \
             | sort -z \
 )
@@ -6624,6 +6926,16 @@ echoTest "${infiles[@]}"
 # ./exp_preprocessing/08_rcorrector/unfixrm.5781_Q_IN_mergedAligned.sortedByCoord.out.sc_all.2.cor.fq.gz
 # ./exp_preprocessing/08_rcorrector/unfixrm.5782_Q_IN_mergedAligned.sortedByCoord.out.sc_all.1.cor.fq.gz
 # ./exp_preprocessing/08_rcorrector/unfixrm.5782_Q_IN_mergedAligned.sortedByCoord.out.sc_all.2.cor.fq.gz
+
+#  2022-1202
+# ./exp_preprocessing/08_rcorrector/5781_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all.1.cor.fq.gz
+# ./exp_preprocessing/08_rcorrector/5781_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all.2.cor.fq.gz
+# ./exp_preprocessing/08_rcorrector/5782_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all.1.cor.fq.gz
+# ./exp_preprocessing/08_rcorrector/5782_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all.2.cor.fq.gz
+# ./exp_preprocessing/08_rcorrector/unfixrm.5781_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all.1.cor.fq.gz
+# ./exp_preprocessing/08_rcorrector/unfixrm.5781_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all.2.cor.fq.gz
+# ./exp_preprocessing/08_rcorrector/unfixrm.5782_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all.1.cor.fq.gz
+# ./exp_preprocessing/08_rcorrector/unfixrm.5782_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all.2.cor.fq.gz
 
 threads=4
 outdir="exp_preprocessing/09_fastqc"
@@ -6662,16 +6974,48 @@ for i in "${infiles[@]}"; do
 	echo "Working with ${i}..."
 	sbatch submit-preprocessing-fastqc.sh \
 		"${i}" \
-		"${outdir}"
+		"${outdir}" \
+		"${threads}"
 	sleep 0.25
 	echo ""
 done
 ```
+
+<details>
+<summary><i>Job submission details printed to the terminal</i></summary>
+
+2022-1202
+```txt
+Working with ./exp_preprocessing/08_rcorrector/5781_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all.1.cor.fq.gz...
+Submitted batch job 5147336
+
+Working with ./exp_preprocessing/08_rcorrector/5781_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all.2.cor.fq.gz...
+Submitted batch job 5147337
+
+Working with ./exp_preprocessing/08_rcorrector/5782_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all.1.cor.fq.gz...
+Submitted batch job 5147338
+
+Working with ./exp_preprocessing/08_rcorrector/5782_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all.2.cor.fq.gz...
+Submitted batch job 5147339
+
+Working with ./exp_preprocessing/08_rcorrector/unfixrm.5781_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all.1.cor.fq.gz...
+Submitted batch job 5147340
+
+Working with ./exp_preprocessing/08_rcorrector/unfixrm.5781_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all.2.cor.fq.gz...
+Submitted batch job 5147341
+
+Working with ./exp_preprocessing/08_rcorrector/unfixrm.5782_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all.1.cor.fq.gz...
+Submitted batch job 5147342
+
+Working with ./exp_preprocessing/08_rcorrector/unfixrm.5782_Q_IN_mergedAligned.sortedByCoord.out.exclude-unmapped.sc_all.2.cor.fq.gz...
+Submitted batch job 5147343
+```
+</details>
 <br />
 <br />
 
-<a id="notes-thoughts-and-next-steps-2022-1201"></a>
-## Notes, thoughts, and next steps, 2022-1201
+<a id="notes-thoughts-and-next-steps-2022-1201-1202"></a>
+## Notes, thoughts, and next steps, 2022-1201-1202
 0. Now, we need to run `Trinity` on the preprocessed data twice:
 	- genome-free `Trinity` 
 	- genome-guided `Trinity`
@@ -6685,17 +7029,80 @@ done
 4. Load those to `IGV` and then make visual comparisons: Does Alison know of individual regions we can focus on for making assessments?
 
 - So, it seems that I need to...
-    - review Alison's heuristics (what she wants to categorize as a result of this (and the info leading up to this which describes the data she's going to use for categorization))
-    - my notes from the last time we discussed the issues she was seeing in her run of Trinity
+    - `#DONE` review Alison's heuristics (what she wants to categorize as a result of this (and the info leading up to this which describes the data she's going to use for categorization))
+    	+ `#QUESTION` Have these changed at all from what Alison wrote in her QE proposal? I remember she wrote out some things on the whiteboard when I met with her and Toshi once
+    - review my notes from the last time we discussed the issues she was seeing with her `Trinity` transcriptome assembly using the parameters from Blevins et al. (Mar Alba), *bioRxiv* 2019-0313
 
-- Separate but related to the above:
-	- Need a carefully defined, curated list of issues that we see with thew results from transcriptome assembly
-	- What do we see and how does that compare to what we expect?
-	- I will put these together for a discussion with Brian Haas, who can guide in what parts of the pipeline to change and/or what program parameters to tune
+The following are key notes from reading Alison's QE proposal:
+```txt
+Antisense transcript classification schema:
+    I. By length
+        a. 3’ end only
+        b. full gene
+        c. into sense promotor
+    II. By stability: "if a transcript is not above a certain threshold in input, it will be
+        classified as rapidly degraded"
 
-- Questions for Alison
-    - Did she try running Trinity with other parameters? Did she record any of those experiments, save the outfiles, take notes on the issues from those, etc.?
-    - What do you see and how does that compare to what you expect to see?
+#QUESTION For II, what is the input? How will it be measured, assessed, and thresholded?
+```
+```txt
+I. Schema for assessing "the interest" of antisense transcripts:
+    a. high antisense transcription
+    b. uniqueness to Q
+    c. potential biological effect on Q if sense strand is transcribed
+
+II. Home in on candidates from the above that...
+    a. extend across the full length of sense gene
+    b. appears to be "shorter 3’ transcript [that] looks like it could be inducing early
+       termination of sense transcription"
+
+#QUESTION How is antisense transcription evaluated to be "high" in Ia?
+#QUESTION How to assess Ic?
+#QUESTION How can you tell IIb just by looking at IGV tracks? You see the end of sense
+          transcription in the 3' UTR together with the antisense transcription specific
+          to/overlapping the 3' UTR?
+```
+`#QUESTION` Are these still accurate? Have they changed at all since writing them?
+
+- `#IMPORTANT` Need a carefully defined, curated list of issues that we see in the results of transcriptome assembly, including visual examples
+	- `#QUESTION` What do we see and how does that compare to what we expect/"want"?
+	- I will put these together for a discussion with Brian Haas, who can guide us in what parts of the pipeline to change and/or what program (`Trinity` and/or `PASA`) parameters to tune
+		+ Have touched base with Alison and Toshi about this; they're OK with me discussing the project and its issues, including evidence of the issues such as IGV screenshots
+	- `#QUESTION` Does Alison have lab notebook entries and/or any other documentation that covers this? For example, from combing through IGV, did she take notes on what she was saw and found to be problematic?
+		+ If so, it'd be great if she copied and sent that/those to me (if it's physical, then paper copies; if digital, then point to it on the tsukiyamalab server and/or message it to me)
+		+ If not, it'd be great for Alison to do the following bullet
+	- `#IMPORTANT` The most helpful thing for me, I think, would be Alison's rough notes that include the following: 
+		+ documentation for a small number of "problem categories" that describe...
+			* what the specific problem is, e.g., "There is transcription beyond a given part of a gene per the Ensembl `sacCer3` annotation"
+			* what we expect and/or "want," e.g., "We expect/want this to be included in the annotation for that transcript after having run `Trinity`/`PASA`"
+		+ IGV screenshots and/or genomic coordinates of examples
+		+ quick and dirty notes would be just fine as long as they cover the important issues
+
+- Other questions for Alison
+    - `#QUESTION` Did she try running `Trinity` with other parameters? Did she record any of those experiments, save the outfiles, take notes on the issues from those, etc.?
+    	+ If so, it'd be great to get those, including any observations, documentation, etc.
+    	+ If not, no big deal
+    - `#QUESTION` When evaluating nascent RNA expression, do we need to consider introns, splicing, etc. at all? Like, would we expect nascent or stready-state 4tU-seq signal to run into introns or skip them?
+    - `#QUESTION` `#IMPORTANT` What are the detailed steps that Alison was taking to address and work with the subpar annotation? Alison mentioned implementing some set operations with `bedtools`...
+    	+ `#TASK` It'd be great to get a systematic list of what Alison was trying to address and how she was trying to address it, including...
+    		* the problems identified (itemized/categorized)
+    		* the substeps for each step she was doing to address each problem
+    		* whether that step was implemented in `bedtools` (or something) or was something she was addressing manually
+    	+ basically, just need...
+    		* the issues,
+    		* the things to address each issue with any rationale, etc., and
+    		* the logic or steps to do the thing that addresses it, regardless of whether the logic/steps are performed with a program or done by hand
+    - `#QUESTION` I was assuming that steady-state 4tu-seq signal is the same as RNA-seq signal, but is that assumption correct? If not, then how are signals from each experiment different and in what ways?
+    - Is there a reason Alison aligned her data with Bowtie 2, a non-splice-aware aligner, versus something like HISAT2 or STAR, both splice-aware aligners?
+    - Is 4tU-seq signal, be it nascent and/or stead-state, more like, say, ChIP-seq signal than RNA-seq signal?
+    - `#QUESTION` In Alison's genome-guided `Trinity`-assembled transcriptome (parameters from from Blevins et al. (Mar Alba), *bioRxiv* 2019-0313), are there *K. lactis* reads in these `fastq` files, in addition to *S. cerevisiae* reads?
+    	+ `#ANSWER` Yes, and 20 S reads too (`#QUESTION` This is copied my notes from 2022-1025: Is this correct?)
+
+- Something we may want to add to the preprocessing pipeline:
+	- Alignment to a reference comprised solely of blacklisted regions
+		+ Filtering out of these alignments from the "main" `.bam` file (that was aligned to a "full" reference)
+	- And/or creation of a reference in which the blacklisted regions are N-masked
+		+ "Main" alignment to this reference instead of the "full" reference
 
 `#DUSRA` `IMPORTANT`  
 - Understanding of these abbreviations is opposite to what I recorded before:
@@ -6703,5 +7110,14 @@ done
 	+ IP = nascent, immunoprecipitation
 
 Apparently, we should be using IP (I thought we were), not IN; however, IN is fine for the test we're running now
+
+- Links to sort and store elsewhere later
+	+ [Splice aware aligner - what does it mean?](https://www.biostars.org/p/175454/)
+	+ Oyster River Protocol for (eukaryotic) transcriptome assembly
+		* [readthedocs](https://oyster-river-protocol.readthedocs.io/en/latest/)
+		* [GitHub](https://github.com/macmanes-lab/Oyster_River_Protocol)
+		* [Manuscript](https://peerj.com/articles/5428/)
+	+ [Is it normal for RCorrector to remove millions of reads?](https://www.biostars.org/p/9484524/)
+
 <br />
 <br />

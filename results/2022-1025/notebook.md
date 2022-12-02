@@ -317,20 +317,25 @@ Sure enough, the library is likely to be `FR`, consistent with what Alison is in
     - [Home](http://nemates.org/MA/): Click on "Statistical significance of the overlap between two groups of genes"
     - [The software](http://nemates.org/MA/progs/overlap_stats.html)
     - [The details](http://nemates.org/MA/progs/representation.stats.html) `#TODO`
-    - These stats that are being generated: Are they legitimate/appropriate given the context of our analyses, the question(s) we ask? `#TODO`
+    - `#TODO` These stats that are being generated: Are they legitimate/appropriate given the context of our analyses, the question(s) we ask?
+        + `#NOTE` Seem fine after reviewing the calculation
 - On *Slide 2*, both sense (S) and antisense (AS) transcripts (tx) are "from nascent"
 - Per Toshi, ≤20 AS tx are biologically functional for their activity, not their RNA product, in budding yeast (*Saccharomyces cerevisiae*)
-- Per Toshi and Alison, may be interesting to look into the following: AS nascent versus steady-state (SS) sense in "all combinations" `#TODO` Follow up on what they're talking about here
+- Per Toshi and Alison, may be interesting to look into the following: AS nascent versus steady-state (SS) sense in "all combinations"
+    + `#TODO` Follow up on what they're talking about here
 - *Slides 2 and 3*: Many of the AS tx that are up, corresponding S does not go down: `#QUESTION` From Toshi: Is this because there's no S to begin with?
 - *Slide 4*: y-axis is S, and panel B is from a separate paper (the left panel is from Alison)
     - Panel B is not Q: it's "late log" (OD 0.6 to 3.0)
     - Alison depleted *Nab3*, the team behind the other paper (2013, I think?) depleted a factor that forms a dimer with Nab3, so it's expected to have a similar function
 - *Slide 7* (the violin-plot slide): Shows changes in mRNA depletion
 - *Slide 8* (the next violin-plot slide): Shows absolute levels of AS tx (in TPM)
-    - Possibilities for "activating" AS tx or "neutral and everything is coming up" `#TODO` Get clarification on this second part?
+    - Possibilities for "activating" AS tx or "neutral and everything is coming up"
+        + `#TODO` Get clarification on this second part?
     - Or it could be that Nab3 (which is currently depleted) would otherwise be degrading the currently upregulated mRNA (e.g., in "violins" 2 and 3)
-    - "Are they tandem genes" because PolII keeps going (`#QUESTION` I presume they're talking about something like "slip-through tx" here?)
-- Question from Toshi: "How much overlap to say that S/AS overlap?" Answer from Alison: "Whatever HTSeq says" `#NOTE` She'll look into precisely is going on here
+    - "Are they tandem genes" because PolII keeps going
+        + (`#QUESTION` I presume they're talking about something like "slip-through tx" here?)
+- Question from Toshi: "How much overlap to say that S/AS overlap?" Answer from Alison: "Whatever HTSeq says"
+    + `#NOTE` She'll look into precisely is going on here
 - Point from Toshi: It's possible that, once we annotate in a formal way (i.e., optimize the `Trinity` work), things might change quite a bit
 - *Slide 11* ("Sense up, AS up")
     - Is this because S was very low to begin with?
@@ -351,13 +356,16 @@ Sure enough, the library is likely to be `FR`, consistent with what Alison is in
 ## Notes from meeting with Alison to discuss the `Trinity` work
 - `#QUESTION` The `fastq` files in `${HOME}/tsukiyamalab/alisong/WTQvsG1/Project_ccucinot`, do I need to do anything with them (e.g., regarding the *K. lactis* spike-in and/or 20 S) prior to using them as input with `Trinity`?
     - Can try to give the fastq (contains *K. lactis* and 20 S information in addition to *S. cerevisiae* information)
-    - The two species are largely conserved (if I copied down this note correctly), but there is some notable divergence between the two `#TODO` Follow up with Alison on this
-    - Alison mentioned a genome duplication event: Did it occur prior to the airising of the two species? `#TODO` Follow up with Alison on this
+    - The two species are largely conserved (if I copied down this note correctly), but there is some notable divergence between the two
+        + `#TODO` Follow up with Alison on this
+    - Alison mentioned a genome duplication event: Did it occur prior to the arising of the two species?
+        + `#TODO` Follow up with Alison on this
     - Idea worked out with Alison: Create a combined genome comprised of *S. cerevisiae*, *K. lactis*, and 20 S
         - Align to it
         - Filter out reads aligned to *K. lactis* and 20 S
         - Use the remaining reads, aligned to *S. cerevisiae* as `bam` input to `Trinity`
-            - Could convert from bam to fastq and split by chromosome too... `#TODO` Think about this...
+            - Could convert from `.bam` to `.fastq` and split by chromosome too...
+                + `#TODO` Think about this...
 - `#QUESTION` Are there *K. lactis* reads in these `fastq` files, in addition to *S. cerevisiae* reads? `#ANSWER` Yes, and 20 S reads too
 - `#QUESTION` ...for the `fastq` and `bam` files prior to using them as input for `deepTools bamCoverage`?
 - `#QUESTION` Alison is calling `Trinity` with `--SS_lib_type FR`; however, most strand-specific libraries are generated with the dUTP method, which means they need `--SS_lib_type RF`; therefore, are we sure that `--SS_lib_type FR` is correct here? `#ANSWER` Yes, see the results of your work with `how_are_we_stranded_here` in `results/2022-1025/readme.md`
@@ -1958,7 +1966,7 @@ Have this open eventually: https://bioinformaticsdotca.github.io/rnaseq_2017_tut
     - `#NOTE` TPM, like FPKM/RPKM, is not well-suited for between-sample comparisons: We may want to end up using something like `DESeq2` normalization (`#QUESTION` including something like `rlow`?) or `edgeR` TMM; still, get the TPM code up and running
 - Review notes (e.g., from previous meetings), steps, written-by-me code, and e-mails (incorporating some into this or another notebook where necessary) prior to Alison's arrival to the lab tomorrow; we-ll likely touch base to talk about things when she comes
     - Look into the PCR deduplication with UMI tools that was suggested by Alison: Need to figure out what that entails
-    - Remember, the goal is to have appropriately processed bam files for experimetns to determine the best way(s) to call `Trinity`
+    - Remember, the goal is to have appropriately processed bam files for experiments to determine the best way(s) to call `Trinity`
 - Continue to build out the alignment and processing script you were working on at the end of last week (functionize it, get major modules into separate scripts, get the main work into a driver script, etc.)
 <br />
 <br />
