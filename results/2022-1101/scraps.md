@@ -12,7 +12,7 @@
 1. [Do a trial run of `Trinity` genome-guided mode \(2022-1122\)](#do-a-trial-run-of-trinity-genome-guided-mode-2022-1122)
 1. [Convert "rna-star" filtered `.bam` files back to `.fastq` files \(2022-1122\)](#convert-rna-star-filtered-bam-files-back-to-fastq-files-2022-1122)
 1. [Do a trial run of `Trinity` genome-free mode \(2022-1122\)](#do-a-trial-run-of-trinity-genome-free-mode-2022-1122)
-1. [Organizing the `*.{err,out}.txt` from the trial runs](#organizing-the-errouttxt-from-the-trial-runs)
+	1. [Organizing the `*.{err,out}.txt` from the trial runs](#organizing-the-errouttxt-from-the-trial-runs)
 1. [Learning to use `Singularity` \(2022-1123\)](#learning-to-use-singularity-2022-1123)
 	1. [Notes from FHCC Bioinformatics' *"Using `Singularity` Containers"*](#notes-from-fhcc-bioinformatics-using-singularity-containers)
 	1. [Introduction](#introduction)
@@ -1235,11 +1235,9 @@ bash "${script}" "${f_free_1}" "${f_free_2}" "${d_exp}" "${prefix}"
 sbatch "${script}" "${f_free_1}" "${f_free_2}" "${d_exp}" "${prefix}"
 #  It seems to be running successfully
 ```
-<br />
-<br />
 
 <a id="organizing-the-errouttxt-from-the-trial-runs"></a>
-## Organizing the `*.{err,out}.txt` from the trial runs
+### Organizing the `*.{err,out}.txt` from the trial runs
 ```bash
 #!/bin/bash
 #DONTRUN
