@@ -29,7 +29,7 @@ STAR \
 #  19 lines
 
 #  Updated call (results/2022-1201/): Addition of --outSAMunmapped to match
-#+ rna-star call below; previously, it was not specified and thus set to
+#+ rna-star call below; previously, it was not specified and was thus set to
 #+ default value of 'None'
 STAR \
     --runMode alignReads \
@@ -74,9 +74,9 @@ STAR \
             - `--runMode alignReads`
             - `--outSAMattributes Standard`
             - `--winAnchorMultimapNmax 50`
-        * `#TODO` Make the above parameters explicit
-        * `#TODO` Change `--outSAMattributes Standard` to `--outSAMattributes All`
-        * Final `rna-star` call will have 18 lines b/c not adding `--outMultimapperOrder Random`
+        * `#DONE` Make the above parameters explicit
+        * `#DONE` Change `--outSAMattributes Standard` to `--outSAMattributes All`
+        * Final `rna-star` call will have ~~18~~19 lines b/c ~~not~~ adding `--outMultimapperOrder Random`
 <br />
 <br />
 
@@ -142,7 +142,7 @@ STAR \
 ```
 
 - `--alignEndsType` is not specified; thus, it's set to its default value of "Local"
-- `--winAnchorMultimapNmax` is not specified; thus, it's set to its default value of "Local"
+- `--winAnchorMultimapNmax` is not specified; thus, it's set to its default value of 50
 
 ```bash
 #  How is the updated call different from 'Updated call (results/2022-1201/)'?
@@ -166,6 +166,7 @@ STAR \
 #     --alignIntronMax 5000 \  #SAMEASmulti-hit-mode
 #     --alignMatesGapMax 5000  #SAMEASmulti-hit-mode
 ```
+
 Ultimately, for `results/2022-1201/` `rna-star` mode, the only difference is the absence of `--outMultimapperOrder Random` and the use of `--alignEndsType Local`
 
 When `--outFilterMultimapNmax 1`, `--outMultimapperOrder Random` can be used without consequence
@@ -175,11 +176,11 @@ Thus, the only difference between the two is `Local` (which does soft-clipping) 
 <br />
 
 
-## Smoking out a *bug*: Additional comparisons
-Somehow, I am getting the following warnings in the `Log.out` files with today's run:  
-`WARNING: not enough space allocated for transcript. Did not process all windows for read`
+## Smoking out a *bug*: Additional comparisons between `rna-star` and multi-hit modes
+Somehow, I am getting the following warnings in the `Log.out` files with today's run: `WARNING: not enough space allocated for transcript. Did not process all windows for read`
+
 ```bash
-#  Today, in results/2022-1201/
+#  Today, 2022-1203, in 'results/2022-1201/'
 STAR \
     --runMode alignReads \
     --runThreadN "${SLURM_CPUS_ON_NODE}" \
@@ -201,7 +202,7 @@ STAR \
     --alignIntronMax 5000 \
     --alignMatesGapMax 5000
 
-#  In results/2022-1101/
+#  In 'results/2022-1101/'
 STAR \
     --runMode alignReads \
     --runThreadN "${SLURM_CPUS_ON_NODE}" \
@@ -241,3 +242,5 @@ STAR   --runMode alignReads      --runThreadN 8   --genomeDir /home/kalavatt/gen
 ```
 
 The error is with `--readFilesIn ./files_fastq_symlinks/5781_G1_IN_merged_R1.fastq   ./files_fastq_symlinks/5781_G1_IN_merged_R1.fastq`: I was using `*_R1.fastq` for each pair!
+
+`#DONE` Fix this

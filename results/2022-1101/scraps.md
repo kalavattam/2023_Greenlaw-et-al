@@ -4401,7 +4401,7 @@ unset infiles_trimmed_unpaired
 
 <a id="set-up-star-alignment-for-genome-free-assembly-2022-1126"></a>
 #### Set up `STAR` alignment for genome-free assembly (2022-1126)
-*Edited and reran (portions) on 2022-1201; this was done to correct a bug that is described in `results/2022-1201/work_preprocessing_fix-errors.md`*
+*Edited and reran (portions) on 2022-1201; this was done to correct a bug that is described in `results/2022-1101/work-fix-errors.md`*
 ```bash
 #!/bin/bash
 #DONTRUN
@@ -4629,7 +4629,7 @@ done
 
 <a id="set-up-star-alignment-for-genome-guided-assembly-2022-1126"></a>
 #### Set up `STAR` alignment for genome-guided assembly (2022-1126)
-*Edited and reran (portions) on 2022-1201-1202; this was done to correct a bug that is described in `results/2022-1201/work_preprocessing_fix-errors.md`*
+*Edited and reran (portions) on 2022-1201-1202; this was done to correct a bug that is described in `results/2022-1101/work-fix-errors.md`*
 ```bash
 #!/bin/bash
 #DONTRUN
@@ -4859,7 +4859,7 @@ done
 
 <a id="filter-bams-to-retain-only-s-cerevisiae-alignments-2022-1128"></a>
 ### Filter `.bam`s to retain only *S. cerevisiae* alignments (2022-1128)
-*Edited and reran (portions) on 2022-1202; this was done to correct a bug that is described in `results/2022-1201/work_preprocessing_fix-errors.md`*
+*Edited and reran (portions) on 2022-1202; this was done to correct a bug that is described in `results/2022-1101/work-fix-errors.md`*
 - `#DONE` Pick up with alignment for the two approaches, including `bam`-to-`fastq` conversion, then move on to implementing calls to `rCorrector`
 - `#DONE` We completed the genome-free and genome-guided styles of `STAR` alignment; next step is to review my handwritten notes and then implement filtering-by-species scripts (genome-free, genome-guided) and `bam`-to-`fastq` scripts (genome-free)... and then what?
 - `#DONE` Also, want to get some kind of rename/organization script in place for the `.bam`s output by `STAR`
@@ -5247,7 +5247,7 @@ The jobs completed successfully
 
 <a id="perform-another-quality-check-with-fastqc-2022-1128"></a>
 ### Perform another quality check with `FastQC` (2022-1128)
-*Edited and reran (portions) on 2022-1202; this was done to correct a bug that is described in `results/2022-1201/work_preprocessing_fix-errors.md`*
+*Edited and reran (portions) on 2022-1202; this was done to correct a bug that is described in `results/2022-1101/work-fix-errors.md`*
 ```bash
 #!/bin/bash
 #DONTRUN #CONTINUE
@@ -5472,7 +5472,7 @@ The jobs completed successfully
 
 <a id="convert-the-species-filtered-bams-from-genome-free-alignment-to-fastqs"></a>
 ### Convert the species-filtered `.bam`s from genome-free alignment to `.fastq`s
-*Edited and reran (portions) on 2022-1202; this was done to correct a bug that is described in `results/2022-1201/work_preprocessing_fix-errors.md`*
+*Edited and reran (portions) on 2022-1202; this was done to correct a bug that is described in `results/2022-1101/work-fix-errors.md`*
 ```bash
 #!/bin/bash
 #DONTRUN #CONTINUE
@@ -5629,7 +5629,7 @@ Submitted batch job 5145158
 
 <a id="perform-a-fastqc-quality-check-for-the-new-fastq-files-2022-1128"></a>
 ### Perform a `FastQC` quality check for the new `.fastq` files (2022-1128)
-*Edited and reran (portions) on 2022-1202; this was done to correct a bug that is described in `results/2022-1201/work_preprocessing_fix-errors.md`*
+*Edited and reran (portions) on 2022-1202; this was done to correct a bug that is described in `results/2022-1101/work-fix-errors.md`*
 ```bash
 #!/bin/bash
 #DONTRUN #CONTINUE
@@ -5730,7 +5730,7 @@ Submitted batch job 5145302
 
 <a id="remove-erroneous-k-mers-from-reads-with-rcorrector-and-correct-the-outfiles"></a>
 ### Remove erroneous k-mers from reads with `rCorrector` and "correct" the outfiles
-*Edited and reran (portions) on 2022-1202; this was done to correct a bug that is described in `results/2022-1201/work_preprocessing_fix-errors.md`*
+*Edited and reran (portions) on 2022-1202; this was done to correct a bug that is described in `results/2022-1101/work-fix-errors.md`*
 <a id="remove-erroneous-k-mers-from-paired-end-reads-with-rcorrector"></a>
 #### Remove erroneous k-mers from paired-end reads with `rCorrector`
 ```bash
@@ -6898,7 +6898,7 @@ python ./submit-preprocessing-filter-uncorrectable-fastq.py \
 
 <a id="run-fastqc-on-the-fastqs-from-rcorrector-and-rcorrector-correction"></a>
 ### Run `FastQC` on the `.fastq`s from `rCorrector` and "`rCorrector` correction"
-*Edited and reran (portions) on 2022-1202; this was done to correct a bug that is described in `results/2022-1201/work_preprocessing_fix-errors.md`*
+*Edited and reran (portions) on 2022-1202; this was done to correct a bug that is described in `results/2022-1101/work-fix-errors.md`*
 `#DEKHO`
 ```bash
 #!/bin/bash
