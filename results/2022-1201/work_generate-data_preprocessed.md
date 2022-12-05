@@ -3,7 +3,19 @@
 
 <details>
 <summary><b><font size="+2"><i>Table of contents</i></font></b></summary>
-...
+<!-- MarkdownTOC -->
+
+1. [Symlink to `.fastq` files of interest](#symlink-to-fastq-files-of-interest)
+1. [Perform adapter and quality trimming of the `.fastq`s](#perform-adapter-and-quality-trimming-of-the-fastqs)
+1. [Generate "unprocessed `.bam`s"](#generate-unprocessed-bams)
+    1. [Align the adapter- and quality-trimmed `.fastq` files](#align-the-adapter--and-quality-trimmed-fastq-files)
+    1. [Clean up results of `STAR` alignment, index `.bam`s](#clean-up-results-of-star-alignment-index-bams)
+    1. [Filter out non-*S. cerevisiae* alignments](#filter-out-non-s-cerevisiae-alignments)
+    1. [Index the *S. cerevisiae*-only `.bam`s](#index-the-s-cerevisiae-only-bams)
+1. [Convert `*_multi-hit-mode_1_*.bam`s back to `.fastq`s](#convert-_multi-hit-mode_1_bams-back-to-fastqs)
+
+<!-- /MarkdownTOC -->
+
 </details>
 <br />
 
@@ -14,6 +26,7 @@ Files are in `${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/resu
 <br />
 <br />
 
+<a id="perform-adapter-and-quality-trimming-of-the-fastqs"></a>
 ## Perform adapter and quality trimming of the `.fastq`s
 ```bash
 #!/bin/bash
@@ -176,7 +189,9 @@ trim_galore --paired --retain_unpaired --phred33 --output_dir ./files_processed/
 <br />
 <br />
 
+<a id="generate-unprocessed-bams"></a>
 ## Generate "unprocessed `.bam`s"
+<a id="align-the-adapter--and-quality-trimmed-fastq-files"></a>
 ### Align the adapter- and quality-trimmed `.fastq` files
 ```bash
 #!/bin/bash
@@ -297,7 +312,7 @@ for i in "${infiles_fastq_trimmed[@]}"; do
 done
 ```
 
-`#DEKHO`
+<a id="clean-up-results-of-star-alignment-index-bams"></a>
 ### Clean up results of `STAR` alignment, index `.bam`s
 ```bash
 #!/bin/bash
@@ -320,9 +335,9 @@ mwd
 
 #  Clean up results of STAR alignment -----------------------------------------
 #  stackoverflow.com/questions/16541582/find-multiple-files-and-rename-them-in-linux
-find ./files_processed -iname "*Aligned.sortedByCoord.out.bam" -exec rename -n 's/Aligned./.Aligned./g' '{}' \;
-find ./files_processed -iname "*Log.*" -exec rename -n 's/Log./.Log./g' '{}' \;
-find ./files_processed -iname "*SJ.*" -exec rename -n 's/SJ./.SJ./g' '{}' \;
+find ./files_processed -iname "*Aligned.sortedByCoord.out.bam" -exec rename 's/Aligned./.Aligned./g' '{}' \;
+find ./files_processed -iname "*Log.*" -exec rename 's/Log./.Log./g' '{}' \;
+find ./files_processed -iname "*SJ.*" -exec rename 's/SJ./.SJ./g' '{}' \;
 
 #  stackoverflow.com/questions/2810838/finding-empty-directories
 cd files_processed/bam_trim
@@ -354,6 +369,8 @@ for i in "${infiles_mapped[@]}"; do
 done
 ```
 
+`#DEKHO`
+<a id="filter-out-non-s-cerevisiae-alignments"></a>
 ### Filter out non-*S. cerevisiae* alignments
 ```bash
 #!/bin/bash
@@ -397,13 +414,13 @@ done < <(\
 #  Run the jobs ---------------------------------------------------------------
 script_name="submit_split-bam.sh"
 threads=4
-storage="./files_unprocessed/bam_split"
+storage="./files_processed/bam_trim_split"  # ., "${storage}"
 chromosomes="I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI Mito"
 split="sc_all"
 
 count=1  # echo "${count}"
 for i in "${infiles_mapped[@]}"; do
-    # i="${infiles_mapped[0]}"  # echo "${i}"
+    # i="${infiles_mapped[0]}"  # ., "${i}"
     base=$(basename "${i}" .bam)  # echo "${base}"
 
     if [[ "${base}" == *"_EndToEnd"* ]]; then
@@ -468,12 +485,13 @@ for i in "${infiles_mapped[@]}"; do
 done
 ```
 
+<a id="index-the-s-cerevisiae-only-bams"></a>
 ### Index the *S. cerevisiae*-only `.bam`s
 ```bash
 #!/bin/bash
 #DONTRUN
 
-grabnode  # Four cores, default settings
+grabnode  # Eight cores, default settings
 
 Trinity_env
 
@@ -505,13 +523,14 @@ done < <(\
 
 #  Run samtools index on each element of .bam array ---------------------------
 for i in "${infiles_mapped_sc[@]}"; do
-    # echo "samtools index -@ 4 \"${i}\""
-    samtools index -@ 4 "${i}"
+    # echo "samtools index -@ 8 \"${i}\""
+    samtools index -@ 8 "${i}"
 done
 ```
 <br />
 <br />
 
+<a id="convert-_multi-hit-mode_1_bams-back-to-fastqs"></a>
 ## Convert `*_multi-hit-mode_1_*.bam`s back to `.fastq`s
 Convert the the non-multi-hit-mode (i.e., those with the substring "`_multi-hit-mode_1_`"), *S. cerevisiae*-filtered `.bam`s from to .`fastq`s
 ```bash
@@ -556,7 +575,7 @@ done < <(\
 #  Run the jobs ---------------------------------------------------------------
 script_name="submit_convert-bam-fastq.sh"
 threads=4
-storage="./files_unprocessed/fastq_split"
+storage="./files_processed/fastq_trim_split"
 
 count=1  # echo "${count}"
 for i in "${infiles_multi_1_sc[@]}"; do
@@ -620,16 +639,4 @@ for i in "${infiles_multi_1_sc[@]}"; do
     
     (( count++ ))
 done
-```
-
-```txt
-IFS=" " read -r -a infiles_mapped_bases \
-	<<< "$(\
-		tr ' ' '\n' \
-			<<< "${infiles_mapped_bases[@]}" \
-				| sort -u \
-				| tr '\n' ' '\
-	)"
-echo "w/o duplicates (in the array)..."
-echoTest "${infiles_mapped_bases[@]}" && echo ""
 ```
