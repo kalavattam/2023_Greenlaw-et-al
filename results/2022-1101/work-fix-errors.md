@@ -13,8 +13,8 @@
 
 - Addressing the above
 	- `#DONE` It seems I made the error at line `4936`: `-name *out.bam`; change this to `-name *out.exclude-unmapped.bam`
-	- `#TODO` Go back to [this spot](../2022-1101/scraps.md#set-up-the-star-alignment-steps-and-sub-steps-2022-1126) to start the above work
-	- `#TODO` While we're at it, change the extension for `.bam`s in which unmapped reads have been excluded from `*.out.unmapped.bam` to `*.out.exclude-unmapped.bam`; importantly, change `"$(basename "${i}" ".bam").unmapped.bam"` to `"$(basename "${i}" ".bam").exclude-unmapped.bam"`; then rerun these lines of code~~; then delete the previous `*.out.unmapped.bam` files~~ 
+	- `#DONE` Go back to [this spot](../2022-1101/scraps.md#set-up-the-star-alignment-steps-and-sub-steps-2022-1126) to start the above work
+	- `#DONE` While we're at it, change the extension for `.bam`s in which unmapped reads have been excluded from `*.out.unmapped.bam` to `*.out.exclude-unmapped.bam`; importantly, change `"$(basename "${i}" ".bam").unmapped.bam"` to `"$(basename "${i}" ".bam").exclude-unmapped.bam"`; then rerun these lines of code~~; then delete the previous `*.out.unmapped.bam` files~~ 
 		+ `#DONE` Regarding files for genome-free `Trinity`, change lines `4606`, `4611`, and `4624`
 		+ `#DONE` Regarding files for genome-free `Trinity`, change lines `4820`, `4826`, and `4837`
         + `#INPROGRESS` Other locations such as line `4934`, `5494`, `5645`, ~~`6449`~~, `6623`, `6776`, `6907`
@@ -27,7 +27,7 @@
         + `#DONE` Remove erroneous k-mers from reads with `rCorrector` and "correct" the outfiles
         + `#DONE` Run `FastQC` on the `.fastq`s from `rCorrector` and "`rCorrector` correction"
 
-`#TODO #ENDOFDAY #THOUGHTS` 2022-1201: Continue to address the issues, then run `Trinity`, then run `PASA`
+`#DONE` 2022-1201: Continue to address the issues, then run `Trinity`, then run `PASA`
 
 <details>
 <summary><i>Accomplishing the third TODO above, bullet 1</i></summary>

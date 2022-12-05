@@ -400,7 +400,7 @@ done < <(\
 # echo "${#infiles_mapped[@]}"
 
 
-#  Generate job submission scripts --------------------------------------------
+#  Generate job submission script ---------------------------------------------
 script_name="submit_split-bam.sh"
 threads=4
 
@@ -641,7 +641,7 @@ done < <(\
 # echo "${#infiles_multi_1_sc[@]}"
 
 
-#  Generate job submission scripts --------------------------------------------
+#  Generate job submission script ---------------------------------------------
 script_name="submit_convert-bam-fastq.sh"
 threads=4
 

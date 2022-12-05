@@ -21,8 +21,8 @@
 
 <a id="symlink-to-fastq-files-of-interest"></a>
 ## Symlink to `.fastq` files of interest
-`#DONE` See `work_generate-data_unprocessed.md`  
-Files are in `${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201/files_fastq_symlinks`
+- `#DONE` See `work_generate-data_unprocessed.md`
+- Files are in `${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201/files_fastq_symlinks`
 <br />
 <br />
 
@@ -71,7 +71,7 @@ IFS=" " read -r -a infile_bases \
 # echoTest "${infile_bases[@]}"
 
 
-#  Generate job submission scripts --------------------------------------------
+#  Generate job submission script ---------------------------------------------
 script_name="submit_trim-fastqs.sh"
 threads=1
 
@@ -406,7 +406,7 @@ done < <(\
 # echo "${#infiles_mapped[@]}"
 
 
-#  Generate job submission scripts --------------------------------------------
+#  Generate job submission script ---------------------------------------------
 #  NOTE 1/2 Necessary script, "submit_split-bam.sh", was generated in
 #+ NOTE 2/2 work_generate-data_unprocessed.md
 
@@ -532,7 +532,7 @@ done
 
 <a id="convert-_multi-hit-mode_1_bams-back-to-fastqs"></a>
 ## Convert `*_multi-hit-mode_1_*.bam`s back to `.fastq`s
-Convert the the non-multi-hit-mode (i.e., those with the substring "`_multi-hit-mode_1_`"), *S. cerevisiae*-filtered `.bam`s from to .`fastq`s
+Convert the the adapter-/quality-trimmed, non-multi-hit-mode (i.e., those with the substring "`_multi-hit-mode_1_`"), *S. cerevisiae*-filtered `.bam`s to .`fastq`s
 ```bash
 #!/bin/bash
 #DONTRUN
@@ -567,7 +567,7 @@ done < <(\
 # echo "${#infiles_multi_1_sc[@]}"
 
 
-#  Generate job submission scripts --------------------------------------------
+#  Generate job submission script ---------------------------------------------
 #  NOTE 1/2 Necessary script, "submit_convert-bam-fastq.sh", was generated in
 #+ NOTE 2/2 work_generate-data_unprocessed.md
 
