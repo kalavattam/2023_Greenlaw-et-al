@@ -1382,6 +1382,7 @@ ls -lhaFG
 #NOTE lolcow_latest.sif is saved to "$(pwd)"
 ```
 </details>
+<br />
 
 ¶4  
 The error about container verification is not necessarily critical&mdash;if you would like to do a bit-by-bit validation of the download, [additional steps](https://sylabs.io/guides/3.5/user-guide/signNverify.html) are required.
