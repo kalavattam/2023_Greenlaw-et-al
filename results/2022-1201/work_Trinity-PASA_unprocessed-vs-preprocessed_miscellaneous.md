@@ -10,6 +10,7 @@
 		1. [Attempt to update with `singularity build`: Successful](#attempt-to-update-with-singularity-build-successful)
 			1. [Now, what is the current version of `Trinity`? `2.15.0`](#now-what-is-the-current-version-of-trinity-2150)
 	1. [Attempt to resolve `perl: warning: Setting locale failed`: Unsuccessful](#attempt-to-resolve-perl-warning-setting-locale-failed-unsuccessful)
+	1. [Checking `singularity --bind` with `Trinity.sif`](#checking-singularity---bind-with-trinitysif)
 1. [Initial work from 2022-1201-1202](#initial-work-from-2022-1201-1202)
 
 <!-- /MarkdownTOC -->
@@ -348,6 +349,141 @@ Singularity> cat environment
 #  The problem may not be solvable, or at least it'll take too long to figure
 #+ it out now, so come back to it later
 Singularity> exit
+```
+
+<a id="checking-singularity---bind-with-trinitysif"></a>
+### Checking `singularity --bind` with `Trinity.sif`
+```bash
+#!/bin/bash
+#DONTRUN
+
+grabnode  # 1
+
+
+#  Get into the work directory with the proper environment --------------------
+transcriptome && cd "./results/2022-1201"
+
+Trinity_env
+
+
+
+singularity shell \
+    --bind /loc/scratch \
+    --bind $(pwd) \
+    ~/singularity-docker-etc/Trinity.sif
+# WARNING: Bind mount '/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201 => /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201' overlaps container CWD /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201, may not be available
+# Singularity>
+
+#  In the container shell now...
+ls -lhaFG /loc/scratch
+# total 204K
+# drwxr-xr-x  43 root     4.0K Dec  7 12:15 ./
+# drwxr-xr-x   3 kalavatt   60 Dec  7 12:16 ../
+# drwxr-xr-x   2    61515 4.0K Aug 25  2021 36150564/
+# drwxr-xr-x   3    57089 4.0K Dec  1 16:15 5124351/
+# drwxr-xr-x   3    57089 4.0K Dec  1 16:15 5124352/
+# drwxr-xr-x   3    57089 4.0K Dec  1 16:15 5124354/
+# drwxr-xr-x   3    40534 4.0K Apr 11  2022 53441931/
+# drwxr-xr-x   3    75929 4.0K Dec  7 09:17 5405899/
+# drwxr-xr-x   3    75929 4.0K Dec  7 09:23 5405968/
+# drwxr-xr-x   3    75929 4.0K Dec  7 09:23 5405969/
+# drwxr-xr-x   3    75929 4.0K Dec  7 11:37 5412655/
+# drwxr-xr-x   3    75929 4.0K Dec  7 11:38 5412705/
+# drwxr-xr-x   3    75929 4.0K Dec  7 11:38 5412706/
+# drwxr-xr-x   3    75929 4.0K Dec  7 11:38 5412707/
+# drwxr-xr-x   3    75929 4.0K Dec  7 11:38 5412708/
+# drwxr-xr-x   3    75929 4.0K Dec  7 11:48 5413516/
+# drwxr-xr-x   3    75929 4.0K Dec  7 11:48 5413517/
+# drwxr-xr-x   3    73348 4.0K Dec  7 12:06 5414542/
+# drwxr-xr-x   3    73348 4.0K Dec  7 12:07 5414592/
+# drwxr-xr-x   3    73348 4.0K Dec  7 12:07 5414597/
+# drwxr-xr-x   3    73348 4.0K Dec  7 12:07 5414661/
+# drwxr-xr-x   3    73348 4.0K Dec  7 12:07 5414662/
+# drwxr-xr-x   3    73348 4.0K Dec  7 12:07 5414665/
+# drwxr-xr-x   3    73348 4.0K Dec  7 12:08 5414673/
+# drwxr-xr-x   3    73348 4.0K Dec  7 12:08 5414689/
+# drwxr-xr-x   3    73348 4.0K Dec  7 12:08 5414699/
+# drwxr-xr-x   3    73348 4.0K Dec  7 12:08 5414700/
+# drwxr-xr-x   3    73348 4.0K Dec  7 12:08 5414734/
+# drwxr-xr-x   3    73348 4.0K Dec  7 12:08 5414736/
+# drwxr-xr-x   3    73348 4.0K Dec  7 12:08 5414737/
+# drwxr-xr-x   3    73348 4.0K Dec  7 12:08 5414748/
+# drwxr-xr-x   3    73348 4.0K Dec  7 12:08 5414749/
+# drwxr-xr-x   3    73348 4.0K Dec  7 12:08 5414750/
+# drwxr-xr-x   3    73348 4.0K Dec  7 12:11 5414962/
+# drwxr-xr-x   3    56616 4.0K Dec  7 12:12 5415287/
+# drwxr-xr-x   3    73348 4.0K Dec  7 12:13 5415364/
+# drwxr-xr-x   3    73348 4.0K Dec  7 12:13 5415400/
+# drwxr-xr-x   2 kalavatt 4.0K Dec  7 12:15 5415469/
+# drwxr-xr-x   3    73348 4.0K Dec  7 12:15 5415470/
+# drwxr-xr-x   3    73348 4.0K Dec  7 12:15 5415473/
+# drwx------   2     9464 4.0K Jan 20  2021 macaque-svc/
+# drwx------ 723     5133  36K Oct 15 23:42 marmoset-svc/
+# drwx------   6     9277 4.0K Aug  9 17:07 smrtlink/
+
+pwd
+# /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201
+
+cd /
+ls -lhaFG
+# total 288K
+# drwxr-xr-x   1 kalavatt  100 Dec  7 12:16 ./
+# drwxr-xr-x   1 kalavatt  100 Dec  7 12:16 ../
+# lrwxrwxrwx   1 root       27 Dec  7 11:20 .exec -> .singularity.d/actions/exec*
+# lrwxrwxrwx   1 root       26 Dec  7 11:20 .run -> .singularity.d/actions/run*
+# lrwxrwxrwx   1 root       28 Dec  7 11:20 .shell -> .singularity.d/actions/shell*
+# drwxr-xr-x   5 root      127 Dec  7 11:20 .singularity.d/
+# lrwxrwxrwx   1 root       27 Dec  7 11:20 .test -> .singularity.d/actions/test*
+# lrwxrwxrwx   1 root        7 Oct 19 09:47 bin -> usr/bin/
+# drwxr-xr-x   2 root        3 Apr 15  2020 boot/
+# drwxr-xr-x  17 root     4.4K Nov 14 10:21 dev/
+# lrwxrwxrwx   1 root       36 Dec  7 11:20 environment -> .singularity.d/env/90-environment.sh*
+# drwxr-xr-x  55 root     1.9K Dec  3 05:46 etc/
+# drwxr-xr-x   3 kalavatt   60 Dec  7 12:16 fh/
+# drwxr-xr-x   1 kalavatt   60 Dec  7 12:16 home/
+# lrwxrwxrwx   1 root        7 Oct 19 09:47 lib -> usr/lib/
+# lrwxrwxrwx   1 root        9 Oct 19 09:47 lib32 -> usr/lib32/
+# lrwxrwxrwx   1 root        9 Oct 19 09:47 lib64 -> usr/lib64/
+# lrwxrwxrwx   1 root       10 Oct 19 09:47 libx32 -> usr/libx32/
+# drwxr-xr-x   3 kalavatt   60 Dec  7 12:16 loc/
+# drwxr-xr-x   2 root        3 Oct 19 09:47 media/
+# drwxr-xr-x   2 root        3 Oct 19 09:47 mnt/
+# drwxr-xr-x   2 root        3 Oct 19 09:47 opt/
+# dr-xr-xr-x 685 root        0 Sep 10 16:01 proc/
+# drwx------   5 root      136 Dec  1 10:34 root/
+# drwxr-xr-x   5 root       67 Oct 19 09:50 run/
+# lrwxrwxrwx   1 root        8 Oct 19 09:47 sbin -> usr/sbin/
+# lrwxrwxrwx   1 root       24 Dec  7 11:20 singularity -> .singularity.d/runscript*
+# drwxr-xr-x   2 root        3 Oct 19 09:47 srv/
+# dr-xr-xr-x  13 root        0 Nov 26 08:39 sys/
+# drwxrwxrwt  45 root     284K Dec  7 12:17 tmp/
+# drwxr-xr-x  14 root      241 Nov 30 06:37 usr/
+# drwxr-xr-x  11 root      160 Oct 19 09:50 var/
+
+cd ~/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201
+ls -lhaFG
+# total 1.3M
+# drwxrws--- 7 kalavatt  795 Dec  7 12:11 ./
+# drwxr-xr-x 3 kalavatt   60 Dec  7 12:16 ../
+# -rw-rw---- 1 kalavatt 4.0K Dec  7 12:11 ._work_Trinity_genome-guided.md
+# drwxrws--- 2 kalavatt  696 Dec  3 08:57 files_fastq_symlinks/
+# drwxrws--- 7 kalavatt  158 Dec  7 09:54 files_processed/
+# drwxrws--- 9 kalavatt  264 Dec  7 09:54 files_processed-full/
+# drwxrws--- 6 kalavatt  110 Dec  7 09:54 files_unprocessed/
+# -rw-rw---- 1 kalavatt 4.3K Dec  3 15:56 links_TBD.md
+# -rw-rw---- 1 kalavatt 2.5K Dec  6 09:57 scratch.sh
+# drwxrws--- 3 kalavatt 1.3K Dec  7 09:54 sh_err_out/
+# -rw-rw---- 1 kalavatt  23K Dec  7 11:52 work_Trinity-PASA_unprocessed-vs-preprocessed_miscellaneous.md
+# -rw-rw---- 1 kalavatt 5.0K Dec  7 12:18 work_Trinity_genome-guided.md
+# -rw-rw---- 1 kalavatt 1018 Dec  7 10:01 work_build-blacklist.md
+# -rw-rw---- 1 kalavatt  12K Dec  4 07:29 work_generate-data_alignment-calls_compare-update.md
+# -rw-rw---- 1 kalavatt    0 Dec  5 08:20 work_generate-data_compress-fastqs_fix-symlinks.md
+# -rw-rw---- 1 kalavatt  54K Dec  7 10:06 work_generate-data_merge-bams.md
+# -rw-rw---- 1 kalavatt  42K Dec  5 12:58 work_generate-data_preprocessed-full.md
+# -rw-rw---- 1 kalavatt  18K Dec  5 12:16 work_generate-data_preprocessed.md
+# -rw-rw---- 1 kalavatt  26K Dec  5 07:26 work_generate-data_unprocessed.md
+
+exit
 ```
 <br />
 <br />
