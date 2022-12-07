@@ -366,7 +366,6 @@ transcriptome && cd "./results/2022-1201"
 Trinity_env
 
 
-
 singularity shell \
     --bind /loc/scratch \
     --bind $(pwd) \
