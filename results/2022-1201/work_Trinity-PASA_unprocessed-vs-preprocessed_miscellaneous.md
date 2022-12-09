@@ -464,7 +464,6 @@ ls -lhaFG
 # total 1.3M
 # drwxrws--- 7 kalavatt  795 Dec  7 12:11 ./
 # drwxr-xr-x 3 kalavatt   60 Dec  7 12:16 ../
-# -rw-rw---- 1 kalavatt 4.0K Dec  7 12:11 ._work_Trinity_genome-guided.md
 # drwxrws--- 2 kalavatt  696 Dec  3 08:57 files_fastq_symlinks/
 # drwxrws--- 7 kalavatt  158 Dec  7 09:54 files_processed/
 # drwxrws--- 9 kalavatt  264 Dec  7 09:54 files_processed-full/
