@@ -8,7 +8,7 @@
 1. [Set things up and run a trial `echo` test to test the setup](#set-things-up-and-run-a-trial-echo-test-to-test-the-setup)
 1. [Build the script for submitting genome-guided `Trinity` jobs](#build-the-script-for-submitting-genome-guided-trinity-jobs)
     1. [Run `echo` tests](#run-echo-tests)
-    1. [Submit and run genome-guided `Trinity` jobs](#submit-and-run-genome-guided-trinity-jobs)
+1. [Submit and run genome-guided `Trinity` jobs](#submit-and-run-genome-guided-trinity-jobs)
 1. [Previous shell script for submitting genome-guided `Trinity` jobs](#previous-shell-script-for-submitting-genome-guided-trinity-jobs)
 
 <!-- /MarkdownTOC -->
@@ -76,19 +76,18 @@ SLURM_CPUS_ON_NODE=6  # echo "${SLURM_CPUS_ON_NODE}"
 f_in="${infiles[5]}"  # echo "${f_in}"
 intron="1002"  # echo "${intron}"
 d_base="files_Trinity_genome-guided/$(echo "${f_in}" | cut -d "/" -f 1)"  # echo "${d_base}"
-pre="trinity_$(basename "${f_in}" ".Aligned.sortedByCoord.out.sc_all.bam")"  # echo "${prefix}"
-t_out="${d_base}/${pre}"  # echo "${d_t}"
+pre="trinity_$(basename "${f_in}" ".Aligned.sortedByCoord.out.sc_all.bam")"  # echo "${pre}"
+t_out="${d_base}/${pre}"  # echo "${t_out}"
 
 echo "${SLURM_CPUS_ON_NODE}"
 echo "${f_in}"
 echo "${intron}"
 echo "${d_base}"
 echo "${pre}"
-echo "${d_t}"
 echo "${t_out}"
 
 parallel --header : --colsep " " -k -j 1 echo \
-    'singularity shell \
+    'singularity run \
         --no-home \
         --bind {d_exp} \
         --bind {d_scr} \
@@ -123,13 +122,13 @@ parallel --header : --colsep " " -k -j 1 echo \
 <summary><i>Results of echo test printed to terminal</i></summary>
 
 ```txt
-singularity shell --no-home --bind /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201 --bind /loc/scratch /home/kalavatt/singularity-docker-etc/Trinity.sif Trinity --verbose --max_memory 50G --CPU 6 --SS_lib_type FR --genome_guided_bam files_processed/bam_trim_split_merge/EndToEnd/5781-5782_Q_IP_merged.trim.un_multi-hit-mode_1_EndToEnd.Aligned.sortedByCoord.out.sc_all.bam --genome_guided_max_intron 1002 --jaccard_clip --output files_Trinity_genome-guided/files_processed/trinity_5781-5782_Q_IP_merged.trim.un_multi-hit-mode_1_EndToEnd --full_cleanup --min_kmer_cov 1 --min_iso_ratio 0.05 --min_glue 2 --glue_factor 0.05 --max_reads_per_graph 2000 --normalize_max_read_cov 200 --group_pairs_distance 700 --min_contig_length 200
+singularity run --no-home --bind /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201 --bind /loc/scratch /home/kalavatt/singularity-docker-etc/Trinity.sif Trinity --verbose --max_memory 50G --CPU 6 --SS_lib_type FR --genome_guided_bam files_processed/bam_trim_split_merge/EndToEnd/5781-5782_Q_IP_merged.trim.un_multi-hit-mode_1_EndToEnd.Aligned.sortedByCoord.out.sc_all.bam --genome_guided_max_intron 1002 --jaccard_clip --output files_Trinity_genome-guided/files_processed/trinity_5781-5782_Q_IP_merged.trim.un_multi-hit-mode_1_EndToEnd --full_cleanup --min_kmer_cov 1 --min_iso_ratio 0.05 --min_glue 2 --glue_factor 0.05 --max_reads_per_graph 2000 --normalize_max_read_cov 200 --group_pairs_distance 700 --min_contig_length 200
 ```
 
 <summary><i>Spot check</i></summary>
 
 ```txt
-singularity shell 
+singularity run 
     --no-home 
     --bind /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201 
     --bind /loc/scratch 
@@ -169,7 +168,7 @@ script_name="echo_submit_Trinity_genome-guided.sh"
 threads=6
 
 if [[ -f "./sh_err_out/${script_name}" ]]; then
-        rm "./sh_err_out/${script_name}"
+    rm "./sh_err_out/${script_name}"
 fi
 cat << script > "./sh_err_out/${script_name}"
 #!/bin/bash
@@ -233,7 +232,7 @@ for i in "${infiles[@]}"; do
 
     d_base="files_Trinity_genome-guided/$(echo "${f_in}" | cut -d "/" -f 1)"  # echo "${d_base}"
     pre="trinity_$(basename "${f_in}" ".Aligned.sortedByCoord.out.sc_all.bam")"  # echo "${prefix}"
-    t_out="${d_base}/${pre}"  # echo "${d_t}"
+    t_out="${d_base}/${pre}"  # echo "${t_out}"
     echo "#  Establishing outfile... ---------------------------------"
     echo "- ${d_base}"
     echo "- ${pre}"
@@ -252,7 +251,7 @@ for i in "${infiles[@]}"; do
     echo "#  ========================================================="
     echo ""
 
-    [[ -d "${d_t}" ]] || mkdir -p "${d_t}"
+    [[ -d "${t_out}" ]] || mkdir -p "${t_out}"
     echo ""
 
     bash "./sh_err_out/${script_name}" \
@@ -485,9 +484,11 @@ singularity run
             --min_contig_length 200
 ```
 </details>
+<br />
+<br />
 
 <a id="submit-and-run-genome-guided-trinity-jobs"></a>
-### Submit and run genome-guided `Trinity` jobs
+## Submit and run genome-guided `Trinity` jobs
 ```bash
 #!/bin/bash
 #DONTRUN #CONTINUE
@@ -618,7 +619,7 @@ for i in "${infiles[1]}"; do
 
     d_base="files_Trinity_genome-guided/$(echo "${f_in}" | cut -d "/" -f 1)"  # echo "${d_base}"
     pre="trinity_$(basename "${f_in}" ".Aligned.sortedByCoord.out.sc_all.bam")"  # echo "${prefix}"
-    t_out="${d_base}/${pre}"  # echo "${d_t}"
+    t_out="${d_base}/${pre}"  # echo "${t_out}"
     echo "#  Establishing outfile... ---------------------------------"
     echo "- ${d_base}"
     echo "- ${pre}"
@@ -637,7 +638,7 @@ for i in "${infiles[1]}"; do
     echo "#  ========================================================="
     echo ""
 
-    [[ -d "${d_t}" ]] || mkdir -p "${d_t}"
+    [[ -d "${t_out}" ]] || mkdir -p "${t_out}"
     echo ""
 
     sbatch "./sh_err_out/${script_name}" \
