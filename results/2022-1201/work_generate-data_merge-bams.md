@@ -5,12 +5,12 @@
 
 1. [Make and populate directories for merged `.bam`s](#make-and-populate-directories-for-merged-bams)
 1. [Get files of interest into an array](#get-files-of-interest-into-an-array)
-  1. [Test with files in `files_unprocessed/`](#test-with-files-in-files_unprocessed)
-  1. [Test with files in `files_unprocessed/`, `files_processed`, and `files_processed-full`](#test-with-files-in-files_unprocessed-files_processed-and-files_processed-full)
+    1. [Test with files in `files_unprocessed/`](#test-with-files-in-files_unprocessed)
+    1. [Test with files in `files_unprocessed/`, `files_processed`, and `files_processed-full`](#test-with-files-in-files_unprocessed-files_processed-and-files_processed-full)
 1. [Design `outfile` name, assign `outdir` automatically](#design-outfile-name-assign-outdir-automatically)
 1. [Draft a script for repeated running of `samtools merge`](#draft-a-script-for-repeated-running-of-samtools-merge)
-  1. [Write a script for echo tests](#write-a-script-for-echo-tests)
-  1. [Write a script for running the commands](#write-a-script-for-running-the-commands)
+    1. [Write a script for echo tests](#write-a-script-for-echo-tests)
+    1. [Write a script for running the commands](#write-a-script-for-running-the-commands)
 1. [Design a loop for on-the-fly assignments before submitting jobs](#design-a-loop-for-on-the-fly-assignments-before-submitting-jobs)
 
 <!-- /MarkdownTOC -->

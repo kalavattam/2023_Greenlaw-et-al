@@ -26,9 +26,22 @@
         1. [Perform an `echo` test](#perform-an-echo-test)
             1. [Results of `echo` test](#results-of-echo-test)
         1. [Run the command](#run-the-command-2)
-1. [Previous shell script for submitting genome-free `Trinity` jobs](#previous-shell-script-for-submitting-genome-free-trinity-jobs)
-1. [Build the script for submitting genome-free `Trinity` jobs](#build-the-script-for-submitting-genome-free-trinity-jobs)
-    1. [Run `echo` tests](#run-echo-tests)
+            1. [Assessing the completion of `Launch_PASA_pipeline.pl`](#assessing-the-completion-of-launch_pasa_pipelinepl)
+        1. [Previous shell script for running `Singularity` `PASA` `Launch_PASA_pipeline.pl`](#previous-shell-script-for-running-singularity-pasa-launch_pasa_pipelinepl)
+        1. [Options for `Launch_PASA_pipeline.pl`](#options-for-launch_pasa_pipelinepl)
+    1. [Run `build_comprehensive_transcriptome.dbi`](#run-build_comprehensive_transcriptomedbi)
+        1. [What are the options/arguments for `build_comprehensive_transcriptome.dbi`?](#what-are-the-optionsarguments-for-build_comprehensive_transcriptomedbi)
+        1. [On the meaning of the parameters, using this script, etc.](#on-the-meaning-of-the-parameters-using-this-script-etc)
+        1. [Questions for Brian Haas regarding `build_comprehensive_transcriptome.dbi` and `PASA` in general](#questions-for-brian-haas-regarding-build_comprehensive_transcriptomedbi-and-pasa-in-general)
+            1. [Question #1](#question-1)
+                1. [Text by me](#text-by-me)
+                1. [Realization](#realization)
+            1. [Question #2: Question about small and/or microbial genomes and `--trans_gtf` \(in `Launch_PASA_pipeline.pl`\)](#question-2-question-about-small-andor-microbial-genomes-and---trans_gtf-in-launch_pasa_pipelinepl)
+                1. [Text by me](#text-by-me-1)
+                1. [Response by Brian](#response-by-brian)
+                1. [Follow-up from me](#follow-up-from-me)
+        1. [On running `build_comprehensive_transcriptome.dbi`](#on-running-build_comprehensive_transcriptomedbi)
+1. [Miscellaneous](#miscellaneous)
 
 <!-- /MarkdownTOC -->
 </details>
@@ -286,7 +299,7 @@ files_Trinity_genome-free/files_unprocessed/trinity_5781-5782_Q_IP_merged.un_mul
 3. Clean the transcript sequences (`PASA_alignment_assembly`)
 4. Write a configuration file
 5. Run `Launch_PASA_pipeline.pl`
-6. Run `build_comprehensive_transcriptome.dbi`  `#NOTE` *Haven't done this yet*
+6. Run [`build_comprehensive_transcriptome.dbi`](https://github.com/PASApipeline/PASApipeline/wiki/PASA_comprehensive_db#build-a-comprehensive-transcriptome-database-using-genome-guided-and-de-novo-rna-seq-assembly)  `#NOTE` *Haven't done this yet*
 
 <a id="breakdown-of-previous-steps-i-performed-leading-up-to-the-running-of-pasa"></a>
 ### Breakdown of previous steps I performed leading up to the running of `PASA`
@@ -668,6 +681,9 @@ parallel --header : --colsep " " -k -j 1 echo \
 
 <a id="results-of-echo-test"></a>
 ##### Results of `echo` test
+<details>
+<summary><i>Click to view</i></summary>
+
 How does it look?
 ```txt
 singularity run --no-home --bind /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201 --bind /fh/scratch/delete30/tsukiyama_t:/loc/scratch /home/kalavatt/singularity-docker-etc/PASA.sif /usr/local/src/PASApipeline/Launch_PASA_pipeline.pl --CPU 6 --config ./test_files_PASA/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.align_assembly.config --create --replace --genome /home/kalavatt/genomes/sacCer3/Ensembl/108/DNA/Saccharomyces_cerevisiae.R64-1-1.dna.toplevel.chr-rename.fasta --MAX_INTRON_LENGTH 1002 --transcripts test_files_PASA/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.transcripts.fasta.clean -T -u test_files_PASA/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.transcripts.fasta --TDN test_files_PASA/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_1_EndToEnd.Trinity.accessions tdn.accs --transcribed_is_aligned_orient --stringent_alignment_overlap 30.0 --ALIGNERS blat,gmap,minimap2 1> /dev/fd/63 2> /dev/fd/62
@@ -697,6 +713,8 @@ singularity run
                 1> /dev/fd/63 
                 2> /dev/fd/62
 ```
+</details>
+<br />
 
 <a id="run-the-command-2"></a>
 #### Run the command
@@ -775,6 +793,7 @@ singularity run \
 
 #IMPORTANT Slurm Environmental Variables: hpcc.umd.edu/hpcc/help/slurmenv.html
 ```
+
 <details>
 <summary><i>Troubleshooting the /loc/scratch errors by performing shell command within and outside the container (edited for readability)</i></summary>
 
@@ -871,6 +890,7 @@ drwxr-xr-x 3 kalavatt 60 Dec 11 06:23 ../
 Singularity> exit
 ```
 </details>
+<br />
 
 <details>
 <summary><i>What is the specific error (edited for readability)?</i></summary>
@@ -941,10 +961,113 @@ died with ret 7424 No such file or directory at /usr/local/src/PASApipeline/Perl
 ```
 </details>
 <br />
-<br />
 
-<a id="previous-shell-script-for-submitting-genome-free-trinity-jobs"></a>
-## Previous shell script for submitting genome-free `Trinity` jobs
+<a id="assessing-the-completion-of-launch_pasa_pipelinepl"></a>
+##### Assessing the completion of `Launch_PASA_pipeline.pl`
+*It seems to have completed successfully*
+<details>
+<summary><i>Click to view</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+pwd
+
+mv stderr.log.txt stderr.log.3.txt
+mv stdout.log.txt stdout.log.3.txt
+
+.,
+```
+
+Results of ., printed to terminal
+```txt
+total 394M
+drwxrws--- 6 kalavatt 5.4K Dec 11 08:23 ./
+drwxrws--- 3 kalavatt  141 Dec 11 08:19 ../
+-rw-r--r-- 1 kalavatt    8 Dec 10 16:05 11.ooc
+-rw-r--r-- 1 kalavatt  12M Dec 10 16:26 alignment.validations.output
+lrwxrwxrwx 1 kalavatt  120 Dec 10 16:06 blat.spliced_alignments.gff3 -> pblat_outdir/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.transcripts.fasta.clean.pslx.top_1.gff3
+drwxr-s--- 2 kalavatt 3.7K Dec 10 15:53 cleaning_1/
+-rw-rw-r-- 1 kalavatt  12K Dec 10 15:53 err_seqcl_trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.transcripts.fasta.log
+-rw-r--r-- 1 kalavatt 7.2M Dec 10 16:05 gmap.spliced_alignments.gff3
+-rw-r--r-- 1 kalavatt    0 Dec 10 16:05 gmap.spliced_alignments.gff3.completed
+-rw-r--r-- 1 kalavatt    0 Dec 10 16:06 minimap2.splice_alignments.gff3.ok
+-rw-r--r-- 1 kalavatt 4.8M Dec 10 16:06 minimap2.spliced_alignments.gff3
+-rw-rw-r-- 1 kalavatt 3.5K Dec 10 15:53 outparts_cln.sort
+drwxr-sr-x 2 kalavatt  325 Dec 11 07:06 pasa_run.log.dir/
+drwxr-sr-x 2 kalavatt 3.0K Dec 11 07:40 __pasa_trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.pasa.sqlite_SQLite_chkpts/
+-rw-r--r-- 1 kalavatt  19K Dec 11 07:34 __pasa_trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.pasa.sqlite_SQLite_chkpts.cmds_log
+drwxr-sr-x 3 kalavatt  270 Dec 10 16:06 pblat_outdir/
+-rw-rw-r-- 1 kalavatt 1.7K Dec 10 15:53 seqcl_trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.transcripts.fasta.log
+-rw-rw---- 1 kalavatt  61K Dec 10 17:33 stderr.log.1.txt
+-rw-rw---- 1 kalavatt  36K Dec 11 06:30 stderr.log.2.txt
+-rw-rw---- 1 kalavatt  61K Dec 11 07:34 stderr.log.3.txt
+-rw-rw---- 1 kalavatt 1008 Dec 10 16:07 stdout.log.1.txt
+-rw-rw---- 1 kalavatt    0 Dec 11 06:30 stdout.log.2.txt
+-rw-rw---- 1 kalavatt  197 Dec 11 07:40 stdout.log.3.txt
+-rw-r--r-- 1 kalavatt    0 Dec 10 16:05 tmp-31731-44938-out
+-rw-r--r-- 1 kalavatt    0 Dec 10 16:05 tmp-31731-44938-out.tmp.1
+-rw-r--r-- 1 kalavatt    0 Dec 10 16:05 tmp-31731-44938-out.tmp.2
+-rw-r--r-- 1 kalavatt    0 Dec 10 16:05 tmp-31731-44938-out.tmp.3
+-rw-r--r-- 1 kalavatt    0 Dec 10 16:05 tmp-31731-44938-out.tmp.4
+-rw-r--r-- 1 kalavatt    0 Dec 10 16:05 tmp-31731-44938-out.tmp.5
+-rw-rw---- 1 kalavatt  984 Dec 10 15:54 trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.align_assembly.config
+-rw-r--r-- 1 kalavatt 151M Dec 11 07:29 trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.pasa.sqlite
+-rw-r--r-- 1 kalavatt  16M Dec 11 07:18 trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.pasa.sqlite.assemblies.fasta
+-rw-r--r-- 1 kalavatt 265K Dec 10 16:38 trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.pasa.sqlite.failed_blat_alignments.gff3
+-rw-r--r-- 1 kalavatt 379K Dec 10 16:38 trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.pasa.sqlite.failed_blat_alignments.gtf
+-rw-r--r-- 1 kalavatt 115K Dec 10 16:49 trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.pasa.sqlite.failed_gmap_alignments.gff3
+-rw-r--r-- 1 kalavatt 188K Dec 10 16:49 trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.pasa.sqlite.failed_gmap_alignments.gtf
+-rw-r--r-- 1 kalavatt 181K Dec 10 17:01 trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.pasa.sqlite.failed_minimap2_alignments.gff3
+-rw-r--r-- 1 kalavatt 264K Dec 10 17:01 trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.pasa.sqlite.failed_minimap2_alignments.gtf
+-rw-r--r-- 1 kalavatt  35M Dec 11 07:06 trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.pasa.sqlite.pasa_alignment_assembly_building.ascii_illustrations.out
+-rw-r--r-- 1 kalavatt 789K Dec 11 07:31 trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.pasa.sqlite.pasa_assemblies.bed
+-rw-r--r-- 1 kalavatt 3.0M Dec 11 07:40 trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.pasa.sqlite.pasa_assemblies_described.txt
+-rw-r--r-- 1 kalavatt 2.2M Dec 11 07:30 trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.pasa.sqlite.pasa_assemblies.gff3
+-rw-r--r-- 1 kalavatt 3.0M Dec 11 07:34 trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.pasa.sqlite.pasa_assemblies.gtf
+-rw-r--r-- 1 kalavatt 338K Dec 10 17:06 trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.pasa.sqlite.polyAsites.fasta
+-rw-r--r-- 1 kalavatt 2.9M Dec 10 16:32 trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.pasa.sqlite.valid_blat_alignments.bed
+-rw-r--r-- 1 kalavatt 5.2M Dec 10 16:29 trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.pasa.sqlite.valid_blat_alignments.gff3
+-rw-r--r-- 1 kalavatt  10M Dec 10 16:37 trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.pasa.sqlite.valid_blat_alignments.gtf
+-rw-r--r-- 1 kalavatt 3.1M Dec 10 16:43 trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.pasa.sqlite.valid_gmap_alignments.bed
+-rw-r--r-- 1 kalavatt 5.3M Dec 10 16:41 trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.pasa.sqlite.valid_gmap_alignments.gff3
+-rw-r--r-- 1 kalavatt  11M Dec 10 16:49 trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.pasa.sqlite.valid_gmap_alignments.gtf
+-rw-r--r-- 1 kalavatt 3.0M Dec 10 16:55 trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.pasa.sqlite.valid_minimap2_alignments.bed
+-rw-r--r-- 1 kalavatt 5.4M Dec 10 16:52 trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.pasa.sqlite.valid_minimap2_alignments.gff3
+-rw-r--r-- 1 kalavatt  11M Dec 10 17:01 trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.pasa.sqlite.valid_minimap2_alignments.gtf
+-rw-rw---- 1 kalavatt  28M Dec 10 15:52 trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.transcripts.fasta
+-rw-rw-r-- 1 kalavatt 1.7M Dec 10 15:53 trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.transcripts.fasta.cidx
+-rw-rw-r-- 1 kalavatt  28M Dec 10 15:53 trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.transcripts.fasta.clean
+-rw-r--r-- 1 kalavatt 1.7M Dec 10 16:06 trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.transcripts.fasta.clean.cidx
+-rw-r--r-- 1 kalavatt 1.3M Dec 10 16:04 trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.transcripts.fasta.clean.fai
+-rw-r--r-- 1 kalavatt 7.0M Dec 10 16:06 trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.transcripts.fasta.clean.mm2.bam
+-rw-r--r-- 1 kalavatt  11K Dec 10 16:06 trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.transcripts.fasta.clean.mm2.bam.bai
+-rw-r--r-- 1 kalavatt    0 Dec 10 16:06 trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.transcripts.fasta.clean.mm2.bam.ok
+-rw-rw-r-- 1 kalavatt 1.9M Dec 10 15:53 trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.transcripts.fasta.cln
+-rw-rw---- 1 kalavatt 400K Dec 10 15:53 trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_1_EndToEnd.Trinity.accessions
+```
+
+Using `Sublime`, manually create more easily readable versions of the `stderr` and `stdout` files; replace all instances of
+```txt
+perl: warning: Setting locale failed.
+perl: warning: Please check that your locale settings:
+    LANGUAGE = "en_US:",
+    LC_ALL = (unset),
+    LC_CTYPE = "en_US.UTF-8",
+    LANG = "en_US.UTF-8"
+    are supported and installed on your system.
+perl: warning: Falling back to the standard locale ("C").
+```
+with blank lines
+
+Also, for any line containing `CMD:`, add a new line before the identified lines
+
+Give these "cleaned up" `stderr` and `stdout` `.clean.txt` extensions
+</details>
+
+<a id="previous-shell-script-for-running-singularity-pasa-launch_pasa_pipelinepl"></a>
+#### Previous shell script for running `Singularity` `PASA` `Launch_PASA_pipeline.pl`
 <details>
 <summary><i>Click to view previous script, etc.</i></summary>
 
@@ -971,7 +1094,6 @@ singularity run \
             2> >(tee -a stderr.log.txt >&2)
 
 export PASAHOME=/usr/local/src/PASApipeline
-
 singularity run \
     ~/singularity-docker-etc/PASA.sif \
     "${PASAHOME}/Launch_PASA_pipeline.pl"
@@ -979,8 +1101,10 @@ singularity run \
 </details>
 <br />
 
+<a id="options-for-launch_pasa_pipelinepl"></a>
+#### Options for `Launch_PASA_pipeline.pl`
 <details>
-<summary><i>PASA options (edited and reformatted for increased readability)</i></summary>
+<summary><i>Launch_PASA_pipeline.pl options (edited and reformatted for increased readability)</i></summary>
 
 ```txt
 ############################# Options ###############################
@@ -1001,13 +1125,13 @@ singularity run \
 #
 #
 # // actions
-# --create | -C                                flag, create database
-# --replace | -r                               flag, drop database if -C is also given; rhis will DELETE
+# --create | -C                    <flag>      flag, create database
+# --replace | -r                   <flag>      flag, drop database if -C is also given; this will DELETE
 #                                              all your data and it is irreversible
-# --run | -R                                   flag, run alignment/assembly pipeline
+# --run | -R                       <flag>      flag, run alignment/assembly pipeline
 # --annot_compare | -A                         (see section below; can use with opts -L and --annots) 
 #                                              compare to annotated genes
-# --ALT_SPLICE                                 flag, run alternative splicing analysis
+# --ALT_SPLICE                     <flag>      flag, run alternative splicing analysis
 #
 #
 # // input files
@@ -1020,14 +1144,14 @@ singularity run \
 #
 #
 # // polyAdenylation site identification  ** highly recommended **
-#  -T                                          flag,transcript db were trimmed using the TGI seqclean tool
+#  -T                              <flag>      flag, transcript db were trimmed using the TGI seqclean tool
 #  -u                              <filename>  value, transcript db containing untrimmed sequences (input
 #                                              to seqclean)
 #                                              <a filename with a .cln extension should also exist,
 #                                              generated by seqclean>
 #
 # // Misc
-# --TRANSDECODER                               flag, run transdecoder to identify candidate full-length
+# --TRANSDECODER                   <flag>      flag, run transdecoder to identify candidate full-length
 #                                              coding transcripts
 # --CPU                            <int>       multithreading (default: 2)
 # --PASACONF                       <string>    path to a user-defined pasa.conf file containing mysql
@@ -1037,8 +1161,8 @@ singularity run \
 #                                              connection info)
 #                                              (instead of the pasa role account)
 #
-#  -d                                          flag, debug
-#  -h                                          flag, print this option menu and quit
+#  -d                              <flag>      flag, debug
+#  -h                              <flag>      flag, print this option menu and quit
 #
 #####################################################################
 #
@@ -1059,17 +1183,17 @@ singularity run \
 #                                                adapted) (just examines 'gene' rows, though)
 #
 #
-# --INVALIDATE_SINGLE_EXON_ESTS                invalidates single exon ests so that none can be built into
+# --INVALIDATE_SINGLE_EXON_ESTS    <flag>      invalidates single exon ests so that none can be built into
 #                                              pasa assemblies
 #
-# --transcribed_is_aligned_orient              flag for strand-specific RNA-Seq assemblies, the aligned
+# --transcribed_is_aligned_orient  <flag>      flag for strand-specific RNA-Seq assemblies, the aligned
 #                                              orientation should correspond to the transcribed orientation
 #
 #####################################################################
 #
 # // Annotation comparison options (used in conjunction with -A at top).
 #
-#  -L                                          load annotations (use in conjunction with --annots)
+#  -L                              <flag>      load annotations (use in conjunction with --annots)
 # --annots                         <filename>  existing gene annotations in recognized format (gtf, gff3,
 #                                              or custom adapted)
 # --GENETIC_CODE                               (default: universal, options: Euplotes, Tetrahymena,
@@ -1079,134 +1203,213 @@ singularity run \
 ```
 </details>
 <br />
-<br />
 
-<a id="build-the-script-for-submitting-genome-free-trinity-jobs"></a>
-## Build the script for submitting genome-free `Trinity` jobs
-<a id="run-echo-tests"></a>
-### Run `echo` tests
+<a id="run-build_comprehensive_transcriptomedbi"></a>
+### Run [`build_comprehensive_transcriptome.dbi`](https://github.com/PASApipeline/PASApipeline/wiki/PASA_comprehensive_db#build-a-comprehensive-transcriptome-database-using-genome-guided-and-de-novo-rna-seq-assembly)
+<a id="what-are-the-optionsarguments-for-build_comprehensive_transcriptomedbi"></a>
+#### What are the options/arguments for `build_comprehensive_transcriptome.dbi`?
+<details>
+<summary><i>Click to view</i></summary>
+
 ```bash
 #!/bin/bash
 #DONTRUN #CONTINUE
 
-script_name="echo_submit_PASA.sh"
-threads=6
-
-if [[ -f "./sh_err_out/${script_name}" ]]; then
-    rm "./sh_err_out/${script_name}"
-fi
-cat << script > "./sh_err_out/${script_name}"
-#!/bin/bash
-
-#SBATCH --nodes=1
-#SBATCH --cpus-per-task=${threads}
-#SBATCH --error=./sh_err_out/err_out/${script_name%.sh}.%J.err.txt
-#SBATCH --output=./sh_err_out/err_out/${script_name%.sh}.%J.out.txt
-
-#  ${script_name}
-#  KA
-#  $(date '+%Y-%m%d')
-
-left_1="\${1}"
-left_2="\${2}"
-right_1="\${3}"
-right_2="\${4}"
-out="\${5}"
-
-# module load Singularity/3.5.3
-
-parallel --header : --colsep " " -k -j 1 echo \\
-    'singularity run \\
-        --no-home \\
-        --bind {d_exp} \\
-        --bind {d_scr} \\
-        ~/singularity-docker-etc/Trinity.sif \\
-            Trinity \\
-                --verbose \\
-                --max_memory {j_mem} \\
-                --CPU {j_cor} \\
-                --SS_lib_type FR \\
-                --seqType fq \\
-                --left {left_1},{left_2} \\
-                --right {right_1},{right_2} \\
-                --jaccard_clip \\
-                --output {t_out} \\
-                --full_cleanup \\
-                --min_kmer_cov 1 \\
-                --min_iso_ratio 0.05 \\
-                --min_glue 2 \\
-                --glue_factor 0.05 \\
-                --max_reads_per_graph 2000 \\
-                --normalize_max_read_cov 200 \\
-                --group_pairs_distance 700 \\
-                --min_contig_length 200' \\
-::: d_exp "\$(pwd)" \\
-::: d_scr "/fh/scratch/delete30/tsukiyama_t:/loc/scratch" \\
-::: j_mem "50G" \\
-::: j_cor "\${SLURM_CPUS_ON_NODE}" \\
-::: left_1 "\${left_1}" \\
-:::+ left_2 "\${left_2}" \\
-:::+ right_1 "\${right_1}" \\
-:::+ right_2 "\${right_2}" \\
-:::+ t_out "\${out}"
-script
-# vi "./sh_err_out/${script_name}"  # :q
-
-
-#  Running the above... -------------------------------------------------------
-# echoTest "${f_in[@]}"
-# echoTest "${d_in[@]}"
-for i in $(seq 0 $(echo "${#f_in[@]}" - 1 | bc)); do
-    # i=1
-    d_f_5781_r1="${d_in[$i]}/5781_${f_in[$i]}.1.fq.gz"
-    d_f_5782_r1="${d_in[$i]}/5782_${f_in[$i]}.1.fq.gz"
-    d_f_5781_r2="${d_in[$i]}/5781_${f_in[$i]}.2.fq.gz"
-    d_f_5782_r2="${d_in[$i]}/5782_${f_in[$i]}.2.fq.gz"
-    echo "#  ========================================================="
-    echo "#  Establishing infiles... ----------------------------------"
-    echo "    left_1  ${d_f_5781_r1}"
-    echo "    left_2  ${d_f_5782_r1}"
-    echo "   right_1  ${d_f_5781_r2}"
-    echo "   right_2  ${d_f_5782_r2}"
-    echo ""
-
-    d_base="files_Trinity_genome-free/$(echo "${d_f_5781_r1}" | cut -d "/" -f 1)"  # echo "${d_base}"
-    pre="trinity_5781-5782_$(\
-        echo $(basename "${d_f_5781_r1}" ".Aligned.sortedByCoord.out.sc_all.1.fq.gz") \
-            | cut -d $'_' -f 2- \
-    )"
-    t_out="${d_base}/${pre}"
-    echo "#  Establishing outfile... ---------------------------------"
-    echo "    d_base  ${d_base}"
-    echo "       pre  ${pre}"
-    echo "     t_out  ${t_out}"
-    echo ""
-
-    intron="1002"
-    echo "#  Setting intron parameter --------------------------------"
-    echo "    intron  ${intron}"
-    echo ""
-
-    echo "#  Comparing in and out... ---------------------------------"
-    echo "    ${f_in[$i]}"
-    echo "    ${t_out}"
-
-    echo "#  ========================================================="
-    echo ""
-
-    [[ -d "${t_out}" ]] || mkdir -p "${t_out}"
-    echo ""
-
-    #TODO 1/2 Could add some kind of check to make sure that left_* include
-    #TODO 2/2 read 1, right_* include read 2
-    bash "./sh_err_out/${script_name}" \
-        "${d_f_5781_r1}" \
-        "${d_f_5782_r1}" \
-        "${d_f_5781_r2}" \
-        "${d_f_5782_r2}" \
-        "${t_out}"
-
-    echo ""
-    echo ""
-done
+export PASAHOME="/usr/local/src/PASApipeline"
+singularity run \
+    --bind "${HOME}" \
+    --bind "$(pwd)" \
+    --bind "/fh/scratch/delete30/tsukiyama_t:/loc/scratch/${SLURM_JOB_ID}" \
+    ~/singularity-docker-etc/PASA.sif \
+        ${PASAHOME}/scripts/build_comprehensive_transcriptome.dbi
 ```
+
+Help message (cleaned for readability)
+```txt
+############################# Options ###############################
+#
+# -c                 <filename>  configuration file for align-assembly
+#
+# -t                 <filename>  transcripts fasta file input to PASA
+#
+#
+# Mapping criteria: (if not met, considered not mapping at all)
+#
+# --prefix           <string>    prefix for output file names. (default: compreh_init_build)
+#
+# --min_per_ID       <int>       default: 95
+#
+# --min_per_aligned  <int>       default: 30
+#
+#
+###################### Process Args and Options #####################
+```
+</details>
+<br />
+
+<a id="on-the-meaning-of-the-parameters-using-this-script-etc"></a>
+#### On the meaning of the parameters, using this script, etc.
+*...taken from the [`PASA` Google Group](https://groups.google.com/g/pasapipeline-users)*
+- [Build comprehensive transcriptome questions](https://groups.google.com/g/pasapipeline-users/c/F1rqmPP1cCc/m/1_ueLz7YBgAJ)
+- [Annotation update will include transcripts that do not match any gene-model?](https://groups.google.com/g/pasapipeline-users/c/VMw2uFAI7fk/m/g_k-LhAaHwAJ)
+- [Comprehensive Transcriptome Database Using Genome-guided and De novo RNA-Seq Assembly](https://groups.google.com/g/pasapipeline-users/c/KdcAyqYUxgU/m/BT7os7LzAQAJ)
+    + `#NOTE` This particular thread answers my questions about not using any files output by step #3 as input for step #4 when building comprehensive transcriptome databases
+    + This message is particularly relevant: *"There is a MySQL database that PASA stores data in. Therefore information can be shared from one step to the next without explicitly passing all the data on the command line."*
+    + `#QUESTION` Does this mean that step #4 needs to be called in the same directory as step #3?  `#TODO` Submit this question on the forum
+
+<a id="questions-for-brian-haas-regarding-build_comprehensive_transcriptomedbi-and-pasa-in-general"></a>
+#### Questions for Brian Haas regarding `build_comprehensive_transcriptome.dbi` and `PASA` in general
+<a id="question-1"></a>
+##### Question #1
+<a id="text-by-me"></a>
+###### Text by me
+Hi Brian and community,
+
+I see in this previous post that, when building comprehensive transcriptome databases, outfiles from step #3 (running `Launch_PASA_pipeline.pl`) don't need to be explicitly passed to step #4 (running `build_comprehensive_transcriptome.dbi`) because of implicit detection of the MySQL or SQLite database...
+
+<a id="realization"></a>
+###### Realization
+`#ANSWER` It doesn't matter where I call the script from; so long as the database path and name in the configuration file is correct, the script will no where to grab things
+
+<a id="question-2-question-about-small-andor-microbial-genomes-and---trans_gtf-in-launch_pasa_pipelinepl"></a>
+##### Question #2: Question about small and/or microbial genomes and `--trans_gtf` (in `Launch_PASA_pipeline.pl`)
+<a id="text-by-me-1"></a>
+###### [Text by me](https://groups.google.com/g/pasapipeline-users/c/0e8jkG6aLtI/m/LLTI9gCNBAAJ)
+Hi Brian and community,
+
+Apologies for the off-topic nature of this question.
+
+I'm interested to include a `.gtf` from `StringTie` for argument `--trans_gtf` when building a comprehensive transcriptome database, i.e., when running `Launch_PASA_pipeline.pl`.
+
+For transcriptome assembly, I'm working with *S. cerevisiae* Illumina RNA-seq data. I'm interested to know if, in your or anyone else's experience, `StringTie` should be called with altered parameters when working with organisms with small and/or microbial genomes. For example, I know that this is recommended when using genome-free and genome-guided `Trinity` with small and/or microbial genomes. No response from the `StringTie` developers so far, and my scans of the literature show that some authors have used default parameters in this or similar contexts.
+
+Or, perhaps, do you not recommend using `StringTie` with small and/or microbial genomes, similar to your not recommending the use of `Cufflinks` in that context?
+
+Thanks; any input will be appreciated,  
+Kris
+
+~~*Sent; awaiting response (hopefully, I'll get one)*~~
+
+<a id="response-by-brian"></a>
+###### [Response by Brian](https://groups.google.com/g/pasapipeline-users/c/0e8jkG6aLtI/m/aLmE5neOBAAJ)
+Hi Kris,
+
+The main danger here is generating fusion transcripts from overlapping
+transcripts (UTRs, mostly).  If the data are strand-specific and you
+can run stringtie in strand-specific mode, it could be fine.  (If it's
+not strand-specific, it'll be trouble w/ compact genomes).  I'd just
+suggest looking at your stringtie results first in IGV and/or run some
+analyses like cuffcompare (or whatever the new version is called) to
+compare your stringtie gtf to the reference gene structure annotation
+and assess the level of fusion transcripts generated.
+
+If things look good, you could use PASA to merge everything, but use
+the option to require sufficient overlap among alignments to assemble
+to again mitigate the neighboring fusion transcript issue.
+
+hope this helps,
+
+~b
+
+<a id="follow-up-from-me"></a>
+###### Follow-up from me
+Thanks, Brian; yes, that's very helpful. When you mention "the option to require sufficient overlap among alignments to assemble to again mitigate the neighboring fusion transcript issue," you mean adjusting the `--stringent_alignment_overlap` parameter when running `Launch_PASA_pipeline.pl`, is that correct?
+
+In trial experiments I'm running with `PASA`, in which I'm using `.fasta` files from genome-guided and genome-free `Trinity` (but nothing from `StringTie`/`Cufflinks`/etc. yet), so it makes me wonder if it would be helpful to increase the value for `--stringent_alignment_overlap` from 30.0 to perhaps something higher? (Currently, I'm calling `Launch_PASA_pipeline.pl` with `--stringent_alignment_overlap 30.0`, following the advice here.) If I understand things correctly, a higher percentage overlap for `--stringent_alignment_overlap` could/would mitigate the false identification of fusion transcripts that result from working with data from small, gene-dense genomes such as S. cerevisiae—, is that right?
+
+A little experimental context could be helpful here: We're working with a *S. cerevisiae* knock-out model that increases global antisense transcription, and we want to accurately identify these ncRNA transcripts and use the custom annotations in downstream analyses. In our work so far, we see a lot of both fusion and (apparently) fragmentary transcripts. Do you think that adjusting the value for `--stringent_alignment_overlap` could be useful in this context? Or perhaps leaving the `--stringent_alignment_overlap` at 30.0 is reasonable? Thinking of this, I'm reminded also of the `--gene_overlap` option available in `Launch_PASA_pipeline.pl` (which should be called together with the `-L` flag and `--annots_gff3` option). Could calling `Launch_PASA_pipeline.pl` with `--gene_overlap` set to some value be potentially useful in this context?
+
+Thanks! And thanks for these great programs and documentation,
+Kris
+
+<a id="on-running-build_comprehensive_transcriptomedbi"></a>
+#### On running `build_comprehensive_transcriptome.dbi`
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+export PASAHOME="/usr/local/src/PASApipeline"
+singularity run \
+    --bind "${HOME}" \
+    --bind "$(pwd)" \
+    --bind "/fh/scratch/delete30/tsukiyama_t:/loc/scratch/${SLURM_JOB_ID}" \
+    ~/singularity-docker-etc/PASA.sif \
+        ${PASAHOME}/scripts/build_comprehensive_transcriptome.dbi \
+            -c "${sub}.align_assembly.config" \
+            -t "${sub}.transcripts.fasta" \
+            --min_per_ID 95 \
+            --min_per_aligned 30 \
+                > >(tee -a stdout.log.bct.txt) \
+                2> >(tee -a stderr.log.bct.txt >&2)
+```
+It completed successfully (and was quick)
+
+<details>
+<summary><i>Messages printed to terminal</i></summary>
+
+```txt
+WARNING: Bind mount '/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201/test_files_PASA/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd => /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201/test_files_PASA/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd' overlaps container CWD /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201/test_files_PASA/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd, may not be available
+perl: warning: Setting locale failed.
+perl: warning: Please check that your locale settings:
+        LANGUAGE = "en_US:",
+        LC_ALL = (unset),
+        LC_CTYPE = "en_US.UTF-8",
+        LANG = "en_US.UTF-8"
+    are supported and installed on your system.
+perl: warning: Falling back to the standard locale ("C").
+perl: warning: Setting locale failed.
+perl: warning: Please check that your locale settings:
+        LANGUAGE = "en_US:",
+        LC_ALL = (unset),
+        LC_CTYPE = "en_US.UTF-8",
+        LANG = "en_US.UTF-8"
+    are supported and installed on your system.
+perl: warning: Falling back to the standard locale ("C").
+-connecting to SQLite db: /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201/test_files_PASA/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.pasa.sqlite
+[84 / 84] processing map/fail TRINITY_DN71_c0_g1_i4CMD: /usr/local/src/PASApipeline/scripts/PASA_transcripts_and_assemblies_to_GFF3.dbi -M '/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201/test_files_PASA/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.pasa.sqlite'
+-F compreh_init_build/compreh_init_build.fasta > compreh_init_build/compreh_init_build.gff3
+
+perl: warning: Setting locale failed.
+perl: warning: Please check that your locale settings:
+        LANGUAGE = "en_US:",
+        LC_ALL = (unset),
+        LC_CTYPE = "en_US.UTF-8",
+        LANG = "en_US.UTF-8"
+    are supported and installed on your system.
+perl: warning: Falling back to the standard locale ("C").
+perl: warning: Setting locale failed.
+perl: warning: Please check that your locale settings:
+        LANGUAGE = "en_US:",
+        LC_ALL = (unset),
+        LC_CTYPE = "en_US.UTF-8",
+        LANG = "en_US.UTF-8"
+    are supported and installed on your system.
+perl: warning: Falling back to the standard locale ("C").
+CMD: /usr/local/src/PASApipeline/scripts/PASA_transcripts_and_assemblies_to_GFF3.dbi -M '/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201/test_files_PASA/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.pasa.sqlite' -F compreh_init_build/compreh_init_build.fasta -B > compreh_init_build/compreh_init_build.bed
+perl: warning: Setting locale failed.
+perl: warning: Please check that your locale settings:
+        LANGUAGE = "en_US:",
+        LC_ALL = (unset),
+        LC_CTYPE = "en_US.UTF-8",
+        LANG = "en_US.UTF-8"
+    are supported and installed on your system.
+perl: warning: Falling back to the standard locale ("C").
+perl: warning: Setting locale failed.
+perl: warning: Please check that your locale settings:
+        LANGUAGE = "en_US:",
+        LC_ALL = (unset),
+        LC_CTYPE = "en_US.UTF-8",
+        LANG = "en_US.UTF-8"
+    are supported and installed on your system.
+perl: warning: Falling back to the standard locale ("C").
+
+
+Done.
+
+See files: compreh_init_build/compreh_init_build.fasta and compreh_init_build/compreh_init_build.geneToTrans_mapping
+```
+</details>
+
+<a id="miscellaneous"></a>
+## Miscellaneous
+- [On viewing .gff3 files in IGV](https://software.broadinstitute.org/software/igv/GFF)
