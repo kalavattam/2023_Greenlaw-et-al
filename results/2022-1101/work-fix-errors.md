@@ -13,7 +13,7 @@
 
 - Addressing the above
 	- `#DONE` It seems I made the error at line `4936`: `-name *out.bam`; change this to `-name *out.exclude-unmapped.bam`
-	- `#DONE` Go back to [this spot](../2022-1101/scraps.md#set-up-the-star-alignment-steps-and-sub-steps-2022-1126) to start the above work
+	- `#DONE` Go back to [this spot](../2022-1101/work-Trinity-2.md#set-up-the-star-alignment-steps-and-sub-steps-2022-1126) to start the above work
 	- `#DONE` While we're at it, change the extension for `.bam`s in which unmapped reads have been excluded from `*.out.unmapped.bam` to `*.out.exclude-unmapped.bam`; importantly, change `"$(basename "${i}" ".bam").unmapped.bam"` to `"$(basename "${i}" ".bam").exclude-unmapped.bam"`; then rerun these lines of code~~; then delete the previous `*.out.unmapped.bam` files~~ 
 		+ `#DONE` Regarding files for genome-free `Trinity`, change lines `4606`, `4611`, and `4624`
 		+ `#DONE` Regarding files for genome-free `Trinity`, change lines `4820`, `4826`, and `4837`

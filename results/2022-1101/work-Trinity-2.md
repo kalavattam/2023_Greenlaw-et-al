@@ -4909,7 +4909,7 @@ Trinity_env
 # -rw-rw----  1 kalavatt 8.0K Nov 25 10:11 notes-miscellaneous-links.md
 # -rw-rw----  1 kalavatt 5.7K Nov 16 12:23 notes-RNA-seq-spike-ins.md
 # -rw-rw----  1 kalavatt  35K Nov 18 11:33 notes-UMIs-etc.md
-# -rw-rw----  1 kalavatt 209K Nov 28 07:43 scraps.md
+# -rw-rw----  1 kalavatt 209K Nov 28 07:43 work-Trinity-2.md
 # -rw-rw----  1 kalavatt  617 Nov  8 14:43 submit-Bowtie-2.test-1.sh
 # -rw-rw----  1 kalavatt  642 Nov  8 16:16 submit-Bowtie-2.test-2.sh
 # -rw-rw----  1 kalavatt  300 Nov  7 14:58 submit-FastQC.sh
@@ -6410,7 +6410,7 @@ python --version
 # -rw-rw----  1 kalavatt 8.3K Nov 28 10:05 notes-miscellaneous-links.md
 # -rw-rw----  1 kalavatt 5.7K Nov 16 12:23 notes-RNA-seq-spike-ins.md
 # -rw-rw----  1 kalavatt  35K Nov 18 11:33 notes-UMIs-etc.md
-# -rw-rw----  1 kalavatt 264K Nov 29 14:57 scraps.md
+# -rw-rw----  1 kalavatt 264K Nov 29 14:57 work-Trinity-2.md
 # -rw-rw----  1 kalavatt  617 Nov  8 14:43 submit-Bowtie-2.test-1.sh
 # -rw-rw----  1 kalavatt  642 Nov  8 16:16 submit-Bowtie-2.test-2.sh
 # -rw-rw----  1 kalavatt  300 Nov  7 14:58 submit-FastQC.sh
