@@ -728,7 +728,218 @@ singularity run \
             --ALIGNERS blat,gmap,minimap2 \
                 > >(tee -a stdout.log.txt) \
                 2> >(tee -a stderr.log.txt >&2)
+
+#TODO 1/2 For some reasong, this does not work:
+#TODO 2/2 --bind "/fh/scratch/delete30/tsukiyama_t:/loc/scratch" \
+
+#  Performed the commands below: /loc/scratch is present within the container;
+#+ try again; first, rename stderr and stdout files so that they're not over-
+#+ written
+mv stderr.log.txt stderr.log.1.txt
+mv stdout.log.txt stdout.log.1.txt
+
+#  Call Launch_PASA_pipeline.pl again... and it failed again; what is the
+#+ specific error? (See below)
+
+#IMPORTANT 1/2 It seems that I need to bind "/loc/scratch/5495869" instead of
+#IMPORTANT 2/2 "/loc/scratch"
+echo "${SLURM_JOB_ID}"
+# 5495869
+#  Do --bind "/fh/scratch/delete30/tsukiyama_t:/loc/scratch/${SLURM_JOB_ID}"
+
+mv stderr.log.txt stderr.log.2.txt
+mv stdout.log.txt stdout.log.2.txt
+
+singularity run \
+    --bind "${HOME}" \
+    --bind "$(pwd)" \
+    --bind "/fh/scratch/delete30/tsukiyama_t:/loc/scratch/${SLURM_JOB_ID}" \
+    ~/singularity-docker-etc/PASA.sif \
+        ${PASAHOME}/Launch_PASA_pipeline.pl \
+            --CPU "${SLURM_CPUS_ON_NODE}" \
+            -c "${sub}.align_assembly.config" \
+            -C \
+            -R \
+            -g "${HOME}/genomes/sacCer3/Ensembl/108/DNA/Saccharomyces_cerevisiae.R64-1-1.dna.toplevel.chr-rename.fasta" \
+            -I 1002 \
+            -t "${sub}.transcripts.fasta.clean" \
+            -T \
+            -u "${sub}.transcripts.fasta" \
+            --TDN "$(basename "${genome_free_fasta}" .fasta).accessions" \
+            --transcribed_is_aligned_orient \
+            --stringent_alignment_overlap 30.0 \
+            --ALIGNERS blat,gmap,minimap2 \
+                > >(tee -a stdout.log.txt) \
+                2> >(tee -a stderr.log.txt >&2)
+#  It seems to be working...
+
+#IMPORTANT Slurm Environmental Variables: hpcc.umd.edu/hpcc/help/slurmenv.html
 ```
+<details>
+<summary><i>Troubleshooting the /loc/scratch errors by performing shell command within and outside the container (edited for readability)</i></summary>
+
+```txt
+❯ singularity shell \
+    --bind "${HOME}" \
+    --bind "$(pwd)" \
+    --bind "/fh/scratch/delete30/tsukiyama_t:/loc/scratch" \
+    ~/singularity-docker-etc/PASA.sif
+WARNING: Bind mount '/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201/test_files_PASA/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd => /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201/test_files_PASA/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd' overlaps container CWD /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201/test_files_PASA/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd, may not be available
+
+Singularity> cd /loc/scratch
+
+Singularity> ls -lhaFG
+total 0
+drwxrws--- 2 root      0 Oct  2  2021 ./
+drwxr-xr-x 3 kalavatt 60 Dec 11 06:17 ../
+
+Singularity> cd /
+
+Singularity> ls -lhaFG
+total 172K
+drwxr-xr-x   1 kalavatt  100 Dec 11 06:17 ./
+drwxr-xr-x   1 kalavatt  100 Dec 11 06:17 ../
+lrwxrwxrwx   1 root       27 Nov 23 12:12 .exec -> .singularity.d/actions/exec*
+lrwxrwxrwx   1 root       26 Nov 23 12:12 .run -> .singularity.d/actions/run*
+lrwxrwxrwx   1 root       28 Nov 23 12:12 .shell -> .singularity.d/actions/shell*
+drwxr-xr-x   5 root      127 Nov 23 12:12 .singularity.d/
+lrwxrwxrwx   1 root       27 Nov 23 12:12 .test -> .singularity.d/actions/test*
+lrwxrwxrwx   1 root        7 Jul 23  2021 bin -> usr/bin/
+drwxr-xr-x   2 root        3 Apr 15  2020 boot/
+drwxr-xr-x  18 root     4.2K Nov 12 19:17 dev/
+lrwxrwxrwx   1 root       36 Nov 23 12:12 environment -> .singularity.d/env/90-environment.sh*
+drwxr-xr-x  53 root     1.8K Aug  6  2021 etc/
+drwxr-xr-x   3 kalavatt   60 Dec 11 06:17 fh/
+drwxr-xr-x   1 kalavatt   60 Dec 11 06:17 home/
+lrwxrwxrwx   1 root        7 Jul 23  2021 lib -> usr/lib/
+lrwxrwxrwx   1 root        9 Jul 23  2021 lib32 -> usr/lib32/
+lrwxrwxrwx   1 root        9 Jul 23  2021 lib64 -> usr/lib64/
+lrwxrwxrwx   1 root       10 Jul 23  2021 libx32 -> usr/libx32/
+drwxr-xr-x   3 kalavatt   60 Dec 11 06:17 loc/
+drwxr-xr-x   2 root        3 Jul 23  2021 media/
+drwxr-xr-x   2 root        3 Jul 23  2021 mnt/
+drwxr-xr-x   2 root        3 Jul 23  2021 opt/
+dr-xr-xr-x 445 root        0 Nov  9 07:00 proc/
+drwx------   3 root       90 Feb  3  2022 root/
+drwxr-xr-x   8 root      124 Aug  6  2021 run/
+lrwxrwxrwx   1 root        8 Jul 23  2021 sbin -> usr/sbin/
+lrwxrwxrwx   1 root       24 Nov 23 12:12 singularity -> .singularity.d/runscript*
+drwxr-xr-x   2 root        3 Jul 23  2021 srv/
+dr-xr-xr-x  13 root        0 Nov  9 07:00 sys/
+drwxrwxrwt  32 root     168K Dec 11 06:17 tmp/
+drwxr-xr-x  14 root      241 Aug  6  2021 usr/
+drwxr-xr-x  11 root      172 Jul 23  2021 var/
+
+Singularity> exit
+
+❯ cd /fh/scratch/delete30/tsukiyama_t
+ 
+❯ .,
+total 512
+drwxrws---   2 root   0 Oct  2  2021 ./
+drwxr-xr-x 240 root 238 Nov 18 11:36 ../
+
+❯ -
+/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201/test_files_PASA/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd
+
+❯ touch /fh/scratch/delete30/tsukiyama_t/test.txt
+
+❯ cd /fh/scratch/delete30/tsukiyama_t
+
+❯ .,
+total 1.0K
+drwxrws---   2 root       1 Dec 11 06:10 ./
+drwxr-xr-x 240 root     238 Nov 18 11:36 ../
+-rw-rw----   1 kalavatt   0 Dec 11 06:22 test.txt
+
+❯ -
+/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201/test_files_PASA/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd
+
+❯ singularity shell \
+    --bind "${HOME}" \
+    --bind "$(pwd)" \
+    --bind "/fh/scratch/delete30/tsukiyama_t:/loc/scratch" \
+    ~/singularity-docker-etc/PASA.sif
+WARNING: Bind mount '/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201/test_files_PASA/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd => /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201/test_files_PASA/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd' overlaps container CWD /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201/test_files_PASA/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd, may not be available
+
+Singularity> ls -lhaFG /loc/scratch
+total 512
+drwxrws--- 2 root      1 Dec 11 06:10 ./
+drwxr-xr-x 3 kalavatt 60 Dec 11 06:23 ../
+-rw-rw---- 1 kalavatt  0 Dec 11 06:22 test.txt
+
+Singularity> exit
+```
+</details>
+
+<details>
+<summary><i>What is the specific error (edited for readability)?</i></summary>
+
+```txt
+It appears that some assemblies were generated from an earlier pass.  Only contigs w/o existing alignment assemblies will be pursued.  Otherwise, kill this process and remove the 'assemblies' directory, then restart.
+Thread 3 terminated abnormally: Can't open file /loc/scratch/5495869/pasa.1670769022-0.462711754794331.+.in at /usr/local/src/PASApipeline/PerlLib/CDNA/PASA_alignment_assembler.pm line 232, <$fh> line 5278.
+Thread 2 terminated abnormally: Can't open file /loc/scratch/5495869/pasa.1670769022-0.128009359891625.+.in at /usr/local/src/PASApipeline/PerlLib/CDNA/PASA_alignment_assembler.pm line 232, <$fh> line 13555.
+Thread 6 terminated abnormally: Can't open file /loc/scratch/5495869/pasa.1670769022-0.977187826604681.+.in at /usr/local/src/PASApipeline/PerlLib/CDNA/PASA_alignment_assembler.pm line 232, <$fh> line 1430.
+Thread 5 terminated abnormally: Can't open file /loc/scratch/5495869/pasa.1670769023-0.262293261083872.+.in at /usr/local/src/PASApipeline/PerlLib/CDNA/PASA_alignment_assembler.pm line 232, <$fh> line 7333.
+Thread 1 terminated abnormally: Can't open file /loc/scratch/5495869/pasa.1670769023-0.40543911031364.+.in at /usr/local/src/PASApipeline/PerlLib/CDNA/PASA_alignment_assembler.pm line 232, <$fh> line 3838.
+Thread 7 terminated abnormally: Can't open file /loc/scratch/5495869/pasa.1670769023-0.457377864354388.+.in at /usr/local/src/PASApipeline/PerlLib/CDNA/PASA_alignment_assembler.pm line 232, <$fh> line 9616.
+Thread 4 terminated abnormally: Can't open file /loc/scratch/5495869/pasa.1670769023-0.568041899082349.+.in at /usr/local/src/PASApipeline/PerlLib/CDNA/PASA_alignment_assembler.pm line 232, <$fh> line 25534.
+ERROR, thread 1 exited with error Can't open file /loc/scratch/5495869/pasa.1670769023-0.40543911031364.+.in at /usr/local/src/PASApipeline/PerlLib/CDNA/PASA_alignment_assembler.pm line 232, <$fh> line 3838.
+
+ERROR, thread 2 exited with error Can't open file /loc/scratch/5495869/pasa.1670769022-0.128009359891625.+.in at /usr/local/src/PASApipeline/PerlLib/CDNA/PASA_alignment_assembler.pm line 232, <$fh> line 13555.
+
+ERROR, thread 3 exited with error Can't open file /loc/scratch/5495869/pasa.1670769022-0.462711754794331.+.in at /usr/local/src/PASApipeline/PerlLib/CDNA/PASA_alignment_assembler.pm line 232, <$fh> line 5278.
+
+ERROR, thread 4 exited with error Can't open file /loc/scratch/5495869/pasa.1670769023-0.568041899082349.+.in at /usr/local/src/PASApipeline/PerlLib/CDNA/PASA_alignment_assembler.pm line 232, <$fh> line 25534.
+
+ERROR, thread 5 exited with error Can't open file /loc/scratch/5495869/pasa.1670769023-0.262293261083872.+.in at /usr/local/src/PASApipeline/PerlLib/CDNA/PASA_alignment_assembler.pm line 232, <$fh> line 7333.
+
+ERROR, thread 6 exited with error Can't open file /loc/scratch/5495869/pasa.1670769022-0.977187826604681.+.in at /usr/local/src/PASApipeline/PerlLib/CDNA/PASA_alignment_assembler.pm line 232, <$fh> line 1430.
+
+ERROR, thread 7 exited with error Can't open file /loc/scratch/5495869/pasa.1670769023-0.457377864354388.+.in at /usr/local/src/PASApipeline/PerlLib/CDNA/PASA_alignment_assembler.pm line 232, <$fh> line 9616.
+
+Thread 11 terminated abnormally: Can't open file /loc/scratch/5495869/pasa.1670769025-0.631634204023616.+.in at /usr/local/src/PASApipeline/PerlLib/CDNA/PASA_alignment_assembler.pm line 232, <$fh> line 12431.
+Thread 14 terminated abnormally: Can't open file /loc/scratch/5495869/pasa.1670769025-0.569490806506114.+.in at /usr/local/src/PASApipeline/PerlLib/CDNA/PASA_alignment_assembler.pm line 232, <$fh> line 15409.
+Thread 8 terminated abnormally: Can't open file /loc/scratch/5495869/pasa.1670769025-0.193429036372439.+.in at /usr/local/src/PASApipeline/PerlLib/CDNA/PASA_alignment_assembler.pm line 232, <$fh> line 4504.
+Thread 9 terminated abnormally: Can't open file /loc/scratch/5495869/pasa.1670769025-0.508540524010645.+.in at /usr/local/src/PASApipeline/PerlLib/CDNA/PASA_alignment_assembler.pm line 232, <$fh> line 18184.
+Thread 13 terminated abnormally: Can't open file /loc/scratch/5495869/pasa.1670769025-0.761479575493471.+.in at /usr/local/src/PASApipeline/PerlLib/CDNA/PASA_alignment_assembler.pm line 232, <$fh> line 17971.
+Thread 10 terminated abnormally: Can't open file /loc/scratch/5495869/pasa.1670769025-0.404627130207704.+.in at /usr/local/src/PASApipeline/PerlLib/CDNA/PASA_alignment_assembler.pm line 232, <$fh> line 9379.
+Thread 12 terminated abnormally: Can't open file /loc/scratch/5495869/pasa.1670769025-0.597653939928026.+.in at /usr/local/src/PASApipeline/PerlLib/CDNA/PASA_alignment_assembler.pm line 232, <$fh> line 11115.
+ERROR, thread 8 exited with error Can't open file /loc/scratch/5495869/pasa.1670769025-0.193429036372439.+.in at /usr/local/src/PASApipeline/PerlLib/CDNA/PASA_alignment_assembler.pm line 232, <$fh> line 4504.
+
+ERROR, thread 9 exited with error Can't open file /loc/scratch/5495869/pasa.1670769025-0.508540524010645.+.in at /usr/local/src/PASApipeline/PerlLib/CDNA/PASA_alignment_assembler.pm line 232, <$fh> line 18184.
+
+ERROR, thread 10 exited with error Can't open file /loc/scratch/5495869/pasa.1670769025-0.404627130207704.+.in at /usr/local/src/PASApipeline/PerlLib/CDNA/PASA_alignment_assembler.pm line 232, <$fh> line 9379.
+
+ERROR, thread 11 exited with error Can't open file /loc/scratch/5495869/pasa.1670769025-0.631634204023616.+.in at /usr/local/src/PASApipeline/PerlLib/CDNA/PASA_alignment_assembler.pm line 232, <$fh> line 12431.
+
+ERROR, thread 12 exited with error Can't open file /loc/scratch/5495869/pasa.1670769025-0.597653939928026.+.in at /usr/local/src/PASApipeline/PerlLib/CDNA/PASA_alignment_assembler.pm line 232, <$fh> line 11115.
+
+ERROR, thread 13 exited with error Can't open file /loc/scratch/5495869/pasa.1670769025-0.761479575493471.+.in at /usr/local/src/PASApipeline/PerlLib/CDNA/PASA_alignment_assembler.pm line 232, <$fh> line 17971.
+
+ERROR, thread 14 exited with error Can't open file /loc/scratch/5495869/pasa.1670769025-0.569490806506114.+.in at /usr/local/src/PASApipeline/PerlLib/CDNA/PASA_alignment_assembler.pm line 232, <$fh> line 15409.
+
+Thread 17 terminated abnormally: Can't open file /loc/scratch/5495869/pasa.1670769026-0.778892846153216.+.in at /usr/local/src/PASApipeline/PerlLib/CDNA/PASA_alignment_assembler.pm line 232, <$fh> line 15803.
+Thread 16 terminated abnormally: Can't open file /loc/scratch/5495869/pasa.1670769026-0.102179548078315.+.in at /usr/local/src/PASApipeline/PerlLib/CDNA/PASA_alignment_assembler.pm line 232, <$fh> line 18190.
+Thread 15 terminated abnormally: Can't open file /loc/scratch/5495869/pasa.1670769026-0.341801809453504.+.in at /usr/local/src/PASApipeline/PerlLib/CDNA/PASA_alignment_assembler.pm line 232, <$fh> line 13074.
+ERROR, thread 15 exited with error Can't open file /loc/scratch/5495869/pasa.1670769026-0.341801809453504.+.in at /usr/local/src/PASApipeline/PerlLib/CDNA/PASA_alignment_assembler.pm line 232, <$fh> line 13074.
+
+ERROR, thread 16 exited with error Can't open file /loc/scratch/5495869/pasa.1670769026-0.102179548078315.+.in at /usr/local/src/PASApipeline/PerlLib/CDNA/PASA_alignment_assembler.pm line 232, <$fh> line 18190.
+
+ERROR, thread 17 exited with error Can't open file /loc/scratch/5495869/pasa.1670769026-0.778892846153216.+.in at /usr/local/src/PASApipeline/PerlLib/CDNA/PASA_alignment_assembler.pm line 232, <$fh> line 15803.
+
+Error, 17 threads failed.
+
+Error, cmd:
+/usr/local/src/PASApipeline/scripts/assemble_clusters.dbi \
+    -G /home/kalavatt/genomes/sacCer3/Ensembl/108/DNA/Saccharomyces_cerevisiae.R64-1-1.dna.toplevel.chr-rename.fasta  \
+    -M '/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201/test_files_PASA/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.pasa.sqlite'  \
+    -T 6  \
+        > trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.pasa.sqlite.pasa_alignment_assembly_building.ascii_illustrations.out
+died with ret 7424 No such file or directory at /usr/local/src/PASApipeline/PerlLib/Pipeliner.pm line 187.
+    Pipeliner::run(Pipeliner=HASH(0x5602202ca5f0)) called at /usr/local/src/PASApipeline/Launch_PASA_pipeline.pl line 1047
+```
+</details>
 <br />
 <br />
 
