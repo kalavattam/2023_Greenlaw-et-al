@@ -53,3 +53,7 @@ parallel --header : --colsep " " -k -j 1 echo \
 :::+ right_1 "${right_1}" \
 :::+ right_2 "${right_2}" \
 :::+ t_out "${out}"
+
+#  2022-1212
+# This seems to be an important conversation for how we can/should go about annotating novel transcripts...
+# https://groups.google.com/g/pasapipeline-users/c/ka_Ue6WLogE/m/0cdqnSrnAQAJ

@@ -9,7 +9,7 @@
     1. [Test with files in `files_unprocessed/`, `files_processed`, and `files_processed-full`](#test-with-files-in-files_unprocessed-files_processed-and-files_processed-full)
 1. [Design `outfile` name, assign `outdir` automatically](#design-outfile-name-assign-outdir-automatically)
 1. [Draft a script for repeated running of `samtools merge`](#draft-a-script-for-repeated-running-of-samtools-merge)
-    1. [Write a script for echo tests](#write-a-script-for-echo-tests)
+    1. [Write a script for `echo` tests](#write-a-script-for-echo-tests)
     1. [Write a script for running the commands](#write-a-script-for-running-the-commands)
 1. [Design a loop for on-the-fly assignments before submitting jobs](#design-a-loop-for-on-the-fly-assignments-before-submitting-jobs)
 
@@ -585,7 +585,7 @@ m_f="${m_d_o}"  # echo "${m_d_o}"  # ., "${m_d_o}"
 <a id="draft-a-script-for-repeated-running-of-samtools-merge"></a>
 ## Draft a script for repeated running of `samtools merge`
 <a id="write-a-script-for-echo-tests"></a>
-### Write a script for echo tests
+### Write a script for `echo` tests
 ```bash
 #!/bin/bash
 #DONTRUN #CONTINUE

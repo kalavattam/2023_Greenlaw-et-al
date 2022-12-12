@@ -38,8 +38,9 @@
                 1. [Realization](#realization)
             1. [Question #2: Question about small and/or microbial genomes and `--trans_gtf` \(in `Launch_PASA_pipeline.pl`\)](#question-2-question-about-small-andor-microbial-genomes-and---trans_gtf-in-launch_pasa_pipelinepl)
                 1. [Text by me](#text-by-me-1)
-                1. [Response by Brian](#response-by-brian)
+                1. [Response from Brian](#response-from-brian)
                 1. [Follow-up from me](#follow-up-from-me)
+                1. [Follow-up response from Brian](#follow-up-response-from-brian)
         1. [On running `build_comprehensive_transcriptome.dbi`](#on-running-build_comprehensive_transcriptomedbi)
 1. [Miscellaneous](#miscellaneous)
 
@@ -339,7 +340,7 @@ files_Trinity_genome-free/files_unprocessed/trinity_5781-5782_Q_IP_merged.un_mul
 
 
 #  Derive names for the subdirectories, "${sub}" ------------------------------
-#+ ...i.e., the experiment directories within test_files_PASA
+#+ ...i.e., the experiment directories within files_PASA_test-run
 #+ 
 #+ Can derive the directory names from the keys rather than the values
 
@@ -391,9 +392,9 @@ sub="$(name_tx_db "${!T_full[*]}" 3)"
 # # echo "${sub}"
 # trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd
 
-mkdir -p "test_files_PASA/${sub}"
-# mkdir: created directory 'test_files_PASA'
-# mkdir: created directory 'test_files_PASA/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd'
+mkdir -p "files_PASA_test-run/${sub}"
+# mkdir: created directory 'files_PASA_test-run'
+# mkdir: created directory 'files_PASA_test-run/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd'
 ```
 
 <a id="set-up-the-concatenation-of-fastas-from-genome-free-and--guided-trinity-runs"></a>
@@ -402,7 +403,7 @@ mkdir -p "test_files_PASA/${sub}"
 #!/bin/bash
 #DONTRUN #CONTINUE
 
-., "$(pwd)/test_files_PASA/${sub}"
+., "$(pwd)/files_PASA_test-run/${sub}"
 # total 80K
 # drwxrws--- 2 kalavatt  0 Dec 10 13:29 ./
 # drwxrws--- 3 kalavatt 85 Dec 10 13:29 ../
@@ -427,9 +428,9 @@ get_element "${T_full[*]}" 3  # Value (genome-free Trinity)
 
 #  cat Trinity.fasta Trinity.GG.fasta > transcripts.fasta
 cat "$(get_element "${T_full[*]}" 3)" "$(get_element "${!T_full[*]}" 3)" \
-    > "test_files_PASA/${sub}/${sub}.transcripts.fasta"
-., "test_files_PASA/${sub}/${sub}.transcripts.fasta"
-# -rw-rw---- 1 kalavatt 28M Dec 10 13:46 test_files_PASA/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.transcripts.fasta
+    > "files_PASA_test-run/${sub}/${sub}.transcripts.fasta"
+., "files_PASA_test-run/${sub}/${sub}.transcripts.fasta"
+# -rw-rw---- 1 kalavatt 28M Dec 10 13:46 files_PASA_test-run/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.transcripts.fasta
 
 #NOTE 1/2 I could perhaps automate this with a nested for loop where i is
 #NOTE 2/2 T_XXXX and j is 1 2 3
@@ -444,7 +445,7 @@ cat "$(get_element "${T_full[*]}" 3)" "$(get_element "${!T_full[*]}" 3)" \
 #DONTRUN #CONTINUE
 
 genome_free_fasta="$(get_element "${T_full[*]}" 3)"
-genome_free_accessions="test_files_PASA/${sub}/$(basename "${genome_free_fasta}" .fasta).accessions"
+genome_free_accessions="files_PASA_test-run/${sub}/$(basename "${genome_free_fasta}" .fasta).accessions"
 # echo "${genome_free_fasta}"
 # echo "${genome_free_accessions}"
 
@@ -461,14 +462,14 @@ parallel --header : --colsep " " -k -j 1 echo \
 ::: d_exp "$(pwd)" \
 ::: d_scr "/fh/scratch/delete30/tsukiyama_t:/loc/scratch" \
 ::: genome_free_fasta "$(get_element "${T_full[*]}" 3)" \
-:::+ genome_free_accessions "test_files_PASA/${sub}/$(basename "${genome_free_fasta}" .fasta).accessions"
+:::+ genome_free_accessions "files_PASA_test-run/${sub}/$(basename "${genome_free_fasta}" .fasta).accessions"
 ```
 
 <a id="check-the-results-of-the-echo-test"></a>
 ##### Check the results of the `echo` test
 How does it look?
 ```txt
-singularity run --no-home --bind /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201 --bind /fh/scratch/delete30/tsukiyama_t:/loc/scratch /home/kalavatt/singularity-docker-etc/PASA.sif /usr/local/src/PASApipeline/misc_utilities/accession_extractor.pl < files_Trinity_genome-free/files_processed-full/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_1_EndToEnd.Trinity.fasta > test_files_PASA/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_1_EndToEnd.Trinity.accessions
+singularity run --no-home --bind /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201 --bind /fh/scratch/delete30/tsukiyama_t:/loc/scratch /home/kalavatt/singularity-docker-etc/PASA.sif /usr/local/src/PASApipeline/misc_utilities/accession_extractor.pl < files_Trinity_genome-free/files_processed-full/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_1_EndToEnd.Trinity.fasta > files_PASA_test-run/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_1_EndToEnd.Trinity.accessions
 ```
 
 Cleaned up for readability
@@ -480,7 +481,7 @@ singularity run
     /home/kalavatt/singularity-docker-etc/PASA.sif 
         /usr/local/src/PASApipeline/misc_utilities/accession_extractor.pl 
             < files_Trinity_genome-free/files_processed-full/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_1_EndToEnd.Trinity.fasta 
-            > test_files_PASA/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_1_EndToEnd.Trinity.accessions
+            > files_PASA_test-run/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_1_EndToEnd.Trinity.accessions
 ```
 
 <a id="run-the-command"></a>
@@ -502,10 +503,10 @@ parallel --header : --colsep " " -k -j 1 \
 ::: d_exp "$(pwd)" \
 ::: d_scr "/fh/scratch/delete30/tsukiyama_t:/loc/scratch" \
 ::: genome_free_fasta "$(get_element "${T_full[*]}" 3)" \
-:::+ genome_free_accessions "test_files_PASA/${sub}/$(basename "${genome_free_fasta}" .fasta).accessions"
+:::+ genome_free_accessions "files_PASA_test-run/${sub}/$(basename "${genome_free_fasta}" .fasta).accessions"
 
 ., "${genome_free_accessions}"
-# -rw-rw---- 1 kalavatt 400K Dec 10 14:17 test_files_PASA/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_1_EndToEnd.Trinity.accessions
+# -rw-rw---- 1 kalavatt 400K Dec 10 14:17 files_PASA_test-run/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_1_EndToEnd.Trinity.accessions
 ```
 
 <a id="clean-the-transcript-sequences-for-the-test-call"></a>
@@ -526,14 +527,14 @@ parallel --header : --colsep " " -k -j 1 echo \
             {genome_combined}" \
 ::: d_exp "$(pwd)" \
 ::: d_scr "/fh/scratch/delete30/tsukiyama_t:/loc/scratch" \
-::: genome_combined "test_files_PASA/${sub}/${sub}.transcripts.fasta"
+::: genome_combined "files_PASA_test-run/${sub}/${sub}.transcripts.fasta"
 ```
 
 <a id="check-the-results-of-the-echo-test-1"></a>
 ##### Check the results of the `echo` test
 How does it look?
 ```txt
-singularity run --no-home --bind /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201 --bind /fh/scratch/delete30/tsukiyama_t:/loc/scratch /home/kalavatt/singularity-docker-etc/PASA.sif /usr/local/src/PASApipeline/bin/seqclean test_files_PASA/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.transcripts.fasta
+singularity run --no-home --bind /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201 --bind /fh/scratch/delete30/tsukiyama_t:/loc/scratch /home/kalavatt/singularity-docker-etc/PASA.sif /usr/local/src/PASApipeline/bin/seqclean files_PASA_test-run/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.transcripts.fasta
 ```
 
 Cleaned up
@@ -543,7 +544,7 @@ singularity run
     --bind /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201 
     --bind /fh/scratch/delete30/tsukiyama_t:/loc/scratch 
         /home/kalavatt/singularity-docker-etc/PASA.sif 
-            /usr/local/src/PASApipeline/bin/seqclean test_files_PASA/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.transcripts.fasta
+            /usr/local/src/PASApipeline/bin/seqclean files_PASA_test-run/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.transcripts.fasta
 ```
 
 <a id="run-the-command-1"></a>
@@ -552,7 +553,7 @@ singularity run
 #!/bin/bash
 #DONTRUN #CONTINUE
 
-cd "test_files_PASA/${sub}"
+cd "files_PASA_test-run/${sub}"
 
 parallel --header : --colsep " " -k -j 1 \
 'singularity run \
@@ -582,7 +583,7 @@ seqclean trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.tra
  Using 1 CPUs for cleaning
 -= Rebuilding trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.transcripts.fasta cdb index =-
  Launching actual cleaning process:
- psx -p 1  -n 1000  -i trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.transcripts.fasta -d cleaning -C '/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201/test_files_PASA/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.transcripts.fasta:ANLMS100:::11:0' -c '/usr/local/src/PASApipeline/bin/seqclean.psx'
+ psx -p 1  -n 1000  -i trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.transcripts.fasta -d cleaning -C '/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201/files_PASA_test-run/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.transcripts.fasta:ANLMS100:::11:0' -c '/usr/local/src/PASApipeline/bin/seqclean.psx'
 Collecting cleaning reports
 
 **************************************************
@@ -598,7 +599,7 @@ Output file containing only valid and trimmed sequences: trinity_5781-5782_Q_IP_
 For trimming and trashing details see cleaning report  : trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.transcripts.fasta.cln
 --------------------------------------------------
 seqclean (trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.transcripts.fasta) finished on machine
- in /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201/test_files_PASA/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd, without a detectable error.
+ in /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201/files_PASA_test-run/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd, without a detectable error.
 ```
 </details>
 <br />
@@ -609,17 +610,17 @@ seqclean (trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.tr
 #!/bin/bash
 #DONTRUN #CONTINUE
 
-if [[ -f "./test_files_PASA/${sub}/${sub}.align_assembly.config" ]]; then
-    rm "./test_files_PASA/${sub}/${sub}.align_assembly.config"
+if [[ -f "./files_PASA_test-run/${sub}/${sub}.align_assembly.config" ]]; then
+    rm "./files_PASA_test-run/${sub}/${sub}.align_assembly.config"
 fi
 
-cat << align_assembly > "./test_files_PASA/${sub}/${sub}.align_assembly.config"
+cat << align_assembly > "./files_PASA_test-run/${sub}/${sub}.align_assembly.config"
 ## templated variables to be replaced exist as <__var_name__>
 
 # Pathname of an SQLite database
 # If the environment variable DSN_DRIVER=mysql then it is the name of a MySQL database
 # DATABASE=/exact/path/to/your/working/directory/sample_mydb.pasa.sqlite
-DATABASE=/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201/test_files_PASA/${sub}/${sub}.pasa.sqlite
+DATABASE=/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201/files_PASA_test-run/${sub}/${sub}.pasa.sqlite
 
 
 #######################################################
@@ -635,7 +636,7 @@ validate_alignments_in_db.dbi:--NUM_BP_PERFECT_SPLICE_BOUNDARY=0
 #script subcluster_builder.dbi
 subcluster_builder.dbi:-m=50
 align_assembly
-# vi "./test_files_PASA/${sub}/${sub}.align_assembly.config"  # :q
+# vi "./files_PASA_test-run/${sub}/${sub}.align_assembly.config"  # :q
 ```
 
 <a id="run-launch_pasa_pipelinepl"></a>
@@ -672,11 +673,11 @@ parallel --header : --colsep " " -k -j 1 echo \
 ::: d_exp "$(pwd)" \
 ::: d_scr "/fh/scratch/delete30/tsukiyama_t:/loc/scratch" \
 ::: j_cor "${SLURM_CPUS_ON_NODE}" \
-::: align_assembly_config "./test_files_PASA/${sub}/${sub}.align_assembly.config" \
+::: align_assembly_config "./files_PASA_test-run/${sub}/${sub}.align_assembly.config" \
 ::: genome "${HOME}/genomes/sacCer3/Ensembl/108/DNA/Saccharomyces_cerevisiae.R64-1-1.dna.toplevel.chr-rename.fasta" \
-::: transcripts_clean "test_files_PASA/${sub}/${sub}.transcripts.fasta.clean" \
-::: transcripts "test_files_PASA/${sub}/${sub}.transcripts.fasta" \
-::: accessions "test_files_PASA/${sub}/$(basename "${genome_free_fasta}" .fasta).accessions"
+::: transcripts_clean "files_PASA_test-run/${sub}/${sub}.transcripts.fasta.clean" \
+::: transcripts "files_PASA_test-run/${sub}/${sub}.transcripts.fasta" \
+::: accessions "files_PASA_test-run/${sub}/$(basename "${genome_free_fasta}" .fasta).accessions"
 ```
 
 <a id="results-of-echo-test"></a>
@@ -686,7 +687,7 @@ parallel --header : --colsep " " -k -j 1 echo \
 
 How does it look?
 ```txt
-singularity run --no-home --bind /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201 --bind /fh/scratch/delete30/tsukiyama_t:/loc/scratch /home/kalavatt/singularity-docker-etc/PASA.sif /usr/local/src/PASApipeline/Launch_PASA_pipeline.pl --CPU 6 --config ./test_files_PASA/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.align_assembly.config --create --replace --genome /home/kalavatt/genomes/sacCer3/Ensembl/108/DNA/Saccharomyces_cerevisiae.R64-1-1.dna.toplevel.chr-rename.fasta --MAX_INTRON_LENGTH 1002 --transcripts test_files_PASA/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.transcripts.fasta.clean -T -u test_files_PASA/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.transcripts.fasta --TDN test_files_PASA/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_1_EndToEnd.Trinity.accessions tdn.accs --transcribed_is_aligned_orient --stringent_alignment_overlap 30.0 --ALIGNERS blat,gmap,minimap2 1> /dev/fd/63 2> /dev/fd/62
+singularity run --no-home --bind /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201 --bind /fh/scratch/delete30/tsukiyama_t:/loc/scratch /home/kalavatt/singularity-docker-etc/PASA.sif /usr/local/src/PASApipeline/Launch_PASA_pipeline.pl --CPU 6 --config ./files_PASA_test-run/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.align_assembly.config --create --replace --genome /home/kalavatt/genomes/sacCer3/Ensembl/108/DNA/Saccharomyces_cerevisiae.R64-1-1.dna.toplevel.chr-rename.fasta --MAX_INTRON_LENGTH 1002 --transcripts files_PASA_test-run/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.transcripts.fasta.clean -T -u files_PASA_test-run/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.transcripts.fasta --TDN files_PASA_test-run/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_1_EndToEnd.Trinity.accessions tdn.accs --transcribed_is_aligned_orient --stringent_alignment_overlap 30.0 --ALIGNERS blat,gmap,minimap2 1> /dev/fd/63 2> /dev/fd/62
 ```
 
 Cleaned up
@@ -698,15 +699,15 @@ singularity run
     /home/kalavatt/singularity-docker-etc/PASA.sif 
         /usr/local/src/PASApipeline/Launch_PASA_pipeline.pl 
             --CPU 6 
-            --config ./test_files_PASA/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.align_assembly.config 
+            --config ./files_PASA_test-run/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.align_assembly.config 
             --create 
             --replace 
             --genome /home/kalavatt/genomes/sacCer3/Ensembl/108/DNA/Saccharomyces_cerevisiae.R64-1-1.dna.toplevel.chr-rename.fasta 
             --MAX_INTRON_LENGTH 1002 
-            --transcripts test_files_PASA/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.transcripts.fasta.clean 
+            --transcripts files_PASA_test-run/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.transcripts.fasta.clean 
             -T 
-            -u test_files_PASA/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.transcripts.fasta 
-            --TDN test_files_PASA/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_1_EndToEnd.Trinity.accessions 
+            -u files_PASA_test-run/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.transcripts.fasta 
+            --TDN files_PASA_test-run/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_1_EndToEnd.Trinity.accessions 
             --transcribed_is_aligned_orient 
             --stringent_alignment_overlap 30.0 
             --ALIGNERS blat,gmap,minimap2 
@@ -722,7 +723,7 @@ singularity run
 #!/bin/bash
 #DONTRUN #CONTINUE
 
-cd "test_files_PASA/${sub}" || echo "cd'ing failed; check on this"
+cd "files_PASA_test-run/${sub}" || echo "cd'ing failed; check on this"
 
 export PASAHOME="/usr/local/src/PASApipeline"
 singularity run \
@@ -768,6 +769,7 @@ echo "${SLURM_JOB_ID}"
 mv stderr.log.txt stderr.log.2.txt
 mv stdout.log.txt stdout.log.2.txt
 
+#CORRECT
 singularity run \
     --bind "${HOME}" \
     --bind "$(pwd)" \
@@ -803,7 +805,7 @@ singularity run \
     --bind "$(pwd)" \
     --bind "/fh/scratch/delete30/tsukiyama_t:/loc/scratch" \
     ~/singularity-docker-etc/PASA.sif
-WARNING: Bind mount '/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201/test_files_PASA/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd => /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201/test_files_PASA/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd' overlaps container CWD /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201/test_files_PASA/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd, may not be available
+WARNING: Bind mount '/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201/files_PASA_test-run/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd => /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201/files_PASA_test-run/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd' overlaps container CWD /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201/files_PASA_test-run/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd, may not be available
 
 Singularity> cd /loc/scratch
 
@@ -859,7 +861,7 @@ drwxrws---   2 root   0 Oct  2  2021 ./
 drwxr-xr-x 240 root 238 Nov 18 11:36 ../
 
 ❯ -
-/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201/test_files_PASA/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd
+/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201/files_PASA_test-run/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd
 
 ❯ touch /fh/scratch/delete30/tsukiyama_t/test.txt
 
@@ -872,14 +874,14 @@ drwxr-xr-x 240 root     238 Nov 18 11:36 ../
 -rw-rw----   1 kalavatt   0 Dec 11 06:22 test.txt
 
 ❯ -
-/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201/test_files_PASA/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd
+/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201/files_PASA_test-run/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd
 
 ❯ singularity shell \
     --bind "${HOME}" \
     --bind "$(pwd)" \
     --bind "/fh/scratch/delete30/tsukiyama_t:/loc/scratch" \
     ~/singularity-docker-etc/PASA.sif
-WARNING: Bind mount '/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201/test_files_PASA/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd => /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201/test_files_PASA/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd' overlaps container CWD /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201/test_files_PASA/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd, may not be available
+WARNING: Bind mount '/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201/files_PASA_test-run/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd => /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201/files_PASA_test-run/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd' overlaps container CWD /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201/files_PASA_test-run/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd, may not be available
 
 Singularity> ls -lhaFG /loc/scratch
 total 512
@@ -953,7 +955,7 @@ Error, 17 threads failed.
 Error, cmd:
 /usr/local/src/PASApipeline/scripts/assemble_clusters.dbi \
     -G /home/kalavatt/genomes/sacCer3/Ensembl/108/DNA/Saccharomyces_cerevisiae.R64-1-1.dna.toplevel.chr-rename.fasta  \
-    -M '/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201/test_files_PASA/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.pasa.sqlite'  \
+    -M '/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201/files_PASA_test-run/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.pasa.sqlite'  \
     -T 6  \
         > trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.pasa.sqlite.pasa_alignment_assembly_building.ascii_illustrations.out
 died with ret 7424 No such file or directory at /usr/local/src/PASApipeline/PerlLib/Pipeliner.pm line 187.
@@ -1290,8 +1292,8 @@ Kris
 
 ~~*Sent; awaiting response (hopefully, I'll get one)*~~
 
-<a id="response-by-brian"></a>
-###### [Response by Brian](https://groups.google.com/g/pasapipeline-users/c/0e8jkG6aLtI/m/aLmE5neOBAAJ)
+<a id="response-from-brian"></a>
+###### [Response from Brian](https://groups.google.com/g/pasapipeline-users/c/0e8jkG6aLtI/m/aLmE5neOBAAJ)
 Hi Kris,
 
 The main danger here is generating fusion transcripts from overlapping
@@ -1322,6 +1324,42 @@ A little experimental context could be helpful here: We're working with a *S. ce
 Thanks! And thanks for these great programs and documentation,
 Kris
 
+<a id="follow-up-response-from-brian"></a>
+###### [Follow-up response from Brian](https://groups.google.com/g/pasapipeline-users/c/0e8jkG6aLtI/m/HA8WVrOdBAAJ)
+
+Hi Kris,
+
+Responses below:
+
+> `On Sun, Dec 11, 2022 at 3:40 PM Kris Alavattam <kalavattam@gmail.com> wrote:`
+> 
+> Thanks, Brian—yes, that's very helpful. When you mention "the option to require sufficient overlap among alignments to assemble to again mitigate the neighboring fusion transcript issue," you mean adjusting the --stringent_alignment_overlap parameter when running Launch_PASA_pipeline.pl—is that correct?
+
+Yes, that's right.
+
+> In trial experiments I'm running with PASA, in which I'm using .fasta files from genome-guided and genome-free Trinity (but nothing from StringTie/Cufflinks/etc. yet), so it makes me wonder if it would be helpful to increase the value for --stringent_alignment_overlap from 30.0 to perhaps something higher? (Currently, I'm calling Launch_PASA_pipeline.pl with --stringent_alignment_overlap 30.0, following the advice here.) If I understand things correctly, a higher percentage overlap for --stringent_alignment_overlap could/would mitigate the false identification of fusion transcripts that result from working with data from small, gene-dense genomes such as S. cerevisiae—is that right?
+
+It'll mitigate PASA contributing more to it, for sure, but it won't
+address the problem for those cases where the input transcripts are
+already fused. The 30% is probably fine.
+
+> A little experimental context could be helpful here: We're working with a S. cerevisiae knock-out model that increases global antisense transcription, and we want to accurately identify these ncRNA transcripts and use the custom annotations in downstream analyses. In our work so far, we see a lot of both fusion and (apparently) fragmentary transcripts. Do you think that adjusting the value for --stringent_alignment_overlap could be useful in this context? Or perhaps leaving the --stringent_alignment_overlap at 30.0 is reasonable? Thinking of this, I'm reminded also of the --gene_overlap option available in Launch_PASA_pipeline.pl (which should be called together with the -L flag and --annots_gff3 option). Could calling Launch_PASA_pipeline.pl with --gene_overlap set to some value be potentially useful in this context?
+
+Given the high quality of the reference annotations for S. cerevisiae,
+using --gene_overlap is easily justified.
+
+If I remember correctly, there aren't many introns in S. cerevisiae.
+<mark>For antisense transcript to be properly identified as such, you'd need
+to have to carefully take into account the transcribed orientation
+based on the aligned orientation</mark> - with Trinity run in the
+strand-specific modes to ensure proper transcript orientation during
+reconstruction.  Just something to be aware of, but you probably
+already dealt with this given you're already deep into the process.
+
+Hope this helps,
+
+~b
+
 <a id="on-running-build_comprehensive_transcriptomedbi"></a>
 #### On running `build_comprehensive_transcriptome.dbi`
 ```bash
@@ -1348,7 +1386,7 @@ It completed successfully (and was quick)
 <summary><i>Messages printed to terminal</i></summary>
 
 ```txt
-WARNING: Bind mount '/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201/test_files_PASA/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd => /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201/test_files_PASA/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd' overlaps container CWD /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201/test_files_PASA/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd, may not be available
+WARNING: Bind mount '/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201/files_PASA_test-run/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd => /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201/files_PASA_test-run/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd' overlaps container CWD /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201/files_PASA_test-run/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd, may not be available
 perl: warning: Setting locale failed.
 perl: warning: Please check that your locale settings:
         LANGUAGE = "en_US:",
@@ -1365,8 +1403,8 @@ perl: warning: Please check that your locale settings:
         LANG = "en_US.UTF-8"
     are supported and installed on your system.
 perl: warning: Falling back to the standard locale ("C").
--connecting to SQLite db: /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201/test_files_PASA/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.pasa.sqlite
-[84 / 84] processing map/fail TRINITY_DN71_c0_g1_i4CMD: /usr/local/src/PASApipeline/scripts/PASA_transcripts_and_assemblies_to_GFF3.dbi -M '/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201/test_files_PASA/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.pasa.sqlite'
+-connecting to SQLite db: /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201/files_PASA_test-run/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.pasa.sqlite
+[84 / 84] processing map/fail TRINITY_DN71_c0_g1_i4CMD: /usr/local/src/PASApipeline/scripts/PASA_transcripts_and_assemblies_to_GFF3.dbi -M '/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201/files_PASA_test-run/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.pasa.sqlite'
 -F compreh_init_build/compreh_init_build.fasta > compreh_init_build/compreh_init_build.gff3
 
 perl: warning: Setting locale failed.
@@ -1385,7 +1423,7 @@ perl: warning: Please check that your locale settings:
         LANG = "en_US.UTF-8"
     are supported and installed on your system.
 perl: warning: Falling back to the standard locale ("C").
-CMD: /usr/local/src/PASApipeline/scripts/PASA_transcripts_and_assemblies_to_GFF3.dbi -M '/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201/test_files_PASA/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.pasa.sqlite' -F compreh_init_build/compreh_init_build.fasta -B > compreh_init_build/compreh_init_build.bed
+CMD: /usr/local/src/PASApipeline/scripts/PASA_transcripts_and_assemblies_to_GFF3.dbi -M '/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201/files_PASA_test-run/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.pasa.sqlite' -F compreh_init_build/compreh_init_build.fasta -B > compreh_init_build/compreh_init_build.bed
 perl: warning: Setting locale failed.
 perl: warning: Please check that your locale settings:
         LANGUAGE = "en_US:",
