@@ -12,8 +12,9 @@
 1. [Run `PASA` precursor commands](#run-pasa-precursor-commands)
 	1. [`mkdir` the experiment directories](#mkdir-the-experiment-directories)
 	1. [`cat` the `.fasta`s from `Trinity` genome-free and genome-guided approaches](#cat-the-fastas-from-trinity-genome-free-and-genome-guided-approaches)
-	1. [Create a `.txt`s for Trinity genome-free transcript accessions](#create-a-txts-for-trinity-genome-free-transcript-accessions)
+	1. [Create `.txt`s for `Trinity` genome-free transcript accessions](#create-txts-for-trinity-genome-free-transcript-accessions)
 	1. ["Clean" the transcript sequences](#clean-the-transcript-sequences)
+	1. [Set up an `.config` files for the calls to `PASA`](#set-up-an-config-files-for-the-calls-to-pasa)
 1. [Miscellaneous](#miscellaneous)
 1. [Miscellaneous](#miscellaneous-1)
 1. [Miscellaneous](#miscellaneous-2)
@@ -53,6 +54,7 @@ mwd
 Trinity_env
 ml Singularity
 ```
+
 </details>
 <br />
 <br />
@@ -671,8 +673,8 @@ cat     files_Trinity_genome-guided/files_unprocessed/trinity_5781-5782_Q_IP_mer
 </details>
 <br />
 
-<a id="create-a-txts-for-trinity-genome-free-transcript-accessions"></a>
-### Create a `.txt`s for Trinity genome-free transcript accessions
+<a id="create-txts-for-trinity-genome-free-transcript-accessions"></a>
+### Create `.txt`s for `Trinity` genome-free transcript accessions
 ```bash
 #!/bin/bash
 #DONTRUN #CONTINUE
@@ -1132,7 +1134,6 @@ cd files_PASA && .,s && cd -
 <summary><i>Results of .,s in files_PASA/ printed to terminal</i></summary>
 
 ```txt
-/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201/files_PASA
 ./trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd:
 total 73M
 drwxrws---  3 kalavatt  822 Dec 11 15:28 ./
@@ -1258,7 +1259,191 @@ drwxr-s---  2 kalavatt 3.2K Dec 11 15:27 cleaning_1/
 -rw-rw-r--  1 kalavatt  27M Dec 11 15:27 trinity_5781-5782_Q_IP_merged.un_multi-hit-mode_1_Local.transcripts.fasta.clean
 -rw-rw-r--  1 kalavatt 1.9M Dec 11 15:27 trinity_5781-5782_Q_IP_merged.un_multi-hit-mode_1_Local.transcripts.fasta.cln
 -rw-rw----  1 kalavatt 406K Dec 11 15:11 trinity_5781-5782_Q_IP_merged.un_multi-hit-mode_1_Local.Trinity.accessions
-/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201
+```
+</details>
+<br />
+
+<a id="set-up-an-config-files-for-the-calls-to-pasa"></a>
+### Set up an `.config` files for the calls to `PASA`
+```bash
+for i in "${!info_tx_db[@]}"; do
+	echo "#  -------------------------------------"
+	echo "GG: $(get_GG_or_GF "${info_tx_db["${i}"]}" 1)"
+	echo "GF: $(get_GG_or_GF "${info_tx_db["${i}"]}" 2)"
+	echo "DB: ${i}"
+	echo ""
+
+	if [[ -f "./files_PASA/${i}/${i}.align_assembly.config" ]]; then
+	    rm "./files_PASA/${i}/${i}.align_assembly.config"
+	fi
+
+cat << align_assembly > "./files_PASA/${i}/${i}.align_assembly.config"
+## templated variables to be replaced exist as <__var_name__>
+
+# Pathname of an SQLite database
+# If the environment variable DSN_DRIVER=mysql then it is the name of a MySQL database
+DATABASE=${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201/files_PASA/${i}/${i}.pasa.sqlite
+
+
+#######################################################
+# Parameters to specify to specific scripts in pipeline
+# create a key = "script_name" + ":" + "parameter" 
+# assign a value as done above.
+
+#script validate_alignments_in_db.dbi
+validate_alignments_in_db.dbi:--MIN_PERCENT_ALIGNED=75
+validate_alignments_in_db.dbi:--MIN_AVG_PER_ID=95
+validate_alignments_in_db.dbi:--NUM_BP_PERFECT_SPLICE_BOUNDARY=0
+
+#script subcluster_builder.dbi
+subcluster_builder.dbi:-m=50
+align_assembly
+# vi "./files_PASA/${i}/${i}.align_assembly.config"  # :q
+
+	echo ""
+done
+
+cd files_PASA && .,s && cd -
+```
+
+<details>
+<summary><i>Results of .,s in files_PASA/ printed to terminal</i></summary>
+
+```txt
+./trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd:
+total 73M
+drwxrws---  3 kalavatt  929 Dec 12 05:37 ./
+drwxrws--- 11 kalavatt  720 Dec 11 15:14 ../
+drwxr-s---  2 kalavatt 3.7K Dec 11 15:28 cleaning_1/
+-rw-rw-r--  1 kalavatt  12K Dec 11 15:28 err_seqcl_trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.transcripts.fasta.log
+-rw-rw-r--  1 kalavatt 3.5K Dec 11 15:28 outparts_cln.sort
+-rw-rw-r--  1 kalavatt 1.7K Dec 11 15:28 seqcl_trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.transcripts.fasta.log
+-rw-rw----  1 kalavatt  906 Dec 12 05:37 trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.align_assembly.config
+-rw-rw----  1 kalavatt  28M Dec 11 14:46 trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.transcripts.fasta
+-rw-rw-r--  1 kalavatt 1.7M Dec 11 15:28 trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.transcripts.fasta.cidx
+-rw-rw-r--  1 kalavatt  28M Dec 11 15:28 trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.transcripts.fasta.clean
+-rw-rw-r--  1 kalavatt 1.9M Dec 11 15:28 trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd.transcripts.fasta.cln
+-rw-rw----  1 kalavatt 400K Dec 11 15:11 trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_1_EndToEnd.Trinity.accessions
+
+./trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_10_EndToEnd:
+total 55M
+drwxrws---  3 kalavatt  922 Dec 12 05:37 ./
+drwxrws--- 11 kalavatt  720 Dec 11 15:14 ../
+drwxr-s---  2 kalavatt 3.5K Dec 11 15:26 cleaning_1/
+-rw-rw-r--  1 kalavatt  11K Dec 11 15:26 err_seqcl_trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_10_EndToEnd.transcripts.fasta.log
+-rw-rw-r--  1 kalavatt 3.4K Dec 11 15:26 outparts_cln.sort
+-rw-rw-r--  1 kalavatt 1.7K Dec 11 15:26 seqcl_trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_10_EndToEnd.transcripts.fasta.log
+-rw-rw----  1 kalavatt  904 Dec 12 05:37 trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_10_EndToEnd.align_assembly.config
+-rw-rw----  1 kalavatt  28M Dec 11 14:46 trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_10_EndToEnd.transcripts.fasta
+-rw-rw-r--  1 kalavatt 1.7M Dec 11 15:26 trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_10_EndToEnd.transcripts.fasta.cidx
+-rw-rw-r--  1 kalavatt  28M Dec 11 15:26 trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_10_EndToEnd.transcripts.fasta.clean
+-rw-rw-r--  1 kalavatt 1.9M Dec 11 15:26 trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_10_EndToEnd.transcripts.fasta.cln
+-rw-rw----  1 kalavatt 400K Dec 11 15:11 trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_1_EndToEnd.Trinity.accessions
+
+./trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_1_EndToEnd:
+total 52M
+drwxrws---  3 kalavatt  915 Dec 12 05:37 ./
+drwxrws--- 11 kalavatt  720 Dec 11 15:14 ../
+drwxr-s---  2 kalavatt 3.5K Dec 11 15:25 cleaning_1/
+-rw-rw-r--  1 kalavatt  11K Dec 11 15:25 err_seqcl_trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_1_EndToEnd.transcripts.fasta.log
+-rw-rw-r--  1 kalavatt 3.4K Dec 11 15:25 outparts_cln.sort
+-rw-rw-r--  1 kalavatt 1.7K Dec 11 15:25 seqcl_trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_1_EndToEnd.transcripts.fasta.log
+-rw-rw----  1 kalavatt  902 Dec 12 05:37 trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_1_EndToEnd.align_assembly.config
+-rw-rw----  1 kalavatt  27M Dec 11 14:46 trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_1_EndToEnd.transcripts.fasta
+-rw-rw-r--  1 kalavatt 1.7M Dec 11 15:25 trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_1_EndToEnd.transcripts.fasta.cidx
+-rw-rw-r--  1 kalavatt  27M Dec 11 15:25 trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_1_EndToEnd.transcripts.fasta.clean
+-rw-rw-r--  1 kalavatt 1.9M Dec 11 15:25 trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_1_EndToEnd.transcripts.fasta.cln
+-rw-rw----  1 kalavatt 400K Dec 11 15:11 trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_1_EndToEnd.Trinity.accessions
+
+./trinity_5781-5782_Q_IP_merged.trim.un_multi-hit-mode_100_EndToEnd:
+total 54M
+drwxrws---  3 kalavatt  913 Dec 12 05:37 ./
+drwxrws--- 11 kalavatt  720 Dec 11 15:14 ../
+drwxr-s---  2 kalavatt 3.5K Dec 11 15:28 cleaning_1/
+-rw-rw-r--  1 kalavatt  11K Dec 11 15:28 err_seqcl_trinity_5781-5782_Q_IP_merged.trim.un_multi-hit-mode_100_EndToEnd.transcripts.fasta.log
+-rw-rw-r--  1 kalavatt 3.4K Dec 11 15:28 outparts_cln.sort
+-rw-rw-r--  1 kalavatt 1.6K Dec 11 15:28 seqcl_trinity_5781-5782_Q_IP_merged.trim.un_multi-hit-mode_100_EndToEnd.transcripts.fasta.log
+-rw-rw----  1 kalavatt  902 Dec 12 05:37 trinity_5781-5782_Q_IP_merged.trim.un_multi-hit-mode_100_EndToEnd.align_assembly.config
+-rw-rw----  1 kalavatt  27M Dec 11 14:46 trinity_5781-5782_Q_IP_merged.trim.un_multi-hit-mode_100_EndToEnd.transcripts.fasta
+-rw-rw-r--  1 kalavatt 1.7M Dec 11 15:27 trinity_5781-5782_Q_IP_merged.trim.un_multi-hit-mode_100_EndToEnd.transcripts.fasta.cidx
+-rw-rw-r--  1 kalavatt  28M Dec 11 15:28 trinity_5781-5782_Q_IP_merged.trim.un_multi-hit-mode_100_EndToEnd.transcripts.fasta.clean
+-rw-rw-r--  1 kalavatt 1.9M Dec 11 15:28 trinity_5781-5782_Q_IP_merged.trim.un_multi-hit-mode_100_EndToEnd.transcripts.fasta.cln
+-rw-rw----  1 kalavatt 401K Dec 11 15:11 trinity_5781-5782_Q_IP_merged.trim.un_multi-hit-mode_1_EndToEnd.Trinity.accessions
+
+./trinity_5781-5782_Q_IP_merged.trim.un_multi-hit-mode_10_EndToEnd:
+total 71M
+drwxrws---  3 kalavatt  906 Dec 12 05:37 ./
+drwxrws--- 11 kalavatt  720 Dec 11 15:14 ../
+drwxr-s---  2 kalavatt 3.5K Dec 11 15:27 cleaning_1/
+-rw-rw-r--  1 kalavatt  11K Dec 11 15:27 err_seqcl_trinity_5781-5782_Q_IP_merged.trim.un_multi-hit-mode_10_EndToEnd.transcripts.fasta.log
+-rw-rw-r--  1 kalavatt 3.3K Dec 11 15:27 outparts_cln.sort
+-rw-rw-r--  1 kalavatt 1.6K Dec 11 15:27 seqcl_trinity_5781-5782_Q_IP_merged.trim.un_multi-hit-mode_10_EndToEnd.transcripts.fasta.log
+-rw-rw----  1 kalavatt  900 Dec 12 05:37 trinity_5781-5782_Q_IP_merged.trim.un_multi-hit-mode_10_EndToEnd.align_assembly.config
+-rw-rw----  1 kalavatt  27M Dec 11 14:46 trinity_5781-5782_Q_IP_merged.trim.un_multi-hit-mode_10_EndToEnd.transcripts.fasta
+-rw-rw-r--  1 kalavatt 1.7M Dec 11 15:27 trinity_5781-5782_Q_IP_merged.trim.un_multi-hit-mode_10_EndToEnd.transcripts.fasta.cidx
+-rw-rw-r--  1 kalavatt  27M Dec 11 15:27 trinity_5781-5782_Q_IP_merged.trim.un_multi-hit-mode_10_EndToEnd.transcripts.fasta.clean
+-rw-rw-r--  1 kalavatt 1.9M Dec 11 15:27 trinity_5781-5782_Q_IP_merged.trim.un_multi-hit-mode_10_EndToEnd.transcripts.fasta.cln
+-rw-rw----  1 kalavatt 401K Dec 11 15:11 trinity_5781-5782_Q_IP_merged.trim.un_multi-hit-mode_1_EndToEnd.Trinity.accessions
+
+./trinity_5781-5782_Q_IP_merged.trim.un_multi-hit-mode_1_EndToEnd:
+total 68M
+drwxrws---  3 kalavatt  899 Dec 12 05:37 ./
+drwxrws--- 11 kalavatt  720 Dec 11 15:14 ../
+drwxr-s---  2 kalavatt 3.4K Dec 11 15:26 cleaning_1/
+-rw-rw-r--  1 kalavatt  11K Dec 11 15:26 err_seqcl_trinity_5781-5782_Q_IP_merged.trim.un_multi-hit-mode_1_EndToEnd.transcripts.fasta.log
+-rw-rw-r--  1 kalavatt 3.3K Dec 11 15:26 outparts_cln.sort
+-rw-rw-r--  1 kalavatt 1.6K Dec 11 15:26 seqcl_trinity_5781-5782_Q_IP_merged.trim.un_multi-hit-mode_1_EndToEnd.transcripts.fasta.log
+-rw-rw----  1 kalavatt  898 Dec 12 05:37 trinity_5781-5782_Q_IP_merged.trim.un_multi-hit-mode_1_EndToEnd.align_assembly.config
+-rw-rw----  1 kalavatt  26M Dec 11 14:46 trinity_5781-5782_Q_IP_merged.trim.un_multi-hit-mode_1_EndToEnd.transcripts.fasta
+-rw-rw-r--  1 kalavatt 1.6M Dec 11 15:26 trinity_5781-5782_Q_IP_merged.trim.un_multi-hit-mode_1_EndToEnd.transcripts.fasta.cidx
+-rw-rw-r--  1 kalavatt  27M Dec 11 15:26 trinity_5781-5782_Q_IP_merged.trim.un_multi-hit-mode_1_EndToEnd.transcripts.fasta.clean
+-rw-rw-r--  1 kalavatt 1.9M Dec 11 15:26 trinity_5781-5782_Q_IP_merged.trim.un_multi-hit-mode_1_EndToEnd.transcripts.fasta.cln
+-rw-rw----  1 kalavatt 401K Dec 11 15:11 trinity_5781-5782_Q_IP_merged.trim.un_multi-hit-mode_1_EndToEnd.Trinity.accessions
+
+./trinity_5781-5782_Q_IP_merged.un_multi-hit-mode_100_Local:
+total 72M
+drwxrws---  3 kalavatt  849 Dec 12 05:37 ./
+drwxrws--- 11 kalavatt  720 Dec 11 15:14 ../
+drwxr-s---  2 kalavatt 3.3K Dec 11 15:28 cleaning_1/
+-rw-rw-r--  1 kalavatt  11K Dec 11 15:28 err_seqcl_trinity_5781-5782_Q_IP_merged.un_multi-hit-mode_100_Local.transcripts.fasta.log
+-rw-rw-r--  1 kalavatt 3.2K Dec 11 15:28 outparts_cln.sort
+-rw-rw-r--  1 kalavatt 1.5K Dec 11 15:28 seqcl_trinity_5781-5782_Q_IP_merged.un_multi-hit-mode_100_Local.transcripts.fasta.log
+-rw-rw----  1 kalavatt  886 Dec 12 05:37 trinity_5781-5782_Q_IP_merged.un_multi-hit-mode_100_Local.align_assembly.config
+-rw-rw----  1 kalavatt  28M Dec 11 14:46 trinity_5781-5782_Q_IP_merged.un_multi-hit-mode_100_Local.transcripts.fasta
+-rw-rw-r--  1 kalavatt 1.7M Dec 11 15:28 trinity_5781-5782_Q_IP_merged.un_multi-hit-mode_100_Local.transcripts.fasta.cidx
+-rw-rw-r--  1 kalavatt  28M Dec 11 15:28 trinity_5781-5782_Q_IP_merged.un_multi-hit-mode_100_Local.transcripts.fasta.clean
+-rw-rw-r--  1 kalavatt 2.0M Dec 11 15:28 trinity_5781-5782_Q_IP_merged.un_multi-hit-mode_100_Local.transcripts.fasta.cln
+-rw-rw----  1 kalavatt 406K Dec 11 15:11 trinity_5781-5782_Q_IP_merged.un_multi-hit-mode_1_Local.Trinity.accessions
+
+./trinity_5781-5782_Q_IP_merged.un_multi-hit-mode_10_Local:
+total 72M
+drwxrws---  3 kalavatt  842 Dec 12 05:37 ./
+drwxrws--- 11 kalavatt  720 Dec 11 15:14 ../
+drwxr-s---  2 kalavatt 3.2K Dec 11 15:29 cleaning_1/
+-rw-rw-r--  1 kalavatt  11K Dec 11 15:29 err_seqcl_trinity_5781-5782_Q_IP_merged.un_multi-hit-mode_10_Local.transcripts.fasta.log
+-rw-rw-r--  1 kalavatt 3.1K Dec 11 15:29 outparts_cln.sort
+-rw-rw-r--  1 kalavatt 1.5K Dec 11 15:29 seqcl_trinity_5781-5782_Q_IP_merged.un_multi-hit-mode_10_Local.transcripts.fasta.log
+-rw-rw----  1 kalavatt  884 Dec 12 05:37 trinity_5781-5782_Q_IP_merged.un_multi-hit-mode_10_Local.align_assembly.config
+-rw-rw----  1 kalavatt  28M Dec 11 14:46 trinity_5781-5782_Q_IP_merged.un_multi-hit-mode_10_Local.transcripts.fasta
+-rw-rw-r--  1 kalavatt 1.7M Dec 11 15:28 trinity_5781-5782_Q_IP_merged.un_multi-hit-mode_10_Local.transcripts.fasta.cidx
+-rw-rw-r--  1 kalavatt  28M Dec 11 15:29 trinity_5781-5782_Q_IP_merged.un_multi-hit-mode_10_Local.transcripts.fasta.clean
+-rw-rw-r--  1 kalavatt 2.0M Dec 11 15:29 trinity_5781-5782_Q_IP_merged.un_multi-hit-mode_10_Local.transcripts.fasta.cln
+-rw-rw----  1 kalavatt 406K Dec 11 15:11 trinity_5781-5782_Q_IP_merged.un_multi-hit-mode_1_Local.Trinity.accessions
+
+./trinity_5781-5782_Q_IP_merged.un_multi-hit-mode_1_Local:
+total 53M
+drwxrws---  3 kalavatt  835 Dec 12 05:37 ./
+drwxrws--- 11 kalavatt  720 Dec 11 15:14 ../
+drwxr-s---  2 kalavatt 3.2K Dec 11 15:27 cleaning_1/
+-rw-rw-r--  1 kalavatt  11K Dec 11 15:27 err_seqcl_trinity_5781-5782_Q_IP_merged.un_multi-hit-mode_1_Local.transcripts.fasta.log
+-rw-rw-r--  1 kalavatt 3.1K Dec 11 15:27 outparts_cln.sort
+-rw-rw-r--  1 kalavatt 1.5K Dec 11 15:27 seqcl_trinity_5781-5782_Q_IP_merged.un_multi-hit-mode_1_Local.transcripts.fasta.log
+-rw-rw----  1 kalavatt  882 Dec 12 05:37 trinity_5781-5782_Q_IP_merged.un_multi-hit-mode_1_Local.align_assembly.config
+-rw-rw----  1 kalavatt  27M Dec 11 14:46 trinity_5781-5782_Q_IP_merged.un_multi-hit-mode_1_Local.transcripts.fasta
+-rw-rw-r--  1 kalavatt 1.7M Dec 11 15:26 trinity_5781-5782_Q_IP_merged.un_multi-hit-mode_1_Local.transcripts.fasta.cidx
+-rw-rw-r--  1 kalavatt  27M Dec 11 15:27 trinity_5781-5782_Q_IP_merged.un_multi-hit-mode_1_Local.transcripts.fasta.clean
+-rw-rw-r--  1 kalavatt 1.9M Dec 11 15:27 trinity_5781-5782_Q_IP_merged.un_multi-hit-mode_1_Local.transcripts.fasta.cln
+-rw-rw----  1 kalavatt 406K Dec 11 15:11 trinity_5781-5782_Q_IP_merged.un_multi-hit-mode_1_Local.Trinity.accessions
 ```
 </details>
 <br />
