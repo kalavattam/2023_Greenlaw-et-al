@@ -3076,7 +3076,7 @@ cd -
 #!/bin/bash
 #DONTRUN #CONTINUE
 
-s_name_next="submit_launch-PASA-pipeline.sh"
+s_name_next="submit_build-comprehensive-transcriptome.sh"
 threads=1
 
 if [[ -f "./sh_err_out/${s_name_next}" ]]; then

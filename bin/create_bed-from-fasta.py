@@ -1,0 +1,215 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Dec 13 10:14:09 2022
+
+@author: kalavatt
+"""
+
+# bioinformatics.stackexchange.com/questions/5435/how-to-create-a-bed-file-from-fasta
+import numpy as np
+import pandas as pd
+# import sys
+
+
+# stackoverflow.com/questions/43067373/split-by-comma-and-how-to-exclude-comma-from-quotes-in-split
+def tokenize(string, separator = ',', quote = '"'):
+    """
+    Split a comma separated string into a List of strings.
+
+    Separator characters inside the quotes are ignored.
+
+    :param string: A string to be split into chunks
+    :param separator: A separator character
+    :param quote: A character to define beginning and end of the quoted string
+    :return: A list of strings, one element for every chunk
+    """
+    comma_separated_list = []
+
+    chunk = ''
+    in_quotes = False
+
+    for character in string:
+        if character == separator and not in_quotes:
+            comma_separated_list.append(chunk)
+            chunk = ''
+        else:
+            chunk += character
+            if character == quote:
+                in_quotes = False if in_quotes else True
+
+    comma_separated_list.append(chunk)
+
+    return comma_separated_list
+
+
+# Drafting it all... ----------------------------------------------------------
+fasta = "other_features_genomic.fasta"
+
+headers = []
+with open(fasta) as f:
+    header = None
+    for line in f:
+        if line.startswith('>'):  # Identifies fasta header line
+            headers.append(line[1:-1])  # Append all of the line that isn't >
+            header = line[1:]  # Reset header
+del(fasta)
+del(f)
+del(line)
+
+
+headers_fix_complement = []
+for i in headers:
+    if i.find('Genome Release 64-3-1, reverse complement,') != -1:
+        headers_fix_complement.append(i)
+    else:
+        headers_fix_complement.append(
+            i.replace(
+                'Genome Release 64-3-1,',
+                'Genome Release 64-3-1, forward complement,'
+            )
+        )
+del(i)
+
+header_list = []
+for i in headers_fix_complement:
+    # print(type(i))
+    print(tokenize(i))
+    header_list.append(tokenize(i))
+del(i)
+
+# stackoverflow.com/questions/18915941/create-a-pandas-dataframe-from-generator
+# sparkbyexamples.com/pandas/pandas-add-column-names-to-dataframe/
+header_df = pd.DataFrame(
+    header_list,
+    columns = ['feature', 'coordinate_written', 'release', 'strand_written', 'category', 'notes']
+)
+
+# Clean up variables
+del(header)
+del(headers)
+del(header_list)
+del(headers_fix_complement)
+
+# Split column 'feature' on space
+# stackoverflow.com/questions/37333299/splitting-a-pandas-dataframe-column-by-delimiter
+header_df[['name_systematic', 'name_standard', 'SGDID']] = header_df[
+    'feature'
+].str.split(' ', expand = True)
+
+# Check that 'name_standard' is exactly the same as 'feature'
+# geeksforgeeks.org/how-to-compare-two-columns-in-pandas/
+header_df['name_standard'].equals(header_df['name_systematic'])  # False
+
+# Return where two columns are different
+header_df.query('name_standard != name_systematic')
+#     feature                    coordinate  ... name_standard             SGDID
+# 11   ARS109      Chr I from 159907-160127  ...    ARS101  SGDID:S000077372
+# 86    RE301      Chr III from 29108-29809  ...        RE  SGDID:S000303804
+# 142  ARS416     Chr IV from 462567-462622  ...      ARS1  SGDID:S000029652
+# 405  ARS808   Chr VIII from 140349-141274  ...      ARS2  SGDID:S000029042
+# 444  ARS913     Chr IX from 214624-214754  ...    ARS901  SGDID:S000007644
+
+# yeastgenome.org/locus/ARS101
+# yeastgenome.org/locus/S000303804
+# yeastgenome.org/locus/S000029652
+# yeastgenome.org/locus/S000029042
+# yeastgenome.org/locus/S000007644
+
+# Strip string 'SGDID:' from column 'SGDID'
+# stackoverflow.com/questions/13682044/remove-unwanted-parts-from-strings-in-a-column
+header_df['SGDID'] = header_df['SGDID'].str.replace('SGDID:', '')
+
+# Create 'coordinate_full_...' columns derived from 'coordinate_written'
+header_df['coordinate_full_prefix_yes'] = header_df['coordinate_written']\
+        .str.replace(' from ', ':').str.replace('Chr ', 'Chr')
+header_df['coordinate_full_prefix_no'] = header_df['coordinate_written']\
+        .str.replace(' from ', ':').str.replace('Chr ', '')
+
+# Populate new column based on value in other column
+# towardsdatascience.com/create-new-column-based-on-other-columns-pandas-5586d87de73d
+# stackoverflow.com/questions/10715519/conditionally-fill-column-values-based-on-another-columns-value-in-pandas
+# numpy.org/doc/stable/reference/generated/numpy.where.html
+header_df['strand'] = np.where(
+    header_df['strand_written'] == 'reverse complement', '-', '+'
+)
+
+
+# Delete column 'name_standard'  #NOTE Don't actually do this
+# header_df = header_df.drop('name_standard', axis = 1)
+header_df = header_df.drop('strand', axis = 1)
+
+# Copy columns for splitting, etc.
+# stackoverflow.com/questions/32675861/copy-all-values-in-a-column-to-a-new-column-in-a-pandas-dataframe
+
+
+
+
+# geeksforgeeks.org/how-to-count-occurrences-of-specific-value-in-pandas-column/
+# geeksforgeeks.org/convert-given-pandas-series-into-a-dataframe-with-its-index-as-another-column-on-the-dataframe/
+# tally_0 = header_df[0].value_counts().to_frame().reset_index()
+# tally_1 = header_df[1].value_counts().to_frame().reset_index()
+# tally_2 = header_df[2].value_counts().to_frame().reset_index()
+tally_3 = header_df[3].value_counts().to_frame().reset_index()
+tally_4 = header_df[4].value_counts().to_frame().reset_index()
+tally_5 = header_df[5].value_counts().to_frame().reset_index()
+
+
+
+
+
+
+def parse_header(fasta):
+    headers = []
+    
+    with open(fasta) as f:
+        header = None
+        for line in f:
+            if line.startswith('>'):  # Identifies fasta header line
+                headers.append(line[1:-1])  # Append all of the line that isn't >
+                header = line[1:]  # Reset header
+    
+    # newHeader = (header.replace(':',',') for header in headers)  # Format to be accepted later
+    # newnewHeader = (header.replace('-',',') for header in newHeader)  # Format to accept later
+    # bed_head = (header.split(',') for header in newnewHeader)  # Separate by comma from format above
+    
+    headers_A = []
+    for i in headers:
+        if i.find('Genome Release 64-3-1, reverse complement,') != -1:
+            print(i)
+            headers_A.append(i)
+        else:
+            headers_A.append(
+                i.replace(
+                    'Genome Release 64-3-1,',
+                    'Genome Release 64-3-1, forward complement,'
+                )
+            )
+    bed_head = (i.split(',') for i in headers_A)  # Separate by comma from format above        
+    return bed_head
+
+
+if __name__=="__main__":
+    # Capture in- and outfile names from the command line
+    # fasta_in = sys.argv[1]  # Take fasta name, including path, as positional argument #1
+    # bed_out = sys.argv[2]  # Take bed name, including path, as positional argument #2
+
+    fasta_in = "other_features_genomic.fasta"
+    bed_out = "other_features_genomic.bed"
+    
+    # Run function parse_header()
+    fasta_parsed = parse_header(fasta_in)
+    
+    # Go from generator to list
+    headers = list(fasta_parsed)
+
+    # Create dataframe that will be used to output bed files
+    bed_file = pd.DataFrame(headers)
+    
+    # Output the bed file
+    bed_file.to_csv(
+        bed_out,
+        sep = '\t',
+        index = False,
+        header = None
+    )
