@@ -9,6 +9,7 @@ Created on Tue Dec 13 10:14:09 2022
 # bioinformatics.stackexchange.com/questions/5435/how-to-create-a-bed-file-from-fasta
 import numpy as np
 import pandas as pd
+import re
 # import sys
 
 
@@ -43,9 +44,53 @@ def tokenize(string, separator = ',', quote = '"'):
     return comma_separated_list
 
 
-# Drafting it all... ----------------------------------------------------------
-fasta = "other_features_genomic.fasta"
+# def tokenize(string, separator = ',', quote = '"', digit = '(?<=\d),(?=\d)'):
+#     """
+#     Split a comma separated string into a List of strings.
+#
+#     Separator characters inside the quotes are ignored.
+#
+#     :param string: A string to be split into chunks
+#     :param separator: A separator character
+#     :param quote: A character to define beginning and end of the quoted string
+#     :return: A list of strings, one element for every chunk
+#     """
+#     comma_separated_list = []
+#
+#     chunk = ''
+#     in_quotes = False
+#     in_digits = False
+#
+#     for character in string:
+#         if character == separator and not in_quotes and not in_digits:
+#             comma_separated_list.append(chunk)
+#             chunk = ''
+#         else:
+#             chunk += character
+#             if character == quote:
+#                 in_quotes = False if in_quotes else True
+#             if character == digit:
+#                 in_digits = False if in_digits else True
+#
+#     comma_separated_list.append(chunk)
+#
+#     return comma_separated_list
 
+
+# -----------------------------------------------------------------------------
+# Drafting it all... ----------------------------------------------------------
+# -----------------------------------------------------------------------------
+# Read in .fasta
+#QUESTION Will this work for the other SGD .fastas?
+fasta = "rna_coding_R64-3-1_20210421.fasta"
+# fasta = "other_features_genomic_R64-3-1_20210421.fasta"
+
+#NOTE rna_coding_* has some features with two (or more) coordinates (check if there are more than two)
+#TODO Come up with some way to handle that
+#TODO Check the other files for any such weirdness, to see if they work with the below, etc.
+#TODO Generalize the script: Make it reusable
+
+# Extract the headers
 headers = []
 with open(fasta) as f:
     header = None
@@ -53,11 +98,10 @@ with open(fasta) as f:
         if line.startswith('>'):  # Identifies fasta header line
             headers.append(line[1:-1])  # Append all of the line that isn't >
             header = line[1:]  # Reset header
-del(fasta)
-del(f)
-del(line)
+del(fasta, f, line)
 
-
+# Add a 'forward complement' designation to match the presence of a 'reverse
+# complement' designation on certain lines
 headers_fix_complement = []
 for i in headers:
     if i.find('Genome Release 64-3-1, reverse complement,') != -1:
@@ -71,18 +115,30 @@ for i in headers:
         )
 del(i)
 
-header_list = []
+
+pattern = re.compile(r'(?<=\d),(?=\d)')
+header_fix_comma = []
 for i in headers_fix_complement:
-    # print(type(i))
+    header_fix_comma.append(pattern.sub('_', i))
+del(i, pattern)
+
+header_list = []
+for i in header_fix_comma:
     print(tokenize(i))
     header_list.append(tokenize(i))
 del(i)
 
+
+# -----------------------------------------------------------------------------
+# Add columns names
 # stackoverflow.com/questions/18915941/create-a-pandas-dataframe-from-generator
 # sparkbyexamples.com/pandas/pandas-add-column-names-to-dataframe/
 header_df = pd.DataFrame(
     header_list,
-    columns = ['feature', 'coordinate_written', 'release', 'strand_written', 'category', 'notes']
+    columns = [
+        'feature', 'coord_written', 'release', 'strand_written',
+        'category', 'notes'
+    ]
 )
 
 # Clean up variables
@@ -91,6 +147,15 @@ del(headers)
 del(header_list)
 del(headers_fix_complement)
 
+# There are leading spaces in string columns; strip these away
+# stackoverflow.com/questions/49551336/pandas-trim-leading-trailing-white-space-in-a-dataframe
+# stackoverflow.com/questions/3232953/python-removing-spaces-from-list-objects
+header_df = header_df.applymap(
+    lambda x: x.strip() if isinstance(x, str) else x
+)
+
+
+# -----------------------------------------------------------------------------
 # Split column 'feature' on space
 # stackoverflow.com/questions/37333299/splitting-a-pandas-dataframe-column-by-delimiter
 header_df[['name_systematic', 'name_standard', 'SGDID']] = header_df[
@@ -103,29 +168,32 @@ header_df['name_standard'].equals(header_df['name_systematic'])  # False
 
 # Return where two columns are different
 header_df.query('name_standard != name_systematic')
-#     feature                    coordinate  ... name_standard             SGDID
+#     feature                    coord  ... name_standard             SGDID
 # 11   ARS109      Chr I from 159907-160127  ...    ARS101  SGDID:S000077372
 # 86    RE301      Chr III from 29108-29809  ...        RE  SGDID:S000303804
 # 142  ARS416     Chr IV from 462567-462622  ...      ARS1  SGDID:S000029652
 # 405  ARS808   Chr VIII from 140349-141274  ...      ARS2  SGDID:S000029042
 # 444  ARS913     Chr IX from 214624-214754  ...    ARS901  SGDID:S000007644
 
+# Details on where there are differences:
 # yeastgenome.org/locus/ARS101
 # yeastgenome.org/locus/S000303804
 # yeastgenome.org/locus/S000029652
 # yeastgenome.org/locus/S000029042
 # yeastgenome.org/locus/S000007644
 
+# -----------------------------------------------------------------------------
 # Strip string 'SGDID:' from column 'SGDID'
 # stackoverflow.com/questions/13682044/remove-unwanted-parts-from-strings-in-a-column
 header_df['SGDID'] = header_df['SGDID'].str.replace('SGDID:', '')
 
-# Create 'coordinate_full_...' columns derived from 'coordinate_written'
-header_df['coordinate_full_prefix_yes'] = header_df['coordinate_written']\
+# Create 'coord_...' columns derived from 'coord_written'
+header_df['coord_pre_y'] = header_df['coord_written']\
         .str.replace(' from ', ':').str.replace('Chr ', 'Chr')
-header_df['coordinate_full_prefix_no'] = header_df['coordinate_written']\
+header_df['coord_pre_n'] = header_df['coord_written']\
         .str.replace(' from ', ':').str.replace('Chr ', '')
 
+# -----------------------------------------------------------------------------
 # Populate new column based on value in other column
 # towardsdatascience.com/create-new-column-based-on-other-columns-pandas-5586d87de73d
 # stackoverflow.com/questions/10715519/conditionally-fill-column-values-based-on-another-columns-value-in-pandas
@@ -134,12 +202,69 @@ header_df['strand'] = np.where(
     header_df['strand_written'] == 'reverse complement', '-', '+'
 )
 
+# -----------------------------------------------------------------------------
+# Extracting substrings to populate columns 'chr', 'start', 'end'
+# # Extract substring before colon for 'chr'
+# header_df['coord_pre_n'].str.split(':').str[0]
+
+header_df['chr'] = header_df['coord_pre_n']\
+    .str.split(':').str[0]
+
+# stackoverflow.com/questions/20025882/add-a-string-prefix-to-each-value-in-a-string-column-using-pandas
+header_df['chr_pre_y'] = 'Chr' + header_df['chr']
+
+#TODO Write up logic to handle lines that contain an underscroe in 'coord_'* columns
+# -------------------------------------
+# # Extract substring after colon for 'start', 'end'
+# header_df['coord_pre_n'].str.split(':').str[1]
+
+# start -----------
+# #   if 'strand' is '+', take [0] for 'start'
+# header_df['coord_pre_n']\
+#     .str.split(':').str[1].str.split('-').str[0]  # '+' 'start'
+#
+# # elif 'strand' is '-', take [1] for 'start'
+# header_df['coord_pre_n']\
+#     .str.split(':').str[1].str.split('-').str[1]  # '-' 'start'
+
+header_df['start'] = np.where(
+    header_df['strand'] == '+',
+    header_df['coord_pre_n']\
+        .str.split(':').str[1].str.split('-').str[0],
+    header_df['coord_pre_n']\
+        .str.split(':').str[1].str.split('-').str[1]
+)
+
+# end -------------
+# #   if 'strand' is '+', take [1] for 'end';
+# header_df['coord_pre_n']\
+#     .str.split(':').str[1].str.split('-').str[1]  # '+' 'end'
+#
+# # elif 'strand' is '-', take [0] for 'end'
+# header_df['coord_pre_n']\
+#     .str.split(':').str[1].str.split('-').str[0]  # '-' 'end'
+
+header_df['end'] = np.where(
+    header_df['strand'] == '+',
+    header_df['coord_pre_n']\
+        .str.split(':').str[1].str.split('-').str[1],
+    header_df['coord_pre_n']\
+        .str.split(':').str[1].str.split('-').str[0]
+)
+
+
+
+# -----------------------------------------------------------------------------
+
+
+
+
 
 # Delete column 'name_standard'  #NOTE Don't actually do this
 # header_df = header_df.drop('name_standard', axis = 1)
 header_df = header_df.drop('strand', axis = 1)
 
-# Copy columns for splitting, etc.
+# Copy columns for splitting, etc.  #NOTE Don't actually do this
 # stackoverflow.com/questions/32675861/copy-all-values-in-a-column-to-a-new-column-in-a-pandas-dataframe
 
 

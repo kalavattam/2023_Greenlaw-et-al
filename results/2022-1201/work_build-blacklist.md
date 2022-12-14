@@ -32,9 +32,17 @@
 		1. ["Processed" `.bam`s](#processed-bams)
 		1. ["Processed \(full\)" `.bam`s](#processed-full-bams)
 	1. [Creating the symbolic links](#creating-the-symbolic-links)
+1. [Symlinking `.gtf`s for Alison to work with with, 2022-1214](#symlinking-gtfs-for-alison-to-work-with-with-2022-1214)
+	1. [The particular `.gtf`s and their details](#the-particular-gtfs-and-their-details)
+		1. [Running `PASA` *without* parameter `--gene overlap 50.0`](#running-pasa-without-parameter---gene-overlap-500)
+		1. [Running `PASA` *with* parameter `--gene overlap 50.0`](#running-pasa-with-parameter---gene-overlap-500)
+	1. [The actual symlinking](#the-actual-symlinking)
+	1. [Documentation for Alison/myself](#documentation-for-alisonmyself)
 1. [Downloading things... \(2022-1213\)](#downloading-things-2022-1213)
 	1. [Grab a node, get to the right directory, etc.](#grab-a-node-get-to-the-right-directory-etc)
+	1. [Get the SGD `_genome_Current_Release.tgz`](#get-the-sgd-_genome_current_releasetgz)
 	1. [Get the SGD `other_features` files](#get-the-sgd-other_features-files)
+1. [Parse the SGD `.fasta` headers to make dataframes, etc.](#parse-the-sgd-fasta-headers-to-make-dataframes-etc)
 
 <!-- /MarkdownTOC -->
 </details>
@@ -587,8 +595,182 @@ lrwxrwxrwx 1 kalavatt  200 Dec 12 14:56 5782_Q_IP_merged.un_multi-hit-mode_1_Loc
 <br />
 <br />
 
+<a id="symlinking-gtfs-for-alison-to-work-with-with-2022-1214"></a>
+## Symlinking `.gtf`s for Alison to work with with, 2022-1214
+<a id="the-particular-gtfs-and-their-details"></a>
+### The particular `.gtf`s and their details
+<a id="running-pasa-without-parameter---gene-overlap-500"></a>
+#### Running `PASA` *without* parameter `--gene overlap 50.0`
+In `2022_transcriptome-construction/results/2022-1201/files_PASA/`
+```txt
+trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_1_EndToEnd/
+trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_10_EndToEnd/
+trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd/
+trinity_5781-5782_Q_IP_merged.trim.un_multi-hit-mode_1_EndToEnd/
+trinity_5781-5782_Q_IP_merged.trim.un_multi-hit-mode_10_EndToEnd/
+trinity_5781-5782_Q_IP_merged.trim.un_multi-hit-mode_100_EndToEnd/
+trinity_5781-5782_Q_IP_merged.un_multi-hit-mode_1_Local/
+trinity_5781-5782_Q_IP_merged.un_multi-hit-mode_10_Local/
+trinity_5781-5782_Q_IP_merged.un_multi-hit-mode_100_Local/
+```
+
+<a id="running-pasa-with-parameter---gene-overlap-500"></a>
+#### Running `PASA` *with* parameter `--gene overlap 50.0`
+In `2022_transcriptome-construction/results/2022-1201/files_PASA_param_gene-overlap/`
+```txt
+trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_1_EndToEnd/
+trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_10_EndToEnd/
+trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd/
+trinity_5781-5782_Q_IP_merged.trim.un_multi-hit-mode_1_EndToEnd/
+trinity_5781-5782_Q_IP_merged.trim.un_multi-hit-mode_10_EndToEnd/
+trinity_5781-5782_Q_IP_merged.trim.un_multi-hit-mode_100_EndToEnd/
+trinity_5781-5782_Q_IP_merged.un_multi-hit-mode_1_Local/
+trinity_5781-5782_Q_IP_merged.un_multi-hit-mode_10_Local/
+trinity_5781-5782_Q_IP_merged.un_multi-hit-mode_100_Local/
+```
+
+<a id="the-actual-symlinking"></a>
+### The actual symlinking
+```bash
+#!/bin/bash
+
+cd "${HOME}/tsukiyamalab/alisong" || \
+	echo "cd'ing failed; check on this"
+
+mkdir -p Kris/gtfs_2022-1214/
+# mkdir: created directory 'Kris'
+# mkdir: created directory 'Kris/gtfs_2022-1214'
+
+mv Kris_bams/ bams_2022-1212/ && mv bams_2022-1212 Kris/
+# renamed 'Kris_bams/' -> 'bams_2022-1212/'
+# renamed 'bams_2022-1212' -> 'Kris/bams_2022-1212'
+
+mv Kris_IGV_Sharing/ IGV_sharing/ && mv IGV_sharing/ Kris/
+# renamed 'Kris_IGV_Sharing/' -> 'IGV_sharing/'
+# renamed 'IGV_sharing/' -> 'Kris/IGV_sharing'
+
+cd Kris/gtfs_2022-1214/ || \
+	echo "cd'ing failed; check on this"
+
+mkdir -p param_gene-overlap_{TRUE,FALSE}
+# mkdir: created directory 'param_gene-overlap_TRUE'
+# mkdir: created directory 'param_gene-overlap_FALSE'
+
+cd param_gene-overlap_FALSE || \
+	echo "cd'ing failed; check on this"
+
+unset stems
+typeset -a stems
+stems=(
+	trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_1_EndToEnd
+	trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_10_EndToEnd
+	trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd
+	trinity_5781-5782_Q_IP_merged.trim.un_multi-hit-mode_1_EndToEnd
+	trinity_5781-5782_Q_IP_merged.trim.un_multi-hit-mode_10_EndToEnd
+	trinity_5781-5782_Q_IP_merged.trim.un_multi-hit-mode_100_EndToEnd
+	trinity_5781-5782_Q_IP_merged.un_multi-hit-mode_1_Local
+	trinity_5781-5782_Q_IP_merged.un_multi-hit-mode_10_Local
+	trinity_5781-5782_Q_IP_merged.un_multi-hit-mode_100_Local
+)
+
+unset key_value
+typeset -A key_value
+for i in "${stems[@]}"; do
+	k="${HOME}/2022_transcriptome-construction_2022-1201/files_PASA/${i}/${i}.compreh_init_build/${i}.compreh_init_build.gff3"
+	v="${i}.compreh_init_build.gff3"
+	# echo "${k}"
+	# echo "${v}"
+	# echo ""
+
+	key_value["${k}"]+="${v}"
+done
+
+for i in "${!key_value[@]}"; do
+	echo "  Key: ${i}"
+	echo "Value: ${key_value[$i]}"
+
+	ln -s "${i}" "${key_value[$i]}"
+	echo ""
+done
+
+
+cd ../param_gene-overlap_TRUE || \
+	echo "cd'ing failed; check on this"
+
+unset key_value
+typeset -A key_value
+for i in "${stems[@]}"; do
+	k="${HOME}/2022_transcriptome-construction_2022-1201/files_PASA_param_gene-overlap/${i}/${i}.compreh_init_build/${i}.compreh_init_build.gff3"
+	v="${i}.compreh_init_build.gff3"
+	# echo "${k}"
+	# echo "${v}"
+	# echo ""
+
+	key_value["${k}"]+="${v}"
+done
+
+for i in "${!key_value[@]}"; do
+	echo "  Key: ${i}"
+	echo "Value: ${key_value[$i]}"
+
+	ln -s "${i}" "${key_value[$i]}"
+	echo ""
+done
+```
+
+<a id="documentation-for-alisonmyself"></a>
+### Documentation for Alison/myself
+I used `PASA` to build our tentative transcriptome assemblies following the "comprehensive transcriptome database" strategy documented [here](https://github.com/PASApipeline/PASApipeline/wiki/PASA_comprehensive_db).
+
+This strategy attempts to overcome limitations from using the `Trinity` genome-guided (__GG__) assembly approach alone, yielding what is hopefully a more comprehensive representation of the transcriptome.  Some limitations of using the `Trinity` __GG__ approach alone include...
+- an inability to capture transcripts associated with non-annotated features in the reference genome
+- an inability to capture transcripts that align partially or otherwise poorly to the reference genome
+- an inability to capture any other transcripts that aren't properly represented by the reference genome
+
+When we use the "comprehensive transcriptome database" strategy, we use as input the results from having called `Trinity` twice:
+- the `.fasta` file that results from running `Trinity` in "genome-free" (__GF__) mode
+	+ `#TODO` Summarize what this is, how it works
+	+ called with `--jaccard_clip`
+	+ input is `.fastq` files processed as described below and filtered to contain only alignments to *S. cerevisiae*
+- the `.fasta` file that results from running `Trinity` in __GG__ mode
+	+ `#TODO` Summarize what this is, how it works
+	+ called with `--jaccard_clip`
+	+ input is `.bam` files processed as described below and filtered to contain only alignments to *S. cerevisiae*
+
+So far, I've called `PASA` using __nine__ different kinds of input; here's the breakdown:
+- Three kinds using __"unprocessed"__ `.bam`s and .`fastq`s
+	+ reads adapter- and quality-trimmed by `trim_galore`: `FALSE`
+	+ reads k-mer-corrected by `rcorrector`: `FALSE`
+	+ STAR alignment type: `Local` (allows "soft clipping")
+- Three kinds using __"processed"__ `.bam`s and .`fastq`s
+	+ reads adapter- and quality-trimmed by `trim_galore`: `TRUE`
+	+ reads k-mer-corrected by `rcorrector`: `FALSE`
+	+ STAR alignment type: `EndToEnd` (*doesn't* allow "soft clipping")
+- Three kinds using __"processed (full)"__ `.bam`s and .`fastq`s
+	+ reads adapter- and quality-trimmed by `trim_galore`: `TRUE`
+	+ reads k-mer-corrected by `rcorrector`: `TRUE`
+	+ STAR alignment type: `EndToEnd` (*doesn't* allow "soft clipping")
+
+Here's what the three kinds of input are (GF = genome-free mode, GG = genome-guided mode):
+- __"unprocessed"__
+	+ PASA from Trinity GF + Trinity GG multi-hit-mode 1
+	+ PASA from Trinity GF + Trinity GG multi-hit-mode 10
+	+ PASA from Trinity GF + Trinity GG multi-hit-mode 100
+- __"processed"__
+	+ PASA from Trinity GF + Trinity GG multi-hit-mode 1
+	+ PASA from Trinity GF + Trinity GG multi-hit-mode 10
+	+ PASA from Trinity GF + Trinity GG multi-hit-mode 100
+- __"processed (full)"__
+	+ PASA from Trinity GF + Trinity GG multi-hit-mode 1
+	+ PASA from Trinity GF + Trinity GG multi-hit-mode 10
+	+ PASA from Trinity GF + Trinity GG multi-hit-mode 100
+<br />
+<br />
+
 <a id="downloading-things-2022-1213"></a>
 ## Downloading things... (2022-1213)
+- `#IMPORTANT` SGD files are derived from UCSC genome resources; see... `#TODO` Reference the source of this information
+- `#TODO` Give this section a better name
 <a id="grab-a-node-get-to-the-right-directory-etc"></a>
 ### Grab a node, get to the right directory, etc.
 <details>
@@ -618,40 +800,284 @@ ml Singularity
 <br />
 <br />
 
+<a id="get-the-sgd-_genome_current_releasetgz"></a>
+### [Get the SGD `_genome_Current_Release.tgz`](http://sgd-archive.yeastgenome.org/sequence/S288C_reference/genome_releases/)
+- The most recent genome release is from 2021-0427
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+mkdir -p files_features/SGD_genome-current-release
+cd files_features/SGD_genome-current-release || \
+	echo "cd'ing failed; check on this"
+
+    # http://sgd-archive.yeastgenome.org/sequence/S288C_reference/genome_releases/S288C_reference_genome_Current_Release.tgz
+link="http://sgd-archive.yeastgenome.org/sequence/S288C_reference/genome_releases"
+files=(
+    genome_releases.README
+    S288C_reference_genome_Current_Release.tgz
+    README.html
+)
+for i in "${files[@]}"; do curl -L "${link}/${i}" -o "${i}"; done
+#   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+#                                  Dload  Upload   Total   Spent    Left  Speed
+# 100  278k  100  278k    0     0  2157k      0 --:--:-- --:--:-- --:--:-- 2157k
+#   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+#                                  Dload  Upload   Total   Spent    Left  Speed
+# 100  278k  100  278k    0     0  2485k      0 --:--:-- --:--:-- --:--:-- 2507k
+#   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+#                                  Dload  Upload   Total   Spent    Left  Speed
+# 100  278k  100  278k    0     0  2191k      0 --:--:-- --:--:-- --:--:-- 2191k
+```
+
 <a id="get-the-sgd-other_features-files"></a>
 ### [Get the SGD `other_features` files](http://sgd-archive.yeastgenome.org/sequence/S288C_reference/other_features/)
 ```bash
 #!/bin/bash
 #DONTRUN #CONTINUE
 
-mkdir -p files_features/SGD-other-features
-cd files_features/SGD-other-features || \
+../..
+
+mkdir -p files_features/SGD_other-features
+cd files_features/SGD_other-features || \
 	echo "cd'ing failed; check on this"
 
-link="http://sgd-archive.yeastgenome.org/sequence/S288C_reference/other_features/"
+link="http://sgd-archive.yeastgenome.org/sequence/S288C_reference/other_features"
 files=(
 	other_features_genomic_1000.fasta.gz
 	other_features_genomic.fasta.gz
 	other_features.README
 	README.html
 )
-for i in "${files[@]}"; do curl "${link}/${i}" > "./${i}"; done
+for i in "${files[@]}"; do curl -L "${link}/${i}" -o "${i}"; done
 #   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
 #                                  Dload  Upload   Total   Spent    Left  Speed
-# 100  278k  100  278k    0     0   799k      0 --:--:-- --:--:-- --:--:--  797k
+# 100  637k  100  637k    0     0  3125k      0 --:--:-- --:--:-- --:--:-- 3125k
 #   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
 #                                  Dload  Upload   Total   Spent    Left  Speed
-# 100  278k  100  278k    0     0  1344k      0 --:--:-- --:--:-- --:--:-- 1351k
+# 100  186k  100  186k    0     0  1023k      0 --:--:-- --:--:-- --:--:-- 1023k
 #   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
 #                                  Dload  Upload   Total   Spent    Left  Speed
-# 100  278k  100  278k    0     0  2319k      0 --:--:-- --:--:-- --:--:-- 2319k
+# 100   775  100   775    0     0   5827      0 --:--:-- --:--:-- --:--:--  5827
 #   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
 #                                  Dload  Upload   Total   Spent    Left  Speed
-# 100  278k  100  278k    0     0  2783k      0 --:--:-- --:--:-- --:--:-- 2783k
-
-zcat other_features_genomic.fasta.gz | less
-
-
+# 100   311  100   311    0     0   4573      0 --:--:-- --:--:-- --:--:--  4573
 ```
+<br />
+<br />
 
-`#TODO` Make a python script for using .fasta headers to make .bed files
+<a id="parse-the-sgd-fasta-headers-to-make-dataframes-etc"></a>
+## Parse the SGD `.fasta` headers to make dataframes, etc.
+- `#INPROGRESS` Make a `python` script for using the headers in the SGD `other_features` `.fasta` to make a `pandas` dataframe, which can be used in turn to make `.bed`, `.gtf`, etc. files
+- [Details about the `.bed` format](https://genome.ucsc.edu/FAQ/FAQformat.html#format1)
+
+<details>
+<summary><i>Scratch work for working with only the 'other_features' .fasta (2022-1214-1214)</i></summary>
+
+```python
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Dec 13 10:14:09 2022
+
+@author: kalavatt
+"""
+
+# bioinformatics.stackexchange.com/questions/5435/how-to-create-a-bed-file-from-fasta
+import numpy as np
+import pandas as pd
+# import sys
+
+
+# stackoverflow.com/questions/43067373/split-by-comma-and-how-to-exclude-comma-from-quotes-in-split
+def tokenize(string, separator = ',', quote = '"'):
+    """
+    Split a comma separated string into a List of strings.
+
+    Separator characters inside the quotes are ignored.
+
+    :param string: A string to be split into chunks
+    :param separator: A separator character
+    :param quote: A character to define beginning and end of the quoted string
+    :return: A list of strings, one element for every chunk
+    """
+    comma_separated_list = []
+
+    chunk = ''
+    in_quotes = False
+
+    for character in string:
+        if character == separator and not in_quotes:
+            comma_separated_list.append(chunk)
+            chunk = ''
+        else:
+            chunk += character
+            if character == quote:
+                in_quotes = False if in_quotes else True
+
+    comma_separated_list.append(chunk)
+
+    return comma_separated_list
+
+# -----------------------------------------------------------------------------
+# Drafting it all... ----------------------------------------------------------
+# -----------------------------------------------------------------------------
+# Read in .fasta
+fasta = "other_features_genomic.fasta"
+
+# Extract the headers
+headers = []
+with open(fasta) as f:
+    header = None
+    for line in f:
+        if line.startswith('>'):  # Identifies fasta header line
+            headers.append(line[1:-1])  # Append all of the line that isn't >
+            header = line[1:]  # Reset header
+del(fasta)
+del(f)
+del(line)
+
+# Add a 'forward complement' designation to match the presence of a 'reverse
+# complement' designation on certain lines
+headers_fix_complement = []
+for i in headers:
+    if i.find('Genome Release 64-3-1, reverse complement,') != -1:
+        headers_fix_complement.append(i)
+    else:
+        headers_fix_complement.append(
+            i.replace(
+                'Genome Release 64-3-1,',
+                'Genome Release 64-3-1, forward complement,'
+            )
+        )
+del(i)
+
+header_list = []
+for i in headers_fix_complement:
+    # print(type(i))
+    print(tokenize(i))
+    header_list.append(tokenize(i))
+del(i)
+
+# -----------------------------------------------------------------------------
+# Add columns names
+# stackoverflow.com/questions/18915941/create-a-pandas-dataframe-from-generator
+# sparkbyexamples.com/pandas/pandas-add-column-names-to-dataframe/
+header_df = pd.DataFrame(
+    header_list,
+    columns = [
+        'feature', 'coord_written', 'release', 'strand_written',
+        'category', 'notes'
+    ]
+)
+
+# Clean up variables
+del(header)
+del(headers)
+del(header_list)
+del(headers_fix_complement)
+
+# There are leading spaces in string columns; strip these away
+# stackoverflow.com/questions/49551336/pandas-trim-leading-trailing-white-space-in-a-dataframe
+header_df = header_df.applymap(
+    lambda x: x.strip() if isinstance(x, str) else x
+)
+
+# -----------------------------------------------------------------------------
+# Split column 'feature' on space
+# stackoverflow.com/questions/37333299/splitting-a-pandas-dataframe-column-by-delimiter
+header_df[['name_systematic', 'name_standard', 'SGDID']] = header_df[
+    'feature'
+].str.split(' ', expand = True)
+
+# Check that 'name_standard' is exactly the same as 'feature'
+# geeksforgeeks.org/how-to-compare-two-columns-in-pandas/
+header_df['name_standard'].equals(header_df['name_systematic'])  # False
+
+# Return where two columns are different
+header_df.query('name_standard != name_systematic')
+#     feature                    coord  ... name_standard             SGDID
+# 11   ARS109      Chr I from 159907-160127  ...    ARS101  SGDID:S000077372
+# 86    RE301      Chr III from 29108-29809  ...        RE  SGDID:S000303804
+# 142  ARS416     Chr IV from 462567-462622  ...      ARS1  SGDID:S000029652
+# 405  ARS808   Chr VIII from 140349-141274  ...      ARS2  SGDID:S000029042
+# 444  ARS913     Chr IX from 214624-214754  ...    ARS901  SGDID:S000007644
+
+# Details on where there are differences:
+# yeastgenome.org/locus/ARS101
+# yeastgenome.org/locus/S000303804
+# yeastgenome.org/locus/S000029652
+# yeastgenome.org/locus/S000029042
+# yeastgenome.org/locus/S000007644
+
+# -----------------------------------------------------------------------------
+# Strip string 'SGDID:' from column 'SGDID'
+# stackoverflow.com/questions/13682044/remove-unwanted-parts-from-strings-in-a-column
+header_df['SGDID'] = header_df['SGDID'].str.replace('SGDID:', '')
+
+# Create 'coord_...' columns derived from 'coord_written'
+header_df['coord_pre_y'] = header_df['coord_written']\
+        .str.replace(' from ', ':').str.replace('Chr ', 'Chr')
+header_df['coord_pre_n'] = header_df['coord_written']\
+        .str.replace(' from ', ':').str.replace('Chr ', '')
+
+# -----------------------------------------------------------------------------
+# Populate new column based on value in other column
+# towardsdatascience.com/create-new-column-based-on-other-columns-pandas-5586d87de73d
+# stackoverflow.com/questions/10715519/conditionally-fill-column-values-based-on-another-columns-value-in-pandas
+# numpy.org/doc/stable/reference/generated/numpy.where.html
+header_df['strand'] = np.where(
+    header_df['strand_written'] == 'reverse complement', '-', '+'
+)
+
+# -----------------------------------------------------------------------------
+# Extracting substrings to populate columns 'chr', 'start', 'end'
+# # Extract substring before colon for 'chr'
+# header_df['coord_pre_n'].str.split(':').str[0]
+
+header_df['chr'] = header_df['coord_pre_n']\
+    .str.split(':').str[0]
+
+# stackoverflow.com/questions/20025882/add-a-string-prefix-to-each-value-in-a-string-column-using-pandas
+header_df['chr_pre_y'] = 'Chr' + header_df['chr']
+
+# -------------------------------------
+# # Extract substring after colon for 'start', 'end'
+# header_df['coord_pre_n'].str.split(':').str[1]
+
+# start -----------
+# #   if 'strand' is '+', take [0] for 'start'
+# header_df['coord_pre_n']\
+#     .str.split(':').str[1].str.split('-').str[0]  # '+' 'start'
+#
+# # elif 'strand' is '-', take [1] for 'start'
+# header_df['coord_pre_n']\
+#     .str.split(':').str[1].str.split('-').str[1]  # '-' 'start'
+
+header_df['start'] = np.where(
+    header_df['strand'] == '+',
+    header_df['coord_pre_n']\
+        .str.split(':').str[1].str.split('-').str[0],
+    header_df['coord_pre_n']\
+        .str.split(':').str[1].str.split('-').str[1]
+)
+
+# end -------------
+# #   if 'strand' is '+', take [1] for 'end';
+# header_df['coord_pre_n']\
+#     .str.split(':').str[1].str.split('-').str[1]  # '+' 'end'
+#
+# # elif 'strand' is '-', take [0] for 'end'
+# header_df['coord_pre_n']\
+#     .str.split(':').str[1].str.split('-').str[0]  # '-' 'end'
+
+header_df['end'] = np.where(
+    header_df['strand'] == '+',
+    header_df['coord_pre_n']\
+        .str.split(':').str[1].str.split('-').str[1],
+    header_df['coord_pre_n']\
+        .str.split(':').str[1].str.split('-').str[0]
+)
+```
+</details>
+<br />
