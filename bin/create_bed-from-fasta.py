@@ -9,10 +9,13 @@ Created on Tue Dec 13 10:14:09 2022
 # bioinformatics.stackexchange.com/questions/5435/how-to-create-a-bed-file-from-fasta
 import numpy as np
 import pandas as pd
+import os
 import re
 # import sys
 
+os.chdir('/Users/kalavatt/Downloads/_Kris/scratch.2022-1213-12XX/R64-3-1_20210421/')
 
+# Functions -------------------------------------------------------------------
 # stackoverflow.com/questions/43067373/split-by-comma-and-how-to-exclude-comma-from-quotes-in-split
 def tokenize(string, separator = ',', quote = '"'):
     """
@@ -44,46 +47,23 @@ def tokenize(string, separator = ',', quote = '"'):
     return comma_separated_list
 
 
-# def tokenize(string, separator = ',', quote = '"', digit = '(?<=\d),(?=\d)'):
-#     """
-#     Split a comma separated string into a List of strings.
-#
-#     Separator characters inside the quotes are ignored.
-#
-#     :param string: A string to be split into chunks
-#     :param separator: A separator character
-#     :param quote: A character to define beginning and end of the quoted string
-#     :return: A list of strings, one element for every chunk
-#     """
-#     comma_separated_list = []
-#
-#     chunk = ''
-#     in_quotes = False
-#     in_digits = False
-#
-#     for character in string:
-#         if character == separator and not in_quotes and not in_digits:
-#             comma_separated_list.append(chunk)
-#             chunk = ''
-#         else:
-#             chunk += character
-#             if character == quote:
-#                 in_quotes = False if in_quotes else True
-#             if character == digit:
-#                 in_digits = False if in_digits else True
-#
-#     comma_separated_list.append(chunk)
-#
-#     return comma_separated_list
-
-
 # -----------------------------------------------------------------------------
 # Drafting it all... ----------------------------------------------------------
 # -----------------------------------------------------------------------------
 # Read in .fasta
 #QUESTION Will this work for the other SGD .fastas?
-fasta = "rna_coding_R64-3-1_20210421.fasta"
+# fasta = "NotFeature_R64-3-1_20210421.fasta"
+# fasta = "orf_coding_all_R64-3-1_20210421.fasta"
+# fasta = "orf_trans_all_R64-3-1_20210421.fasta"
 # fasta = "other_features_genomic_R64-3-1_20210421.fasta"
+# fasta = "rna_coding_R64-3-1_20210421.fasta"
+
+#NOTE As written, does not work for NotFeature_*
+
+#NOTE orf_coding_all_* works but has some features with two (or more) coordinates (check if there are more than two)
+
+#NOTE orf_trans_all_* works in the same way orf_coding_all_* works: it has some features with two (or more) coordinates (check if there are more than two)
+#QUESTION Is orf_coding_all_* exactly the same as orf_trans_all_*?
 
 #NOTE rna_coding_* has some features with two (or more) coordinates (check if there are more than two)
 #TODO Come up with some way to handle that
@@ -98,7 +78,7 @@ with open(fasta) as f:
         if line.startswith('>'):  # Identifies fasta header line
             headers.append(line[1:-1])  # Append all of the line that isn't >
             header = line[1:]  # Reset header
-del(fasta, f, line)
+del(f, line)
 
 # Add a 'forward complement' designation to match the presence of a 'reverse
 # complement' designation on certain lines
@@ -129,6 +109,7 @@ for i in header_fix_comma:
 del(i)
 
 
+
 # -----------------------------------------------------------------------------
 # Add columns names
 # stackoverflow.com/questions/18915941/create-a-pandas-dataframe-from-generator
@@ -144,8 +125,9 @@ header_df = pd.DataFrame(
 # Clean up variables
 del(header)
 del(headers)
-del(header_list)
 del(headers_fix_complement)
+del(header_fix_comma)
+del(header_list)
 
 # There are leading spaces in string columns; strip these away
 # stackoverflow.com/questions/49551336/pandas-trim-leading-trailing-white-space-in-a-dataframe
@@ -253,11 +235,11 @@ header_df['end'] = np.where(
 )
 
 
-
 # -----------------------------------------------------------------------------
-
-
-
+# If row contains specific text in specific field, then select it
+test = header_df[header_df['coord_written'].str.contains('_')]
+test['fir'] = test['coord_pre_n'].str.split(':').str[1].str.split('_').str[0]
+test['sec'] = test['coord_pre_n'].str.split(':').str[1].str.split('_').str[1]
 
 
 # Delete column 'name_standard'  #NOTE Don't actually do this
