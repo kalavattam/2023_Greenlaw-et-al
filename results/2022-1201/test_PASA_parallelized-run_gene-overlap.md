@@ -130,7 +130,6 @@ GF_un="files_Trinity_genome-free/files_unprocessed/trinity_5781-5782_Q_IP_merged
 unset T_un
 typeset -A T_un
 for i in "${GG_un[@]}"; do
-    # echo "Working with ${i}..."
     T_un["${i}"]+="${GF_un}"
     echo ""
 done
@@ -356,28 +355,11 @@ DB: trinity_5781-5782_Q_IP_merged.un_multi-hit-mode_10_Local
 cd "${HOME}/genomes/sacCer3/Ensembl/108/gff3" || \
 	echo "cd'ing failed; check on this"
 
-.,
-# total 1.7M
-# drwxrwx--- 2 kalavatt  184 Nov  7 12:46 ./
-# drwxrwx--- 8 kalavatt  133 Nov 25 09:58 ../
-# -rw-rw---- 1 kalavatt 1.4K Nov  7 12:46 CHECKSUMS
-# -rw-rw---- 1 kalavatt 6.3K Nov  7 12:46 README
-# -rw-rw---- 1 kalavatt  524 Nov  7 12:46 Saccharomyces_cerevisiae.R64-1-1.108.abinitio.gff3.gz
-# -rw-rw---- 1 kalavatt 1.1M Nov  7 12:47 Saccharomyces_cerevisiae.R64-1-1.108.gff3.gz
-
+#TODO Test that *.gff3.gz is present as well
 if [[ ! -f "Saccharomyces_cerevisiae.R64-1-1.108.gff3" ]]; then
 	zcat Saccharomyces_cerevisiae.R64-1-1.108.gff3.gz \
 		> Saccharomyces_cerevisiae.R64-1-1.108.gff3
 fi
-.,
-# total 8.4M
-# drwxrwx--- 2 kalavatt  243 Dec 13 06:57 ./
-# drwxrwx--- 8 kalavatt  133 Nov 25 09:58 ../
-# -rw-rw---- 1 kalavatt 1.4K Nov  7 12:46 CHECKSUMS
-# -rw-rw---- 1 kalavatt 6.3K Nov  7 12:46 README
-# -rw-rw---- 1 kalavatt  524 Nov  7 12:46 Saccharomyces_cerevisiae.R64-1-1.108.abinitio.gff3.gz
-# -rw-rw---- 1 kalavatt 5.6M Dec 13 06:57 Saccharomyces_cerevisiae.R64-1-1.108.gff3
-# -rw-rw---- 1 kalavatt 1.1M Nov  7 12:47 Saccharomyces_cerevisiae.R64-1-1.108.gff3.gz
 ```
 
 <a id="set-up-and-run-loop-for-precursor-commands"></a>
@@ -1737,6 +1719,7 @@ script
 
 <a id="run-the-job-submission-script-for-pasa-launch_pasa_pipelinepl"></a>
 ### Run the job submission script for `PASA` `Launch_PASA_pipeline.pl`
+`#DEKHO`
 ```bash
 #!/bin/bash
 #DONTRUN #CONTINUE

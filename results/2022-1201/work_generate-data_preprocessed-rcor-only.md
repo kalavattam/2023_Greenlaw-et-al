@@ -41,7 +41,8 @@ mwd() {
 
 mwd
 
-mkdir -p files_processed-rcor-only/{fastq_rcor,fastq_rcor-cor,bam_rcor-cor,bam_rcor-cor_split,fastq_rcor-cor_split}
+d_exp="files_processed-rcor-only"
+mkdir -p ${d_exp}/{fastq_rcor,fastq_rcor-cor,bam_rcor-cor,bam_rcor-cor_split,fastq_rcor-cor_split}
 # mkdir: created directory 'files_processed-rcor-only'
 # mkdir: created directory 'files_processed-rcor-only/fastq_rcor'
 # mkdir: created directory 'files_processed-rcor-only/fastq_rcor-cor'
@@ -108,18 +109,8 @@ IFS=" " read -r -a infile_prefix \
                 | sort -u \
                 | tr '\n' ' '\
     )"
-# # echoTest "${infile_prefix[@]}"
-# ./files_processed-rcor-only/fastq_trim/5781_G1_IN_merged
-# ./files_processed-rcor-only/fastq_trim/5781_G1_IP_merged
-# ./files_processed-rcor-only/fastq_trim/5781_Q_IN_merged
-# ./files_processed-rcor-only/fastq_trim/5781_Q_IP_merged
-# ./files_processed-rcor-only/fastq_trim/5782_G1_IN_merged
-# ./files_processed-rcor-only/fastq_trim/5782_G1_IP_merged
-# ./files_processed-rcor-only/fastq_trim/5782_Q_IN_merged
-# ./files_processed-rcor-only/fastq_trim/5782_Q_IP_merged
-
-# # echo "${#infile_prefix[@]}"
-# 8
+# echoTest "${infile_prefix[@]}"
+# echo "${#infile_prefix[@]}"
 
 
 # #  Generate job submission script ---------------------------------------------
@@ -174,7 +165,7 @@ IFS=" " read -r -a infile_prefix \
 #  Run the jobs ---------------------------------------------------------------
 script_name="submit_run-rcorrector.sh"
 threads=8
-storage="./files_processed-rcor-only/fastq_rcor"
+storage="./${d_exp}/fastq_rcor"
 
 count=1  # echo "${count}"
 for i in "${infile_prefix[@]}"; do
@@ -217,13 +208,10 @@ done
 
 
 #  Compress the rcorrector .fq outfiles ---------------------------------------
-exit
+exit  # Leave the node with 1 core, get a node with 8 cores
 grabnode  # 8 cores, default settings
 
 Trinity_env
-
-which pigz
-# /home/kalavatt/miniconda3/envs/Trinity_env/bin/pigz
 
 #  Go to the main working directory
 mwd() {
@@ -234,7 +222,7 @@ mwd() {
 
 
 mwd
-cd ./files_processed-rcor-only/fastq_rcor \
+cd ./${d_exp}/fastq_rcor \
 	|| echo "cd'ing failed; check on this"
 
 unset infiles
@@ -276,13 +264,13 @@ mwd() {
 mwd
 
 
-#  Get .fastq-file prefixes for trimmed, k-mer-corrected files into an array --
+#  Get .fastq prefixes for k-mer-corrected files into an array ----------------
 unset infile_rcor_prefix
 typeset -a infile_rcor_prefix
 while IFS=" " read -r -d $'\0'; do
     infile_rcor_prefix+=( "${REPLY%_R?.cor.fq.gz}" )
 done < <(\
-    find ./files_processed-rcor-only/fastq_rcor \
+    find "./${d_exp}/fastq_rcor" \
         -type f \
         -name *.cor.fq.gz \
         -print0 \
@@ -322,7 +310,7 @@ fi
 #  Run the jobs ---------------------------------------------------------------
 script_name="submit_run-rcorrector-corrector.sh"
 threads=1
-storage="./files_processed-rcor-only/fastq_rcor-cor"  # ., "${storage}"
+storage="./${d_exp}/fastq_rcor-cor"  # ., "${storage}"
 correction_script="../../bin/filter_rCorrector-treated-fastqs.py"  # ., "${correction_script}"
 
 count=1  # echo "${count}"
@@ -393,7 +381,7 @@ typeset -a infile_rcor_cor
 while IFS=" " read -r -d $'\0'; do
     infile_rcor_cor+=( "${REPLY}" )
 done < <(\
-    find ./files_processed-rcor-only/fastq_rcor-cor \
+    find "./${d_exp}/fastq_rcor-cor" \
         -type f \
         -name unfixrm.*.cor.fq.gz \
         -print0 \
@@ -464,13 +452,13 @@ mwd() {
 mwd
 
 
-#  Get .fastq-file prefixes for trimmed files into an array -------------------
+#  Get .fastq-file prefixes for corrected rcor files into an array ------------
 unset infile_rcor_cor
 typeset -a infile_rcor_cor
 while IFS=" " read -r -d $'\0'; do
     infile_rcor_cor+=( "${REPLY%_R?.unfixrm.cor.fq.gz}" )
 done < <(\
-    find ./files_processed-rcor-only/fastq_rcor-cor \
+    find "./${d_exp}/fastq_rcor-cor" \
         -type f \
         -name *.unfixrm.cor.fq.gz \
         -print0 \
@@ -574,7 +562,7 @@ done
 #  Run the jobs ---------------------------------------------------------------
 genome_dir="${HOME}/genomes/combined_SC_KL_20S/STAR"  # ., "${genome_dir}"
 threads=8  # echo "${threads}"
-storage="./files_processed-rcor-only/bam_rcor-cor"  # ., "${storage}"
+storage="./${d_exp}/bam_rcor-cor"  # ., "${storage}"
 
 count=1
 for i in "${infile_rcor_cor[@]}"; do
@@ -583,7 +571,7 @@ for i in "${infile_rcor_cor[@]}"; do
             # j=1
             # k="Local"
             script_name="submit_align_multi-hit-mode_${j}_${k}.sh"  # echo "${script_name}"
-            pre="$(basename "${i}").trim-rcor"  # echo "${pre}"
+            pre="$(basename "${i}").rcor"  # echo "${pre}"
             suf=$(\
                 echo "${script_name}" \
                     | awk -F "_" '{ print $3"_"$4"_"$5"_"$6 }' \
@@ -655,20 +643,20 @@ mwd
 
 #  Clean up results of STAR alignment -----------------------------------------
 #  stackoverflow.com/questions/16541582/find-multiple-files-and-rename-them-in-linux
-find ./files_processed-rcor-only/bam_rcor-cor \
+find "./${d_exp}/bam_rcor-cor" \
 	-iname "*Aligned.sortedByCoord.out.bam" \
 	-exec rename 's/Aligned./.Aligned./g' '{}' \;
 
-find ./files_processed-rcor-only/bam_rcor-cor \
+find "./${d_exp}/bam_rcor-cor" \
 	-iname "*Log.*" \
 	-exec rename 's/Log./.Log./g' '{}' \;
 
-find ./files_processed-rcor-only/bam_rcor-cor \
+find "./${d_exp}/bam_rcor-cor" \
 	-iname "*SJ.*" \
 	-exec rename 's/SJ./.SJ./g' '{}' \;
 
 #  stackoverflow.com/questions/2810838/finding-empty-directories
-cd ./files_processed-rcor-only/bam_rcor-cor
+cd ./${d_exp}/bam_rcor-cor
 find . -depth -type d -empty -delete
 
 #  Get back to the main working directory
@@ -680,9 +668,9 @@ unset infiles_mapped
 while IFS=" " read -r -d $'\0'; do
     infiles_mapped+=( "${REPLY}" )
 done < <(\
-    find ./files_processed-rcor-only/bam_rcor-cor \
+    find "./${d_exp}/bam_rcor-cor" \
         -type f \
-        -name *.trim-rcor.*.Aligned.sortedByCoord.out.bam \
+        -name *.rcor.*.Aligned.sortedByCoord.out.bam \
         -print0 \
             | sort -z \
 )
@@ -703,7 +691,7 @@ done
 #!/bin/bash
 #DONTRUN
 
-grabnode  # Lowest and default settings
+grabnode  # 1 core, default settings
 
 Trinity_env
 
@@ -723,9 +711,9 @@ unset infiles_mapped
 while IFS=" " read -r -d $'\0'; do
     infiles_mapped+=( "${REPLY}" )
 done < <(\
-    find ./files_processed-rcor-only/bam_rcor-cor \
+    find "./${d_exp}/bam_rcor-cor" \
         -type f \
-        -name *.trim-rcor.*.Aligned.sortedByCoord.out.bam \
+        -name *.rcor.*.Aligned.sortedByCoord.out.bam \
         -print0 \
             | sort -z \
 )
@@ -741,7 +729,7 @@ done < <(\
 #  Run the jobs ---------------------------------------------------------------
 script_name="submit_split-bam.sh"  # ., "./sh_err_out/${script_name}"
 threads=4
-storage="./files_processed-rcor-only/bam_rcor-cor_split"  # ., "${storage}"
+storage="./${d_exp}/bam_rcor-cor_split"  # ., "${storage}"
 chromosomes="I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI Mito"
 split="sc_all"
 
@@ -786,9 +774,7 @@ for i in "${infiles_mapped[@]}"; do
 
     #  Make storage directories if they don't exist
     if [[ ! -d "${where}" ]]; then mkdir "${where}"; fi
-    # mkdir: created directory './files_unprocessed/bam_split'
-    # mkdir: created directory './files_unprocessed/bam_split/EndToEnd'
-    
+
     # #  Echo test
     # bash "./sh_err_out/${script_name}" \
     #     "${i}" \
@@ -838,7 +824,7 @@ unset infiles_mapped_sc
 while IFS=" " read -r -d $'\0'; do
     infiles_mapped_sc+=( "${REPLY}" )
 done < <(\
-    find ./files_processed-rcor-only/bam_rcor-cor_split \
+    find "./${d_exp}/bam_rcor-cor_split" \
         -type f \
         -name *.sc_all.bam \
         -print0 \
@@ -854,25 +840,12 @@ for i in "${infiles_mapped_sc[@]}"; do
     samtools index -@ 8 "${i}"
 done
 ```
-<details>
-<summary><i>Note on files that took a long time to filter to include only S. cerevisiae chromosomes</i></summary>
-
-```txt
-Interestingly, it took a very long time for the following to complete:
-- 5781_G1_IN_merged.trim-rcor.multi-hit-mode_1000_EndToEnd.Aligned.sortedByCoord.out.sc_all.bam
-- 5781_G1_IP_merged.trim-rcor.multi-hit-mode_1000_EndToEnd.Aligned.sortedByCoord.out.sc_all.bam
-
-These also took a long time to complete:
-- 5782_G1_IP_merged.trim-rcor.multi-hit-mode_100_Local.Aligned.sortedByCoord.out.sc_all.bam
-- 5782_Q_IP_merged.trim-rcor.multi-hit-mode_1_Local.Aligned.sortedByCoord.out.sc_all.bam
-```
-</details>
 <br />
 <br />
 
 <a id="convert-_multi-hit-mode_1_bams-back-to-fastqs"></a>
 ## Convert `*_multi-hit-mode_1_*.bam`s back to `.fastq`s
-Convert the the adapter-/quality-trimmed, k-mer-correct, non-multi-hit-mode (i.e., those with the substring "`_multi-hit-mode_1_`"), *S. cerevisiae*-filtered `.bam`s to .`fastq`s
+Convert the the k-mer-corrected, non-multi-hit-mode (i.e., those with the substring "`_multi-hit-mode_1_`"), *S. cerevisiae*-filtered `.bam`s to .`fastq`s
 ```bash
 #!/bin/bash
 #DONTRUN
@@ -898,9 +871,9 @@ unset infiles_multi_1_sc
 while IFS=" " read -r -d $'\0'; do
     infiles_multi_1_sc+=( "${REPLY}" )
 done < <(\
-    find ./files_processed-rcor-only/bam_rcor-cor_split \
+    find "./${d_exp}/bam_rcor-cor_split" \
         -type f \
-        -name *.trim-rcor.multi-hit-mode_1_*.sc_all.bam \
+        -name *.rcor.multi-hit-mode_1_*.sc_all.bam \
         -print0 \
             | sort -z \
 )
@@ -916,7 +889,7 @@ done < <(\
 #  Run the jobs ---------------------------------------------------------------
 script_name="submit_convert-bam-fastq.sh"
 threads=4
-storage="./files_processed-rcor-only/fastq_rcor-cor_split"  # ., "${storage}"
+storage="./${d_exp}/fastq_rcor-cor_split"  # ., "${storage}"
 
 count=1  # echo "${count}"
 for i in "${infiles_multi_1_sc[@]}"; do
@@ -958,8 +931,6 @@ for i in "${infiles_multi_1_sc[@]}"; do
 
     #  Make storage directories if they don't exist
     if [[ ! -d "${where}" ]]; then mkdir "${where}"; fi
-    # mkdir: created directory './files_unprocessed/fastq_split'
-    # mkdir: created directory './files_unprocessed/fastq_split/EndToEnd'
     
     # #  Echo test
     # bash "./sh_err_out/${script_name}" \
