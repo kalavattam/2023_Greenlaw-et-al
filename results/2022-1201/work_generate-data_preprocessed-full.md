@@ -9,13 +9,13 @@
 1. [Symlink to `.fastq` files of interest](#symlink-to-fastq-files-of-interest)
 1. [Symlink to trimmed `.fastq` files of interest](#symlink-to-trimmed-fastq-files-of-interest)
 1. [Remove "erroneous k-mers" from trimmed `.fastq`s with `rcorrector`](#remove-erroneous-k-mers-from-trimmed-fastqs-with-rcorrector)
-	1. [Run `rcorrector`](#run-rcorrector)
-	1. ["Correct" the `.fastq` outfiles fr/`rcorrector`](#correct-the-fastq-outfiles-frrcorrector)
+    1. [Run `rcorrector`](#run-rcorrector)
+    1. ["Correct" the `.fastq` outfiles fr/`rcorrector`](#correct-the-fastq-outfiles-frrcorrector)
 1. [Generate "processed-full" \(`trim_galore`, `rcorrector`\) `.bam`s](#generate-processed-full-trim_galore-rcorrector-bams)
-	1. [Align the adapter-/quality-trimmed, k-mer-corrected `.fastq` files](#align-the-adapter-quality-trimmed-k-mer-corrected-fastq-files)
-	1. [Clean up results of `STAR` alignment, index `.bam`s](#clean-up-results-of-star-alignment-index-bams)
-	1. [Filter out non-*S. cerevisiae* alignments](#filter-out-non-s-cerevisiae-alignments)
-	1. [Index the *S. cerevisiae*-only `.bam`s](#index-the-s-cerevisiae-only-bams)
+    1. [Align the adapter-/quality-trimmed, k-mer-corrected `.fastq` files](#align-the-adapter-quality-trimmed-k-mer-corrected-fastq-files)
+    1. [Clean up results of `STAR` alignment, index `.bam`s](#clean-up-results-of-star-alignment-index-bams)
+    1. [Filter out non-*S. cerevisiae* alignments](#filter-out-non-s-cerevisiae-alignments)
+    1. [Index the *S. cerevisiae*-only `.bam`s](#index-the-s-cerevisiae-only-bams)
 1. [Convert `*_multi-hit-mode_1_*.bam`s back to `.fastq`s](#convert-_multi-hit-mode_1_bams-back-to-fastqs)
 
 <!-- /MarkdownTOC -->
@@ -1127,7 +1127,6 @@ grabnode  # Lowest and default settings
 
 Trinity_env
 
-<a id="go-to-the-main-working-directory"></a>
 #  Go to the main working directory
 mwd() {
     transcriptome \
@@ -1247,3 +1246,4 @@ list_running_IDs() {
 alias count_running="list_running_IDs | wc -l"
 ```
 </details>
+<br />

@@ -433,6 +433,7 @@ done
 ## Generate "processed-rcor-only" (`rcorrector`) `.bam`s
 <a id="align-the-k-mer-corrected-fastq-files"></a>
 ### Align the k-mer-corrected `.fastq` files
+`#DEKHO`
 ```bash
 #!/bin/bash
 #DONTRUN
@@ -453,6 +454,8 @@ mwd
 
 
 #  Get .fastq-file prefixes for corrected rcor files into an array ------------
+d_exp="files_processed-rcor-only"
+
 unset infile_rcor_cor
 typeset -a infile_rcor_cor
 while IFS=" " read -r -d $'\0'; do
@@ -626,7 +629,7 @@ done
 #!/bin/bash
 #DONTRUN
 
-grabnode  # 8 cores, default settings
+grabnode  # 16 cores, default settings
 
 Trinity_env
 
@@ -642,6 +645,8 @@ mwd
 
 
 #  Clean up results of STAR alignment -----------------------------------------
+d_exp="files_processed-rcor-only"
+
 #  stackoverflow.com/questions/16541582/find-multiple-files-and-rename-them-in-linux
 find "./${d_exp}/bam_rcor-cor" \
 	-iname "*Aligned.sortedByCoord.out.bam" \
@@ -670,7 +675,7 @@ while IFS=" " read -r -d $'\0'; do
 done < <(\
     find "./${d_exp}/bam_rcor-cor" \
         -type f \
-        -name *.rcor.*.Aligned.sortedByCoord.out.bam \
+        -name *rcor.*.Aligned.sortedByCoord.out.bam \
         -print0 \
             | sort -z \
 )
@@ -681,7 +686,7 @@ done < <(\
 #  Run samtools index on each element of .bam array ---------------------------
 for i in "${infiles_mapped[@]}"; do
     # echo "samtools index -@ 8 \"${i}\""
-    samtools index -@ 8 "${i}"
+    samtools index -@ 16 "${i}"
 done
 ```
 
@@ -707,13 +712,15 @@ mwd
 
 
 #  Create an array for .bam files of interest ---------------------------------
+d_exp="files_processed-rcor-only"
+
 unset infiles_mapped
 while IFS=" " read -r -d $'\0'; do
     infiles_mapped+=( "${REPLY}" )
 done < <(\
     find "./${d_exp}/bam_rcor-cor" \
         -type f \
-        -name *.rcor.*.Aligned.sortedByCoord.out.bam \
+        -name *rcor.*.Aligned.sortedByCoord.out.bam \
         -print0 \
             | sort -z \
 )
@@ -804,7 +811,7 @@ done
 #!/bin/bash
 #DONTRUN
 
-grabnode  # Eight cores, default settings
+grabnode  # 16 cores, default settings
 
 Trinity_env
 
@@ -820,6 +827,8 @@ mwd
 
 
 #  Create an array for .bam files of interest ---------------------------------
+d_exp="files_processed-rcor-only"
+
 unset infiles_mapped_sc
 while IFS=" " read -r -d $'\0'; do
     infiles_mapped_sc+=( "${REPLY}" )
@@ -837,7 +846,7 @@ done < <(\
 #  Run samtools index on each element of .bam array ---------------------------
 for i in "${infiles_mapped_sc[@]}"; do
     # echo "samtools index -@ 8 \"${i}\""
-    samtools index -@ 8 "${i}"
+    samtools index -@ 16 "${i}"
 done
 ```
 <br />
@@ -850,11 +859,10 @@ Convert the the k-mer-corrected, non-multi-hit-mode (i.e., those with the substr
 #!/bin/bash
 #DONTRUN
 
-grabnode  # Lowest and default settings
+grabnode  # 1 core, default settings
 
 Trinity_env
 
-<a id="go-to-the-main-working-directory"></a>
 #  Go to the main working directory
 mwd() {
     transcriptome \
@@ -867,13 +875,15 @@ mwd
 
 
 #  Create an array for .bam files of interest ---------------------------------
+d_exp="files_processed-rcor-only"
+
 unset infiles_multi_1_sc
 while IFS=" " read -r -d $'\0'; do
     infiles_multi_1_sc+=( "${REPLY}" )
 done < <(\
     find "./${d_exp}/bam_rcor-cor_split" \
         -type f \
-        -name *.rcor.multi-hit-mode_1_*.sc_all.bam \
+        -name *rcor.multi-hit-mode_1_*.sc_all.bam \
         -print0 \
             | sort -z \
 )
@@ -972,3 +982,4 @@ list_running_IDs() {
 alias count_running="list_running_IDs | wc -l"
 ```
 </details>
+<br />
