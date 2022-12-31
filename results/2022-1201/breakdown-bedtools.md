@@ -21,7 +21,7 @@
 	1. [`bedtools intersect -h`](#bedtools-intersect--h)
 	1. [`GffCompare`](#gffcompare)
 		1. [`gffcompare -h`](#gffcompare--h)
-		1. [Description of GffCompare](#description-of-gffcompare)
+		1. [Description of `GffCompare`](#description-of-gffcompare)
 			1. [Methods: Implementation, ¶5](#methods-implementation-%C2%B65)
 			1. [Methods: Implementation, ¶6](#methods-implementation-%C2%B66)
 			1. [Methods: Implementation, ¶7](#methods-implementation-%C2%B67)
@@ -41,12 +41,30 @@
 				1. [¶1](#%C2%B61-4)
 				1. [¶2](#%C2%B62-1)
 			1. [Use cases: Overlap classification for a large set of transcripts with `TrMap`](#use-cases-overlap-classification-for-a-large-set-of-transcripts-with-trmap)
+	1. [`bedtools slop -h`](#bedtools-slop--h)
+	1. [`bedtools subtract -h`](#bedtools-subtract--h)
 1. [Breaking down the `bedtools_comparison` document](#breaking-down-the-bedtools_comparison-document)
 	1. [*"...lets do a comparison between `merged_final` and `combined`..."*](#lets-do-a-comparison-between-merged_final-and-combined)
 		1. [Find entries that have no overlap with known transcripts](#find-entries-that-have-no-overlap-with-known-transcripts)
 		1. [Find entries that have no overlap with known transcripts, paying attention to strandedness](#find-entries-that-have-no-overlap-with-known-transcripts-paying-attention-to-strandedness)
 		1. [Discard intron-redundant transcript fragments with `gffcompare`](#discard-intron-redundant-transcript-fragments-with-gffcompare)
 	1. [*"Let’s compare between mRNA and annotations"*](#let%E2%80%99s-compare-between-mrna-and-annotations)
+	1. [*"How many antisense transcripts?"*](#how-many-antisense-transcripts)
+		1. [Using the online `bedtools intersect` documentation to understand the above call](#using-the-online-bedtools-intersect-documentation-to-understand-the-above-call)
+			1. [`-s` Enforcing same strandedness](#-s-enforcing-same-strandedness)
+			1. [`-S` Enforcing opposite "strandedness"](#-s-enforcing-opposite-strandedness)
+			1. [`-wa` Reporting the original A feature](#-wa-reporting-the-original-a-feature)
+			1. [`-f` Requiring a minimal overlap fraction](#-f-requiring-a-minimal-overlap-fraction)
+	1. [Additional commands after *"How many antisense transcripts?"*](#additional-commands-after-how-many-antisense-transcripts)
+	1. [*"How many transcripts are both antisense and extended?"*](#how-many-transcripts-are-both-antisense-and-extended)
+	1. [*"How many transcripts are partial genes?"*](#how-many-transcripts-are-partial-genes)
+	1. [*"How many transcripts are completely intergenic?"*](#how-many-transcripts-are-completely-intergenic)
+	1. [*"Make a gtf to determine if extension is 3’ or 5’"*](#make-a-gtf-to-determine-if-extension-is-3%E2%80%99-or-5%E2%80%99)
+	1. [*"Bedtools subtract"*](#bedtools-subtract)
+		1. [Sussing things out from the online documentation for `bedtools subtract`](#sussing-things-out-from-the-online-documentation-for-bedtools-subtract)
+			1. [-f Requiring a minimal overlap fraction before subtracting](#-f-requiring-a-minimal-overlap-fraction-before-subtracting)
+			1. [-s Enforcing same “strandedness”](#-s-enforcing-same-%E2%80%9Cstrandedness%E2%80%9D)
+			1. [-S Enforcing opposite “strandedness”](#-s-enforcing-opposite-%E2%80%9Cstrandedness%E2%80%9D)
 
 <!-- /MarkdownTOC -->
 </details>
@@ -402,8 +420,8 @@ Options for the combined GTF output file:
 ```
 
 <a id="description-of-gffcompare"></a>
-#### Description of GffCompare
-*Based on the F1000Research paper [here](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7222033/)*  
+#### Description of `GffCompare`
+*The below is taken from the F1000Research paper [here](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7222033/)*  
 <a id="methods-implementation-%C2%B65"></a>
 ##### Methods: Implementation, ¶5
 GffCompare is a generic, standalone tool for merging and tracking transcript structures across multiple samples and comparing them to a reference annotation. ... GffCompare has the following main functions:  
@@ -416,7 +434,7 @@ GffCompare is a generic, standalone tool for merging and tracking transcript str
 The last two purposes require the user to provide a known reference annotation file that GffCompare then uses to classify all the transcripts in the input samples according to the reference transcript that they most closely overlap (Figure 1). To assess the accuracy of transcriptome assemblies, GffCompare reports several accuracy metrics previously employed for gene prediction evaluation (Burset, Guigó, *Genomics* 1996). <mark>These metrics include sensitivity and precision as well as the number of novel or missed features</mark>, and the metrics are computed at various levels (base, exon, intron chain, transcript, or locus). More details about how to obtain the different reports provided by GffCompare can be found in the *Use Cases* section.
 
 <img src="notebook/Pertea-et-al.Figure-1.jpeg" alt="drawing">
-<b>Figure 1. Transcript classification codes based on their relationship to reference transcripts, as generated by GffCompare.</b> <mark>Reference exons and transcripts are shown in black</mark>, <mark style="background: #00FFFF!important">transcripts to be classified are shown in blue</mark>, and hashed regions represent repeated regions in the genome. For example, the transcript in blue on the uppermost left panel is labeled “=” because all of its introns precisely match the annotation in black.
+<b>Figure 1. Transcript classification codes based on their relationship to reference transcripts, as generated by GffCompare.</b> <mark>Reference exons and transcripts are shown in black</mark>, <mark style="background: #00FFFF!important">transcripts to be classified are shown in blue</mark>, and hashed regions represent repeated regions in the genome. For example, the transcript in blue on the uppermost left panel is labeled "=" because all of its introns precisely match the annotation in black.
 
 <a id="methods-implementation-%C2%B67"></a>
 ##### Methods: Implementation, ¶7
@@ -428,12 +446,12 @@ Some pipelines can produce a very large number of transcripts that need to be ev
 ##### Use cases: Basic usage example of the `GffCompare` utility
 <a id="%C2%B61"></a>
 ###### ¶1
-The program GffCompare can be used to compare, merge, annotate and estimate accuracy of one or more GTF/GFF files (the “query” files), when compared with a reference annotation (also provided as GTF/GFF). A basic command line to compare a list of GTF files to a reference annotation file is:
+The program GffCompare can be used to compare, merge, annotate and estimate accuracy of one or more GTF/GFF files (the "query" files), when compared with a reference annotation (also provided as GTF/GFF). A basic command line to compare a list of GTF files to a reference annotation file is:
 
 ```bash
 gffcompare -r annotation.gff transcripts.gtf
 ```
-The reference annotation is specified in the `annotation.gff` file and `transcripts.gtf` represents the query file (more than one query file can be provided). Unless the `-o` option was provided, the output will be found in multiple files with the prefix “gffcmp.”. A list of the more important options for the GffCompare utility is provided in [Table 3](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7222033/table/T3/?report=objectonly).
+The reference annotation is specified in the `annotation.gff` file and `transcripts.gtf` represents the query file (more than one query file can be provided). Unless the `-o` option was provided, the output will be found in multiple files with the prefix "gffcmp.". A list of the more important options for the GffCompare utility is provided in [Table 3](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7222033/table/T3/?report=objectonly).
 
 <a id="use-cases-transcript-accuracy-estimation-with-gffcompare"></a>
 ##### Use cases: Transcript accuracy estimation with `GffCompare`
@@ -445,7 +463,7 @@ GffCompare can be used to assess the accuracy of transcriptome assemblies produc
 Sensitivity = TP/(TP + FN)
 Precision = TP/(TP + FP)
 ```
-<mark>where TP stands for "true positives", or query features (bases, exons, introns, transcripts, etc.) that agree with the corresponding reference annotation features</mark>; <mark style="background: #00FFFF!important">FN means "false negatives", i.e. features that are found in the reference annotation but are not present in the input data</mark>; <mark>FP (“false positives”) are features present in the input data but not confirmed by any reference annotation data</mark>. Notice that FP + TP amounts to the whole input set of query features in the input file. If multiple query GTF/GFF files are given as input, these metrics are computed separately for each sample.
+<mark>where TP stands for "true positives", or query features (bases, exons, introns, transcripts, etc.) that agree with the corresponding reference annotation features</mark>; <mark style="background: #00FFFF!important">FN means "false negatives", i.e. features that are found in the reference annotation but are not present in the input data</mark>; <mark>FP ("false positives") are features present in the input data but not confirmed by any reference annotation data</mark>. Notice that FP + TP amounts to the whole input set of query features in the input file. If multiple query GTF/GFF files are given as input, these metrics are computed separately for each sample.
 
 <a id="%C2%B62"></a>
 ###### ¶2
@@ -511,6 +529,138 @@ In order to quickly see which reference transcripts match which transcripts from
 <a id="use-cases-overlap-classification-for-a-large-set-of-transcripts-with-trmap"></a>
 ##### Use cases: Overlap classification for a large set of transcripts with `TrMap`
 ...
+
+<a id="bedtools-slop--h"></a>
+### `bedtools slop -h`
+```txt
+❯ bedtools slop -h
+
+Tool:    bedtools slop (aka slopBed)
+Version: v2.30.0
+Summary: Add requested base pairs of "slop" to each feature.
+
+Usage:   bedtools slop [OPTIONS] -i <bed/gff/vcf> -g <genome> [-b <int> or (-l and -r)]
+
+Options:
+	-b	Increase the BED/GFF/VCF entry -b base pairs in each direction.
+		- (Integer) or (Float, e.g. 0.1) if used with -pct.
+
+	-l	The number of base pairs to subtract from the start coordinate.
+		- (Integer) or (Float, e.g. 0.1) if used with -pct.
+
+	-r	The number of base pairs to add to the end coordinate.
+		- (Integer) or (Float, e.g. 0.1) if used with -pct.
+
+	-s	Define -l and -r based on strand.
+		E.g. if used, -l 500 for a negative-stranded feature,
+		it will add 500 bp downstream.  Default = false.
+
+	-pct	Define -l and -r as a fraction of the feature's length.
+		E.g. if used on a 1000bp feature, -l 0.50,
+		will add 500 bp "upstream".  Default = false.
+
+	-header	Print the header from the input file prior to results.
+
+Notes:
+	(1)  Starts will be set to 0 if options would force it below 0.
+	(2)  Ends will be set to the chromosome length if  requested slop would
+	force it above the max chrom length.
+	(3)  The genome file should tab delimited and structured as follows:
+
+	<chromName><TAB><chromSize>
+
+	For example, Human (hg19):
+	chr1	249250621
+	chr2	243199373
+	...
+	chr18_gl000207_random	4262
+
+Tips:
+	One can use the UCSC Genome Browser's MySQL database to extract
+	chromosome sizes. For example, H. sapiens:
+
+	mysql --user=genome --host=genome-mysql.cse.ucsc.edu -A -e \
+	"select chrom, size from hg19.chromInfo"  > hg19.genome
+```
+
+<a id="bedtools-subtract--h"></a>
+### `bedtools subtract -h`
+```txt
+bedtools subtract -h
+
+Tool:    bedtools subtract (aka subtractBed)
+Version: v2.30.0
+Summary: Removes the portion(s) of an interval that is overlapped
+	 by another feature(s).
+
+Usage:   bedtools subtract [OPTIONS] -a <bed/gff/vcf> -b <bed/gff/vcf>
+
+Options:
+	-A	Remove entire feature if any overlap.  That is, by default,
+		only subtract the portion of A that overlaps B. Here, if
+		any overlap is found (or -f amount), the entire feature is removed.
+
+	-N	Same as -A except when used with -f, the amount is the sum
+		of all features (not any single feature).
+
+	-wb	Write the original entry in B for each overlap.
+		- Useful for knowing _what_ A overlaps. Restricted by -f and -r.
+
+	-wo	Write the original A and B entries plus the number of base
+		pairs of overlap between the two features.
+		- Overlaps restricted by -f and -r.
+		  Only A features with overlap are reported.
+
+	-s	Require same strandedness.  That is, only report hits in B
+		that overlap A on the _same_ strand.
+		- By default, overlaps are reported without respect to strand.
+
+	-S	Require different strandedness.  That is, only report hits in B
+		that overlap A on the _opposite_ strand.
+		- By default, overlaps are reported without respect to strand.
+
+	-f	Minimum overlap required as a fraction of A.
+		- Default is 1E-9 (i.e., 1bp).
+		- FLOAT (e.g. 0.50)
+
+	-F	Minimum overlap required as a fraction of B.
+		- Default is 1E-9 (i.e., 1bp).
+		- FLOAT (e.g. 0.50)
+
+	-r	Require that the fraction overlap be reciprocal for A AND B.
+		- In other words, if -f is 0.90 and -r is used, this requires
+		  that B overlap 90% of A and A _also_ overlaps 90% of B.
+
+	-e	Require that the minimum fraction be satisfied for A OR B.
+		- In other words, if -e is used with -f 0.90 and -F 0.10 this requires
+		  that either 90% of A is covered OR 10% of  B is covered.
+		  Without -e, both fractions would have to be satisfied.
+
+	-split	Treat "split" BAM or BED12 entries as distinct BED intervals.
+
+	-g	Provide a genome file to enforce consistent chromosome sort order
+		across input files. Only applies when used with -sorted option.
+
+	-nonamecheck	For sorted data, don't throw an error if the file has different naming conventions
+			for the same chromosome. ex. "chr1" vs "chr01".
+
+	-sorted	Use the "chromsweep" algorithm for sorted (-k1,1 -k2,2n) input.
+
+	-bed	If using BAM input, write output as BED.
+
+	-header	Print the header from the A file prior to results.
+
+	-nobuf	Disable buffered output. Using this option will cause each line
+		of output to be printed as it is generated, rather than saved
+		in a buffer. This will make printing large output files
+		noticeably slower, but can be useful in conjunction with
+		other software tools and scripts that need to process one
+		line of bedtools output at a time.
+
+	-iobuf	Specify amount of memory to use for input buffer.
+		Takes an integer argument. Optional suffixes K/M/G supported.
+		Note: currently has no effect with compressed files.
+```
 <br />
 <br />
 
@@ -521,7 +671,8 @@ In order to quickly see which reference transcripts match which transcripts from
 <a id="find-entries-that-have-no-overlap-with-known-transcripts"></a>
 #### Find entries that have no overlap with known transcripts
 ```bash
-bedtools intersect -v -a downloadable_collapsed.gtf -b combined.gtf > totally_unique.gtf
+bedtools intersect -v -a downloadable_collapsed.gtf -b combined.gtf \
+	> totally_unique.gtf
 ```
 - `-a <bed/gff/vcf/bam>`
 	+ `downloadable_collapsed.gtf`
@@ -535,7 +686,8 @@ bedtools intersect -v -a downloadable_collapsed.gtf -b combined.gtf > totally_un
 <a id="find-entries-that-have-no-overlap-with-known-transcripts-paying-attention-to-strandedness"></a>
 #### Find entries that have no overlap with known transcripts, paying attention to strandedness
 ```bash
-bedtools intersect -v -s -a downloadable_collapsed.gtf -b combined.gtf > totally_unique_stranded.gtf
+bedtools intersect -v -s -a downloadable_collapsed.gtf -b combined.gtf \
+	> totally_unique_stranded.gtf
 ```
 - `-a <bed/gff/vcf/bam>`
 	+ `downloadable_collapsed.gtf`
@@ -556,7 +708,8 @@ gffcompare -C -o completely.unique totally_unique_stranded.gtf
 <a id="let%E2%80%99s-compare-between-mrna-and-annotations"></a>
 ### *"Let’s compare between mRNA and annotations"*
 ```bash
-bedtools intersect -F 1 -s -wa -a downloadable_collapsed.gtf -b mRNAonly.gtf > mRNA_overlap_completely.gtf
+bedtools intersect -F 1 -s -wa -a downloadable_collapsed.gtf -b mRNAonly.gtf \
+	> mRNA_overlap_completely.gtf
 ```
 - `-a <bed/gff/vcf/bam>`
 	+ `downloadable_collapsed.gtf`
@@ -568,7 +721,362 @@ bedtools intersect -F 1 -s -wa -a downloadable_collapsed.gtf -b mRNAonly.gtf > m
     + `#QUESTION` What does a value of 1 mean here? 1000000000?
 - `downloadable_collapsed.gtf`: "...anything with the word downloaded was downloaded from google docs which is where I did all the hand curations on trinity."
 - "`mRNAonly.gtf` was made by using awk to filter only the mRNA from `combined.gtf`."
+- `-wa`: force `bedtools intersect` to report the original "A" feature (`downloadable_collapsed.gtf`) when an overlap is found
 - AG's notes
 	+ "Must cover 100% of gene"
 	+ "714 extended transcripts - but some genes double cause spliced"
+
+<a id="how-many-antisense-transcripts"></a>
+### *"How many antisense transcripts?"*
+```bash
+bedtools intersect -F .3 -S -wa -a downloadable_collapsed.gtf -b mRNAonly.gtf \
+	> Antisense_tomRNA_overlap_30p.gtf
+```
+- `-a <bed/gff/vcf/bam>`
+	+ `downloadable_collapsed.gtf`
+- `-b <bed/gff/vcf/bam>`
+	+ `combined.gtf`
+- `-wa Write the original entry in A for each overlap.`
+- `-F Minimum overlap required as a fraction of B.`
+	+ `Default is 1E-9 (i.e., 1bp).`
+    + `FLOAT (e.g. 0.50)`
+    + A value of `.3`: 30%
+- `-S Require different strandedness. That is, only report hits in B that overlap A on the _opposite_ strand.`
+    + `By default, overlaps are reported without respect to strand.`
+- So, for any entry in `downloadable_collapsed.gtf` (`a`) that overlaps an entry in `mRNAonly.gtf` (`b`) on the opposite strand (`-S`) by a minimum of 30% (`-F .3`), write out the entire `downloadable_collapsed.gtf` (`a`) entry, i.e., not just the portion that overlaps
+	+ enforce that overlaps be found on opposite strands (`-S`)
+	+ restrict reported overlaps between "A" and "B" to cases where the feature in "A" overlaps at least 30% of the "B" feature (`-F .3`)
+	+ report the original "A" feature when an overlap is found (`-wa`; i.e., not just the portion that overlaps "B")
+- AG's notes
+	+ "1804 antisense transcripts"
+	+ "Probably an undercount"
+
+<a id="using-the-online-bedtools-intersect-documentation-to-understand-the-above-call"></a>
+#### Using the online `bedtools intersect` documentation to understand the above call
+https://bedtools.readthedocs.io/en/latest/content/tools/intersect.html
+
+<a id="-s-enforcing-same-strandedness"></a>
+##### `-s` Enforcing same strandedness
+<mark>By default, bedtools intersect will report overlaps between features even if the features are on opposite strands.</mark> However, if strand information is present in both BED files and the "`-s`" option is used, overlaps will only be reported when features are on the same strand.
+
+For example (note that the first B entry is not reported):
+```bash
+$ cat A.bed
+chr1 100 200 a1 100 +
+
+$ cat B.bed
+chr1 130 201 b1 100 -
+chr1 132 203 b2 100 +
+
+$ bedtools intersect -a A.bed -b B.bed -wa -wb -s
+chr1 100 200 a1 100 + chr1 132 203 b2 100 +
+```
+
+<a id="-s-enforcing-opposite-strandedness"></a>
+##### `-S` Enforcing opposite "strandedness"
+The `-s` option enforces that overlaps be on the same strand. In some cases, you may want to enforce that overlaps be found on opposite strands. In this, case use the `-S` option.
+
+For example:
+```bash
+$ cat A.bed
+chr1 100 200 a1 100 +
+
+$ cat B.bed
+chr1 130 201 b1 100 -
+chr1 132 203 b2 100 +
+
+$ bedtools intersect -a A.bed -b B.bed -wa -wb -S
+chr1 100 200 a1 100 + chr1 130 201 b1 100 -
+```
+
+<a id="-wa-reporting-the-original-a-feature"></a>
+##### `-wa` Reporting the original A feature
+Instead, one can force `bedtools intersect` to report the original "A" feature when an overlap is found. As shown below, the entire "A" feature is reported, not just the portion that overlaps with the "B" feature.
+
+For example:
+```bash
+$ cat A.bed
+chr1  10  20
+chr1  30   40
+
+$ cat B.bed
+chr1  15  20
+
+$ bedtools intersect -a A.bed -b B.bed -wa
+chr1  10   20
+```
+
+<a id="-f-requiring-a-minimal-overlap-fraction"></a>
+##### `-f` Requiring a minimal overlap fraction
+By default, bedtools intersect will report an overlap between A and B so long as there is at least one base pair is overlapping. Yet sometimes you may want to restrict reported overlaps between A and B to cases where the feature in B overlaps at least X% (e.g., 50%) of the A feature. The `-f` option does exactly this.
+
+For example (note that the second B entry is not reported):
+```bash
+$ cat A.bed
+chr1 100 200
+
+$ cat B.bed
+chr1 130 201
+chr1 180 220
+
+$ bedtools intersect -a A.bed -b B.bed -f 0.50 -wa -wb
+chr1 100 200 chr1 130 201
+```
+
+*From the `bedtools intersect` command-line help*
+```txt
+	-f	Minimum overlap required as a fraction of A.
+		- Default is 1E-9 (i.e., 1bp).
+		- FLOAT (e.g. 0.50)
+
+	-F	Minimum overlap required as a fraction of B.
+		- Default is 1E-9 (i.e., 1bp).
+		- FLOAT (e.g. 0.50)
+```
+So, `-F` does the same as `-f`, except the reported overlap is with respect to the file assigned to `-b` 
+
+<a id="additional-commands-after-how-many-antisense-transcripts"></a>
+### Additional commands after *"How many antisense transcripts?"*
+Break down what is going on here
+
+```bash
+bedtools intersect -F .2 -S -wa -a downloadable_collapsed.gtf -b mRNAonly.gtf \
+	> Antisense_tomRNA_overlap_20p.gtf
+```
+- For any entry in `downloadable_collapsed.gtf` (`a`) that overlaps an entry in `mRNAonly.gtf` (`b`) on the opposite strand (`-S`) by a minimum of 20% (`-F .2`), write out the entire `downloadable_collapsed.gtf` (`a`) entry, i.e., not just the portion that overlaps
+
+
+```bash
+gffcompare -C -o antisense_20 Antisense_tomRNA_overlap_20p.gtf
+```
+- Collapse redundant entries in `Antisense_tomRNA_overlap_20p.gtf`
+	+ `-C discard matching and "contained" transfrags in the GTF output (i.e., collapse intron-redundant transfrags across all query files)`
+	+ `-o <outprefix>`
+
+```bash
+bedtools intersect -F .4 -S -wa -a downloadable_collapsed.gtf -b mRNAonly.gtf \
+	> Antisense_tomRNA_overlap_40p.gtf
+```
+- For any entry in `downloadable_collapsed.gtf` (`a`) that overlaps an entry in `mRNAonly.gtf` (`b`) on the opposite strand (`-S`) by a minimum of 40% (`-F .4`), write out the entire `downloadable_collapsed.gtf` (`a`) entry, i.e., not just the portion that overlaps
+
+```bash
+gffcompare -C -o antisense_40 Antisense_tomRNA_overlap_40p.gtf
+```
+- Collapse redundant entries in `Antisense_tomRNA_overlap_40p.gtf`
+
+```bash
+gffcompare -C -o antisense_30 Antisense_tomRNA_overlap_30p.gtf
+```
+- Collapse redundant entries in `Antisense_tomRNA_overlap_30p.gtf`
+
+<a id="how-many-transcripts-are-both-antisense-and-extended"></a>
+### *"How many transcripts are both antisense and extended?"*
+```bash
+bedtools intersect -F 1 -s -wa -a mRNA_overlap_completely.gtf -b Antisense_tomRNA_overlap_30p.gtf \
+	> antisense_extended2.gtf
+```
+- `-F 1`: Per AG, "Must cover 100% of gene"
+- `-s`: Per the `bedtools intersect` online documentation, "The `-s` option enforces that overlaps be on the same strand"
+- AG's notes
+	+ "486"
+	+ "70% different from any known transcript"
+		* `#QUESTION` What is this percentage? How did AG calculate it?
+
+*`#YAAD` This is how we made `mRNA_overlap_completely.gtf`*
+```bash
+bedtools intersect -F 1 -s -wa -a downloadable_collapsed.gtf -b mRNAonly.gtf \
+	> mRNA_overlap_completely.gtf
+```
+
+<a id="how-many-transcripts-are-partial-genes"></a>
+### *"How many transcripts are partial genes?"*
+Related note from AG: "short"
+```bash
+bedtools intersect -F .2 -s -wa -a downloadable_collapsed.gtf -b mRNAonly.gtf \
+	> mRNA_overlap_20.gtf
+```
+- `-F .2`: To be reported, "A" features must overlap "B" features by a minimum of 20% (`-F Minimum overlap required as a fraction of B`)
+- `-s`: ...and the overlaps must be on the same strand
+- `-wa`: ...and for any overlaps between "A" and "B", write out the whole feature assigned to `-a` (`downloadable_collapsed.gtf`)
+	+ i.e., not just the portion that overlaps
+
+Note from AG
+```bash
+#  Then subtract all extended transcripts - if this works it should be small
+#+ amount
+```
+
+```bash
+bedtools intersect -v -s -a mRNA_overlap_20.gtf -b mRNA_overlap_1.gtf \
+	> mRNA_frag1.gtf
+```
+- `#QUESTIONS` Where did `mRNA_overlap_1.gtf` come from?
+	+ Is it the same as `mRNA_overlap_completely.gtf`?
+		* I would assume so, or it seems so, since we're trying to isolate all extended transcripts
+		* i.e., those that extend beyond transcripts entirely overlapping established annotated mRNA transcripts
+- Notes from AG
+	+ "This also pulls transcripts which are extended but with weird start site - not total overlap with gene"
+	+ "~50 or fewer fragment genes"
+
+<a id="how-many-transcripts-are-completely-intergenic"></a>
+### *"How many transcripts are completely intergenic?"*
+Related note from AG: "no mRNA overlap"
+```bash
+bedtools intersect -v -wa -a downloadable_collapsed.gtf -b mRNAonly.gtf \
+	> totally_intergenic_2.gtf
+
+gffcompare -C -o intergenic totally_intergenic_2.gtf
+```
+- `-v Only report those entries in A that have _no overlaps_ with B.`
+    + `Similar to "grep -v" (an homage).`
+- `-wa`: For any found features in "A", report the whole of them
+	+ I think this may not be needed since `-v` ensures that there will be no overlap at all; it selects for the entirety of an "A" feature by its nature
+- Note from AG
+	+ "1275"
+
+<a id="make-a-gtf-to-determine-if-extension-is-3%E2%80%99-or-5%E2%80%99"></a>
+### *"Make a gtf to determine if extension is 3’ or 5’"*
+```bash
+bedtools slop -i mRNAonly.gtf -g saccer3.genome -l 100 -r 0 -s \
+	> 100_3_mRNA.gtf
+
+bedtools slop -i mRNAonly.gtf -g saccer3.genome -l 200 -r 0 -s \
+	> 200_3_mRNA.gtf
+
+bedtools slop -i mRNAonly.gtf -g saccer3.genome -l 0 -r 100 -s \
+	> 100_5_mRNA.gtf
+
+bedtools slop -i mRNAonly.gtf -g saccer3.genome -l 0 -r 200 -s \
+	> 200_5_mRNA.gtf
+```
+- `-i`: `-i <bed/gff/vcf>`
+- `-g`: `-g <genome>`
+- `-l`: `-l The number of base pairs to subtract from the start coordinate.`
+    + `(Integer) or (Float, e.g. 0.1) if used with -pct.`
+- `-r`: `-r The number of base pairs to add to the end coordinate.`
+	+ `(Integer) or (Float, e.g. 0.1) if used with -pct.`
+- `-s`: `-s Define -l and -r based on strand.`
+	+ `E.g., if used, -l 500 for a negative-stranded feature, it will add 500 bp downstream. Default = false.`
+
+```bash
+gffcompare -C -o extended_total_number mRNA_overlap_completely.gtf
+```
+- 714 extended transcripts or 10% of genes
+
+```bash
+bedtools intersect -F 1 -s -wa -a mRNA_overlap_completely.gtf -b 100_3_mRNA.gtf \
+	> 3_extended_100_annos.gtf
+
+gffcompare -C -o 3_extended_100_annos 3_extended_100_annos.gtf
+```
+- 489 of 789
+
+```bash
+bedtools intersect -F 1 -s -wa -a mRNA_overlap_completely.gtf -b 200_3_mRNA.gtf \
+	> 3_extended_200_annos.gtf
+
+gffcompare -C -o 3_extended_200_annos 3_extended_200_annos.gtf
+```
+- 489 of 714
+
+```bash
+bedtools intersect -F 1 -s -wa -a mRNA_overlap_completely.gtf -b 100_5_mRNA.gtf \
+	> 5_extended_100_annos.gtf
+bedtools intersect -F 1 -s -wa -a mRNA_overlap_completely.gtf -b 200_5_mRNA.gtf \
+	> 5_extended_200_annos.gtf
+gffcompare -C -o 5_extended_200_annos 5_extended_200_annos.gtf
+```
+- 490 of 714
+	+ `#QUESTION` Is this for `5_extended_200_annos`?
+	+ `#QUESTION` What about for `5_extended_100_annos`?
+
+```bash
+bedtools intersect -F 1 -s -wa -a  5_extended_200_annos.combined.gtf -b 3_extended_200_annos.combined.gtf \
+	> extended_in_both_directions.gtf
+gffcompare -C -o 5_3_extended_200_annos extended_in_both_directions.gtf
+```
+- 276
+
+```bash
+bedtools intersect -F 1 -s -v -wa -a downloadable_collapsed.gtf -b 3_extended_200_annos.combined.gtf \
+	> unclassed.gtf
+```
+
+<a id="bedtools-subtract"></a>
+### *"Bedtools subtract"*
+```bash
+bedtools subtract -r -f 1 -s -a downloadable_collapsed.gtf -b Antisense_tomRNA_overlap_20p.gtf \
+	> no_antisense.gtf
+
+bedtools subtract -r -f 1 -s -a no_antisense.gtf -b totally_intergenic_2.gtf \
+	> no_antisense_no_intergenic.gtf
+
+bedtools subtract -r -f 1 -s -a no_antisense_no_intergenic.gtf -b mRNA_overlap_1.gtf \
+	> no_antisense_no_intergenic_no_extended.gtf
+```
+- `-r`: `-r Require that the fraction overlap be reciprocal for A AND B.`
+    + `In other words, if -f is 0.90 and -r is used, this requires that B overlap 90% of A and A _also_ overlaps 90% of B.`
+- `-f`: `-f Minimum overlap required as a fraction of A.`
+    + `Default is 1E-9 (i.e., 1bp).`
+    + `FLOAT (e.g. 0.50)`
+- `-s`: `-s Require same strandedness. That is, only report hits in B that overlap A on the _same_ strand.`
+    + `By default, overlaps are reported without respect to strand.`
+- `-a`: `-a <bed/gff/vcf>`
+- `-b`: `-b <bed/gff/vcf>`
+- `#QUESTIONS` Where did `mRNA_overlap_1.gtf` come from? (*This is a repeat of what I wrote above.*)
+	+ Is it the same as `mRNA_overlap_completely.gtf`?
+		* I would assume so, or it seems so, since we're trying to isolate all extended transcripts
+		* i.e., those that extend beyond transcripts entirely overlapping established annotated mRNA transcripts
+
+<a id="sussing-things-out-from-the-online-documentation-for-bedtools-subtract"></a>
+#### Sussing things out from the online documentation for `bedtools subtract`
+<a id="-f-requiring-a-minimal-overlap-fraction-before-subtracting"></a>
+##### -f Requiring a minimal overlap fraction before subtracting
+This option behaves the same as the -f option for bedtools intersect. In this case, subtract will only subtract an overlap with B if it covers at least the fraction of A defined by -f. If an overlap is found, but it does not meet the overlap fraction, the original A feature is reported without subtraction.
+
+```bash
+$ cat A.bed
+chr1  100  200
+
+$ cat B.bed
+chr1  180  300
+
+$ bedtools subtract -a A.bed -b B.bed -f 0.10
+chr1  100  180
+
+$ bedtools subtract -a A.bed -b B.bed -f 0.80
+chr1  100  200
+```
+
+<a id="-s-enforcing-same-%E2%80%9Cstrandedness%E2%80%9D"></a>
+##### -s Enforcing same “strandedness”
+This option behaves the same as the -s option for bedtools intersect while scanning for features in B that should be subtracted from A.
+
+```bash
+$ cat A.bed
+chr1  100  200    a1  1   +
+
+$ cat B.bed
+chr1  80   120    b1  1   +
+chr1  180  300    b2  1   -
+
+$ bedtools subtract -a A.bed -b B.bed -s
+chr1  120  200    a1  1   +
+```
+
+<a id="-s-enforcing-opposite-%E2%80%9Cstrandedness%E2%80%9D"></a>
+##### -S Enforcing opposite “strandedness”
+This option behaves the same as the -s option for bedtools intersect while scanning for features in B that should be subtracted from A.
+
+```bash
+$ cat A.bed
+chr1  100  200    a1  1   +
+
+$ cat B.bed
+chr1  80   120    b1  1   +
+chr1  180  300    b2  1   -
+
+$ bedtools subtract -a A.bed -b B.bed -S
+chr1  100  180    a1  1   +
+```
 
