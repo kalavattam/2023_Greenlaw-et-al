@@ -569,10 +569,11 @@ storage="./${d_exp}/bam_rcor-cor"  # ., "${storage}"
 
 count=1
 for i in "${infile_rcor_cor[@]}"; do
+    # i="${infile_rcor_cor[0]}"  # echo "${i}"
     for j in 1 5 10 15 50 100 1000; do
         for k in "Local" "EndToEnd"; do
-            # j=1
-            # k="Local"
+            # j=1  # echo "${j}"
+            # k="Local"  # echo "${k}"
             script_name="submit_align_multi-hit-mode_${j}_${k}.sh"  # echo "${script_name}"
             pre="$(basename "${i}").rcor"  # echo "${pre}"
             suf=$(\

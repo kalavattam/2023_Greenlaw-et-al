@@ -1,3 +1,163 @@
+
+`#work_make-blacklist-etc.md`
+
+<details>
+<summary><b><font size="+2"><i>Table of contents</i></font></b></summary>
+<!-- MarkdownTOC -->
+
+1. [Commands used for initial processing on 2022-1206](#commands-used-for-initial-processing-on-2022-1206)
+	1. [Look them up...](#look-them-up)
+	1. [Pertinent results from the call to history](#pertinent-results-from-the-call-to-history)
+1. [Downloading things... \(2022-1213\)](#downloading-things-2022-1213)
+	1. [Grab a node, get to the right directory, etc.](#grab-a-node-get-to-the-right-directory-etc)
+	1. [Get the SGD `_genome_Current_Release.tgz`](#get-the-sgd-_genome_current_releasetgz)
+	1. [Get the SGD `other_features` files](#get-the-sgd-other_features-files)
+1. [Parse the SGD `.fasta` headers to make dataframes, etc.](#parse-the-sgd-fasta-headers-to-make-dataframes-etc)
+
+<!-- /MarkdownTOC -->
+</details>
+<br />
+
+<a id="commands-used-for-initial-processing-on-2022-1206"></a>
+## Commands used for initial processing on 2022-1206
+<a id="look-them-up"></a>
+### Look them up...
+<details>
+<summary><i>Click to view</i></summary>
+
+```bash
+#!/bin/bash
+
+history | grep -i awk | less
+```
+</details>
+
+<a id="pertinent-results-from-the-call-to-history"></a>
+### Pertinent results from the call to history
+<details>
+<summary><i>Click to view</i></summary>
+
+```txt
+32894  2022-12-06 10:49:49 cat gene_names.txt | awk -F '\t' '{ print $9 }'
+32895  2022-12-06 10:50:31 cat gene_names.txt | awk -F '\t' '{ print $9 }' > gene_names.ID-field.txt
+32898  2022-12-06 10:51:58 cat feature_names.ID-field.txt | awk -F ';' '{ print $2 }'
+32899  2022-12-06 10:52:11 cat feature_names.ID-field.txt | awk -F ';' '{ print $2 }' | grep -v "Name="
+32900  2022-12-06 10:53:17 cat feature_names.ID-field.txt | awk -F ';' '{ print $2 }' | grep -v "Name=" -
+32922  2022-12-06 11:01:39 cat KA.other_features_genomic.names.ID-field.txt | awk -F ';' '{ print $2 }' | sed 's/Name=//' | head
+32923  2022-12-06 11:03:18 cat KA.other_features_genomic.names.ID-field.txt | awk -F ';' '{ print $2 }' | sed 's/Name=//' | sort | uniq -c > KA.other_feature
+```
+</details>
+<br />
+<br />
+
+<a id="downloading-things-2022-1213"></a>
+## Downloading things... (2022-1213)
+- `#IMPORTANT` SGD files are derived from UCSC genome resources; see... `#TODO` Reference the source of this information
+- `#TODO` Give this section a better name
+<a id="grab-a-node-get-to-the-right-directory-etc"></a>
+### Grab a node, get to the right directory, etc.
+<details>
+<summary><i>Click to view</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN
+
+
+#  Move to work directory, establish work environment -------------------------
+grabnode  # 1 and corresponding defaults
+
+mwd() {
+    transcriptome \
+       && cd "./results/2022-1201" \
+       || echo "cd'ing failed; check on this"
+}
+
+
+mwd
+
+Trinity_env
+ml Singularity
+```
+</details>
+<br />
+<br />
+
+<a id="get-the-sgd-_genome_current_releasetgz"></a>
+### [Get the SGD `_genome_Current_Release.tgz`](http://sgd-archive.yeastgenome.org/sequence/S288C_reference/genome_releases/)
+- The most recent genome release is from 2021-0427
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+mkdir -p files_features/SGD_genome-current-release
+cd files_features/SGD_genome-current-release || \
+	echo "cd'ing failed; check on this"
+
+    # http://sgd-archive.yeastgenome.org/sequence/S288C_reference/genome_releases/S288C_reference_genome_Current_Release.tgz
+link="http://sgd-archive.yeastgenome.org/sequence/S288C_reference/genome_releases"
+files=(
+    genome_releases.README
+    S288C_reference_genome_Current_Release.tgz
+    README.html
+)
+for i in "${files[@]}"; do curl -L "${link}/${i}" -o "${i}"; done
+#   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+#                                  Dload  Upload   Total   Spent    Left  Speed
+# 100  278k  100  278k    0     0  2157k      0 --:--:-- --:--:-- --:--:-- 2157k
+#   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+#                                  Dload  Upload   Total   Spent    Left  Speed
+# 100  278k  100  278k    0     0  2485k      0 --:--:-- --:--:-- --:--:-- 2507k
+#   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+#                                  Dload  Upload   Total   Spent    Left  Speed
+# 100  278k  100  278k    0     0  2191k      0 --:--:-- --:--:-- --:--:-- 2191k
+```
+
+<a id="get-the-sgd-other_features-files"></a>
+### [Get the SGD `other_features` files](http://sgd-archive.yeastgenome.org/sequence/S288C_reference/other_features/)
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+../..
+
+mkdir -p files_features/SGD_other-features
+cd files_features/SGD_other-features || \
+	echo "cd'ing failed; check on this"
+
+link="http://sgd-archive.yeastgenome.org/sequence/S288C_reference/other_features"
+files=(
+	other_features_genomic_1000.fasta.gz
+	other_features_genomic.fasta.gz
+	other_features.README
+	README.html
+)
+for i in "${files[@]}"; do curl -L "${link}/${i}" -o "${i}"; done
+#   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+#                                  Dload  Upload   Total   Spent    Left  Speed
+# 100  637k  100  637k    0     0  3125k      0 --:--:-- --:--:-- --:--:-- 3125k
+#   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+#                                  Dload  Upload   Total   Spent    Left  Speed
+# 100  186k  100  186k    0     0  1023k      0 --:--:-- --:--:-- --:--:-- 1023k
+#   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+#                                  Dload  Upload   Total   Spent    Left  Speed
+# 100   775  100   775    0     0   5827      0 --:--:-- --:--:-- --:--:--  5827
+#   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+#                                  Dload  Upload   Total   Spent    Left  Speed
+# 100   311  100   311    0     0   4573      0 --:--:-- --:--:-- --:--:--  4573
+```
+<br />
+<br />
+
+<a id="parse-the-sgd-fasta-headers-to-make-dataframes-etc"></a>
+## Parse the SGD `.fasta` headers to make dataframes, etc.
+- `#INPROGRESS` Make a `python` script for using the headers in the SGD `other_features` `.fasta` to make a `pandas` dataframe, which can be used in turn to make `.bed`, `.gtf`, etc. files
+- [Details about the `.bed` format](https://genome.ucsc.edu/FAQ/FAQformat.html#format1)
+
+<details>
+<summary><i>Scratch work for working with only the 'other_features' .fasta (2022-1214-1214)</i></summary>
+
+```python
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
@@ -9,15 +169,11 @@ Created on Tue Dec 13 10:14:09 2022
 # bioinformatics.stackexchange.com/questions/5435/how-to-create-a-bed-file-from-fasta
 import numpy as np
 import pandas as pd
-import os
-import re
 # import sys
 
-os.chdir('/Users/kalavatt/Downloads/_Kris/scratch.2022-1213-12XX/R64-3-1_20210421/')
 
-# Functions -------------------------------------------------------------------
 # stackoverflow.com/questions/43067373/split-by-comma-and-how-to-exclude-comma-from-quotes-in-split
-def tokenize(string, separator = ',', quote = '"'):
+def tokenize(string, separator=',', quote='"'):
     """
     Split a comma separated string into a List of strings.
 
@@ -46,29 +202,11 @@ def tokenize(string, separator = ',', quote = '"'):
 
     return comma_separated_list
 
-
 # -----------------------------------------------------------------------------
 # Drafting it all... ----------------------------------------------------------
 # -----------------------------------------------------------------------------
 # Read in .fasta
-#QUESTION Will this work for the other SGD .fastas?
-# fasta = "NotFeature_R64-3-1_20210421.fasta"
-# fasta = "orf_coding_all_R64-3-1_20210421.fasta"
-# fasta = "orf_trans_all_R64-3-1_20210421.fasta"
-# fasta = "other_features_genomic_R64-3-1_20210421.fasta"
-# fasta = "rna_coding_R64-3-1_20210421.fasta"
-
-#NOTE As written, does not work for NotFeature_*
-
-#NOTE orf_coding_all_* works but has some features with two (or more) coordinates (check if there are more than two)
-
-#NOTE orf_trans_all_* works in the same way orf_coding_all_* works: it has some features with two (or more) coordinates (check if there are more than two)
-#QUESTION Is orf_coding_all_* exactly the same as orf_trans_all_*?
-
-#NOTE rna_coding_* has some features with two (or more) coordinates (check if there are more than two)
-#TODO Come up with some way to handle that
-#TODO Check the other files for any such weirdness, to see if they work with the below, etc.
-#TODO Generalize the script: Make it reusable
+fasta = "other_features_genomic.fasta"
 
 # Extract the headers
 headers = []
@@ -78,7 +216,9 @@ with open(fasta) as f:
         if line.startswith('>'):  # Identifies fasta header line
             headers.append(line[1:-1])  # Append all of the line that isn't >
             header = line[1:]  # Reset header
-del(f, line)
+del(fasta)
+del(f)
+del(line)
 
 # Add a 'forward complement' designation to match the presence of a 'reverse
 # complement' designation on certain lines
@@ -95,20 +235,12 @@ for i in headers:
         )
 del(i)
 
-
-pattern = re.compile(r'(?<=\d),(?=\d)')
-header_fix_comma = []
-for i in headers_fix_complement:
-    header_fix_comma.append(pattern.sub('_', i))
-del(i, pattern)
-
 header_list = []
-for i in header_fix_comma:
+for i in headers_fix_complement:
+    # print(type(i))
     print(tokenize(i))
     header_list.append(tokenize(i))
 del(i)
-
-
 
 # -----------------------------------------------------------------------------
 # Add columns names
@@ -116,7 +248,7 @@ del(i)
 # sparkbyexamples.com/pandas/pandas-add-column-names-to-dataframe/
 header_df = pd.DataFrame(
     header_list,
-    columns = [
+    columns=[
         'feature', 'coord_written', 'release', 'strand_written',
         'category', 'notes'
     ]
@@ -125,24 +257,21 @@ header_df = pd.DataFrame(
 # Clean up variables
 del(header)
 del(headers)
-del(headers_fix_complement)
-del(header_fix_comma)
 del(header_list)
+del(headers_fix_complement)
 
 # There are leading spaces in string columns; strip these away
 # stackoverflow.com/questions/49551336/pandas-trim-leading-trailing-white-space-in-a-dataframe
-# stackoverflow.com/questions/3232953/python-removing-spaces-from-list-objects
 header_df = header_df.applymap(
     lambda x: x.strip() if isinstance(x, str) else x
 )
-
 
 # -----------------------------------------------------------------------------
 # Split column 'feature' on space
 # stackoverflow.com/questions/37333299/splitting-a-pandas-dataframe-column-by-delimiter
 header_df[['name_systematic', 'name_standard', 'SGDID']] = header_df[
     'feature'
-].str.split(' ', expand = True)
+].str.split(' ', expand=True)
 
 # Check that 'name_standard' is exactly the same as 'feature'
 # geeksforgeeks.org/how-to-compare-two-columns-in-pandas/
@@ -195,7 +324,6 @@ header_df['chr'] = header_df['coord_pre_n']\
 # stackoverflow.com/questions/20025882/add-a-string-prefix-to-each-value-in-a-string-column-using-pandas
 header_df['chr_pre_y'] = 'Chr' + header_df['chr']
 
-#TODO Write up logic to handle lines that contain an underscroe in 'coord_'* columns
 # -------------------------------------
 # # Extract substring after colon for 'start', 'end'
 # header_df['coord_pre_n'].str.split(':').str[1]
@@ -233,90 +361,7 @@ header_df['end'] = np.where(
     header_df['coord_pre_n']\
         .str.split(':').str[1].str.split('-').str[0]
 )
-
-
-# -----------------------------------------------------------------------------
-# If row contains specific text in specific field, then select it
-test = header_df[header_df['coord_written'].str.contains('_')]
-test['fir'] = test['coord_pre_n'].str.split(':').str[1].str.split('_').str[0]
-test['sec'] = test['coord_pre_n'].str.split(':').str[1].str.split('_').str[1]
-
-
-# Delete column 'name_standard'  #NOTE Don't actually do this
-# header_df = header_df.drop('name_standard', axis = 1)
-header_df = header_df.drop('strand', axis = 1)
-
-# Copy columns for splitting, etc.  #NOTE Don't actually do this
-# stackoverflow.com/questions/32675861/copy-all-values-in-a-column-to-a-new-column-in-a-pandas-dataframe
-
-
-
-
-# geeksforgeeks.org/how-to-count-occurrences-of-specific-value-in-pandas-column/
-# geeksforgeeks.org/convert-given-pandas-series-into-a-dataframe-with-its-index-as-another-column-on-the-dataframe/
-# tally_0 = header_df[0].value_counts().to_frame().reset_index()
-# tally_1 = header_df[1].value_counts().to_frame().reset_index()
-# tally_2 = header_df[2].value_counts().to_frame().reset_index()
-tally_3 = header_df[3].value_counts().to_frame().reset_index()
-tally_4 = header_df[4].value_counts().to_frame().reset_index()
-tally_5 = header_df[5].value_counts().to_frame().reset_index()
-
-
-
-
-
-
-def parse_header(fasta):
-    headers = []
-    
-    with open(fasta) as f:
-        header = None
-        for line in f:
-            if line.startswith('>'):  # Identifies fasta header line
-                headers.append(line[1:-1])  # Append all of the line that isn't >
-                header = line[1:]  # Reset header
-    
-    # newHeader = (header.replace(':',',') for header in headers)  # Format to be accepted later
-    # newnewHeader = (header.replace('-',',') for header in newHeader)  # Format to accept later
-    # bed_head = (header.split(',') for header in newnewHeader)  # Separate by comma from format above
-    
-    headers_A = []
-    for i in headers:
-        if i.find('Genome Release 64-3-1, reverse complement,') != -1:
-            print(i)
-            headers_A.append(i)
-        else:
-            headers_A.append(
-                i.replace(
-                    'Genome Release 64-3-1,',
-                    'Genome Release 64-3-1, forward complement,'
-                )
-            )
-    bed_head = (i.split(',') for i in headers_A)  # Separate by comma from format above        
-    return bed_head
-
-
-if __name__=="__main__":
-    # Capture in- and outfile names from the command line
-    # fasta_in = sys.argv[1]  # Take fasta name, including path, as positional argument #1
-    # bed_out = sys.argv[2]  # Take bed name, including path, as positional argument #2
-
-    fasta_in = "other_features_genomic.fasta"
-    bed_out = "other_features_genomic.bed"
-    
-    # Run function parse_header()
-    fasta_parsed = parse_header(fasta_in)
-    
-    # Go from generator to list
-    headers = list(fasta_parsed)
-
-    # Create dataframe that will be used to output bed files
-    bed_file = pd.DataFrame(headers)
-    
-    # Output the bed file
-    bed_file.to_csv(
-        bed_out,
-        sep = '\t',
-        index = False,
-        header = None
-    )
+```
+</details>
+<br />
+<br />
