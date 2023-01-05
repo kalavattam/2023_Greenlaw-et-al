@@ -1,5 +1,42 @@
 
 `#work_make-presentation-etc.md`
+<br />
+<br />
+
+<details>
+<summary><b><font size="+2"><i>Table of contents</i></font></b></summary>
+<!-- MarkdownTOC -->
+
+1. [Scraps to be incorporated](#scraps-to-be-incorporated)
+1. [Documentation for Alison/me](#documentation-for-alisonme)
+    1. [The *"comprehensive transcriptome database"* strategy](#the-comprehensive-transcriptome-database-strategy)
+        1. [Pros and cons of the `Trinity` GG and GF approaches](#pros-and-cons-of-the-trinity-gg-and-gf-approaches)
+        1. [Input for the *"comprehensive transcriptome database"* strategy](#input-for-the-comprehensive-transcriptome-database-strategy)
+    1. [How I called the different programs, including rationale and other details](#how-i-called-the-different-programs-including-rationale-and-other-details)
+        1. [★ `PASA`](#%E2%98%85-pasa)
+            1. [Details](#details)
+                1. [First, here's a breakdown of the *"kinds"* of input](#first-heres-a-breakdown-of-the-kinds-of-input)
+                1. [And here's a breakdown of the input with respect to both *"kinds"* and *"combinations"*](#and-heres-a-breakdown-of-the-input-with-respect-to-both-kinds-and-combinations)
+            1. [The how](#the-how)
+                1. [`--gene_overlap` method](#--gene_overlap-method)
+                1. [`--stringent_alignment_overlap` method](#--stringent_alignment_overlap-method)
+                1. [Default method \(neither `--gene_overlap` nor `--stringent_alignment_overlap`\)](#default-method-neither---gene_overlap-nor---stringent_alignment_overlap)
+                1. [The meaning of the parameters](#the-meaning-of-the-parameters)
+        1. [★ `Trinity`](#%E2%98%85-trinity)
+            1. [Details](#details-1)
+            1. [The how](#the-how-1)
+                1. [GG](#gg)
+                1. [GF](#gf)
+        1. [★ `STAR`](#%E2%98%85-star)
+        1. [★ `rcorrector`](#%E2%98%85-rcorrector)
+        1. [★ `trim_galore`](#%E2%98%85-trim_galore)
+1. [`#TODOs`](#todos)
+    1. [Building an understanding/explanation for important parts of the `PASA` pipeline](#building-an-understandingexplanation-for-important-parts-of-the-pasa-pipeline)
+
+<!-- /MarkdownTOC -->
+</details>
+<br />
+
 
 <a id="scraps-to-be-incorporated"></a>
 ## Scraps to be incorporated
@@ -110,196 +147,274 @@ In `PASA`'s *"comprehensive transcriptome database"* strategy, we use as input t
 
 <a id="the-how"></a>
 ##### The how
-<a id="--gene_overlap-true"></a>
-###### `--gene_overlap` `TRUE`
+<a id="--gene_overlap-method"></a>
+###### `--gene_overlap` method
 <details>
-<summary><i>Click to view the bash script</i></summary>
+<summary><i>Click to view code: The calls to Launch_PASA_pipeline.pl using the --gene_overlap method, followed by the call to build_comprehensive_transcriptome.dbi</i></summary>
 
-The calls to both `Launch_PASA_pipeline.pl` and `build_comprehensive_transcriptome.dbi`
 ```bash
+#!/bin/bash
+#DONTRUN
+
+cat << script > "./sh_err_out/${s_name}"
 #!/bin/bash
 
 #SBATCH --nodes=1
-#SBATCH --cpus-per-task=8
-#SBATCH --error=./sh_err_out/err_out/submit_launch-PASA-pipeline_build-comprehensive-transcriptome_param_gene-overlap.%J.err.txt
-#SBATCH --output=./sh_err_out/err_out/submit_launch-PASA-pipeline_build-comprehensive-transcriptome_param_gene-overlap.%J.out.txt
+#SBATCH --cpus-per-task=${threads}
+#SBATCH --error=./sh_err_out/err_out/${s_name%.sh}.%J.err.txt
+#SBATCH --output=./sh_err_out/err_out/${s_name%.sh}.%J.out.txt
 
-#  submit_launch-PASA-pipeline_build-comprehensive-transcriptome_param_gene-overlap.sh
+#  ${s_name}
 #  KA
-#  2022-1213
+#  $(date '+%Y-%m%d')
 
-str_experiment="${1}"
-str_accessions="${2}"
+str_directory="\${1}"
+str_experiment="\${2}"
+str_accessions="\${3}"
 
 ml Singularity 
 
 export PASAHOME="/usr/local/src/PASApipeline" 
-echo "PASAHOME is ${PASAHOME}"
+echo "PASAHOME is \${PASAHOME}"
 echo ""
 
-cd "files_PASA_param_gene-overlap/${str_experiment}"
-echo "Working directory from which the script is called: $(pwd)"
+cd "\${str_directory}/\${str_experiment}"
+echo "Working directory from which the script is called: \$(pwd)"
 echo ""
 
 echo "All files in the working directory:"
 ls -lhaFG
 echo ""
 
-singularity run \
-    --no-home \
-    --bind "${HOME}/genomes/sacCer3/Ensembl/108" \
-    --bind "$(pwd)" \
-    --bind "/fh/scratch/delete30/tsukiyama_t:/loc/scratch/${SLURM_JOB_ID}" \
-    "${HOME}/singularity-docker-etc/PASA.sif" \
-        "${PASAHOME}/Launch_PASA_pipeline.pl" \
-            --CPU ${SLURM_CPUS_ON_NODE} \
-            -c "${str_experiment}.align_assembly.config" \
-            -C \
-            -R \
-            -g "Saccharomyces_cerevisiae.R64-1-1.dna.toplevel.chr-rename.fasta" \
-            -I 1002 \
-            -t "${str_experiment}.transcripts.fasta.clean" \
-            -T \
-            -u "${str_experiment}.transcripts.fasta" \
-            --TDN "${str_accessions}" \
-            --transcribed_is_aligned_orient \
-            --stringent_alignment_overlap 30.0 \
-            -L \
-            --annots "Saccharomyces_cerevisiae.R64-1-1.108.gff3" \
-            --gene_overlap 50.0  \
-            --ALIGNERS "blat,gmap,minimap2" \
-                1> >(tee -a "${str_experiment}.Launch_PASA_pipeline.stdout.log") \
-                2> >(tee -a "${str_experiment}.Launch_PASA_pipeline.stderr.log" >&2)
+singularity run \\
+    --no-home \\
+    --bind "\${HOME}/genomes/sacCer3/Ensembl/108" \\
+    --bind "\$(pwd)" \\
+    --bind "/fh/scratch/delete30/tsukiyama_t:/loc/scratch/\${SLURM_JOB_ID}" \\
+    "\${HOME}/singularity-docker-etc/PASA.sif" \\
+        "\${PASAHOME}/Launch_PASA_pipeline.pl" \\
+            --CPU \${SLURM_CPUS_ON_NODE} \\
+            -c "\${str_experiment}.align_assembly.config" \\
+            -C \\
+            -R \\
+            -g "Saccharomyces_cerevisiae.R64-1-1.dna.toplevel.chr-rename.fasta" \\
+            -I 1002 \\
+            -t "\${str_experiment}.transcripts.fasta.clean" \\
+            -T \\
+            -u "\${str_experiment}.transcripts.fasta" \\
+            --TDN "\${str_accessions}" \\
+            --transcribed_is_aligned_orient \\
+            -L \\
+            --annots "Saccharomyces_cerevisiae.R64-1-1.108.gff3" \\
+            --gene_overlap ${value} \\
+            --ALIGNERS "blat,gmap,minimap2" \\
+                1> >(tee -a "\${str_experiment}.Launch_PASA_pipeline.stdout.log") \\
+                2> >(tee -a "\${str_experiment}.Launch_PASA_pipeline.stderr.log" >&2)
 
-if [[ -f "${str_experiment}.pasa.sqlite.pasa_assemblies.gtf" ]]; then
+if [[ -f "\${str_experiment}.pasa.sqlite.pasa_assemblies.gtf" ]]; then
     #  cyberciti.biz/faq/linux-unix-script-check-if-file-empty-or-not/
-    if [[ -s "${str_experiment}.pasa.sqlite.pasa_assemblies.gtf" ]]; then
-        singularity run \
-            --no-home \
-            --bind "${HOME}/genomes/sacCer3/Ensembl/108" \
-            --bind "$(pwd)" \
-            --bind "/fh/scratch/delete30/tsukiyama_t:/loc/scratch/${SLURM_JOB_ID}" \
-            "${HOME}/singularity-docker-etc/PASA.sif" \
-                ${PASAHOME}/scripts/build_comprehensive_transcriptome.dbi \
-                    -c "${str_experiment}.align_assembly.config" \
-                    -t "${str_experiment}.transcripts.fasta" \
-                    --prefix "${str_experiment}.compreh_init_build" \
-                    --min_per_ID 95 \
-                    --min_per_aligned 30 \
-                        1> >(tee -a "${str_experiment}.build_comprehensive_transcriptome.stdout.log") \
-                        2> >(tee -a "${str_experiment}.build_comprehensive_transcriptome.stderr.log" >&2)
+    if [[ -s "\${str_experiment}.pasa.sqlite.pasa_assemblies.gtf" ]]; then
+        singularity run \\
+            --no-home \\
+            --bind "\${HOME}/genomes/sacCer3/Ensembl/108" \\
+            --bind "\$(pwd)" \\
+            --bind "/fh/scratch/delete30/tsukiyama_t:/loc/scratch/\${SLURM_JOB_ID}" \\
+            "\${HOME}/singularity-docker-etc/PASA.sif" \\
+                \${PASAHOME}/scripts/build_comprehensive_transcriptome.dbi \\
+                    -c "\${str_experiment}.align_assembly.config" \\
+                    -t "\${str_experiment}.transcripts.fasta" \\
+                    --prefix "\${str_experiment}.compreh_init_build" \\
+                    --min_per_ID 95 \\
+                    --min_per_aligned 30 \\
+                        1> >(tee -a "\${str_experiment}.build_comprehensive_transcriptome.stdout.log") \\
+                        2> >(tee -a "\${str_experiment}.build_comprehensive_transcriptome.stderr.log" >&2)
     else
-        echo "${str_experiment}.pasa.sqlite.pasa_assemblies.gtf is empty"
+        echo "\${str_experiment}.pasa.sqlite.pasa_assemblies.gtf is empty"
         echo "Check on things..."
     fi
 fi
+
+script
 ```
 </details>
 <br />
 
-<a id="--gene_overlap-false"></a>
-###### `--gene_overlap` `FALSE`
+<a id="--stringent_alignment_overlap-method"></a>
+###### `--stringent_alignment_overlap` method
+<details>
+<summary><i>Click to view code: The calls to Launch_PASA_pipeline.pl using the --stringent_alignment_overlap method, followed by the call to build_comprehensive_transcriptome.dbi</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN
+
+cat << script > "./sh_err_out/${s_name}"
+#!/bin/bash
+
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=${threads}
+#SBATCH --error=./sh_err_out/err_out/${s_name%.sh}.%J.err.txt
+#SBATCH --output=./sh_err_out/err_out/${s_name%.sh}.%J.out.txt
+
+#  ${s_name}
+#  KA
+#  $(date '+%Y-%m%d')
+
+str_directory="\${1}"
+str_experiment="\${2}"
+str_accessions="\${3}"
+
+ml Singularity 
+
+export PASAHOME="/usr/local/src/PASApipeline" 
+echo "PASAHOME is \${PASAHOME}"
+echo ""
+
+cd "\${str_directory}/\${str_experiment}"
+echo "Working directory from which the script is called: \$(pwd)"
+echo ""
+
+echo "All files in the working directory:"
+ls -lhaFG
+echo ""
+
+singularity run \\
+    --no-home \\
+    --bind "\${HOME}/genomes/sacCer3/Ensembl/108" \\
+    --bind "\$(pwd)" \\
+    --bind "/fh/scratch/delete30/tsukiyama_t:/loc/scratch/\${SLURM_JOB_ID}" \\
+    "\${HOME}/singularity-docker-etc/PASA.sif" \\
+        "\${PASAHOME}/Launch_PASA_pipeline.pl" \\
+            --CPU \${SLURM_CPUS_ON_NODE} \\
+            -c "\${str_experiment}.align_assembly.config" \\
+            -C \\
+            -R \\
+            -g "Saccharomyces_cerevisiae.R64-1-1.dna.toplevel.chr-rename.fasta" \\
+            -I 1002 \\
+            -t "\${str_experiment}.transcripts.fasta.clean" \\
+            -T \\
+            -u "\${str_experiment}.transcripts.fasta" \\
+            --TDN "\${str_accessions}" \\
+            --transcribed_is_aligned_orient \\
+            --stringent_alignment_overlap ${value} \\
+            --ALIGNERS "blat,gmap,minimap2" \\
+                1> >(tee -a "\${str_experiment}.Launch_PASA_pipeline.stdout.log") \\
+                2> >(tee -a "\${str_experiment}.Launch_PASA_pipeline.stderr.log" >&2)
+
+if [[ -f "\${str_experiment}.pasa.sqlite.pasa_assemblies.gtf" ]]; then
+    #  cyberciti.biz/faq/linux-unix-script-check-if-file-empty-or-not/
+    if [[ -s "\${str_experiment}.pasa.sqlite.pasa_assemblies.gtf" ]]; then
+        singularity run \\
+            --no-home \\
+            --bind "\${HOME}/genomes/sacCer3/Ensembl/108" \\
+            --bind "\$(pwd)" \\
+            --bind "/fh/scratch/delete30/tsukiyama_t:/loc/scratch/\${SLURM_JOB_ID}" \\
+            "\${HOME}/singularity-docker-etc/PASA.sif" \\
+                \${PASAHOME}/scripts/build_comprehensive_transcriptome.dbi \\
+                    -c "\${str_experiment}.align_assembly.config" \\
+                    -t "\${str_experiment}.transcripts.fasta" \\
+                    --prefix "\${str_experiment}.compreh_init_build" \\
+                    --min_per_ID 95 \\
+                    --min_per_aligned 30 \\
+                        1> >(tee -a "\${str_experiment}.build_comprehensive_transcriptome.stdout.log") \\
+                        2> >(tee -a "\${str_experiment}.build_comprehensive_transcriptome.stderr.log" >&2)
+    else
+        echo "\${str_experiment}.pasa.sqlite.pasa_assemblies.gtf is empty"
+        echo "Check on things..."
+    fi
+fi
+
+script
+```
+</details>
+<br />
+
+<a id="default-method-neither---gene_overlap-nor---stringent_alignment_overlap"></a>
+###### Default method (neither `--gene_overlap` nor `--stringent_alignment_overlap`)
 
 <details>
-<summary><i>Click to view the bash scripts</i></summary>
+<summary><i>Click to view code: The calls to Launch_PASA_pipeline.pl using default "overlap" settings, followed by the call to build_comprehensive_transcriptome.dbi</i></summary>
 
-The calls to `Launch_PASA_pipeline.pl`
 ```bash
+#!/bin/bash
+#DONTRUN
+
+cat << script > "./sh_err_out/${s_name}"
 #!/bin/bash
 
 #SBATCH --nodes=1
-#SBATCH --cpus-per-task=8
-#SBATCH --error=./sh_err_out/err_out/submit_launch-PASA-pipeline.%J.err.txt
-#SBATCH --output=./sh_err_out/err_out/submit_launch-PASA-pipeline.%J.out.txt
+#SBATCH --cpus-per-task=${threads}
+#SBATCH --error=./sh_err_out/err_out/${s_name%.sh}.%J.err.txt
+#SBATCH --output=./sh_err_out/err_out/${s_name%.sh}.%J.out.txt
 
-#  submit_launch-PASA-pipeline.sh
+#  ${s_name}
 #  KA
-#  2022-1212
+#  $(date '+%Y-%m%d')
 
-str_experiment="${1}"
-str_accessions="${2}"
+str_directory="\${1}"
+str_experiment="\${2}"
+str_accessions="\${3}"
 
 ml Singularity 
 
 export PASAHOME="/usr/local/src/PASApipeline" 
-echo "PASAHOME is ${PASAHOME}"
+echo "PASAHOME is \${PASAHOME}"
 echo ""
 
-cd "files_PASA_param_gene-overlap/${str_experiment}"
-echo "Working directory from which the script is called: $(pwd)"
+cd "\${str_directory}/\${str_experiment}"
+echo "Working directory from which the script is called: \$(pwd)"
 echo ""
 
 echo "All files in the working directory:"
 ls -lhaFG
 echo ""
 
-singularity run \
-    --no-home \
-    --bind "${HOME}/genomes/sacCer3/Ensembl/108" \
-    --bind "$(pwd)" \
-    --bind "/fh/scratch/delete30/tsukiyama_t:/loc/scratch/${SLURM_JOB_ID}" \
-    "${HOME}/singularity-docker-etc/PASA.sif" \
-        "${PASAHOME}/Launch_PASA_pipeline.pl" \
-            --CPU ${SLURM_CPUS_ON_NODE} \
-            -c "${str_experiment}.align_assembly.config" \
-            -C \
-            -R \
-            -g "Saccharomyces_cerevisiae.R64-1-1.dna.toplevel.chr-rename.fasta" \
-            -I 1002 \
-            -t "${str_experiment}.transcripts.fasta.clean" \
-            -T \
-            -u "${str_experiment}.transcripts.fasta" \
-            --TDN "${str_accessions}" \
-            --transcribed_is_aligned_orient \
-            --stringent_alignment_overlap 30.0 \
-            --ALIGNERS "blat,gmap,minimap2" \
-                1> >(tee -a "${str_experiment}.Launch_PASA_pipeline.stdout.log") \
-                2> >(tee -a "${str_experiment}.Launch_PASA_pipeline.stderr.log" >&2)
-```
+singularity run \\
+    --no-home \\
+    --bind "\${HOME}/genomes/sacCer3/Ensembl/108" \\
+    --bind "\$(pwd)" \\
+    --bind "/fh/scratch/delete30/tsukiyama_t:/loc/scratch/\${SLURM_JOB_ID}" \\
+    "\${HOME}/singularity-docker-etc/PASA.sif" \\
+        "\${PASAHOME}/Launch_PASA_pipeline.pl" \\
+            --CPU \${SLURM_CPUS_ON_NODE} \\
+            -c "\${str_experiment}.align_assembly.config" \\
+            -C \\
+            -R \\
+            -g "Saccharomyces_cerevisiae.R64-1-1.dna.toplevel.chr-rename.fasta" \\
+            -I 1002 \\
+            -t "\${str_experiment}.transcripts.fasta.clean" \\
+            -T \\
+            -u "\${str_experiment}.transcripts.fasta" \\
+            --TDN "\${str_accessions}" \\
+            --transcribed_is_aligned_orient \\
+            --ALIGNERS "blat,gmap,minimap2" \\
+                1> >(tee -a "\${str_experiment}.Launch_PASA_pipeline.stdout.log") \\
+                2> >(tee -a "\${str_experiment}.Launch_PASA_pipeline.stderr.log" >&2)
 
-The calls to `build_comprehensive_transcriptome.dbi`
-```bash
-#!/bin/bash
+if [[ -f "\${str_experiment}.pasa.sqlite.pasa_assemblies.gtf" ]]; then
+    #  cyberciti.biz/faq/linux-unix-script-check-if-file-empty-or-not/
+    if [[ -s "\${str_experiment}.pasa.sqlite.pasa_assemblies.gtf" ]]; then
+        singularity run \\
+            --no-home \\
+            --bind "\${HOME}/genomes/sacCer3/Ensembl/108" \\
+            --bind "\$(pwd)" \\
+            --bind "/fh/scratch/delete30/tsukiyama_t:/loc/scratch/\${SLURM_JOB_ID}" \\
+            "\${HOME}/singularity-docker-etc/PASA.sif" \\
+                \${PASAHOME}/scripts/build_comprehensive_transcriptome.dbi \\
+                    -c "\${str_experiment}.align_assembly.config" \\
+                    -t "\${str_experiment}.transcripts.fasta" \\
+                    --prefix "\${str_experiment}.compreh_init_build" \\
+                    --min_per_ID 95 \\
+                    --min_per_aligned 30 \\
+                        1> >(tee -a "\${str_experiment}.build_comprehensive_transcriptome.stdout.log") \\
+                        2> >(tee -a "\${str_experiment}.build_comprehensive_transcriptome.stderr.log" >&2)
+    else
+        echo "\${str_experiment}.pasa.sqlite.pasa_assemblies.gtf is empty"
+        echo "Check on things..."
+    fi
+fi
 
-#SBATCH --nodes=1
-#SBATCH --cpus-per-task=8
-#SBATCH --error=./sh_err_out/err_out/submit_launch-PASA-pipeline.%J.err.txt
-#SBATCH --output=./sh_err_out/err_out/submit_launch-PASA-pipeline.%J.out.txt
-
-#  submit_launch-PASA-pipeline.sh
-#  KA
-#  2022-1212
-
-str_experiment="${1}"
-
-ml Singularity 
-
-export PASAHOME="/usr/local/src/PASApipeline" 
-echo "PASAHOME is ${PASAHOME}"
-echo ""
-
-cd "files_PASA/${str_experiment}"
-echo "Working directory from which the script is called: $(pwd)"
-echo ""
-
-echo "All files in the working directory:"
-ls -lhaFG
-echo ""
-
-singularity run \
-    --no-home \
-    --bind "${HOME}/genomes/sacCer3/Ensembl/108/DNA" \
-    --bind "$(pwd)" \
-    --bind "/fh/scratch/delete30/tsukiyama_t:/loc/scratch/${SLURM_JOB_ID}" \
-    "${HOME}/singularity-docker-etc/PASA.sif" \
-        ${PASAHOME}/scripts/build_comprehensive_transcriptome.dbi \
-            -c "${str_experiment}.align_assembly.config" \
-            -t "${str_experiment}.transcripts.fasta" \
-            --prefix "${str_experiment}.compreh_init_build" \
-            --min_per_ID 95 \
-            --min_per_aligned 30 \
-                1> >(tee -a "${str_experiment}.stdout.log") \
-                2> >(tee -a "${str_experiment}.stderr.log" >&2)
+script
 ```
 </details>
 <br />
@@ -312,19 +427,15 @@ singularity run \
 
 <a id="%E2%98%85-trinity"></a>
 #### <sup>★</sup> `Trinity`
-<a id="details-1"></a>
 
 <a id="details-1"></a>
 ##### Details
-<a id="the-how-1"></a>
 
 <a id="the-how-1"></a>
 ##### The how
-<a id="gg"></a>
 
 <a id="gg"></a>
 ###### GG
-<a id="gf"></a>
 
 <a id="gf"></a>
 ###### GF
@@ -345,3 +456,26 @@ singularity run \
 #### <sup>★</sup> `trim_galore`
 <br />
 <br />
+
+<a id="todos"></a>
+## `#TODOs`
+<a id="building-an-understandingexplanation-for-important-parts-of-the-pasa-pipeline"></a>
+### Building an understanding/explanation for important parts of the `PASA` pipeline
+- Review what's going on with/in `Launch_PASA_pipeline.pl`
+- Understand what's going on with `validate_alignments_in_db.dbi`, which is regulated by the `PASA` `*.align_assembly.config` file
+```txt
+#script validate_alignments_in_db.dbi
+validate_alignments_in_db.dbi:--MIN_PERCENT_ALIGNED=75
+validate_alignments_in_db.dbi:--MIN_AVG_PER_ID=95
+validate_alignments_in_db.dbi:--NUM_BP_PERFECT_SPLICE_BOUNDARY=0
+```
+- Understand what's going on with `subcluster_builder.dbi`, which is also regulated by the `PASA` `*.align_assembly.config` file
+```txt
+#script subcluster_builder.dbi
+subcluster_builder.dbi:-m=50
+```
+- Understand what's going on with the parameters in `build_comprehensive_transcriptome.dbi`, e.g.,
+```txt
+--min_per_ID 95
+--min_per_aligned 30
+```

@@ -26,7 +26,7 @@
 				1. [Before \(AG\)](#before-ag)
 				1. [After \(KA\)](#after-ka)
 			1. [Make `submit_bamCoverage.sh`](#make-submit_bamcoveragesh)
-			1. [Get the `.bam`s of interest into an array or glob to be looped over for job submissions](#get-the-bams-of-interest-into-an-array-or-glob-to-be-looped-over-for-job-submissions)
+			1. [Get the `.bam`s of interest into an array \(or glob\) to be looped over for job submissions](#get-the-bams-of-interest-into-an-array-or-glob-to-be-looped-over-for-job-submissions)
 1. [Symlinking more `.bam`s and creating more `.bw`s, 2022-1216](#symlinking-more-bams-and-creating-more-bws-2022-1216)
 	1. [Checking on what `.bam`s have been symlinked](#checking-on-what-bams-have-been-symlinked)
 	1. [Reorganize the `.bw`s](#reorganize-the-bws)
@@ -42,7 +42,17 @@
 		1. [Create symlinks that will work for Alison/other users](#create-symlinks-that-will-work-for-alisonother-users)
 1. [Questions about `bamCoverage`](#questions-about-bamcoverage)
 	1. [On `--filterRNAstrand`](#on---filterrnastrand)
-1. [Symlink to merged `.bam`s and create `.bw`s for them, 2023-0102-0103](#symlink-to-merged-bams-and-create-bws-for-them-2023-0102-0103)
+1. [Linking and/or symlinking to data galore, 2022-0103-0105](#linking-andor-symlinking-to-data-galore-2022-0103-0105)
+	1. [The plan of attack](#the-plan-of-attack)
+	1. [Replace string "`trim-rcor`" with "`rcor`" in appropriate directories](#replace-string-trim-rcor-with-rcor-in-appropriate-directories)
+		1. [Grab a node, get to the work directory, and load the proper environment](#grab-a-node-get-to-the-work-directory-and-load-the-proper-environment)
+		1. [Rename incorrectly labeled `*trim-rcor*` files to `*rcor*`](#rename-incorrectly-labeled-trim-rcor-files-to-rcor)
+			1. [Create arrays of specific, approrpiate files for renaming](#create-arrays-of-specific-approrpiate-files-for-renaming)
+			1. [Use the arrays to rename appropriate files](#use-the-arrays-to-rename-appropriate-files)
+	1. [Copy/rename \(and rename some more\) for use by Alison](#copyrename-and-rename-some-more-for-use-by-alison)
+		1. [Get files of interest into arrays](#get-files-of-interest-into-arrays)
+		1. [Copy/rename files of interest into the "assessment" directory](#copyrename-files-of-interest-into-the-assessment-directory)
+		1. [In the "assignment" directory, do additional renaming work](#in-the-assignment-directory-do-additional-renaming-work)
 
 <!-- /MarkdownTOC -->
 </details>
@@ -190,7 +200,7 @@
 <a id="creating-the-symbolic-links"></a>
 ### Creating the symbolic links
 <details>
-<summary><i>Click to view the bash code</i></summary>
+<summary><i>Click to view code: Go to work directory, create symbolic links for files of interest</i></summary>
 
 ```bash
 #!/bin/bash
@@ -230,7 +240,7 @@ cd ..
 <br />
 
 <details>
-<summary><i>Results of .,s in ~/tsukiyamalab/alisong/Kris_bams </i></summary>
+<summary><i>Printed to terminal: `.,s` in `~/tsukiyamalab/alisong/Kris_bams` </i></summary>
 
 ```txt
 ./preprocessed:
@@ -355,7 +365,7 @@ lrwxrwxrwx 1 kalavatt  200 Dec 12 14:56 5782_Q_IP_merged.un_multi-hit-mode_1_Loc
 <a id="grab-a-node-get-to-the-right-directory-etc"></a>
 ### Grab a node, get to the right directory, etc.
 <details>
-<summary><i>Click to view</i></summary>
+<summary><i>Click to view code: Grab a node, get to the right directory, symlink 'assess_transcriptome_assemblies/', load conda/mamba environment</i></summary>
 
 ```bash
 #!/bin/bash
@@ -402,7 +412,9 @@ Trinity_env
 
 <a id="assess-things"></a>
 ### Assess things
-`#DEKHO`
+<details>
+<summary><i>Click to view code: Go to 'bams_2022-1212/', run `.,`, etc., run `head -1000 slurm-5685397.out`</i></summary>
+
 ```bash
 #!/bin/bash
 #DONTRUN #CONTINUE
@@ -431,9 +443,11 @@ cd bams_2022-1212/bigwig_test1/ && .,
 
 head -1000 slurm-5685397.out
 ```
+</details>
+<br />
 
 <details>
-<summary><i>Click to view results of head -1000 slurm-5685397.out</i></summary>
+<summary><i>Printed to terminal: `head -1000 slurm-5685397.out`</i></summary>
 
 ```txt
 [E::hts_open_format] Failed to open file "5781_Q_IP_merged.trim.multi-hit-mode_10_EndToEnd.bam" : Permission denied
@@ -491,15 +505,15 @@ mv: cannot stat '*.bw': No such file or directory
 </details>
 <br />
 
+<details>
+<summary><i>Click to view code and results printed to terminal: `., ../preprocessed`</i></summary>
+
 ```bash
 #!/bin/bash
 #DONTRUN #CONTINUE
 
 ., ../preprocessed
 ```
-
-<details>
-<summary><i>Click to view results of ., ../preprocessed</i></summary>
 
 ```txt
 total 972K
@@ -541,14 +555,17 @@ lrwxrwxrwx 1 kalavatt  214 Dec 12 14:57 5782_Q_IP_merged.trim.multi-hit-mode_1_E
 </details>
 <br />
 
-- The problem is that the symlink is pointing to my home directory, which does not exist on Alison's (or anyone else's) system...
+- <mark>`#ERROR` The problem is that the symlink is pointing to my home directory, which does not exist on Alison's (or anyone else's) system...</mark>
 - Let's see how we can address this...
 
 <a id="fix-the-symlinks-to-the-bams-linked-on-2022-1212"></a>
 ### Fix the symlinks to the `.bam`s linked on 2022-1212
 <a id="preprocessed-bams"></a>
 #### "preprocessed" `.bam`s
-`#DEKHO` `#TODO` Fix things when `samtools split`, `samtools index`, and `samtools sort -n` are completed
+~~`#TODO` Fix things when `samtools split`, `samtools index`, and `samtools sort -n` are completed~~ *Done.*
+<details>
+<summary><i>Go to bams_2022-1212/preprocessed, unlink the unusable symlinks (fr/absolute paths), create usable symlinks (fr/relative paths), run `.,`</i></summary>
+
 ```bash
 #!/bin/bash
 #DONTRUN #CONTINUE
@@ -587,11 +604,14 @@ for i in "${path_prepro}/"*".sc_all.ba"*; do
     # unlink "${i}"
     ln -s "${i}" "$(basename "${i}")"
 done
+
 .,
 ```
+</details>
+<br />
 
 <details>
-<summary><i>Click to view results of .,</i></summary>
+<summary><i>Printed to terminal: `.,`</i></summary>
 
 ```txt
 total 2.0M
@@ -667,6 +687,9 @@ lrwxrwxrwx 1 kalavatt  202 Dec 15 13:38 5782_Q_IP_merged.trim.un_multi-hit-mode_
 
 <a id="unprocessed-bams-1"></a>
 #### "unprocessed" `.bam`s
+<details>
+<summary><i>Go to bams_2022-1212/unprocessed, unlink the unusable symlinks (fr/absolute paths), create usable symlinks (fr/relative paths), run `.,`</i></summary>
+
 ```bash
 #!/bin/bash
 #DONTRUN #CONTINUE
@@ -696,11 +719,14 @@ for i in "${path_unpro}/"*".sc_all.ba"*; do
     
     ln -s "${i}" "$(basename "${i}")"
 done
+
 .,
 ```
+</details>
+<br />
 
 <details>
-<summary><i>Click to view results of .,</i></summary>
+<summary><i>Printed to terminal: `.,`</i></summary>
 
 ```txt
 total 2.0M
@@ -776,6 +802,9 @@ lrwxrwxrwx 1 kalavatt  188 Dec 15 13:36 5782_Q_IP_merged.un_multi-hit-mode_1_Loc
 
 <a id="processed-full-bams-1"></a>
 #### "processed (full)" .`bam`s
+<details>
+<summary><i>Go to bams_2022-1212/processed-full, unlink the unusable symlinks (fr/absolute paths), create usable symlinks (fr/relative paths), run `.,`</i></summary>
+
 ```bash
 #!/bin/bash
 #DONTRUN #CONTINUE
@@ -806,9 +835,11 @@ for i in "${path_prepro_full}/"*".sc_all.ba"*; do
 done
 .,
 ```
+</details>
+<br />
 
 <details>
-<summary><i>Click to view results of .,</i></summary>
+<summary><i>Printed to terminal: `.,`</i></summary>
 
 ```txt
 total 2.0M
@@ -886,6 +917,9 @@ lrwxrwxrwx 1 kalavatt  218 Dec 15 13:37 5782_Q_IP_merged.trim-rcor.multi-hit-mod
 ### Now, edit the `.bam`-to-`.bw` script and make `.bw`s
 <a id="update-the-script"></a>
 #### Update the script
+<details>
+<summary><i>Go to bams_2022-1212/bigwig_test1, unlink unusable symlinks to bams (fr/absolute paths), then archive AG's work with the broken links</i></summary>
+
 ```bash
 #!/bin/bash
 #DONTRUN #CONTINUE
@@ -920,14 +954,19 @@ mv bamcoverage_strandselect.sh slurm-5685397.out archive
 # renamed 'bamcoverage_strandselect.sh' -> 'archive/bamcoverage_strandselect.sh'
 # renamed 'slurm-5685397.out' -> 'archive/slurm-5685397.out'
 ```
+</details>
+<br />
 
 <a id="scratch-bamcoverage_strandselectsh"></a>
 ##### Scratch: `bamcoverage_strandselect.sh`
-Now, update `bamcoverage_strandselect.sh` to...
-`#QUESTION` Does `deepTools` `bamCoverage` have a `parallel` mode? `#ANSWER` No...
+Now, update AG's script, `bamcoverage_strandselect.sh`, to...  
+`#QUESTION` Does `deepTools` `bamCoverage` have a `parallel` mode? `#ANSWER` ~~No...~~*Yes.*
 
 <a id="before-ag"></a>
 ###### Before (AG)
+<details>
+<summary><i>The contents of the shell script `bamcoverage_strandselect.sh`</i></summary>
+
 ```bash
 #!/bin/bash
 WRAP=""
@@ -956,9 +995,15 @@ for file in *.bam; do
 
 done
 ```
+</details>
+<br />
 
 <a id="after-ka"></a>
 ###### After (KA)
+<details>
+<summary><i>Contents of new script, `submit_bamCoverage.sh`</i></summary>
+
+`#NOTE` `2023-0104` I neglected to rename `#SBATCH --error=` and `#SBATCH --output=`
 ```bash
 #!/bin/bash
 
@@ -1034,30 +1079,35 @@ bamCoverage \
 	--filterRNAstrand reverse \
 	-o ${file%.bam}_rev_MAPQ30.bw
 ```
+</details>
+<br />
 
 Some quick notes about the previous script for teaching purposes:
 - Important
 	+ `bamCoverage` has a parameter to run in parallel, but it won't recognize it unless you call it with the `-p` option
-		* So, `THREADS` becomes an unused variable
+		* So, without specifying `-p`, `THREADS` becomes an unused variable
 		* Also, when submitting the job to `SLURM`, you need to tell it to assign 8 (or however many) cores/CPUs to the job,
 			- either through the call to `sbatch` (`-c` or `--cpus-per-task`)
 			- or through a `#SBATCH` line in the job submission script: `#SBATCH --cpus-per-task=#`
 	+ I recommend to get used to explicitly telling `SLURM` things with lines in the script that start with `#SBATCH` (see below)
-	+ Rather than have the for loop in the job submission script, use the for loop outside of the script;
+	+ Rather than have the `for loop` in the job submission script, use the for loop outside of the script;
 		* Write the script to take a single infile
-		* Then,loop over the files to apply the script to each file
+		* Then,loop over the files, applying the script to each file
 		* I'll show an example below...
 	+ To organize your results, explicitly specify to `SLURM` that you want `stderr` and `stdout` files
-		* Save the files to specific locations (optional, but important for organizing your results/staying on top of things)
-		* ...with specific names (I think this is mandatory)
-	+ ~~Don't do directory remodeling, etc. inside the script~~ It's fine if it's a thing you want to do repeatedly with consistent, specific directory changes
+		* Save the files to specific locations *(optional, but important for organizing your results/staying on top of things)*
+		* ...with specific names
+	+ ~~Don't do directory remodeling, etc. inside the script~~ If it's limited in scope, then it's fine, especially if it's a thing you want to do repeatedly with consistent, specific directory changes
 - Less important
 	+ I told you yesterday that a MAPQ score of 30 represents of 99.99% that the mapped position is correct, but that's incorrect&mdash;it's actually 99.9%
 		* Some details on MAPQ [here](http://www.acgt.me/blog/2014/12/16/understanding-mapq-scores-in-sam-files-does-37-42)
-	+ Delete all of the unused variables
+	+ Delete all of the unused variables&mdash;they're confusing for other people using your script
 
 <a id="make-submit_bamcoveragesh"></a>
 ##### Make `submit_bamCoverage.sh`
+<details>
+<summary><i>Click to view code: HEREDOC to make `submit_bamCoverage.sh`</i></summary>
+
 ```bash
 #!/bin/bash
 #DONTRUN #CONTINUE
@@ -1143,16 +1193,22 @@ bamCoverage \\
 script
 # vi "${s_name}"  # :q
 ```
+</details>
+<br />
 
 <a id="get-the-bams-of-interest-into-an-array-or-glob-to-be-looped-over-for-job-submissions"></a>
-##### Get the `.bam`s of interest into an array or glob to be looped over for job submissions
-- In my attempts to come up with something teachable, I think I've gone about doing this in a way that is overall not good
+##### Get the `.bam`s of interest into an array (or glob) to be looped over for job submissions
+- In my attempts to come up with something teachable, I think I've gone about doing this in a way that is, in some ways, not good
 - What's not good about it?
-	+ For one, we're Parsing the results of `ls`, which is a bit of a no-no (probably fine for rough-draft work and assuming your filenames are "normal")
+	+ For one, we're parsing the results of `ls`, which is frowned upon (but somewhat fine for rough-draft work and assuming your filenames are "normal")
 		* [unix.stackexchange.com/questions/128985/why-not-parse-ls-and-what-to-do-instead](https://unix.stackexchange.com/questions/128985/why-not-parse-ls-and-what-to-do-instead)
 		* [mywiki.wooledge.org/ParsingLs](http://mywiki.wooledge.org/ParsingLs)
 	+ Very poor control of what's being globbed onto
 	+ Using relative paths to find things: This code snippet is even more context-sensitive, and thus breakable, than normal
+
+<details>
+<summary><i>Click to view code: Get the .bams of interest into an array (or glob) to be looped over; submit jobs for submit_bamCoverage.sh</i></summary>
+
 ```bash
 #!/bin/bash
 #DONTRUN #CONTINUE
@@ -1197,9 +1253,11 @@ done
 #TODO With the jobs now completed, mv and rename the bigwig directory
 #WAIT Wait to get feedback from Alison on the files
 ```
+</details>
+<br />
 
 <details>
-<summary><i>Submission messages printed to terminal</i></summary>
+<summary><i>Printed to terminal: Submit jobs for submit_bamCoverage.sh</i></summary>
 
 ```txt
 lrwxrwxrwx 1 kalavatt 199 Dec 15 13:38 ../preprocessed/5781_Q_IP_merged.trim.un_multi-hit-mode_10_EndToEnd.Aligned.sortedByCoord.out.sc_all.bam -> ../../../../kalavatt/2022_transcriptome-construction/results/2022-1201/files_processed/bam_trim_split/EndToEnd/5781_Q_IP_merged.trim.un_multi-hit-mode_10_EndToEnd.Aligned.sortedByCoord.out.sc_all.bam
@@ -1243,9 +1301,11 @@ Submitted batch job 5707993
 
 <a id="symlinking-more-bams-and-creating-more-bws-2022-1216"></a>
 ## Symlinking more `.bam`s and creating more `.bw`s, 2022-1216
-`#DEKHO`
 <a id="checking-on-what-bams-have-been-symlinked"></a>
 ### Checking on what `.bam`s have been symlinked
+<details>
+<summary><i>Click to view: Get on a node, load conda environment, go to work directory, check on things</i></summary>
+
 ```bash
 #!/bin/bash
 #DONTRUN
@@ -1275,9 +1335,14 @@ awd
 ls -1 ./*
 #NOTE We've already symlinked to *.multi-hit-mode_{100,1000}_*.{bam,bam.bai}
 ```
+</details>
+<br />
 
 <a id="reorganize-the-bws"></a>
 ### Reorganize the `.bw`s
+<details>
+<summary><i>Click to view: Rename and reorganize work directory, check on things</i></summary>
+
 ```bash
 #!/bin/bash
 #DONTRUN
@@ -1321,9 +1386,14 @@ mv MAPQ{0,3,30} param_ignoreDuplicates-TRUE/
 mv *.txt param_ignoreDuplicates-TRUE/err_out
 mv *.sh param_ignoreDuplicates-TRUE/ && cd param_ignoreDuplicates-TRUE/
 ```
+</details>
+<br />
 
 <a id="create---ignoreduplicates-bws-for-multi-hit-mode-100-1000"></a>
 ### Create `--ignoreDuplicates` `.bw`s for `multi-hit-mode 100`, `1000`
+<details>
+<summary><i>Click to view code: Create --ignoreDuplicates .bws for multi-hit-mode 100, 1000</i></summary>
+
 ```bash
 #!/bin/bash
 #DONTRUN
@@ -1358,9 +1428,11 @@ for i in "${bams[@]}"; do
 	echo ""
 done
 ```
+</details>
+<br />
 
 <details>
-<summary><i>Job submission messages printed to terminal</i></summary>
+<summary><i>Printed to terminal: Create --ignoreDuplicates .bws for multi-hit-mode 100, 1000</i></summary>
 
 ```txt
 sbatch submit_bamCoverage_param-ignoreDuplicates-TRUE.sh ../../bams_2022-1212/preprocessed/5781_G1_IN_merged.trim.un_multi-hit-mode_1000_EndToEnd.Aligned.sortedByCoord.out.sc_all.bam 5781_G1_IN_merged.trim.un_multi-hit-mode_1000_EndToEnd.Aligned.sortedByCoord.out.sc_all
@@ -1609,6 +1681,9 @@ Submitted batch job 5745725
 ### Create non-`--ignoreDuplicates` `.bw`s for `multi-hit-mode` `1`, `10`, `100`, `1000`
 <a id="make-the-submission-script"></a>
 #### Make the submission script
+<details>
+<summary><i>Click to view code: Make the submission script for non --ignoreDuplicates .bws for multi-hit-mode 1, 10, 100, 1000, then submit jobs</i></summary>
+
 ```bash
 #!/bin/bash
 #DONTRUN
@@ -1744,9 +1819,11 @@ for i in "${bams[@]}"; do
 	sleep 0.33
 done
 ```
+</details>
+<br />
 
 <details>
-<summary><i>Job submission messages printed to terminal</i></summary>
+<summary><i>Printed to terminal: Submission of jobs</i></summary>
 
 ```txt
 sbatch submit_bamCoverage_param-ignoreDuplicates-FALSE.sh ../../bams_2022-1212/preprocessed/5781_G1_IN_merged.trim.un_multi-hit-mode_1000_EndToEnd.Aligned.sortedByCoord.out.sc_all.bam 5781_G1_IN_merged.trim.un_multi-hit-mode_1000_EndToEnd.Aligned.sortedByCoord.out.sc_all
@@ -2234,6 +2311,9 @@ Submitted batch job 5745860
 
 <a id="symlink-to-merged-bams-and-create-bws-for-them-2022-1216"></a>
 ## Symlink to merged `.bam`s and create `.bw`s for them, 2022-1216
+<details>
+<summary><i>Click to view code: Go to work directory, load environment, symlink to merged .bams, and create .bws</i></summary>
+
 ```bash
 #!/bin/bash
 #DONTRUN
@@ -2394,6 +2474,7 @@ mkdir -p {param_ignoreDuplicates-FALSE,param_ignoreDuplicates-TRUE}/{MAPQ0,MAPQ3
 # drwxrws--- 2 kalavatt  0 Dec 16 10:49 MAPQ3/
 # drwxrws--- 2 kalavatt  0 Dec 16 10:49 MAPQ30/
 ```
+
 ```bash
 #!/bin/bash
 #DONTRUN #CONTINUE
@@ -2682,14 +2763,17 @@ for i in "${bams[@]}"; do
     sleep 0.2
 done
 ```
+</details>
 <br />
 <br />
 
 <a id="symlinking-gff3s-for-assessment-2022-1214-1216"></a>
 ## Symlinking `.gff3`s for assessment, 2022-1214-1216
-
 <a id="the-particular-gff3s-and-their-details"></a>
 ### The particular `.gff3`s and their details
+<details>
+<summary><i>Click to view code: Go to work directory, load environment, run `ls -1` on `files_PASA/` and `files_PASA_param_gene-overlap/`</i></summary>
+
 ```bash
 #!/bin/bash
 #DONTRUN
@@ -2713,9 +2797,11 @@ Trinity_env
 ls -1 files_PASA
 ls -1 files_PASA_param_gene-overlap
 ```
+</details>
+<br />
 
 <details>
-<summary><i>Results of ls -1 </i></summary>
+<summary><i>Printed to terminal: Run `ls -1` </i></summary>
 
 Results of `ls -1 files_PASA`
 ```txt
@@ -2747,6 +2833,9 @@ trinity_5781-5782_Q_IP_merged.un_multi-hit-mode_1_Local
 
 <a id="get-the-absolute-paths-to-the-relevant-files_pas-gff3s"></a>
 #### Get the absolute paths to the relevant `files_PAS*` `.gff3`s
+<details>
+<summary><i>Click to view code: Target `*.compreh_init_build/*.gff3`, then run `ls -1`</i></summary>
+
 ```bash
 #!/bin/bash
 #CONTINUE
@@ -2776,9 +2865,11 @@ files_PASA_param_T="/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-cons
 ls -1 files_PASA/*/*.compreh_init_build/*.gff3
 ls -1 files_PASA_param_gene-overlap/*/*.compreh_init_build/*.gff3
 ```
+</details>
+<br />
 
 <details>
-<summary><i>Results of ls -1 </i></summary>
+<summary><i>Printed to terminal: Run `ls -1`</i></summary>
 
 Results of `ls -1 files_PASA`
 ```txt
@@ -2810,11 +2901,11 @@ files_PASA_param_gene-overlap/trinity_5781-5782_Q_IP_merged.un_multi-hit-mode_1_
 
 <a id="the-actual-symlinking"></a>
 ### The actual symlinking
-<details>
-<summary><i>Click to view the bash code</i></summary>
-
 <a id="clean-up-the-previous-symlinks-which-dont-work-for-alison"></a>
 #### Clean up the previous symlinks, which don't work for Alison
+<details>
+<summary><i>Click to view code: Go to work directory, check on things, then create symlinks</i></summary>
+
 ```bash
 #!/bin/bash
 #CONTINUE
@@ -2883,9 +2974,14 @@ for i in */*.gff3; do
 	echo ""
 done
 ```
+</details>
+<br />
 
 <a id="create-symlinks-that-will-work-for-alisonother-users"></a>
 #### Create symlinks that will work for Alison/other users
+<details>
+<summary><i>Click to view code: Rename/reorganize things, check on things, create symlinks</i></summary>
+
 ```bash
 #!/bin/bash
 #CONTINUE
@@ -2999,9 +3095,354 @@ Selects RNA-seq reads (single-end or paired-end) originating from genes on the g
 ```
 Were our files made with a dUTP-based library preparation method?
 
-In the `stdout.*.txt` files for the job submissions, we see that only some 30-50% of alignments are being used; the rest are being filtered out, even when we set `--minMappingQuality 0`. Is this normal? Can check these against the slurm.out files from your previous runs of `bamCoverage`?
+<mark>`#TODO` AG answered this in an email from sometime in mid-to-late December: Copy the answer in here</mark>
+
+In the `stdout.*.txt` files for the job submissions, we see that only some 30-50% of alignments are being used; the rest are being filtered out, even when we set `--minMappingQuality 0`. Is this normal? Can check these against the `*slurm.out` files from your previous runs of `bamCoverage`?
 <br />
 <br />
 
-<a id="symlink-to-merged-bams-and-create-bws-for-them-2023-0102-0103"></a>
-## Symlink to merged `.bam`s and create `.bw`s for them, 2023-0102-0103
+<a id="linking-andor-symlinking-to-data-galore-2022-0103-0105"></a>
+## Linking and/or symlinking to data galore, 2022-0103-0105
+<a id="the-plan-of-attack"></a>
+### The plan of attack
+- To be specific, `#TODO` Symlink to `.bam`s, merged `.bam`s~~, and `.gff3`s~~
+	+ However, first, `#TODO` For all subdirectories and files in `files_PASA_rcor-only_*`, replace string "`trim-rcor`" with either "`rcor`" or "`rcor-only`"
+	+ Put another way, `#TODO` After the completion of remaining jobs, rename appropriate '`trim-rcor`'/actually only '`rcor`' string-containing files; carefully determine the appropriate files before running anything
+	+ Likewise, `#TODO` Determine the `MarkDown` notebooks and shell scripts in which the '`trim-rcor`' string should be replaced with the string '`rcor`', then make the appropriate changes
+- When the above is completed, `#TODO` Create `.bw`s for the `.bam`s, i.e., both the individual and merged ones
+- `#DONE` `2023-0104`: Have renamed, copied, and further renamed the `.gff3`s for use by Alison; it remains to...
+	+ `#TODO` Symlink the individual and merged `.bam`s
+	+ `#TODO` Create `.bw`s for `.bam`s
+
+<a id="replace-string-trim-rcor-with-rcor-in-appropriate-directories"></a>
+### Replace string "`trim-rcor`" with "`rcor`" in appropriate directories
+<a id="grab-a-node-get-to-the-work-directory-and-load-the-proper-environment"></a>
+#### Grab a node, get to the work directory, and load the proper environment
+<details>
+<summary><i>Click to view code: Grab a node, get to the work directory, and load the proper environment</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN
+
+
+#  Move to work directory, establish work environment -------------------------
+grabnode  # 1 and corresponding defaults
+
+mwd() {
+    transcriptome \
+       && cd "./results/2022-1201" \
+       || echo "cd'ing failed; check on this"
+}
+
+
+mwd
+
+Trinity_env
+```
+</details>
+<br />
+
+<a id="rename-incorrectly-labeled-trim-rcor-files-to-rcor"></a>
+#### Rename incorrectly labeled `*trim-rcor*` files to `*rcor*`
+<a id="create-arrays-of-specific-approrpiate-files-for-renaming"></a>
+##### Create arrays of specific, approrpiate files for renaming
+<details>
+<summary><i>Click to view code: Create arrays of specific, approrpiate files for renaming</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+unset directories
+typeset -a directories
+while IFS=" " read -r -d $'\0'; do
+    directories+=( "${REPLY}" )
+done < <(\
+    find . \
+	    -maxdepth 2 \
+		-type d \
+		-name "*rcor-only*" \
+		-not -path "./files_Trinity*" \
+		-not -path "./files_processed-rcor-only" \
+		-print0 \
+			| sort -z
+)
+echoTest "${directories[@]}"
+# ./files_PASA_rcor-only_gene-overlap-10.0
+# ./files_PASA_rcor-only_gene-overlap-20.0
+# ./files_PASA_rcor-only_gene-overlap-30.0
+# ./files_PASA_rcor-only_gene-overlap-40.0
+# ./files_PASA_rcor-only_gene-overlap-50.0
+# ./files_PASA_rcor-only_gene-overlap-60.0
+# ./files_PASA_rcor-only_gene-overlap-70.0
+# ./files_PASA_rcor-only_gene-overlap-80.0
+# ./files_PASA_rcor-only_gene-overlap-90.0
+# ./files_PASA_rcor-only_minimal-overlap
+# ./files_PASA_rcor-only_stringent-alignment-overlap-10.0
+# ./files_PASA_rcor-only_stringent-alignment-overlap-20.0
+# ./files_PASA_rcor-only_stringent-alignment-overlap-30.0
+# ./files_PASA_rcor-only_stringent-alignment-overlap-40.0
+# ./files_PASA_rcor-only_stringent-alignment-overlap-50.0
+# ./files_PASA_rcor-only_stringent-alignment-overlap-60.0
+# ./files_PASA_rcor-only_stringent-alignment-overlap-70.0
+# ./files_PASA_rcor-only_stringent-alignment-overlap-80.0
+# ./files_PASA_rcor-only_stringent-alignment-overlap-90.0
+```
+</details>
+<br />
+
+- `#TODO` Need to do something like the above for "`./files_Trinity*`" "`./files_processed-rcor-only`"
+- `#IMPORTANT` `2023-0104`: Don't forget the above `#TODO`
+
+<a id="use-the-arrays-to-rename-appropriate-files"></a>
+##### Use the arrays to rename appropriate files
+`#NOTE` Here, I ended up pursuing a tact in which we rename directories in order of top-to-bottom hierarchy; once that's done, move on to renaming the individual files; if renaming is not done in this order, then directory names will change prior to file names, thereby breaking the paths to access the files; errors will be thrown
+
+<details>
+<summary><i>Click to view code: Use the arrays to rename appropriate files</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+#  Rename the directories: -maxdepth 1
+for i in "${directories[@]}"; do
+	unset tmp
+	typeset -a tmp
+	while IFS=" " read -r -d $'\0'; do
+	    tmp+=( "${REPLY}" )
+	done < <(\
+		find "${i}" \
+			-maxdepth 1 \
+			-type d \
+			-name "*trim-rcor*" \
+			-print0 \
+				| sort -z \
+	)
+	# echoTest "${tmp[@]}"
+	for i in "${tmp[@]}"; do
+		rename 's/trim-rcor/rcor/g' "${i}"
+	done
+done
+
+#  Rename the directories: -maxdepth 2
+for i in "${directories[@]}"; do
+	unset tmp
+	typeset -a tmp
+	while IFS=" " read -r -d $'\0'; do
+	    tmp+=( "${REPLY}" )
+	done < <(\
+		find "${i}" \
+			-maxdepth 2 \
+			-type d \
+			-name "*trim-rcor*" \
+			-print0 \
+				| sort -z \
+	)
+	# echoTest "${tmp[@]}"
+	for i in "${tmp[@]}"; do
+		rename 's/trim-rcor/rcor/g' "${i}"
+	done
+done
+
+#  Rename the files
+for i in "${directories[@]}"; do
+	unset tmp
+	typeset -a tmp
+	while IFS=" " read -r -d $'\0'; do
+	    tmp+=( "${REPLY}" )
+	done < <(\
+		find "${i}" \
+			-type f \
+			-name "*trim-rcor*" \
+			-print0 \
+				| sort -z \
+	)
+	# echoTest "${tmp[@]}"
+	for i in "${tmp[@]}"; do
+		rename 's/trim-rcor/rcor/g' "${i}"
+	done
+done
+```
+</details>
+<br />
+
+<a id="copyrename-and-rename-some-more-for-use-by-alison"></a>
+### Copy/rename (and rename some more) for use by Alison
+<a id="get-files-of-interest-into-arrays"></a>
+#### Get files of interest into arrays
+<details>
+<summary><i>Click to view code: Get files of interest into arrays</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+#  First, work with the .gff3s from rcor-only-processed datasets
+unset gff3s_rcor
+typeset -a gff3s_rcor
+while IFS=" " read -r -d $'\0'; do
+    gff3s_rcor+=( "${REPLY}" )
+done < <(\
+    find "./files_PASA_rcor-only_"*"/trinity_5781-5782_Q_IP_merged."*"/"*".compreh_init_build/" \
+		-type f \
+		-name "*.gff3" \
+		-print0 \
+			| sort -z
+)
+echoTest "${gff3s_rcor[@]}"
+echo "${#gff3s_rcor[@]}"
+
+#  Next, work with the other .gff3s, i.e., those with no processing,
+#+ trim-galore processing, and rcor-trim-galore-combined processing
+unset gff3s_other
+typeset -a gff3s_other
+while IFS=" " read -r -d $'\0'; do
+    gff3s_other+=( "${REPLY}" )
+done < <(\
+    find "./files_PASA_un_trim_trim-rcor_"*"/trinity_5781-5782_Q_IP_merged."*"/"*".compreh_init_build/" \
+		-type f \
+		-name "*.gff3" \
+		-print0 \
+			| sort -z
+)
+echoTest "${gff3s_other[@]}"
+echo "${#gff3s_other[@]}"
+```
+</details>
+<br />
+
+<a id="copyrename-files-of-interest-into-the-assessment-directory"></a>
+#### Copy/rename files of interest into the "assessment" directory
+<details>
+<summary><i>Click to view code: Copy/rename files of interest into the "assessment" directory</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+count=1
+for i in "${gff3s_rcor[@]}"; do
+	# i="${gff3s_rcor[0]}"  # echo "${i}"
+
+	#  Extract a string from a parent of parent of parent (greatgrandparent)
+	#+ directory to be appended to the child filename when copying
+	greatgrandparent="$(\
+		basename "$(dirname "$(dirname "$(dirname "${i}")")")" \
+			| awk -F '_' '{$1=""; print $0}' \
+			| sed 's/^ *//g' \
+			| tr -s ' ' '_'\
+	)"
+	# echo "${greatgrandparent}"
+	child="$(basename "${i}")"  # echo "${child}"
+	new_child="${greatgrandparent}_${child}"  # echo "${new_child}"
+
+	#  Copy to 'gff3s_2023-0103/' in
+	#+ 'tsukiyamalab/alisong/assess_transcriptome_assemblies/'; it's already
+	#+ been mkdir'd
+	path_new_child="tsukiyamalab/alisong/assess_transcriptome_assemblies/gff3s_2023-0103"
+
+	echo "${count}"
+	# echo "cp -- ${i} ${HOME}/${path_new_child}/${new_child}"  #TEST
+	cp -- "${i}" "${HOME}/${path_new_child}/${new_child}"
+	count=$(( count + 1 ))
+	echo ""
+done
+#  228
+
+count=1
+for i in "${gff3s_other[@]}"; do
+	# i="${gff3s_other[0]}"  # echo "${i}"
+
+	#  Extract a string from a parent of parent of parent (greatgrandparent)
+	#+ directory to be appended to the child filename when copying
+	greatgrandparent="$(\
+		basename "$(dirname "$(dirname "$(dirname "${i}")")")" \
+			| awk -F '_' '{$1=""; print $0}' \
+			| sed 's/^ *//g' \
+			| tr -s ' ' '_'\
+	)"
+	# echo "${greatgrandparent}"
+	child="$(basename "${i}")"  # echo "${child}"
+	new_child="${greatgrandparent}_${child}"  # echo "${new_child}"
+
+	#  Copy to 'gff3s_2023-0103/' in
+	#+ 'tsukiyamalab/alisong/assess_transcriptome_assemblies/'; it's already
+	#+ been mkdir'd
+	path_new_child="tsukiyamalab/alisong/assess_transcriptome_assemblies/gff3s_2023-0103"
+
+	echo "${count}"
+	# echo "cp -- ${i} ${HOME}/${path_new_child}/${new_child}"  #TEST
+	cp -- "${i}" "${HOME}/${path_new_child}/${new_child}"
+	count=$(( count + 1 ))
+	echo ""
+done
+#  171
+
+#  There are two loops above, one for each array, because I was not sure if I
+#+ would need to do different text processing for the filenames in the two
+#+ arrays; it turns out I don't need to do that, so I can use a single loop,
+#+ instead of the two identical loops, in the future
+
+#  Tally the total number of files copied
+echo $(( 228 + 171 ))
+# 399
+```
+</details>
+<br />
+
+<a id="in-the-assignment-directory-do-additional-renaming-work"></a>
+#### In the "assignment" directory, do additional renaming work
+...to make file identities clearer
+
+<details>
+<summary><i>Click to view code: In the "assignment" directory, do additional renaming work</i></summary>
+
+```bash
+cd --  ~/tsukiyamalab/alisong/assess_transcriptome_assemblies/gff3s_2023-0103
+
+for i in *.trim-rcor.*; do
+	# echo "${i}"
+	# rename -n 's/PASA_un_trim_trim-rcor_/PASA_trim-rcor_/g' "${i}"  #TEST
+	rename 's/PASA_un_trim_trim-rcor_/PASA_trim-rcor_/g' "${i}"
+done
+
+for i in *.trim.un_*; do
+	# echo "${i}"
+	# rename -n 's/PASA_un_trim_trim-rcor_/PASA_trim-only_/g' "${i}"  #TEST
+	rename 's/PASA_un_trim_trim-rcor_/PASA_trim-only_/g' "${i}"
+done
+
+for i in *_merged.un_*; do
+	# echo "${i}"
+	# rename -n 's/PASA_un_trim_trim-rcor_/PASA_unprocessed_/g' "${i}"  #TEST
+	rename 's/PASA_un_trim_trim-rcor_/PASA_unprocessed_/g' "${i}"
+done
+
+for i in *.trim-rcor.*; do
+	# echo "${i}"
+	# rename -n 's/\.trim-rcor\./\./g' "${i}"  #TEST
+	rename 's/\.trim-rcor\./\./g' "${i}"
+done
+
+for i in *.trim.un_*; do
+	# echo "${i}"
+	# rename -n 's/\.trim\.un_/\./g' "${i}"  #TEST
+	rename 's/\.trim\.un_/\./g' "${i}"
+done
+
+for i in *_merged.un_*; do
+	# echo "${i}"
+	# rename -n 's/\.un_/\./g' "${i}"  #TEST
+	rename 's/\.un_/\./g' "${i}"
+done
+
+for i in *.rcor.*; do
+	# echo "${i}"
+	# rename -n 's/\.rcor\./\./g' "${i}"  #TEST
+	rename 's/\.rcor\./\./g' "${i}"
+done
+```
+</details>
+<br />
