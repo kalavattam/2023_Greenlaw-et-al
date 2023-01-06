@@ -25,6 +25,7 @@
 			1. [Scratch: `bamcoverage_strandselect.sh`](#scratch-bamcoverage_strandselectsh)
 				1. [Before \(AG\)](#before-ag)
 				1. [After \(KA\)](#after-ka)
+				1. [Notes about the previous script for teaching purposes](#notes-about-the-previous-script-for-teaching-purposes)
 			1. [Make `submit_bamCoverage.sh`](#make-submit_bamcoveragesh)
 			1. [Get the `.bam`s of interest into an array \(or glob\) to be looped over for job submissions](#get-the-bams-of-interest-into-an-array-or-glob-to-be-looped-over-for-job-submissions)
 1. [Symlinking more `.bam`s and creating more `.bw`s, 2022-1216](#symlinking-more-bams-and-creating-more-bws-2022-1216)
@@ -53,6 +54,17 @@
 		1. [Get files of interest into arrays](#get-files-of-interest-into-arrays)
 		1. [Copy/rename files of interest into the "assessment" directory](#copyrename-files-of-interest-into-the-assessment-directory)
 		1. [In the "assignment" directory, do additional renaming work](#in-the-assignment-directory-do-additional-renaming-work)
+	1. [Rename "`trim-rcor`" strings to "`rcor`" in "`./files_Trinity*`", "`./files_processed-rcor-only`"](#rename-trim-rcor-strings-to-rcor-in-files_trinity-files_processed-rcor-only)
+		1. [Get directories of interest into arrays, then rename them as appropriate](#get-directories-of-interest-into-arrays-then-rename-them-as-appropriate)
+		1. [Work with "`./files_Trinity*`"](#work-with-files_trinity)
+		1. [Work with "`./files_processed-rcor-only`"](#work-with-files_processed-rcor-only)
+			1. [Notes](#notes)
+			1. [Code to accomplish the above](#code-to-accomplish-the-above)
+	1. [Symlink to the individual and merged `.bam`s, renaming them for easy use by Alison](#symlink-to-the-individual-and-merged-bams-renaming-them-for-easy-use-by-alison)
+		1. [Create an array of appropriate `.bam`s](#create-an-array-of-appropriate-bams)
+		1. [Clean up/set up '`awd`', then symlink the `.bam`s](#clean-upset-up-awd-then-symlink-the-bams)
+		1. [Create an array of appropriate `.bai`s and symlink them](#create-an-array-of-appropriate-bais-and-symlink-them)
+	1. [Generate `.bw`s for the `.bam`s](#generate-bws-for-the-bams)
 
 <!-- /MarkdownTOC -->
 </details>
@@ -1082,6 +1094,11 @@ bamCoverage \
 </details>
 <br />
 
+<a id="notes-about-the-previous-script-for-teaching-purposes"></a>
+###### Notes about the previous script for teaching purposes
+<details>
+<summary><i>Notes about the previous script for teaching purposes</i></summary>
+
 Some quick notes about the previous script for teaching purposes:
 - Important
 	+ `bamCoverage` has a parameter to run in parallel, but it won't recognize it unless you call it with the `-p` option
@@ -1102,6 +1119,8 @@ Some quick notes about the previous script for teaching purposes:
 	+ I told you yesterday that a MAPQ score of 30 represents of 99.99% that the mapped position is correct, but that's incorrect&mdash;it's actually 99.9%
 		* Some details on MAPQ [here](http://www.acgt.me/blog/2014/12/16/understanding-mapq-scores-in-sam-files-does-37-42)
 	+ Delete all of the unused variables&mdash;they're confusing for other people using your script
+</details>
+<br />
 
 <a id="make-submit_bamcoveragesh"></a>
 ##### Make `submit_bamCoverage.sh`
@@ -1198,6 +1217,9 @@ script
 
 <a id="get-the-bams-of-interest-into-an-array-or-glob-to-be-looped-over-for-job-submissions"></a>
 ##### Get the `.bam`s of interest into an array (or glob) to be looped over for job submissions
+<details>
+<summary><i>More notes for teaching purposes</i></summary>
+
 - In my attempts to come up with something teachable, I think I've gone about doing this in a way that is, in some ways, not good
 - What's not good about it?
 	+ For one, we're parsing the results of `ls`, which is frowned upon (but somewhat fine for rough-draft work and assuming your filenames are "normal")
@@ -1205,6 +1227,8 @@ script
 		* [mywiki.wooledge.org/ParsingLs](http://mywiki.wooledge.org/ParsingLs)
 	+ Very poor control of what's being globbed onto
 	+ Using relative paths to find things: This code snippet is even more context-sensitive, and thus breakable, than normal
+</details>
+<br />
 
 <details>
 <summary><i>Click to view code: Get the .bams of interest into an array (or glob) to be looped over; submit jobs for submit_bamCoverage.sh</i></summary>
@@ -2838,7 +2862,7 @@ trinity_5781-5782_Q_IP_merged.un_multi-hit-mode_1_Local
 
 ```bash
 #!/bin/bash
-#CONTINUE
+#DONTRUN #CONTINUE
 
 cd files_PASA/
 # /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201/files_PASA
@@ -2908,7 +2932,7 @@ files_PASA_param_gene-overlap/trinity_5781-5782_Q_IP_merged.un_multi-hit-mode_1_
 
 ```bash
 #!/bin/bash
-#CONTINUE
+#DONTRUN #CONTINUE
 
 cd "${HOME}/tsukiyamalab/alisong" || \
 	echo "cd'ing failed; check on this"
@@ -2984,7 +3008,7 @@ done
 
 ```bash
 #!/bin/bash
-#CONTINUE
+#DONTRUN #CONTINUE
 
 pwd
 # /home/kalavatt/tsukiyamalab/alisong/assess_transcriptome_assemblies/gtfs_2022-1214
@@ -3446,3 +3470,609 @@ done
 ```
 </details>
 <br />
+
+<a id="rename-trim-rcor-strings-to-rcor-in-files_trinity-files_processed-rcor-only"></a>
+### Rename "`trim-rcor`" strings to "`rcor`" in "`./files_Trinity*`", "`./files_processed-rcor-only`"
+<details>
+<summary><i>Click to view code: Get into work directory, load environment, etc.</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN
+
+
+#  Move to work directory, establish work environment -------------------------
+grabnode  # 1 and corresponding defaults
+Trinity_env
+
+mwd() {
+    transcriptome \
+       && cd "./results/2022-1201" \
+       || echo "cd'ing failed; check on this"
+}
+
+
+awd() {
+	~/assess_transcriptome_assemblies \
+       || echo "cd'ing failed; check on this"
+}
+
+
+mwd
+# awd
+```
+</details>
+<br />
+
+<a id="get-directories-of-interest-into-arrays-then-rename-them-as-appropriate"></a>
+#### Get directories of interest into arrays, then rename them as appropriate
+<a id="work-with-files_trinity"></a>
+#### Work with "`./files_Trinity*`"
+<details>
+<summary><i>Click to view code: Get directories of interest into arrays, then rename directories as appropriate; afterwards, rename files in directories/subdirectories as appropriate</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+unset directories
+typeset -a directories
+while IFS=" " read -r -d $'\0'; do
+    directories+=( "${REPLY}" )
+done < <(\
+	find "./files_Trinity"*"/files_processed-rcor-only" \
+	    -maxdepth 1 \
+		-type d \
+		-name "*trim-rcor*" \
+		-print0 \
+			| sort -z
+)
+echoTest "${directories[@]}"
+# ./files_Trinity_genome-free/files_processed-rcor-only/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_1_EndToEnd
+# ./files_Trinity_genome-free/files_processed-rcor-only/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_1_Local
+# ./files_Trinity_genome-guided/files_processed-rcor-only/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_EndToEnd
+# ./files_Trinity_genome-guided/files_processed-rcor-only/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_100_Local
+# ./files_Trinity_genome-guided/files_processed-rcor-only/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_10_EndToEnd
+# ./files_Trinity_genome-guided/files_processed-rcor-only/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_10_Local
+# ./files_Trinity_genome-guided/files_processed-rcor-only/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_15_EndToEnd
+# ./files_Trinity_genome-guided/files_processed-rcor-only/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_15_Local
+# ./files_Trinity_genome-guided/files_processed-rcor-only/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_1_EndToEnd
+# ./files_Trinity_genome-guided/files_processed-rcor-only/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_1_Local
+# ./files_Trinity_genome-guided/files_processed-rcor-only/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_50_EndToEnd
+# ./files_Trinity_genome-guided/files_processed-rcor-only/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_50_Local
+# ./files_Trinity_genome-guided/files_processed-rcor-only/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_5_EndToEnd
+# ./files_Trinity_genome-guided/files_processed-rcor-only/trinity_5781-5782_Q_IP_merged.trim-rcor.multi-hit-mode_5_Local
+
+#  Rename the directories
+for i in "${directories[@]}"; do
+	# rename -n 's/trim-rcor/rcor/g' "${i}"
+    rename 's/trim-rcor/rcor/g' "${i}"
+done
+
+#  Now that the directories are renamed, update the array
+unset directories
+typeset -a directories
+while IFS=" " read -r -d $'\0'; do
+    directories+=( "${REPLY}" )
+done < <(\
+	find "./files_Trinity"*"/files_processed-rcor-only" \
+	    -maxdepth 1 \
+		-type d \
+		-name "*rcor*" \
+		-print0 \
+			| sort -z
+)
+echoTest "${directories[@]}"
+
+#  Identify subdirectories to rename, then do so
+for i in "${directories[@]}"; do
+    unset tmp
+    typeset -a tmp
+    while IFS=" " read -r -d $'\0'; do
+        tmp+=( "${REPLY}" )
+    done < <(\
+        find "${i}" \
+            -maxdepth 1 \
+            -type d \
+            -name "*trim-rcor*" \
+            -print0 \
+                | sort -z \
+    )
+    # echoTest "${tmp[@]}"
+    for i in "${tmp[@]}"; do
+        # rename -n 's/trim-rcor/rcor/g' "${i}"
+        rename 's/trim-rcor/rcor/g' "${i}"
+    done
+done
+
+#  Check to ensure that the subdirectories were renamed
+for i in "${directories[@]}"; do
+    unset tmp
+    typeset -a tmp
+    while IFS=" " read -r -d $'\0'; do
+        tmp+=( "${REPLY}" )
+    done < <(\
+        find "${i}" \
+            -maxdepth 1 \
+            -type d \
+            -name "*rcor*" \
+            -print0 \
+                | sort -z \
+    )
+    echoTest "${tmp[@]}"
+done
+
+#  Are there sub-subdirectories that need to be renamed? If so, then do so
+for i in "${directories[@]}"; do
+    unset tmp
+    typeset -a tmp
+    while IFS=" " read -r -d $'\0'; do
+        tmp+=( "${REPLY}" )
+    done < <(\
+        find "${i}" \
+            # -maxdepth 2 \
+            -maxdepth 3 \
+            -type d \
+            -name "*trim-rcor*" \
+            -print0 \
+                | sort -z \
+    )
+    echoTest "${tmp[@]}"
+    # for i in "${tmp[@]}"; do
+    #     rename -n 's/trim-rcor/rcor/g' "${i}"
+    #     # rename 's/trim-rcor/rcor/g' "${i}"
+    # done
+done
+#NOTE 1/2 There appear to be none (testing -maxdepth 2 and 3), so move on to
+#NOTE 2/2 renaming files
+
+#  Rename files in subdirectories
+for i in "${directories[@]}"; do
+    unset tmp
+    typeset -a tmp
+    while IFS=" " read -r -d $'\0'; do
+        tmp+=( "${REPLY}" )
+    done < <(\
+        find "${i}" \
+            -maxdepth 1 \
+            -type d \
+            -name "*rcor*" \
+            -print0 \
+                | sort -z \
+    )
+    # echoTest "${tmp[@]}"
+    
+    for j in "${tmp[@]}"; do
+    	# j="${tmp[0]}"  # echo "${j}"
+    	unset tmp_2
+	    typeset -a tmp_2
+	    while IFS=" " read -r -d $'\0'; do
+	        tmp_2+=( "${REPLY}" )
+	    done < <(\
+	        find "${j}" \
+	            -maxdepth 1 \
+	            -type f \
+	            -name "*rcor*" \
+	            -print0 \
+	                | sort -z \
+    	)
+    	# echoTest "${tmp_2[@]}"
+	    for i in "${tmp_2[@]}"; do
+	        # rename -n 's/trim-rcor/rcor/g' "${i}"
+	        rename 's/trim-rcor/rcor/g' "${i}"
+	    done
+	done
+done
+#NOTE 1/2 This should handle everything; to check on this, do some spot checks
+#NOTE 2/2 in the subdirectories
+
+#NOTE Sure enough, everything is addressed
+```
+</details>
+<br />
+
+<a id="work-with-files_processed-rcor-only"></a>
+#### Work with "`./files_processed-rcor-only`"
+<a id="notes"></a>
+##### Notes
+<details>
+<summary><i>Click to view notes</i></summary>
+
+In `./files_processed-rcor-only`, we have the following subdirectories:
+- `bam_rcor-cor/`
+- `bam_rcor-cor_split/`
+- `bam_rcor-cor_split_merge/`
+- `fastq_rcor/`
+- `fastq_rcor-cor/`
+- `fastq_rcor-cor_split/`
+
+Of these subdirectories, the following contain *sub-subdirectories* that need to be renamed:
+- `./bam_rcor-cor/EndToEnd/`
+- `./bam_rcor-cor/Local/`
+
+Of these subdirectories, the following contain *files* that need to be renamed:
+- `./bam_rcor-cor_split/EndToEnd/`
+- `./bam_rcor-cor_split/Local/`
+- `./bam_rcor-cor_split_merge/EndToEnd/`
+- `./bam_rcor-cor_split_merge/Local/`
+- `./fastq_rcor-cor_split/EndToEnd`
+- `./fastq_rcor-cor_split/Local`
+
+Once the *sub-subdirectories* are renamed, there are files in each that need to be renamed too
+</details>
+<br />
+
+<a id="code-to-accomplish-the-above"></a>
+##### Code to accomplish the above
+<details>
+<summary><i>Click to view code: Get directories of interest into arrays, then rename directories as appropriate; afterwards, rename files in directories/subdirectories as appropriate</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+#  Rename appropriate subdirectories
+unset subdirectories
+typeset -a subdirectories
+while IFS=" " read -r -d $'\0'; do
+    subdirectories+=( "${REPLY}" )
+done < <(\
+	find "./files_processed-rcor-only/bam_rcor-cor/"*"/" \
+	    -maxdepth 1 \
+		-type d \
+		-name "*trim-rcor*" \
+		-print0 \
+			| sort -z
+)
+echoTest "${subdirectories[@]}"
+
+for i in "${subdirectories[@]}"; do
+	# rename -n 's/trim-rcor/rcor/g' "${i}"
+	rename 's/trim-rcor/rcor/g' "${i}"
+done
+
+#  With all subdirectories appropriately named, rename files
+unset files
+typeset -a files
+while IFS=" " read -r -d $'\0'; do
+    files+=( "${REPLY}" )
+done < <(\
+	find "./files_processed-rcor-only/"* \
+	    -maxdepth 4 \
+		-type f \
+		-name "*trim-rcor*" \
+		-print0 \
+			| sort -z
+)
+echoTest "${files[@]}"
+
+for i in "${files[@]}"; do
+	# rename -n 's/trim-rcor/rcor/g' "${i}"
+	rename 's/trim-rcor/rcor/g' "${i}"
+done
+#NOTE 1/2 This should handle everything; to check on this, do some spot checks
+#NOTE 2/2 in the subdirectories
+
+#NOTE Sure enough, everything is addressed
+```
+</details>
+<br />
+
+OK, now we're ready to symlink `.bam`s and perform subsequent steps
+
+<a id="symlink-to-the-individual-and-merged-bams-renaming-them-for-easy-use-by-alison"></a>
+### Symlink to the individual and merged `.bam`s, renaming them for easy use by Alison
+<a id="create-an-array-of-appropriate-bams"></a>
+#### Create an array of appropriate `.bam`s
+<details>
+<summary><i>Click to view code: Get appropriate .bams of interest into an array</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+pwd
+# /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201
+
+unset bams
+typeset -a bams
+while IFS=" " read -r -d $'\0'; do
+    bams+=( "${REPLY}" )
+done < <(\
+	find "./files_processed-rcor-only" \
+		-type f \
+		-name "*rcor*.bam" \
+		-print0 \
+			| sort -z
+)
+echoTest "${bams[@]}"
+echo "${#bams[@]}"
+```
+</details>
+<br />
+
+<a id="clean-upset-up-awd-then-symlink-the-bams"></a>
+#### Clean up/set up '`awd`', then symlink the `.bam`s
+<details>
+<summary><i>Click to view code: Clean up/set up 'awd', then symlink the .bams</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+#  Get to the proper wd -------------------------------------------------------
+awd
+# cd -- /home/kalavatt/assess_transcriptome_assemblies
+
+.,
+# total 747K
+# drwxrws--- 10 kalavatt  276 Jan  5 09:58 ./
+# drwxrws--- 49 agreenla 2.4K Jan  3 12:14 ../
+# drwxrws---  5 kalavatt  149 Dec 28 10:18 bams_2022-1212/
+# drwxrws---  5 kalavatt   94 Dec 28 10:18 bams_merged_2022-1216/
+# drwxrws---  5 agreenla  116 Dec 28 10:18 bws_2022-1215/
+# drwxrws---  4 kalavatt   91 Dec 16 10:49 bws_merged_2022-1216/
+# drwxrws---  5 kalavatt  114 Jan  5 10:15 gff3s_2022-1214/
+# drwxrws--- 11 agreenla  622 Dec 28 10:18 gff3s_2022-1222_email-from-Kris/
+# drwxrws---  5 kalavatt  54K Jan  5 09:59 gff3s_2023-0103/
+# drwxrws---  3 agreenla   32 Jan  5 10:15 IGV/
+
+mv bams_2022-1212/ bams_individual_2022-1212/
+# renamed 'bams_2022-1212/' -> 'bams_individual_2022-1212/'
+
+mkdir -p bams_individual_merged_2023-0105/
+
+#  Determine the relative paths from the present location ---------------------
+#+ ...to the bam directories
+pwd
+# /home/kalavatt/assess_transcriptome_assemblies/bams_individual_merged_2023-0105
+
+find_relative_path() {
+    realpath --relative-to="${1}" "${2}"
+}
+
+
+#  Symlink to the files -------------------------------------------------------
+p_part="${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201"
+for i in "${bams[@]}"; do
+	# i="${bams[0]}"  # echo "${i}"
+	# dirname "${i}"
+
+	# #  Working things out...
+	# find_relative_path "${p_part}/${i}" "$(pwd)"  #REVERSED
+	# find_relative_path "$(dirname "${p_part}/${i}")" "$(pwd)"  #REVERSED
+	# ., "$(find_relative_path "$(pwd)" "${p_part}/${i}")"  #FAILS
+	# ., "$(find_relative_path "$(pwd)" "$(dirname "${p_part}/${i}")")" #WORKS
+	
+	p_rel="$(find_relative_path "$(pwd)" "$(dirname "${p_part}/${i}")")"  # echo "${p_rel}"
+	f_base="$(basename "${i}")"  # echo "${f_base}"
+	ln -sf "${p_rel}/${f_base}" "${f_base}"
+done
+```
+</details>
+<br />
+
+<a id="create-an-array-of-appropriate-bais-and-symlink-them"></a>
+#### Create an array of appropriate `.bai`s and symlink them
+<details>
+<summary><i>Click to view code: Symlink the .bais</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+
+#  Get into the proper wd -----------------------------------------------------
+mwd && pwd
+# /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201
+
+
+#  Make an array fro .bais ----------------------------------------------------
+unset bais
+typeset -a bais
+while IFS=" " read -r -d $'\0'; do
+    bais+=( "${REPLY}" )
+done < <(\
+	find "./files_processed-rcor-only" \
+		-type f \
+		-name "*rcor*.bai" \
+		-print0 \
+			| sort -z
+)
+echoTest "${bais[@]}"
+echo "${#bais[@]}"
+
+
+#  Get to the proper wd -------------------------------------------------------
+awd
+# cd -- /home/kalavatt/assess_transcriptome_assemblies
+
+cd -- bams_individual_merged_2023-0105/
+# /home/kalavatt/assess_transcriptome_assemblies/bams_individual_merged_2023-0105
+
+
+#  Determine the relative paths from the present location ---------------------
+#+ ...to the bam directories
+pwd
+# /home/kalavatt/assess_transcriptome_assemblies/bams_individual_merged_2023-0105
+
+find_relative_path() {
+    realpath --relative-to="${1}" "${2}"
+}
+
+
+#  Symlink to the files -------------------------------------------------------
+p_part="${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201"
+for i in "${bais[@]}"; do
+	p_rel="$(find_relative_path "$(pwd)" "$(dirname "${p_part}/${i}")")"  # echo "${p_rel}"
+	f_base="$(basename "${i}")"  # echo "${f_base}"
+	ln -sf "${p_rel}/${f_base}" "${f_base}"
+done
+```
+</details>
+<br />
+
+<a id="generate-bws-for-the-bams"></a>
+### Generate `.bw`s for the `.bam`s
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+
+pwd
+# /home/kalavatt/assess_transcriptome_assemblies/bams_individual_merged_2023-0105
+
+cd .. && .,
+# total 987K
+# drwxrws--- 11 kalavatt  337 Jan  5 11:32 ./
+# drwxrws--- 49 agreenla 2.4K Jan  3 12:14 ../
+# drwxrws---  5 kalavatt  149 Dec 28 10:18 bams_individual_2022-1212/
+# drwxrws---  2 kalavatt  30K Jan  5 13:47 bams_individual_merged_2023-0105/
+# drwxrws---  5 kalavatt   94 Dec 28 10:18 bams_merged_2022-1216/
+# drwxrws---  5 agreenla  116 Dec 28 10:18 bws_2022-1215/
+# drwxrws---  4 kalavatt   91 Dec 16 10:49 bws_merged_2022-1216/
+# drwxrws---  5 kalavatt  114 Jan  5 10:15 gff3s_2022-1214/
+# drwxrws--- 11 agreenla  622 Dec 28 10:18 gff3s_2022-1222_email-from-Kris/
+# drwxrws---  5 kalavatt  54K Jan  5 09:59 gff3s_2023-0103/
+# drwxrws---  3 agreenla   32 Jan  5 10:15 IGV/
+
+mv bws_2022-1215/ bws_individual_2022-1215/
+# renamed 'bws_2022-1215/' -> 'bws_individual_2022-1215/'
+
+mkdir -p bws_individual_merged_2023-0105/err_out
+cd bws_individual_merged_2023-0105/
+# /home/kalavatt/assess_transcriptome_assemblies/bws_individual_merged_2023-0105
+
+
+#  Generate .bws from the merged .bams that have been symlinked ---------------
+#NOTE Not using parameter --ignoreDuplicates
+
+#  Make a job submission script ---------------------------
+s_name="submit_bamCoverage.sh"
+
+if [[ -f "${s_name}" ]]; then rm "${s_name}"; fi
+cat << script > "${s_name}"
+#!/bin/bash
+
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=8
+#SBATCH --error=./err_out/stderr.${s_name}.%J.txt
+#SBATCH --output=./err_out/stdout.${s_name}.%J.txt
+
+#  ${s_name}
+#  AG, KA
+#  $(date '+%Y-%m%d')
+
+# module load deepTools
+
+infile="\${1}"
+outfile="\${2}"
+
+#  Make directories for outfiles
+mkdir -p {MAPQ0,MAPQ3,MAPQ30}
+
+
+#   ---------------------------------------------------------------------------
+#  Run bamCoverage ------------------------------------------------------------
+#   ---------------------------------------------------------------------------
+
+#  ...with no MAPQ filtering  -------------------------------------------------
+bamCoverage \\
+    -p \${SLURM_CPUS_ON_NODE} \\
+    -b "\${infile}" \\
+    --normalizeUsing CPM \\
+    --filterRNAstrand forward \\
+    -o "MAPQ0/\${outfile}_MAPQ0_fwd.bw"
+echo "" | tee >(cat >&2)
+echo "" | tee >(cat >&2)
+
+bamCoverage \\
+    -p \${SLURM_CPUS_ON_NODE} \\
+    -b "\${infile}" \\
+    --normalizeUsing CPM \\
+    --filterRNAstrand reverse \\
+    -o "MAPQ0/\${outfile}_MAPQ0_rev.bw"
+echo "" | tee >(cat >&2)
+echo "" | tee >(cat >&2)
+
+
+# #  ...by excluding alignments less than MAPQ 3 --------------------------------
+# bamCoverage \\
+#     -p \${SLURM_CPUS_ON_NODE} \\
+#     -b "\${infile}" \\
+#     --normalizeUsing CPM \\
+#     --minMappingQuality 3 \\
+#     --filterRNAstrand forward \\
+#     -o "MAPQ3/\${outfile}_MAPQ3_fwd.bw"
+# echo "" | tee >(cat >&2)
+# echo "" | tee >(cat >&2)
+#
+# bamCoverage \\
+#     -p \${SLURM_CPUS_ON_NODE} \\
+#     -b "\${infile}" \\
+#     --normalizeUsing CPM \\
+#     --minMappingQuality 3 \\
+#     --filterRNAstrand reverse \\
+#     -o "MAPQ3/\${outfile}_MAPQ3_rev.bw"
+# echo "" | tee >(cat >&2)
+# echo "" | tee >(cat >&2)
+#
+#
+# #  ...by excluding alignments less than MAPQ 30 -------------------------------
+# bamCoverage \\
+#     -p \${SLURM_CPUS_ON_NODE} \\
+#     -b "\${infile}" \\
+#     --normalizeUsing CPM \\
+#     --minMappingQuality 30 \\
+#     --filterRNAstrand forward \\
+#     -o "MAPQ30/\${outfile}_MAPQ30_fwd.bw"
+# echo "" | tee >(cat >&2)
+# echo "" | tee >(cat >&2)
+#
+# bamCoverage \\
+#     -p \${SLURM_CPUS_ON_NODE} \\
+#     -b "\${infile}" \\
+#     --normalizeUsing CPM \\
+#     --minMappingQuality 30 \\
+#     --filterRNAstrand reverse \\
+#     -o "MAPQ30/\${outfile}_MAPQ30_rev.bw"
+# echo "" | tee >(cat >&2)
+# echo "" | tee >(cat >&2)
+
+script
+# vi "${s_name}"  # :q
+
+#  Create an .bam array for generation of .bws ------------
+unset bams
+typeset -a bams
+while IFS=" " read -r -d $'\0'; do
+    bams+=( "${REPLY}" )
+done < <(\
+    find "${HOME}/assess_transcriptome_assemblies/bams_individual_merged_2023-0105" \
+        -type l \
+        -name "*.sc_all.bam" \
+        -print0 | \
+            sort -z
+)
+echoTest "${bams[@]}"  # It works!
+echo "${#bams[@]}"
+# 168
+
+#  Submit the jobs ----------------------------------------
+# echo "${s_name}"  # submit_bamCoverage.sh
+for i in "${bams[@]}"; do
+    echo "sbatch ${s_name} ${i} $(basename "${i}" .bam)"
+    echo ""
+
+    sbatch ${s_name} ${i} $(basename "${i}" .bam)
+    echo ""
+    echo ""
+    sleep 0.1
+done
+
+rmdir MAPQ3/ MAPQ30/
+```
+
+```txt
+
+```
