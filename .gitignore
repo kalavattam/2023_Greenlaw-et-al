@@ -3,11 +3,16 @@
 ._.DS_Store
 
 
+# IPython files
+*.ipynb
+
+
 # Output files
 *.bam
 *.bai
 *.ok
 *.gz
+*.tgz
 
 
 # More files: stderr and stdout

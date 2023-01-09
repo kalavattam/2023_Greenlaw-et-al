@@ -6,12 +6,12 @@
 <!-- MarkdownTOC -->
 
 1. [Commands used for initial processing on 2022-1206](#commands-used-for-initial-processing-on-2022-1206)
-	1. [Look them up...](#look-them-up)
-	1. [Pertinent results from the call to history](#pertinent-results-from-the-call-to-history)
+    1. [Look them up...](#look-them-up)
+    1. [Pertinent results from the call to history](#pertinent-results-from-the-call-to-history)
 1. [Downloading things... \(2022-1213\)](#downloading-things-2022-1213)
-	1. [Grab a node, get to the right directory, etc.](#grab-a-node-get-to-the-right-directory-etc)
-	1. [Get the SGD `_genome_Current_Release.tgz`](#get-the-sgd-_genome_current_releasetgz)
-	1. [Get the SGD `other_features` files](#get-the-sgd-other_features-files)
+    1. [Grab a node, get to the right directory, etc.](#grab-a-node-get-to-the-right-directory-etc)
+    1. [Get the SGD `_genome_Current_Release.tgz`](#get-the-sgd-_genome_current_releasetgz)
+    1. [Get the SGD `other_features` files](#get-the-sgd-other_features-files)
 1. [Parse the SGD `.fasta` headers to make dataframes, etc.](#parse-the-sgd-fasta-headers-to-make-dataframes-etc)
 
 <!-- /MarkdownTOC -->
@@ -155,7 +155,7 @@ for i in "${files[@]}"; do curl -L "${link}/${i}" -o "${i}"; done
 - [Details about the `.bed` format](https://genome.ucsc.edu/FAQ/FAQformat.html#format1)
 
 <details>
-<summary><i>Scratch work for working with only the 'other_features' .fasta (2022-1214-1214)</i></summary>
+<summary><i>Click to view code: Scratch work for working with only the 'other_features' .fasta (2022-1214-1214)</i></summary>
 
 ```python
 #!/usr/bin/env python3

@@ -72,6 +72,7 @@
 
 <a id="email-notes-on-trinity"></a>
 ## Email: *Notes on Trinity*
+*See additional entries, etc. for this email chain in [`AG_emails-notes.md`](./AG_emails-notes.md)*
 <a id="alison-%E2%86%92-me-2022-1202-1658"></a>
 ### Alison → me, 2022-1202, 1658
 Hi Kris -

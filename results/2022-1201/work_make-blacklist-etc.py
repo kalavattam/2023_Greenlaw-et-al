@@ -7,14 +7,16 @@ Created on Tue Dec 13 10:14:09 2022
 """
 
 # bioinformatics.stackexchange.com/questions/5435/how-to-create-a-bed-file-from-fasta
+import gzip
 import numpy as np
 import pandas as pd
-import os
+# import os
 import re
 # import sys
 
-# os.chdir('/Users/kalavatt/Downloads/_Kris/scratch.2022-1213-12XX/R64-3-1_20210421/')
-# os.chdir('')
+# os.getcwd()
+# os.chdir('/Users/kalavatt/projects-etc/2022_transcriptome-construction/results/2022-1201/files_features/SGD_genome-current-release/S288C_reference_genome_R64-3-1_20210421')
+# os.listdir(os.curdir)  # List files and directories
 
 
 # Functions -------------------------------------------------------------------
@@ -54,11 +56,11 @@ def tokenize(string, separator=',', quote='"'):
 # -----------------------------------------------------------------------------
 # Read in .fasta
 # #QUESTION Will this work for the other SGD .fastas?
-# fasta = "NotFeature_R64-3-1_20210421.fasta"
-# fasta = "orf_coding_all_R64-3-1_20210421.fasta"
-# fasta = "orf_trans_all_R64-3-1_20210421.fasta"
-# fasta = "other_features_genomic_R64-3-1_20210421.fasta"
-# fasta = "rna_coding_R64-3-1_20210421.fasta"
+fasta = "NotFeature_R64-3-1_20210421.fasta.gz"
+# fasta = "orf_coding_all_R64-3-1_20210421.fasta.gz"
+# fasta = "orf_trans_all_R64-3-1_20210421.fasta.gz"
+# fasta = "other_features_genomic_R64-3-1_20210421.fasta.gz"
+# fasta = "rna_coding_R64-3-1_20210421.fasta.gz"
 
 # #NOTE As written, does not work for NotFeature_*
 
@@ -79,12 +81,20 @@ def tokenize(string, separator=',', quote='"'):
 
 # Extract the headers
 headers = []
-with open(fasta) as f:
-    header = None
-    for line in f:
-        if line.startswith('>'):  # Identifies fasta header line
-            headers.append(line[1:-1])  # Append all of the line that isn't >
-            header = line[1:]  # Reset header
+if fasta[-2:]=='gz':
+    with gzip.open(fasta, mode='rt') as f:
+        header = None
+        for line in f:
+            if line.startswith('>'):  # Identifies fasta header line
+                headers.append(line[1:-1])  # Append all of the line that isn't >
+                header = line[1:]  # Reset header
+else:
+    with open(fasta) as f:
+        header = None
+        for line in f:
+            if line.startswith('>'):  # Identifies fasta header line
+                headers.append(line[1:-1])  # Append all of the line that isn't >
+                header = line[1:]  # Reset header
 del(f, line)
 
 # Add a 'forward complement' designation to match the presence of a 'reverse
@@ -199,7 +209,10 @@ header_df['chr'] = header_df['coord_pre_n']\
     .str.split(':').str[0]
 
 # stackoverflow.com/questions/20025882/add-a-string-prefix-to-each-value-in-a-string-column-using-pandas
-header_df['chr_pre_y'] = 'Chr' + header_df['chr']
+chr_pre_y = 'Chr' + header_df['chr']
+# https://stackoverflow.com/a/3232962 (python-removing-spaces-from-list-objects)
+header_df['chr_pre_y'] = [i.replace(' ', '') for i in chr_pre_y]
+del(chr_pre_y)
 
 # #TODO Write up logic to handle lines that contain an underscroe in 'coord_'*
 #       columns
