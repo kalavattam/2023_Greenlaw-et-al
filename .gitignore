@@ -16,7 +16,9 @@
 
 
 # More files: stderr and stdout
+*.err
 *.err.txt
+*.out
 *.out.txt
 
 

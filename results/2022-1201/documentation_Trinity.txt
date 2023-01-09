@@ -1,0 +1,603 @@
+
+#NOTE #KA See https://github.com/trinityrnaseq/trinityrnaseq/blob/master/Trinity
+
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+use threads;
+no strict qw(subs refs);
+
+use FindBin;
+use lib ("$FindBin::RealBin/PerlLib");
+use File::Basename;
+use Time::localtime;
+use Cwd;
+use Carp;
+use COMMON;
+use Getopt::Long qw(:config posix_default no_ignore_case pass_through gnu_compat no_auto_abbrev); 
+use Pipeliner;
+use Fasta_reader;
+use SAM_reader;
+use SAM_entry;
+use List::Util qw(min max);
+use Data::Dumper;
+
+
+
+my $VERSION = "Trinity-v2.15.0";
+#my $VERSION = "__BLEEDING_EDGE__"; 
+
+
+my $ABSOLUTE_MIN_CONTIG_LENGTH = 100;  # going shorter might lead to making too many intermediate files during the run.
+
+
+BEGIN {
+
+    $ENV{TRINITY_HOME} = "$FindBin::RealBin";
+
+}
+
+open (STDERR, ">&STDOUT");  ## capturing stderr and stdout in a single stdout stream
+
+
+#directory defnintions
+my $ROOTDIR = "$FindBin::RealBin";
+my $UTILDIR = "$ROOTDIR/util";
+my $MISCDIR = "$UTILDIR/misc";
+my $INCHWORM_DIR = "$ROOTDIR/Inchworm/bin/";
+my $CHRYSALIS_DIR = "$ROOTDIR/Chrysalis";
+my $BUTTERFLY_DIR = "$ROOTDIR/Butterfly";
+my $COLLECTL_DIR = "$ROOTDIR/trinity-plugins/COLLECTL/collectl";
+my $TRINITY_PLUGINS_DIR = "$ROOTDIR/trinity-plugins";
+my $TRINITY_BIN_DIR = "$TRINITY_PLUGINS_DIR/BIN";
+my $PARAFLY = "$TRINITY_BIN_DIR/ParaFly";
+my $HTSLIB_DIR = "$ROOTDIR/trinity-plugins/htslib";
+
+$ENV{LD_LIBRARY_PATH} .= ":${HTSLIB_DIR}";
+
+if ($ENV{TRINITY_NO_RETRIES}) {
+    $PARAFLY .= " -max_retry 1 ";
+}
+
+my $TRIMMOMATIC = "$ROOTDIR/trinity-plugins/Trimmomatic/trimmomatic.jar";
+my $TRIMMOMATIC_DIR = "$ROOTDIR/trinity-plugins/Trimmomatic";
+
+$ENV{PATH} = "$ROOTDIR/trinity-plugins/BIN:$ENV{PATH}";
+
+my $JAVA_VERSION_REQUIRED = 8;
+
+# Site specific setup
+
+my $USE_PERL_SCAFFOLDER = 1;  # for testing purposes in chrysalis stage
+
+my $SYMLINK = "ln -sf";
+
+my $KMER_SIZE = 25;
+
+my $INCHWORM_CUSTOM_PARAMS = "";
+
+# option list:
+my ($seqType, @left_files, @right_files, @single_files, $SS_lib_type, $min_contig_length,
+    $group_pairs_distance, $jaccard_clip, $show_advanced_options,
+    $output_directory, $prep_only
+    );
+
+
+# defaults:
+
+$output_directory = &create_full_path("trinity_out_dir", 0);
+
+
+#variable for bowtie2
+my $bowtie2_path;
+my $bowtie2_build_path;
+
+
+#  butterfly opts
+$min_contig_length = 200;
+$group_pairs_distance = 500;
+my $path_reinforcement_distance;
+my $PE_path_reinforcement_distance = 25;
+my $SE_path_reinforcement_distance = 25;
+
+my $bfly_opts = "";
+my $bflyHeapSpaceMax = "10G";
+my $bflyHeapSpaceInit = "1G";
+
+my $BFLY_JAR = "";
+my $JAVA_OPTS = "";
+
+# butterfly path merging criteria 
+my $NO_PATH_MERGING = 0;
+my $MIN_PER_ID_SAME_PATH;  # leave these at the butterfy defaults
+my $MAX_DIFFS_SAME_PATH;
+my $MAX_INTERNAL_GAP_SAME_PATH;
+my @BFLY_ALGORITHMS = ("ORIGINAL", "PASAFLY");
+my $BFLY_ALGORITHM = "ORIGINAL"; # default
+
+# misc opts
+my $min_kmer_cov = 1;
+my $meryl_opts = "";
+my $inchworm_cpu = 6;
+
+my $min_percent_read_iworm_kmers = -1; # experimental, off
+
+my $CPU = 2;
+my $np = 1;
+my $mpiexec = "mpiexec";
+my $bflyCPU;
+my $bflyCalculateCPU = 0;
+my $bflyGCThreads = 2;
+
+my $long_reads = "";
+my $LONG_READS_MODE = 0;
+my $LONG_READS_SCAFFOLDING_FLAG = 0;
+
+
+my $NO_SUPER_READS_FLAG = 0;
+
+## ADVANCED OPTIONS:
+
+
+## Chrysalis opts
+my $min_glue = 2;
+my $min_iso_ratio = 0.05;
+my $glue_factor = 0.05;
+my $max_reads_per_graph = 200000;
+my $max_reads_per_loop = 50000000; #MW: Set default to 50M, still fits into main memory
+my $min_pct_read_mapping = 10; # set to 50 for phase 2
+my $chrysalis_output_dir = "chrysalis";
+my $NO_RUN_CHRYSALIS_FLAG = 0;
+
+my $NO_DISTRIBUTED_TRINITY_EXEC = 0;
+
+my $IWORM_CDHIT;
+
+my $help_flag;
+my $advanced_help_flag;
+my $SHOW_CITATION_FLAG = 0;
+
+my $show_version_flag = 0;
+
+## Kmer methods
+my $kmer_method = "";
+
+## Jellyfish
+my $max_memory;
+
+
+## Grid computing options:
+my $grid_exec_toolname = "";
+
+## Performance monitoring options 
+my $pm_logfile = "Trinity.timing";
+my $pm_trinity_startstring="NA";
+my $pm_trinity_endstring="NA";
+my $pm_trinity_start="NA";
+my $pm_trinity_end="NA";
+my $pm_inchworm_start="NA";
+my $pm_inchworm_end="NA";
+my $pm_chrysalis_start="NA";
+my $pm_chrysalis_end="NA";
+my $pm_left_fa_size="NA";
+my $pm_right_fa_size="NA";
+my $pm_single_fa_size="NA";
+my $pm_trinity_fa_size="NA";
+my $pm_trinity_arguments="";
+my $pm_inchworm_kmers=0;
+my $pm_read_count="NA";
+
+my $run_with_collectl = 0;
+# flush each second, record procs+rest every 5 secs, use only process subsystem
+
+my $collectl_output_directory = "collectl";
+my $collectl_pid = 0;
+my $collectl_out = "";
+my $collectl_titlename = "";
+my $start_dir = cwd();
+my $COLLECTL_INTERVAL_SECONDS = 60;
+
+## misc other opts, mostly for testing purposes
+my $run_as_paired_flag = 0;  ## in case we have paired reads in single fasta file, already oriented.
+my $weldmer_size = 48;
+my $FORCE_INCHWORM_KMER_METHOD = 0; 
+
+
+my $PARALLEL_IWORM_FLAG = 1;
+my $NO_PARALLEL_IWORM = 0;
+
+## Quality trimming params
+my $RUN_TRIMMOMATIC_FLAG = 0;
+my $trimmomatic_quality_trim_params = "ILLUMINACLIP:$TRIMMOMATIC_DIR/adapters/TruSeq3-PE.fa:2:30:10 SLIDINGWINDOW:4:5 LEADING:5 TRAILING:5 MINLEN:25";
+
+## Normalize reads
+my $NORMALIZE_READS_FLAG = 0; ## now on by default, unless told not to via --no_normalize_reads!  See below for logic.
+my $NO_NORMALIZE_READS_FLAG = 0; ## set to turn off normalization (will be turned on if trinity_complete_flag and ! --normalize_reads set. 
+my $normalize_max_read_cov = 200; # better for polymorphic transcriptomes
+my $normalize_max_CV = 10000; # effectively turn it off for this application.
+my $NORMALIZE_BY_READ_SET = 0; 
+my $NO_PARALLEL_NORM_STATS = 0;
+
+my $grid_node_CPU = 1;
+my $grid_node_max_memory = "1G";
+
+my $min_eff_read_cov = 2.0; # min effective read coverage (#reads * read_len / transcript_len)
+
+my $FORCE_FLAG = 0;
+
+# Note: For the Trinity logo below the backslashes are quoted in order to keep
+#   them from quoting the character than follows them.  "\\" keeps "\ " from occuring.
+
+my $MAX_CHRYSALIS_CLUSTER_SIZE = 25; # might need to set higher for highly polymorphic transcriptomes.
+
+my $JUST_NORMALIZE_READS_FLAG = 0;
+
+my $NO_SEQTK = 0;
+
+
+my $singularity_img = "";
+my $singularity_extra_params = "";
+my $in_simg_mode = 0; # bit flag, indicate whether we're executing from within a singularity image.
+
+
+my $trinity_banner = qq^
+     ______  ____   ____  ____   ____  ______  __ __
+    |      ||    \\ |    ||    \\ |    ||      ||  |  |
+    |      ||  D  ) |  | |  _  | |  | |      ||  |  |
+    |_|  |_||    /  |  | |  |  | |  | |_|  |_||  ~  |
+      |  |  |    \\  |  | |  |  | |  |   |  |  |___, |
+      |  |  |  .  \\ |  | |  |  | |  |   |  |  |     |
+      |__|  |__|\\_||____||__|__||____|  |__|  |____/
+    $VERSION
+^;
+
+my $basic_usage = qq^
+     ______  ____   ____  ____   ____  ______  __ __
+    |      ||    \\ |    ||    \\ |    ||      ||  |  |
+    |      ||  D  ) |  | |  _  | |  | |      ||  |  |
+    |_|  |_||    /  |  | |  |  | |  | |_|  |_||  ~  |
+      |  |  |    \\  |  | |  |  | |  |   |  |  |___, |
+      |  |  |  .  \\ |  | |  |  | |  |   |  |  |     |
+      |__|  |__|\\_||____||__|__||____|  |__|  |____/
+
+    $VERSION
+
+^;
+
+my $basic_usage = qq^
+
+
+###############################################################################
+#
+$trinity_banner
+#
+#
+# Required:
+#
+#  --seqType <string>      :type of reads: ('fa' or 'fq')
+#
+#  --max_memory <string>      :suggested max memory to use by Trinity where limiting can be enabled. (jellyfish, sorting, etc)
+#                            provided in Gb of RAM, ie.  '--max_memory 10G'
+#
+#  If paired reads:
+#      --left  <string>    :left reads, one or more file names (separated by commas, no spaces)
+#      --right <string>    :right reads, one or more file names (separated by commas, no spaces)
+#
+#  Or, if unpaired reads:
+#      --single <string>   :single reads, one or more file names, comma-delimited (note, if single file contains pairs, can use flag: --run_as_paired )
+#
+#  Or,
+#      --samples_file <string>         tab-delimited text file indicating biological replicate relationships.
+#                                   ex.
+#                                        cond_A    cond_A_rep1    A_rep1_left.fq    A_rep1_right.fq
+#                                        cond_A    cond_A_rep2    A_rep2_left.fq    A_rep2_right.fq
+#                                        cond_B    cond_B_rep1    B_rep1_left.fq    B_rep1_right.fq
+#                                        cond_B    cond_B_rep2    B_rep2_left.fq    B_rep2_right.fq
+#
+#                      # if single-end instead of paired-end, then leave the 4th column above empty.
+#
+####################################
+##  Misc:  #########################
+#
+#  --SS_lib_type <string>          :Strand-specific RNA-Seq read orientation.
+#                                   if paired: RF or FR,
+#                                   if single: F or R.   (dUTP method = RF)
+#                                   See web documentation.
+#
+#  --CPU <int>                     :number of CPUs to use, default: $CPU
+#  --min_contig_length <int>       :minimum assembled contig length to report
+#                                   (def=$min_contig_length, must be >= $ABSOLUTE_MIN_CONTIG_LENGTH)
+#
+#  --long_reads <string>           :fasta file containing error-corrected or circular consensus (CCS) pac bio reads
+#                                   (** note: experimental parameter **, this functionality continues to be under development)
+#
+#  --genome_guided_bam <string>    :genome guided mode, provide path to coordinate-sorted bam file.
+#                                   (see genome-guided param section under --show_full_usage_info)
+#
+#  --long_reads_bam <string>       :long reads to include for genome-guided Trinity
+#                                  (bam file consists of error-corrected or circular consensus (CCS) pac bio read aligned to the genome)
+#
+#  --jaccard_clip                  :option, set if you have paired reads and
+#                                   you expect high gene density with UTR
+#                                   overlap (use FASTQ input file format
+#                                   for reads).
+#                                   (note: jaccard_clip is an expensive
+#                                   operation, so avoid using it unless
+#                                   necessary due to finding excessive fusion
+#                                   transcripts w/o it.)
+#
+#  --trimmomatic                   :run Trimmomatic to quality trim reads
+#                                        see '--quality_trimming_params' under full usage info for tailored settings.
+#
+#  --output <string>               :name of directory for output (will be
+#                                   created if it doesn't already exist)
+#                                   default( your current working directory: "$output_directory" 
+#                                    note: must include 'trinity' in the name as a safety precaution! )
+#  
+#  --full_cleanup                  :only retain the Trinity fasta file, rename as \${output_dir}.Trinity.fasta
+#
+#  --cite                          :show the Trinity literature citation
+#
+#  --verbose                       :provide additional job status info during the run.
+#
+#  --version                       :reports Trinity version ($VERSION) and exits.
+#
+#  --show_full_usage_info          :show the many many more options available for running Trinity (expert usage).
+^;
+
+my $full_usage = qq^
+#
+#  --no_super_reads                :turn off super-reads mode
+#
+#  --prep                          :Only prepare files (high I/O usage) and stop before kmer counting.
+#
+#  --no_cleanup                    :retain all intermediate input files.
+#
+#  --no_version_check              :dont run a network check to determine if software updates are available.
+#
+#  --no_symlink                    :dont symlink, just copy files instead (sets env var NO_SYMLINK=TRUE)
+#
+#  --monitoring                    :use collectl to monitor all steps of Trinity
+#     --monitor_sec <int>          : number of seconds for each interval of runtime monitoring (default: $COLLECTL_INTERVAL_SECONDS)
+#  
+#  --no_distributed_trinity_exec   :do not run Trinity phase 2 (assembly of partitioned reads), and stop after generating command list.
+#
+#  --workdir <string>              :where Trinity phase-2 assembly computation takes place (defaults to --output setting).
+#                                  (can set this to a node-local drive or RAM disk)     
+#
+####################################################
+# Inchworm and K-mer counting-related options: #####
+#
+#  --min_kmer_cov <int>           :min count for K-mers to be assembled by
+#                                  Inchworm (default: $min_kmer_cov)
+#  --inchworm_cpu <int>           :number of CPUs to use for Inchworm, default is min(6, --CPU option)
+#
+#  --no_run_inchworm              :stop after running jellyfish, before inchworm. (phase 1, read clustering only)
+#
+###################################
+# Chrysalis-related options: ######
+#
+#  --max_reads_per_graph <int>    :maximum number of reads to anchor within
+#                                  a single graph (default: $max_reads_per_graph)
+#  --min_glue <int>               :min number of reads needed to glue two inchworm contigs
+#                                  together. (default: $min_glue) 
+#
+#  --max_chrysalis_cluster_size <int>  :max number of Inchworm contigs to be included in a single Chrysalis cluster. (default: $MAX_CHRYSALIS_CLUSTER_SIZE)
+#
+#  --no_bowtie                    :dont run bowtie to use pair info in chrysalis clustering.
+#
+#  --no_run_chrysalis             :stop after running inchworm, before chrysalis. (phase 1, read clustering only)
+#
+#####################################
+###  Butterfly-related options:  ####
+#
+#  --bfly_algorithm <string>       : assembly algorithm to use. Options: @BFLY_ALGORITHMS
+#
+#  --bfly_opts <string>            :additional parameters to pass through to butterfly
+#                                   (see butterfly options: java -jar Butterfly.jar ).
+#                                   (note: only for expert or experimental use.  Commonly used parameters are exposed through this Trinity menu here).
+#
+#
+#  Butterfly read-pair grouping settings (used to define 'pair paths'):
+#
+#  --group_pairs_distance <int>    :maximum length expected between fragment pairs (default: $group_pairs_distance)
+#                                   (reads outside this distance are treated as single-end)
+#
+#  ///////////////////////////////////////////////
+#  Butterfly default reconstruction mode settings.
+#                                   
+#  --path_reinforcement_distance <int>   :minimum overlap of reads with growing transcript 
+#                                         path (default: PE: $PE_path_reinforcement_distance, SE: $SE_path_reinforcement_distance)
+#                                         Set to 1 for the most lenient path extension requirements.
+#
+#
+#  /////////////////////////////////////////
+#  Butterfly transcript reduction settings:
+#
+#  --no_path_merging            : all final transcript candidates are output (including SNP variations, however, some SNPs may be unphased)  
+#
+#  By default, alternative transcript candidates are merged (in reality, discarded) if they are found to be too similar, according to the following logic:
+#
+#  (identity=(numberOfMatches/shorterLen) > 98.0% or if we have <= 2 mismatches) and if we have internal gap lengths <= 10
+#
+#  with parameters as:
+#      
+#      --min_per_id_same_path <int>          default: 98     min percent identity for two paths to be merged into single paths
+#      --max_diffs_same_path <int>           default: 2      max allowed differences encountered between path sequences to combine them
+#      --max_internal_gap_same_path <int>    default: 10     maximum number of internal consecutive gap characters allowed for paths to be merged into single paths.
+#
+#      If, in a comparison between two alternative transcripts, they are found too similar, the transcript with the greatest cumulative 
+#      compatible read (pair-path) support is retained, and the other is discarded.
+#
+#
+#  //////////////////////////////////////////////
+#  Butterfly Java and parallel execution settings.
+#
+#  --bflyHeapSpaceMax <string>     :java max heap space setting for butterfly
+#                                   (default: $bflyHeapSpaceMax) => yields command
+#                  'java -Xmx$bflyHeapSpaceMax -jar Butterfly.jar ... \$bfly_opts'
+#  --bflyHeapSpaceInit <string>    :java initial heap space settings for
+#                                   butterfly (default: $bflyHeapSpaceInit) => yields command
+#                  'java -Xms$bflyHeapSpaceInit -jar Butterfly.jar ... \$bfly_opts'
+#  --bflyGCThreads <int>           :threads for garbage collection
+#                                   (default: $bflyGCThreads))
+#  --bflyCPU <int>                 :CPUs to use (default will be normal 
+#                                   number of CPUs; e.g., $CPU)
+#  --bflyCalculateCPU              :Calculate CPUs based on 80% of max_memory
+#                                   divided by maxbflyHeapSpaceMax
+#
+#  --bfly_jar <string>             : /path/to/Butterfly.jar, otherwise default
+#                                    Trinity-installed version is used. 
+#                                    
+#
+################################################################################
+#### Quality Trimming Options ####  
+# 
+#  --quality_trimming_params <string>   defaults to: "$trimmomatic_quality_trim_params"
+#
+################################################################################
+####  In silico Read Normalization Options ###
+#
+#  --normalize_max_read_cov <int>       defaults to $normalize_max_read_cov 
+#  --normalize_by_read_set              run normalization separate for each pair of fastq files,
+#                                       then one final normalization that combines the individual normalized reads.
+#                                       Consider using this if RAM limitations are a consideration.
+#
+#  --just_normalize_reads               stop after performing read normalization
+#
+#  --no_normalize_reads            :Do *not* run in silico normalization of reads. Defaults to max. read coverage of $normalize_max_read_cov.
+#                                       see '--normalize_max_read_cov' under full usage info for tailored settings.
+#                                       (Note, as of Sept 21, 2016, normalization is on by default)
+#                                       (*Turning off normalization is not recommended for most applications)
+#     
+#  --no_parallel_norm_stats            :Do not try to run the high-mem normalization stats generator in parallel for paired-end fastqs.
+#
+###############################################################################
+#### Genome-guided de novo assembly
+# 
+#  * required:
+#
+# --genome_guided_max_intron <int>     :maximum allowed intron length (also maximum fragment span on genome)
+#
+#  * optional:
+#
+# --genome_guided_min_coverage <int>   :minimum read coverage for identifying and expressed region of the genome. (default: 1)
+#
+# --genome_guided_min_reads_per_partition <int>   :default min of 10 reads per partition
+#
+#
+#######################################################################
+# Trinity phase 2 (parallel assembly of read clusters) Options: #######
+#
+#  --grid_exec <string>                 :your command-line utility for submitting jobs to the grid.
+#                                        This should be a command line tool that accepts a single parameter:
+#                                        \${your_submission_tool} /path/to/file/containing/commands.txt
+#                                        and this submission tool should exit(0) upon successful 
+#                                        completion of all commands.
+#
+#  --grid_node_CPU <int>                number of threads for each parallel process to leverage. (default: $grid_node_CPU)
+#
+#  --grid_node_max_memory <string>         max memory targeted for each grid node. (default: $grid_node_max_memory)
+#
+#            The --grid_node_CPU and --grid_node_max_memory are applied as 
+#              the --CPU and --max_memory parameters for the Trinity jobs run in 
+#              Trinity Phase 2 (assembly of read clusters)
+#
+#  --FORCE                               ignore failed commands from earlier run, continue on. 
+#                                          (Note, this should only be used after you've
+#                                           already dealt with these failed commands directly as needed)
+#
+########################################################################
+# Singularity-related options
+#
+# --singularity_img <string>         :path to a Trinity singularity image to use
+#
+# --singularity_extra_params <string>   :additional parameters to include for the singularity command execution
+#
+#
+
+    ^;
+
+my $usage_synopsis = qq^#
+#
+###############################################################################
+#
+#  *Note, a typical Trinity command might be:
+#
+#        Trinity --seqType fq --max_memory 50G --left reads_1.fq  --right reads_2.fq --CPU 6
+#
+#            (if you have multiple samples, use --samples_file ... see above for details)
+#
+#    and for Genome-guided Trinity, provide a coordinate-sorted bam:
+#
+#        Trinity --genome_guided_bam rnaseq_alignments.csorted.bam --max_memory 50G\
+#                --genome_guided_max_intron 10000 --CPU 6
+#
+#     see: $FindBin::RealBin/sample_data/test_Trinity_Assembly/
+#          for sample data and 'runMe.sh' for example Trinity execution
+#
+#     For more details, visit: http://trinityrnaseq.github.io
+#
+###############################################################################
+
+
+    ^;
+
+
+
+my $advanced_usage =  <<_ADVANCEDUSAGE_;
+###################################################################################
+     ## Not intended for users, instead for experimentation by developers ## 
+###################################################################################
+#
+#
+#  Inchworm-related options:
+#
+#  --INCHWORM_CUSTOM_PARAMS <string>     :additional parameters to be passed on to Inchworm
+#  --FORCE_INCHWORM_KMER_METHOD           :uses inchworm built-in kmer cataloger instead of jellyfish (not recommended)  
+#  --NO_PARALLEL_IWORM                : turn off parallel iworm assembly
+#  --iworm_opts <string>              : options for inchworm
+#
+#  --iworm_cdhit                      : perform iworm contig database reduction using cdhit
+#  --__KMER_SIZE <int>                : default $KMER_SIZE  (do not change unless for experimental usage)
+#
+#
+#  Chyrsalis-related options:
+#
+#    --min_pcnt_read_iworm_kmers <int>      :min percentage of a read sequence that must be composed of inchworm kmers to be pursued 
+#                                               by chrysalis (default: $min_percent_read_iworm_kmers)  note: off if < 0
+#
+#  --min_iso_ratio <float>        :min fraction of average kmer coverage between two iworm contigs
+#                                  required for gluing.  (default: $min_iso_ratio)
+#  --glue_factor <float>          :fraction of max (iworm pair coverage) for read glue support (default: $glue_factor)
+#
+#  --max_reads_per_loop <int>     :maximum number of reads to read into
+#                                  memory at once (default: $max_reads_per_loop)
+#  --min_pct_read_mapping <int>   :minimum percent of a reads kmers that must map to an
+#                                  inchworm bundle (aka. component)  default: $min_pct_read_mapping
+#
+#  --bowtie_components            :use bowtie2 to generate readsToTranscripts mappings
+#
+#
+#  Other:
+#
+#  --bypass_java_version_check     : skip check for required java version 1.$JAVA_VERSION_REQUIRED
+#
+#  --java_opts <string>       : can include any additional custom options to the java command.
+#                                    ie.  -Djava.io.tmpdir=/path/to/my/custom/tmpdir
+#  --no_salmon                : exclude salmon expression filtering
+#     --min_eff_read_cov <int>   : minimum effective read coverage for reconstructed transcript (default: $min_eff_read_cov)
+#
+#  --long_reads_mode               : run in long reads mode (requires --single and the long reads integrated with LR$| accession prefixes.
+#
+#  --no_check_coordsorted_bam      : in genome-guided mode, won't test the bam file for coordinate-sortedness#
+#
+#  --stomp_snps                    : stomp snps out of kmers before inchworm assembly
+#
+#  --NO_SEQTK                      :disable seqtk for fq->fa conversions, instead use slower perl code
+#
+
+_ADVANCEDUSAGE_
+
+ ;

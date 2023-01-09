@@ -1271,6 +1271,8 @@ Found this review as well, which appears to be helpful
 - [A simple guide to *de novo* transcriptome assembly and annotation](https://academic.oup.com/bib/article/23/2/bbab563/6514404)
 - `#TODO` Read it in preparation for the presentation you will give on __Wednesday, January 11__
 - [File for "Raghavan, Kraft, Mesny, Rigerte, Simple guide to de novo transcriptome assembly and annotation, *Briefings Bioinf* 2022"](./notebook/Raghavan-et-al.review.pdf)
+	+ [File for Table S1](./notebook/Raghavan-et-al.review.table-s1.csv)
+	+ [File for Table S2](./notebook/Raghavan-et-al.review.table-s2.csv)
 
 This led me to Google "trinity versus stringtie", which resulted [this informative post](https://bioinformatics.stackexchange.com/questions/3201/difference-between-de-novo-transcriptome-assembly-methods#:~:text=stringTie%20is%20just%20looking%20at,them%20together%20into%20longer%20sequences.)
 - [File](./notebook/)
