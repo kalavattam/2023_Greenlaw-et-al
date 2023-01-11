@@ -37,19 +37,19 @@
 
 <a id="wtqvsg1"></a>
 #### WTQvsG1
-```txt
+```bash
 ~/tsukiyamalab/alisong/WTQvsG1/Project_ccucinot/S_cerevisiae_BamFiles/HTSeq
 ~/tsukiyamalab/alisong/WTQvsG1/Project_ccucinot/S_cerevisiae_BamFiles/HTSeq/bam_resort
 ```
 
 <a id="nab3_nrd1_depletion"></a>
 #### Nab3_Nrd1_Depletion
-```txt
+```bash
 ~/tsukiyamalab/alisong/Nab3_Nrd1_Depletion/Sequencing/Project_agreenla/SC_bams_all
 ```
 - `#DONE` Double check that this is the correct location for "processed .bam files"
     + Seems not to be per [this email](#email-from-alison-2022-1020); for example, output of HTSeq `count` here:
-```txt
+```bash
 ~/tsukiyamalab/alisong/Nab3_Nrd1_Depletion/Sequencing/Project_agreenla/6126_7716/S_cerevisiae_BamFiles/bam_resort/feature_counts_7716_6126
 ```
 
@@ -65,11 +65,11 @@ Subject: Re: .bam files for calculating TPM
 Yes! 
  
 There are bam files at:  
-```txt
+```bash
 ~/tsukiyamalab/alisong/WTQvsG1/Project_ccucinot/S_cerevisiae_BamFiles/HTSeq
 ```
 Also resorted for HTseq:  
-```txt
+```bash
 ~/tsukiyamalab/alisong/WTQvsG1/Project_ccucinot/S_cerevisiae_BamFiles/HTSeq/bam_resort
 ```
 
@@ -98,7 +98,7 @@ Notes and summary based on an email chain between me and Alison, [shown below](#
 #### WTQvsG1
 <a id="1"></a>
 ##### #1
-```txt
+```bash
 ~/tsukiyamalab/alisong/WTQvsG1/Unaligned_UMI/Project_ccucinot
 ```
 - Demultiplexed but still contain PCR duplicates to be removed with UMI-tools
@@ -112,7 +112,7 @@ Notes and summary based on an email chain between me and Alison, [shown below](#
 
 <a id="2"></a>
 ##### #2
-```txt
+```bash
 ~/tsukiyamalab/alisong/WTQvsG1/Project_ccucinot/Sample_578*
 ```
 - Demultiplexed but still contain PCR duplicates to be removed with UMI-tools
@@ -130,7 +130,7 @@ Notes and summary based on an email chain between me and Alison, [shown below](#
 
 <a id="trf4_ssrna_april2022"></a>
 #### TRF4_SSRNA_April2022
-```txt
+```bash
 ~/tsukiyamalab/alisong/TRF4_SSRNA_April2022/UMI_information/Project_agreenla
 #QUESTION What is this project?
 #QUESTION Is this a project we're working on now? 
@@ -140,7 +140,7 @@ Notes and summary based on an email chain between me and Alison, [shown below](#
 #### Nab3_Nrd1_Depletion
 <a id="1-1"></a>
 ###### #1
-```txt
+```bash
 ~/tsukiyamalab/alisong/Nab3_Nrd1_Depletion/Sequencing/Project_agreenla/{5782_7714,6125_7718,6126_7716}
 ```
 - Demultiplexed but still contain PCR duplicates to be removed with UMI-tools
@@ -154,7 +154,7 @@ Notes and summary based on an email chain between me and Alison, [shown below](#
 
 <a id="2-1"></a>
 ###### #2
-```txt
+```bash
 ~/tsukiyamalab/alisong/Nab3_Nrd1_Depletion/Sequencing/Project_agreenla/5782_7714/UMI
 ~/tsukiyamalab/alisong/Nab3_Nrd1_Depletion/Sequencing/Project_agreenla/6125_7718/UMI
 ~/tsukiyamalab/alisong/Nab3_Nrd1_Depletion/Sequencing/Project_agreenla/6126_7716/UMI
@@ -182,26 +182,26 @@ Hi Alison,
 I just want to check my understanding regarding the fastq files: i.e., what is what, what I should try out for alignment and Trinity work, etc.
 
 For the WT Q vs. G1 analyses, raw fastq files are in this directory:
-```txt
+```bash
 ~/tsukiyamalab/alisong/WTQvsG1/Unaligned_UMI/Project_ccucinot
 ```
 1. These have not yet been demultiplexed and I should (perhaps not now but eventually) demultiplex them to remove PCR duplicates using UMI tools? Then, use the demultiplexed fastq files for alignment and Trinity work, right?
  
 For the WT Q vs. G1 analyses as well, there are also raw fastq files in these directories:
-```txt
+```bash
 ~/tsukiyamalab/alisong/WTQvsG1/Project_ccucinot/Sample_578*
 ```
 2. These files have been demultiplexed, but PCR duplicates remain in the fastq files—is that correct?
 3. To save time, I am thinking I should use the `*_merged_R{1,2}.fastq` files for alignment to the combined reference (comprised of *S. cerevisiae*, *K. lactis*, and 20 S) and downstream steps: is that reasonable to you?
  
 For WT vs. Nab3-depletion work, there are fastq files in these directories:
-```txt
+```bash
 ~/tsukiyamalab/alisong/Nab3_Nrd1_Depletion/Sequencing/Project_agreenla/{5782_7714,6125_7718,6126_7716}
 ```
 4. These files have been demultiplexed, but PCR duplicates remain in the fastq files—is that correct?
  
 Within each of the immediately above `{5782_7714,6125_7718,6126_7716}` directories, there are UMI subdirectories:
-```txt
+```bash
 ~/tsukiyamalab/alisong/Nab3_Nrd1_Depletion/Sequencing/Project_agreenla/{5782_7714,6125_7718,6126_7716}/UMI
 ```
 5. These contain fastq files that have not been demultiplexed and I should (perhaps not now but eventually) demultiplex them to remove PCR duplicates using UMI tools? Then, use the demultiplexed fastq files for alignment and Trinity work, right?
@@ -222,7 +222,7 @@ Hi Kris! You caught me right before my flight so excellent timing.
  
 > To address your questions:  
 > For the WT Q vs. G1 analyses, raw fastq files are in this directory:  
-> ```txt
+> ```bash
 > ~/tsukiyamalab/alisong/WTQvsG1/Unaligned_UMI/Project_ccucinot
 > ```
 > 1. These have not yet been demultiplexed and I should (perhaps not now but eventually) demultiplex them to remove PCR duplicates using UMI tools? Then, use the demultiplexed fastq files for alignment and Trinity work, right?
@@ -230,7 +230,7 @@ Hi Kris! You caught me right before my flight so excellent timing.
 Yes! They have been "demultiplexed" in that the core splits them by barcode but no UMI processing has been done. (Is this also known as demultiplexing?) PCR duplicates should be removed using UMI tools. Then, use those fastq files with UMI removed for alignment and Trinity work. 
 
 > For the WT Q vs. G1 analyses as well, there are also raw fastq files in these directories:
-> ```txt
+> ```bash
 > ~/tsukiyamalab/alisong/WTQvsG1/Project_ccucinot/Sample_578*
 > ```
 > 2. These files have been demultiplexed, but PCR duplicates remain in the fastq files: is that correct?
@@ -242,7 +242,7 @@ Yep!
 This is definitely a good place to start! Perhaps we can re-do with UMI factored in later?
 
 > For WT vs. Nab3-depletion work, there are fastq files in these directories:
-> ```txt
+> ```bash
 > ~/tsukiyamalab/alisong/Nab3_Nrd1_Depletion/Sequencing/Project_agreenla/{5782_7714,6125_7718,6126_7716}
 > ```
 > 4. These files have been demultiplexed, but PCR duplicates remain in the fastq files: is that correct?
@@ -250,7 +250,7 @@ This is definitely a good place to start! Perhaps we can re-do with UMI factored
 Yes!
 
 > Within each of the immediately above `{5782_7714,6125_7718,6126_7716}` directories, there are UMI subdirectories:
-> ```txt 
+> ```bash
 > ~/tsukiyamalab/alisong/Nab3_Nrd1_Depletion/Sequencing/Project_agreenla/{5782_7714,6125_7718,6126_7716}/UMI
 > ```
 > 5. These contain fastq files that have not been demultiplexed and I should (perhaps not now but eventually) demultiplex them to remove PCR duplicates using UMI tools? Then, use the demultiplexed fastq files for alignment and Trinity work, right?

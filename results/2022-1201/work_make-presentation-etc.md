@@ -8,7 +8,7 @@
 <!-- MarkdownTOC -->
 
 1. [Scraps to be incorporated](#scraps-to-be-incorporated)
-1. [Documentation for Alison/me](#documentation-for-alisonme)
+1. [Documentation `#INPROGRESS`](#documentation-inprogress)
     1. [The *"comprehensive transcriptome database"* strategy](#the-comprehensive-transcriptome-database-strategy)
         1. [Pros and cons of the `Trinity` GG and GF approaches](#pros-and-cons-of-the-trinity-gg-and-gf-approaches)
         1. [Input for the *"comprehensive transcriptome database"* strategy](#input-for-the-comprehensive-transcriptome-database-strategy)
@@ -32,6 +32,30 @@
         1. [★ `trim_galore`](#%E2%98%85-trim_galore)
 1. [`#TODOs`](#todos)
     1. [Building an understanding/explanation for important parts of the `PASA` pipeline](#building-an-understandingexplanation-for-important-parts-of-the-pasa-pipeline)
+1. [Presentation outline](#presentation-outline)
+    1. [Slide 1](#slide-1)
+        1. [Head](#head)
+        1. [Body: Bullets](#body-bullets)
+        1. [Tail](#tail)
+    1. [Slide 2](#slide-2)
+        1. [Head](#head-1)
+        1. [Body: Bullets](#body-bullets-1)
+        1. [Tail](#tail-1)
+    1. [Slide 3](#slide-3)
+        1. [Head](#head-2)
+        1. [Body](#body)
+            1. [Left side: Bullets](#left-side-bullets)
+                1. [Abbreviated bullets](#abbreviated-bullets)
+            1. [Right side: Raghavan et al., Figure 1](#right-side-raghavan-et-al-figure-1)
+    1. [Slide 4](#slide-4)
+        1. [Head](#head-3)
+                1. [Left side: Bullets](#left-side-bullets-1)
+        1. [Tail](#tail-2)
+    1. [Slide 4](#slide-4-1)
+        1. [Background \(not in the main slide\)](#background-not-in-the-main-slide)
+    1. [Maybe](#maybe)
+    1. [Citations](#citations)
+    1. [Snippets](#snippets)
 
 <!-- /MarkdownTOC -->
 </details>
@@ -40,6 +64,9 @@
 
 <a id="scraps-to-be-incorporated"></a>
 ## Scraps to be incorporated
+<details>
+<summary><i>Click to view: Scraps to be incorporated</i></summary>
+
 If a genome sequence is available, `Trinity` offers a method in which...
 1. reads are aligned to the genome, partitioning mapped reads by locus
 2. the alignments undergo local *de novo* transcriptome assembly at each locus
@@ -47,15 +74,19 @@ If a genome sequence is available, `Trinity` offers a method in which...
 Thus, the genome serves as "a substrate" for grouping overlapping reads into clusters that will be separately fed into `Trinity` for *de novo* transcriptome assembly. This differs from other genome-guided approaches such as those implemented in `cufflinks` and `stringtie`, where aligned reads are stitched into transcript structures, and where <mark>transcript sequences are reconstructed based on the reference genome sequence</mark>. In the `Trinity` __GG__ approach, transcripts are reconstructed based on the actual read sequences.
 
 Why do this? You may have a reference genome, but your sample likely comes from an organism with a genome that isn't an exact match to the reference genome. Genome-guided *de novo* assembly should capture the sequence variations contained in your RNA-Seq sample in the form of the transcripts that are *de novo* reconstructed. In comparison to genome-free *de novo* assembly, it can also help in cases where you have paralogs or other genes with shared sequences, since the genome is used to partition the reads according to locus prior to doing any *de novo* assembly. If you have a highly fragmented draft genome, then you are likely better off performing a genome-free *de novo* transcriptome assembly.
+</details>
 <br />
 <br />
 
-<a id="documentation-for-alisonme"></a>
-## Documentation for Alison/me
+<a id="documentation-inprogress"></a>
+## Documentation `#INPROGRESS`
 I used [`PASA` (Program to Assemble Spliced Alignments)](https://github.com/PASApipeline/PASApipeline/wiki) to build our draft transcriptome assemblies following the *"comprehensive transcriptome database"* strategy documented [here](https://github.com/PASApipeline/PASApipeline/wiki/PASA_comprehensive_db).
 
 <a id="the-comprehensive-transcriptome-database-strategy"></a>
 ### The *"comprehensive transcriptome database"* strategy
+<details>
+<summary><i>Click to view: The "comprehensive transcriptome database" strategy</i></summary>
+
 The *"comprehensive transcriptome database"* strategy attempts to overcome limitations from using either the `Trinity` genome-guided (__GG__) or `Trinity` genome-free (__GF__) assembly approaches alone, yielding what is likely a more comprehensive representation of the transcriptome.
 
 <a id="pros-and-cons-of-the-trinity-gg-and-gf-approaches"></a>
@@ -99,6 +130,8 @@ In `PASA`'s *"comprehensive transcriptome database"* strategy, we use as input t
 	+ `#TODO #INPROGRESS` Summarize what this is, how it works
 	+ called with `--jaccard_clip`
 	+ input is `.bam` files processed as described below and filtered to contain only alignments to *S. cerevisiae*
+</details>
+<br />
 
 <a id="how-i-called-the-different-programs-including-rationale-and-other-details"></a>
 ### How I called the different programs, including rationale and other details
@@ -106,6 +139,9 @@ In `PASA`'s *"comprehensive transcriptome database"* strategy, we use as input t
 - Automated pipeline `#INPROGRESS`
 <a id="%E2%98%85-pasa"></a>
 #### <sup>★</sup> `PASA`
+<details>
+<summary><i>Click to view: PASA</i></summary>
+
 `#DEKHO`
 <a id="details"></a>
 ##### Details
@@ -422,11 +458,14 @@ script
 <a id="the-meaning-of-the-parameters"></a>
 ###### The meaning of the parameters
 `#TODO`
+</details>
 <br />
 <br />
 
 <a id="%E2%98%85-trinity"></a>
 #### <sup>★</sup> `Trinity`
+<details>
+<summary><i>Click to view: Trinity</i></summary>
 
 <a id="details-1"></a>
 ##### Details
@@ -439,26 +478,45 @@ script
 
 <a id="gf"></a>
 ###### GF
+</details>
 <br />
 <br />
 
 <a id="%E2%98%85-star"></a>
 #### <sup>★</sup> `STAR`
+<details>
+<summary><i>Click to view: STAR</i></summary>
+
+...
+</details>
 <br />
 <br />
 
 <a id="%E2%98%85-rcorrector"></a>
 #### <sup>★</sup> `rcorrector`
+<details>
+<summary><i>Click to view: rcorrector</i></summary>
+
+...
+</details>
 <br />
 <br />
 
 <a id="%E2%98%85-trim_galore"></a>
 #### <sup>★</sup> `trim_galore`
+<details>
+<summary><i>Click to view: trim_galore</i></summary>
+
+...
+</details>
 <br />
 <br />
 
 <a id="todos"></a>
 ## `#TODOs`
+<details>
+<summary><i>Click to view: #TODO items</i></summary>
+
 <a id="building-an-understandingexplanation-for-important-parts-of-the-pasa-pipeline"></a>
 ### Building an understanding/explanation for important parts of the `PASA` pipeline
 - Review what's going on with/in `Launch_PASA_pipeline.pl`
@@ -479,3 +537,170 @@ subcluster_builder.dbi:-m=50
 --min_per_ID 95
 --min_per_aligned 30
 ```
+</details>
+<br />
+<br />
+
+<a id="presentation-outline"></a>
+## Presentation outline
+*...for the presentation to be given on 2023-0111*
+<a id="slide-1"></a>
+### Slide 1
+<a id="head"></a>
+#### Head
+Using quiescent yeast cells, we seek to perform a *comprehensive characterization of cryptic transcripts*
+
+<a id="body-bullets"></a>
+#### Body: Bullets
+- An important, conserved feature of eukaryotic genomes is ___pervasive transcription___
+- In *S. cerevisiae*, at least 85% of the genome is transcribed in cycling cells, resulting in substantial amounts of ___noncoding transcription___
+    + In close proximity to or overlapping annotated genes
+    + On the antisense strand
+- Much of this noncoding transcription degrades on a shorter time scale than transcription detected by, e.g., RNA-seq&mdash;as such, it is termed ___cryptic transcription___
+- Subsets of cryptic transcripts have been characterized and annotated through the knockout of RNA surveillance factors and chromatin modifiers `#CITATIONS`
+    + When such factors are knocked out, the otherwise cryptic transcripts are stabilized  `#QUESTION Do we need to mention this in the slide?`
+    + They're made capable of detection with standard transcription readouts&mdash;and thus capable of characterization  `#QUESTION Do we need to mention this in the slide?`
+- However, it is an ongoing mystery as to the functions of cryptic transcripts 
+- Alison and the Tsukiyama Lab have shown that quiescent cells are ___enriched for noncoding transcription in general and antisense transcripts in particular___
+- Thus, using quiescent *S. cerevisiae* as a model, Alison sought to perform a ___comprehensive characterization of cryptic transcripts___...
+    + Alison performed ___4tU-seq___&mdash;also known as ___"nascent RNA-seq"___
+        * 4tU-seq is a variant of RNA-seq that enriches for nascent transcription
+        * 4tU-seq detects low abundance and labile transcripts that are not detected with standard transcription readouts (unless analyzing cells defective for RNA degradation)  `#QUESTION Do we need to mention this in the slide?`
+    + ...with the goal of identifying and characterizing noncoding and antisense transcripts detected at the entry to quiescence
+    + <mark style="background-color:lightgrey;">This will be followed by experiments that infer and define the function of cryptic transcripts</mark> `#QUESTION Do we need to mention this?`
+
+<a id="tail"></a>
+#### Tail
+This work necessitates the creation of a new transcriptome assembly built from the 4tU-seq data&mdash;but ___why?___ And ___what will we do with it?___
+<br />
+<br />
+
+<a id="slide-2"></a>
+### Slide 2
+<a id="head-1"></a>
+#### Head
+Why do we need a new transcriptome assembly, and what will we do with it?
+
+<a id="body-bullets-1"></a>
+#### Body: Bullets
+- Even though a standard *S. cerevisiae* transcriptome assembly exists, it contains little-to-no information for our transcripts of interest, namely...
+    + Noncoding transcription  `#NOTE May not need these bullets`
+        * Antisense transcripts
+        * Intergenic transcripts
+    + Alternative stop and start sites for transcripts
+    + `#QUESTION Anything else?`
+- Using the 4tU-seq-derived transcriptome assembly, we seek to...
+    + Determine the numbers of antisense (AS) transcripts in quiescence-entry (Q) versus G1-arrest (G1) cells, and examine the differences in AS transcription between the two states; e.g.,
+        * Are there changes in levels of transcription?
+        * Are there positional changes such as changes in start or stop sites?
+        * `#QUESTION Anything else?`
+    + Determine the numbers of intergenic transcripts in Q versus G1 cells&mdash; and examine the between-state differences as above
+    + Determine the extent of altered transcription start or stop sites in Q cells `#QUESTION Is this redundant with the above?`
+    + Find, tally, and characterize transcripts that have never been annotated
+- Having recorded exact coordinates for altered and/or novel transcripts, we will use the new assembly to...
+    + measure differential expression in Q versus G1 cells
+    + evaluate chromatin structure at particular kinds of loci
+    + `#QUESTION Anything else?`
+
+<a id="tail-1"></a>
+#### Tail
+The 4tU-seq-derived assembly makes it possible to characterize cryptic transcription&mdash;___but what does custom transcriptome assembly entail?___
+<br />
+<br />
+
+<a id="slide-3"></a>
+### Slide 3
+<a id="head-2"></a>
+#### Head
+What is it to make a custom transcriptome assembly? What is the workflow?
+
+<a id="body"></a>
+#### Body
+<a id="left-side-bullets"></a>
+##### Left side: Bullets
+- In transcriptome assembly, millions of "short" reads&mdash;sequences of nucleotides (e.g., CCGCGTGGAGGCAG) from transcription-specific next generation sequencing experiments&mdash;are pieced together to match or closely resemble their genomic sequences of origin: These are the ___assembled transcripts___
+- In general, reads can be assembled through either <b>(a)</b> reference genome-guided or <b>(b)</b> *de novo*&mdash;a.k.a., genome-free&mdash;approaches
+    + In the genome-guided approach, transcriptome assembly occurs when reads are mapped to the reference genome
+        * Doing so is a means to determine the gene sequences from which the reads originate
+        * From there, transcripts are reconstructed
+    + In the genome-free approach, assembly is accomplished using the information contained in the reads alone
+- We perform a hybrid approach, building transcripts from both genome-guided and genome-free approaches&mdash;but before diving into that, it's important to discuss the general workflow for transcriptome assembly
+
+<a id="abbreviated-bullets"></a>
+###### Abbreviated bullets
+- In transcriptome assembly, millions of "short" reads are pieced together to match or closely resemble their genomic sequences of origin: These are the assembled transcripts
+- In general, reads can be assembled through either <b>(a)</b> reference genome-guided or <b>(b)</b> *de novo*&mdash;a.k.a., genome-free&mdash;approaches
+    + In the genome-guided approach, transcriptome assembly occurs when reads are mapped to the reference genome
+    + In the genome-free approach, assembly is accomplished using the information contained in the reads alone
+We perform a hybrid approach&mdash;but before diving into that, it's important to discuss the general workflow for transcriptome assembly
+
+<a id="right-side-raghavan-et-al-figure-1"></a>
+##### Right side: Raghavan et al., Figure 1
+
+<a id="slide-4"></a>
+### Slide 4
+<a id="head-3"></a>
+#### Head
+What is it to make a custom transcriptome assembly? What is the workflow?
+
+<a id="left-side-bullets-1"></a>
+###### Left side: Bullets
+- (A) The sequencing data must be quality controlled
+- (B) The data is then assembled to obtain the reference transcriptome; then, it’s further quality controlled to produce an artifact-free assembly
+- (C, D) Read alignment and transcript abundance estimation (C) are performed both as quality control measures, and differential transcript expression levels can be estimated (D)
+- (E) If the RNA-seq data are suspected to contain non-mRNA species, RNA classification can be carried out to classify and filter the data
+- (E) Transcriptomic sequences can be translated into their amino acid counterparts
+- (F) The nucleotide (and/or translated protein) sequences can be annotated to assign identifiers and elucidate biological roles
+
+
+- First, the sequencing data must be quality controlled (A); this can include
+    + excluding reads originating from rRNAs
+    + removing adapter sequences
+    + `#TODO Add more, including rcorrector`
+    + \[(A) Section ‘Pre-assembly quality control and filtering’\]
+- Next, the data can be assembled (here, we see an illustration for *de novo* assembly) to obtain the transcriptome
+    + they must then be quality controlled again to produce a final artifact-free assembly (B)
+    + \[(B), Sections ‘De novo transcriptome assembly’, ‘Post-assembly quality control’, ‘Alignment and abundance estimation’, and ‘Assembly thinning and redundancy reduction’\]
+- Read alignment and transcript abundance estimation (C) are performed both as quality control measures and to estimate transcript expression levels for differential expression analysis (D)
+    + \[(C), Section ‘Alignment and abundance estimation’\]
+    + \[(D), Section ‘Differential expression analysis’\]
+- If the RNA-seq data are suspected to contain non-mRNA species, RNA classification can be carried out to classify and filter the data (E)
+    + \[(E), Section ‘RNA classification’\]
+- Protein sequences are useful in many contexts (including annotation), and therefore, the transcriptomic sequences can be translated into their amino acid counterparts (E)
+    + \[(E), Section ‘Sequence translation’\]
+- Finally, the nucleotide (and/or translated protein) sequences can be annotated to assign human-readable identifiers to them, and elucidate their biological roles (F)
+    + \[(F), Section ‘Transcriptome functional annotation’)\]
+
+<a id="tail-2"></a>
+#### Tail
+To be determined
+
+<a id="slide-4-1"></a>
+### Slide 4
+
+
+<a id="background-not-in-the-main-slide"></a>
+#### Background (not in the main slide)
+- The "short" reads are typically 50 to 250 bp in length
+
+<a id="maybe"></a>
+### Maybe
+- In __Slide 1__, below the bullet for *"Using 4tU-seq data, we seek to perform a..."*
+    + We also seek to analyze noncoding transcription when the Nrd1-Nab3-Sen1 (NNS) complex is disrupted  `#QUESTION Do we need to mention this?`
+- Depending on the above answer, some pieces I may need to fit into __Slide 1__
+    + `#TODO` Want to ask and answer, *"Why do we need a new transcriptome assembly?"*
+    + `#TODO` Brief rationale for disruption of NNS complex and analysis of transcription afterwards
+        * NNS promotes transcription termination (or, more specifically, promotes); thus, it is expected that antisense transcription is increased in this model
+        * `#QUESTIONS` Are we examining transcription in the NNS-KO model at Q entry, i.e., is this Q entry NNS-WT vs NNS-KO? And/or are G1-arrest or cycling cells analyzed in this experiment?
+
+<a id="citations"></a>
+### Citations
+- Slide 1
+    + Tudek A, Candelli T, Libri D, "Non-coding transcription by RNA polymerase II in yeast: Hasard or nécessité?", *Biochimie.* 2015
+    + van Dijk EL, Chen CL, d'Aubenton-Carafa Y, Gourvennec S, Kwapisz M, Roche V, et al., "XUTs are a class of Xrn1-sensitive antisense regulatory non-coding RNA in yeast", *Nature* 2011
+    + `#QUESTION` Others?
+    + <mark>Greenlaw et al., *in preparation*</mark>
+
+<a id="snippets"></a>
+### Snippets
+- From Alison: "Eg. My first annotation attempt allowed me to show that the 3’ NDR at convergent genes that fail to terminate is shallower than convergent genes that terminate appropriately."
