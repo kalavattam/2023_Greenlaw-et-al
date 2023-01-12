@@ -3914,6 +3914,9 @@ done
 
 <a id="generate-bws-for-the-bams"></a>
 ### Generate `.bw`s for the `.bam`s
+<details>
+<summary><i>Click to view code: Generate .bws for the .bams</i></summary>
+
 ```bash
 #!/bin/bash
 #DONTRUN #CONTINUE
@@ -4072,7 +4075,5 @@ done
 
 rmdir MAPQ3/ MAPQ30/
 ```
-
-```txt
-
-```
+</details>
+<br />

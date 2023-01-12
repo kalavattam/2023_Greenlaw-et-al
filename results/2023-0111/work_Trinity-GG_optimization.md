@@ -1,5 +1,5 @@
 
-`#work_Trinity_genome-guided_processed-rcor-only.md`
+`#work_Trinity-GF_optimization.md`
 
 <details>
 <summary><b><font size="+2"><i>Table of contents</i></font></b></summary>
