@@ -55,6 +55,7 @@
 			1. [Clean up/rename results of `STAR` alignment](#clean-uprename-results-of-star-alignment)
 			1. [Check on `*.Log.out` warning messages: "`WARNING: not enough space allocated for transcript.`"](#check-on-logout-warning-messages-warning-not-enough-space-allocated-for-transcript)
 		1. [Index the `bam`s](#index-the-bams)
+			1. [Get situated](#get-situated-6)
 			1. [Get `bam`s of interest into an array](#get-bams-of-interest-into-an-array)
 			1. [Run `samtools index` on each element of `bam` array](#run-samtools-index-on-each-element-of-bam-array)
 	1. [Create `bam`s composed of alignments to specific species](#create-bams-composed-of-alignments-to-specific-species)
@@ -12070,6 +12071,19 @@ Sample_CU12_5782_Q_SteadyState_S12.multi-10.Log.out	4
 
 <a id="index-the-bams"></a>
 #### Index the `bam`s
+<a id="get-situated-6"></a>
+##### Get situated
+<details>
+<summary><i></i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+```
+</details>
+<br />
+
 <a id="get-bams-of-interest-into-an-array"></a>
 ##### Get `bam`s of interest into an array
 
