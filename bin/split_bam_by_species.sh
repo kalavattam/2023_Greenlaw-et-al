@@ -31,7 +31,7 @@ check_etc() {
 
     #  If TRUE exist, then make "${outdir}" if it does not exist; if FALSE,
     #+ then exit if "${outdir}" does not exist
-    check_exists_directory TRUE "${outdir}"  #TODO Fix this function
+    check_exists_directory FALSE "${outdir}"  #TODO Fix this function
 
     #  Check on the specified value for "${split}"
     case "$(echo "${split}" | tr '[:upper:]' '[:lower:]')" in
@@ -144,7 +144,7 @@ main() {
         "${threads}" \
         "${infile}" \
         "${chr}" \
-        "${infile%.bam}.${split}.bam"
+        "${outdir}/${infile%.bam}.${split}.bam"
 }
 
 

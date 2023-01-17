@@ -49,20 +49,24 @@
 		1. [Run `submit_run-fastqc.sh` on `trim_galore`-processed `fastq` files](#run-submit_run-fastqcsh-on-trim_galore-processed-fastq-files)
 1. [Align the trimmed, compressed `fastq` files to a combined reference](#align-the-trimmed-compressed-fastq-files-to-a-combined-reference)
 	1. [Get situated](#get-situated-5)
-	1. [Use a `HEREDOC` to write the script, `submit_STAR.sh`](#use-a-heredoc-to-write-the-script-submit_starsh)
-	1. [Run `submit_STAR.sh` on `fq.gz` files](#run-submit_starsh-on-fqgz-files)
+	1. [Use a `HEREDOC` to write the script, `submit_star.sh`](#use-a-heredoc-to-write-the-script-submit_starsh)
+	1. [Run `submit_star.sh` on `fq.gz` files](#run-submit_starsh-on-fqgz-files)
 		1. [Clean up results from `STAR` alignment, then index `bam`s](#clean-up-results-from-star-alignment-then-index-bams)
 			1. [Clean up/rename results of `STAR` alignment](#clean-uprename-results-of-star-alignment)
 			1. [Check on `*.Log.out` warning messages: "`WARNING: not enough space allocated for transcript.`"](#check-on-logout-warning-messages-warning-not-enough-space-allocated-for-transcript)
 		1. [Index the `bam`s](#index-the-bams)
 			1. [Get situated](#get-situated-6)
-			1. [Get `bam`s of interest into an array](#get-bams-of-interest-into-an-array)
+			1. [Set up necessary variables, get `bam`s of interest into an array](#set-up-necessary-variables-get-bams-of-interest-into-an-array)
+			1. [Use a `HEREDOC` to write the script, `submit_samtools-index.sh`](#use-a-heredoc-to-write-the-script-submit_samtools-indexsh)
 			1. [Run `samtools index` on each element of `bam` array](#run-samtools-index-on-each-element-of-bam-array)
 	1. [Create `bam`s composed of alignments to specific species](#create-bams-composed-of-alignments-to-specific-species)
+		1. [Get situated](#get-situated-7)
+		1. [Try a test run with `split_bam_by_species.sh`](#try-a-test-run-with-split_bam_by_speciessh)
 		1. [Create `bam`s w/o *20S* alignments: composed of *S. cerevisiae* and *K. lactis*](#create-bams-wo-20s-alignments-composed-of-s-cerevisiae-and-k-lactis)
 		1. [Create `bam`s w/o *K.lactis* and *20S* alignments: composed of *S. cerevisiae*](#create-bams-wo-klactis-and-20s-alignments-composed-of-s-cerevisiae)
 		1. [Create `bam`s w/o *S. cerevisiae* and *20S* alignments: composed of *K. lactis*](#create-bams-wo-s-cerevisiae-and-20s-alignments-composed-of-k-lactis)
 		1. [Create `bam`s w/o *S. cerevisiae* and *K. lactis* alignments: composed of *20S*](#create-bams-wo-s-cerevisiae-and-k-lactis-alignments-composed-of-20s)
+1. [*Scraps*](#scraps)
 
 <!-- /MarkdownTOC -->
 </details>
@@ -10619,7 +10623,7 @@ if [[ ! -d "./bams" ]]; then
 fi
 
 #  Variables
-script_name="submit_STAR.sh"  # echo "${script_name}"
+script_name="submit_star.sh"  # echo "${script_name}"
 threads=16  # echo "${threads}"
 dir_genome="${HOME}/genomes/combined_SC_KL_20S/STAR"  # ., "${dir_genome}"
 
@@ -10673,9 +10677,9 @@ done
 <br />
 
 <a id="use-a-heredoc-to-write-the-script-submit_starsh"></a>
-### Use a `HEREDOC` to write the script, `submit_STAR.sh`
+### Use a `HEREDOC` to write the script, `submit_star.sh`
 <details>
-<summary><i>Code: Use a HEREDOC to write the script, submit_STAR.sh</i></summary>
+<summary><i>Code: Use a HEREDOC to write the script, submit_star.sh</i></summary>
 
 ```bash
 #!/bin/bash
@@ -10752,11 +10756,11 @@ script
 <br />
 
 <a id="run-submit_starsh-on-fqgz-files"></a>
-### Run `submit_STAR.sh` on `fq.gz` files
+### Run `submit_star.sh` on `fq.gz` files
 *For a given read pair, allow up to 10 multimappers*
 
 <details>
-<summary><i>Code: Run submit_STAR.sh on fq.gz files</i></summary>
+<summary><i>Code: Run submit_star.sh on fq.gz files</i></summary>
 
 ```bash
 #!/bin/bash
@@ -10793,7 +10797,7 @@ done
 <br />
 
 <details>
-<summary><i>Printed: Run submit_STAR.sh on fq.gz files</i></summary>
+<summary><i>Printed: Run submit_star.sh on fq.gz files</i></summary>
 
 ```txt
 # --------------------------------------
@@ -12074,7 +12078,751 @@ Sample_CU12_5782_Q_SteadyState_S12.multi-10.Log.out	4
 <a id="get-situated-6"></a>
 ##### Get situated
 <details>
-<summary><i></i></summary>
+<summary><i>Code: Get situated</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+#  Get on a node, etc. if necessary
+grabnode  # 1, default settings
+Trinity_env
+
+#  cd into '2022_transcriptome-construction/results', e.g.,
+transcriptome && 
+	{
+		cd "results/2023-0115" || echo "cd'ing failed; check on this..."
+	}
+```
+</details>
+<br />
+
+<a id="set-up-necessary-variables-get-bams-of-interest-into-an-array"></a>
+##### Set up necessary variables, get `bam`s of interest into an array
+<details>
+<summary><i>Code: Set up necessary variables, get bams of interest into an array</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+#  Variables
+script_name="submit_samtools-index.sh"  # echo "${script_name}"
+threads=8  # echo "${threads}"
+
+#  Arrays
+unset bams
+typeset -a bams
+while IFS=" " read -r -d $'\0'; do
+    bams+=( "${REPLY%_R?_001_val_?.fq.gz}" )
+done < <(\
+    find "./bams/SC_KL_20S" \
+        -type f \
+        -name "*.bam" \
+        -print0 \
+            | sort -z \
+)
+# echo_test "${bams[@]}"
+# echo "${#bams[@]}"  # 55
+```
+</details>
+<br />
+
+<a id="use-a-heredoc-to-write-the-script-submit_samtools-indexsh"></a>
+##### Use a `HEREDOC` to write the script, `submit_samtools-index.sh`
+<details>
+<summary><i>Code: Use a HEREDOC to write the script, submit_samtools-index.s</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+if [[ -f "./sh_err_out/${script_name}" ]]; then
+    rm "./sh_err_out/${script_name}"
+fi
+cat << script > "./sh_err_out/${script_name}"
+#!/bin/bash
+
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=${threads}
+#SBATCH --error=./sh_err_out/err_out/${script_name%.sh}.%J.err.txt
+#SBATCH --output=./sh_err_out/err_out/${script_name%.sh}.%J.out.txt
+
+#  ${script_name}
+#  KA
+#  $(date '+%Y-%m%d')
+
+bam="\${1}"
+
+samtools index -@ "\${SLURM_CPUS_ON_NODE}" "\${bam}"
+script
+# vi "./sh_err_out/${script_name}"  # :q
+```
+</details>
+<br />
+
+<a id="run-samtools-index-on-each-element-of-bam-array"></a>
+##### Run `samtools index` on each element of `bam` array
+<details>
+<summary><i>Code: Run samtools index on each element of bam array</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+x="${#bams[@]}"  # echo "${x}"
+y=$(( x - 1 ))  # echo "${y}"
+for (( i=0; i<=y; i++ )); do
+    echo "# --------------------------------------"
+    echo "   Iteration:  ${i}"
+    echo "        File:  ${bams[${i}]}"
+    echo "      outdir:  $(dirname "${bams[${i}]}")"
+    echo ""
+
+    sbatch "./sh_err_out/${script_name}" "${bams[${i}]}"
+    sleep 1  # Slow down rate of job submission
+
+    echo ""
+    echo ""
+done
+```
+</details>
+<br />
+
+<details>
+<summary><i>Printed: Run samtools index on each element of bam array</i></summary>
+
+```txt
+# --------------------------------------
+   Iteration:  0
+        File:  ./bams/SC_KL_20S/5781_G1_IN_S5.multi-10.bam
+      outdir:  ./bams/SC_KL_20S
+
+Submitted batch job 8010831
+
+
+# --------------------------------------
+   Iteration:  1
+        File:  ./bams/SC_KL_20S/5781_G1_IP_S1.multi-10.bam
+      outdir:  ./bams/SC_KL_20S
+
+Submitted batch job 8010832
+
+
+# --------------------------------------
+   Iteration:  2
+        File:  ./bams/SC_KL_20S/5781_Q_IN_S6.multi-10.bam
+      outdir:  ./bams/SC_KL_20S
+
+Submitted batch job 8010833
+
+
+# --------------------------------------
+   Iteration:  3
+        File:  ./bams/SC_KL_20S/5781_Q_IP_S2.multi-10.bam
+      outdir:  ./bams/SC_KL_20S
+
+Submitted batch job 8010834
+
+
+# --------------------------------------
+   Iteration:  4
+        File:  ./bams/SC_KL_20S/5782_G1_IN_S7.multi-10.bam
+      outdir:  ./bams/SC_KL_20S
+
+Submitted batch job 8010835
+
+
+# --------------------------------------
+   Iteration:  5
+        File:  ./bams/SC_KL_20S/5782_G1_IP_S3.multi-10.bam
+      outdir:  ./bams/SC_KL_20S
+
+Submitted batch job 8010836
+
+
+# --------------------------------------
+   Iteration:  6
+        File:  ./bams/SC_KL_20S/5782_Q_IN_S8.multi-10.bam
+      outdir:  ./bams/SC_KL_20S
+
+Submitted batch job 8010837
+
+
+# --------------------------------------
+   Iteration:  7
+        File:  ./bams/SC_KL_20S/5782_Q_IP_S4.multi-10.bam
+      outdir:  ./bams/SC_KL_20S
+
+Submitted batch job 8010838
+
+
+# --------------------------------------
+   Iteration:  8
+        File:  ./bams/SC_KL_20S/CW10_7747_8day_Q_IN_S5.multi-10.bam
+      outdir:  ./bams/SC_KL_20S
+
+Submitted batch job 8010839
+
+
+# --------------------------------------
+   Iteration:  9
+        File:  ./bams/SC_KL_20S/CW10_7747_8day_Q_PD_S11.multi-10.bam
+      outdir:  ./bams/SC_KL_20S
+
+Submitted batch job 8010840
+
+
+# --------------------------------------
+   Iteration:  10
+        File:  ./bams/SC_KL_20S/CW12_7748_8day_Q_IN_S6.multi-10.bam
+      outdir:  ./bams/SC_KL_20S
+
+Submitted batch job 8010841
+
+
+# --------------------------------------
+   Iteration:  11
+        File:  ./bams/SC_KL_20S/CW12_7748_8day_Q_PD_S12.multi-10.bam
+      outdir:  ./bams/SC_KL_20S
+
+Submitted batch job 8010842
+
+
+# --------------------------------------
+   Iteration:  12
+        File:  ./bams/SC_KL_20S/CW2_5781_8day_Q_IN_S1.multi-10.bam
+      outdir:  ./bams/SC_KL_20S
+
+Submitted batch job 8010843
+
+
+# --------------------------------------
+   Iteration:  13
+        File:  ./bams/SC_KL_20S/CW2_5781_8day_Q_PD_S7.multi-10.bam
+      outdir:  ./bams/SC_KL_20S
+
+Submitted batch job 8010844
+
+
+# --------------------------------------
+   Iteration:  14
+        File:  ./bams/SC_KL_20S/CW4_5782_8day_Q_IN_S2.multi-10.bam
+      outdir:  ./bams/SC_KL_20S
+
+Submitted batch job 8010845
+
+
+# --------------------------------------
+   Iteration:  15
+        File:  ./bams/SC_KL_20S/CW4_5782_8day_Q_PD_S8.multi-10.bam
+      outdir:  ./bams/SC_KL_20S
+
+Submitted batch job 8010846
+
+
+# --------------------------------------
+   Iteration:  16
+        File:  ./bams/SC_KL_20S/CW6_7078_8day_Q_IN_S3.multi-10.bam
+      outdir:  ./bams/SC_KL_20S
+
+Submitted batch job 8010847
+
+
+# --------------------------------------
+   Iteration:  17
+        File:  ./bams/SC_KL_20S/CW6_7078_8day_Q_PD_S9.multi-10.bam
+      outdir:  ./bams/SC_KL_20S
+
+Submitted batch job 8010848
+
+
+# --------------------------------------
+   Iteration:  18
+        File:  ./bams/SC_KL_20S/CW8_7079_8day_Q_IN_S4.multi-10.bam
+      outdir:  ./bams/SC_KL_20S
+
+Submitted batch job 8010849
+
+
+# --------------------------------------
+   Iteration:  19
+        File:  ./bams/SC_KL_20S/CW8_7079_8day_Q_PD_S10.multi-10.bam
+      outdir:  ./bams/SC_KL_20S
+
+Submitted batch job 8010850
+
+
+# --------------------------------------
+   Iteration:  20
+        File:  ./bams/SC_KL_20S/SAMPLE_BM10_DSp48_5781_S22.multi-10.bam
+      outdir:  ./bams/SC_KL_20S
+
+Submitted batch job 8010851
+
+
+# --------------------------------------
+   Iteration:  21
+        File:  ./bams/SC_KL_20S/SAMPLE_BM11_DSp48_7080_S23.multi-10.bam
+      outdir:  ./bams/SC_KL_20S
+
+Submitted batch job 8010852
+
+
+# --------------------------------------
+   Iteration:  22
+        File:  ./bams/SC_KL_20S/SAMPLE_BM1_DSm2_5781_S13.multi-10.bam
+      outdir:  ./bams/SC_KL_20S
+
+Submitted batch job 8010853
+
+
+# --------------------------------------
+   Iteration:  23
+        File:  ./bams/SC_KL_20S/SAMPLE_BM2_DSm2_7080_S14.multi-10.bam
+      outdir:  ./bams/SC_KL_20S
+
+Submitted batch job 8010854
+
+
+# --------------------------------------
+   Iteration:  24
+        File:  ./bams/SC_KL_20S/SAMPLE_BM3_DSm2_7079_S15.multi-10.bam
+      outdir:  ./bams/SC_KL_20S
+
+Submitted batch job 8010855
+
+
+# --------------------------------------
+   Iteration:  25
+        File:  ./bams/SC_KL_20S/SAMPLE_BM4_DSp2_5781_S16.multi-10.bam
+      outdir:  ./bams/SC_KL_20S
+
+Submitted batch job 8010856
+
+
+# --------------------------------------
+   Iteration:  26
+        File:  ./bams/SC_KL_20S/SAMPLE_BM5_DSp2_7080_S17.multi-10.bam
+      outdir:  ./bams/SC_KL_20S
+
+Submitted batch job 8010857
+
+
+# --------------------------------------
+   Iteration:  27
+        File:  ./bams/SC_KL_20S/SAMPLE_BM6_DSp2_7079_S18.multi-10.bam
+      outdir:  ./bams/SC_KL_20S
+
+Submitted batch job 8010858
+
+
+# --------------------------------------
+   Iteration:  28
+        File:  ./bams/SC_KL_20S/SAMPLE_BM7_DSp24_5781_S19.multi-10.bam
+      outdir:  ./bams/SC_KL_20S
+
+Submitted batch job 8010859
+
+
+# --------------------------------------
+   Iteration:  29
+        File:  ./bams/SC_KL_20S/SAMPLE_BM8_DSp24_7080_S20.multi-10.bam
+      outdir:  ./bams/SC_KL_20S
+
+Submitted batch job 8010860
+
+
+# --------------------------------------
+   Iteration:  30
+        File:  ./bams/SC_KL_20S/SAMPLE_BM9_DSp24_7079_S21.multi-10.bam
+      outdir:  ./bams/SC_KL_20S
+
+Submitted batch job 8010861
+
+
+# --------------------------------------
+   Iteration:  31
+        File:  ./bams/SC_KL_20S/SAMPLE_Bp10_DSp48_5782_S10.multi-10.bam
+      outdir:  ./bams/SC_KL_20S
+
+Submitted batch job 8010862
+
+
+# --------------------------------------
+   Iteration:  32
+        File:  ./bams/SC_KL_20S/SAMPLE_Bp11_DSp48_7081_S11.multi-10.bam
+      outdir:  ./bams/SC_KL_20S
+
+Submitted batch job 8010863
+
+
+# --------------------------------------
+   Iteration:  33
+        File:  ./bams/SC_KL_20S/SAMPLE_Bp12_DSp48_7078_S12.multi-10.bam
+      outdir:  ./bams/SC_KL_20S
+
+Submitted batch job 8010864
+
+
+# --------------------------------------
+   Iteration:  34
+        File:  ./bams/SC_KL_20S/SAMPLE_Bp1_DSm2_5782_S1.multi-10.bam
+      outdir:  ./bams/SC_KL_20S
+
+Submitted batch job 8010865
+
+
+# --------------------------------------
+   Iteration:  35
+        File:  ./bams/SC_KL_20S/SAMPLE_Bp2_DSm2_7081_S2.multi-10.bam
+      outdir:  ./bams/SC_KL_20S
+
+Submitted batch job 8010866
+
+
+# --------------------------------------
+   Iteration:  36
+        File:  ./bams/SC_KL_20S/SAMPLE_Bp3_DSm2_7078_S3.multi-10.bam
+      outdir:  ./bams/SC_KL_20S
+
+Submitted batch job 8010867
+
+
+# --------------------------------------
+   Iteration:  37
+        File:  ./bams/SC_KL_20S/SAMPLE_Bp4_DSp2_5782_S4.multi-10.bam
+      outdir:  ./bams/SC_KL_20S
+
+Submitted batch job 8010868
+
+
+# --------------------------------------
+   Iteration:  38
+        File:  ./bams/SC_KL_20S/SAMPLE_Bp5_DSp2_7081_S5.multi-10.bam
+      outdir:  ./bams/SC_KL_20S
+
+Submitted batch job 8010869
+
+
+# --------------------------------------
+   Iteration:  39
+        File:  ./bams/SC_KL_20S/SAMPLE_Bp6_DSp2_7078_S6.multi-10.bam
+      outdir:  ./bams/SC_KL_20S
+
+Submitted batch job 8010870
+
+
+# --------------------------------------
+   Iteration:  40
+        File:  ./bams/SC_KL_20S/SAMPLE_Bp7_DSp24_5782_S7.multi-10.bam
+      outdir:  ./bams/SC_KL_20S
+
+Submitted batch job 8010871
+
+
+# --------------------------------------
+   Iteration:  41
+        File:  ./bams/SC_KL_20S/SAMPLE_Bp8_DSp24_7081_S8.multi-10.bam
+      outdir:  ./bams/SC_KL_20S
+
+Submitted batch job 8010872
+
+
+# --------------------------------------
+   Iteration:  42
+        File:  ./bams/SC_KL_20S/SAMPLE_Bp9_DSp24_7078_S9.multi-10.bam
+      outdir:  ./bams/SC_KL_20S
+
+Submitted batch job 8010873
+
+
+# --------------------------------------
+   Iteration:  43
+        File:  ./bams/SC_KL_20S/Sample_CT10_7718_pIAA_Q_Nascent_S5.multi-10.bam
+      outdir:  ./bams/SC_KL_20S
+
+Submitted batch job 8010874
+
+
+# --------------------------------------
+   Iteration:  44
+        File:  ./bams/SC_KL_20S/Sample_CT10_7718_pIAA_Q_SteadyState_S10.multi-10.bam
+      outdir:  ./bams/SC_KL_20S
+
+Submitted batch job 8010875
+
+
+# --------------------------------------
+   Iteration:  45
+        File:  ./bams/SC_KL_20S/Sample_CT2_6125_pIAA_Q_Nascent_S1.multi-10.bam
+      outdir:  ./bams/SC_KL_20S
+
+Submitted batch job 8010876
+
+
+# --------------------------------------
+   Iteration:  46
+        File:  ./bams/SC_KL_20S/Sample_CT2_6125_pIAA_Q_SteadyState_S6.multi-10.bam
+      outdir:  ./bams/SC_KL_20S
+
+Submitted batch job 8010877
+
+
+# --------------------------------------
+   Iteration:  47
+        File:  ./bams/SC_KL_20S/Sample_CT4_6126_pIAA_Q_Nascent_S2.multi-10.bam
+      outdir:  ./bams/SC_KL_20S
+
+Submitted batch job 8010878
+
+
+# --------------------------------------
+   Iteration:  48
+        File:  ./bams/SC_KL_20S/Sample_CT4_6126_pIAA_Q_SteadyState_S7.multi-10.bam
+      outdir:  ./bams/SC_KL_20S
+
+Submitted batch job 8010879
+
+
+# --------------------------------------
+   Iteration:  49
+        File:  ./bams/SC_KL_20S/Sample_CT6_7714_pIAA_Q_Nascent_S3.multi-10.bam
+      outdir:  ./bams/SC_KL_20S
+
+Submitted batch job 8010880
+
+
+# --------------------------------------
+   Iteration:  50
+        File:  ./bams/SC_KL_20S/Sample_CT6_7714_pIAA_Q_SteadyState_S8.multi-10.bam
+      outdir:  ./bams/SC_KL_20S
+
+Submitted batch job 8010881
+
+
+# --------------------------------------
+   Iteration:  51
+        File:  ./bams/SC_KL_20S/Sample_CT8_7716_pIAA_Q_Nascent_S4.multi-10.bam
+      outdir:  ./bams/SC_KL_20S
+
+Submitted batch job 8010882
+
+
+# --------------------------------------
+   Iteration:  52
+        File:  ./bams/SC_KL_20S/Sample_CT8_7716_pIAA_Q_SteadyState_S9.multi-10.bam
+      outdir:  ./bams/SC_KL_20S
+
+Submitted batch job 8010883
+
+
+# --------------------------------------
+   Iteration:  53
+        File:  ./bams/SC_KL_20S/Sample_CU11_5782_Q_Nascent_S11.multi-10.bam
+      outdir:  ./bams/SC_KL_20S
+
+Submitted batch job 8010884
+
+
+# --------------------------------------
+   Iteration:  54
+        File:  ./bams/SC_KL_20S/Sample_CU12_5782_Q_SteadyState_S12.multi-10.bam
+      outdir:  ./bams/SC_KL_20S
+
+Submitted batch job 8010885
+```
+</details>
+<br />
+
+<a id="create-bams-composed-of-alignments-to-specific-species"></a>
+### Create `bam`s composed of alignments to specific species
+<a id="get-situated-7"></a>
+#### Get situated
+<details>
+<summary><i>Code, notes: Get situated</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN
+
+#  Get on a node, etc. if necessary
+grabnode  # 1, default settings
+Trinity_env
+
+#  cd into '2022_transcriptome-construction/results', e.g.,
+transcriptome && 
+	{
+		cd "results/2023-0115" || echo "cd'ing failed; check on this..."
+	}
+
+#  Directory
+if [[ ! -d "./bams" ]]; then
+	mkdir -p bams/SC_KL_20S
+	mkdir -p bams/SC
+	mkdir -p bams/SC_KL
+	mkdir -p bams/KL
+	mkdir -p bams/20S
+	mkdir -p FastQC/bams/SC_KL_20S
+	mkdir -p FastQC/bams/SC
+	mkdir -p FastQC/bams/SC_KL
+	mkdir -p FastQC/bams/KL
+	mkdir -p FastQC/bams/20S
+fi
+```
+
+In November of 2022, I wrote two dedicated scripts for splitting bam by species, `split_bam_by_species.sh` and `functions.sh`
+
+Access and these scripts from `$(pwd)` (`~/path/to/2022_transcriptome-construction/results/2023-0115`)
+```bash
+#!/bin/bash
+#DONTRUN
+
+., ../../bin
+# ...
+
+bash ../../bin/split_bam_by_species.sh
+```
+</details>
+<br />
+
+<details>
+<summary><i>Printed: Get situated</i></summary>
+
+```txt
+❯ bash ../../bin/split_bam_by_species.sh
+split_bam_by_species.sh
+-----------------------
+Take user-input .bam files containing alignments to S. cerevisiae, K. lactis,
+and 20 S narnavirus, and split them into distinct .bam files for each species,
+with three splits for S. cerevisiae: all S. cerevisiae chromosomes not
+including chromosome M, all S. cerevisiae including chromosome M, and S.
+cerevisiae chromosome M only.
+
+Names of chromosomes in .bam infiles must be in the following format:
+  - S. cerevisiae (SC)
+    - I
+    - II
+    - III
+    - IV
+    - V
+    - VI
+    - VII
+    - VIII
+    - IX
+    - X
+    - XI
+    - XII
+    - XIII
+    - XIV
+    - XV
+    - XVI
+    - Mito
+
+  - K. lactis (KL)
+    - A
+    - B
+    - C
+    - D
+    - E
+
+  - 20 S narnavirus
+    - 20S
+
+The split .bam files are saved to a user-defined out directory.
+
+Dependencies:
+  - samtools >= #TBD
+
+Arguments:
+  -h  print this help message and exit
+  -u  use safe mode: "TRUE" or "FALSE" <lgl; default: FALSE>
+  -i  bam infile, including path <chr>
+  -o  outfile directory, including path; if not found, will be mkdir'd <chr>
+  -s  what to split out; options: SC_all, SC_no_Mito, SC_VII, SC_XII,
+      SC_VII_XII, SC_Mito, KL_all, virus_20S <chr; default: SC_all>
+
+            SC_all  return all SC chromosomes, including Mito (default)
+        SC_no_Mito  return all SC chromosomes, excluding Mito
+            SC_VII  return only SC chromosome VII
+            SC_XII  return only SC chromosome XII
+        SC_VII_XII  return only SC chromosomes VII and XII
+           SC_Mito  return only SC chromosome Mito
+            KL_all  return all KL chromosomes
+         virus_20S  return only 20 S narnavirus
+
+  -t  number of threads <int >= 1; default: 1>
+```
+</details>
+<br />
+
+<a id="try-a-test-run-with-split_bam_by_speciessh"></a>
+#### Try a test run with `split_bam_by_species.sh`
+<details>
+<summary><i>Code: Try a test run with split_bam_by_species.sh</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+#  Initial try
+bash ../../bin/split_bam_by_species.sh \
+	-i "./bams/SC_KL_20S/CW10_7747_8day_Q_IN_S5.multi-10.bam" \
+	-o "./bams" \
+	-s "virus_20S" \
+	-t 1
+
+#  Try again after editing main() in split_bam_by_species.sh and
+#+ check_exists_directory() in functions.sh
+bash ../../bin/split_bam_by_species.sh \
+	-i "./bams/SC_KL_20S/CW10_7747_8day_Q_IN_S5.multi-10.bam" \
+	-o "./bams" \
+	-s "KL_all" \
+	-t 1
+```
+</details>
+<br />
+
+<details>
+<summary><i>Printed, notes: Try a test run with split_bam_by_species.sh</i></summary>
+
+```txt
+❯ bash ../../bin/split_bam_by_species.sh \
+>     -i "./bams/SC_KL_20S/CW10_7747_8day_Q_IN_S5.multi-10.bam" \
+>     -o "./bams" \
+>     -s "virus_20S" \
+>     -t 1
+"Safe mode" is FALSE.
+./bams doesn't exist; mkdir'ing it.
+
+
+Running ../../bin/split_bam_by_species.sh...
+
+
+❯ bash ../../bin/split_bam_by_species.sh \
+> 	-i "./bams/SC_KL_20S/CW10_7747_8day_Q_IN_S5.multi-10.bam" \
+> 	-o "./bams" \
+> 	-s "KL_all" \
+> 	-t 1
+"Safe mode" is FALSE.
+./bams doesn't exist; mkdir'ing it.
+
+
+Running ../../bin/split_bam_by_species.sh...
+```
+The script worked in the sense that `CW10_7747_8day_Q_IN_S5.multi-10.virus_20S.bam` was generated; however, it was generated in the "`indir`", `./bams/SC_KL_20S`, not `./bams`; moreover, a `./bams` directory was neither generated in `$(pwd)` nor in `./bams/SC_KL_20S`
+
+`#TODO` Take some time to fix `split_bam_by_species.sh` 
+- Second attempt did not address things...
+- 
+</details>
+<br />
+
+`#DEKHO`
+<a id="create-bams-wo-20s-alignments-composed-of-s-cerevisiae-and-k-lactis"></a>
+#### Create `bam`s w/o *20S* alignments: composed of *S. cerevisiae* and *K. lactis*
+<details>
+<summary><i>Code: </i></summary>
 
 ```bash
 #!/bin/bash
@@ -12084,53 +12832,70 @@ Sample_CU12_5782_Q_SteadyState_S12.multi-10.Log.out	4
 </details>
 <br />
 
-<a id="get-bams-of-interest-into-an-array"></a>
-##### Get `bam`s of interest into an array
-
-```bash
-#!/bin/bash
-#DONTRUN #CONTINUE
-
-```
-
-<a id="run-samtools-index-on-each-element-of-bam-array"></a>
-##### Run `samtools index` on each element of `bam` array
-```bash
-#!/bin/bash
-#DONTRUN #CONTINUE
-
-```
-
-<a id="create-bams-composed-of-alignments-to-specific-species"></a>
-### Create `bam`s composed of alignments to specific species
-<a id="create-bams-wo-20s-alignments-composed-of-s-cerevisiae-and-k-lactis"></a>
-#### Create `bam`s w/o *20S* alignments: composed of *S. cerevisiae* and *K. lactis*
-```bash
-#!/bin/bash
-#DONTRUN #CONTINUE
-
-```
-
 <a id="create-bams-wo-klactis-and-20s-alignments-composed-of-s-cerevisiae"></a>
 #### Create `bam`s w/o *K.lactis* and *20S* alignments: composed of *S. cerevisiae*
+<details>
+<summary><i>Code: </i></summary>
+
 ```bash
 #!/bin/bash
 #DONTRUN #CONTINUE
 
 ```
+</details>
+<br />
 
 <a id="create-bams-wo-s-cerevisiae-and-20s-alignments-composed-of-k-lactis"></a>
 #### Create `bam`s w/o *S. cerevisiae* and *20S* alignments: composed of *K. lactis*
+<details>
+<summary><i>Code: </i></summary>
+
 ```bash
 #!/bin/bash
 #DONTRUN #CONTINUE
 
 ```
+</details>
+<br />
 
 <a id="create-bams-wo-s-cerevisiae-and-k-lactis-alignments-composed-of-20s"></a>
 #### Create `bam`s w/o *S. cerevisiae* and *K. lactis* alignments: composed of *20S*
+<details>
+<summary><i>Code: </i></summary>
+
 ```bash
 #!/bin/bash
 #DONTRUN #CONTINUE
 
 ```
+</details>
+<br />
+
+<a id="scraps"></a>
+## *Scraps*
+<details>
+<summary><i>Code: </i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+```
+</details>
+<br />
+
+<details>
+<summary><i>Printed: </i></summary>
+
+```txt
+
+```
+</details>
+<br />
+
+
+<details>
+<summary><i>Notes: </i></summary>
+
+</details>
+<br />

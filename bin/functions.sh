@@ -183,14 +183,14 @@ check_exists_directory() {  #TODO Fix this function
 	"""
 	case "$(convert_chr_lower "${1}")" in
         true | t) \
-            [[ -f "${2}" ]] ||
+            [[ ! -d "${2}" ]] &&
 			    {
 			        printf "%s\n" "${2} doesn't exist; mkdir'ing it."
         			mkdir -p "${2}"
 			    }
             ;;
         false | f) \
-            [[ -f "${2}" ]] ||
+            [[ ! -d "${2}" ]] &&
 			    {
 			        printf "%s\n" "Exiting: ${2} does not exist."
 			        # exit 1
