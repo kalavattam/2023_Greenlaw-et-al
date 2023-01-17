@@ -63,6 +63,8 @@
 		1. [Get situated](#get-situated-7)
 		1. [Try/troubleshoot a test run with `split_bam_by_species.sh`](#trytroubleshoot-a-test-run-with-split_bam_by_speciessh)
 		1. [Submit jobs to make `bam`s for species-specific alignments](#submit-jobs-to-make-bams-for-species-specific-alignments)
+			1. [Set up necessary variables, get `bam`s of interest into an array](#set-up-necessary-variables-get-bams-of-interest-into-an-array-1)
+			1. [Run `split_bam_by_species.sh` on `bam`s](#run-split_bam_by_speciessh-on-bams)
 		1. [Create `bam`s w/o *K.lactis* and *20S* alignments: composed of *S. cerevisiae*](#create-bams-wo-klactis-and-20s-alignments-composed-of-s-cerevisiae)
 		1. [Create `bam`s w/o *S. cerevisiae* and *20S* alignments: composed of *K. lactis*](#create-bams-wo-s-cerevisiae-and-20s-alignments-composed-of-k-lactis)
 		1. [Create `bam`s w/o *S. cerevisiae* and *K. lactis* alignments: composed of *20S*](#create-bams-wo-s-cerevisiae-and-k-lactis-alignments-composed-of-20s)
@@ -12871,13 +12873,75 @@ rm ./bams/SC_KL_20S/CW10_7747_8day_Q_IN_S5.multi-10.{SC,KL,virus}*
 
 <a id="submit-jobs-to-make-bams-for-species-specific-alignments"></a>
 #### Submit jobs to make `bam`s for species-specific alignments
+<a id="set-up-necessary-variables-get-bams-of-interest-into-an-array-1"></a>
+##### Set up necessary variables, get `bam`s of interest into an array
 <details>
-<summary><i>Code: </i></summary>
+<summary><i>Code: Set up necessary variables, get bams of interest into an array </i></summary>
 
 ```bash
 #!/bin/bash
 #DONTRUN #CONTINUE
 
+#  Get on a node, etc. if necessary
+grabnode  # 1, default settings
+Trinity_env
+
+#  cd into '2022_transcriptome-construction/results', e.g.,
+transcriptome && 
+	{
+		cd "results/2023-0115" || echo "cd'ing failed; check on this..."
+	}
+
+#  Variables
+script_name="../../bin/split_bam_by_species.sh"  # echo "${script_name}"
+threads=4  # echo "${threads}"
+
+#  Arrays
+unset bams
+typeset -a bams
+while IFS=" " read -r -d $'\0'; do
+    bams+=( "${REPLY%_R?_001_val_?.fq.gz}" )
+done < <(\
+    find "./bams/SC_KL_20S" \
+        -type f \
+        -name "*.bam" \
+        -print0 \
+            | sort -z \
+)
+# echo_test "${bams[@]}"
+# echo "${#bams[@]}"  # 55
+```
+</details>
+<br />
+
+<a id="run-split_bam_by_speciessh-on-bams"></a>
+##### Run `split_bam_by_species.sh` on `bam`s
+`#PICKUPHERE`
+<details>
+<summary><i>Notes, code: Run split_bam_by_species.sh on bams</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+x="${#bams[@]}"  # echo "${x}"
+y=$(( x - 1 ))  # echo "${y}"
+for (( i=0; i<=y; i++ )); do
+    echo "# --------------------------------------"
+    echo "   Iteration:  ${i}"
+    echo "        File:  ${bams[${i}]}"
+    echo ""
+
+    echo "       split: "
+    sbatch ../../bin/split_bam_by_species.sh \
+		-i "${i}" \
+		-o "./bams" \
+		-s "" \
+		-t 1
+
+    echo ""
+    echo ""
+done
 ```
 </details>
 <br />
