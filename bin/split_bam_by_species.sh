@@ -59,29 +59,10 @@ check_etc() {
     #  Check on value assigned to "${threads}"
     check_argument_threads
 
-    echo ""
-
     #  Make additional variable assignments from the arguments
-    # base="$(basename "${infile}")"
-    # name="${base%.*}"
-    # SC_all="${outdir}/${name}.split_SC_all.bam"
-    # SC_no_Mito="${outdir}/${name}.split_SC_no_Mito.bam"
-    # SC_VII="${outdir}/${name}.split_SC_VII.bam"
-    # SC_XII="${outdir}/${name}.split_SC_XII.bam"
-    # SC_VII_XII="${outdir}/${name}.split_SC_VII_XII.bam"
-    # SC_Mito="${outdir}/${name}.split_SC_Mito.bam"
-    # KL_all="${outdir}/${name}.split_KL_all.bam"
-    # virus_20S="${outdir}/${name}.split_20S.bam"
+    outfile="$(basename "${infile}")"
 
-    # #TEST
-    # echo "${SC_all}"
-    # echo "${SC_no_Mito}"
-    # echo "${SC_VII}"
-    # echo "${SC_XII}"
-    # echo "${SC_VII_XII}"
-    # echo "${SC_Mito}"
-    # echo "${KL_all}"
-    # echo "${virus_20S}"
+    echo ""
 }
 
 
@@ -144,7 +125,7 @@ main() {
         "${threads}" \
         "${infile}" \
         "${chr}" \
-        "${outdir}/${infile%.bam}.${split}.bam"
+        "${outdir}/${outfile%.bam}.${split}.bam"
 }
 
 

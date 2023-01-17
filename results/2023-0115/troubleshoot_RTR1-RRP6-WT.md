@@ -61,8 +61,8 @@
 			1. [Run `samtools index` on each element of `bam` array](#run-samtools-index-on-each-element-of-bam-array)
 	1. [Create `bam`s composed of alignments to specific species](#create-bams-composed-of-alignments-to-specific-species)
 		1. [Get situated](#get-situated-7)
-		1. [Try a test run with `split_bam_by_species.sh`](#try-a-test-run-with-split_bam_by_speciessh)
-		1. [Create `bam`s w/o *20S* alignments: composed of *S. cerevisiae* and *K. lactis*](#create-bams-wo-20s-alignments-composed-of-s-cerevisiae-and-k-lactis)
+		1. [Try/troubleshoot a test run with `split_bam_by_species.sh`](#trytroubleshoot-a-test-run-with-split_bam_by_speciessh)
+		1. [Submit jobs to make `bam`s for species-specific alignments](#submit-jobs-to-make-bams-for-species-specific-alignments)
 		1. [Create `bam`s w/o *K.lactis* and *20S* alignments: composed of *S. cerevisiae*](#create-bams-wo-klactis-and-20s-alignments-composed-of-s-cerevisiae)
 		1. [Create `bam`s w/o *S. cerevisiae* and *20S* alignments: composed of *K. lactis*](#create-bams-wo-s-cerevisiae-and-20s-alignments-composed-of-k-lactis)
 		1. [Create `bam`s w/o *S. cerevisiae* and *K. lactis* alignments: composed of *20S*](#create-bams-wo-s-cerevisiae-and-k-lactis-alignments-composed-of-20s)
@@ -12682,6 +12682,7 @@ Access and these scripts from `$(pwd)` (`~/path/to/2022_transcriptome-constructi
 # ...
 
 bash ../../bin/split_bam_by_species.sh
+# vi ../../bin/split_bam_by_species.sh  # :q
 ```
 </details>
 <br />
@@ -12756,10 +12757,10 @@ Arguments:
 </details>
 <br />
 
-<a id="try-a-test-run-with-split_bam_by_speciessh"></a>
-#### Try a test run with `split_bam_by_species.sh`
+<a id="trytroubleshoot-a-test-run-with-split_bam_by_speciessh"></a>
+#### Try/troubleshoot a test run with `split_bam_by_species.sh`
 <details>
-<summary><i>Code: Try a test run with split_bam_by_species.sh</i></summary>
+<summary><i>Code, printed, notes: Try/troubleshoot a test run with split_bam_by_species.sh</i></summary>
 
 ```bash
 #!/bin/bash
@@ -12771,6 +12772,16 @@ bash ../../bin/split_bam_by_species.sh \
 	-o "./bams" \
 	-s "virus_20S" \
 	-t 1
+# "Safe mode" is FALSE.
+# ./bams doesn't exist; mkdir'ing it.
+#
+#
+# Running ../../bin/split_bam_by_species.sh...
+
+#  The script worked in the sense that
+#+ CW10_7747_8day_Q_IN_S5.multi-10.virus_20S.bam was generated; however, it was
+#+ generated in the "indir", ./bams/SC_KL_20S, not ./bams; moreover, a ./bams
+#+ directory was neither generated in $(pwd) nor in ./bams/SC_KL_20S
 
 #  Try again after editing main() in split_bam_by_species.sh and
 #+ check_exists_directory() in functions.sh
@@ -12779,48 +12790,87 @@ bash ../../bin/split_bam_by_species.sh \
 	-o "./bams" \
 	-s "KL_all" \
 	-t 1
+# "Safe mode" is FALSE.
+# ./bams doesn't exist; mkdir'ing it.
+#
+#
+# Running ../../bin/split_bam_by_species.sh...
+
+#  Adjust check_exists_directory(), change it to FALSE in the main script
+bash ../../bin/split_bam_by_species.sh \
+	-i "./bams/SC_KL_20S/CW10_7747_8day_Q_IN_S5.multi-10.bam" \
+	-o "./bams" \
+	-s "SC_Mito" \
+	-t 1
+# "Safe mode" is FALSE.
+# ./bams doesn't exist; mkdir'ing it.
+#
+#
+# Running ../../bin/split_bam_by_species.sh...
+
+#  After pushing the changes to split_bam_by_species.sh and function.sh (I had
+#+ not done that for the previous two tests)
+bash ../../bin/split_bam_by_species.sh \
+	-i "./bams/SC_KL_20S/CW10_7747_8day_Q_IN_S5.multi-10.bam" \
+	-o "./bams" \
+	-s "SC_XII" \
+	-t 1
+# "Safe mode" is FALSE.
+#
+#
+# Running ../../bin/split_bam_by_species.sh...
+# [E::hts_open_format] Failed to open file "./bams/./bams/SC_KL_20S/CW10_7747_8day_Q_IN_S5.multi-10.SC_XII.bam" : No such file or directory
+# samtools view: failed to open "./bams/./bams/SC_KL_20S/CW10_7747_8day_Q_IN_S5.multi-10.SC_XII.bam" for writing: No such file or directory
+
+#  When writing the outfile, strip away the path associated with infile
+bash ../../bin/split_bam_by_species.sh \
+	-i "./bams/SC_KL_20S/CW10_7747_8day_Q_IN_S5.multi-10.bam" \
+	-o "./bams" \
+	-s "SC_XII" \
+	-t 1
+# "Safe mode" is FALSE.
+#
+#
+# Running ../../bin/split_bam_by_species.sh...
+
+bash ../../bin/split_bam_by_species.sh \
+	-i "./bams/SC_KL_20S/CW10_7747_8day_Q_IN_S5.multi-10.bam" \
+	-o "./bams" \
+	-s "SC_VII" \
+	-t 1
+# "Safe mode" is FALSE.
+#
+#
+# Running ../../bin/split_bam_by_species.sh...
+
+#  It works!
+., bams
+# total 24M
+# drwxrws--- 7 kalavatt 171 Jan 17 14:20 ./
+# drwxrws--- 7 kalavatt 197 Jan 17 14:12 ../
+# drwxrws--- 2 kalavatt   0 Jan 16 17:37 20S/
+# -rw-rw---- 1 kalavatt 20M Jan 17 14:27 CW10_7747_8day_Q_IN_S5.multi-10.SC_VII.bam
+# -rw-rw---- 1 kalavatt 858M Jan 17 14:20 CW10_7747_8day_Q_IN_S5.multi-10.SC_XII.bam
+# drwxrws--- 2 kalavatt   0 Jan 16 17:37 KL/
+# drwxrws--- 2 kalavatt   0 Jan 16 17:37 SC/
+# drwxrws--- 2 kalavatt   0 Jan 16 17:37 SC_KL/
+# drwxrws--- 2 kalavatt 20K Jan 17 14:08 SC_KL_20S/
+
+#  Now clean up all of the test bams...
+rm ./bams/CW10_7747_8day_Q_IN_S5.multi-10.SC_{VII,XII}.bam
+., ./bams/SC_KL_20S/CW10_7747_8day_Q_IN_S5.multi-10.{SC,KL,virus}*
+# -rw-rw---- 1 kalavatt  540M Jan 17 13:59 ./bams/SC_KL_20S/CW10_7747_8day_Q_IN_S5.multi-10.KL_all.bam
+# -rw-rw---- 1 kalavatt   25M Jan 17 14:08 ./bams/SC_KL_20S/CW10_7747_8day_Q_IN_S5.multi-10.SC_Mito.bam
+# -rw-rw---- 1 kalavatt 1022M Jan 17 13:39 ./bams/SC_KL_20S/CW10_7747_8day_Q_IN_S5.multi-10.virus_20S.bam
+rm ./bams/SC_KL_20S/CW10_7747_8day_Q_IN_S5.multi-10.{SC,KL,virus}*
+., ./bams/SC_KL_20S/CW10_7747_8day_Q_IN_S5.multi-10.*  # Looks good
 ```
+~~`#TODO` Take some time to fix `split_bam_by_species.sh`~~ *Done.*
 </details>
 <br />
 
-<details>
-<summary><i>Printed, notes: Try a test run with split_bam_by_species.sh</i></summary>
-
-```txt
-❯ bash ../../bin/split_bam_by_species.sh \
->     -i "./bams/SC_KL_20S/CW10_7747_8day_Q_IN_S5.multi-10.bam" \
->     -o "./bams" \
->     -s "virus_20S" \
->     -t 1
-"Safe mode" is FALSE.
-./bams doesn't exist; mkdir'ing it.
-
-
-Running ../../bin/split_bam_by_species.sh...
-
-
-❯ bash ../../bin/split_bam_by_species.sh \
-> 	-i "./bams/SC_KL_20S/CW10_7747_8day_Q_IN_S5.multi-10.bam" \
-> 	-o "./bams" \
-> 	-s "KL_all" \
-> 	-t 1
-"Safe mode" is FALSE.
-./bams doesn't exist; mkdir'ing it.
-
-
-Running ../../bin/split_bam_by_species.sh...
-```
-The script worked in the sense that `CW10_7747_8day_Q_IN_S5.multi-10.virus_20S.bam` was generated; however, it was generated in the "`indir`", `./bams/SC_KL_20S`, not `./bams`; moreover, a `./bams` directory was neither generated in `$(pwd)` nor in `./bams/SC_KL_20S`
-
-`#TODO` Take some time to fix `split_bam_by_species.sh` 
-- Second attempt did not address things...
-- 
-</details>
-<br />
-
-`#DEKHO`
-<a id="create-bams-wo-20s-alignments-composed-of-s-cerevisiae-and-k-lactis"></a>
-#### Create `bam`s w/o *20S* alignments: composed of *S. cerevisiae* and *K. lactis*
+<a id="submit-jobs-to-make-bams-for-species-specific-alignments"></a>
+#### Submit jobs to make `bam`s for species-specific alignments
 <details>
 <summary><i>Code: </i></summary>
 
