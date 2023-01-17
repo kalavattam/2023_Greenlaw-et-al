@@ -1,5 +1,8 @@
 
-# 2022-11
+`#2022-11`
+<br />
+<br />
+
 <details>
 <summary><b><font size="+2">Table of Contents</font></b></summary>
 <!-- MarkdownTOC -->
@@ -19,7 +22,7 @@
         1. [Nab3_Nrd1_Depletion](#nab3_nrd1_depletion-1)
                 1. [#1](#1-1)
                 1. [#2](#2-1)
-        1. [Email chain between me and Alison](#email-chain-between-me-and-alison-1)
+        1. [Email chain between me and Alison on "raw" `.fastq` files and "UMI information"](#email-chain-between-me-and-alison-on-raw-fastq-files-and-umi-information)
             1. [Message #1](#message-1-1)
             1. [Message #2](#message-2-1)
     1. [Locations of other important files](#locations-of-other-important-files)
@@ -57,8 +60,22 @@
 #### Email chain between me and Alison
 <a id="message-1"></a>
 ##### Message #1
-From: [Greenlaw, Alison C](agreenla@fredhutch.org)
-Date: Tuesday, November 1, 2022 at 10:55 AM
+From: [Alavattam, Kris](kalavatt@fredhutch.org)  
+Sent: Tuesday, November 1, 2022 10:19 AM  
+To: [Greenlaw, Alison C](agreenla@fredhutch.org)  
+Subject: .bam files for calculating TPM
+ 
+Hi Alison,
+ 
+In addition to Nab3_Nrd1_Depletion, was thinking to test my in-progress TPM code on some WTQvsG1 .bam files that you have processed (those that you’re using to run htseq-count/featurecounts). If there are any, can you let me know the location of some files?
+ 
+Thanks,  
+Kris
+
+<a id="message-2"></a>
+##### Message #2
+From: [Greenlaw, Alison C](agreenla@fredhutch.org)  
+Date: Tuesday, November 1, 2022 at 10:55 AM  
 To: [Alavattam, Kris](kalavatt@fredhutch.org)  
 Subject: Re: .bam files for calculating TPM
 
@@ -76,20 +93,6 @@ Also resorted for HTseq:
 I should be in in the next hour-ish so we can chat more then! 
  
 Alison
-
-<a id="message-2"></a>
-##### Message #2
-From: [Alavattam, Kris](kalavatt@fredhutch.org)  
-Sent: Tuesday, November 1, 2022 10:19 AM
-To: [Greenlaw, Alison C](agreenla@fredhutch.org)
-Subject: .bam files for calculating TPM
- 
-Hi Alison,
- 
-In addition to Nab3_Nrd1_Depletion, was thinking to test my in-progress TPM code on some WTQvsG1 .bam files that you have processed (those that you’re using to run htseq-count/featurecounts). If there are any, can you let me know the location of some files?
- 
-Thanks,  
-Kris
 
 <a id="locations-of-raw-fastq-files-and-umi-information"></a>
 ### Locations of "raw `.fastq` files" and "UMI information"
@@ -166,9 +169,8 @@ Notes and summary based on an email chain between me and Alison, [shown below](#
     + `#TODO (   )` Reference with [the email chains between Alison and Matt](#email-chains-between-alison-and-matt-fitzgibbon-fhcc-bioinformatician)
 - How are these files different from the above?
 
-<a id="email-chain-between-me-and-alison-1"></a>
-#### Email chain between me and Alison
-...on "raw" `.fastq` files and "UMI information"
+<a id="email-chain-between-me-and-alison-on-raw-fastq-files-and-umi-information"></a>
+#### Email chain between me and Alison on "raw" `.fastq` files and "UMI information"
 
 <a id="message-1-1"></a>
 ##### Message #1
@@ -263,7 +265,6 @@ Alison
 
 <a id="locations-of-other-important-files"></a>
 ### Locations of other important files
-
 <a id="email-from-alison-2022-1020"></a>
 #### Email from Alison, 2022-1020
 From: [Greenlaw, Alison C](agreenla@fredhutch.org)  
