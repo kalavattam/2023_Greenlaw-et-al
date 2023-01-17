@@ -52,8 +52,8 @@
 	1. [Use a `HEREDOC` to write the script, `submit_STAR.sh`](#use-a-heredoc-to-write-the-script-submit_starsh)
 	1. [Run `submit_STAR.sh` on `fq.gz` files](#run-submit_starsh-on-fqgz-files)
 		1. [Clean up results from `STAR` alignment, then index `bam`s](#clean-up-results-from-star-alignment-then-index-bams)
-			1. [Get situated](#get-situated-6)
 			1. [Clean up/rename results of `STAR` alignment](#clean-uprename-results-of-star-alignment)
+			1. [Check on `*.Log.out` warning messages: "`WARNING: not enough space allocated for transcript.`"](#check-on-logout-warning-messages-warning-not-enough-space-allocated-for-transcript)
 		1. [Index the `bam`s](#index-the-bams)
 			1. [Get `bam`s of interest into an array](#get-bams-of-interest-into-an-array)
 			1. [Run `samtools index` on each element of `bam` array](#run-samtools-index-on-each-element-of-bam-array)
@@ -124,7 +124,7 @@ conda activate Trinity_env
 #  cd into '2022_transcriptome-construction/results', e.g.,
 transcriptome && 
 	{
-		cd "results/2023-0115" || echo "cd'ing failed; check on this"
+		cd "results/2023-0115" || echo "cd'ing failed; check on this..."
 	}
 
 if [[ ! -d "2023-0115" ]]; then
@@ -137,7 +137,7 @@ if [[ ! -d "2023-0115" ]]; then
 	# mkdir: created directory '2023-0115/sh_err_out/err_out'
 fi
 
-cd 2023-0115 || echo "cd'ing failed; check on this"
+cd 2023-0115 || echo "cd'ing failed; check on this..."
 
 if [[ ! -f README.md ]]; then
 	touch README.md
@@ -534,7 +534,7 @@ AGAAAG.<..GGAGIGGGIIGGGGGGGGGGGG.GGGGAGGGGIIGIGGGG
 
 # -------------------------------------
 cd ~/tsukiyamalab/alisong/WTQvsG1/Unaligned_UMI/Project_ccucinot \
-	|| echo "cd'ing failed; check on this"
+	|| echo "cd'ing failed; check on this..."
 
 zcat 5781_G1_IN_S5_R1_001.fastq.gz | wc -l
 # 54893212
@@ -585,7 +585,7 @@ zcat 5781_G1_IN_S5_R3_001.fastq.gz | tail -8
 
 # -------------------------------------
 cd ~/tsukiyamalab/alisong/WTQvsG1/Project_ccucinot/Sample_5781_G1_IN \
-	|| echo "cd'ing failed; check on this"
+	|| echo "cd'ing failed; check on this..."
 
 cat 5781_G1_IN_merged_R1.fastq | wc -l
 # 55955368
@@ -682,7 +682,7 @@ cd "${dir}"
 
 #  20S ------------------------------------------------------------------------
 cd 20S \
-	|| echo "cd'ing failed; check on this"
+	|| echo "cd'ing failed; check on this..."
 
 
 #  rm *.sam files ---------------------
@@ -1162,7 +1162,7 @@ cd "${dir}"
 
 #  Project_ccucinot -----------------------------------------------------------
 cd Project_ccucinot \
-	|| echo "cd'ing failed; check on this"
+	|| echo "cd'ing failed; check on this..."
 
 
 #  rm *.sam files ---------------------
@@ -1628,7 +1628,7 @@ cd "${dir}"
 
 #  de_novo_annotation ---------------------------------------------------------
 cd de_novo_annotation \
-	|| echo "cd'ing failed; check on this"
+	|| echo "cd'ing failed; check on this..."
 
 
 #  rm *.sam files ---------------------
@@ -1745,7 +1745,7 @@ cd "${dir}"
 
 #  Project_ccucinot -----------------------------------------------------------
 cd Project_ccucinot_test \
-	|| echo "cd'ing failed; check on this"
+	|| echo "cd'ing failed; check on this..."
 
 
 #  rm *.sam files ---------------------
@@ -1947,7 +1947,7 @@ cd "${dir}"
 
 #  Project_ccucinot -----------------------------------------------------------
 cd automation_of_annotation \
-	|| echo "cd'ing failed; check on this"
+	|| echo "cd'ing failed; check on this..."
 
 
 #  rm *.sam files ---------------------
@@ -2114,7 +2114,7 @@ Use the files in "`~/tsukiyamalab/alisong/TRF4_SSRNA_April2022/UMI_information/P
 #DONTRUN #CONTINUE
 
 cd ~/tsukiyamalab/alisong/TRF4_SSRNA_April2022/UMI_information/Project_agreenla \
-	|| echo "cd'ing failed; check on this"
+	|| echo "cd'ing failed; check on this..."
 
 .,
 # total 42G
@@ -2237,7 +2237,7 @@ cd ~/tsukiyamalab/alisong/TRF4_SSRNA_April2022/UMI_information/Project_agreenla 
 # -rw-r----- 1 agreenla 538M Sep 29 18:48 SAMPLE_Bp9_DSp24_7078_S9_R3_001.fastq.gz
 
 cd ~/tsukiyamalab/alisong/TRF4_SSRNA_April2022 \
-	|| echo "cd'ing failed; check on this"
+	|| echo "cd'ing failed; check on this..."
 .,
 # total 952K
 # drwxrws---  7 agreenla  401 Jan 16 11:12  ./
@@ -2485,7 +2485,7 @@ find . -type f -name "*.fastq" | sort
 # -rw-rw---- 1 agreenla 4.2G Apr 20  2022 SAMPLE_Bp12_DSp48_7078/Bp12_DSp48_7078_merged_R2.fastq
 
 cd SAMPLE_BM10_DSp48_5781/ \
-	|| echo "cd'ing failed; check on this"
+	|| echo "cd'ing failed; check on this..."
 # /home/kalavatt/tsukiyamalab/alisong/TRF4_SSRNA_April2022/Project_agreenla/SAMPLE_BM10_DSp48_5781
 
 .,
@@ -3182,7 +3182,7 @@ Use the files in "`~/tsukiyamalab/alisong/Nab3_Nrd1_Depletion/Sequencing/Project
 #DONTRUN #CONTINUE
 
 cd ~/tsukiyamalab/alisong/Nab3_Nrd1_Depletion/Sequencing/Project_agreenla \
-	|| echo "cd'ing failed; check on this"
+	|| echo "cd'ing failed; check on this..."
 
 .,
 # total 584K
@@ -3590,7 +3590,7 @@ Use the files in "`~/tsukiyamalab/alisong/rtr1_rrp6_wt/Sequencinfg/Project_agree
 #DONTRUN #CONTINUE
 
 cd ~/tsukiyamalab/alisong/rtr1_rrp6_wt/Sequencinfg/Project_agreenla/Fastq \
-	|| echo "cd'ing failed; check on this"
+	|| echo "cd'ing failed; check on this..."
 
 # .,
 # total 1.2M
@@ -3636,7 +3636,7 @@ cd CW10_7747_8day_Q_IN/
 # -rw-rw----  1 agreenla 6.9G Dec 21 12:23 CW10_7747_8day_Q_IN_S5_R3_001.fastq
 
 cd ~/tsukiyamalab/alisong/rtr1_rrp6_wt \
-	|| echo "cd'ing failed; check on this"
+	|| echo "cd'ing failed; check on this..."
 
 .,
 # total 896K
@@ -4160,7 +4160,7 @@ Trinity_env
 #  cd into '2022_transcriptome-construction/results', e.g.,
 transcriptome && 
     {
-        cd "results/2023-0115" || echo "cd'ing failed; check on this"
+        cd "results/2023-0115" || echo "cd'ing failed; check on this..."
     }
 
 #  Make a directory for storing the symlinked fastqs
@@ -4256,7 +4256,7 @@ cd "./fastqs/symlinks" && .,
 zcat "${file_fq[50]}" | head -8
 zcat "${file_fq[50]}" | awk 'NR%4==2{print length($0)}' | head -1
 
-tab="	"
+tab="$(echo -e "\t")"
 echo "file${tab}length"
 for i in "${file_fq[@]}"; do
 	length="$(zcat "${i}" | awk 'NR%4==2{print length($0)}' | head -1)"
@@ -6420,7 +6420,7 @@ Trinity_env
 #  cd into '2022_transcriptome-construction/results', e.g.,
 transcriptome && 
 	{
-		cd "results/2023-0115" || echo "cd'ing failed; check on this"
+		cd "results/2023-0115" || echo "cd'ing failed; check on this..."
 	}
 
 unset fq_bases
@@ -8018,7 +8018,7 @@ Trinity_env
 #  cd into '2022_transcriptome-construction/results', e.g.,
 transcriptome && 
 	{
-		cd "results/2023-0115" || echo "cd'ing failed; check on this"
+		cd "results/2023-0115" || echo "cd'ing failed; check on this..."
 	}
 
 #  Make a directory for storing the FastQC results
@@ -8945,7 +8945,7 @@ Trinity_env
 #  cd into '2022_transcriptome-construction/results', e.g.,
 transcriptome && 
 	{
-		cd "results/2023-0115" || echo "cd'ing failed; check on this"
+		cd "results/2023-0115" || echo "cd'ing failed; check on this..."
 	}
 
 #  Make directory if necessary
@@ -9708,7 +9708,7 @@ Trinity_env
 #  cd into '2022_transcriptome-construction/results', e.g.,
 transcriptome && 
 	{
-		cd "results/2023-0115" || echo "cd'ing failed; check on this"
+		cd "results/2023-0115" || echo "cd'ing failed; check on this..."
 	}
 
 #  Make directory if necessary
@@ -9721,42 +9721,44 @@ script_name="submit_run-fastqc.sh"  # echo "${script_name}"
 threads=4  # echo "${threads}"
 
 #  Arrays
-unset fq_bases_t
-typeset -a fq_bases_t
+unset t_bases
+typeset -a t_bases
 while IFS=" " read -r -d $'\0'; do
-    fq_bases_t+=( "${REPLY%_R?_001_val_?.fq}" )
+    t_bases+=( "${REPLY%_R?_001_val_?.fq.gz}" )
 done < <(\
-    find "./fastqs_trim-galore" \
+    find "./fastqs/trim_galore" \
         -type f \
-        -name "*_val_?.fq" \
+        -name "*_R?_001_val_?.fq.gz" \
         -print0 \
             | sort -z \
 )
-# echo_test "${fq_bases_t[@]}"
+# echo_test "${t_bases[@]}"
+# echo "${#t_bases[@]}"  # 100
 
-IFS=" " read -r -a fq_bases_t \
+IFS=" " read -r -a t_bases \
 	<<< "$(\
 		tr ' ' '\n' \
-			<<< "${fq_bases_t[@]}" \
+			<<< "${t_bases[@]}" \
 				| sort -u \
 				| tr '\n' ' '\
 	)"
-# echo_test "${fq_bases_t[@]}"
+# echo_test "${t_bases[@]}"
+# echo "${#t_bases[@]}"  # 55
 
-unset fq_t_r1
-unset fq_t_r2
-typeset -a fq_t_r1
-typeset -a fq_t_r2
-for i in "${fq_bases_t[@]}"; do
-	fq_t_r1+=("${i}_R1_001_val_1.fq")
-	fq_t_r2+=("${i}_R3_001_val_2.fq")
+unset t_r1
+unset t_r2
+typeset -a t_r1
+typeset -a t_r2
+for i in "${t_bases[@]}"; do
+	t_r1+=("${i}_R1_001_val_1.fq.gz")
+	t_r2+=("${i}_R3_001_val_2.fq.gz")
 done
-# echo_test "${fq_t_r1[@]}"
-# echo_test "${fq_t_r2[@]}"
-# echo "${#fq_t_r1[@]}"  # 12
-# echo "${#fq_t_r2[@]}"  # 12
-# ., "${fq_t_r1[8]}"
-# ., "${fq_t_r2[8]}"
+# echo_test "${t_r1[@]}"
+# echo_test "${t_r2[@]}"
+# echo "${#t_r1[@]}"  # 55
+# echo "${#t_r2[@]}"  # 55
+# ., "${t_r1[18]}"
+# ., "${t_r2[18]}"
 ```
 </details>
 <br />
@@ -9770,29 +9772,29 @@ done
 #!/bin/bash
 #DONTRUN #CONTINUE
 
-x="${#fq_bases_t[@]}"  # echo "${x}"
+x="${#t_bases[@]}"  # echo "${x}"
 y=$(( x - 1 ))  # echo "${y}"
 for (( i=0; i<=y; i++ )); do
 	echo "# --------------------------------------"
 	echo "Iteration:  ${i}"
-	echo "File base:  ${fq_bases_t[${i}]}"
-	echo "       r1:  ${fq_t_r1[${i}]}"
-	echo "       r2:  ${fq_t_r2[${i}]}"
+	echo "File base:  ${t_bases[${i}]}"
+	echo "       r1:  ${t_r1[${i}]}"
+	echo "       r2:  ${t_r2[${i}]}"
 	echo "   outdir:  ./FastQC/trim_galore"
 	echo ""
 
 	#  For r1
 	sbatch "./sh_err_out/${script_name}" \
-		"${fq_t_r1[${i}]}" \
+		"${t_r1[${i}]}" \
 		"./FastQC/trim_galore"
-	echo "FastQC job submitted for ${fq_t_r1[${i}]}"
+	echo "FastQC job submitted for ${t_r1[${i}]}"
 	echo ""
 
 	#  For r2
 	sbatch "./sh_err_out/${script_name}" \
-		"${fq_t_r2[${i}]}" \
+		"${t_r2[${i}]}" \
 		"./FastQC/trim_galore"
-	echo "FastQC job submitted for ${fq_t_r2[${i}]}"
+	echo "FastQC job submitted for ${t_r2[${i}]}"
 
 	echo ""
 	echo ""
@@ -9805,7 +9807,774 @@ done
 <summary><i>Printed: Run submit_run-fastqc.sh on trim_galore-processed fastq files</i></summary>
 
 ```txt
+# --------------------------------------
+Iteration:  0
+File base:  ./fastqs/trim_galore/5781_G1_IN_S5
+       r1:  ./fastqs/trim_galore/5781_G1_IN_S5_R1_001_val_1.fq.gz
+       r2:  ./fastqs/trim_galore/5781_G1_IN_S5_R3_001_val_2.fq.gz
+   outdir:  ./FastQC/trim_galore
 
+Submitted batch job 7998782
+FastQC job submitted for ./fastqs/trim_galore/5781_G1_IN_S5_R1_001_val_1.fq.gz
+
+Submitted batch job 7998783
+FastQC job submitted for ./fastqs/trim_galore/5781_G1_IN_S5_R3_001_val_2.fq.gz
+
+
+# --------------------------------------
+Iteration:  1
+File base:  ./fastqs/trim_galore/5781_G1_IP_S1
+       r1:  ./fastqs/trim_galore/5781_G1_IP_S1_R1_001_val_1.fq.gz
+       r2:  ./fastqs/trim_galore/5781_G1_IP_S1_R3_001_val_2.fq.gz
+   outdir:  ./FastQC/trim_galore
+
+Submitted batch job 7998784
+FastQC job submitted for ./fastqs/trim_galore/5781_G1_IP_S1_R1_001_val_1.fq.gz
+
+Submitted batch job 7998785
+FastQC job submitted for ./fastqs/trim_galore/5781_G1_IP_S1_R3_001_val_2.fq.gz
+
+
+# --------------------------------------
+Iteration:  2
+File base:  ./fastqs/trim_galore/5781_Q_IN_S6
+       r1:  ./fastqs/trim_galore/5781_Q_IN_S6_R1_001_val_1.fq.gz
+       r2:  ./fastqs/trim_galore/5781_Q_IN_S6_R3_001_val_2.fq.gz
+   outdir:  ./FastQC/trim_galore
+
+Submitted batch job 7998786
+FastQC job submitted for ./fastqs/trim_galore/5781_Q_IN_S6_R1_001_val_1.fq.gz
+
+Submitted batch job 7998787
+FastQC job submitted for ./fastqs/trim_galore/5781_Q_IN_S6_R3_001_val_2.fq.gz
+
+
+# --------------------------------------
+Iteration:  3
+File base:  ./fastqs/trim_galore/5781_Q_IP_S2
+       r1:  ./fastqs/trim_galore/5781_Q_IP_S2_R1_001_val_1.fq.gz
+       r2:  ./fastqs/trim_galore/5781_Q_IP_S2_R3_001_val_2.fq.gz
+   outdir:  ./FastQC/trim_galore
+
+Submitted batch job 7998788
+FastQC job submitted for ./fastqs/trim_galore/5781_Q_IP_S2_R1_001_val_1.fq.gz
+
+Submitted batch job 7998789
+FastQC job submitted for ./fastqs/trim_galore/5781_Q_IP_S2_R3_001_val_2.fq.gz
+
+
+# --------------------------------------
+Iteration:  4
+File base:  ./fastqs/trim_galore/5782_G1_IN_S7
+       r1:  ./fastqs/trim_galore/5782_G1_IN_S7_R1_001_val_1.fq.gz
+       r2:  ./fastqs/trim_galore/5782_G1_IN_S7_R3_001_val_2.fq.gz
+   outdir:  ./FastQC/trim_galore
+
+Submitted batch job 7998790
+FastQC job submitted for ./fastqs/trim_galore/5782_G1_IN_S7_R1_001_val_1.fq.gz
+
+Submitted batch job 7998791
+FastQC job submitted for ./fastqs/trim_galore/5782_G1_IN_S7_R3_001_val_2.fq.gz
+
+
+# --------------------------------------
+Iteration:  5
+File base:  ./fastqs/trim_galore/5782_G1_IP_S3
+       r1:  ./fastqs/trim_galore/5782_G1_IP_S3_R1_001_val_1.fq.gz
+       r2:  ./fastqs/trim_galore/5782_G1_IP_S3_R3_001_val_2.fq.gz
+   outdir:  ./FastQC/trim_galore
+
+Submitted batch job 7998792
+FastQC job submitted for ./fastqs/trim_galore/5782_G1_IP_S3_R1_001_val_1.fq.gz
+
+Submitted batch job 7998793
+FastQC job submitted for ./fastqs/trim_galore/5782_G1_IP_S3_R3_001_val_2.fq.gz
+
+
+# --------------------------------------
+Iteration:  6
+File base:  ./fastqs/trim_galore/5782_Q_IN_S8
+       r1:  ./fastqs/trim_galore/5782_Q_IN_S8_R1_001_val_1.fq.gz
+       r2:  ./fastqs/trim_galore/5782_Q_IN_S8_R3_001_val_2.fq.gz
+   outdir:  ./FastQC/trim_galore
+
+Submitted batch job 7998794
+FastQC job submitted for ./fastqs/trim_galore/5782_Q_IN_S8_R1_001_val_1.fq.gz
+
+Submitted batch job 7998795
+FastQC job submitted for ./fastqs/trim_galore/5782_Q_IN_S8_R3_001_val_2.fq.gz
+
+
+# --------------------------------------
+Iteration:  7
+File base:  ./fastqs/trim_galore/5782_Q_IP_S4
+       r1:  ./fastqs/trim_galore/5782_Q_IP_S4_R1_001_val_1.fq.gz
+       r2:  ./fastqs/trim_galore/5782_Q_IP_S4_R3_001_val_2.fq.gz
+   outdir:  ./FastQC/trim_galore
+
+Submitted batch job 7998796
+FastQC job submitted for ./fastqs/trim_galore/5782_Q_IP_S4_R1_001_val_1.fq.gz
+
+Submitted batch job 7998797
+FastQC job submitted for ./fastqs/trim_galore/5782_Q_IP_S4_R3_001_val_2.fq.gz
+
+
+# --------------------------------------
+Iteration:  8
+File base:  ./fastqs/trim_galore/CW10_7747_8day_Q_IN_S5
+       r1:  ./fastqs/trim_galore/CW10_7747_8day_Q_IN_S5_R1_001_val_1.fq.gz
+       r2:  ./fastqs/trim_galore/CW10_7747_8day_Q_IN_S5_R3_001_val_2.fq.gz
+   outdir:  ./FastQC/trim_galore
+
+Submitted batch job 7998798
+FastQC job submitted for ./fastqs/trim_galore/CW10_7747_8day_Q_IN_S5_R1_001_val_1.fq.gz
+
+Submitted batch job 7998799
+FastQC job submitted for ./fastqs/trim_galore/CW10_7747_8day_Q_IN_S5_R3_001_val_2.fq.gz
+
+
+# --------------------------------------
+Iteration:  9
+File base:  ./fastqs/trim_galore/CW10_7747_8day_Q_PD_S11
+       r1:  ./fastqs/trim_galore/CW10_7747_8day_Q_PD_S11_R1_001_val_1.fq.gz
+       r2:  ./fastqs/trim_galore/CW10_7747_8day_Q_PD_S11_R3_001_val_2.fq.gz
+   outdir:  ./FastQC/trim_galore
+
+Submitted batch job 7998800
+FastQC job submitted for ./fastqs/trim_galore/CW10_7747_8day_Q_PD_S11_R1_001_val_1.fq.gz
+
+Submitted batch job 7998801
+FastQC job submitted for ./fastqs/trim_galore/CW10_7747_8day_Q_PD_S11_R3_001_val_2.fq.gz
+
+
+# --------------------------------------
+Iteration:  10
+File base:  ./fastqs/trim_galore/CW12_7748_8day_Q_IN_S6
+       r1:  ./fastqs/trim_galore/CW12_7748_8day_Q_IN_S6_R1_001_val_1.fq.gz
+       r2:  ./fastqs/trim_galore/CW12_7748_8day_Q_IN_S6_R3_001_val_2.fq.gz
+   outdir:  ./FastQC/trim_galore
+
+Submitted batch job 7998802
+FastQC job submitted for ./fastqs/trim_galore/CW12_7748_8day_Q_IN_S6_R1_001_val_1.fq.gz
+
+Submitted batch job 7998803
+FastQC job submitted for ./fastqs/trim_galore/CW12_7748_8day_Q_IN_S6_R3_001_val_2.fq.gz
+
+
+# --------------------------------------
+Iteration:  11
+File base:  ./fastqs/trim_galore/CW12_7748_8day_Q_PD_S12
+       r1:  ./fastqs/trim_galore/CW12_7748_8day_Q_PD_S12_R1_001_val_1.fq.gz
+       r2:  ./fastqs/trim_galore/CW12_7748_8day_Q_PD_S12_R3_001_val_2.fq.gz
+   outdir:  ./FastQC/trim_galore
+
+Submitted batch job 7998804
+FastQC job submitted for ./fastqs/trim_galore/CW12_7748_8day_Q_PD_S12_R1_001_val_1.fq.gz
+
+Submitted batch job 7998805
+FastQC job submitted for ./fastqs/trim_galore/CW12_7748_8day_Q_PD_S12_R3_001_val_2.fq.gz
+
+
+# --------------------------------------
+Iteration:  12
+File base:  ./fastqs/trim_galore/CW2_5781_8day_Q_IN_S1
+       r1:  ./fastqs/trim_galore/CW2_5781_8day_Q_IN_S1_R1_001_val_1.fq.gz
+       r2:  ./fastqs/trim_galore/CW2_5781_8day_Q_IN_S1_R3_001_val_2.fq.gz
+   outdir:  ./FastQC/trim_galore
+
+Submitted batch job 7998806
+FastQC job submitted for ./fastqs/trim_galore/CW2_5781_8day_Q_IN_S1_R1_001_val_1.fq.gz
+
+Submitted batch job 7998807
+FastQC job submitted for ./fastqs/trim_galore/CW2_5781_8day_Q_IN_S1_R3_001_val_2.fq.gz
+
+
+# --------------------------------------
+Iteration:  13
+File base:  ./fastqs/trim_galore/CW2_5781_8day_Q_PD_S7
+       r1:  ./fastqs/trim_galore/CW2_5781_8day_Q_PD_S7_R1_001_val_1.fq.gz
+       r2:  ./fastqs/trim_galore/CW2_5781_8day_Q_PD_S7_R3_001_val_2.fq.gz
+   outdir:  ./FastQC/trim_galore
+
+Submitted batch job 7998808
+FastQC job submitted for ./fastqs/trim_galore/CW2_5781_8day_Q_PD_S7_R1_001_val_1.fq.gz
+
+Submitted batch job 7998809
+FastQC job submitted for ./fastqs/trim_galore/CW2_5781_8day_Q_PD_S7_R3_001_val_2.fq.gz
+
+
+# --------------------------------------
+Iteration:  14
+File base:  ./fastqs/trim_galore/CW4_5782_8day_Q_IN_S2
+       r1:  ./fastqs/trim_galore/CW4_5782_8day_Q_IN_S2_R1_001_val_1.fq.gz
+       r2:  ./fastqs/trim_galore/CW4_5782_8day_Q_IN_S2_R3_001_val_2.fq.gz
+   outdir:  ./FastQC/trim_galore
+
+Submitted batch job 7998810
+FastQC job submitted for ./fastqs/trim_galore/CW4_5782_8day_Q_IN_S2_R1_001_val_1.fq.gz
+
+Submitted batch job 7998811
+FastQC job submitted for ./fastqs/trim_galore/CW4_5782_8day_Q_IN_S2_R3_001_val_2.fq.gz
+
+
+# --------------------------------------
+Iteration:  15
+File base:  ./fastqs/trim_galore/CW4_5782_8day_Q_PD_S8
+       r1:  ./fastqs/trim_galore/CW4_5782_8day_Q_PD_S8_R1_001_val_1.fq.gz
+       r2:  ./fastqs/trim_galore/CW4_5782_8day_Q_PD_S8_R3_001_val_2.fq.gz
+   outdir:  ./FastQC/trim_galore
+
+Submitted batch job 7998812
+FastQC job submitted for ./fastqs/trim_galore/CW4_5782_8day_Q_PD_S8_R1_001_val_1.fq.gz
+
+Submitted batch job 7998813
+FastQC job submitted for ./fastqs/trim_galore/CW4_5782_8day_Q_PD_S8_R3_001_val_2.fq.gz
+
+
+# --------------------------------------
+Iteration:  16
+File base:  ./fastqs/trim_galore/CW6_7078_8day_Q_IN_S3
+       r1:  ./fastqs/trim_galore/CW6_7078_8day_Q_IN_S3_R1_001_val_1.fq.gz
+       r2:  ./fastqs/trim_galore/CW6_7078_8day_Q_IN_S3_R3_001_val_2.fq.gz
+   outdir:  ./FastQC/trim_galore
+
+Submitted batch job 7998814
+FastQC job submitted for ./fastqs/trim_galore/CW6_7078_8day_Q_IN_S3_R1_001_val_1.fq.gz
+
+Submitted batch job 7998815
+FastQC job submitted for ./fastqs/trim_galore/CW6_7078_8day_Q_IN_S3_R3_001_val_2.fq.gz
+
+
+# --------------------------------------
+Iteration:  17
+File base:  ./fastqs/trim_galore/CW6_7078_8day_Q_PD_S9
+       r1:  ./fastqs/trim_galore/CW6_7078_8day_Q_PD_S9_R1_001_val_1.fq.gz
+       r2:  ./fastqs/trim_galore/CW6_7078_8day_Q_PD_S9_R3_001_val_2.fq.gz
+   outdir:  ./FastQC/trim_galore
+
+Submitted batch job 7998816
+FastQC job submitted for ./fastqs/trim_galore/CW6_7078_8day_Q_PD_S9_R1_001_val_1.fq.gz
+
+Submitted batch job 7998817
+FastQC job submitted for ./fastqs/trim_galore/CW6_7078_8day_Q_PD_S9_R3_001_val_2.fq.gz
+
+
+# --------------------------------------
+Iteration:  18
+File base:  ./fastqs/trim_galore/CW8_7079_8day_Q_IN_S4
+       r1:  ./fastqs/trim_galore/CW8_7079_8day_Q_IN_S4_R1_001_val_1.fq.gz
+       r2:  ./fastqs/trim_galore/CW8_7079_8day_Q_IN_S4_R3_001_val_2.fq.gz
+   outdir:  ./FastQC/trim_galore
+
+Submitted batch job 7998818
+FastQC job submitted for ./fastqs/trim_galore/CW8_7079_8day_Q_IN_S4_R1_001_val_1.fq.gz
+
+Submitted batch job 7998819
+FastQC job submitted for ./fastqs/trim_galore/CW8_7079_8day_Q_IN_S4_R3_001_val_2.fq.gz
+
+
+# --------------------------------------
+Iteration:  19
+File base:  ./fastqs/trim_galore/CW8_7079_8day_Q_PD_S10
+       r1:  ./fastqs/trim_galore/CW8_7079_8day_Q_PD_S10_R1_001_val_1.fq.gz
+       r2:  ./fastqs/trim_galore/CW8_7079_8day_Q_PD_S10_R3_001_val_2.fq.gz
+   outdir:  ./FastQC/trim_galore
+
+Submitted batch job 7998820
+FastQC job submitted for ./fastqs/trim_galore/CW8_7079_8day_Q_PD_S10_R1_001_val_1.fq.gz
+
+Submitted batch job 7998821
+FastQC job submitted for ./fastqs/trim_galore/CW8_7079_8day_Q_PD_S10_R3_001_val_2.fq.gz
+
+
+# --------------------------------------
+Iteration:  20
+File base:  ./fastqs/trim_galore/SAMPLE_BM10_DSp48_5781_S22
+       r1:  ./fastqs/trim_galore/SAMPLE_BM10_DSp48_5781_S22_R1_001_val_1.fq.gz
+       r2:  ./fastqs/trim_galore/SAMPLE_BM10_DSp48_5781_S22_R3_001_val_2.fq.gz
+   outdir:  ./FastQC/trim_galore
+
+Submitted batch job 7998822
+FastQC job submitted for ./fastqs/trim_galore/SAMPLE_BM10_DSp48_5781_S22_R1_001_val_1.fq.gz
+
+Submitted batch job 7998823
+FastQC job submitted for ./fastqs/trim_galore/SAMPLE_BM10_DSp48_5781_S22_R3_001_val_2.fq.gz
+
+
+# --------------------------------------
+Iteration:  21
+File base:  ./fastqs/trim_galore/SAMPLE_BM11_DSp48_7080_S23
+       r1:  ./fastqs/trim_galore/SAMPLE_BM11_DSp48_7080_S23_R1_001_val_1.fq.gz
+       r2:  ./fastqs/trim_galore/SAMPLE_BM11_DSp48_7080_S23_R3_001_val_2.fq.gz
+   outdir:  ./FastQC/trim_galore
+
+Submitted batch job 7998824
+FastQC job submitted for ./fastqs/trim_galore/SAMPLE_BM11_DSp48_7080_S23_R1_001_val_1.fq.gz
+
+Submitted batch job 7998825
+FastQC job submitted for ./fastqs/trim_galore/SAMPLE_BM11_DSp48_7080_S23_R3_001_val_2.fq.gz
+
+
+# --------------------------------------
+Iteration:  22
+File base:  ./fastqs/trim_galore/SAMPLE_BM1_DSm2_5781_S13
+       r1:  ./fastqs/trim_galore/SAMPLE_BM1_DSm2_5781_S13_R1_001_val_1.fq.gz
+       r2:  ./fastqs/trim_galore/SAMPLE_BM1_DSm2_5781_S13_R3_001_val_2.fq.gz
+   outdir:  ./FastQC/trim_galore
+
+Submitted batch job 7998826
+FastQC job submitted for ./fastqs/trim_galore/SAMPLE_BM1_DSm2_5781_S13_R1_001_val_1.fq.gz
+
+Submitted batch job 7998827
+FastQC job submitted for ./fastqs/trim_galore/SAMPLE_BM1_DSm2_5781_S13_R3_001_val_2.fq.gz
+
+
+# --------------------------------------
+Iteration:  23
+File base:  ./fastqs/trim_galore/SAMPLE_BM2_DSm2_7080_S14
+       r1:  ./fastqs/trim_galore/SAMPLE_BM2_DSm2_7080_S14_R1_001_val_1.fq.gz
+       r2:  ./fastqs/trim_galore/SAMPLE_BM2_DSm2_7080_S14_R3_001_val_2.fq.gz
+   outdir:  ./FastQC/trim_galore
+
+Submitted batch job 7998828
+FastQC job submitted for ./fastqs/trim_galore/SAMPLE_BM2_DSm2_7080_S14_R1_001_val_1.fq.gz
+
+Submitted batch job 7998829
+FastQC job submitted for ./fastqs/trim_galore/SAMPLE_BM2_DSm2_7080_S14_R3_001_val_2.fq.gz
+
+
+# --------------------------------------
+Iteration:  24
+File base:  ./fastqs/trim_galore/SAMPLE_BM3_DSm2_7079_S15
+       r1:  ./fastqs/trim_galore/SAMPLE_BM3_DSm2_7079_S15_R1_001_val_1.fq.gz
+       r2:  ./fastqs/trim_galore/SAMPLE_BM3_DSm2_7079_S15_R3_001_val_2.fq.gz
+   outdir:  ./FastQC/trim_galore
+
+Submitted batch job 7998830
+FastQC job submitted for ./fastqs/trim_galore/SAMPLE_BM3_DSm2_7079_S15_R1_001_val_1.fq.gz
+
+Submitted batch job 7998831
+FastQC job submitted for ./fastqs/trim_galore/SAMPLE_BM3_DSm2_7079_S15_R3_001_val_2.fq.gz
+
+
+# --------------------------------------
+Iteration:  25
+File base:  ./fastqs/trim_galore/SAMPLE_BM4_DSp2_5781_S16
+       r1:  ./fastqs/trim_galore/SAMPLE_BM4_DSp2_5781_S16_R1_001_val_1.fq.gz
+       r2:  ./fastqs/trim_galore/SAMPLE_BM4_DSp2_5781_S16_R3_001_val_2.fq.gz
+   outdir:  ./FastQC/trim_galore
+
+Submitted batch job 7998832
+FastQC job submitted for ./fastqs/trim_galore/SAMPLE_BM4_DSp2_5781_S16_R1_001_val_1.fq.gz
+
+Submitted batch job 7998833
+FastQC job submitted for ./fastqs/trim_galore/SAMPLE_BM4_DSp2_5781_S16_R3_001_val_2.fq.gz
+
+
+# --------------------------------------
+Iteration:  26
+File base:  ./fastqs/trim_galore/SAMPLE_BM5_DSp2_7080_S17
+       r1:  ./fastqs/trim_galore/SAMPLE_BM5_DSp2_7080_S17_R1_001_val_1.fq.gz
+       r2:  ./fastqs/trim_galore/SAMPLE_BM5_DSp2_7080_S17_R3_001_val_2.fq.gz
+   outdir:  ./FastQC/trim_galore
+
+Submitted batch job 7998834
+FastQC job submitted for ./fastqs/trim_galore/SAMPLE_BM5_DSp2_7080_S17_R1_001_val_1.fq.gz
+
+Submitted batch job 7998835
+FastQC job submitted for ./fastqs/trim_galore/SAMPLE_BM5_DSp2_7080_S17_R3_001_val_2.fq.gz
+
+
+# --------------------------------------
+Iteration:  27
+File base:  ./fastqs/trim_galore/SAMPLE_BM6_DSp2_7079_S18
+       r1:  ./fastqs/trim_galore/SAMPLE_BM6_DSp2_7079_S18_R1_001_val_1.fq.gz
+       r2:  ./fastqs/trim_galore/SAMPLE_BM6_DSp2_7079_S18_R3_001_val_2.fq.gz
+   outdir:  ./FastQC/trim_galore
+
+Submitted batch job 7998836
+FastQC job submitted for ./fastqs/trim_galore/SAMPLE_BM6_DSp2_7079_S18_R1_001_val_1.fq.gz
+
+Submitted batch job 7998837
+FastQC job submitted for ./fastqs/trim_galore/SAMPLE_BM6_DSp2_7079_S18_R3_001_val_2.fq.gz
+
+
+# --------------------------------------
+Iteration:  28
+File base:  ./fastqs/trim_galore/SAMPLE_BM7_DSp24_5781_S19
+       r1:  ./fastqs/trim_galore/SAMPLE_BM7_DSp24_5781_S19_R1_001_val_1.fq.gz
+       r2:  ./fastqs/trim_galore/SAMPLE_BM7_DSp24_5781_S19_R3_001_val_2.fq.gz
+   outdir:  ./FastQC/trim_galore
+
+Submitted batch job 7998838
+FastQC job submitted for ./fastqs/trim_galore/SAMPLE_BM7_DSp24_5781_S19_R1_001_val_1.fq.gz
+
+Submitted batch job 7998839
+FastQC job submitted for ./fastqs/trim_galore/SAMPLE_BM7_DSp24_5781_S19_R3_001_val_2.fq.gz
+
+
+# --------------------------------------
+Iteration:  29
+File base:  ./fastqs/trim_galore/SAMPLE_BM8_DSp24_7080_S20
+       r1:  ./fastqs/trim_galore/SAMPLE_BM8_DSp24_7080_S20_R1_001_val_1.fq.gz
+       r2:  ./fastqs/trim_galore/SAMPLE_BM8_DSp24_7080_S20_R3_001_val_2.fq.gz
+   outdir:  ./FastQC/trim_galore
+
+Submitted batch job 7998840
+FastQC job submitted for ./fastqs/trim_galore/SAMPLE_BM8_DSp24_7080_S20_R1_001_val_1.fq.gz
+
+Submitted batch job 7998841
+FastQC job submitted for ./fastqs/trim_galore/SAMPLE_BM8_DSp24_7080_S20_R3_001_val_2.fq.gz
+
+
+# --------------------------------------
+Iteration:  30
+File base:  ./fastqs/trim_galore/SAMPLE_BM9_DSp24_7079_S21
+       r1:  ./fastqs/trim_galore/SAMPLE_BM9_DSp24_7079_S21_R1_001_val_1.fq.gz
+       r2:  ./fastqs/trim_galore/SAMPLE_BM9_DSp24_7079_S21_R3_001_val_2.fq.gz
+   outdir:  ./FastQC/trim_galore
+
+Submitted batch job 7998842
+FastQC job submitted for ./fastqs/trim_galore/SAMPLE_BM9_DSp24_7079_S21_R1_001_val_1.fq.gz
+
+Submitted batch job 7998843
+FastQC job submitted for ./fastqs/trim_galore/SAMPLE_BM9_DSp24_7079_S21_R3_001_val_2.fq.gz
+
+
+# --------------------------------------
+Iteration:  31
+File base:  ./fastqs/trim_galore/SAMPLE_Bp10_DSp48_5782_S10
+       r1:  ./fastqs/trim_galore/SAMPLE_Bp10_DSp48_5782_S10_R1_001_val_1.fq.gz
+       r2:  ./fastqs/trim_galore/SAMPLE_Bp10_DSp48_5782_S10_R3_001_val_2.fq.gz
+   outdir:  ./FastQC/trim_galore
+
+Submitted batch job 7998844
+FastQC job submitted for ./fastqs/trim_galore/SAMPLE_Bp10_DSp48_5782_S10_R1_001_val_1.fq.gz
+
+Submitted batch job 7998845
+FastQC job submitted for ./fastqs/trim_galore/SAMPLE_Bp10_DSp48_5782_S10_R3_001_val_2.fq.gz
+
+
+# --------------------------------------
+Iteration:  32
+File base:  ./fastqs/trim_galore/SAMPLE_Bp11_DSp48_7081_S11
+       r1:  ./fastqs/trim_galore/SAMPLE_Bp11_DSp48_7081_S11_R1_001_val_1.fq.gz
+       r2:  ./fastqs/trim_galore/SAMPLE_Bp11_DSp48_7081_S11_R3_001_val_2.fq.gz
+   outdir:  ./FastQC/trim_galore
+
+Submitted batch job 7998846
+FastQC job submitted for ./fastqs/trim_galore/SAMPLE_Bp11_DSp48_7081_S11_R1_001_val_1.fq.gz
+
+Submitted batch job 7998847
+FastQC job submitted for ./fastqs/trim_galore/SAMPLE_Bp11_DSp48_7081_S11_R3_001_val_2.fq.gz
+
+
+# --------------------------------------
+Iteration:  33
+File base:  ./fastqs/trim_galore/SAMPLE_Bp12_DSp48_7078_S12
+       r1:  ./fastqs/trim_galore/SAMPLE_Bp12_DSp48_7078_S12_R1_001_val_1.fq.gz
+       r2:  ./fastqs/trim_galore/SAMPLE_Bp12_DSp48_7078_S12_R3_001_val_2.fq.gz
+   outdir:  ./FastQC/trim_galore
+
+Submitted batch job 7998848
+FastQC job submitted for ./fastqs/trim_galore/SAMPLE_Bp12_DSp48_7078_S12_R1_001_val_1.fq.gz
+
+Submitted batch job 7998849
+FastQC job submitted for ./fastqs/trim_galore/SAMPLE_Bp12_DSp48_7078_S12_R3_001_val_2.fq.gz
+
+
+# --------------------------------------
+Iteration:  34
+File base:  ./fastqs/trim_galore/SAMPLE_Bp1_DSm2_5782_S1
+       r1:  ./fastqs/trim_galore/SAMPLE_Bp1_DSm2_5782_S1_R1_001_val_1.fq.gz
+       r2:  ./fastqs/trim_galore/SAMPLE_Bp1_DSm2_5782_S1_R3_001_val_2.fq.gz
+   outdir:  ./FastQC/trim_galore
+
+Submitted batch job 7998850
+FastQC job submitted for ./fastqs/trim_galore/SAMPLE_Bp1_DSm2_5782_S1_R1_001_val_1.fq.gz
+
+Submitted batch job 7998851
+FastQC job submitted for ./fastqs/trim_galore/SAMPLE_Bp1_DSm2_5782_S1_R3_001_val_2.fq.gz
+
+
+# --------------------------------------
+Iteration:  35
+File base:  ./fastqs/trim_galore/SAMPLE_Bp2_DSm2_7081_S2
+       r1:  ./fastqs/trim_galore/SAMPLE_Bp2_DSm2_7081_S2_R1_001_val_1.fq.gz
+       r2:  ./fastqs/trim_galore/SAMPLE_Bp2_DSm2_7081_S2_R3_001_val_2.fq.gz
+   outdir:  ./FastQC/trim_galore
+
+Submitted batch job 7998852
+FastQC job submitted for ./fastqs/trim_galore/SAMPLE_Bp2_DSm2_7081_S2_R1_001_val_1.fq.gz
+
+Submitted batch job 7998853
+FastQC job submitted for ./fastqs/trim_galore/SAMPLE_Bp2_DSm2_7081_S2_R3_001_val_2.fq.gz
+
+
+# --------------------------------------
+Iteration:  36
+File base:  ./fastqs/trim_galore/SAMPLE_Bp3_DSm2_7078_S3
+       r1:  ./fastqs/trim_galore/SAMPLE_Bp3_DSm2_7078_S3_R1_001_val_1.fq.gz
+       r2:  ./fastqs/trim_galore/SAMPLE_Bp3_DSm2_7078_S3_R3_001_val_2.fq.gz
+   outdir:  ./FastQC/trim_galore
+
+Submitted batch job 7998854
+FastQC job submitted for ./fastqs/trim_galore/SAMPLE_Bp3_DSm2_7078_S3_R1_001_val_1.fq.gz
+
+Submitted batch job 7998855
+FastQC job submitted for ./fastqs/trim_galore/SAMPLE_Bp3_DSm2_7078_S3_R3_001_val_2.fq.gz
+
+
+# --------------------------------------
+Iteration:  37
+File base:  ./fastqs/trim_galore/SAMPLE_Bp4_DSp2_5782_S4
+       r1:  ./fastqs/trim_galore/SAMPLE_Bp4_DSp2_5782_S4_R1_001_val_1.fq.gz
+       r2:  ./fastqs/trim_galore/SAMPLE_Bp4_DSp2_5782_S4_R3_001_val_2.fq.gz
+   outdir:  ./FastQC/trim_galore
+
+Submitted batch job 7998856
+FastQC job submitted for ./fastqs/trim_galore/SAMPLE_Bp4_DSp2_5782_S4_R1_001_val_1.fq.gz
+
+Submitted batch job 7998857
+FastQC job submitted for ./fastqs/trim_galore/SAMPLE_Bp4_DSp2_5782_S4_R3_001_val_2.fq.gz
+
+
+# --------------------------------------
+Iteration:  38
+File base:  ./fastqs/trim_galore/SAMPLE_Bp5_DSp2_7081_S5
+       r1:  ./fastqs/trim_galore/SAMPLE_Bp5_DSp2_7081_S5_R1_001_val_1.fq.gz
+       r2:  ./fastqs/trim_galore/SAMPLE_Bp5_DSp2_7081_S5_R3_001_val_2.fq.gz
+   outdir:  ./FastQC/trim_galore
+
+Submitted batch job 7998858
+FastQC job submitted for ./fastqs/trim_galore/SAMPLE_Bp5_DSp2_7081_S5_R1_001_val_1.fq.gz
+
+Submitted batch job 7998859
+FastQC job submitted for ./fastqs/trim_galore/SAMPLE_Bp5_DSp2_7081_S5_R3_001_val_2.fq.gz
+
+
+# --------------------------------------
+Iteration:  39
+File base:  ./fastqs/trim_galore/SAMPLE_Bp6_DSp2_7078_S6
+       r1:  ./fastqs/trim_galore/SAMPLE_Bp6_DSp2_7078_S6_R1_001_val_1.fq.gz
+       r2:  ./fastqs/trim_galore/SAMPLE_Bp6_DSp2_7078_S6_R3_001_val_2.fq.gz
+   outdir:  ./FastQC/trim_galore
+
+Submitted batch job 7998860
+FastQC job submitted for ./fastqs/trim_galore/SAMPLE_Bp6_DSp2_7078_S6_R1_001_val_1.fq.gz
+
+Submitted batch job 7998861
+FastQC job submitted for ./fastqs/trim_galore/SAMPLE_Bp6_DSp2_7078_S6_R3_001_val_2.fq.gz
+
+
+# --------------------------------------
+Iteration:  40
+File base:  ./fastqs/trim_galore/SAMPLE_Bp7_DSp24_5782_S7
+       r1:  ./fastqs/trim_galore/SAMPLE_Bp7_DSp24_5782_S7_R1_001_val_1.fq.gz
+       r2:  ./fastqs/trim_galore/SAMPLE_Bp7_DSp24_5782_S7_R3_001_val_2.fq.gz
+   outdir:  ./FastQC/trim_galore
+
+Submitted batch job 7998862
+FastQC job submitted for ./fastqs/trim_galore/SAMPLE_Bp7_DSp24_5782_S7_R1_001_val_1.fq.gz
+
+Submitted batch job 7998863
+FastQC job submitted for ./fastqs/trim_galore/SAMPLE_Bp7_DSp24_5782_S7_R3_001_val_2.fq.gz
+
+
+# --------------------------------------
+Iteration:  41
+File base:  ./fastqs/trim_galore/SAMPLE_Bp8_DSp24_7081_S8
+       r1:  ./fastqs/trim_galore/SAMPLE_Bp8_DSp24_7081_S8_R1_001_val_1.fq.gz
+       r2:  ./fastqs/trim_galore/SAMPLE_Bp8_DSp24_7081_S8_R3_001_val_2.fq.gz
+   outdir:  ./FastQC/trim_galore
+
+Submitted batch job 7998864
+FastQC job submitted for ./fastqs/trim_galore/SAMPLE_Bp8_DSp24_7081_S8_R1_001_val_1.fq.gz
+
+Submitted batch job 7998865
+FastQC job submitted for ./fastqs/trim_galore/SAMPLE_Bp8_DSp24_7081_S8_R3_001_val_2.fq.gz
+
+
+# --------------------------------------
+Iteration:  42
+File base:  ./fastqs/trim_galore/SAMPLE_Bp9_DSp24_7078_S9
+       r1:  ./fastqs/trim_galore/SAMPLE_Bp9_DSp24_7078_S9_R1_001_val_1.fq.gz
+       r2:  ./fastqs/trim_galore/SAMPLE_Bp9_DSp24_7078_S9_R3_001_val_2.fq.gz
+   outdir:  ./FastQC/trim_galore
+
+Submitted batch job 7998866
+FastQC job submitted for ./fastqs/trim_galore/SAMPLE_Bp9_DSp24_7078_S9_R1_001_val_1.fq.gz
+
+Submitted batch job 7998867
+FastQC job submitted for ./fastqs/trim_galore/SAMPLE_Bp9_DSp24_7078_S9_R3_001_val_2.fq.gz
+
+
+# --------------------------------------
+Iteration:  43
+File base:  ./fastqs/trim_galore/Sample_CT10_7718_pIAA_Q_Nascent_S5
+       r1:  ./fastqs/trim_galore/Sample_CT10_7718_pIAA_Q_Nascent_S5_R1_001_val_1.fq.gz
+       r2:  ./fastqs/trim_galore/Sample_CT10_7718_pIAA_Q_Nascent_S5_R3_001_val_2.fq.gz
+   outdir:  ./FastQC/trim_galore
+
+Submitted batch job 7998868
+FastQC job submitted for ./fastqs/trim_galore/Sample_CT10_7718_pIAA_Q_Nascent_S5_R1_001_val_1.fq.gz
+
+Submitted batch job 7998869
+FastQC job submitted for ./fastqs/trim_galore/Sample_CT10_7718_pIAA_Q_Nascent_S5_R3_001_val_2.fq.gz
+
+
+# --------------------------------------
+Iteration:  44
+File base:  ./fastqs/trim_galore/Sample_CT10_7718_pIAA_Q_SteadyState_S10
+       r1:  ./fastqs/trim_galore/Sample_CT10_7718_pIAA_Q_SteadyState_S10_R1_001_val_1.fq.gz
+       r2:  ./fastqs/trim_galore/Sample_CT10_7718_pIAA_Q_SteadyState_S10_R3_001_val_2.fq.gz
+   outdir:  ./FastQC/trim_galore
+
+Submitted batch job 7998870
+FastQC job submitted for ./fastqs/trim_galore/Sample_CT10_7718_pIAA_Q_SteadyState_S10_R1_001_val_1.fq.gz
+
+Submitted batch job 7998871
+FastQC job submitted for ./fastqs/trim_galore/Sample_CT10_7718_pIAA_Q_SteadyState_S10_R3_001_val_2.fq.gz
+
+
+# --------------------------------------
+Iteration:  45
+File base:  ./fastqs/trim_galore/Sample_CT2_6125_pIAA_Q_Nascent_S1
+       r1:  ./fastqs/trim_galore/Sample_CT2_6125_pIAA_Q_Nascent_S1_R1_001_val_1.fq.gz
+       r2:  ./fastqs/trim_galore/Sample_CT2_6125_pIAA_Q_Nascent_S1_R3_001_val_2.fq.gz
+   outdir:  ./FastQC/trim_galore
+
+Submitted batch job 7998872
+FastQC job submitted for ./fastqs/trim_galore/Sample_CT2_6125_pIAA_Q_Nascent_S1_R1_001_val_1.fq.gz
+
+Submitted batch job 7998873
+FastQC job submitted for ./fastqs/trim_galore/Sample_CT2_6125_pIAA_Q_Nascent_S1_R3_001_val_2.fq.gz
+
+
+# --------------------------------------
+Iteration:  46
+File base:  ./fastqs/trim_galore/Sample_CT2_6125_pIAA_Q_SteadyState_S6
+       r1:  ./fastqs/trim_galore/Sample_CT2_6125_pIAA_Q_SteadyState_S6_R1_001_val_1.fq.gz
+       r2:  ./fastqs/trim_galore/Sample_CT2_6125_pIAA_Q_SteadyState_S6_R3_001_val_2.fq.gz
+   outdir:  ./FastQC/trim_galore
+
+Submitted batch job 7998874
+FastQC job submitted for ./fastqs/trim_galore/Sample_CT2_6125_pIAA_Q_SteadyState_S6_R1_001_val_1.fq.gz
+
+Submitted batch job 7998875
+FastQC job submitted for ./fastqs/trim_galore/Sample_CT2_6125_pIAA_Q_SteadyState_S6_R3_001_val_2.fq.gz
+
+
+# --------------------------------------
+Iteration:  47
+File base:  ./fastqs/trim_galore/Sample_CT4_6126_pIAA_Q_Nascent_S2
+       r1:  ./fastqs/trim_galore/Sample_CT4_6126_pIAA_Q_Nascent_S2_R1_001_val_1.fq.gz
+       r2:  ./fastqs/trim_galore/Sample_CT4_6126_pIAA_Q_Nascent_S2_R3_001_val_2.fq.gz
+   outdir:  ./FastQC/trim_galore
+
+Submitted batch job 7998876
+FastQC job submitted for ./fastqs/trim_galore/Sample_CT4_6126_pIAA_Q_Nascent_S2_R1_001_val_1.fq.gz
+
+Submitted batch job 7998877
+FastQC job submitted for ./fastqs/trim_galore/Sample_CT4_6126_pIAA_Q_Nascent_S2_R3_001_val_2.fq.gz
+
+
+# --------------------------------------
+Iteration:  48
+File base:  ./fastqs/trim_galore/Sample_CT4_6126_pIAA_Q_SteadyState_S7
+       r1:  ./fastqs/trim_galore/Sample_CT4_6126_pIAA_Q_SteadyState_S7_R1_001_val_1.fq.gz
+       r2:  ./fastqs/trim_galore/Sample_CT4_6126_pIAA_Q_SteadyState_S7_R3_001_val_2.fq.gz
+   outdir:  ./FastQC/trim_galore
+
+Submitted batch job 7998878
+FastQC job submitted for ./fastqs/trim_galore/Sample_CT4_6126_pIAA_Q_SteadyState_S7_R1_001_val_1.fq.gz
+
+Submitted batch job 7998879
+FastQC job submitted for ./fastqs/trim_galore/Sample_CT4_6126_pIAA_Q_SteadyState_S7_R3_001_val_2.fq.gz
+
+
+# --------------------------------------
+Iteration:  49
+File base:  ./fastqs/trim_galore/Sample_CT6_7714_pIAA_Q_Nascent_S3
+       r1:  ./fastqs/trim_galore/Sample_CT6_7714_pIAA_Q_Nascent_S3_R1_001_val_1.fq.gz
+       r2:  ./fastqs/trim_galore/Sample_CT6_7714_pIAA_Q_Nascent_S3_R3_001_val_2.fq.gz
+   outdir:  ./FastQC/trim_galore
+
+Submitted batch job 7998880
+FastQC job submitted for ./fastqs/trim_galore/Sample_CT6_7714_pIAA_Q_Nascent_S3_R1_001_val_1.fq.gz
+
+Submitted batch job 7998881
+FastQC job submitted for ./fastqs/trim_galore/Sample_CT6_7714_pIAA_Q_Nascent_S3_R3_001_val_2.fq.gz
+
+
+# --------------------------------------
+Iteration:  50
+File base:  ./fastqs/trim_galore/Sample_CT6_7714_pIAA_Q_SteadyState_S8
+       r1:  ./fastqs/trim_galore/Sample_CT6_7714_pIAA_Q_SteadyState_S8_R1_001_val_1.fq.gz
+       r2:  ./fastqs/trim_galore/Sample_CT6_7714_pIAA_Q_SteadyState_S8_R3_001_val_2.fq.gz
+   outdir:  ./FastQC/trim_galore
+
+Submitted batch job 7998882
+FastQC job submitted for ./fastqs/trim_galore/Sample_CT6_7714_pIAA_Q_SteadyState_S8_R1_001_val_1.fq.gz
+
+Submitted batch job 7998883
+FastQC job submitted for ./fastqs/trim_galore/Sample_CT6_7714_pIAA_Q_SteadyState_S8_R3_001_val_2.fq.gz
+
+
+# --------------------------------------
+Iteration:  51
+File base:  ./fastqs/trim_galore/Sample_CT8_7716_pIAA_Q_Nascent_S4
+       r1:  ./fastqs/trim_galore/Sample_CT8_7716_pIAA_Q_Nascent_S4_R1_001_val_1.fq.gz
+       r2:  ./fastqs/trim_galore/Sample_CT8_7716_pIAA_Q_Nascent_S4_R3_001_val_2.fq.gz
+   outdir:  ./FastQC/trim_galore
+
+Submitted batch job 7998884
+FastQC job submitted for ./fastqs/trim_galore/Sample_CT8_7716_pIAA_Q_Nascent_S4_R1_001_val_1.fq.gz
+
+Submitted batch job 7998885
+FastQC job submitted for ./fastqs/trim_galore/Sample_CT8_7716_pIAA_Q_Nascent_S4_R3_001_val_2.fq.gz
+
+
+# --------------------------------------
+Iteration:  52
+File base:  ./fastqs/trim_galore/Sample_CT8_7716_pIAA_Q_SteadyState_S9
+       r1:  ./fastqs/trim_galore/Sample_CT8_7716_pIAA_Q_SteadyState_S9_R1_001_val_1.fq.gz
+       r2:  ./fastqs/trim_galore/Sample_CT8_7716_pIAA_Q_SteadyState_S9_R3_001_val_2.fq.gz
+   outdir:  ./FastQC/trim_galore
+
+Submitted batch job 7998886
+FastQC job submitted for ./fastqs/trim_galore/Sample_CT8_7716_pIAA_Q_SteadyState_S9_R1_001_val_1.fq.gz
+
+Submitted batch job 7998887
+FastQC job submitted for ./fastqs/trim_galore/Sample_CT8_7716_pIAA_Q_SteadyState_S9_R3_001_val_2.fq.gz
+
+
+# --------------------------------------
+Iteration:  53
+File base:  ./fastqs/trim_galore/Sample_CU11_5782_Q_Nascent_S11
+       r1:  ./fastqs/trim_galore/Sample_CU11_5782_Q_Nascent_S11_R1_001_val_1.fq.gz
+       r2:  ./fastqs/trim_galore/Sample_CU11_5782_Q_Nascent_S11_R3_001_val_2.fq.gz
+   outdir:  ./FastQC/trim_galore
+
+Submitted batch job 7998888
+FastQC job submitted for ./fastqs/trim_galore/Sample_CU11_5782_Q_Nascent_S11_R1_001_val_1.fq.gz
+
+Submitted batch job 7998889
+FastQC job submitted for ./fastqs/trim_galore/Sample_CU11_5782_Q_Nascent_S11_R3_001_val_2.fq.gz
+
+
+# --------------------------------------
+Iteration:  54
+File base:  ./fastqs/trim_galore/Sample_CU12_5782_Q_SteadyState_S12
+       r1:  ./fastqs/trim_galore/Sample_CU12_5782_Q_SteadyState_S12_R1_001_val_1.fq.gz
+       r2:  ./fastqs/trim_galore/Sample_CU12_5782_Q_SteadyState_S12_R3_001_val_2.fq.gz
+   outdir:  ./FastQC/trim_galore
+
+Submitted batch job 7998890
+FastQC job submitted for ./fastqs/trim_galore/Sample_CU12_5782_Q_SteadyState_S12_R1_001_val_1.fq.gz
+
+Submitted batch job 7998891
+FastQC job submitted for ./fastqs/trim_galore/Sample_CU12_5782_Q_SteadyState_S12_R3_001_val_2.fq.gz
 ```
 </details>
 <br />
@@ -9831,7 +10600,7 @@ Trinity_env
 #  cd into '2022_transcriptome-construction/results', e.g.,
 transcriptome && 
 	{
-		cd "results/2023-0115" || echo "cd'ing failed; check on this"
+		cd "results/2023-0115" || echo "cd'ing failed; check on this..."
 	}
 
 #  Directory
@@ -9854,48 +10623,50 @@ threads=16  # echo "${threads}"
 dir_genome="${HOME}/genomes/combined_SC_KL_20S/STAR"  # ., "${dir_genome}"
 
 #  Arrays
-unset fq_bases_gz
-typeset -a fq_bases_gz
+unset fq_bases
+typeset -a fq_bases
 while IFS=" " read -r -d $'\0'; do
-    fq_bases_gz+=( "${REPLY%_R?_001_val_?.fq.gz}" )
+    fq_bases+=( "${REPLY%_R?_001_val_?.fq.gz}" )
 done < <(\
-    find "./fastqs_trim-galore" \
+    find "./fastqs/trim_galore" \
         -type f \
         -name "*_val_?.fq.gz" \
         -print0 \
             | sort -z \
 )
-# echo_test "${fq_bases_gz[@]}"
+# echo_test "${fq_bases[@]}"
+# echo "${#fq_bases[@]}"  # 110
 
-IFS=" " read -r -a fq_bases_gz \
+IFS=" " read -r -a fq_bases \
     <<< "$(\
         tr ' ' '\n' \
-            <<< "${fq_bases_gz[@]}" \
+            <<< "${fq_bases[@]}" \
                 | sort -u \
                 | tr '\n' ' '\
     )"
-# echo_test "${fq_bases_gz[@]}"
+# echo_test "${fq_bases[@]}"
+# echo "${#fq_bases[@]}"  # 55
 
-unset fq_gz_r1
-unset fq_gz_r2
+unset fq_r1
+unset fq_r2
 unset fq_pre
-typeset -a fq_gz_r1
-typeset -a fq_gz_r2
+typeset -a fq_r1
+typeset -a fq_r2
 typeset -a fq_pre
-for i in "${fq_bases_gz[@]}"; do
-    fq_gz_r1+=( "${i}_R1_001_val_1.fq.gz" )
-    fq_gz_r2+=( "${i}_R3_001_val_2.fq.gz" )
+for i in "${fq_bases[@]}"; do
+    fq_r1+=( "${i}_R1_001_val_1.fq.gz" )
+    fq_r2+=( "${i}_R3_001_val_2.fq.gz" )
     fq_pre+=( "$(basename "${i}")" )
 done
-# echo_test "${fq_gz_r1[@]}"
-# echo_test "${fq_gz_r2[@]}"
+# echo_test "${fq_r1[@]}"
+# echo_test "${fq_r2[@]}"
 # echo_test "${fq_pre[@]}"
-# echo "${#fq_gz_r1[@]}"  # 12
-# echo "${#fq_gz_r2[@]}"  # 12
-# echo "${#fq_pre[@]}"  # 12
-#   ., "${fq_gz_r1[7]}"
-#   ., "${fq_gz_r2[7]}"
-# echo "${fq_gz_r2[7]}"
+# echo "${#fq_r1[@]}"  # 55
+# echo "${#fq_r2[@]}"  # 55
+# echo "${#fq_pre[@]}"  # 55
+#   ., "${fq_r1[37]}"
+#   ., "${fq_r2[37]}"
+# echo "${fq_r2[37]}"
 ```
 </details>
 <br />
@@ -9909,6 +10680,9 @@ done
 #!/bin/bash
 #DONTRUN #CONTINUE
 
+if [[ -f "./sh_err_out/${script_name}" ]]; then
+	rm "./sh_err_out/${script_name}"
+fi
 cat << script > "./sh_err_out/${script_name}"
 #!/bin/bash
 
@@ -9925,6 +10699,7 @@ read_1="\${1}"
 read_2="\${2}"
 prefix="\${3}"
 dir_genome="\${4}"
+multimappers="\${5}"
 
 echo -e "STAR \\ \n\
     --runMode alignReads \\ \n\
@@ -9937,7 +10712,7 @@ echo -e "STAR \\ \n\
     --readFilesCommand zcat \\ \n\
     --outFileNamePrefix "\${prefix}" \\ \n\
     --limitBAMsortRAM 4000000000 \\ \n\
-    --outFilterMultimapNmax 1 \\ \n\
+    --outFilterMultimapNmax "\${multimappers}" \\ \n\
     --winAnchorMultimapNmax 1000 \\ \n\
     --alignSJoverhangMin 8 \\ \n\
     --alignSJDBoverhangMin 1 \\ \n\
@@ -9959,7 +10734,7 @@ STAR \\
     --readFilesCommand zcat \\
     --outFileNamePrefix "\${prefix}" \\
     --limitBAMsortRAM 4000000000 \\
-    --outFilterMultimapNmax 1 \\
+    --outFilterMultimapNmax "\${multimappers}" \\
     --winAnchorMultimapNmax 1000 \\
     --alignSJoverhangMin 8 \\
     --alignSJDBoverhangMin 1 \\
@@ -9977,6 +10752,8 @@ script
 
 <a id="run-submit_starsh-on-fqgz-files"></a>
 ### Run `submit_STAR.sh` on `fq.gz` files
+*For a given read pair, allow up to 10 multimappers*
+
 <details>
 <summary><i>Code: Run submit_STAR.sh on fq.gz files</i></summary>
 
@@ -9984,22 +10761,28 @@ script
 #!/bin/bash
 #DONTRUN #CONTINUE
 
-x="${#fq_bases_gz[@]}"  # echo "${x}"
+x="${#fq_bases[@]}"  # echo "${x}"
 y=$(( x - 1 ))  # echo "${y}"
 for (( i=0; i<=y; i++ )); do
     echo "# --------------------------------------"
-    echo "Iteration:  ${i}"
-    echo "File base:  ${fq_bases_gz[${i}]}"
-    echo "       r1:  ${fq_gz_r1[${i}]}"
-    echo "       r2:  ${fq_gz_r2[${i}]}"
-    echo "   prefix:  ${fq_pre[${i}]}"
-    echo ""
+    echo "   Iteration:  ${i}"
+    echo "   File base:  ${fq_bases[${i}]}"
+    echo "          r1:  ${fq_r1[${i}]}"
+    echo "          r2:  ${fq_r2[${i}]}"
+    echo "      prefix:  ${fq_pre[${i}]}"
+    echo "      outdir:  ./bams/SC_KL_20S"
+    echo "      genome:  ${dir_genome}"
+    echo "multimappers:  10"
 
     sbatch "./sh_err_out/${script_name}" \
-    	"${fq_gz_r1[${i}]}" \
-    	"${fq_gz_r2[${i}]}" \
-    	"./bams/SC_KL_20S/${fq_pre[${i}]}" \
-    	"${dir_genome}"
+    	"${fq_r1[${i}]}" \
+    	"${fq_r2[${i}]}" \
+    	"./bams/SC_KL_20S/${fq_pre[${i}]}." \
+    	"${dir_genome}" \
+    	10
+    
+    echo ""
+    sleep 1  # Slow down rate of job submission
 
     echo ""
     echo ""
@@ -10013,149 +10796,1283 @@ done
 
 ```txt
 # --------------------------------------
-Iteration:  0
-File base:  ./fastqs_trim-galore/CW10_7747_8day_Q_IN_S5
-       r1:  ./fastqs_trim-galore/CW10_7747_8day_Q_IN_S5_R1_001_val_1.fq.gz
-       r2:  ./fastqs_trim-galore/CW10_7747_8day_Q_IN_S5_R3_001_val_2.fq.gz
-   prefix:  CW10_7747_8day_Q_IN_S5
+   Iteration:  0
+   File base:  ./fastqs/trim_galore/5781_G1_IN_S5
+          r1:  ./fastqs/trim_galore/5781_G1_IN_S5_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/5781_G1_IN_S5_R3_001_val_2.fq.gz
+      prefix:  5781_G1_IN_S5
+      outdir:  ./bams/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
 
-Submitted batch job 7958373
-
-
-# --------------------------------------
-Iteration:  1
-File base:  ./fastqs_trim-galore/CW10_7747_8day_Q_PD_S11
-       r1:  ./fastqs_trim-galore/CW10_7747_8day_Q_PD_S11_R1_001_val_1.fq.gz
-       r2:  ./fastqs_trim-galore/CW10_7747_8day_Q_PD_S11_R3_001_val_2.fq.gz
-   prefix:  CW10_7747_8day_Q_PD_S11
-
-Submitted batch job 7958374
+Submitted batch job 7998902
 
 
 # --------------------------------------
-Iteration:  2
-File base:  ./fastqs_trim-galore/CW12_7748_8day_Q_IN_S6
-       r1:  ./fastqs_trim-galore/CW12_7748_8day_Q_IN_S6_R1_001_val_1.fq.gz
-       r2:  ./fastqs_trim-galore/CW12_7748_8day_Q_IN_S6_R3_001_val_2.fq.gz
-   prefix:  CW12_7748_8day_Q_IN_S6
+   Iteration:  1
+   File base:  ./fastqs/trim_galore/5781_G1_IP_S1
+          r1:  ./fastqs/trim_galore/5781_G1_IP_S1_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/5781_G1_IP_S1_R3_001_val_2.fq.gz
+      prefix:  5781_G1_IP_S1
+      outdir:  ./bams/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
 
-Submitted batch job 7958375
-
-
-# --------------------------------------
-Iteration:  3
-File base:  ./fastqs_trim-galore/CW12_7748_8day_Q_PD_S12
-       r1:  ./fastqs_trim-galore/CW12_7748_8day_Q_PD_S12_R1_001_val_1.fq.gz
-       r2:  ./fastqs_trim-galore/CW12_7748_8day_Q_PD_S12_R3_001_val_2.fq.gz
-   prefix:  CW12_7748_8day_Q_PD_S12
-
-Submitted batch job 7958376
+Submitted batch job 7998903
 
 
 # --------------------------------------
-Iteration:  4
-File base:  ./fastqs_trim-galore/CW2_5781_8day_Q_IN_S1
-       r1:  ./fastqs_trim-galore/CW2_5781_8day_Q_IN_S1_R1_001_val_1.fq.gz
-       r2:  ./fastqs_trim-galore/CW2_5781_8day_Q_IN_S1_R3_001_val_2.fq.gz
-   prefix:  CW2_5781_8day_Q_IN_S1
+   Iteration:  2
+   File base:  ./fastqs/trim_galore/5781_Q_IN_S6
+          r1:  ./fastqs/trim_galore/5781_Q_IN_S6_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/5781_Q_IN_S6_R3_001_val_2.fq.gz
+      prefix:  5781_Q_IN_S6
+      outdir:  ./bams/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
 
-Submitted batch job 7958377
-
-
-# --------------------------------------
-Iteration:  5
-File base:  ./fastqs_trim-galore/CW2_5781_8day_Q_PD_S7
-       r1:  ./fastqs_trim-galore/CW2_5781_8day_Q_PD_S7_R1_001_val_1.fq.gz
-       r2:  ./fastqs_trim-galore/CW2_5781_8day_Q_PD_S7_R3_001_val_2.fq.gz
-   prefix:  CW2_5781_8day_Q_PD_S7
-
-Submitted batch job 7958378
+Submitted batch job 7998904
 
 
 # --------------------------------------
-Iteration:  6
-File base:  ./fastqs_trim-galore/CW4_5782_8day_Q_IN_S2
-       r1:  ./fastqs_trim-galore/CW4_5782_8day_Q_IN_S2_R1_001_val_1.fq.gz
-       r2:  ./fastqs_trim-galore/CW4_5782_8day_Q_IN_S2_R3_001_val_2.fq.gz
-   prefix:  CW4_5782_8day_Q_IN_S2
+   Iteration:  3
+   File base:  ./fastqs/trim_galore/5781_Q_IP_S2
+          r1:  ./fastqs/trim_galore/5781_Q_IP_S2_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/5781_Q_IP_S2_R3_001_val_2.fq.gz
+      prefix:  5781_Q_IP_S2
+      outdir:  ./bams/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
 
-Submitted batch job 7958379
-
-
-# --------------------------------------
-Iteration:  7
-File base:  ./fastqs_trim-galore/CW4_5782_8day_Q_PD_S8
-       r1:  ./fastqs_trim-galore/CW4_5782_8day_Q_PD_S8_R1_001_val_1.fq.gz
-       r2:  ./fastqs_trim-galore/CW4_5782_8day_Q_PD_S8_R3_001_val_2.fq.gz
-   prefix:  CW4_5782_8day_Q_PD_S8
-
-Submitted batch job 7958380
+Submitted batch job 7998905
 
 
 # --------------------------------------
-Iteration:  8
-File base:  ./fastqs_trim-galore/CW6_7078_8day_Q_IN_S3
-       r1:  ./fastqs_trim-galore/CW6_7078_8day_Q_IN_S3_R1_001_val_1.fq.gz
-       r2:  ./fastqs_trim-galore/CW6_7078_8day_Q_IN_S3_R3_001_val_2.fq.gz
-   prefix:  CW6_7078_8day_Q_IN_S3
+   Iteration:  4
+   File base:  ./fastqs/trim_galore/5782_G1_IN_S7
+          r1:  ./fastqs/trim_galore/5782_G1_IN_S7_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/5782_G1_IN_S7_R3_001_val_2.fq.gz
+      prefix:  5782_G1_IN_S7
+      outdir:  ./bams/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
 
-Submitted batch job 7958381
-
-
-# --------------------------------------
-Iteration:  9
-File base:  ./fastqs_trim-galore/CW6_7078_8day_Q_PD_S9
-       r1:  ./fastqs_trim-galore/CW6_7078_8day_Q_PD_S9_R1_001_val_1.fq.gz
-       r2:  ./fastqs_trim-galore/CW6_7078_8day_Q_PD_S9_R3_001_val_2.fq.gz
-   prefix:  CW6_7078_8day_Q_PD_S9
-
-Submitted batch job 7958382
+Submitted batch job 7998906
 
 
 # --------------------------------------
-Iteration:  10
-File base:  ./fastqs_trim-galore/CW8_7079_8day_Q_IN_S4
-       r1:  ./fastqs_trim-galore/CW8_7079_8day_Q_IN_S4_R1_001_val_1.fq.gz
-       r2:  ./fastqs_trim-galore/CW8_7079_8day_Q_IN_S4_R3_001_val_2.fq.gz
-   prefix:  CW8_7079_8day_Q_IN_S4
+   Iteration:  5
+   File base:  ./fastqs/trim_galore/5782_G1_IP_S3
+          r1:  ./fastqs/trim_galore/5782_G1_IP_S3_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/5782_G1_IP_S3_R3_001_val_2.fq.gz
+      prefix:  5782_G1_IP_S3
+      outdir:  ./bams/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
 
-Submitted batch job 7958383
+Submitted batch job 7998907
 
 
 # --------------------------------------
-Iteration:  11
-File base:  ./fastqs_trim-galore/CW8_7079_8day_Q_PD_S10
-       r1:  ./fastqs_trim-galore/CW8_7079_8day_Q_PD_S10_R1_001_val_1.fq.gz
-       r2:  ./fastqs_trim-galore/CW8_7079_8day_Q_PD_S10_R3_001_val_2.fq.gz
-   prefix:  CW8_7079_8day_Q_PD_S10
+   Iteration:  6
+   File base:  ./fastqs/trim_galore/5782_Q_IN_S8
+          r1:  ./fastqs/trim_galore/5782_Q_IN_S8_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/5782_Q_IN_S8_R3_001_val_2.fq.gz
+      prefix:  5782_Q_IN_S8
+      outdir:  ./bams/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
 
-Submitted batch job 7958384
+Submitted batch job 7998908
+
+
+# --------------------------------------
+   Iteration:  7
+   File base:  ./fastqs/trim_galore/5782_Q_IP_S4
+          r1:  ./fastqs/trim_galore/5782_Q_IP_S4_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/5782_Q_IP_S4_R3_001_val_2.fq.gz
+      prefix:  5782_Q_IP_S4
+      outdir:  ./bams/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 7998909
+
+
+# --------------------------------------
+   Iteration:  8
+   File base:  ./fastqs/trim_galore/CW10_7747_8day_Q_IN_S5
+          r1:  ./fastqs/trim_galore/CW10_7747_8day_Q_IN_S5_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/CW10_7747_8day_Q_IN_S5_R3_001_val_2.fq.gz
+      prefix:  CW10_7747_8day_Q_IN_S5
+      outdir:  ./bams/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 7998910
+
+
+# --------------------------------------
+   Iteration:  9
+   File base:  ./fastqs/trim_galore/CW10_7747_8day_Q_PD_S11
+          r1:  ./fastqs/trim_galore/CW10_7747_8day_Q_PD_S11_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/CW10_7747_8day_Q_PD_S11_R3_001_val_2.fq.gz
+      prefix:  CW10_7747_8day_Q_PD_S11
+      outdir:  ./bams/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 7998911
+
+
+# --------------------------------------
+   Iteration:  10
+   File base:  ./fastqs/trim_galore/CW12_7748_8day_Q_IN_S6
+          r1:  ./fastqs/trim_galore/CW12_7748_8day_Q_IN_S6_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/CW12_7748_8day_Q_IN_S6_R3_001_val_2.fq.gz
+      prefix:  CW12_7748_8day_Q_IN_S6
+      outdir:  ./bams/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 7998912
+
+
+# --------------------------------------
+   Iteration:  11
+   File base:  ./fastqs/trim_galore/CW12_7748_8day_Q_PD_S12
+          r1:  ./fastqs/trim_galore/CW12_7748_8day_Q_PD_S12_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/CW12_7748_8day_Q_PD_S12_R3_001_val_2.fq.gz
+      prefix:  CW12_7748_8day_Q_PD_S12
+      outdir:  ./bams/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 7998913
+
+
+# --------------------------------------
+   Iteration:  12
+   File base:  ./fastqs/trim_galore/CW2_5781_8day_Q_IN_S1
+          r1:  ./fastqs/trim_galore/CW2_5781_8day_Q_IN_S1_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/CW2_5781_8day_Q_IN_S1_R3_001_val_2.fq.gz
+      prefix:  CW2_5781_8day_Q_IN_S1
+      outdir:  ./bams/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 7998914
+
+
+# --------------------------------------
+   Iteration:  13
+   File base:  ./fastqs/trim_galore/CW2_5781_8day_Q_PD_S7
+          r1:  ./fastqs/trim_galore/CW2_5781_8day_Q_PD_S7_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/CW2_5781_8day_Q_PD_S7_R3_001_val_2.fq.gz
+      prefix:  CW2_5781_8day_Q_PD_S7
+      outdir:  ./bams/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 7998915
+
+
+# --------------------------------------
+   Iteration:  14
+   File base:  ./fastqs/trim_galore/CW4_5782_8day_Q_IN_S2
+          r1:  ./fastqs/trim_galore/CW4_5782_8day_Q_IN_S2_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/CW4_5782_8day_Q_IN_S2_R3_001_val_2.fq.gz
+      prefix:  CW4_5782_8day_Q_IN_S2
+      outdir:  ./bams/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 7998916
+
+
+# --------------------------------------
+   Iteration:  15
+   File base:  ./fastqs/trim_galore/CW4_5782_8day_Q_PD_S8
+          r1:  ./fastqs/trim_galore/CW4_5782_8day_Q_PD_S8_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/CW4_5782_8day_Q_PD_S8_R3_001_val_2.fq.gz
+      prefix:  CW4_5782_8day_Q_PD_S8
+      outdir:  ./bams/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 7998917
+
+
+# --------------------------------------
+   Iteration:  16
+   File base:  ./fastqs/trim_galore/CW6_7078_8day_Q_IN_S3
+          r1:  ./fastqs/trim_galore/CW6_7078_8day_Q_IN_S3_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/CW6_7078_8day_Q_IN_S3_R3_001_val_2.fq.gz
+      prefix:  CW6_7078_8day_Q_IN_S3
+      outdir:  ./bams/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 7998918
+
+
+# --------------------------------------
+   Iteration:  17
+   File base:  ./fastqs/trim_galore/CW6_7078_8day_Q_PD_S9
+          r1:  ./fastqs/trim_galore/CW6_7078_8day_Q_PD_S9_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/CW6_7078_8day_Q_PD_S9_R3_001_val_2.fq.gz
+      prefix:  CW6_7078_8day_Q_PD_S9
+      outdir:  ./bams/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 7998919
+
+
+# --------------------------------------
+   Iteration:  18
+   File base:  ./fastqs/trim_galore/CW8_7079_8day_Q_IN_S4
+          r1:  ./fastqs/trim_galore/CW8_7079_8day_Q_IN_S4_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/CW8_7079_8day_Q_IN_S4_R3_001_val_2.fq.gz
+      prefix:  CW8_7079_8day_Q_IN_S4
+      outdir:  ./bams/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 7998920
+
+
+# --------------------------------------
+   Iteration:  19
+   File base:  ./fastqs/trim_galore/CW8_7079_8day_Q_PD_S10
+          r1:  ./fastqs/trim_galore/CW8_7079_8day_Q_PD_S10_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/CW8_7079_8day_Q_PD_S10_R3_001_val_2.fq.gz
+      prefix:  CW8_7079_8day_Q_PD_S10
+      outdir:  ./bams/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 7998921
+
+
+# --------------------------------------
+   Iteration:  20
+   File base:  ./fastqs/trim_galore/SAMPLE_BM10_DSp48_5781_S22
+          r1:  ./fastqs/trim_galore/SAMPLE_BM10_DSp48_5781_S22_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/SAMPLE_BM10_DSp48_5781_S22_R3_001_val_2.fq.gz
+      prefix:  SAMPLE_BM10_DSp48_5781_S22
+      outdir:  ./bams/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 7998922
+
+
+# --------------------------------------
+   Iteration:  21
+   File base:  ./fastqs/trim_galore/SAMPLE_BM11_DSp48_7080_S23
+          r1:  ./fastqs/trim_galore/SAMPLE_BM11_DSp48_7080_S23_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/SAMPLE_BM11_DSp48_7080_S23_R3_001_val_2.fq.gz
+      prefix:  SAMPLE_BM11_DSp48_7080_S23
+      outdir:  ./bams/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 7998923
+
+
+# --------------------------------------
+   Iteration:  22
+   File base:  ./fastqs/trim_galore/SAMPLE_BM1_DSm2_5781_S13
+          r1:  ./fastqs/trim_galore/SAMPLE_BM1_DSm2_5781_S13_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/SAMPLE_BM1_DSm2_5781_S13_R3_001_val_2.fq.gz
+      prefix:  SAMPLE_BM1_DSm2_5781_S13
+      outdir:  ./bams/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 7998924
+
+
+# --------------------------------------
+   Iteration:  23
+   File base:  ./fastqs/trim_galore/SAMPLE_BM2_DSm2_7080_S14
+          r1:  ./fastqs/trim_galore/SAMPLE_BM2_DSm2_7080_S14_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/SAMPLE_BM2_DSm2_7080_S14_R3_001_val_2.fq.gz
+      prefix:  SAMPLE_BM2_DSm2_7080_S14
+      outdir:  ./bams/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 7998925
+
+
+# --------------------------------------
+   Iteration:  24
+   File base:  ./fastqs/trim_galore/SAMPLE_BM3_DSm2_7079_S15
+          r1:  ./fastqs/trim_galore/SAMPLE_BM3_DSm2_7079_S15_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/SAMPLE_BM3_DSm2_7079_S15_R3_001_val_2.fq.gz
+      prefix:  SAMPLE_BM3_DSm2_7079_S15
+      outdir:  ./bams/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 7998926
+
+
+# --------------------------------------
+   Iteration:  25
+   File base:  ./fastqs/trim_galore/SAMPLE_BM4_DSp2_5781_S16
+          r1:  ./fastqs/trim_galore/SAMPLE_BM4_DSp2_5781_S16_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/SAMPLE_BM4_DSp2_5781_S16_R3_001_val_2.fq.gz
+      prefix:  SAMPLE_BM4_DSp2_5781_S16
+      outdir:  ./bams/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 7998927
+
+
+# --------------------------------------
+   Iteration:  26
+   File base:  ./fastqs/trim_galore/SAMPLE_BM5_DSp2_7080_S17
+          r1:  ./fastqs/trim_galore/SAMPLE_BM5_DSp2_7080_S17_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/SAMPLE_BM5_DSp2_7080_S17_R3_001_val_2.fq.gz
+      prefix:  SAMPLE_BM5_DSp2_7080_S17
+      outdir:  ./bams/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 7998928
+
+
+# --------------------------------------
+   Iteration:  27
+   File base:  ./fastqs/trim_galore/SAMPLE_BM6_DSp2_7079_S18
+          r1:  ./fastqs/trim_galore/SAMPLE_BM6_DSp2_7079_S18_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/SAMPLE_BM6_DSp2_7079_S18_R3_001_val_2.fq.gz
+      prefix:  SAMPLE_BM6_DSp2_7079_S18
+      outdir:  ./bams/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 7998929
+
+
+# --------------------------------------
+   Iteration:  28
+   File base:  ./fastqs/trim_galore/SAMPLE_BM7_DSp24_5781_S19
+          r1:  ./fastqs/trim_galore/SAMPLE_BM7_DSp24_5781_S19_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/SAMPLE_BM7_DSp24_5781_S19_R3_001_val_2.fq.gz
+      prefix:  SAMPLE_BM7_DSp24_5781_S19
+      outdir:  ./bams/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 7998930
+
+
+# --------------------------------------
+   Iteration:  29
+   File base:  ./fastqs/trim_galore/SAMPLE_BM8_DSp24_7080_S20
+          r1:  ./fastqs/trim_galore/SAMPLE_BM8_DSp24_7080_S20_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/SAMPLE_BM8_DSp24_7080_S20_R3_001_val_2.fq.gz
+      prefix:  SAMPLE_BM8_DSp24_7080_S20
+      outdir:  ./bams/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 7998931
+
+
+# --------------------------------------
+   Iteration:  30
+   File base:  ./fastqs/trim_galore/SAMPLE_BM9_DSp24_7079_S21
+          r1:  ./fastqs/trim_galore/SAMPLE_BM9_DSp24_7079_S21_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/SAMPLE_BM9_DSp24_7079_S21_R3_001_val_2.fq.gz
+      prefix:  SAMPLE_BM9_DSp24_7079_S21
+      outdir:  ./bams/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 7998932
+
+
+# --------------------------------------
+   Iteration:  31
+   File base:  ./fastqs/trim_galore/SAMPLE_Bp10_DSp48_5782_S10
+          r1:  ./fastqs/trim_galore/SAMPLE_Bp10_DSp48_5782_S10_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/SAMPLE_Bp10_DSp48_5782_S10_R3_001_val_2.fq.gz
+      prefix:  SAMPLE_Bp10_DSp48_5782_S10
+      outdir:  ./bams/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 7998933
+
+
+# --------------------------------------
+   Iteration:  32
+   File base:  ./fastqs/trim_galore/SAMPLE_Bp11_DSp48_7081_S11
+          r1:  ./fastqs/trim_galore/SAMPLE_Bp11_DSp48_7081_S11_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/SAMPLE_Bp11_DSp48_7081_S11_R3_001_val_2.fq.gz
+      prefix:  SAMPLE_Bp11_DSp48_7081_S11
+      outdir:  ./bams/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 7998934
+
+
+# --------------------------------------
+   Iteration:  33
+   File base:  ./fastqs/trim_galore/SAMPLE_Bp12_DSp48_7078_S12
+          r1:  ./fastqs/trim_galore/SAMPLE_Bp12_DSp48_7078_S12_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/SAMPLE_Bp12_DSp48_7078_S12_R3_001_val_2.fq.gz
+      prefix:  SAMPLE_Bp12_DSp48_7078_S12
+      outdir:  ./bams/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 7998935
+
+
+# --------------------------------------
+   Iteration:  34
+   File base:  ./fastqs/trim_galore/SAMPLE_Bp1_DSm2_5782_S1
+          r1:  ./fastqs/trim_galore/SAMPLE_Bp1_DSm2_5782_S1_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/SAMPLE_Bp1_DSm2_5782_S1_R3_001_val_2.fq.gz
+      prefix:  SAMPLE_Bp1_DSm2_5782_S1
+      outdir:  ./bams/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 7998936
+
+
+# --------------------------------------
+   Iteration:  35
+   File base:  ./fastqs/trim_galore/SAMPLE_Bp2_DSm2_7081_S2
+          r1:  ./fastqs/trim_galore/SAMPLE_Bp2_DSm2_7081_S2_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/SAMPLE_Bp2_DSm2_7081_S2_R3_001_val_2.fq.gz
+      prefix:  SAMPLE_Bp2_DSm2_7081_S2
+      outdir:  ./bams/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 7998937
+
+
+# --------------------------------------
+   Iteration:  36
+   File base:  ./fastqs/trim_galore/SAMPLE_Bp3_DSm2_7078_S3
+          r1:  ./fastqs/trim_galore/SAMPLE_Bp3_DSm2_7078_S3_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/SAMPLE_Bp3_DSm2_7078_S3_R3_001_val_2.fq.gz
+      prefix:  SAMPLE_Bp3_DSm2_7078_S3
+      outdir:  ./bams/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 7998938
+
+
+# --------------------------------------
+   Iteration:  37
+   File base:  ./fastqs/trim_galore/SAMPLE_Bp4_DSp2_5782_S4
+          r1:  ./fastqs/trim_galore/SAMPLE_Bp4_DSp2_5782_S4_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/SAMPLE_Bp4_DSp2_5782_S4_R3_001_val_2.fq.gz
+      prefix:  SAMPLE_Bp4_DSp2_5782_S4
+      outdir:  ./bams/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 7998939
+
+
+# --------------------------------------
+   Iteration:  38
+   File base:  ./fastqs/trim_galore/SAMPLE_Bp5_DSp2_7081_S5
+          r1:  ./fastqs/trim_galore/SAMPLE_Bp5_DSp2_7081_S5_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/SAMPLE_Bp5_DSp2_7081_S5_R3_001_val_2.fq.gz
+      prefix:  SAMPLE_Bp5_DSp2_7081_S5
+      outdir:  ./bams/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 7998940
+
+
+# --------------------------------------
+   Iteration:  39
+   File base:  ./fastqs/trim_galore/SAMPLE_Bp6_DSp2_7078_S6
+          r1:  ./fastqs/trim_galore/SAMPLE_Bp6_DSp2_7078_S6_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/SAMPLE_Bp6_DSp2_7078_S6_R3_001_val_2.fq.gz
+      prefix:  SAMPLE_Bp6_DSp2_7078_S6
+      outdir:  ./bams/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 7998941
+
+
+# --------------------------------------
+   Iteration:  40
+   File base:  ./fastqs/trim_galore/SAMPLE_Bp7_DSp24_5782_S7
+          r1:  ./fastqs/trim_galore/SAMPLE_Bp7_DSp24_5782_S7_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/SAMPLE_Bp7_DSp24_5782_S7_R3_001_val_2.fq.gz
+      prefix:  SAMPLE_Bp7_DSp24_5782_S7
+      outdir:  ./bams/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 7998942
+
+
+# --------------------------------------
+   Iteration:  41
+   File base:  ./fastqs/trim_galore/SAMPLE_Bp8_DSp24_7081_S8
+          r1:  ./fastqs/trim_galore/SAMPLE_Bp8_DSp24_7081_S8_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/SAMPLE_Bp8_DSp24_7081_S8_R3_001_val_2.fq.gz
+      prefix:  SAMPLE_Bp8_DSp24_7081_S8
+      outdir:  ./bams/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 7998943
+
+
+# --------------------------------------
+   Iteration:  42
+   File base:  ./fastqs/trim_galore/SAMPLE_Bp9_DSp24_7078_S9
+          r1:  ./fastqs/trim_galore/SAMPLE_Bp9_DSp24_7078_S9_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/SAMPLE_Bp9_DSp24_7078_S9_R3_001_val_2.fq.gz
+      prefix:  SAMPLE_Bp9_DSp24_7078_S9
+      outdir:  ./bams/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 7998944
+
+
+# --------------------------------------
+   Iteration:  43
+   File base:  ./fastqs/trim_galore/Sample_CT10_7718_pIAA_Q_Nascent_S5
+          r1:  ./fastqs/trim_galore/Sample_CT10_7718_pIAA_Q_Nascent_S5_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/Sample_CT10_7718_pIAA_Q_Nascent_S5_R3_001_val_2.fq.gz
+      prefix:  Sample_CT10_7718_pIAA_Q_Nascent_S5
+      outdir:  ./bams/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 7998945
+
+
+# --------------------------------------
+   Iteration:  44
+   File base:  ./fastqs/trim_galore/Sample_CT10_7718_pIAA_Q_SteadyState_S10
+          r1:  ./fastqs/trim_galore/Sample_CT10_7718_pIAA_Q_SteadyState_S10_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/Sample_CT10_7718_pIAA_Q_SteadyState_S10_R3_001_val_2.fq.gz
+      prefix:  Sample_CT10_7718_pIAA_Q_SteadyState_S10
+      outdir:  ./bams/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 7998946
+
+
+# --------------------------------------
+   Iteration:  45
+   File base:  ./fastqs/trim_galore/Sample_CT2_6125_pIAA_Q_Nascent_S1
+          r1:  ./fastqs/trim_galore/Sample_CT2_6125_pIAA_Q_Nascent_S1_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/Sample_CT2_6125_pIAA_Q_Nascent_S1_R3_001_val_2.fq.gz
+      prefix:  Sample_CT2_6125_pIAA_Q_Nascent_S1
+      outdir:  ./bams/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 7998947
+
+
+# --------------------------------------
+   Iteration:  46
+   File base:  ./fastqs/trim_galore/Sample_CT2_6125_pIAA_Q_SteadyState_S6
+          r1:  ./fastqs/trim_galore/Sample_CT2_6125_pIAA_Q_SteadyState_S6_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/Sample_CT2_6125_pIAA_Q_SteadyState_S6_R3_001_val_2.fq.gz
+      prefix:  Sample_CT2_6125_pIAA_Q_SteadyState_S6
+      outdir:  ./bams/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 7998948
+
+
+# --------------------------------------
+   Iteration:  47
+   File base:  ./fastqs/trim_galore/Sample_CT4_6126_pIAA_Q_Nascent_S2
+          r1:  ./fastqs/trim_galore/Sample_CT4_6126_pIAA_Q_Nascent_S2_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/Sample_CT4_6126_pIAA_Q_Nascent_S2_R3_001_val_2.fq.gz
+      prefix:  Sample_CT4_6126_pIAA_Q_Nascent_S2
+      outdir:  ./bams/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 7998949
+
+
+# --------------------------------------
+   Iteration:  48
+   File base:  ./fastqs/trim_galore/Sample_CT4_6126_pIAA_Q_SteadyState_S7
+          r1:  ./fastqs/trim_galore/Sample_CT4_6126_pIAA_Q_SteadyState_S7_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/Sample_CT4_6126_pIAA_Q_SteadyState_S7_R3_001_val_2.fq.gz
+      prefix:  Sample_CT4_6126_pIAA_Q_SteadyState_S7
+      outdir:  ./bams/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 7998950
+
+
+# --------------------------------------
+   Iteration:  49
+   File base:  ./fastqs/trim_galore/Sample_CT6_7714_pIAA_Q_Nascent_S3
+          r1:  ./fastqs/trim_galore/Sample_CT6_7714_pIAA_Q_Nascent_S3_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/Sample_CT6_7714_pIAA_Q_Nascent_S3_R3_001_val_2.fq.gz
+      prefix:  Sample_CT6_7714_pIAA_Q_Nascent_S3
+      outdir:  ./bams/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 7998951
+
+
+# --------------------------------------
+   Iteration:  50
+   File base:  ./fastqs/trim_galore/Sample_CT6_7714_pIAA_Q_SteadyState_S8
+          r1:  ./fastqs/trim_galore/Sample_CT6_7714_pIAA_Q_SteadyState_S8_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/Sample_CT6_7714_pIAA_Q_SteadyState_S8_R3_001_val_2.fq.gz
+      prefix:  Sample_CT6_7714_pIAA_Q_SteadyState_S8
+      outdir:  ./bams/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 7998952
+
+
+# --------------------------------------
+   Iteration:  51
+   File base:  ./fastqs/trim_galore/Sample_CT8_7716_pIAA_Q_Nascent_S4
+          r1:  ./fastqs/trim_galore/Sample_CT8_7716_pIAA_Q_Nascent_S4_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/Sample_CT8_7716_pIAA_Q_Nascent_S4_R3_001_val_2.fq.gz
+      prefix:  Sample_CT8_7716_pIAA_Q_Nascent_S4
+      outdir:  ./bams/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 7998953
+
+
+# --------------------------------------
+   Iteration:  52
+   File base:  ./fastqs/trim_galore/Sample_CT8_7716_pIAA_Q_SteadyState_S9
+          r1:  ./fastqs/trim_galore/Sample_CT8_7716_pIAA_Q_SteadyState_S9_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/Sample_CT8_7716_pIAA_Q_SteadyState_S9_R3_001_val_2.fq.gz
+      prefix:  Sample_CT8_7716_pIAA_Q_SteadyState_S9
+      outdir:  ./bams/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 7998954
+
+
+# --------------------------------------
+   Iteration:  53
+   File base:  ./fastqs/trim_galore/Sample_CU11_5782_Q_Nascent_S11
+          r1:  ./fastqs/trim_galore/Sample_CU11_5782_Q_Nascent_S11_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/Sample_CU11_5782_Q_Nascent_S11_R3_001_val_2.fq.gz
+      prefix:  Sample_CU11_5782_Q_Nascent_S11
+      outdir:  ./bams/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 7998955
+
+
+# --------------------------------------
+   Iteration:  54
+   File base:  ./fastqs/trim_galore/Sample_CU12_5782_Q_SteadyState_S12
+          r1:  ./fastqs/trim_galore/Sample_CU12_5782_Q_SteadyState_S12_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/Sample_CU12_5782_Q_SteadyState_S12_R3_001_val_2.fq.gz
+      prefix:  Sample_CU12_5782_Q_SteadyState_S12
+      outdir:  ./bams/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 7998956
 ```
 </details>
 <br />
 
 <a id="clean-up-results-from-star-alignment-then-index-bams"></a>
 #### Clean up results from `STAR` alignment, then index `bam`s
-<a id="get-situated-6"></a>
-##### Get situated
-```bash
-#!/bin/bash
-#DONTRUN #CONTINUE
-
-```
-
 <a id="clean-uprename-results-of-star-alignment"></a>
 ##### Clean up/rename results of `STAR` alignment
+<details>
+<summary><i>Code, notes: Clean up/rename results of `STAR` alignment</i></summary>
+
 ```bash
 #!/bin/bash
 #DONTRUN #CONTINUE
 
+cd bams/SC_KL_20S \
+	|| echo "cd'ing failed; check on this..."
+
+#  Working things out...
+rm -r *._STARtmp
+
+rename -n 's/.out./.multi-10./g' *
+rename 's/.out./.multi-10./g' *
+
+rename -n 's/.Log./.multi-10.Log./g' *
+rename 's/.Log./.multi-10.Log./g' *
+
+rename -n 's/.SJ.multi-10.tab/.multi-10.SJ.tab/g' *
+rename 's/.SJ.multi-10.tab/.multi-10.SJ.tab/g' *
+
+rename -n 's/.Aligned.sortedByCoord././g' *
+rename 's/.Aligned.sortedByCoord././g' *
+
 ```
+
+Moving forward, perform the following steps:
+1. `rm -r *._STARtmp`
+2. `rename 's/.Log./.multi-10.Log./g' *`
+3. `rename 's/.SJ.out.tab/.multi-10.SJ.tab/g' *`
+4. `rename 's/.Aligned.sortedByCoord././g' *`
+5. `rename 's/.out.bam/.multi-10.bam/g' *`
+</details>
+<br />
+
+<details>
+<summary><i>Printed: Clean up/rename results of `STAR` alignment</i></summary>
+
+```txt
+❯ rename -n 's/.out./.multi-10./g' *
+'5781_G1_IN_S5.Aligned.sortedByCoord.out.bam' would be renamed to '5781_G1_IN_S5.Aligned.sortedByCoord.multi-10.bam'
+'5781_G1_IN_S5.SJ.out.tab' would be renamed to '5781_G1_IN_S5.SJ.multi-10.tab'
+'5781_G1_IP_S1.Aligned.sortedByCoord.out.bam' would be renamed to '5781_G1_IP_S1.Aligned.sortedByCoord.multi-10.bam'
+'5781_G1_IP_S1.SJ.out.tab' would be renamed to '5781_G1_IP_S1.SJ.multi-10.tab'
+'5781_Q_IN_S6.Aligned.sortedByCoord.out.bam' would be renamed to '5781_Q_IN_S6.Aligned.sortedByCoord.multi-10.bam'
+'5781_Q_IN_S6.SJ.out.tab' would be renamed to '5781_Q_IN_S6.SJ.multi-10.tab'
+'5781_Q_IP_S2.Aligned.sortedByCoord.out.bam' would be renamed to '5781_Q_IP_S2.Aligned.sortedByCoord.multi-10.bam'
+'5781_Q_IP_S2.SJ.out.tab' would be renamed to '5781_Q_IP_S2.SJ.multi-10.tab'
+'5782_G1_IN_S7.Aligned.sortedByCoord.out.bam' would be renamed to '5782_G1_IN_S7.Aligned.sortedByCoord.multi-10.bam'
+'5782_G1_IN_S7.SJ.out.tab' would be renamed to '5782_G1_IN_S7.SJ.multi-10.tab'
+'5782_G1_IP_S3.Aligned.sortedByCoord.out.bam' would be renamed to '5782_G1_IP_S3.Aligned.sortedByCoord.multi-10.bam'
+'5782_G1_IP_S3.SJ.out.tab' would be renamed to '5782_G1_IP_S3.SJ.multi-10.tab'
+'5782_Q_IN_S8.Aligned.sortedByCoord.out.bam' would be renamed to '5782_Q_IN_S8.Aligned.sortedByCoord.multi-10.bam'
+'5782_Q_IN_S8.SJ.out.tab' would be renamed to '5782_Q_IN_S8.SJ.multi-10.tab'
+'5782_Q_IP_S4.Aligned.sortedByCoord.out.bam' would be renamed to '5782_Q_IP_S4.Aligned.sortedByCoord.multi-10.bam'
+'5782_Q_IP_S4.SJ.out.tab' would be renamed to '5782_Q_IP_S4.SJ.multi-10.tab'
+'CW10_7747_8day_Q_IN_S5.Aligned.sortedByCoord.out.bam' would be renamed to 'CW10_7747_8day_Q_IN_S5.Aligned.sortedByCoord.multi-10.bam'
+'CW10_7747_8day_Q_IN_S5.SJ.out.tab' would be renamed to 'CW10_7747_8day_Q_IN_S5.SJ.multi-10.tab'
+'CW10_7747_8day_Q_PD_S11.Aligned.sortedByCoord.out.bam' would be renamed to 'CW10_7747_8day_Q_PD_S11.Aligned.sortedByCoord.multi-10.bam'
+'CW10_7747_8day_Q_PD_S11.SJ.out.tab' would be renamed to 'CW10_7747_8day_Q_PD_S11.SJ.multi-10.tab'
+'CW12_7748_8day_Q_IN_S6.Aligned.sortedByCoord.out.bam' would be renamed to 'CW12_7748_8day_Q_IN_S6.Aligned.sortedByCoord.multi-10.bam'
+'CW12_7748_8day_Q_IN_S6.SJ.out.tab' would be renamed to 'CW12_7748_8day_Q_IN_S6.SJ.multi-10.tab'
+'CW12_7748_8day_Q_PD_S12.Aligned.sortedByCoord.out.bam' would be renamed to 'CW12_7748_8day_Q_PD_S12.Aligned.sortedByCoord.multi-10.bam'
+'CW12_7748_8day_Q_PD_S12.SJ.out.tab' would be renamed to 'CW12_7748_8day_Q_PD_S12.SJ.multi-10.tab'
+'CW2_5781_8day_Q_IN_S1.Aligned.sortedByCoord.out.bam' would be renamed to 'CW2_5781_8day_Q_IN_S1.Aligned.sortedByCoord.multi-10.bam'
+'CW2_5781_8day_Q_IN_S1.SJ.out.tab' would be renamed to 'CW2_5781_8day_Q_IN_S1.SJ.multi-10.tab'
+'CW2_5781_8day_Q_PD_S7.Aligned.sortedByCoord.out.bam' would be renamed to 'CW2_5781_8day_Q_PD_S7.Aligned.sortedByCoord.multi-10.bam'
+'CW2_5781_8day_Q_PD_S7.SJ.out.tab' would be renamed to 'CW2_5781_8day_Q_PD_S7.SJ.multi-10.tab'
+'CW4_5782_8day_Q_IN_S2.Aligned.sortedByCoord.out.bam' would be renamed to 'CW4_5782_8day_Q_IN_S2.Aligned.sortedByCoord.multi-10.bam'
+'CW4_5782_8day_Q_IN_S2.SJ.out.tab' would be renamed to 'CW4_5782_8day_Q_IN_S2.SJ.multi-10.tab'
+'CW4_5782_8day_Q_PD_S8.Aligned.sortedByCoord.out.bam' would be renamed to 'CW4_5782_8day_Q_PD_S8.Aligned.sortedByCoord.multi-10.bam'
+'CW4_5782_8day_Q_PD_S8.SJ.out.tab' would be renamed to 'CW4_5782_8day_Q_PD_S8.SJ.multi-10.tab'
+'CW6_7078_8day_Q_IN_S3.Aligned.sortedByCoord.out.bam' would be renamed to 'CW6_7078_8day_Q_IN_S3.Aligned.sortedByCoord.multi-10.bam'
+'CW6_7078_8day_Q_IN_S3.SJ.out.tab' would be renamed to 'CW6_7078_8day_Q_IN_S3.SJ.multi-10.tab'
+'CW6_7078_8day_Q_PD_S9.Aligned.sortedByCoord.out.bam' would be renamed to 'CW6_7078_8day_Q_PD_S9.Aligned.sortedByCoord.multi-10.bam'
+'CW6_7078_8day_Q_PD_S9.SJ.out.tab' would be renamed to 'CW6_7078_8day_Q_PD_S9.SJ.multi-10.tab'
+'CW8_7079_8day_Q_IN_S4.Aligned.sortedByCoord.out.bam' would be renamed to 'CW8_7079_8day_Q_IN_S4.Aligned.sortedByCoord.multi-10.bam'
+'CW8_7079_8day_Q_IN_S4.SJ.out.tab' would be renamed to 'CW8_7079_8day_Q_IN_S4.SJ.multi-10.tab'
+'CW8_7079_8day_Q_PD_S10.Aligned.sortedByCoord.out.bam' would be renamed to 'CW8_7079_8day_Q_PD_S10.Aligned.sortedByCoord.multi-10.bam'
+'CW8_7079_8day_Q_PD_S10.SJ.out.tab' would be renamed to 'CW8_7079_8day_Q_PD_S10.SJ.multi-10.tab'
+'SAMPLE_BM10_DSp48_5781_S22.Aligned.sortedByCoord.out.bam' would be renamed to 'SAMPLE_BM10_DSp48_5781_S22.Aligned.sortedByCoord.multi-10.bam'
+'SAMPLE_BM10_DSp48_5781_S22.SJ.out.tab' would be renamed to 'SAMPLE_BM10_DSp48_5781_S22.SJ.multi-10.tab'
+'SAMPLE_BM11_DSp48_7080_S23.Aligned.sortedByCoord.out.bam' would be renamed to 'SAMPLE_BM11_DSp48_7080_S23.Aligned.sortedByCoord.multi-10.bam'
+'SAMPLE_BM11_DSp48_7080_S23.SJ.out.tab' would be renamed to 'SAMPLE_BM11_DSp48_7080_S23.SJ.multi-10.tab'
+'SAMPLE_BM1_DSm2_5781_S13.Aligned.sortedByCoord.out.bam' would be renamed to 'SAMPLE_BM1_DSm2_5781_S13.Aligned.sortedByCoord.multi-10.bam'
+'SAMPLE_BM1_DSm2_5781_S13.SJ.out.tab' would be renamed to 'SAMPLE_BM1_DSm2_5781_S13.SJ.multi-10.tab'
+'SAMPLE_BM2_DSm2_7080_S14.Aligned.sortedByCoord.out.bam' would be renamed to 'SAMPLE_BM2_DSm2_7080_S14.Aligned.sortedByCoord.multi-10.bam'
+'SAMPLE_BM2_DSm2_7080_S14.SJ.out.tab' would be renamed to 'SAMPLE_BM2_DSm2_7080_S14.SJ.multi-10.tab'
+'SAMPLE_BM3_DSm2_7079_S15.Aligned.sortedByCoord.out.bam' would be renamed to 'SAMPLE_BM3_DSm2_7079_S15.Aligned.sortedByCoord.multi-10.bam'
+'SAMPLE_BM3_DSm2_7079_S15.SJ.out.tab' would be renamed to 'SAMPLE_BM3_DSm2_7079_S15.SJ.multi-10.tab'
+'SAMPLE_BM4_DSp2_5781_S16.Aligned.sortedByCoord.out.bam' would be renamed to 'SAMPLE_BM4_DSp2_5781_S16.Aligned.sortedByCoord.multi-10.bam'
+'SAMPLE_BM4_DSp2_5781_S16.SJ.out.tab' would be renamed to 'SAMPLE_BM4_DSp2_5781_S16.SJ.multi-10.tab'
+'SAMPLE_BM5_DSp2_7080_S17.Aligned.sortedByCoord.out.bam' would be renamed to 'SAMPLE_BM5_DSp2_7080_S17.Aligned.sortedByCoord.multi-10.bam'
+'SAMPLE_BM5_DSp2_7080_S17.SJ.out.tab' would be renamed to 'SAMPLE_BM5_DSp2_7080_S17.SJ.multi-10.tab'
+'SAMPLE_BM6_DSp2_7079_S18.Aligned.sortedByCoord.out.bam' would be renamed to 'SAMPLE_BM6_DSp2_7079_S18.Aligned.sortedByCoord.multi-10.bam'
+'SAMPLE_BM6_DSp2_7079_S18.SJ.out.tab' would be renamed to 'SAMPLE_BM6_DSp2_7079_S18.SJ.multi-10.tab'
+'SAMPLE_BM7_DSp24_5781_S19.Aligned.sortedByCoord.out.bam' would be renamed to 'SAMPLE_BM7_DSp24_5781_S19.Aligned.sortedByCoord.multi-10.bam'
+'SAMPLE_BM7_DSp24_5781_S19.SJ.out.tab' would be renamed to 'SAMPLE_BM7_DSp24_5781_S19.SJ.multi-10.tab'
+'SAMPLE_BM8_DSp24_7080_S20.Aligned.sortedByCoord.out.bam' would be renamed to 'SAMPLE_BM8_DSp24_7080_S20.Aligned.sortedByCoord.multi-10.bam'
+'SAMPLE_BM8_DSp24_7080_S20.SJ.out.tab' would be renamed to 'SAMPLE_BM8_DSp24_7080_S20.SJ.multi-10.tab'
+'SAMPLE_BM9_DSp24_7079_S21.Aligned.sortedByCoord.out.bam' would be renamed to 'SAMPLE_BM9_DSp24_7079_S21.Aligned.sortedByCoord.multi-10.bam'
+'SAMPLE_BM9_DSp24_7079_S21.SJ.out.tab' would be renamed to 'SAMPLE_BM9_DSp24_7079_S21.SJ.multi-10.tab'
+'SAMPLE_Bp10_DSp48_5782_S10.Aligned.sortedByCoord.out.bam' would be renamed to 'SAMPLE_Bp10_DSp48_5782_S10.Aligned.sortedByCoord.multi-10.bam'
+'SAMPLE_Bp10_DSp48_5782_S10.SJ.out.tab' would be renamed to 'SAMPLE_Bp10_DSp48_5782_S10.SJ.multi-10.tab'
+'SAMPLE_Bp11_DSp48_7081_S11.Aligned.sortedByCoord.out.bam' would be renamed to 'SAMPLE_Bp11_DSp48_7081_S11.Aligned.sortedByCoord.multi-10.bam'
+'SAMPLE_Bp11_DSp48_7081_S11.SJ.out.tab' would be renamed to 'SAMPLE_Bp11_DSp48_7081_S11.SJ.multi-10.tab'
+'SAMPLE_Bp12_DSp48_7078_S12.Aligned.sortedByCoord.out.bam' would be renamed to 'SAMPLE_Bp12_DSp48_7078_S12.Aligned.sortedByCoord.multi-10.bam'
+'SAMPLE_Bp12_DSp48_7078_S12.SJ.out.tab' would be renamed to 'SAMPLE_Bp12_DSp48_7078_S12.SJ.multi-10.tab'
+'SAMPLE_Bp1_DSm2_5782_S1.Aligned.sortedByCoord.out.bam' would be renamed to 'SAMPLE_Bp1_DSm2_5782_S1.Aligned.sortedByCoord.multi-10.bam'
+'SAMPLE_Bp1_DSm2_5782_S1.SJ.out.tab' would be renamed to 'SAMPLE_Bp1_DSm2_5782_S1.SJ.multi-10.tab'
+'SAMPLE_Bp2_DSm2_7081_S2.Aligned.sortedByCoord.out.bam' would be renamed to 'SAMPLE_Bp2_DSm2_7081_S2.Aligned.sortedByCoord.multi-10.bam'
+'SAMPLE_Bp2_DSm2_7081_S2.SJ.out.tab' would be renamed to 'SAMPLE_Bp2_DSm2_7081_S2.SJ.multi-10.tab'
+'SAMPLE_Bp3_DSm2_7078_S3.Aligned.sortedByCoord.out.bam' would be renamed to 'SAMPLE_Bp3_DSm2_7078_S3.Aligned.sortedByCoord.multi-10.bam'
+'SAMPLE_Bp3_DSm2_7078_S3.SJ.out.tab' would be renamed to 'SAMPLE_Bp3_DSm2_7078_S3.SJ.multi-10.tab'
+'SAMPLE_Bp4_DSp2_5782_S4.Aligned.sortedByCoord.out.bam' would be renamed to 'SAMPLE_Bp4_DSp2_5782_S4.Aligned.sortedByCoord.multi-10.bam'
+'SAMPLE_Bp4_DSp2_5782_S4.SJ.out.tab' would be renamed to 'SAMPLE_Bp4_DSp2_5782_S4.SJ.multi-10.tab'
+'SAMPLE_Bp5_DSp2_7081_S5.Aligned.sortedByCoord.out.bam' would be renamed to 'SAMPLE_Bp5_DSp2_7081_S5.Aligned.sortedByCoord.multi-10.bam'
+'SAMPLE_Bp5_DSp2_7081_S5.SJ.out.tab' would be renamed to 'SAMPLE_Bp5_DSp2_7081_S5.SJ.multi-10.tab'
+'SAMPLE_Bp6_DSp2_7078_S6.Aligned.sortedByCoord.out.bam' would be renamed to 'SAMPLE_Bp6_DSp2_7078_S6.Aligned.sortedByCoord.multi-10.bam'
+'SAMPLE_Bp6_DSp2_7078_S6.SJ.out.tab' would be renamed to 'SAMPLE_Bp6_DSp2_7078_S6.SJ.multi-10.tab'
+'SAMPLE_Bp7_DSp24_5782_S7.Aligned.sortedByCoord.out.bam' would be renamed to 'SAMPLE_Bp7_DSp24_5782_S7.Aligned.sortedByCoord.multi-10.bam'
+'SAMPLE_Bp7_DSp24_5782_S7.SJ.out.tab' would be renamed to 'SAMPLE_Bp7_DSp24_5782_S7.SJ.multi-10.tab'
+'SAMPLE_Bp8_DSp24_7081_S8.Aligned.sortedByCoord.out.bam' would be renamed to 'SAMPLE_Bp8_DSp24_7081_S8.Aligned.sortedByCoord.multi-10.bam'
+'SAMPLE_Bp8_DSp24_7081_S8.SJ.out.tab' would be renamed to 'SAMPLE_Bp8_DSp24_7081_S8.SJ.multi-10.tab'
+'SAMPLE_Bp9_DSp24_7078_S9.Aligned.sortedByCoord.out.bam' would be renamed to 'SAMPLE_Bp9_DSp24_7078_S9.Aligned.sortedByCoord.multi-10.bam'
+'SAMPLE_Bp9_DSp24_7078_S9.SJ.out.tab' would be renamed to 'SAMPLE_Bp9_DSp24_7078_S9.SJ.multi-10.tab'
+'Sample_CT10_7718_pIAA_Q_Nascent_S5.Aligned.sortedByCoord.out.bam' would be renamed to 'Sample_CT10_7718_pIAA_Q_Nascent_S5.Aligned.sortedByCoord.multi-10.bam'
+'Sample_CT10_7718_pIAA_Q_Nascent_S5.SJ.out.tab' would be renamed to 'Sample_CT10_7718_pIAA_Q_Nascent_S5.SJ.multi-10.tab'
+'Sample_CT10_7718_pIAA_Q_SteadyState_S10.Aligned.sortedByCoord.out.bam' would be renamed to 'Sample_CT10_7718_pIAA_Q_SteadyState_S10.Aligned.sortedByCoord.multi-10.bam'
+'Sample_CT10_7718_pIAA_Q_SteadyState_S10.SJ.out.tab' would be renamed to 'Sample_CT10_7718_pIAA_Q_SteadyState_S10.SJ.multi-10.tab'
+'Sample_CT2_6125_pIAA_Q_Nascent_S1.Aligned.sortedByCoord.out.bam' would be renamed to 'Sample_CT2_6125_pIAA_Q_Nascent_S1.Aligned.sortedByCoord.multi-10.bam'
+'Sample_CT2_6125_pIAA_Q_Nascent_S1.SJ.out.tab' would be renamed to 'Sample_CT2_6125_pIAA_Q_Nascent_S1.SJ.multi-10.tab'
+'Sample_CT2_6125_pIAA_Q_SteadyState_S6.Aligned.sortedByCoord.out.bam' would be renamed to 'Sample_CT2_6125_pIAA_Q_SteadyState_S6.Aligned.sortedByCoord.multi-10.bam'
+'Sample_CT2_6125_pIAA_Q_SteadyState_S6.SJ.out.tab' would be renamed to 'Sample_CT2_6125_pIAA_Q_SteadyState_S6.SJ.multi-10.tab'
+'Sample_CT4_6126_pIAA_Q_Nascent_S2.Aligned.sortedByCoord.out.bam' would be renamed to 'Sample_CT4_6126_pIAA_Q_Nascent_S2.Aligned.sortedByCoord.multi-10.bam'
+'Sample_CT4_6126_pIAA_Q_Nascent_S2.SJ.out.tab' would be renamed to 'Sample_CT4_6126_pIAA_Q_Nascent_S2.SJ.multi-10.tab'
+'Sample_CT4_6126_pIAA_Q_SteadyState_S7.Aligned.sortedByCoord.out.bam' would be renamed to 'Sample_CT4_6126_pIAA_Q_SteadyState_S7.Aligned.sortedByCoord.multi-10.bam'
+'Sample_CT4_6126_pIAA_Q_SteadyState_S7.SJ.out.tab' would be renamed to 'Sample_CT4_6126_pIAA_Q_SteadyState_S7.SJ.multi-10.tab'
+'Sample_CT6_7714_pIAA_Q_Nascent_S3.Aligned.sortedByCoord.out.bam' would be renamed to 'Sample_CT6_7714_pIAA_Q_Nascent_S3.Aligned.sortedByCoord.multi-10.bam'
+'Sample_CT6_7714_pIAA_Q_Nascent_S3.SJ.out.tab' would be renamed to 'Sample_CT6_7714_pIAA_Q_Nascent_S3.SJ.multi-10.tab'
+'Sample_CT6_7714_pIAA_Q_SteadyState_S8.Aligned.sortedByCoord.out.bam' would be renamed to 'Sample_CT6_7714_pIAA_Q_SteadyState_S8.Aligned.sortedByCoord.multi-10.bam'
+'Sample_CT6_7714_pIAA_Q_SteadyState_S8.SJ.out.tab' would be renamed to 'Sample_CT6_7714_pIAA_Q_SteadyState_S8.SJ.multi-10.tab'
+'Sample_CT8_7716_pIAA_Q_Nascent_S4.Aligned.sortedByCoord.out.bam' would be renamed to 'Sample_CT8_7716_pIAA_Q_Nascent_S4.Aligned.sortedByCoord.multi-10.bam'
+'Sample_CT8_7716_pIAA_Q_Nascent_S4.SJ.out.tab' would be renamed to 'Sample_CT8_7716_pIAA_Q_Nascent_S4.SJ.multi-10.tab'
+'Sample_CT8_7716_pIAA_Q_SteadyState_S9.Aligned.sortedByCoord.out.bam' would be renamed to 'Sample_CT8_7716_pIAA_Q_SteadyState_S9.Aligned.sortedByCoord.multi-10.bam'
+'Sample_CT8_7716_pIAA_Q_SteadyState_S9.SJ.out.tab' would be renamed to 'Sample_CT8_7716_pIAA_Q_SteadyState_S9.SJ.multi-10.tab'
+'Sample_CU11_5782_Q_Nascent_S11.Aligned.sortedByCoord.out.bam' would be renamed to 'Sample_CU11_5782_Q_Nascent_S11.Aligned.sortedByCoord.multi-10.bam'
+'Sample_CU11_5782_Q_Nascent_S11.SJ.out.tab' would be renamed to 'Sample_CU11_5782_Q_Nascent_S11.SJ.multi-10.tab'
+'Sample_CU12_5782_Q_SteadyState_S12.Aligned.sortedByCoord.out.bam' would be renamed to 'Sample_CU12_5782_Q_SteadyState_S12.Aligned.sortedByCoord.multi-10.bam'
+'Sample_CU12_5782_Q_SteadyState_S12.SJ.out.tab' would be renamed to 'Sample_CU12_5782_Q_SteadyState_S12.SJ.multi-10.tab'
+
+
+❯ rename -n 's/.Log./.multi-10.Log./g' *
+'5781_G1_IN_S5.Log.final.out' would be renamed to '5781_G1_IN_S5.multi-10.Log.final.out'
+'5781_G1_IN_S5.Log.out' would be renamed to '5781_G1_IN_S5.multi-10.Log.out'
+'5781_G1_IN_S5.Log.progress.out' would be renamed to '5781_G1_IN_S5.multi-10.Log.progress.out'
+'5781_G1_IP_S1.Log.final.out' would be renamed to '5781_G1_IP_S1.multi-10.Log.final.out'
+'5781_G1_IP_S1.Log.out' would be renamed to '5781_G1_IP_S1.multi-10.Log.out'
+'5781_G1_IP_S1.Log.progress.out' would be renamed to '5781_G1_IP_S1.multi-10.Log.progress.out'
+'5781_Q_IN_S6.Log.final.out' would be renamed to '5781_Q_IN_S6.multi-10.Log.final.out'
+'5781_Q_IN_S6.Log.out' would be renamed to '5781_Q_IN_S6.multi-10.Log.out'
+'5781_Q_IN_S6.Log.progress.out' would be renamed to '5781_Q_IN_S6.multi-10.Log.progress.out'
+'5781_Q_IP_S2.Log.final.out' would be renamed to '5781_Q_IP_S2.multi-10.Log.final.out'
+'5781_Q_IP_S2.Log.out' would be renamed to '5781_Q_IP_S2.multi-10.Log.out'
+'5781_Q_IP_S2.Log.progress.out' would be renamed to '5781_Q_IP_S2.multi-10.Log.progress.out'
+'5782_G1_IN_S7.Log.final.out' would be renamed to '5782_G1_IN_S7.multi-10.Log.final.out'
+'5782_G1_IN_S7.Log.out' would be renamed to '5782_G1_IN_S7.multi-10.Log.out'
+'5782_G1_IN_S7.Log.progress.out' would be renamed to '5782_G1_IN_S7.multi-10.Log.progress.out'
+'5782_G1_IP_S3.Log.final.out' would be renamed to '5782_G1_IP_S3.multi-10.Log.final.out'
+'5782_G1_IP_S3.Log.out' would be renamed to '5782_G1_IP_S3.multi-10.Log.out'
+'5782_G1_IP_S3.Log.progress.out' would be renamed to '5782_G1_IP_S3.multi-10.Log.progress.out'
+'5782_Q_IN_S8.Log.final.out' would be renamed to '5782_Q_IN_S8.multi-10.Log.final.out'
+'5782_Q_IN_S8.Log.out' would be renamed to '5782_Q_IN_S8.multi-10.Log.out'
+'5782_Q_IN_S8.Log.progress.out' would be renamed to '5782_Q_IN_S8.multi-10.Log.progress.out'
+'5782_Q_IP_S4.Log.final.out' would be renamed to '5782_Q_IP_S4.multi-10.Log.final.out'
+'5782_Q_IP_S4.Log.out' would be renamed to '5782_Q_IP_S4.multi-10.Log.out'
+'5782_Q_IP_S4.Log.progress.out' would be renamed to '5782_Q_IP_S4.multi-10.Log.progress.out'
+'CW10_7747_8day_Q_IN_S5.Log.final.out' would be renamed to 'CW10_7747_8day_Q_IN_S5.multi-10.Log.final.out'
+'CW10_7747_8day_Q_IN_S5.Log.out' would be renamed to 'CW10_7747_8day_Q_IN_S5.multi-10.Log.out'
+'CW10_7747_8day_Q_IN_S5.Log.progress.out' would be renamed to 'CW10_7747_8day_Q_IN_S5.multi-10.Log.progress.out'
+'CW10_7747_8day_Q_PD_S11.Log.final.out' would be renamed to 'CW10_7747_8day_Q_PD_S11.multi-10.Log.final.out'
+'CW10_7747_8day_Q_PD_S11.Log.out' would be renamed to 'CW10_7747_8day_Q_PD_S11.multi-10.Log.out'
+'CW10_7747_8day_Q_PD_S11.Log.progress.out' would be renamed to 'CW10_7747_8day_Q_PD_S11.multi-10.Log.progress.out'
+'CW12_7748_8day_Q_IN_S6.Log.final.out' would be renamed to 'CW12_7748_8day_Q_IN_S6.multi-10.Log.final.out'
+'CW12_7748_8day_Q_IN_S6.Log.out' would be renamed to 'CW12_7748_8day_Q_IN_S6.multi-10.Log.out'
+'CW12_7748_8day_Q_IN_S6.Log.progress.out' would be renamed to 'CW12_7748_8day_Q_IN_S6.multi-10.Log.progress.out'
+'CW12_7748_8day_Q_PD_S12.Log.final.out' would be renamed to 'CW12_7748_8day_Q_PD_S12.multi-10.Log.final.out'
+'CW12_7748_8day_Q_PD_S12.Log.out' would be renamed to 'CW12_7748_8day_Q_PD_S12.multi-10.Log.out'
+'CW12_7748_8day_Q_PD_S12.Log.progress.out' would be renamed to 'CW12_7748_8day_Q_PD_S12.multi-10.Log.progress.out'
+'CW2_5781_8day_Q_IN_S1.Log.final.out' would be renamed to 'CW2_5781_8day_Q_IN_S1.multi-10.Log.final.out'
+'CW2_5781_8day_Q_IN_S1.Log.out' would be renamed to 'CW2_5781_8day_Q_IN_S1.multi-10.Log.out'
+'CW2_5781_8day_Q_IN_S1.Log.progress.out' would be renamed to 'CW2_5781_8day_Q_IN_S1.multi-10.Log.progress.out'
+'CW2_5781_8day_Q_PD_S7.Log.final.out' would be renamed to 'CW2_5781_8day_Q_PD_S7.multi-10.Log.final.out'
+'CW2_5781_8day_Q_PD_S7.Log.out' would be renamed to 'CW2_5781_8day_Q_PD_S7.multi-10.Log.out'
+'CW2_5781_8day_Q_PD_S7.Log.progress.out' would be renamed to 'CW2_5781_8day_Q_PD_S7.multi-10.Log.progress.out'
+'CW4_5782_8day_Q_IN_S2.Log.final.out' would be renamed to 'CW4_5782_8day_Q_IN_S2.multi-10.Log.final.out'
+'CW4_5782_8day_Q_IN_S2.Log.out' would be renamed to 'CW4_5782_8day_Q_IN_S2.multi-10.Log.out'
+'CW4_5782_8day_Q_IN_S2.Log.progress.out' would be renamed to 'CW4_5782_8day_Q_IN_S2.multi-10.Log.progress.out'
+'CW4_5782_8day_Q_PD_S8.Log.final.out' would be renamed to 'CW4_5782_8day_Q_PD_S8.multi-10.Log.final.out'
+'CW4_5782_8day_Q_PD_S8.Log.out' would be renamed to 'CW4_5782_8day_Q_PD_S8.multi-10.Log.out'
+'CW4_5782_8day_Q_PD_S8.Log.progress.out' would be renamed to 'CW4_5782_8day_Q_PD_S8.multi-10.Log.progress.out'
+'CW6_7078_8day_Q_IN_S3.Log.final.out' would be renamed to 'CW6_7078_8day_Q_IN_S3.multi-10.Log.final.out'
+'CW6_7078_8day_Q_IN_S3.Log.out' would be renamed to 'CW6_7078_8day_Q_IN_S3.multi-10.Log.out'
+'CW6_7078_8day_Q_IN_S3.Log.progress.out' would be renamed to 'CW6_7078_8day_Q_IN_S3.multi-10.Log.progress.out'
+'CW6_7078_8day_Q_PD_S9.Log.final.out' would be renamed to 'CW6_7078_8day_Q_PD_S9.multi-10.Log.final.out'
+'CW6_7078_8day_Q_PD_S9.Log.out' would be renamed to 'CW6_7078_8day_Q_PD_S9.multi-10.Log.out'
+'CW6_7078_8day_Q_PD_S9.Log.progress.out' would be renamed to 'CW6_7078_8day_Q_PD_S9.multi-10.Log.progress.out'
+'CW8_7079_8day_Q_IN_S4.Log.final.out' would be renamed to 'CW8_7079_8day_Q_IN_S4.multi-10.Log.final.out'
+'CW8_7079_8day_Q_IN_S4.Log.out' would be renamed to 'CW8_7079_8day_Q_IN_S4.multi-10.Log.out'
+'CW8_7079_8day_Q_IN_S4.Log.progress.out' would be renamed to 'CW8_7079_8day_Q_IN_S4.multi-10.Log.progress.out'
+'CW8_7079_8day_Q_PD_S10.Log.final.out' would be renamed to 'CW8_7079_8day_Q_PD_S10.multi-10.Log.final.out'
+'CW8_7079_8day_Q_PD_S10.Log.out' would be renamed to 'CW8_7079_8day_Q_PD_S10.multi-10.Log.out'
+'CW8_7079_8day_Q_PD_S10.Log.progress.out' would be renamed to 'CW8_7079_8day_Q_PD_S10.multi-10.Log.progress.out'
+'SAMPLE_BM10_DSp48_5781_S22.Log.final.out' would be renamed to 'SAMPLE_BM10_DSp48_5781_S22.multi-10.Log.final.out'
+'SAMPLE_BM10_DSp48_5781_S22.Log.out' would be renamed to 'SAMPLE_BM10_DSp48_5781_S22.multi-10.Log.out'
+'SAMPLE_BM10_DSp48_5781_S22.Log.progress.out' would be renamed to 'SAMPLE_BM10_DSp48_5781_S22.multi-10.Log.progress.out'
+'SAMPLE_BM11_DSp48_7080_S23.Log.final.out' would be renamed to 'SAMPLE_BM11_DSp48_7080_S23.multi-10.Log.final.out'
+'SAMPLE_BM11_DSp48_7080_S23.Log.out' would be renamed to 'SAMPLE_BM11_DSp48_7080_S23.multi-10.Log.out'
+'SAMPLE_BM11_DSp48_7080_S23.Log.progress.out' would be renamed to 'SAMPLE_BM11_DSp48_7080_S23.multi-10.Log.progress.out'
+'SAMPLE_BM1_DSm2_5781_S13.Log.final.out' would be renamed to 'SAMPLE_BM1_DSm2_5781_S13.multi-10.Log.final.out'
+'SAMPLE_BM1_DSm2_5781_S13.Log.out' would be renamed to 'SAMPLE_BM1_DSm2_5781_S13.multi-10.Log.out'
+'SAMPLE_BM1_DSm2_5781_S13.Log.progress.out' would be renamed to 'SAMPLE_BM1_DSm2_5781_S13.multi-10.Log.progress.out'
+'SAMPLE_BM2_DSm2_7080_S14.Log.final.out' would be renamed to 'SAMPLE_BM2_DSm2_7080_S14.multi-10.Log.final.out'
+'SAMPLE_BM2_DSm2_7080_S14.Log.out' would be renamed to 'SAMPLE_BM2_DSm2_7080_S14.multi-10.Log.out'
+'SAMPLE_BM2_DSm2_7080_S14.Log.progress.out' would be renamed to 'SAMPLE_BM2_DSm2_7080_S14.multi-10.Log.progress.out'
+'SAMPLE_BM3_DSm2_7079_S15.Log.final.out' would be renamed to 'SAMPLE_BM3_DSm2_7079_S15.multi-10.Log.final.out'
+'SAMPLE_BM3_DSm2_7079_S15.Log.out' would be renamed to 'SAMPLE_BM3_DSm2_7079_S15.multi-10.Log.out'
+'SAMPLE_BM3_DSm2_7079_S15.Log.progress.out' would be renamed to 'SAMPLE_BM3_DSm2_7079_S15.multi-10.Log.progress.out'
+'SAMPLE_BM4_DSp2_5781_S16.Log.final.out' would be renamed to 'SAMPLE_BM4_DSp2_5781_S16.multi-10.Log.final.out'
+'SAMPLE_BM4_DSp2_5781_S16.Log.out' would be renamed to 'SAMPLE_BM4_DSp2_5781_S16.multi-10.Log.out'
+'SAMPLE_BM4_DSp2_5781_S16.Log.progress.out' would be renamed to 'SAMPLE_BM4_DSp2_5781_S16.multi-10.Log.progress.out'
+'SAMPLE_BM5_DSp2_7080_S17.Log.final.out' would be renamed to 'SAMPLE_BM5_DSp2_7080_S17.multi-10.Log.final.out'
+'SAMPLE_BM5_DSp2_7080_S17.Log.out' would be renamed to 'SAMPLE_BM5_DSp2_7080_S17.multi-10.Log.out'
+'SAMPLE_BM5_DSp2_7080_S17.Log.progress.out' would be renamed to 'SAMPLE_BM5_DSp2_7080_S17.multi-10.Log.progress.out'
+'SAMPLE_BM6_DSp2_7079_S18.Log.final.out' would be renamed to 'SAMPLE_BM6_DSp2_7079_S18.multi-10.Log.final.out'
+'SAMPLE_BM6_DSp2_7079_S18.Log.out' would be renamed to 'SAMPLE_BM6_DSp2_7079_S18.multi-10.Log.out'
+'SAMPLE_BM6_DSp2_7079_S18.Log.progress.out' would be renamed to 'SAMPLE_BM6_DSp2_7079_S18.multi-10.Log.progress.out'
+'SAMPLE_BM7_DSp24_5781_S19.Log.final.out' would be renamed to 'SAMPLE_BM7_DSp24_5781_S19.multi-10.Log.final.out'
+'SAMPLE_BM7_DSp24_5781_S19.Log.out' would be renamed to 'SAMPLE_BM7_DSp24_5781_S19.multi-10.Log.out'
+'SAMPLE_BM7_DSp24_5781_S19.Log.progress.out' would be renamed to 'SAMPLE_BM7_DSp24_5781_S19.multi-10.Log.progress.out'
+'SAMPLE_BM8_DSp24_7080_S20.Log.final.out' would be renamed to 'SAMPLE_BM8_DSp24_7080_S20.multi-10.Log.final.out'
+'SAMPLE_BM8_DSp24_7080_S20.Log.out' would be renamed to 'SAMPLE_BM8_DSp24_7080_S20.multi-10.Log.out'
+'SAMPLE_BM8_DSp24_7080_S20.Log.progress.out' would be renamed to 'SAMPLE_BM8_DSp24_7080_S20.multi-10.Log.progress.out'
+'SAMPLE_BM9_DSp24_7079_S21.Log.final.out' would be renamed to 'SAMPLE_BM9_DSp24_7079_S21.multi-10.Log.final.out'
+'SAMPLE_BM9_DSp24_7079_S21.Log.out' would be renamed to 'SAMPLE_BM9_DSp24_7079_S21.multi-10.Log.out'
+'SAMPLE_BM9_DSp24_7079_S21.Log.progress.out' would be renamed to 'SAMPLE_BM9_DSp24_7079_S21.multi-10.Log.progress.out'
+'SAMPLE_Bp10_DSp48_5782_S10.Log.final.out' would be renamed to 'SAMPLE_Bp10_DSp48_5782_S10.multi-10.Log.final.out'
+'SAMPLE_Bp10_DSp48_5782_S10.Log.out' would be renamed to 'SAMPLE_Bp10_DSp48_5782_S10.multi-10.Log.out'
+'SAMPLE_Bp10_DSp48_5782_S10.Log.progress.out' would be renamed to 'SAMPLE_Bp10_DSp48_5782_S10.multi-10.Log.progress.out'
+'SAMPLE_Bp11_DSp48_7081_S11.Log.final.out' would be renamed to 'SAMPLE_Bp11_DSp48_7081_S11.multi-10.Log.final.out'
+'SAMPLE_Bp11_DSp48_7081_S11.Log.out' would be renamed to 'SAMPLE_Bp11_DSp48_7081_S11.multi-10.Log.out'
+'SAMPLE_Bp11_DSp48_7081_S11.Log.progress.out' would be renamed to 'SAMPLE_Bp11_DSp48_7081_S11.multi-10.Log.progress.out'
+'SAMPLE_Bp12_DSp48_7078_S12.Log.final.out' would be renamed to 'SAMPLE_Bp12_DSp48_7078_S12.multi-10.Log.final.out'
+'SAMPLE_Bp12_DSp48_7078_S12.Log.out' would be renamed to 'SAMPLE_Bp12_DSp48_7078_S12.multi-10.Log.out'
+'SAMPLE_Bp12_DSp48_7078_S12.Log.progress.out' would be renamed to 'SAMPLE_Bp12_DSp48_7078_S12.multi-10.Log.progress.out'
+'SAMPLE_Bp1_DSm2_5782_S1.Log.final.out' would be renamed to 'SAMPLE_Bp1_DSm2_5782_S1.multi-10.Log.final.out'
+'SAMPLE_Bp1_DSm2_5782_S1.Log.out' would be renamed to 'SAMPLE_Bp1_DSm2_5782_S1.multi-10.Log.out'
+'SAMPLE_Bp1_DSm2_5782_S1.Log.progress.out' would be renamed to 'SAMPLE_Bp1_DSm2_5782_S1.multi-10.Log.progress.out'
+'SAMPLE_Bp2_DSm2_7081_S2.Log.final.out' would be renamed to 'SAMPLE_Bp2_DSm2_7081_S2.multi-10.Log.final.out'
+'SAMPLE_Bp2_DSm2_7081_S2.Log.out' would be renamed to 'SAMPLE_Bp2_DSm2_7081_S2.multi-10.Log.out'
+'SAMPLE_Bp2_DSm2_7081_S2.Log.progress.out' would be renamed to 'SAMPLE_Bp2_DSm2_7081_S2.multi-10.Log.progress.out'
+'SAMPLE_Bp3_DSm2_7078_S3.Log.final.out' would be renamed to 'SAMPLE_Bp3_DSm2_7078_S3.multi-10.Log.final.out'
+'SAMPLE_Bp3_DSm2_7078_S3.Log.out' would be renamed to 'SAMPLE_Bp3_DSm2_7078_S3.multi-10.Log.out'
+'SAMPLE_Bp3_DSm2_7078_S3.Log.progress.out' would be renamed to 'SAMPLE_Bp3_DSm2_7078_S3.multi-10.Log.progress.out'
+'SAMPLE_Bp4_DSp2_5782_S4.Log.final.out' would be renamed to 'SAMPLE_Bp4_DSp2_5782_S4.multi-10.Log.final.out'
+'SAMPLE_Bp4_DSp2_5782_S4.Log.out' would be renamed to 'SAMPLE_Bp4_DSp2_5782_S4.multi-10.Log.out'
+'SAMPLE_Bp4_DSp2_5782_S4.Log.progress.out' would be renamed to 'SAMPLE_Bp4_DSp2_5782_S4.multi-10.Log.progress.out'
+'SAMPLE_Bp5_DSp2_7081_S5.Log.final.out' would be renamed to 'SAMPLE_Bp5_DSp2_7081_S5.multi-10.Log.final.out'
+'SAMPLE_Bp5_DSp2_7081_S5.Log.out' would be renamed to 'SAMPLE_Bp5_DSp2_7081_S5.multi-10.Log.out'
+'SAMPLE_Bp5_DSp2_7081_S5.Log.progress.out' would be renamed to 'SAMPLE_Bp5_DSp2_7081_S5.multi-10.Log.progress.out'
+'SAMPLE_Bp6_DSp2_7078_S6.Log.final.out' would be renamed to 'SAMPLE_Bp6_DSp2_7078_S6.multi-10.Log.final.out'
+'SAMPLE_Bp6_DSp2_7078_S6.Log.out' would be renamed to 'SAMPLE_Bp6_DSp2_7078_S6.multi-10.Log.out'
+'SAMPLE_Bp6_DSp2_7078_S6.Log.progress.out' would be renamed to 'SAMPLE_Bp6_DSp2_7078_S6.multi-10.Log.progress.out'
+'SAMPLE_Bp7_DSp24_5782_S7.Log.final.out' would be renamed to 'SAMPLE_Bp7_DSp24_5782_S7.multi-10.Log.final.out'
+'SAMPLE_Bp7_DSp24_5782_S7.Log.out' would be renamed to 'SAMPLE_Bp7_DSp24_5782_S7.multi-10.Log.out'
+'SAMPLE_Bp7_DSp24_5782_S7.Log.progress.out' would be renamed to 'SAMPLE_Bp7_DSp24_5782_S7.multi-10.Log.progress.out'
+'SAMPLE_Bp8_DSp24_7081_S8.Log.final.out' would be renamed to 'SAMPLE_Bp8_DSp24_7081_S8.multi-10.Log.final.out'
+'SAMPLE_Bp8_DSp24_7081_S8.Log.out' would be renamed to 'SAMPLE_Bp8_DSp24_7081_S8.multi-10.Log.out'
+'SAMPLE_Bp8_DSp24_7081_S8.Log.progress.out' would be renamed to 'SAMPLE_Bp8_DSp24_7081_S8.multi-10.Log.progress.out'
+'SAMPLE_Bp9_DSp24_7078_S9.Log.final.out' would be renamed to 'SAMPLE_Bp9_DSp24_7078_S9.multi-10.Log.final.out'
+'SAMPLE_Bp9_DSp24_7078_S9.Log.out' would be renamed to 'SAMPLE_Bp9_DSp24_7078_S9.multi-10.Log.out'
+'SAMPLE_Bp9_DSp24_7078_S9.Log.progress.out' would be renamed to 'SAMPLE_Bp9_DSp24_7078_S9.multi-10.Log.progress.out'
+'Sample_CT10_7718_pIAA_Q_Nascent_S5.Log.final.out' would be renamed to 'Sample_CT10_7718_pIAA_Q_Nascent_S5.multi-10.Log.final.out'
+'Sample_CT10_7718_pIAA_Q_Nascent_S5.Log.out' would be renamed to 'Sample_CT10_7718_pIAA_Q_Nascent_S5.multi-10.Log.out'
+'Sample_CT10_7718_pIAA_Q_Nascent_S5.Log.progress.out' would be renamed to 'Sample_CT10_7718_pIAA_Q_Nascent_S5.multi-10.Log.progress.out'
+'Sample_CT10_7718_pIAA_Q_SteadyState_S10.Log.final.out' would be renamed to 'Sample_CT10_7718_pIAA_Q_SteadyState_S10.multi-10.Log.final.out'
+'Sample_CT10_7718_pIAA_Q_SteadyState_S10.Log.out' would be renamed to 'Sample_CT10_7718_pIAA_Q_SteadyState_S10.multi-10.Log.out'
+'Sample_CT10_7718_pIAA_Q_SteadyState_S10.Log.progress.out' would be renamed to 'Sample_CT10_7718_pIAA_Q_SteadyState_S10.multi-10.Log.progress.out'
+'Sample_CT2_6125_pIAA_Q_Nascent_S1.Log.final.out' would be renamed to 'Sample_CT2_6125_pIAA_Q_Nascent_S1.multi-10.Log.final.out'
+'Sample_CT2_6125_pIAA_Q_Nascent_S1.Log.out' would be renamed to 'Sample_CT2_6125_pIAA_Q_Nascent_S1.multi-10.Log.out'
+'Sample_CT2_6125_pIAA_Q_Nascent_S1.Log.progress.out' would be renamed to 'Sample_CT2_6125_pIAA_Q_Nascent_S1.multi-10.Log.progress.out'
+'Sample_CT2_6125_pIAA_Q_SteadyState_S6.Log.final.out' would be renamed to 'Sample_CT2_6125_pIAA_Q_SteadyState_S6.multi-10.Log.final.out'
+'Sample_CT2_6125_pIAA_Q_SteadyState_S6.Log.out' would be renamed to 'Sample_CT2_6125_pIAA_Q_SteadyState_S6.multi-10.Log.out'
+'Sample_CT2_6125_pIAA_Q_SteadyState_S6.Log.progress.out' would be renamed to 'Sample_CT2_6125_pIAA_Q_SteadyState_S6.multi-10.Log.progress.out'
+'Sample_CT4_6126_pIAA_Q_Nascent_S2.Log.final.out' would be renamed to 'Sample_CT4_6126_pIAA_Q_Nascent_S2.multi-10.Log.final.out'
+'Sample_CT4_6126_pIAA_Q_Nascent_S2.Log.out' would be renamed to 'Sample_CT4_6126_pIAA_Q_Nascent_S2.multi-10.Log.out'
+'Sample_CT4_6126_pIAA_Q_Nascent_S2.Log.progress.out' would be renamed to 'Sample_CT4_6126_pIAA_Q_Nascent_S2.multi-10.Log.progress.out'
+'Sample_CT4_6126_pIAA_Q_SteadyState_S7.Log.final.out' would be renamed to 'Sample_CT4_6126_pIAA_Q_SteadyState_S7.multi-10.Log.final.out'
+'Sample_CT4_6126_pIAA_Q_SteadyState_S7.Log.out' would be renamed to 'Sample_CT4_6126_pIAA_Q_SteadyState_S7.multi-10.Log.out'
+'Sample_CT4_6126_pIAA_Q_SteadyState_S7.Log.progress.out' would be renamed to 'Sample_CT4_6126_pIAA_Q_SteadyState_S7.multi-10.Log.progress.out'
+'Sample_CT6_7714_pIAA_Q_Nascent_S3.Log.final.out' would be renamed to 'Sample_CT6_7714_pIAA_Q_Nascent_S3.multi-10.Log.final.out'
+'Sample_CT6_7714_pIAA_Q_Nascent_S3.Log.out' would be renamed to 'Sample_CT6_7714_pIAA_Q_Nascent_S3.multi-10.Log.out'
+'Sample_CT6_7714_pIAA_Q_Nascent_S3.Log.progress.out' would be renamed to 'Sample_CT6_7714_pIAA_Q_Nascent_S3.multi-10.Log.progress.out'
+'Sample_CT6_7714_pIAA_Q_SteadyState_S8.Log.final.out' would be renamed to 'Sample_CT6_7714_pIAA_Q_SteadyState_S8.multi-10.Log.final.out'
+'Sample_CT6_7714_pIAA_Q_SteadyState_S8.Log.out' would be renamed to 'Sample_CT6_7714_pIAA_Q_SteadyState_S8.multi-10.Log.out'
+'Sample_CT6_7714_pIAA_Q_SteadyState_S8.Log.progress.out' would be renamed to 'Sample_CT6_7714_pIAA_Q_SteadyState_S8.multi-10.Log.progress.out'
+'Sample_CT8_7716_pIAA_Q_Nascent_S4.Log.final.out' would be renamed to 'Sample_CT8_7716_pIAA_Q_Nascent_S4.multi-10.Log.final.out'
+'Sample_CT8_7716_pIAA_Q_Nascent_S4.Log.out' would be renamed to 'Sample_CT8_7716_pIAA_Q_Nascent_S4.multi-10.Log.out'
+'Sample_CT8_7716_pIAA_Q_Nascent_S4.Log.progress.out' would be renamed to 'Sample_CT8_7716_pIAA_Q_Nascent_S4.multi-10.Log.progress.out'
+'Sample_CT8_7716_pIAA_Q_SteadyState_S9.Log.final.out' would be renamed to 'Sample_CT8_7716_pIAA_Q_SteadyState_S9.multi-10.Log.final.out'
+'Sample_CT8_7716_pIAA_Q_SteadyState_S9.Log.out' would be renamed to 'Sample_CT8_7716_pIAA_Q_SteadyState_S9.multi-10.Log.out'
+'Sample_CT8_7716_pIAA_Q_SteadyState_S9.Log.progress.out' would be renamed to 'Sample_CT8_7716_pIAA_Q_SteadyState_S9.multi-10.Log.progress.out'
+'Sample_CU11_5782_Q_Nascent_S11.Log.final.out' would be renamed to 'Sample_CU11_5782_Q_Nascent_S11.multi-10.Log.final.out'
+'Sample_CU11_5782_Q_Nascent_S11.Log.out' would be renamed to 'Sample_CU11_5782_Q_Nascent_S11.multi-10.Log.out'
+'Sample_CU11_5782_Q_Nascent_S11.Log.progress.out' would be renamed to 'Sample_CU11_5782_Q_Nascent_S11.multi-10.Log.progress.out'
+'Sample_CU12_5782_Q_SteadyState_S12.Log.final.out' would be renamed to 'Sample_CU12_5782_Q_SteadyState_S12.multi-10.Log.final.out'
+'Sample_CU12_5782_Q_SteadyState_S12.Log.out' would be renamed to 'Sample_CU12_5782_Q_SteadyState_S12.multi-10.Log.out'
+'Sample_CU12_5782_Q_SteadyState_S12.Log.progress.out' would be renamed to 'Sample_CU12_5782_Q_SteadyState_S12.multi-10.Log.progress.out'
+
+
+❯ rename -n 's/.SJ.multi-10.tab/.multi-10.SJ.tab/g' *
+'5781_G1_IN_S5.SJ.multi-10.tab' would be renamed to '5781_G1_IN_S5.multi-10.SJ.tab'
+'5781_G1_IP_S1.SJ.multi-10.tab' would be renamed to '5781_G1_IP_S1.multi-10.SJ.tab'
+'5781_Q_IN_S6.SJ.multi-10.tab' would be renamed to '5781_Q_IN_S6.multi-10.SJ.tab'
+'5781_Q_IP_S2.SJ.multi-10.tab' would be renamed to '5781_Q_IP_S2.multi-10.SJ.tab'
+'5782_G1_IN_S7.SJ.multi-10.tab' would be renamed to '5782_G1_IN_S7.multi-10.SJ.tab'
+'5782_G1_IP_S3.SJ.multi-10.tab' would be renamed to '5782_G1_IP_S3.multi-10.SJ.tab'
+'5782_Q_IN_S8.SJ.multi-10.tab' would be renamed to '5782_Q_IN_S8.multi-10.SJ.tab'
+'5782_Q_IP_S4.SJ.multi-10.tab' would be renamed to '5782_Q_IP_S4.multi-10.SJ.tab'
+'CW10_7747_8day_Q_IN_S5.SJ.multi-10.tab' would be renamed to 'CW10_7747_8day_Q_IN_S5.multi-10.SJ.tab'
+'CW10_7747_8day_Q_PD_S11.SJ.multi-10.tab' would be renamed to 'CW10_7747_8day_Q_PD_S11.multi-10.SJ.tab'
+'CW12_7748_8day_Q_IN_S6.SJ.multi-10.tab' would be renamed to 'CW12_7748_8day_Q_IN_S6.multi-10.SJ.tab'
+'CW12_7748_8day_Q_PD_S12.SJ.multi-10.tab' would be renamed to 'CW12_7748_8day_Q_PD_S12.multi-10.SJ.tab'
+'CW2_5781_8day_Q_IN_S1.SJ.multi-10.tab' would be renamed to 'CW2_5781_8day_Q_IN_S1.multi-10.SJ.tab'
+'CW2_5781_8day_Q_PD_S7.SJ.multi-10.tab' would be renamed to 'CW2_5781_8day_Q_PD_S7.multi-10.SJ.tab'
+'CW4_5782_8day_Q_IN_S2.SJ.multi-10.tab' would be renamed to 'CW4_5782_8day_Q_IN_S2.multi-10.SJ.tab'
+'CW4_5782_8day_Q_PD_S8.SJ.multi-10.tab' would be renamed to 'CW4_5782_8day_Q_PD_S8.multi-10.SJ.tab'
+'CW6_7078_8day_Q_IN_S3.SJ.multi-10.tab' would be renamed to 'CW6_7078_8day_Q_IN_S3.multi-10.SJ.tab'
+'CW6_7078_8day_Q_PD_S9.SJ.multi-10.tab' would be renamed to 'CW6_7078_8day_Q_PD_S9.multi-10.SJ.tab'
+'CW8_7079_8day_Q_IN_S4.SJ.multi-10.tab' would be renamed to 'CW8_7079_8day_Q_IN_S4.multi-10.SJ.tab'
+'CW8_7079_8day_Q_PD_S10.SJ.multi-10.tab' would be renamed to 'CW8_7079_8day_Q_PD_S10.multi-10.SJ.tab'
+'SAMPLE_BM10_DSp48_5781_S22.SJ.multi-10.tab' would be renamed to 'SAMPLE_BM10_DSp48_5781_S22.multi-10.SJ.tab'
+'SAMPLE_BM11_DSp48_7080_S23.SJ.multi-10.tab' would be renamed to 'SAMPLE_BM11_DSp48_7080_S23.multi-10.SJ.tab'
+'SAMPLE_BM1_DSm2_5781_S13.SJ.multi-10.tab' would be renamed to 'SAMPLE_BM1_DSm2_5781_S13.multi-10.SJ.tab'
+'SAMPLE_BM2_DSm2_7080_S14.SJ.multi-10.tab' would be renamed to 'SAMPLE_BM2_DSm2_7080_S14.multi-10.SJ.tab'
+'SAMPLE_BM3_DSm2_7079_S15.SJ.multi-10.tab' would be renamed to 'SAMPLE_BM3_DSm2_7079_S15.multi-10.SJ.tab'
+'SAMPLE_BM4_DSp2_5781_S16.SJ.multi-10.tab' would be renamed to 'SAMPLE_BM4_DSp2_5781_S16.multi-10.SJ.tab'
+'SAMPLE_BM5_DSp2_7080_S17.SJ.multi-10.tab' would be renamed to 'SAMPLE_BM5_DSp2_7080_S17.multi-10.SJ.tab'
+'SAMPLE_BM6_DSp2_7079_S18.SJ.multi-10.tab' would be renamed to 'SAMPLE_BM6_DSp2_7079_S18.multi-10.SJ.tab'
+'SAMPLE_BM7_DSp24_5781_S19.SJ.multi-10.tab' would be renamed to 'SAMPLE_BM7_DSp24_5781_S19.multi-10.SJ.tab'
+'SAMPLE_BM8_DSp24_7080_S20.SJ.multi-10.tab' would be renamed to 'SAMPLE_BM8_DSp24_7080_S20.multi-10.SJ.tab'
+'SAMPLE_BM9_DSp24_7079_S21.SJ.multi-10.tab' would be renamed to 'SAMPLE_BM9_DSp24_7079_S21.multi-10.SJ.tab'
+'SAMPLE_Bp10_DSp48_5782_S10.SJ.multi-10.tab' would be renamed to 'SAMPLE_Bp10_DSp48_5782_S10.multi-10.SJ.tab'
+'SAMPLE_Bp11_DSp48_7081_S11.SJ.multi-10.tab' would be renamed to 'SAMPLE_Bp11_DSp48_7081_S11.multi-10.SJ.tab'
+'SAMPLE_Bp12_DSp48_7078_S12.SJ.multi-10.tab' would be renamed to 'SAMPLE_Bp12_DSp48_7078_S12.multi-10.SJ.tab'
+'SAMPLE_Bp1_DSm2_5782_S1.SJ.multi-10.tab' would be renamed to 'SAMPLE_Bp1_DSm2_5782_S1.multi-10.SJ.tab'
+'SAMPLE_Bp2_DSm2_7081_S2.SJ.multi-10.tab' would be renamed to 'SAMPLE_Bp2_DSm2_7081_S2.multi-10.SJ.tab'
+'SAMPLE_Bp3_DSm2_7078_S3.SJ.multi-10.tab' would be renamed to 'SAMPLE_Bp3_DSm2_7078_S3.multi-10.SJ.tab'
+'SAMPLE_Bp4_DSp2_5782_S4.SJ.multi-10.tab' would be renamed to 'SAMPLE_Bp4_DSp2_5782_S4.multi-10.SJ.tab'
+'SAMPLE_Bp5_DSp2_7081_S5.SJ.multi-10.tab' would be renamed to 'SAMPLE_Bp5_DSp2_7081_S5.multi-10.SJ.tab'
+'SAMPLE_Bp6_DSp2_7078_S6.SJ.multi-10.tab' would be renamed to 'SAMPLE_Bp6_DSp2_7078_S6.multi-10.SJ.tab'
+'SAMPLE_Bp7_DSp24_5782_S7.SJ.multi-10.tab' would be renamed to 'SAMPLE_Bp7_DSp24_5782_S7.multi-10.SJ.tab'
+'SAMPLE_Bp8_DSp24_7081_S8.SJ.multi-10.tab' would be renamed to 'SAMPLE_Bp8_DSp24_7081_S8.multi-10.SJ.tab'
+'SAMPLE_Bp9_DSp24_7078_S9.SJ.multi-10.tab' would be renamed to 'SAMPLE_Bp9_DSp24_7078_S9.multi-10.SJ.tab'
+'Sample_CT10_7718_pIAA_Q_Nascent_S5.SJ.multi-10.tab' would be renamed to 'Sample_CT10_7718_pIAA_Q_Nascent_S5.multi-10.SJ.tab'
+'Sample_CT10_7718_pIAA_Q_SteadyState_S10.SJ.multi-10.tab' would be renamed to 'Sample_CT10_7718_pIAA_Q_SteadyState_S10.multi-10.SJ.tab'
+'Sample_CT2_6125_pIAA_Q_Nascent_S1.SJ.multi-10.tab' would be renamed to 'Sample_CT2_6125_pIAA_Q_Nascent_S1.multi-10.SJ.tab'
+'Sample_CT2_6125_pIAA_Q_SteadyState_S6.SJ.multi-10.tab' would be renamed to 'Sample_CT2_6125_pIAA_Q_SteadyState_S6.multi-10.SJ.tab'
+'Sample_CT4_6126_pIAA_Q_Nascent_S2.SJ.multi-10.tab' would be renamed to 'Sample_CT4_6126_pIAA_Q_Nascent_S2.multi-10.SJ.tab'
+'Sample_CT4_6126_pIAA_Q_SteadyState_S7.SJ.multi-10.tab' would be renamed to 'Sample_CT4_6126_pIAA_Q_SteadyState_S7.multi-10.SJ.tab'
+'Sample_CT6_7714_pIAA_Q_Nascent_S3.SJ.multi-10.tab' would be renamed to 'Sample_CT6_7714_pIAA_Q_Nascent_S3.multi-10.SJ.tab'
+'Sample_CT6_7714_pIAA_Q_SteadyState_S8.SJ.multi-10.tab' would be renamed to 'Sample_CT6_7714_pIAA_Q_SteadyState_S8.multi-10.SJ.tab'
+'Sample_CT8_7716_pIAA_Q_Nascent_S4.SJ.multi-10.tab' would be renamed to 'Sample_CT8_7716_pIAA_Q_Nascent_S4.multi-10.SJ.tab'
+'Sample_CT8_7716_pIAA_Q_SteadyState_S9.SJ.multi-10.tab' would be renamed to 'Sample_CT8_7716_pIAA_Q_SteadyState_S9.multi-10.SJ.tab'
+'Sample_CU11_5782_Q_Nascent_S11.SJ.multi-10.tab' would be renamed to 'Sample_CU11_5782_Q_Nascent_S11.multi-10.SJ.tab'
+'Sample_CU12_5782_Q_SteadyState_S12.SJ.multi-10.tab' would be renamed to 'Sample_CU12_5782_Q_SteadyState_S12.multi-10.SJ.tab'
+
+
+❯ rename -n 's/.Aligned.sortedByCoord././g' *
+'5781_G1_IN_S5.Aligned.sortedByCoord.multi-10.bam' would be renamed to '5781_G1_IN_S5.multi-10.bam'
+'5781_G1_IP_S1.Aligned.sortedByCoord.multi-10.bam' would be renamed to '5781_G1_IP_S1.multi-10.bam'
+'5781_Q_IN_S6.Aligned.sortedByCoord.multi-10.bam' would be renamed to '5781_Q_IN_S6.multi-10.bam'
+'5781_Q_IP_S2.Aligned.sortedByCoord.multi-10.bam' would be renamed to '5781_Q_IP_S2.multi-10.bam'
+'5782_G1_IN_S7.Aligned.sortedByCoord.multi-10.bam' would be renamed to '5782_G1_IN_S7.multi-10.bam'
+'5782_G1_IP_S3.Aligned.sortedByCoord.multi-10.bam' would be renamed to '5782_G1_IP_S3.multi-10.bam'
+'5782_Q_IN_S8.Aligned.sortedByCoord.multi-10.bam' would be renamed to '5782_Q_IN_S8.multi-10.bam'
+'5782_Q_IP_S4.Aligned.sortedByCoord.multi-10.bam' would be renamed to '5782_Q_IP_S4.multi-10.bam'
+'CW10_7747_8day_Q_IN_S5.Aligned.sortedByCoord.multi-10.bam' would be renamed to 'CW10_7747_8day_Q_IN_S5.multi-10.bam'
+'CW10_7747_8day_Q_PD_S11.Aligned.sortedByCoord.multi-10.bam' would be renamed to 'CW10_7747_8day_Q_PD_S11.multi-10.bam'
+'CW12_7748_8day_Q_IN_S6.Aligned.sortedByCoord.multi-10.bam' would be renamed to 'CW12_7748_8day_Q_IN_S6.multi-10.bam'
+'CW12_7748_8day_Q_PD_S12.Aligned.sortedByCoord.multi-10.bam' would be renamed to 'CW12_7748_8day_Q_PD_S12.multi-10.bam'
+'CW2_5781_8day_Q_IN_S1.Aligned.sortedByCoord.multi-10.bam' would be renamed to 'CW2_5781_8day_Q_IN_S1.multi-10.bam'
+'CW2_5781_8day_Q_PD_S7.Aligned.sortedByCoord.multi-10.bam' would be renamed to 'CW2_5781_8day_Q_PD_S7.multi-10.bam'
+'CW4_5782_8day_Q_IN_S2.Aligned.sortedByCoord.multi-10.bam' would be renamed to 'CW4_5782_8day_Q_IN_S2.multi-10.bam'
+'CW4_5782_8day_Q_PD_S8.Aligned.sortedByCoord.multi-10.bam' would be renamed to 'CW4_5782_8day_Q_PD_S8.multi-10.bam'
+'CW6_7078_8day_Q_IN_S3.Aligned.sortedByCoord.multi-10.bam' would be renamed to 'CW6_7078_8day_Q_IN_S3.multi-10.bam'
+'CW6_7078_8day_Q_PD_S9.Aligned.sortedByCoord.multi-10.bam' would be renamed to 'CW6_7078_8day_Q_PD_S9.multi-10.bam'
+'CW8_7079_8day_Q_IN_S4.Aligned.sortedByCoord.multi-10.bam' would be renamed to 'CW8_7079_8day_Q_IN_S4.multi-10.bam'
+'CW8_7079_8day_Q_PD_S10.Aligned.sortedByCoord.multi-10.bam' would be renamed to 'CW8_7079_8day_Q_PD_S10.multi-10.bam'
+'SAMPLE_BM10_DSp48_5781_S22.Aligned.sortedByCoord.multi-10.bam' would be renamed to 'SAMPLE_BM10_DSp48_5781_S22.multi-10.bam'
+'SAMPLE_BM11_DSp48_7080_S23.Aligned.sortedByCoord.multi-10.bam' would be renamed to 'SAMPLE_BM11_DSp48_7080_S23.multi-10.bam'
+'SAMPLE_BM1_DSm2_5781_S13.Aligned.sortedByCoord.multi-10.bam' would be renamed to 'SAMPLE_BM1_DSm2_5781_S13.multi-10.bam'
+'SAMPLE_BM2_DSm2_7080_S14.Aligned.sortedByCoord.multi-10.bam' would be renamed to 'SAMPLE_BM2_DSm2_7080_S14.multi-10.bam'
+'SAMPLE_BM3_DSm2_7079_S15.Aligned.sortedByCoord.multi-10.bam' would be renamed to 'SAMPLE_BM3_DSm2_7079_S15.multi-10.bam'
+'SAMPLE_BM4_DSp2_5781_S16.Aligned.sortedByCoord.multi-10.bam' would be renamed to 'SAMPLE_BM4_DSp2_5781_S16.multi-10.bam'
+'SAMPLE_BM5_DSp2_7080_S17.Aligned.sortedByCoord.multi-10.bam' would be renamed to 'SAMPLE_BM5_DSp2_7080_S17.multi-10.bam'
+'SAMPLE_BM6_DSp2_7079_S18.Aligned.sortedByCoord.multi-10.bam' would be renamed to 'SAMPLE_BM6_DSp2_7079_S18.multi-10.bam'
+'SAMPLE_BM7_DSp24_5781_S19.Aligned.sortedByCoord.multi-10.bam' would be renamed to 'SAMPLE_BM7_DSp24_5781_S19.multi-10.bam'
+'SAMPLE_BM8_DSp24_7080_S20.Aligned.sortedByCoord.multi-10.bam' would be renamed to 'SAMPLE_BM8_DSp24_7080_S20.multi-10.bam'
+'SAMPLE_BM9_DSp24_7079_S21.Aligned.sortedByCoord.multi-10.bam' would be renamed to 'SAMPLE_BM9_DSp24_7079_S21.multi-10.bam'
+'SAMPLE_Bp10_DSp48_5782_S10.Aligned.sortedByCoord.multi-10.bam' would be renamed to 'SAMPLE_Bp10_DSp48_5782_S10.multi-10.bam'
+'SAMPLE_Bp11_DSp48_7081_S11.Aligned.sortedByCoord.multi-10.bam' would be renamed to 'SAMPLE_Bp11_DSp48_7081_S11.multi-10.bam'
+'SAMPLE_Bp12_DSp48_7078_S12.Aligned.sortedByCoord.multi-10.bam' would be renamed to 'SAMPLE_Bp12_DSp48_7078_S12.multi-10.bam'
+'SAMPLE_Bp1_DSm2_5782_S1.Aligned.sortedByCoord.multi-10.bam' would be renamed to 'SAMPLE_Bp1_DSm2_5782_S1.multi-10.bam'
+'SAMPLE_Bp2_DSm2_7081_S2.Aligned.sortedByCoord.multi-10.bam' would be renamed to 'SAMPLE_Bp2_DSm2_7081_S2.multi-10.bam'
+'SAMPLE_Bp3_DSm2_7078_S3.Aligned.sortedByCoord.multi-10.bam' would be renamed to 'SAMPLE_Bp3_DSm2_7078_S3.multi-10.bam'
+'SAMPLE_Bp4_DSp2_5782_S4.Aligned.sortedByCoord.multi-10.bam' would be renamed to 'SAMPLE_Bp4_DSp2_5782_S4.multi-10.bam'
+'SAMPLE_Bp5_DSp2_7081_S5.Aligned.sortedByCoord.multi-10.bam' would be renamed to 'SAMPLE_Bp5_DSp2_7081_S5.multi-10.bam'
+'SAMPLE_Bp6_DSp2_7078_S6.Aligned.sortedByCoord.multi-10.bam' would be renamed to 'SAMPLE_Bp6_DSp2_7078_S6.multi-10.bam'
+'SAMPLE_Bp7_DSp24_5782_S7.Aligned.sortedByCoord.multi-10.bam' would be renamed to 'SAMPLE_Bp7_DSp24_5782_S7.multi-10.bam'
+'SAMPLE_Bp8_DSp24_7081_S8.Aligned.sortedByCoord.multi-10.bam' would be renamed to 'SAMPLE_Bp8_DSp24_7081_S8.multi-10.bam'
+'SAMPLE_Bp9_DSp24_7078_S9.Aligned.sortedByCoord.multi-10.bam' would be renamed to 'SAMPLE_Bp9_DSp24_7078_S9.multi-10.bam'
+'Sample_CT10_7718_pIAA_Q_Nascent_S5.Aligned.sortedByCoord.multi-10.bam' would be renamed to 'Sample_CT10_7718_pIAA_Q_Nascent_S5.multi-10.bam'
+'Sample_CT10_7718_pIAA_Q_SteadyState_S10.Aligned.sortedByCoord.multi-10.bam' would be renamed to 'Sample_CT10_7718_pIAA_Q_SteadyState_S10.multi-10.bam'
+'Sample_CT2_6125_pIAA_Q_Nascent_S1.Aligned.sortedByCoord.multi-10.bam' would be renamed to 'Sample_CT2_6125_pIAA_Q_Nascent_S1.multi-10.bam'
+'Sample_CT2_6125_pIAA_Q_SteadyState_S6.Aligned.sortedByCoord.multi-10.bam' would be renamed to 'Sample_CT2_6125_pIAA_Q_SteadyState_S6.multi-10.bam'
+'Sample_CT4_6126_pIAA_Q_Nascent_S2.Aligned.sortedByCoord.multi-10.bam' would be renamed to 'Sample_CT4_6126_pIAA_Q_Nascent_S2.multi-10.bam'
+'Sample_CT4_6126_pIAA_Q_SteadyState_S7.Aligned.sortedByCoord.multi-10.bam' would be renamed to 'Sample_CT4_6126_pIAA_Q_SteadyState_S7.multi-10.bam'
+'Sample_CT6_7714_pIAA_Q_Nascent_S3.Aligned.sortedByCoord.multi-10.bam' would be renamed to 'Sample_CT6_7714_pIAA_Q_Nascent_S3.multi-10.bam'
+'Sample_CT6_7714_pIAA_Q_SteadyState_S8.Aligned.sortedByCoord.multi-10.bam' would be renamed to 'Sample_CT6_7714_pIAA_Q_SteadyState_S8.multi-10.bam'
+'Sample_CT8_7716_pIAA_Q_Nascent_S4.Aligned.sortedByCoord.multi-10.bam' would be renamed to 'Sample_CT8_7716_pIAA_Q_Nascent_S4.multi-10.bam'
+'Sample_CT8_7716_pIAA_Q_SteadyState_S9.Aligned.sortedByCoord.multi-10.bam' would be renamed to 'Sample_CT8_7716_pIAA_Q_SteadyState_S9.multi-10.bam'
+'Sample_CU11_5782_Q_Nascent_S11.Aligned.sortedByCoord.multi-10.bam' would be renamed to 'Sample_CU11_5782_Q_Nascent_S11.multi-10.bam'
+'Sample_CU12_5782_Q_SteadyState_S12.Aligned.sortedByCoord.multi-10.bam' would be renamed to 'Sample_CU12_5782_Q_SteadyState_S12.multi-10.bam'
+```
+</details>
+<br />
+
+<a id="check-on-logout-warning-messages-warning-not-enough-space-allocated-for-transcript"></a>
+##### Check on `*.Log.out` warning messages: "`WARNING: not enough space allocated for transcript.`"
+<details>
+<summary><i>Notes: Check on *.Log.out warning messages: "WARNING: not enough space allocated for transcript."</i></summary>
+
+In the `*.Log.out` files, we see a small number of warning messages, e.g., in "`SAMPLE_Bp7_DSp24_5782_S7.multi-10.Log.out`",
+```txt
+WARNING: not enough space allocated for transcript. Did not process all windows for read VH00699:36:AAAWYTFM5:1:1207:18572:48177
+   SOLUTION: increase alignTranscriptsPerReadNmax and re-run
+```
+
+What does this mean? The answer from Alex Dobin, author of `STAR`, is [here](https://groups.google.com/g/rna-star/c/Bp2LoGbg09s/m/n5m5_gZNAgAJ):
+> STAR preallocates memory for `alignTranscriptsPerReadNmax=10000` (by default) different alignments (transcripts) for each read.
+> 
+> If the actual number of possible alignments exceeds this value, the warning is issued.
+> 
+> Most likely, the reads with such a large number of possible alignments will have too many top alignments, and so will end up mapping to too many loci and will be discarded as multimappers.
+</details>
+<br />
+
+<details>
+<summary><i>Code: Check on *.Log.out warning messages: "WARNING: not enough space allocated for transcript."</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+pwd
+# /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0115/bams/SC_KL_20S
+
+if [[ -f warnings-alignTranscriptsPerReadNmax.txt ]]; then
+	rm warnings_alignTranscriptsPerReadNmax.txt
+fi
+touch warnings_alignTranscriptsPerReadNmax.txt
+
+for i in *.Log.out; do
+	tally="$(\
+		grep "WARNING: not enough space allocated for transcript" "${i}" \
+			| wc -l\
+	)"
+	echo -e "${i}\t${tally}" >> warnings_alignTranscriptsPerReadNmax.txt
+	# echo ""
+done
+# cat warnings_alignTranscriptsPerReadNmax.txt
+```
+</details>
+<br />
+
+<details>
+<summary><i>Printed: Check on *.Log.out warning messages: "WARNING: not enough space allocated for transcript."</i></summary>
+
+```txt
+❯ cat warnings_alignTranscriptsPerReadNmax.txt
+5781_G1_IN_S5.multi-10.Log.out	0
+5781_G1_IP_S1.multi-10.Log.out	0
+5781_Q_IN_S6.multi-10.Log.out	0
+5781_Q_IP_S2.multi-10.Log.out	0
+5782_G1_IN_S7.multi-10.Log.out	0
+5782_G1_IP_S3.multi-10.Log.out	0
+5782_Q_IN_S8.multi-10.Log.out	1
+5782_Q_IP_S4.multi-10.Log.out	0
+CW10_7747_8day_Q_IN_S5.multi-10.Log.out	3
+CW10_7747_8day_Q_PD_S11.multi-10.Log.out	0
+CW12_7748_8day_Q_IN_S6.multi-10.Log.out	1
+CW12_7748_8day_Q_PD_S12.multi-10.Log.out	3
+CW2_5781_8day_Q_IN_S1.multi-10.Log.out	0
+CW2_5781_8day_Q_PD_S7.multi-10.Log.out	1
+CW4_5782_8day_Q_IN_S2.multi-10.Log.out	5
+CW4_5782_8day_Q_PD_S8.multi-10.Log.out	6
+CW6_7078_8day_Q_IN_S3.multi-10.Log.out	4
+CW6_7078_8day_Q_PD_S9.multi-10.Log.out	4
+CW8_7079_8day_Q_IN_S4.multi-10.Log.out	0
+CW8_7079_8day_Q_PD_S10.multi-10.Log.out	1
+SAMPLE_BM10_DSp48_5781_S22.multi-10.Log.out	1
+SAMPLE_BM11_DSp48_7080_S23.multi-10.Log.out	1
+SAMPLE_BM1_DSm2_5781_S13.multi-10.Log.out	2
+SAMPLE_BM2_DSm2_7080_S14.multi-10.Log.out	0
+SAMPLE_BM3_DSm2_7079_S15.multi-10.Log.out	0
+SAMPLE_BM4_DSp2_5781_S16.multi-10.Log.out	0
+SAMPLE_BM5_DSp2_7080_S17.multi-10.Log.out	1
+SAMPLE_BM6_DSp2_7079_S18.multi-10.Log.out	0
+SAMPLE_BM7_DSp24_5781_S19.multi-10.Log.out	0
+SAMPLE_BM8_DSp24_7080_S20.multi-10.Log.out	2
+SAMPLE_BM9_DSp24_7079_S21.multi-10.Log.out	4
+SAMPLE_Bp10_DSp48_5782_S10.multi-10.Log.out	1
+SAMPLE_Bp11_DSp48_7081_S11.multi-10.Log.out	2
+SAMPLE_Bp12_DSp48_7078_S12.multi-10.Log.out	0
+SAMPLE_Bp1_DSm2_5782_S1.multi-10.Log.out	2
+SAMPLE_Bp2_DSm2_7081_S2.multi-10.Log.out	3
+SAMPLE_Bp3_DSm2_7078_S3.multi-10.Log.out	1
+SAMPLE_Bp4_DSp2_5782_S4.multi-10.Log.out	0
+SAMPLE_Bp5_DSp2_7081_S5.multi-10.Log.out	1
+SAMPLE_Bp6_DSp2_7078_S6.multi-10.Log.out	1
+SAMPLE_Bp7_DSp24_5782_S7.multi-10.Log.out	4
+SAMPLE_Bp8_DSp24_7081_S8.multi-10.Log.out	1
+SAMPLE_Bp9_DSp24_7078_S9.multi-10.Log.out	0
+Sample_CT10_7718_pIAA_Q_Nascent_S5.multi-10.Log.out	3
+Sample_CT10_7718_pIAA_Q_SteadyState_S10.multi-10.Log.out	6
+Sample_CT2_6125_pIAA_Q_Nascent_S1.multi-10.Log.out	9
+Sample_CT2_6125_pIAA_Q_SteadyState_S6.multi-10.Log.out	3
+Sample_CT4_6126_pIAA_Q_Nascent_S2.multi-10.Log.out	6
+Sample_CT4_6126_pIAA_Q_SteadyState_S7.multi-10.Log.out	5
+Sample_CT6_7714_pIAA_Q_Nascent_S3.multi-10.Log.out	2
+Sample_CT6_7714_pIAA_Q_SteadyState_S8.multi-10.Log.out	6
+Sample_CT8_7716_pIAA_Q_Nascent_S4.multi-10.Log.out	6
+Sample_CT8_7716_pIAA_Q_SteadyState_S9.multi-10.Log.out	9
+Sample_CU11_5782_Q_Nascent_S11.multi-10.Log.out	4
+Sample_CU12_5782_Q_SteadyState_S12.multi-10.Log.out	4
+```
+</details>
+<br />
+
 
 <a id="index-the-bams"></a>
 #### Index the `bam`s
 <a id="get-bams-of-interest-into-an-array"></a>
 ##### Get `bam`s of interest into an array
+
 ```bash
 #!/bin/bash
 #DONTRUN #CONTINUE
