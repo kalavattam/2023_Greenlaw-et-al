@@ -1,12 +1,14 @@
 
-# 2022-11
+`#2022-11`
+<br />
+<br />
+
 <details>
 <summary><b><font size="+2">Table of Contents</font></b></summary>
 <!-- MarkdownTOC -->
 
 1. [RNA-seq: Information on bamCoverage, spike-ins with DESeq2](#rna-seq-information-on-bamcoverage-spike-ins-with-deseq2)
     1. [Looking into the use of bamCoverage with RNA-seq data](#looking-into-the-use-of-bamcoverage-with-rna-seq-data)
-1. [TODO Return to this line of thinking later; for now, focus on PCR deduplication using UMI-tools and the UMI-containing `.fastq` files from FHCC Bioinformatics](#todo-return-to-this-line-of-thinking-later-for-now-focus-on-pcr-deduplication-using-umi-tools-and-the-umi-containing-fastq-files-from-fhcc-bioinformatics)
     1. [Looking into the use of spike-ins prior to running `DESeq2`](#looking-into-the-use-of-spike-ins-prior-to-running-deseq2)
         1. [Related email from me to Alison](#related-email-from-me-to-alison)
         1. [Moving forward](#moving-forward)
@@ -21,7 +23,7 @@
 <a id="looking-into-the-use-of-bamcoverage-with-rna-seq-data"></a>
 ### Looking into the use of bamCoverage with RNA-seq data
 <a id="todo-return-to-this-line-of-thinking-later-for-now-focus-on-pcr-deduplication-using-umi-tools-and-the-umi-containing-fastq-files-from-fhcc-bioinformatics"></a>
-#TODO Return to this line of thinking later; for now, focus on PCR deduplication using UMI-tools and the UMI-containing `.fastq` files from FHCC Bioinformatics
+`#TODO` Return to this line of thinking later; for now, focus on PCR deduplication using UMI-tools and the UMI-containing `.fastq` files from FHCC Bioinformatics
 - [Purpose of bamCoverage RPKM normalization methods](https://www.biostars.org/p/9474318/)
 - [bamCoverage and RNA-seq data](https://github.com/deeptools/deepTools/issues/401)
 - [Normalization with deepTools](https://www.biostars.org/p/473442/)
@@ -35,7 +37,7 @@
 
 <a id="looking-into-the-use-of-spike-ins-prior-to-running-deseq2"></a>
 ### Looking into the use of spike-ins prior to running `DESeq2`
-`#TODO (   ) Write up notes later`
+`#TODO` Write up notes later
 - [estimateSizeFactors](https://rdrr.io/bioc/DESeq2/man/estimateSizeFactors.html)
 - [Incorporating spike-ins to RNA-seq analysis](https://support.bioconductor.org/p/9143354/)
 - [DESeq2 estimateSizeFactors with control genes](https://support.bioconductor.org/p/115682/)

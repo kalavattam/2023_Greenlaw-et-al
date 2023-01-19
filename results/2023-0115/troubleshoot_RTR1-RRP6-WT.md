@@ -49,16 +49,21 @@
 		1. [Run `submit_run-fastqc.sh` on `trim_galore`-processed `fastq` files](#run-submit_run-fastqcsh-on-trim_galore-processed-fastq-files)
 1. [Align the trimmed, compressed `fastq` files to a combined reference](#align-the-trimmed-compressed-fastq-files-to-a-combined-reference)
 	1. [Get situated](#get-situated-5)
-	1. [Use a `HEREDOC` to write the script, `submit_star.sh`](#use-a-heredoc-to-write-the-script-submit_starsh)
-	1. [Run `submit_star.sh` on `fq.gz` files](#run-submit_starsh-on-fqgz-files)
-		1. [Clean up results from `STAR` alignment, then index `bam`s](#clean-up-results-from-star-alignment-then-index-bams)
-			1. [Clean up/rename results of `STAR` alignment](#clean-uprename-results-of-star-alignment)
-			1. [Check on `*.Log.out` warning messages: "`WARNING: not enough space allocated for transcript.`"](#check-on-logout-warning-messages-warning-not-enough-space-allocated-for-transcript)
-		1. [Index the `bam`s](#index-the-bams)
-			1. [Get situated](#get-situated-6)
-			1. [Set up necessary variables, get `bam`s of interest into an array](#set-up-necessary-variables-get-bams-of-interest-into-an-array)
-			1. [Use a `HEREDOC` to write the script, `submit_samtools-index.sh`](#use-a-heredoc-to-write-the-script-submit_samtools-indexsh)
-			1. [Run `samtools index` on each element of `bam` array](#run-samtools-index-on-each-element-of-bam-array)
+	1. [Assign variables and arrays](#assign-variables-and-arrays)
+	1. [Write and run the script `submit_star_unmapped-rm.sh`](#write-and-run-the-script-submit_star_unmapped-rmsh)
+		1. [Use a `HEREDOC` to write the script, `submit_star_unmapped-rm.sh`](#use-a-heredoc-to-write-the-script-submit_star_unmapped-rmsh)
+		1. [Run `submit_star_unmapped-rm.sh` on `fq.gz` files](#run-submit_star_unmapped-rmsh-on-fqgz-files)
+	1. [Write and run the script `submit_star_unmapped-w.sh`](#write-and-run-the-script-submit_star_unmapped-wsh)
+		1. [Use a `HEREDOC` to write the script, `submit_star_unmapped-w.sh`](#use-a-heredoc-to-write-the-script-submit_star_unmapped-wsh)
+		1. [Run `submit_star_unmapped-w.sh` on `fq.gz` files](#run-submit_star_unmapped-wsh-on-fqgz-files)
+	1. [Clean up results from `STAR` alignment, then index `bam`s](#clean-up-results-from-star-alignment-then-index-bams)
+		1. [Clean up/rename results of `STAR` alignment](#clean-uprename-results-of-star-alignment)
+		1. [Check on `*.Log.out` warning messages: "`WARNING: not enough space allocated for transcript.`"](#check-on-logout-warning-messages-warning-not-enough-space-allocated-for-transcript)
+	1. [Index the `bam`s](#index-the-bams)
+		1. [Get situated](#get-situated-6)
+		1. [Set up necessary variables, get `bam`s of interest into an array](#set-up-necessary-variables-get-bams-of-interest-into-an-array)
+		1. [Use a `HEREDOC` to write the script, `submit_samtools-index.sh`](#use-a-heredoc-to-write-the-script-submit_samtools-indexsh)
+		1. [Run `samtools index` on each element of `bam` array](#run-samtools-index-on-each-element-of-bam-array)
 	1. [Create `bam`s composed of alignments to specific species](#create-bams-composed-of-alignments-to-specific-species)
 		1. [Get situated](#get-situated-7)
 		1. [Try/troubleshoot a test run with `split_bam_by_species.sh`](#trytroubleshoot-a-test-run-with-split_bam_by_speciessh)
@@ -177,7 +182,6 @@ echo_test () {
 
 <a id="symlink-to-the-fastq-files"></a>
 ## Symlink to the `fastq` files
-
 <a id="find-out-which-files-to-use-for-ags-experiments"></a>
 ### Find out which files to use for AG's experiments
 <details>
@@ -10598,7 +10602,7 @@ The reference genome is composed of *S. cerevisiae*, *K. lactis*, and *20S* sequ
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
+#DONTRUN
 
 #  Get on a node, etc. if necessary
 grabnode  # 1, default settings
@@ -10612,20 +10616,23 @@ transcriptome &&
 
 #  Directory
 if [[ ! -d "./bams" ]]; then
-	mkdir -p bams/SC_KL_20S
-	mkdir -p bams/SC
-	mkdir -p bams/SC_KL
-	mkdir -p bams/KL
-	mkdir -p bams/20S
-	mkdir -p FastQC/bams/SC_KL_20S
-	mkdir -p FastQC/bams/SC
-	mkdir -p FastQC/bams/SC_KL
-	mkdir -p FastQC/bams/KL
-	mkdir -p FastQC/bams/20S
+	mkdir -p bams/{unmapped-rm,unmapped-w}/{SC_KL_20S,SC,SC_KL,KL,20S}
 fi
+```
+<details>
+<br />
+
+<a id="assign-variables-and-arrays"></a>
+### Assign variables and arrays
+<details>
+<summary><i>Code: Assign variables and arrays</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN
 
 #  Variables
-script_name="submit_star.sh"  # echo "${script_name}"
+script_name="submit_star_unmapped-rm.sh"  # echo "${script_name}"
 threads=16  # echo "${threads}"
 dir_genome="${HOME}/genomes/combined_SC_KL_20S/STAR"  # ., "${dir_genome}"
 
@@ -10678,10 +10685,12 @@ done
 </details>
 <br />
 
-<a id="use-a-heredoc-to-write-the-script-submit_starsh"></a>
-### Use a `HEREDOC` to write the script, `submit_star.sh`
+<a id="write-and-run-the-script-submit_star_unmapped-rmsh"></a>
+### Write and run the script `submit_star_unmapped-rm.sh`
+<a id="use-a-heredoc-to-write-the-script-submit_star_unmapped-rmsh"></a>
+#### Use a `HEREDOC` to write the script, `submit_star_unmapped-rm.sh`
 <details>
-<summary><i>Code: Use a HEREDOC to write the script, submit_star.sh</i></summary>
+<summary><i>Code: Use a HEREDOC to write the script, submit_star_unmapped-rm.sh</i></summary>
 
 ```bash
 #!/bin/bash
@@ -10757,12 +10766,12 @@ script
 </details>
 <br />
 
-<a id="run-submit_starsh-on-fqgz-files"></a>
-### Run `submit_star.sh` on `fq.gz` files
+<a id="run-submit_star_unmapped-rmsh-on-fqgz-files"></a>
+#### Run `submit_star_unmapped-rm.sh` on `fq.gz` files
 *For a given read pair, allow up to 10 multimappers*
 
 <details>
-<summary><i>Code: Run submit_star.sh on fq.gz files</i></summary>
+<summary><i>Code: Run submit_star_unmapped-rm.sh on fq.gz files</i></summary>
 
 ```bash
 #!/bin/bash
@@ -10777,14 +10786,14 @@ for (( i=0; i<=y; i++ )); do
     echo "          r1:  ${fq_r1[${i}]}"
     echo "          r2:  ${fq_r2[${i}]}"
     echo "      prefix:  ${fq_pre[${i}]}"
-    echo "      outdir:  ./bams/SC_KL_20S"
+    echo "      outdir:  ./bams/unmapped-rm/SC_KL_20S"
     echo "      genome:  ${dir_genome}"
     echo "multimappers:  10"
 
     sbatch "./sh_err_out/${script_name}" \
     	"${fq_r1[${i}]}" \
     	"${fq_r2[${i}]}" \
-    	"./bams/SC_KL_20S/${fq_pre[${i}]}." \
+    	"./bams/unmapped-rm/SC_KL_20S/${fq_pre[${i}]}." \
     	"${dir_genome}" \
     	10
     
@@ -10799,7 +10808,7 @@ done
 <br />
 
 <details>
-<summary><i>Printed: Run submit_star.sh on fq.gz files</i></summary>
+<summary><i>Printed: Run submit_star_unmapped-rm.sh on fq.gz files</i></summary>
 
 ```txt
 # --------------------------------------
@@ -10808,7 +10817,7 @@ done
           r1:  ./fastqs/trim_galore/5781_G1_IN_S5_R1_001_val_1.fq.gz
           r2:  ./fastqs/trim_galore/5781_G1_IN_S5_R3_001_val_2.fq.gz
       prefix:  5781_G1_IN_S5
-      outdir:  ./bams/SC_KL_20S
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
       genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
 multimappers:  10
 
@@ -10821,7 +10830,7 @@ Submitted batch job 7998902
           r1:  ./fastqs/trim_galore/5781_G1_IP_S1_R1_001_val_1.fq.gz
           r2:  ./fastqs/trim_galore/5781_G1_IP_S1_R3_001_val_2.fq.gz
       prefix:  5781_G1_IP_S1
-      outdir:  ./bams/SC_KL_20S
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
       genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
 multimappers:  10
 
@@ -10834,7 +10843,7 @@ Submitted batch job 7998903
           r1:  ./fastqs/trim_galore/5781_Q_IN_S6_R1_001_val_1.fq.gz
           r2:  ./fastqs/trim_galore/5781_Q_IN_S6_R3_001_val_2.fq.gz
       prefix:  5781_Q_IN_S6
-      outdir:  ./bams/SC_KL_20S
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
       genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
 multimappers:  10
 
@@ -10847,7 +10856,7 @@ Submitted batch job 7998904
           r1:  ./fastqs/trim_galore/5781_Q_IP_S2_R1_001_val_1.fq.gz
           r2:  ./fastqs/trim_galore/5781_Q_IP_S2_R3_001_val_2.fq.gz
       prefix:  5781_Q_IP_S2
-      outdir:  ./bams/SC_KL_20S
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
       genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
 multimappers:  10
 
@@ -10860,7 +10869,7 @@ Submitted batch job 7998905
           r1:  ./fastqs/trim_galore/5782_G1_IN_S7_R1_001_val_1.fq.gz
           r2:  ./fastqs/trim_galore/5782_G1_IN_S7_R3_001_val_2.fq.gz
       prefix:  5782_G1_IN_S7
-      outdir:  ./bams/SC_KL_20S
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
       genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
 multimappers:  10
 
@@ -10873,7 +10882,7 @@ Submitted batch job 7998906
           r1:  ./fastqs/trim_galore/5782_G1_IP_S3_R1_001_val_1.fq.gz
           r2:  ./fastqs/trim_galore/5782_G1_IP_S3_R3_001_val_2.fq.gz
       prefix:  5782_G1_IP_S3
-      outdir:  ./bams/SC_KL_20S
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
       genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
 multimappers:  10
 
@@ -10886,7 +10895,7 @@ Submitted batch job 7998907
           r1:  ./fastqs/trim_galore/5782_Q_IN_S8_R1_001_val_1.fq.gz
           r2:  ./fastqs/trim_galore/5782_Q_IN_S8_R3_001_val_2.fq.gz
       prefix:  5782_Q_IN_S8
-      outdir:  ./bams/SC_KL_20S
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
       genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
 multimappers:  10
 
@@ -10899,7 +10908,7 @@ Submitted batch job 7998908
           r1:  ./fastqs/trim_galore/5782_Q_IP_S4_R1_001_val_1.fq.gz
           r2:  ./fastqs/trim_galore/5782_Q_IP_S4_R3_001_val_2.fq.gz
       prefix:  5782_Q_IP_S4
-      outdir:  ./bams/SC_KL_20S
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
       genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
 multimappers:  10
 
@@ -10912,7 +10921,7 @@ Submitted batch job 7998909
           r1:  ./fastqs/trim_galore/CW10_7747_8day_Q_IN_S5_R1_001_val_1.fq.gz
           r2:  ./fastqs/trim_galore/CW10_7747_8day_Q_IN_S5_R3_001_val_2.fq.gz
       prefix:  CW10_7747_8day_Q_IN_S5
-      outdir:  ./bams/SC_KL_20S
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
       genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
 multimappers:  10
 
@@ -10925,7 +10934,7 @@ Submitted batch job 7998910
           r1:  ./fastqs/trim_galore/CW10_7747_8day_Q_PD_S11_R1_001_val_1.fq.gz
           r2:  ./fastqs/trim_galore/CW10_7747_8day_Q_PD_S11_R3_001_val_2.fq.gz
       prefix:  CW10_7747_8day_Q_PD_S11
-      outdir:  ./bams/SC_KL_20S
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
       genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
 multimappers:  10
 
@@ -10938,7 +10947,7 @@ Submitted batch job 7998911
           r1:  ./fastqs/trim_galore/CW12_7748_8day_Q_IN_S6_R1_001_val_1.fq.gz
           r2:  ./fastqs/trim_galore/CW12_7748_8day_Q_IN_S6_R3_001_val_2.fq.gz
       prefix:  CW12_7748_8day_Q_IN_S6
-      outdir:  ./bams/SC_KL_20S
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
       genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
 multimappers:  10
 
@@ -10951,7 +10960,7 @@ Submitted batch job 7998912
           r1:  ./fastqs/trim_galore/CW12_7748_8day_Q_PD_S12_R1_001_val_1.fq.gz
           r2:  ./fastqs/trim_galore/CW12_7748_8day_Q_PD_S12_R3_001_val_2.fq.gz
       prefix:  CW12_7748_8day_Q_PD_S12
-      outdir:  ./bams/SC_KL_20S
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
       genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
 multimappers:  10
 
@@ -10964,7 +10973,7 @@ Submitted batch job 7998913
           r1:  ./fastqs/trim_galore/CW2_5781_8day_Q_IN_S1_R1_001_val_1.fq.gz
           r2:  ./fastqs/trim_galore/CW2_5781_8day_Q_IN_S1_R3_001_val_2.fq.gz
       prefix:  CW2_5781_8day_Q_IN_S1
-      outdir:  ./bams/SC_KL_20S
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
       genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
 multimappers:  10
 
@@ -10977,7 +10986,7 @@ Submitted batch job 7998914
           r1:  ./fastqs/trim_galore/CW2_5781_8day_Q_PD_S7_R1_001_val_1.fq.gz
           r2:  ./fastqs/trim_galore/CW2_5781_8day_Q_PD_S7_R3_001_val_2.fq.gz
       prefix:  CW2_5781_8day_Q_PD_S7
-      outdir:  ./bams/SC_KL_20S
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
       genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
 multimappers:  10
 
@@ -10990,7 +10999,7 @@ Submitted batch job 7998915
           r1:  ./fastqs/trim_galore/CW4_5782_8day_Q_IN_S2_R1_001_val_1.fq.gz
           r2:  ./fastqs/trim_galore/CW4_5782_8day_Q_IN_S2_R3_001_val_2.fq.gz
       prefix:  CW4_5782_8day_Q_IN_S2
-      outdir:  ./bams/SC_KL_20S
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
       genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
 multimappers:  10
 
@@ -11003,7 +11012,7 @@ Submitted batch job 7998916
           r1:  ./fastqs/trim_galore/CW4_5782_8day_Q_PD_S8_R1_001_val_1.fq.gz
           r2:  ./fastqs/trim_galore/CW4_5782_8day_Q_PD_S8_R3_001_val_2.fq.gz
       prefix:  CW4_5782_8day_Q_PD_S8
-      outdir:  ./bams/SC_KL_20S
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
       genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
 multimappers:  10
 
@@ -11016,7 +11025,7 @@ Submitted batch job 7998917
           r1:  ./fastqs/trim_galore/CW6_7078_8day_Q_IN_S3_R1_001_val_1.fq.gz
           r2:  ./fastqs/trim_galore/CW6_7078_8day_Q_IN_S3_R3_001_val_2.fq.gz
       prefix:  CW6_7078_8day_Q_IN_S3
-      outdir:  ./bams/SC_KL_20S
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
       genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
 multimappers:  10
 
@@ -11029,7 +11038,7 @@ Submitted batch job 7998918
           r1:  ./fastqs/trim_galore/CW6_7078_8day_Q_PD_S9_R1_001_val_1.fq.gz
           r2:  ./fastqs/trim_galore/CW6_7078_8day_Q_PD_S9_R3_001_val_2.fq.gz
       prefix:  CW6_7078_8day_Q_PD_S9
-      outdir:  ./bams/SC_KL_20S
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
       genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
 multimappers:  10
 
@@ -11042,7 +11051,7 @@ Submitted batch job 7998919
           r1:  ./fastqs/trim_galore/CW8_7079_8day_Q_IN_S4_R1_001_val_1.fq.gz
           r2:  ./fastqs/trim_galore/CW8_7079_8day_Q_IN_S4_R3_001_val_2.fq.gz
       prefix:  CW8_7079_8day_Q_IN_S4
-      outdir:  ./bams/SC_KL_20S
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
       genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
 multimappers:  10
 
@@ -11055,7 +11064,7 @@ Submitted batch job 7998920
           r1:  ./fastqs/trim_galore/CW8_7079_8day_Q_PD_S10_R1_001_val_1.fq.gz
           r2:  ./fastqs/trim_galore/CW8_7079_8day_Q_PD_S10_R3_001_val_2.fq.gz
       prefix:  CW8_7079_8day_Q_PD_S10
-      outdir:  ./bams/SC_KL_20S
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
       genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
 multimappers:  10
 
@@ -11068,7 +11077,7 @@ Submitted batch job 7998921
           r1:  ./fastqs/trim_galore/SAMPLE_BM10_DSp48_5781_S22_R1_001_val_1.fq.gz
           r2:  ./fastqs/trim_galore/SAMPLE_BM10_DSp48_5781_S22_R3_001_val_2.fq.gz
       prefix:  SAMPLE_BM10_DSp48_5781_S22
-      outdir:  ./bams/SC_KL_20S
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
       genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
 multimappers:  10
 
@@ -11081,7 +11090,7 @@ Submitted batch job 7998922
           r1:  ./fastqs/trim_galore/SAMPLE_BM11_DSp48_7080_S23_R1_001_val_1.fq.gz
           r2:  ./fastqs/trim_galore/SAMPLE_BM11_DSp48_7080_S23_R3_001_val_2.fq.gz
       prefix:  SAMPLE_BM11_DSp48_7080_S23
-      outdir:  ./bams/SC_KL_20S
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
       genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
 multimappers:  10
 
@@ -11094,7 +11103,7 @@ Submitted batch job 7998923
           r1:  ./fastqs/trim_galore/SAMPLE_BM1_DSm2_5781_S13_R1_001_val_1.fq.gz
           r2:  ./fastqs/trim_galore/SAMPLE_BM1_DSm2_5781_S13_R3_001_val_2.fq.gz
       prefix:  SAMPLE_BM1_DSm2_5781_S13
-      outdir:  ./bams/SC_KL_20S
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
       genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
 multimappers:  10
 
@@ -11107,7 +11116,7 @@ Submitted batch job 7998924
           r1:  ./fastqs/trim_galore/SAMPLE_BM2_DSm2_7080_S14_R1_001_val_1.fq.gz
           r2:  ./fastqs/trim_galore/SAMPLE_BM2_DSm2_7080_S14_R3_001_val_2.fq.gz
       prefix:  SAMPLE_BM2_DSm2_7080_S14
-      outdir:  ./bams/SC_KL_20S
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
       genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
 multimappers:  10
 
@@ -11120,7 +11129,7 @@ Submitted batch job 7998925
           r1:  ./fastqs/trim_galore/SAMPLE_BM3_DSm2_7079_S15_R1_001_val_1.fq.gz
           r2:  ./fastqs/trim_galore/SAMPLE_BM3_DSm2_7079_S15_R3_001_val_2.fq.gz
       prefix:  SAMPLE_BM3_DSm2_7079_S15
-      outdir:  ./bams/SC_KL_20S
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
       genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
 multimappers:  10
 
@@ -11133,7 +11142,7 @@ Submitted batch job 7998926
           r1:  ./fastqs/trim_galore/SAMPLE_BM4_DSp2_5781_S16_R1_001_val_1.fq.gz
           r2:  ./fastqs/trim_galore/SAMPLE_BM4_DSp2_5781_S16_R3_001_val_2.fq.gz
       prefix:  SAMPLE_BM4_DSp2_5781_S16
-      outdir:  ./bams/SC_KL_20S
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
       genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
 multimappers:  10
 
@@ -11146,7 +11155,7 @@ Submitted batch job 7998927
           r1:  ./fastqs/trim_galore/SAMPLE_BM5_DSp2_7080_S17_R1_001_val_1.fq.gz
           r2:  ./fastqs/trim_galore/SAMPLE_BM5_DSp2_7080_S17_R3_001_val_2.fq.gz
       prefix:  SAMPLE_BM5_DSp2_7080_S17
-      outdir:  ./bams/SC_KL_20S
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
       genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
 multimappers:  10
 
@@ -11159,7 +11168,7 @@ Submitted batch job 7998928
           r1:  ./fastqs/trim_galore/SAMPLE_BM6_DSp2_7079_S18_R1_001_val_1.fq.gz
           r2:  ./fastqs/trim_galore/SAMPLE_BM6_DSp2_7079_S18_R3_001_val_2.fq.gz
       prefix:  SAMPLE_BM6_DSp2_7079_S18
-      outdir:  ./bams/SC_KL_20S
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
       genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
 multimappers:  10
 
@@ -11172,7 +11181,7 @@ Submitted batch job 7998929
           r1:  ./fastqs/trim_galore/SAMPLE_BM7_DSp24_5781_S19_R1_001_val_1.fq.gz
           r2:  ./fastqs/trim_galore/SAMPLE_BM7_DSp24_5781_S19_R3_001_val_2.fq.gz
       prefix:  SAMPLE_BM7_DSp24_5781_S19
-      outdir:  ./bams/SC_KL_20S
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
       genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
 multimappers:  10
 
@@ -11185,7 +11194,7 @@ Submitted batch job 7998930
           r1:  ./fastqs/trim_galore/SAMPLE_BM8_DSp24_7080_S20_R1_001_val_1.fq.gz
           r2:  ./fastqs/trim_galore/SAMPLE_BM8_DSp24_7080_S20_R3_001_val_2.fq.gz
       prefix:  SAMPLE_BM8_DSp24_7080_S20
-      outdir:  ./bams/SC_KL_20S
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
       genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
 multimappers:  10
 
@@ -11198,7 +11207,7 @@ Submitted batch job 7998931
           r1:  ./fastqs/trim_galore/SAMPLE_BM9_DSp24_7079_S21_R1_001_val_1.fq.gz
           r2:  ./fastqs/trim_galore/SAMPLE_BM9_DSp24_7079_S21_R3_001_val_2.fq.gz
       prefix:  SAMPLE_BM9_DSp24_7079_S21
-      outdir:  ./bams/SC_KL_20S
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
       genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
 multimappers:  10
 
@@ -11211,7 +11220,7 @@ Submitted batch job 7998932
           r1:  ./fastqs/trim_galore/SAMPLE_Bp10_DSp48_5782_S10_R1_001_val_1.fq.gz
           r2:  ./fastqs/trim_galore/SAMPLE_Bp10_DSp48_5782_S10_R3_001_val_2.fq.gz
       prefix:  SAMPLE_Bp10_DSp48_5782_S10
-      outdir:  ./bams/SC_KL_20S
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
       genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
 multimappers:  10
 
@@ -11224,7 +11233,7 @@ Submitted batch job 7998933
           r1:  ./fastqs/trim_galore/SAMPLE_Bp11_DSp48_7081_S11_R1_001_val_1.fq.gz
           r2:  ./fastqs/trim_galore/SAMPLE_Bp11_DSp48_7081_S11_R3_001_val_2.fq.gz
       prefix:  SAMPLE_Bp11_DSp48_7081_S11
-      outdir:  ./bams/SC_KL_20S
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
       genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
 multimappers:  10
 
@@ -11237,7 +11246,7 @@ Submitted batch job 7998934
           r1:  ./fastqs/trim_galore/SAMPLE_Bp12_DSp48_7078_S12_R1_001_val_1.fq.gz
           r2:  ./fastqs/trim_galore/SAMPLE_Bp12_DSp48_7078_S12_R3_001_val_2.fq.gz
       prefix:  SAMPLE_Bp12_DSp48_7078_S12
-      outdir:  ./bams/SC_KL_20S
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
       genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
 multimappers:  10
 
@@ -11250,7 +11259,7 @@ Submitted batch job 7998935
           r1:  ./fastqs/trim_galore/SAMPLE_Bp1_DSm2_5782_S1_R1_001_val_1.fq.gz
           r2:  ./fastqs/trim_galore/SAMPLE_Bp1_DSm2_5782_S1_R3_001_val_2.fq.gz
       prefix:  SAMPLE_Bp1_DSm2_5782_S1
-      outdir:  ./bams/SC_KL_20S
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
       genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
 multimappers:  10
 
@@ -11263,7 +11272,7 @@ Submitted batch job 7998936
           r1:  ./fastqs/trim_galore/SAMPLE_Bp2_DSm2_7081_S2_R1_001_val_1.fq.gz
           r2:  ./fastqs/trim_galore/SAMPLE_Bp2_DSm2_7081_S2_R3_001_val_2.fq.gz
       prefix:  SAMPLE_Bp2_DSm2_7081_S2
-      outdir:  ./bams/SC_KL_20S
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
       genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
 multimappers:  10
 
@@ -11276,7 +11285,7 @@ Submitted batch job 7998937
           r1:  ./fastqs/trim_galore/SAMPLE_Bp3_DSm2_7078_S3_R1_001_val_1.fq.gz
           r2:  ./fastqs/trim_galore/SAMPLE_Bp3_DSm2_7078_S3_R3_001_val_2.fq.gz
       prefix:  SAMPLE_Bp3_DSm2_7078_S3
-      outdir:  ./bams/SC_KL_20S
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
       genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
 multimappers:  10
 
@@ -11289,7 +11298,7 @@ Submitted batch job 7998938
           r1:  ./fastqs/trim_galore/SAMPLE_Bp4_DSp2_5782_S4_R1_001_val_1.fq.gz
           r2:  ./fastqs/trim_galore/SAMPLE_Bp4_DSp2_5782_S4_R3_001_val_2.fq.gz
       prefix:  SAMPLE_Bp4_DSp2_5782_S4
-      outdir:  ./bams/SC_KL_20S
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
       genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
 multimappers:  10
 
@@ -11302,7 +11311,7 @@ Submitted batch job 7998939
           r1:  ./fastqs/trim_galore/SAMPLE_Bp5_DSp2_7081_S5_R1_001_val_1.fq.gz
           r2:  ./fastqs/trim_galore/SAMPLE_Bp5_DSp2_7081_S5_R3_001_val_2.fq.gz
       prefix:  SAMPLE_Bp5_DSp2_7081_S5
-      outdir:  ./bams/SC_KL_20S
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
       genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
 multimappers:  10
 
@@ -11315,7 +11324,7 @@ Submitted batch job 7998940
           r1:  ./fastqs/trim_galore/SAMPLE_Bp6_DSp2_7078_S6_R1_001_val_1.fq.gz
           r2:  ./fastqs/trim_galore/SAMPLE_Bp6_DSp2_7078_S6_R3_001_val_2.fq.gz
       prefix:  SAMPLE_Bp6_DSp2_7078_S6
-      outdir:  ./bams/SC_KL_20S
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
       genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
 multimappers:  10
 
@@ -11328,7 +11337,7 @@ Submitted batch job 7998941
           r1:  ./fastqs/trim_galore/SAMPLE_Bp7_DSp24_5782_S7_R1_001_val_1.fq.gz
           r2:  ./fastqs/trim_galore/SAMPLE_Bp7_DSp24_5782_S7_R3_001_val_2.fq.gz
       prefix:  SAMPLE_Bp7_DSp24_5782_S7
-      outdir:  ./bams/SC_KL_20S
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
       genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
 multimappers:  10
 
@@ -11341,7 +11350,7 @@ Submitted batch job 7998942
           r1:  ./fastqs/trim_galore/SAMPLE_Bp8_DSp24_7081_S8_R1_001_val_1.fq.gz
           r2:  ./fastqs/trim_galore/SAMPLE_Bp8_DSp24_7081_S8_R3_001_val_2.fq.gz
       prefix:  SAMPLE_Bp8_DSp24_7081_S8
-      outdir:  ./bams/SC_KL_20S
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
       genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
 multimappers:  10
 
@@ -11354,7 +11363,7 @@ Submitted batch job 7998943
           r1:  ./fastqs/trim_galore/SAMPLE_Bp9_DSp24_7078_S9_R1_001_val_1.fq.gz
           r2:  ./fastqs/trim_galore/SAMPLE_Bp9_DSp24_7078_S9_R3_001_val_2.fq.gz
       prefix:  SAMPLE_Bp9_DSp24_7078_S9
-      outdir:  ./bams/SC_KL_20S
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
       genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
 multimappers:  10
 
@@ -11367,7 +11376,7 @@ Submitted batch job 7998944
           r1:  ./fastqs/trim_galore/Sample_CT10_7718_pIAA_Q_Nascent_S5_R1_001_val_1.fq.gz
           r2:  ./fastqs/trim_galore/Sample_CT10_7718_pIAA_Q_Nascent_S5_R3_001_val_2.fq.gz
       prefix:  Sample_CT10_7718_pIAA_Q_Nascent_S5
-      outdir:  ./bams/SC_KL_20S
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
       genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
 multimappers:  10
 
@@ -11380,7 +11389,7 @@ Submitted batch job 7998945
           r1:  ./fastqs/trim_galore/Sample_CT10_7718_pIAA_Q_SteadyState_S10_R1_001_val_1.fq.gz
           r2:  ./fastqs/trim_galore/Sample_CT10_7718_pIAA_Q_SteadyState_S10_R3_001_val_2.fq.gz
       prefix:  Sample_CT10_7718_pIAA_Q_SteadyState_S10
-      outdir:  ./bams/SC_KL_20S
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
       genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
 multimappers:  10
 
@@ -11393,7 +11402,7 @@ Submitted batch job 7998946
           r1:  ./fastqs/trim_galore/Sample_CT2_6125_pIAA_Q_Nascent_S1_R1_001_val_1.fq.gz
           r2:  ./fastqs/trim_galore/Sample_CT2_6125_pIAA_Q_Nascent_S1_R3_001_val_2.fq.gz
       prefix:  Sample_CT2_6125_pIAA_Q_Nascent_S1
-      outdir:  ./bams/SC_KL_20S
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
       genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
 multimappers:  10
 
@@ -11406,7 +11415,7 @@ Submitted batch job 7998947
           r1:  ./fastqs/trim_galore/Sample_CT2_6125_pIAA_Q_SteadyState_S6_R1_001_val_1.fq.gz
           r2:  ./fastqs/trim_galore/Sample_CT2_6125_pIAA_Q_SteadyState_S6_R3_001_val_2.fq.gz
       prefix:  Sample_CT2_6125_pIAA_Q_SteadyState_S6
-      outdir:  ./bams/SC_KL_20S
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
       genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
 multimappers:  10
 
@@ -11419,7 +11428,7 @@ Submitted batch job 7998948
           r1:  ./fastqs/trim_galore/Sample_CT4_6126_pIAA_Q_Nascent_S2_R1_001_val_1.fq.gz
           r2:  ./fastqs/trim_galore/Sample_CT4_6126_pIAA_Q_Nascent_S2_R3_001_val_2.fq.gz
       prefix:  Sample_CT4_6126_pIAA_Q_Nascent_S2
-      outdir:  ./bams/SC_KL_20S
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
       genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
 multimappers:  10
 
@@ -11432,7 +11441,7 @@ Submitted batch job 7998949
           r1:  ./fastqs/trim_galore/Sample_CT4_6126_pIAA_Q_SteadyState_S7_R1_001_val_1.fq.gz
           r2:  ./fastqs/trim_galore/Sample_CT4_6126_pIAA_Q_SteadyState_S7_R3_001_val_2.fq.gz
       prefix:  Sample_CT4_6126_pIAA_Q_SteadyState_S7
-      outdir:  ./bams/SC_KL_20S
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
       genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
 multimappers:  10
 
@@ -11445,7 +11454,7 @@ Submitted batch job 7998950
           r1:  ./fastqs/trim_galore/Sample_CT6_7714_pIAA_Q_Nascent_S3_R1_001_val_1.fq.gz
           r2:  ./fastqs/trim_galore/Sample_CT6_7714_pIAA_Q_Nascent_S3_R3_001_val_2.fq.gz
       prefix:  Sample_CT6_7714_pIAA_Q_Nascent_S3
-      outdir:  ./bams/SC_KL_20S
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
       genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
 multimappers:  10
 
@@ -11458,7 +11467,7 @@ Submitted batch job 7998951
           r1:  ./fastqs/trim_galore/Sample_CT6_7714_pIAA_Q_SteadyState_S8_R1_001_val_1.fq.gz
           r2:  ./fastqs/trim_galore/Sample_CT6_7714_pIAA_Q_SteadyState_S8_R3_001_val_2.fq.gz
       prefix:  Sample_CT6_7714_pIAA_Q_SteadyState_S8
-      outdir:  ./bams/SC_KL_20S
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
       genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
 multimappers:  10
 
@@ -11471,7 +11480,7 @@ Submitted batch job 7998952
           r1:  ./fastqs/trim_galore/Sample_CT8_7716_pIAA_Q_Nascent_S4_R1_001_val_1.fq.gz
           r2:  ./fastqs/trim_galore/Sample_CT8_7716_pIAA_Q_Nascent_S4_R3_001_val_2.fq.gz
       prefix:  Sample_CT8_7716_pIAA_Q_Nascent_S4
-      outdir:  ./bams/SC_KL_20S
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
       genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
 multimappers:  10
 
@@ -11484,7 +11493,7 @@ Submitted batch job 7998953
           r1:  ./fastqs/trim_galore/Sample_CT8_7716_pIAA_Q_SteadyState_S9_R1_001_val_1.fq.gz
           r2:  ./fastqs/trim_galore/Sample_CT8_7716_pIAA_Q_SteadyState_S9_R3_001_val_2.fq.gz
       prefix:  Sample_CT8_7716_pIAA_Q_SteadyState_S9
-      outdir:  ./bams/SC_KL_20S
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
       genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
 multimappers:  10
 
@@ -11497,7 +11506,7 @@ Submitted batch job 7998954
           r1:  ./fastqs/trim_galore/Sample_CU11_5782_Q_Nascent_S11_R1_001_val_1.fq.gz
           r2:  ./fastqs/trim_galore/Sample_CU11_5782_Q_Nascent_S11_R3_001_val_2.fq.gz
       prefix:  Sample_CU11_5782_Q_Nascent_S11
-      outdir:  ./bams/SC_KL_20S
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
       genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
 multimappers:  10
 
@@ -11510,7 +11519,7 @@ Submitted batch job 7998955
           r1:  ./fastqs/trim_galore/Sample_CU12_5782_Q_SteadyState_S12_R1_001_val_1.fq.gz
           r2:  ./fastqs/trim_galore/Sample_CU12_5782_Q_SteadyState_S12_R3_001_val_2.fq.gz
       prefix:  Sample_CU12_5782_Q_SteadyState_S12
-      outdir:  ./bams/SC_KL_20S
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
       genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
 multimappers:  10
 
@@ -11519,10 +11528,18 @@ Submitted batch job 7998956
 </details>
 <br />
 
+<a id="write-and-run-the-script-submit_star_unmapped-wsh"></a>
+### Write and run the script `submit_star_unmapped-w.sh`
+`#PICKUPHERE` `#INPROGRESS`
+<a id="use-a-heredoc-to-write-the-script-submit_star_unmapped-wsh"></a>
+#### Use a `HEREDOC` to write the script, `submit_star_unmapped-w.sh`
+<a id="run-submit_star_unmapped-wsh-on-fqgz-files"></a>
+#### Run `submit_star_unmapped-w.sh` on `fq.gz` files
+
 <a id="clean-up-results-from-star-alignment-then-index-bams"></a>
-#### Clean up results from `STAR` alignment, then index `bam`s
+### Clean up results from `STAR` alignment, then index `bam`s
 <a id="clean-uprename-results-of-star-alignment"></a>
-##### Clean up/rename results of `STAR` alignment
+#### Clean up/rename results of `STAR` alignment
 <details>
 <summary><i>Code, notes: Clean up/rename results of `STAR` alignment</i></summary>
 
@@ -11963,7 +11980,7 @@ Moving forward, perform the following steps:
 <br />
 
 <a id="check-on-logout-warning-messages-warning-not-enough-space-allocated-for-transcript"></a>
-##### Check on `*.Log.out` warning messages: "`WARNING: not enough space allocated for transcript.`"
+#### Check on `*.Log.out` warning messages: "`WARNING: not enough space allocated for transcript.`"
 <details>
 <summary><i>Notes: Check on *.Log.out warning messages: "WARNING: not enough space allocated for transcript."</i></summary>
 
@@ -12076,9 +12093,9 @@ Sample_CU12_5782_Q_SteadyState_S12.multi-10.Log.out	4
 
 
 <a id="index-the-bams"></a>
-#### Index the `bam`s
+### Index the `bam`s
 <a id="get-situated-6"></a>
-##### Get situated
+#### Get situated
 <details>
 <summary><i>Code: Get situated</i></summary>
 
@@ -12100,7 +12117,7 @@ transcriptome &&
 <br />
 
 <a id="set-up-necessary-variables-get-bams-of-interest-into-an-array"></a>
-##### Set up necessary variables, get `bam`s of interest into an array
+#### Set up necessary variables, get `bam`s of interest into an array
 <details>
 <summary><i>Code: Set up necessary variables, get bams of interest into an array</i></summary>
 
@@ -12118,7 +12135,7 @@ typeset -a bams
 while IFS=" " read -r -d $'\0'; do
     bams+=( "${REPLY%_R?_001_val_?.fq.gz}" )
 done < <(\
-    find "./bams/SC_KL_20S" \
+    find "./bams/unmapped-rm/SC_KL_20S" \
         -type f \
         -name "*.bam" \
         -print0 \
@@ -12131,7 +12148,7 @@ done < <(\
 <br />
 
 <a id="use-a-heredoc-to-write-the-script-submit_samtools-indexsh"></a>
-##### Use a `HEREDOC` to write the script, `submit_samtools-index.sh`
+#### Use a `HEREDOC` to write the script, `submit_samtools-index.sh`
 <details>
 <summary><i>Code: Use a HEREDOC to write the script, submit_samtools-index.s</i></summary>
 
@@ -12164,7 +12181,7 @@ script
 <br />
 
 <a id="run-samtools-index-on-each-element-of-bam-array"></a>
-##### Run `samtools index` on each element of `bam` array
+#### Run `samtools index` on each element of `bam` array
 <details>
 <summary><i>Code: Run samtools index on each element of bam array</i></summary>
 
@@ -12197,440 +12214,440 @@ done
 ```txt
 # --------------------------------------
    Iteration:  0
-        File:  ./bams/SC_KL_20S/5781_G1_IN_S5.multi-10.bam
-      outdir:  ./bams/SC_KL_20S
+        File:  ./bams/unmapped-rm/SC_KL_20S/5781_G1_IN_S5.multi-10.bam
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010831
 
 
 # --------------------------------------
    Iteration:  1
-        File:  ./bams/SC_KL_20S/5781_G1_IP_S1.multi-10.bam
-      outdir:  ./bams/SC_KL_20S
+        File:  ./bams/unmapped-rm/SC_KL_20S/5781_G1_IP_S1.multi-10.bam
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010832
 
 
 # --------------------------------------
    Iteration:  2
-        File:  ./bams/SC_KL_20S/5781_Q_IN_S6.multi-10.bam
-      outdir:  ./bams/SC_KL_20S
+        File:  ./bams/unmapped-rm/SC_KL_20S/5781_Q_IN_S6.multi-10.bam
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010833
 
 
 # --------------------------------------
    Iteration:  3
-        File:  ./bams/SC_KL_20S/5781_Q_IP_S2.multi-10.bam
-      outdir:  ./bams/SC_KL_20S
+        File:  ./bams/unmapped-rm/SC_KL_20S/5781_Q_IP_S2.multi-10.bam
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010834
 
 
 # --------------------------------------
    Iteration:  4
-        File:  ./bams/SC_KL_20S/5782_G1_IN_S7.multi-10.bam
-      outdir:  ./bams/SC_KL_20S
+        File:  ./bams/unmapped-rm/SC_KL_20S/5782_G1_IN_S7.multi-10.bam
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010835
 
 
 # --------------------------------------
    Iteration:  5
-        File:  ./bams/SC_KL_20S/5782_G1_IP_S3.multi-10.bam
-      outdir:  ./bams/SC_KL_20S
+        File:  ./bams/unmapped-rm/SC_KL_20S/5782_G1_IP_S3.multi-10.bam
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010836
 
 
 # --------------------------------------
    Iteration:  6
-        File:  ./bams/SC_KL_20S/5782_Q_IN_S8.multi-10.bam
-      outdir:  ./bams/SC_KL_20S
+        File:  ./bams/unmapped-rm/SC_KL_20S/5782_Q_IN_S8.multi-10.bam
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010837
 
 
 # --------------------------------------
    Iteration:  7
-        File:  ./bams/SC_KL_20S/5782_Q_IP_S4.multi-10.bam
-      outdir:  ./bams/SC_KL_20S
+        File:  ./bams/unmapped-rm/SC_KL_20S/5782_Q_IP_S4.multi-10.bam
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010838
 
 
 # --------------------------------------
    Iteration:  8
-        File:  ./bams/SC_KL_20S/CW10_7747_8day_Q_IN_S5.multi-10.bam
-      outdir:  ./bams/SC_KL_20S
+        File:  ./bams/unmapped-rm/SC_KL_20S/CW10_7747_8day_Q_IN_S5.multi-10.bam
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010839
 
 
 # --------------------------------------
    Iteration:  9
-        File:  ./bams/SC_KL_20S/CW10_7747_8day_Q_PD_S11.multi-10.bam
-      outdir:  ./bams/SC_KL_20S
+        File:  ./bams/unmapped-rm/SC_KL_20S/CW10_7747_8day_Q_PD_S11.multi-10.bam
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010840
 
 
 # --------------------------------------
    Iteration:  10
-        File:  ./bams/SC_KL_20S/CW12_7748_8day_Q_IN_S6.multi-10.bam
-      outdir:  ./bams/SC_KL_20S
+        File:  ./bams/unmapped-rm/SC_KL_20S/CW12_7748_8day_Q_IN_S6.multi-10.bam
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010841
 
 
 # --------------------------------------
    Iteration:  11
-        File:  ./bams/SC_KL_20S/CW12_7748_8day_Q_PD_S12.multi-10.bam
-      outdir:  ./bams/SC_KL_20S
+        File:  ./bams/unmapped-rm/SC_KL_20S/CW12_7748_8day_Q_PD_S12.multi-10.bam
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010842
 
 
 # --------------------------------------
    Iteration:  12
-        File:  ./bams/SC_KL_20S/CW2_5781_8day_Q_IN_S1.multi-10.bam
-      outdir:  ./bams/SC_KL_20S
+        File:  ./bams/unmapped-rm/SC_KL_20S/CW2_5781_8day_Q_IN_S1.multi-10.bam
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010843
 
 
 # --------------------------------------
    Iteration:  13
-        File:  ./bams/SC_KL_20S/CW2_5781_8day_Q_PD_S7.multi-10.bam
-      outdir:  ./bams/SC_KL_20S
+        File:  ./bams/unmapped-rm/SC_KL_20S/CW2_5781_8day_Q_PD_S7.multi-10.bam
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010844
 
 
 # --------------------------------------
    Iteration:  14
-        File:  ./bams/SC_KL_20S/CW4_5782_8day_Q_IN_S2.multi-10.bam
-      outdir:  ./bams/SC_KL_20S
+        File:  ./bams/unmapped-rm/SC_KL_20S/CW4_5782_8day_Q_IN_S2.multi-10.bam
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010845
 
 
 # --------------------------------------
    Iteration:  15
-        File:  ./bams/SC_KL_20S/CW4_5782_8day_Q_PD_S8.multi-10.bam
-      outdir:  ./bams/SC_KL_20S
+        File:  ./bams/unmapped-rm/SC_KL_20S/CW4_5782_8day_Q_PD_S8.multi-10.bam
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010846
 
 
 # --------------------------------------
    Iteration:  16
-        File:  ./bams/SC_KL_20S/CW6_7078_8day_Q_IN_S3.multi-10.bam
-      outdir:  ./bams/SC_KL_20S
+        File:  ./bams/unmapped-rm/SC_KL_20S/CW6_7078_8day_Q_IN_S3.multi-10.bam
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010847
 
 
 # --------------------------------------
    Iteration:  17
-        File:  ./bams/SC_KL_20S/CW6_7078_8day_Q_PD_S9.multi-10.bam
-      outdir:  ./bams/SC_KL_20S
+        File:  ./bams/unmapped-rm/SC_KL_20S/CW6_7078_8day_Q_PD_S9.multi-10.bam
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010848
 
 
 # --------------------------------------
    Iteration:  18
-        File:  ./bams/SC_KL_20S/CW8_7079_8day_Q_IN_S4.multi-10.bam
-      outdir:  ./bams/SC_KL_20S
+        File:  ./bams/unmapped-rm/SC_KL_20S/CW8_7079_8day_Q_IN_S4.multi-10.bam
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010849
 
 
 # --------------------------------------
    Iteration:  19
-        File:  ./bams/SC_KL_20S/CW8_7079_8day_Q_PD_S10.multi-10.bam
-      outdir:  ./bams/SC_KL_20S
+        File:  ./bams/unmapped-rm/SC_KL_20S/CW8_7079_8day_Q_PD_S10.multi-10.bam
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010850
 
 
 # --------------------------------------
    Iteration:  20
-        File:  ./bams/SC_KL_20S/SAMPLE_BM10_DSp48_5781_S22.multi-10.bam
-      outdir:  ./bams/SC_KL_20S
+        File:  ./bams/unmapped-rm/SC_KL_20S/SAMPLE_BM10_DSp48_5781_S22.multi-10.bam
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010851
 
 
 # --------------------------------------
    Iteration:  21
-        File:  ./bams/SC_KL_20S/SAMPLE_BM11_DSp48_7080_S23.multi-10.bam
-      outdir:  ./bams/SC_KL_20S
+        File:  ./bams/unmapped-rm/SC_KL_20S/SAMPLE_BM11_DSp48_7080_S23.multi-10.bam
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010852
 
 
 # --------------------------------------
    Iteration:  22
-        File:  ./bams/SC_KL_20S/SAMPLE_BM1_DSm2_5781_S13.multi-10.bam
-      outdir:  ./bams/SC_KL_20S
+        File:  ./bams/unmapped-rm/SC_KL_20S/SAMPLE_BM1_DSm2_5781_S13.multi-10.bam
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010853
 
 
 # --------------------------------------
    Iteration:  23
-        File:  ./bams/SC_KL_20S/SAMPLE_BM2_DSm2_7080_S14.multi-10.bam
-      outdir:  ./bams/SC_KL_20S
+        File:  ./bams/unmapped-rm/SC_KL_20S/SAMPLE_BM2_DSm2_7080_S14.multi-10.bam
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010854
 
 
 # --------------------------------------
    Iteration:  24
-        File:  ./bams/SC_KL_20S/SAMPLE_BM3_DSm2_7079_S15.multi-10.bam
-      outdir:  ./bams/SC_KL_20S
+        File:  ./bams/unmapped-rm/SC_KL_20S/SAMPLE_BM3_DSm2_7079_S15.multi-10.bam
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010855
 
 
 # --------------------------------------
    Iteration:  25
-        File:  ./bams/SC_KL_20S/SAMPLE_BM4_DSp2_5781_S16.multi-10.bam
-      outdir:  ./bams/SC_KL_20S
+        File:  ./bams/unmapped-rm/SC_KL_20S/SAMPLE_BM4_DSp2_5781_S16.multi-10.bam
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010856
 
 
 # --------------------------------------
    Iteration:  26
-        File:  ./bams/SC_KL_20S/SAMPLE_BM5_DSp2_7080_S17.multi-10.bam
-      outdir:  ./bams/SC_KL_20S
+        File:  ./bams/unmapped-rm/SC_KL_20S/SAMPLE_BM5_DSp2_7080_S17.multi-10.bam
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010857
 
 
 # --------------------------------------
    Iteration:  27
-        File:  ./bams/SC_KL_20S/SAMPLE_BM6_DSp2_7079_S18.multi-10.bam
-      outdir:  ./bams/SC_KL_20S
+        File:  ./bams/unmapped-rm/SC_KL_20S/SAMPLE_BM6_DSp2_7079_S18.multi-10.bam
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010858
 
 
 # --------------------------------------
    Iteration:  28
-        File:  ./bams/SC_KL_20S/SAMPLE_BM7_DSp24_5781_S19.multi-10.bam
-      outdir:  ./bams/SC_KL_20S
+        File:  ./bams/unmapped-rm/SC_KL_20S/SAMPLE_BM7_DSp24_5781_S19.multi-10.bam
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010859
 
 
 # --------------------------------------
    Iteration:  29
-        File:  ./bams/SC_KL_20S/SAMPLE_BM8_DSp24_7080_S20.multi-10.bam
-      outdir:  ./bams/SC_KL_20S
+        File:  ./bams/unmapped-rm/SC_KL_20S/SAMPLE_BM8_DSp24_7080_S20.multi-10.bam
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010860
 
 
 # --------------------------------------
    Iteration:  30
-        File:  ./bams/SC_KL_20S/SAMPLE_BM9_DSp24_7079_S21.multi-10.bam
-      outdir:  ./bams/SC_KL_20S
+        File:  ./bams/unmapped-rm/SC_KL_20S/SAMPLE_BM9_DSp24_7079_S21.multi-10.bam
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010861
 
 
 # --------------------------------------
    Iteration:  31
-        File:  ./bams/SC_KL_20S/SAMPLE_Bp10_DSp48_5782_S10.multi-10.bam
-      outdir:  ./bams/SC_KL_20S
+        File:  ./bams/unmapped-rm/SC_KL_20S/SAMPLE_Bp10_DSp48_5782_S10.multi-10.bam
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010862
 
 
 # --------------------------------------
    Iteration:  32
-        File:  ./bams/SC_KL_20S/SAMPLE_Bp11_DSp48_7081_S11.multi-10.bam
-      outdir:  ./bams/SC_KL_20S
+        File:  ./bams/unmapped-rm/SC_KL_20S/SAMPLE_Bp11_DSp48_7081_S11.multi-10.bam
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010863
 
 
 # --------------------------------------
    Iteration:  33
-        File:  ./bams/SC_KL_20S/SAMPLE_Bp12_DSp48_7078_S12.multi-10.bam
-      outdir:  ./bams/SC_KL_20S
+        File:  ./bams/unmapped-rm/SC_KL_20S/SAMPLE_Bp12_DSp48_7078_S12.multi-10.bam
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010864
 
 
 # --------------------------------------
    Iteration:  34
-        File:  ./bams/SC_KL_20S/SAMPLE_Bp1_DSm2_5782_S1.multi-10.bam
-      outdir:  ./bams/SC_KL_20S
+        File:  ./bams/unmapped-rm/SC_KL_20S/SAMPLE_Bp1_DSm2_5782_S1.multi-10.bam
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010865
 
 
 # --------------------------------------
    Iteration:  35
-        File:  ./bams/SC_KL_20S/SAMPLE_Bp2_DSm2_7081_S2.multi-10.bam
-      outdir:  ./bams/SC_KL_20S
+        File:  ./bams/unmapped-rm/SC_KL_20S/SAMPLE_Bp2_DSm2_7081_S2.multi-10.bam
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010866
 
 
 # --------------------------------------
    Iteration:  36
-        File:  ./bams/SC_KL_20S/SAMPLE_Bp3_DSm2_7078_S3.multi-10.bam
-      outdir:  ./bams/SC_KL_20S
+        File:  ./bams/unmapped-rm/SC_KL_20S/SAMPLE_Bp3_DSm2_7078_S3.multi-10.bam
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010867
 
 
 # --------------------------------------
    Iteration:  37
-        File:  ./bams/SC_KL_20S/SAMPLE_Bp4_DSp2_5782_S4.multi-10.bam
-      outdir:  ./bams/SC_KL_20S
+        File:  ./bams/unmapped-rm/SC_KL_20S/SAMPLE_Bp4_DSp2_5782_S4.multi-10.bam
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010868
 
 
 # --------------------------------------
    Iteration:  38
-        File:  ./bams/SC_KL_20S/SAMPLE_Bp5_DSp2_7081_S5.multi-10.bam
-      outdir:  ./bams/SC_KL_20S
+        File:  ./bams/unmapped-rm/SC_KL_20S/SAMPLE_Bp5_DSp2_7081_S5.multi-10.bam
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010869
 
 
 # --------------------------------------
    Iteration:  39
-        File:  ./bams/SC_KL_20S/SAMPLE_Bp6_DSp2_7078_S6.multi-10.bam
-      outdir:  ./bams/SC_KL_20S
+        File:  ./bams/unmapped-rm/SC_KL_20S/SAMPLE_Bp6_DSp2_7078_S6.multi-10.bam
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010870
 
 
 # --------------------------------------
    Iteration:  40
-        File:  ./bams/SC_KL_20S/SAMPLE_Bp7_DSp24_5782_S7.multi-10.bam
-      outdir:  ./bams/SC_KL_20S
+        File:  ./bams/unmapped-rm/SC_KL_20S/SAMPLE_Bp7_DSp24_5782_S7.multi-10.bam
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010871
 
 
 # --------------------------------------
    Iteration:  41
-        File:  ./bams/SC_KL_20S/SAMPLE_Bp8_DSp24_7081_S8.multi-10.bam
-      outdir:  ./bams/SC_KL_20S
+        File:  ./bams/unmapped-rm/SC_KL_20S/SAMPLE_Bp8_DSp24_7081_S8.multi-10.bam
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010872
 
 
 # --------------------------------------
    Iteration:  42
-        File:  ./bams/SC_KL_20S/SAMPLE_Bp9_DSp24_7078_S9.multi-10.bam
-      outdir:  ./bams/SC_KL_20S
+        File:  ./bams/unmapped-rm/SC_KL_20S/SAMPLE_Bp9_DSp24_7078_S9.multi-10.bam
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010873
 
 
 # --------------------------------------
    Iteration:  43
-        File:  ./bams/SC_KL_20S/Sample_CT10_7718_pIAA_Q_Nascent_S5.multi-10.bam
-      outdir:  ./bams/SC_KL_20S
+        File:  ./bams/unmapped-rm/SC_KL_20S/Sample_CT10_7718_pIAA_Q_Nascent_S5.multi-10.bam
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010874
 
 
 # --------------------------------------
    Iteration:  44
-        File:  ./bams/SC_KL_20S/Sample_CT10_7718_pIAA_Q_SteadyState_S10.multi-10.bam
-      outdir:  ./bams/SC_KL_20S
+        File:  ./bams/unmapped-rm/SC_KL_20S/Sample_CT10_7718_pIAA_Q_SteadyState_S10.multi-10.bam
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010875
 
 
 # --------------------------------------
    Iteration:  45
-        File:  ./bams/SC_KL_20S/Sample_CT2_6125_pIAA_Q_Nascent_S1.multi-10.bam
-      outdir:  ./bams/SC_KL_20S
+        File:  ./bams/unmapped-rm/SC_KL_20S/Sample_CT2_6125_pIAA_Q_Nascent_S1.multi-10.bam
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010876
 
 
 # --------------------------------------
    Iteration:  46
-        File:  ./bams/SC_KL_20S/Sample_CT2_6125_pIAA_Q_SteadyState_S6.multi-10.bam
-      outdir:  ./bams/SC_KL_20S
+        File:  ./bams/unmapped-rm/SC_KL_20S/Sample_CT2_6125_pIAA_Q_SteadyState_S6.multi-10.bam
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010877
 
 
 # --------------------------------------
    Iteration:  47
-        File:  ./bams/SC_KL_20S/Sample_CT4_6126_pIAA_Q_Nascent_S2.multi-10.bam
-      outdir:  ./bams/SC_KL_20S
+        File:  ./bams/unmapped-rm/SC_KL_20S/Sample_CT4_6126_pIAA_Q_Nascent_S2.multi-10.bam
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010878
 
 
 # --------------------------------------
    Iteration:  48
-        File:  ./bams/SC_KL_20S/Sample_CT4_6126_pIAA_Q_SteadyState_S7.multi-10.bam
-      outdir:  ./bams/SC_KL_20S
+        File:  ./bams/unmapped-rm/SC_KL_20S/Sample_CT4_6126_pIAA_Q_SteadyState_S7.multi-10.bam
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010879
 
 
 # --------------------------------------
    Iteration:  49
-        File:  ./bams/SC_KL_20S/Sample_CT6_7714_pIAA_Q_Nascent_S3.multi-10.bam
-      outdir:  ./bams/SC_KL_20S
+        File:  ./bams/unmapped-rm/SC_KL_20S/Sample_CT6_7714_pIAA_Q_Nascent_S3.multi-10.bam
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010880
 
 
 # --------------------------------------
    Iteration:  50
-        File:  ./bams/SC_KL_20S/Sample_CT6_7714_pIAA_Q_SteadyState_S8.multi-10.bam
-      outdir:  ./bams/SC_KL_20S
+        File:  ./bams/unmapped-rm/SC_KL_20S/Sample_CT6_7714_pIAA_Q_SteadyState_S8.multi-10.bam
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010881
 
 
 # --------------------------------------
    Iteration:  51
-        File:  ./bams/SC_KL_20S/Sample_CT8_7716_pIAA_Q_Nascent_S4.multi-10.bam
-      outdir:  ./bams/SC_KL_20S
+        File:  ./bams/unmapped-rm/SC_KL_20S/Sample_CT8_7716_pIAA_Q_Nascent_S4.multi-10.bam
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010882
 
 
 # --------------------------------------
    Iteration:  52
-        File:  ./bams/SC_KL_20S/Sample_CT8_7716_pIAA_Q_SteadyState_S9.multi-10.bam
-      outdir:  ./bams/SC_KL_20S
+        File:  ./bams/unmapped-rm/SC_KL_20S/Sample_CT8_7716_pIAA_Q_SteadyState_S9.multi-10.bam
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010883
 
 
 # --------------------------------------
    Iteration:  53
-        File:  ./bams/SC_KL_20S/Sample_CU11_5782_Q_Nascent_S11.multi-10.bam
-      outdir:  ./bams/SC_KL_20S
+        File:  ./bams/unmapped-rm/SC_KL_20S/Sample_CU11_5782_Q_Nascent_S11.multi-10.bam
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010884
 
 
 # --------------------------------------
    Iteration:  54
-        File:  ./bams/SC_KL_20S/Sample_CU12_5782_Q_SteadyState_S12.multi-10.bam
-      outdir:  ./bams/SC_KL_20S
+        File:  ./bams/unmapped-rm/SC_KL_20S/Sample_CU12_5782_Q_SteadyState_S12.multi-10.bam
+      outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010885
 ```
@@ -12658,18 +12675,8 @@ transcriptome &&
 		cd "results/2023-0115" || echo "cd'ing failed; check on this..."
 	}
 
-#  Directory
 if [[ ! -d "./bams" ]]; then
-	mkdir -p bams/SC_KL_20S
-	mkdir -p bams/SC
-	mkdir -p bams/SC_KL
-	mkdir -p bams/KL
-	mkdir -p bams/20S
-	mkdir -p FastQC/bams/SC_KL_20S
-	mkdir -p FastQC/bams/SC
-	mkdir -p FastQC/bams/SC_KL
-	mkdir -p FastQC/bams/KL
-	mkdir -p FastQC/bams/20S
+	mkdir -p bams/{unmapped-rm,unmapped-w}/{SC_KL_20S,SC,SC_KL,KL,20S}
 fi
 ```
 
@@ -12770,7 +12777,7 @@ Arguments:
 
 #  Initial try
 bash ../../bin/split_bam_by_species.sh \
-	-i "./bams/SC_KL_20S/CW10_7747_8day_Q_IN_S5.multi-10.bam" \
+	-i "./bams/unmapped-rm/SC_KL_20S/CW10_7747_8day_Q_IN_S5.multi-10.bam" \
 	-o "./bams" \
 	-s "virus_20S" \
 	-t 1
@@ -12782,13 +12789,13 @@ bash ../../bin/split_bam_by_species.sh \
 
 #  The script worked in the sense that
 #+ CW10_7747_8day_Q_IN_S5.multi-10.virus_20S.bam was generated; however, it was
-#+ generated in the "indir", ./bams/SC_KL_20S, not ./bams; moreover, a ./bams
-#+ directory was neither generated in $(pwd) nor in ./bams/SC_KL_20S
+#+ generated in the "indir", ./bams/unmapped-rm/SC_KL_20S, not ./bams; moreover, a ./bams
+#+ directory was neither generated in $(pwd) nor in ./bams/unmapped-rm/SC_KL_20S
 
 #  Try again after editing main() in split_bam_by_species.sh and
 #+ check_exists_directory() in functions.sh
 bash ../../bin/split_bam_by_species.sh \
-	-i "./bams/SC_KL_20S/CW10_7747_8day_Q_IN_S5.multi-10.bam" \
+	-i "./bams/unmapped-rm/SC_KL_20S/CW10_7747_8day_Q_IN_S5.multi-10.bam" \
 	-o "./bams" \
 	-s "KL_all" \
 	-t 1
@@ -12800,7 +12807,7 @@ bash ../../bin/split_bam_by_species.sh \
 
 #  Adjust check_exists_directory(), change it to FALSE in the main script
 bash ../../bin/split_bam_by_species.sh \
-	-i "./bams/SC_KL_20S/CW10_7747_8day_Q_IN_S5.multi-10.bam" \
+	-i "./bams/unmapped-rm/SC_KL_20S/CW10_7747_8day_Q_IN_S5.multi-10.bam" \
 	-o "./bams" \
 	-s "SC_Mito" \
 	-t 1
@@ -12813,7 +12820,7 @@ bash ../../bin/split_bam_by_species.sh \
 #  After pushing the changes to split_bam_by_species.sh and function.sh (I had
 #+ not done that for the previous two tests)
 bash ../../bin/split_bam_by_species.sh \
-	-i "./bams/SC_KL_20S/CW10_7747_8day_Q_IN_S5.multi-10.bam" \
+	-i "./bams/unmapped-rm/SC_KL_20S/CW10_7747_8day_Q_IN_S5.multi-10.bam" \
 	-o "./bams" \
 	-s "SC_XII" \
 	-t 1
@@ -12821,12 +12828,12 @@ bash ../../bin/split_bam_by_species.sh \
 #
 #
 # Running ../../bin/split_bam_by_species.sh...
-# [E::hts_open_format] Failed to open file "./bams/./bams/SC_KL_20S/CW10_7747_8day_Q_IN_S5.multi-10.SC_XII.bam" : No such file or directory
-# samtools view: failed to open "./bams/./bams/SC_KL_20S/CW10_7747_8day_Q_IN_S5.multi-10.SC_XII.bam" for writing: No such file or directory
+# [E::hts_open_format] Failed to open file "./bams/./bams/unmapped-rm/SC_KL_20S/CW10_7747_8day_Q_IN_S5.multi-10.SC_XII.bam" : No such file or directory
+# samtools view: failed to open "./bams/./bams/unmapped-rm/SC_KL_20S/CW10_7747_8day_Q_IN_S5.multi-10.SC_XII.bam" for writing: No such file or directory
 
 #  When writing the outfile, strip away the path associated with infile
 bash ../../bin/split_bam_by_species.sh \
-	-i "./bams/SC_KL_20S/CW10_7747_8day_Q_IN_S5.multi-10.bam" \
+	-i "./bams/unmapped-rm/SC_KL_20S/CW10_7747_8day_Q_IN_S5.multi-10.bam" \
 	-o "./bams" \
 	-s "SC_XII" \
 	-t 1
@@ -12836,7 +12843,7 @@ bash ../../bin/split_bam_by_species.sh \
 # Running ../../bin/split_bam_by_species.sh...
 
 bash ../../bin/split_bam_by_species.sh \
-	-i "./bams/SC_KL_20S/CW10_7747_8day_Q_IN_S5.multi-10.bam" \
+	-i "./bams/unmapped-rm/SC_KL_20S/CW10_7747_8day_Q_IN_S5.multi-10.bam" \
 	-o "./bams" \
 	-s "SC_VII" \
 	-t 1
@@ -12860,12 +12867,12 @@ bash ../../bin/split_bam_by_species.sh \
 
 #  Now clean up all of the test bams...
 rm ./bams/CW10_7747_8day_Q_IN_S5.multi-10.SC_{VII,XII}.bam
-., ./bams/SC_KL_20S/CW10_7747_8day_Q_IN_S5.multi-10.{SC,KL,virus}*
-# -rw-rw---- 1 kalavatt  540M Jan 17 13:59 ./bams/SC_KL_20S/CW10_7747_8day_Q_IN_S5.multi-10.KL_all.bam
-# -rw-rw---- 1 kalavatt   25M Jan 17 14:08 ./bams/SC_KL_20S/CW10_7747_8day_Q_IN_S5.multi-10.SC_Mito.bam
-# -rw-rw---- 1 kalavatt 1022M Jan 17 13:39 ./bams/SC_KL_20S/CW10_7747_8day_Q_IN_S5.multi-10.virus_20S.bam
-rm ./bams/SC_KL_20S/CW10_7747_8day_Q_IN_S5.multi-10.{SC,KL,virus}*
-., ./bams/SC_KL_20S/CW10_7747_8day_Q_IN_S5.multi-10.*  # Looks good
+., ./bams/unmapped-rm/SC_KL_20S/CW10_7747_8day_Q_IN_S5.multi-10.{SC,KL,virus}*
+# -rw-rw---- 1 kalavatt  540M Jan 17 13:59 ./bams/unmapped-rm/SC_KL_20S/CW10_7747_8day_Q_IN_S5.multi-10.KL_all.bam
+# -rw-rw---- 1 kalavatt   25M Jan 17 14:08 ./bams/unmapped-rm/SC_KL_20S/CW10_7747_8day_Q_IN_S5.multi-10.SC_Mito.bam
+# -rw-rw---- 1 kalavatt 1022M Jan 17 13:39 ./bams/unmapped-rm/SC_KL_20S/CW10_7747_8day_Q_IN_S5.multi-10.virus_20S.bam
+rm ./bams/unmapped-rm/SC_KL_20S/CW10_7747_8day_Q_IN_S5.multi-10.{SC,KL,virus}*
+., ./bams/unmapped-rm/SC_KL_20S/CW10_7747_8day_Q_IN_S5.multi-10.*  # Looks good
 ```
 ~~`#TODO` Take some time to fix `split_bam_by_species.sh`~~ *Done.*
 </details>
@@ -12902,7 +12909,7 @@ typeset -a bams
 while IFS=" " read -r -d $'\0'; do
     bams+=( "${REPLY%_R?_001_val_?.fq.gz}" )
 done < <(\
-    find "./bams/SC_KL_20S" \
+    find "./bams/unmapped-rm/SC_KL_20S" \
         -type f \
         -name "*.bam" \
         -print0 \
@@ -12916,7 +12923,7 @@ done < <(\
 
 <a id="run-split_bam_by_speciessh-on-bams"></a>
 ##### Run `split_bam_by_species.sh` on `bam`s
-`#PICKUPHERE`
+`#PICKUPHERE` `#STILLNEEDTODOTHIS`
 <details>
 <summary><i>Notes, code: Run split_bam_by_species.sh on bams</i></summary>
 
