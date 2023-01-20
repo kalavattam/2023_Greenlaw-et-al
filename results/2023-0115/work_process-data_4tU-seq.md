@@ -49,15 +49,18 @@
 		1. [Run `submit_run-fastqc.sh` on `trim_galore`-processed `fastq` files](#run-submit_run-fastqcsh-on-trim_galore-processed-fastq-files)
 1. [Align the trimmed, compressed `fastq` files to a combined reference](#align-the-trimmed-compressed-fastq-files-to-a-combined-reference)
 	1. [Get situated](#get-situated-5)
-	1. [Assign variables and arrays](#assign-variables-and-arrays)
 	1. [Write and run the script `submit_star_unmapped-rm.sh`](#write-and-run-the-script-submit_star_unmapped-rmsh)
+		1. [Assign variables and arrays](#assign-variables-and-arrays)
 		1. [Use a `HEREDOC` to write the script, `submit_star_unmapped-rm.sh`](#use-a-heredoc-to-write-the-script-submit_star_unmapped-rmsh)
 		1. [Run `submit_star_unmapped-rm.sh` on `fq.gz` files](#run-submit_star_unmapped-rmsh-on-fqgz-files)
 	1. [Write and run the script `submit_star_unmapped-w.sh`](#write-and-run-the-script-submit_star_unmapped-wsh)
+		1. [Assign variables and arrays](#assign-variables-and-arrays-1)
 		1. [Use a `HEREDOC` to write the script, `submit_star_unmapped-w.sh`](#use-a-heredoc-to-write-the-script-submit_star_unmapped-wsh)
 		1. [Run `submit_star_unmapped-w.sh` on `fq.gz` files](#run-submit_star_unmapped-wsh-on-fqgz-files)
 	1. [Clean up results from `STAR` alignment, then index `bam`s](#clean-up-results-from-star-alignment-then-index-bams)
 		1. [Clean up/rename results of `STAR` alignment](#clean-uprename-results-of-star-alignment)
+			1. [In `bams/unmapped-rm/SC_KL_20S`](#in-bamsunmapped-rmsc_kl_20s)
+			1. [In `bams/unmapped-w/SC_KL_20S`](#in-bamsunmapped-wsc_kl_20s)
 		1. [Check on `*.Log.out` warning messages: "`WARNING: not enough space allocated for transcript.`"](#check-on-logout-warning-messages-warning-not-enough-space-allocated-for-transcript)
 	1. [Index the `bam`s](#index-the-bams)
 		1. [Get situated](#get-situated-6)
@@ -74,6 +77,7 @@
 		1. [Create `bam`s w/o *S. cerevisiae* and *20S* alignments: composed of *K. lactis*](#create-bams-wo-s-cerevisiae-and-20s-alignments-composed-of-k-lactis)
 		1. [Create `bam`s w/o *S. cerevisiae* and *K. lactis* alignments: composed of *20S*](#create-bams-wo-s-cerevisiae-and-k-lactis-alignments-composed-of-20s)
 1. [*Scraps*](#scraps)
+1. [Open tabs \(`#TODO`\)](#open-tabs-todo)
 
 <!-- /MarkdownTOC -->
 </details>
@@ -8179,7 +8183,6 @@ FastQC job submitted for ./fastqs/symlinks/5781_G1_IN_S5_R1_001.fastq.gz
 Submitted batch job 7993200
 FastQC job submitted for ./fastqs/symlinks/5781_G1_IN_S5_R3_001.fastq.gz
 
-
 # --------------------------------------
 Iteration:  1
 File base:  ./fastqs/symlinks/5781_G1_IP_S1
@@ -8192,7 +8195,6 @@ FastQC job submitted for ./fastqs/symlinks/5781_G1_IP_S1_R1_001.fastq.gz
 
 Submitted batch job 7993202
 FastQC job submitted for ./fastqs/symlinks/5781_G1_IP_S1_R3_001.fastq.gz
-
 
 # --------------------------------------
 Iteration:  2
@@ -8207,7 +8209,6 @@ FastQC job submitted for ./fastqs/symlinks/5781_Q_IN_S6_R1_001.fastq.gz
 Submitted batch job 7993204
 FastQC job submitted for ./fastqs/symlinks/5781_Q_IN_S6_R3_001.fastq.gz
 
-
 # --------------------------------------
 Iteration:  3
 File base:  ./fastqs/symlinks/5781_Q_IP_S2
@@ -8220,7 +8221,6 @@ FastQC job submitted for ./fastqs/symlinks/5781_Q_IP_S2_R1_001.fastq.gz
 
 Submitted batch job 7993206
 FastQC job submitted for ./fastqs/symlinks/5781_Q_IP_S2_R3_001.fastq.gz
-
 
 # --------------------------------------
 Iteration:  4
@@ -8235,7 +8235,6 @@ FastQC job submitted for ./fastqs/symlinks/5782_G1_IN_S7_R1_001.fastq.gz
 Submitted batch job 7993208
 FastQC job submitted for ./fastqs/symlinks/5782_G1_IN_S7_R3_001.fastq.gz
 
-
 # --------------------------------------
 Iteration:  5
 File base:  ./fastqs/symlinks/5782_G1_IP_S3
@@ -8248,7 +8247,6 @@ FastQC job submitted for ./fastqs/symlinks/5782_G1_IP_S3_R1_001.fastq.gz
 
 Submitted batch job 7993210
 FastQC job submitted for ./fastqs/symlinks/5782_G1_IP_S3_R3_001.fastq.gz
-
 
 # --------------------------------------
 Iteration:  6
@@ -8263,7 +8261,6 @@ FastQC job submitted for ./fastqs/symlinks/5782_Q_IN_S8_R1_001.fastq.gz
 Submitted batch job 7993212
 FastQC job submitted for ./fastqs/symlinks/5782_Q_IN_S8_R3_001.fastq.gz
 
-
 # --------------------------------------
 Iteration:  7
 File base:  ./fastqs/symlinks/5782_Q_IP_S4
@@ -8276,7 +8273,6 @@ FastQC job submitted for ./fastqs/symlinks/5782_Q_IP_S4_R1_001.fastq.gz
 
 Submitted batch job 7993214
 FastQC job submitted for ./fastqs/symlinks/5782_Q_IP_S4_R3_001.fastq.gz
-
 
 # --------------------------------------
 Iteration:  8
@@ -8291,7 +8287,6 @@ FastQC job submitted for ./fastqs/symlinks/CW10_7747_8day_Q_IN_S5_R1_001.fastq.g
 Submitted batch job 7993216
 FastQC job submitted for ./fastqs/symlinks/CW10_7747_8day_Q_IN_S5_R3_001.fastq.gz
 
-
 # --------------------------------------
 Iteration:  9
 File base:  ./fastqs/symlinks/CW10_7747_8day_Q_PD_S11
@@ -8304,7 +8299,6 @@ FastQC job submitted for ./fastqs/symlinks/CW10_7747_8day_Q_PD_S11_R1_001.fastq.
 
 Submitted batch job 7993218
 FastQC job submitted for ./fastqs/symlinks/CW10_7747_8day_Q_PD_S11_R3_001.fastq.gz
-
 
 # --------------------------------------
 Iteration:  10
@@ -8319,7 +8313,6 @@ FastQC job submitted for ./fastqs/symlinks/CW12_7748_8day_Q_IN_S6_R1_001.fastq.g
 Submitted batch job 7993220
 FastQC job submitted for ./fastqs/symlinks/CW12_7748_8day_Q_IN_S6_R3_001.fastq.gz
 
-
 # --------------------------------------
 Iteration:  11
 File base:  ./fastqs/symlinks/CW12_7748_8day_Q_PD_S12
@@ -8332,7 +8325,6 @@ FastQC job submitted for ./fastqs/symlinks/CW12_7748_8day_Q_PD_S12_R1_001.fastq.
 
 Submitted batch job 7993222
 FastQC job submitted for ./fastqs/symlinks/CW12_7748_8day_Q_PD_S12_R3_001.fastq.gz
-
 
 # --------------------------------------
 Iteration:  12
@@ -8347,7 +8339,6 @@ FastQC job submitted for ./fastqs/symlinks/CW2_5781_8day_Q_IN_S1_R1_001.fastq.gz
 Submitted batch job 7993224
 FastQC job submitted for ./fastqs/symlinks/CW2_5781_8day_Q_IN_S1_R3_001.fastq.gz
 
-
 # --------------------------------------
 Iteration:  13
 File base:  ./fastqs/symlinks/CW2_5781_8day_Q_PD_S7
@@ -8360,7 +8351,6 @@ FastQC job submitted for ./fastqs/symlinks/CW2_5781_8day_Q_PD_S7_R1_001.fastq.gz
 
 Submitted batch job 7993226
 FastQC job submitted for ./fastqs/symlinks/CW2_5781_8day_Q_PD_S7_R3_001.fastq.gz
-
 
 # --------------------------------------
 Iteration:  14
@@ -8375,7 +8365,6 @@ FastQC job submitted for ./fastqs/symlinks/CW4_5782_8day_Q_IN_S2_R1_001.fastq.gz
 Submitted batch job 7993228
 FastQC job submitted for ./fastqs/symlinks/CW4_5782_8day_Q_IN_S2_R3_001.fastq.gz
 
-
 # --------------------------------------
 Iteration:  15
 File base:  ./fastqs/symlinks/CW4_5782_8day_Q_PD_S8
@@ -8388,7 +8377,6 @@ FastQC job submitted for ./fastqs/symlinks/CW4_5782_8day_Q_PD_S8_R1_001.fastq.gz
 
 Submitted batch job 7993230
 FastQC job submitted for ./fastqs/symlinks/CW4_5782_8day_Q_PD_S8_R3_001.fastq.gz
-
 
 # --------------------------------------
 Iteration:  16
@@ -8403,7 +8391,6 @@ FastQC job submitted for ./fastqs/symlinks/CW6_7078_8day_Q_IN_S3_R1_001.fastq.gz
 Submitted batch job 7993232
 FastQC job submitted for ./fastqs/symlinks/CW6_7078_8day_Q_IN_S3_R3_001.fastq.gz
 
-
 # --------------------------------------
 Iteration:  17
 File base:  ./fastqs/symlinks/CW6_7078_8day_Q_PD_S9
@@ -8416,7 +8403,6 @@ FastQC job submitted for ./fastqs/symlinks/CW6_7078_8day_Q_PD_S9_R1_001.fastq.gz
 
 Submitted batch job 7993234
 FastQC job submitted for ./fastqs/symlinks/CW6_7078_8day_Q_PD_S9_R3_001.fastq.gz
-
 
 # --------------------------------------
 Iteration:  18
@@ -8431,7 +8417,6 @@ FastQC job submitted for ./fastqs/symlinks/CW8_7079_8day_Q_IN_S4_R1_001.fastq.gz
 Submitted batch job 7993238
 FastQC job submitted for ./fastqs/symlinks/CW8_7079_8day_Q_IN_S4_R3_001.fastq.gz
 
-
 # --------------------------------------
 Iteration:  19
 File base:  ./fastqs/symlinks/CW8_7079_8day_Q_PD_S10
@@ -8444,7 +8429,6 @@ FastQC job submitted for ./fastqs/symlinks/CW8_7079_8day_Q_PD_S10_R1_001.fastq.g
 
 Submitted batch job 7993240
 FastQC job submitted for ./fastqs/symlinks/CW8_7079_8day_Q_PD_S10_R3_001.fastq.gz
-
 
 # --------------------------------------
 Iteration:  20
@@ -8459,7 +8443,6 @@ FastQC job submitted for ./fastqs/symlinks/SAMPLE_BM10_DSp48_5781_S22_R1_001.fas
 Submitted batch job 7993242
 FastQC job submitted for ./fastqs/symlinks/SAMPLE_BM10_DSp48_5781_S22_R3_001.fastq.gz
 
-
 # --------------------------------------
 Iteration:  21
 File base:  ./fastqs/symlinks/SAMPLE_BM11_DSp48_7080_S23
@@ -8472,7 +8455,6 @@ FastQC job submitted for ./fastqs/symlinks/SAMPLE_BM11_DSp48_7080_S23_R1_001.fas
 
 Submitted batch job 7993244
 FastQC job submitted for ./fastqs/symlinks/SAMPLE_BM11_DSp48_7080_S23_R3_001.fastq.gz
-
 
 # --------------------------------------
 Iteration:  22
@@ -8487,7 +8469,6 @@ FastQC job submitted for ./fastqs/symlinks/SAMPLE_BM1_DSm2_5781_S13_R1_001.fastq
 Submitted batch job 7993246
 FastQC job submitted for ./fastqs/symlinks/SAMPLE_BM1_DSm2_5781_S13_R3_001.fastq.gz
 
-
 # --------------------------------------
 Iteration:  23
 File base:  ./fastqs/symlinks/SAMPLE_BM2_DSm2_7080_S14
@@ -8500,7 +8481,6 @@ FastQC job submitted for ./fastqs/symlinks/SAMPLE_BM2_DSm2_7080_S14_R1_001.fastq
 
 Submitted batch job 7993248
 FastQC job submitted for ./fastqs/symlinks/SAMPLE_BM2_DSm2_7080_S14_R3_001.fastq.gz
-
 
 # --------------------------------------
 Iteration:  24
@@ -8515,7 +8495,6 @@ FastQC job submitted for ./fastqs/symlinks/SAMPLE_BM3_DSm2_7079_S15_R1_001.fastq
 Submitted batch job 7993250
 FastQC job submitted for ./fastqs/symlinks/SAMPLE_BM3_DSm2_7079_S15_R3_001.fastq.gz
 
-
 # --------------------------------------
 Iteration:  25
 File base:  ./fastqs/symlinks/SAMPLE_BM4_DSp2_5781_S16
@@ -8528,7 +8507,6 @@ FastQC job submitted for ./fastqs/symlinks/SAMPLE_BM4_DSp2_5781_S16_R1_001.fastq
 
 Submitted batch job 7993252
 FastQC job submitted for ./fastqs/symlinks/SAMPLE_BM4_DSp2_5781_S16_R3_001.fastq.gz
-
 
 # --------------------------------------
 Iteration:  26
@@ -8543,7 +8521,6 @@ FastQC job submitted for ./fastqs/symlinks/SAMPLE_BM5_DSp2_7080_S17_R1_001.fastq
 Submitted batch job 7993254
 FastQC job submitted for ./fastqs/symlinks/SAMPLE_BM5_DSp2_7080_S17_R3_001.fastq.gz
 
-
 # --------------------------------------
 Iteration:  27
 File base:  ./fastqs/symlinks/SAMPLE_BM6_DSp2_7079_S18
@@ -8556,7 +8533,6 @@ FastQC job submitted for ./fastqs/symlinks/SAMPLE_BM6_DSp2_7079_S18_R1_001.fastq
 
 Submitted batch job 7993256
 FastQC job submitted for ./fastqs/symlinks/SAMPLE_BM6_DSp2_7079_S18_R3_001.fastq.gz
-
 
 # --------------------------------------
 Iteration:  28
@@ -8571,7 +8547,6 @@ FastQC job submitted for ./fastqs/symlinks/SAMPLE_BM7_DSp24_5781_S19_R1_001.fast
 Submitted batch job 7993258
 FastQC job submitted for ./fastqs/symlinks/SAMPLE_BM7_DSp24_5781_S19_R3_001.fastq.gz
 
-
 # --------------------------------------
 Iteration:  29
 File base:  ./fastqs/symlinks/SAMPLE_BM8_DSp24_7080_S20
@@ -8584,7 +8559,6 @@ FastQC job submitted for ./fastqs/symlinks/SAMPLE_BM8_DSp24_7080_S20_R1_001.fast
 
 Submitted batch job 7993260
 FastQC job submitted for ./fastqs/symlinks/SAMPLE_BM8_DSp24_7080_S20_R3_001.fastq.gz
-
 
 # --------------------------------------
 Iteration:  30
@@ -8599,7 +8573,6 @@ FastQC job submitted for ./fastqs/symlinks/SAMPLE_BM9_DSp24_7079_S21_R1_001.fast
 Submitted batch job 7993262
 FastQC job submitted for ./fastqs/symlinks/SAMPLE_BM9_DSp24_7079_S21_R3_001.fastq.gz
 
-
 # --------------------------------------
 Iteration:  31
 File base:  ./fastqs/symlinks/SAMPLE_Bp10_DSp48_5782_S10
@@ -8612,7 +8585,6 @@ FastQC job submitted for ./fastqs/symlinks/SAMPLE_Bp10_DSp48_5782_S10_R1_001.fas
 
 Submitted batch job 7993264
 FastQC job submitted for ./fastqs/symlinks/SAMPLE_Bp10_DSp48_5782_S10_R3_001.fastq.gz
-
 
 # --------------------------------------
 Iteration:  32
@@ -8627,7 +8599,6 @@ FastQC job submitted for ./fastqs/symlinks/SAMPLE_Bp11_DSp48_7081_S11_R1_001.fas
 Submitted batch job 7993266
 FastQC job submitted for ./fastqs/symlinks/SAMPLE_Bp11_DSp48_7081_S11_R3_001.fastq.gz
 
-
 # --------------------------------------
 Iteration:  33
 File base:  ./fastqs/symlinks/SAMPLE_Bp12_DSp48_7078_S12
@@ -8640,7 +8611,6 @@ FastQC job submitted for ./fastqs/symlinks/SAMPLE_Bp12_DSp48_7078_S12_R1_001.fas
 
 Submitted batch job 7993268
 FastQC job submitted for ./fastqs/symlinks/SAMPLE_Bp12_DSp48_7078_S12_R3_001.fastq.gz
-
 
 # --------------------------------------
 Iteration:  34
@@ -8655,7 +8625,6 @@ FastQC job submitted for ./fastqs/symlinks/SAMPLE_Bp1_DSm2_5782_S1_R1_001.fastq.
 Submitted batch job 7993270
 FastQC job submitted for ./fastqs/symlinks/SAMPLE_Bp1_DSm2_5782_S1_R3_001.fastq.gz
 
-
 # --------------------------------------
 Iteration:  35
 File base:  ./fastqs/symlinks/SAMPLE_Bp2_DSm2_7081_S2
@@ -8668,7 +8637,6 @@ FastQC job submitted for ./fastqs/symlinks/SAMPLE_Bp2_DSm2_7081_S2_R1_001.fastq.
 
 Submitted batch job 7993272
 FastQC job submitted for ./fastqs/symlinks/SAMPLE_Bp2_DSm2_7081_S2_R3_001.fastq.gz
-
 
 # --------------------------------------
 Iteration:  36
@@ -8683,7 +8651,6 @@ FastQC job submitted for ./fastqs/symlinks/SAMPLE_Bp3_DSm2_7078_S3_R1_001.fastq.
 Submitted batch job 7993274
 FastQC job submitted for ./fastqs/symlinks/SAMPLE_Bp3_DSm2_7078_S3_R3_001.fastq.gz
 
-
 # --------------------------------------
 Iteration:  37
 File base:  ./fastqs/symlinks/SAMPLE_Bp4_DSp2_5782_S4
@@ -8696,7 +8663,6 @@ FastQC job submitted for ./fastqs/symlinks/SAMPLE_Bp4_DSp2_5782_S4_R1_001.fastq.
 
 Submitted batch job 7993276
 FastQC job submitted for ./fastqs/symlinks/SAMPLE_Bp4_DSp2_5782_S4_R3_001.fastq.gz
-
 
 # --------------------------------------
 Iteration:  38
@@ -8711,7 +8677,6 @@ FastQC job submitted for ./fastqs/symlinks/SAMPLE_Bp5_DSp2_7081_S5_R1_001.fastq.
 Submitted batch job 7993278
 FastQC job submitted for ./fastqs/symlinks/SAMPLE_Bp5_DSp2_7081_S5_R3_001.fastq.gz
 
-
 # --------------------------------------
 Iteration:  39
 File base:  ./fastqs/symlinks/SAMPLE_Bp6_DSp2_7078_S6
@@ -8724,7 +8689,6 @@ FastQC job submitted for ./fastqs/symlinks/SAMPLE_Bp6_DSp2_7078_S6_R1_001.fastq.
 
 Submitted batch job 7993280
 FastQC job submitted for ./fastqs/symlinks/SAMPLE_Bp6_DSp2_7078_S6_R3_001.fastq.gz
-
 
 # --------------------------------------
 Iteration:  40
@@ -8739,7 +8703,6 @@ FastQC job submitted for ./fastqs/symlinks/SAMPLE_Bp7_DSp24_5782_S7_R1_001.fastq
 Submitted batch job 7993282
 FastQC job submitted for ./fastqs/symlinks/SAMPLE_Bp7_DSp24_5782_S7_R3_001.fastq.gz
 
-
 # --------------------------------------
 Iteration:  41
 File base:  ./fastqs/symlinks/SAMPLE_Bp8_DSp24_7081_S8
@@ -8752,7 +8715,6 @@ FastQC job submitted for ./fastqs/symlinks/SAMPLE_Bp8_DSp24_7081_S8_R1_001.fastq
 
 Submitted batch job 7993284
 FastQC job submitted for ./fastqs/symlinks/SAMPLE_Bp8_DSp24_7081_S8_R3_001.fastq.gz
-
 
 # --------------------------------------
 Iteration:  42
@@ -8767,7 +8729,6 @@ FastQC job submitted for ./fastqs/symlinks/SAMPLE_Bp9_DSp24_7078_S9_R1_001.fastq
 Submitted batch job 7993286
 FastQC job submitted for ./fastqs/symlinks/SAMPLE_Bp9_DSp24_7078_S9_R3_001.fastq.gz
 
-
 # --------------------------------------
 Iteration:  43
 File base:  ./fastqs/symlinks/Sample_CT10_7718_pIAA_Q_Nascent_S5
@@ -8780,7 +8741,6 @@ FastQC job submitted for ./fastqs/symlinks/Sample_CT10_7718_pIAA_Q_Nascent_S5_R1
 
 Submitted batch job 7993288
 FastQC job submitted for ./fastqs/symlinks/Sample_CT10_7718_pIAA_Q_Nascent_S5_R3_001.fastq.gz
-
 
 # --------------------------------------
 Iteration:  44
@@ -8795,7 +8755,6 @@ FastQC job submitted for ./fastqs/symlinks/Sample_CT10_7718_pIAA_Q_SteadyState_S
 Submitted batch job 7993290
 FastQC job submitted for ./fastqs/symlinks/Sample_CT10_7718_pIAA_Q_SteadyState_S10_R3_001.fastq.gz
 
-
 # --------------------------------------
 Iteration:  45
 File base:  ./fastqs/symlinks/Sample_CT2_6125_pIAA_Q_Nascent_S1
@@ -8808,7 +8767,6 @@ FastQC job submitted for ./fastqs/symlinks/Sample_CT2_6125_pIAA_Q_Nascent_S1_R1_
 
 Submitted batch job 7993292
 FastQC job submitted for ./fastqs/symlinks/Sample_CT2_6125_pIAA_Q_Nascent_S1_R3_001.fastq.gz
-
 
 # --------------------------------------
 Iteration:  46
@@ -8823,7 +8781,6 @@ FastQC job submitted for ./fastqs/symlinks/Sample_CT2_6125_pIAA_Q_SteadyState_S6
 Submitted batch job 7993294
 FastQC job submitted for ./fastqs/symlinks/Sample_CT2_6125_pIAA_Q_SteadyState_S6_R3_001.fastq.gz
 
-
 # --------------------------------------
 Iteration:  47
 File base:  ./fastqs/symlinks/Sample_CT4_6126_pIAA_Q_Nascent_S2
@@ -8836,7 +8793,6 @@ FastQC job submitted for ./fastqs/symlinks/Sample_CT4_6126_pIAA_Q_Nascent_S2_R1_
 
 Submitted batch job 7993296
 FastQC job submitted for ./fastqs/symlinks/Sample_CT4_6126_pIAA_Q_Nascent_S2_R3_001.fastq.gz
-
 
 # --------------------------------------
 Iteration:  48
@@ -8851,7 +8807,6 @@ FastQC job submitted for ./fastqs/symlinks/Sample_CT4_6126_pIAA_Q_SteadyState_S7
 Submitted batch job 7993298
 FastQC job submitted for ./fastqs/symlinks/Sample_CT4_6126_pIAA_Q_SteadyState_S7_R3_001.fastq.gz
 
-
 # --------------------------------------
 Iteration:  49
 File base:  ./fastqs/symlinks/Sample_CT6_7714_pIAA_Q_Nascent_S3
@@ -8864,7 +8819,6 @@ FastQC job submitted for ./fastqs/symlinks/Sample_CT6_7714_pIAA_Q_Nascent_S3_R1_
 
 Submitted batch job 7993300
 FastQC job submitted for ./fastqs/symlinks/Sample_CT6_7714_pIAA_Q_Nascent_S3_R3_001.fastq.gz
-
 
 # --------------------------------------
 Iteration:  50
@@ -8879,7 +8833,6 @@ FastQC job submitted for ./fastqs/symlinks/Sample_CT6_7714_pIAA_Q_SteadyState_S8
 Submitted batch job 7993302
 FastQC job submitted for ./fastqs/symlinks/Sample_CT6_7714_pIAA_Q_SteadyState_S8_R3_001.fastq.gz
 
-
 # --------------------------------------
 Iteration:  51
 File base:  ./fastqs/symlinks/Sample_CT8_7716_pIAA_Q_Nascent_S4
@@ -8892,7 +8845,6 @@ FastQC job submitted for ./fastqs/symlinks/Sample_CT8_7716_pIAA_Q_Nascent_S4_R1_
 
 Submitted batch job 7993304
 FastQC job submitted for ./fastqs/symlinks/Sample_CT8_7716_pIAA_Q_Nascent_S4_R3_001.fastq.gz
-
 
 # --------------------------------------
 Iteration:  52
@@ -8907,7 +8859,6 @@ FastQC job submitted for ./fastqs/symlinks/Sample_CT8_7716_pIAA_Q_SteadyState_S9
 Submitted batch job 7993306
 FastQC job submitted for ./fastqs/symlinks/Sample_CT8_7716_pIAA_Q_SteadyState_S9_R3_001.fastq.gz
 
-
 # --------------------------------------
 Iteration:  53
 File base:  ./fastqs/symlinks/Sample_CU11_5782_Q_Nascent_S11
@@ -8920,7 +8871,6 @@ FastQC job submitted for ./fastqs/symlinks/Sample_CU11_5782_Q_Nascent_S11_R1_001
 
 Submitted batch job 7993308
 FastQC job submitted for ./fastqs/symlinks/Sample_CU11_5782_Q_Nascent_S11_R3_001.fastq.gz
-
 
 # --------------------------------------
 Iteration:  54
@@ -9103,7 +9053,6 @@ File base:  ./fastqs/symlinks/5781_G1_IN_S5
 Submitted batch job 7993566
 trim_galore job submitted for ./fastqs/symlinks/5781_G1_IN_S5_R1_001.fastq.gz and ./fastqs/symlinks/5781_G1_IN_S5_R3_001.fastq.gz
 
-
 # --------------------------------------
 Iteration:  1
 File base:  ./fastqs/symlinks/5781_G1_IP_S1
@@ -9113,7 +9062,6 @@ File base:  ./fastqs/symlinks/5781_G1_IP_S1
 
 Submitted batch job 7993567
 trim_galore job submitted for ./fastqs/symlinks/5781_G1_IP_S1_R1_001.fastq.gz and ./fastqs/symlinks/5781_G1_IP_S1_R3_001.fastq.gz
-
 
 # --------------------------------------
 Iteration:  2
@@ -9125,7 +9073,6 @@ File base:  ./fastqs/symlinks/5781_Q_IN_S6
 Submitted batch job 7993568
 trim_galore job submitted for ./fastqs/symlinks/5781_Q_IN_S6_R1_001.fastq.gz and ./fastqs/symlinks/5781_Q_IN_S6_R3_001.fastq.gz
 
-
 # --------------------------------------
 Iteration:  3
 File base:  ./fastqs/symlinks/5781_Q_IP_S2
@@ -9135,7 +9082,6 @@ File base:  ./fastqs/symlinks/5781_Q_IP_S2
 
 Submitted batch job 7993569
 trim_galore job submitted for ./fastqs/symlinks/5781_Q_IP_S2_R1_001.fastq.gz and ./fastqs/symlinks/5781_Q_IP_S2_R3_001.fastq.gz
-
 
 # --------------------------------------
 Iteration:  4
@@ -9147,7 +9093,6 @@ File base:  ./fastqs/symlinks/5782_G1_IN_S7
 Submitted batch job 7993570
 trim_galore job submitted for ./fastqs/symlinks/5782_G1_IN_S7_R1_001.fastq.gz and ./fastqs/symlinks/5782_G1_IN_S7_R3_001.fastq.gz
 
-
 # --------------------------------------
 Iteration:  5
 File base:  ./fastqs/symlinks/5782_G1_IP_S3
@@ -9157,7 +9102,6 @@ File base:  ./fastqs/symlinks/5782_G1_IP_S3
 
 Submitted batch job 7993571
 trim_galore job submitted for ./fastqs/symlinks/5782_G1_IP_S3_R1_001.fastq.gz and ./fastqs/symlinks/5782_G1_IP_S3_R3_001.fastq.gz
-
 
 # --------------------------------------
 Iteration:  6
@@ -9169,7 +9113,6 @@ File base:  ./fastqs/symlinks/5782_Q_IN_S8
 Submitted batch job 7993572
 trim_galore job submitted for ./fastqs/symlinks/5782_Q_IN_S8_R1_001.fastq.gz and ./fastqs/symlinks/5782_Q_IN_S8_R3_001.fastq.gz
 
-
 # --------------------------------------
 Iteration:  7
 File base:  ./fastqs/symlinks/5782_Q_IP_S4
@@ -9179,7 +9122,6 @@ File base:  ./fastqs/symlinks/5782_Q_IP_S4
 
 Submitted batch job 7993573
 trim_galore job submitted for ./fastqs/symlinks/5782_Q_IP_S4_R1_001.fastq.gz and ./fastqs/symlinks/5782_Q_IP_S4_R3_001.fastq.gz
-
 
 # --------------------------------------
 Iteration:  8
@@ -9191,7 +9133,6 @@ File base:  ./fastqs/symlinks/CW10_7747_8day_Q_IN_S5
 Submitted batch job 7993574
 trim_galore job submitted for ./fastqs/symlinks/CW10_7747_8day_Q_IN_S5_R1_001.fastq.gz and ./fastqs/symlinks/CW10_7747_8day_Q_IN_S5_R3_001.fastq.gz
 
-
 # --------------------------------------
 Iteration:  9
 File base:  ./fastqs/symlinks/CW10_7747_8day_Q_PD_S11
@@ -9201,7 +9142,6 @@ File base:  ./fastqs/symlinks/CW10_7747_8day_Q_PD_S11
 
 Submitted batch job 7993575
 trim_galore job submitted for ./fastqs/symlinks/CW10_7747_8day_Q_PD_S11_R1_001.fastq.gz and ./fastqs/symlinks/CW10_7747_8day_Q_PD_S11_R3_001.fastq.gz
-
 
 # --------------------------------------
 Iteration:  10
@@ -9213,7 +9153,6 @@ File base:  ./fastqs/symlinks/CW12_7748_8day_Q_IN_S6
 Submitted batch job 7993576
 trim_galore job submitted for ./fastqs/symlinks/CW12_7748_8day_Q_IN_S6_R1_001.fastq.gz and ./fastqs/symlinks/CW12_7748_8day_Q_IN_S6_R3_001.fastq.gz
 
-
 # --------------------------------------
 Iteration:  11
 File base:  ./fastqs/symlinks/CW12_7748_8day_Q_PD_S12
@@ -9223,7 +9162,6 @@ File base:  ./fastqs/symlinks/CW12_7748_8day_Q_PD_S12
 
 Submitted batch job 7993577
 trim_galore job submitted for ./fastqs/symlinks/CW12_7748_8day_Q_PD_S12_R1_001.fastq.gz and ./fastqs/symlinks/CW12_7748_8day_Q_PD_S12_R3_001.fastq.gz
-
 
 # --------------------------------------
 Iteration:  12
@@ -9235,7 +9173,6 @@ File base:  ./fastqs/symlinks/CW2_5781_8day_Q_IN_S1
 Submitted batch job 7993578
 trim_galore job submitted for ./fastqs/symlinks/CW2_5781_8day_Q_IN_S1_R1_001.fastq.gz and ./fastqs/symlinks/CW2_5781_8day_Q_IN_S1_R3_001.fastq.gz
 
-
 # --------------------------------------
 Iteration:  13
 File base:  ./fastqs/symlinks/CW2_5781_8day_Q_PD_S7
@@ -9245,7 +9182,6 @@ File base:  ./fastqs/symlinks/CW2_5781_8day_Q_PD_S7
 
 Submitted batch job 7993579
 trim_galore job submitted for ./fastqs/symlinks/CW2_5781_8day_Q_PD_S7_R1_001.fastq.gz and ./fastqs/symlinks/CW2_5781_8day_Q_PD_S7_R3_001.fastq.gz
-
 
 # --------------------------------------
 Iteration:  14
@@ -9257,7 +9193,6 @@ File base:  ./fastqs/symlinks/CW4_5782_8day_Q_IN_S2
 Submitted batch job 7993580
 trim_galore job submitted for ./fastqs/symlinks/CW4_5782_8day_Q_IN_S2_R1_001.fastq.gz and ./fastqs/symlinks/CW4_5782_8day_Q_IN_S2_R3_001.fastq.gz
 
-
 # --------------------------------------
 Iteration:  15
 File base:  ./fastqs/symlinks/CW4_5782_8day_Q_PD_S8
@@ -9267,7 +9202,6 @@ File base:  ./fastqs/symlinks/CW4_5782_8day_Q_PD_S8
 
 Submitted batch job 7993581
 trim_galore job submitted for ./fastqs/symlinks/CW4_5782_8day_Q_PD_S8_R1_001.fastq.gz and ./fastqs/symlinks/CW4_5782_8day_Q_PD_S8_R3_001.fastq.gz
-
 
 # --------------------------------------
 Iteration:  16
@@ -9279,7 +9213,6 @@ File base:  ./fastqs/symlinks/CW6_7078_8day_Q_IN_S3
 Submitted batch job 7993582
 trim_galore job submitted for ./fastqs/symlinks/CW6_7078_8day_Q_IN_S3_R1_001.fastq.gz and ./fastqs/symlinks/CW6_7078_8day_Q_IN_S3_R3_001.fastq.gz
 
-
 # --------------------------------------
 Iteration:  17
 File base:  ./fastqs/symlinks/CW6_7078_8day_Q_PD_S9
@@ -9289,7 +9222,6 @@ File base:  ./fastqs/symlinks/CW6_7078_8day_Q_PD_S9
 
 Submitted batch job 7993583
 trim_galore job submitted for ./fastqs/symlinks/CW6_7078_8day_Q_PD_S9_R1_001.fastq.gz and ./fastqs/symlinks/CW6_7078_8day_Q_PD_S9_R3_001.fastq.gz
-
 
 # --------------------------------------
 Iteration:  18
@@ -9301,7 +9233,6 @@ File base:  ./fastqs/symlinks/CW8_7079_8day_Q_IN_S4
 Submitted batch job 7993584
 trim_galore job submitted for ./fastqs/symlinks/CW8_7079_8day_Q_IN_S4_R1_001.fastq.gz and ./fastqs/symlinks/CW8_7079_8day_Q_IN_S4_R3_001.fastq.gz
 
-
 # --------------------------------------
 Iteration:  19
 File base:  ./fastqs/symlinks/CW8_7079_8day_Q_PD_S10
@@ -9311,7 +9242,6 @@ File base:  ./fastqs/symlinks/CW8_7079_8day_Q_PD_S10
 
 Submitted batch job 7993585
 trim_galore job submitted for ./fastqs/symlinks/CW8_7079_8day_Q_PD_S10_R1_001.fastq.gz and ./fastqs/symlinks/CW8_7079_8day_Q_PD_S10_R3_001.fastq.gz
-
 
 # --------------------------------------
 Iteration:  20
@@ -9323,7 +9253,6 @@ File base:  ./fastqs/symlinks/SAMPLE_BM10_DSp48_5781_S22
 Submitted batch job 7993586
 trim_galore job submitted for ./fastqs/symlinks/SAMPLE_BM10_DSp48_5781_S22_R1_001.fastq.gz and ./fastqs/symlinks/SAMPLE_BM10_DSp48_5781_S22_R3_001.fastq.gz
 
-
 # --------------------------------------
 Iteration:  21
 File base:  ./fastqs/symlinks/SAMPLE_BM11_DSp48_7080_S23
@@ -9333,7 +9262,6 @@ File base:  ./fastqs/symlinks/SAMPLE_BM11_DSp48_7080_S23
 
 Submitted batch job 7993587
 trim_galore job submitted for ./fastqs/symlinks/SAMPLE_BM11_DSp48_7080_S23_R1_001.fastq.gz and ./fastqs/symlinks/SAMPLE_BM11_DSp48_7080_S23_R3_001.fastq.gz
-
 
 # --------------------------------------
 Iteration:  22
@@ -9345,7 +9273,6 @@ File base:  ./fastqs/symlinks/SAMPLE_BM1_DSm2_5781_S13
 Submitted batch job 7993588
 trim_galore job submitted for ./fastqs/symlinks/SAMPLE_BM1_DSm2_5781_S13_R1_001.fastq.gz and ./fastqs/symlinks/SAMPLE_BM1_DSm2_5781_S13_R3_001.fastq.gz
 
-
 # --------------------------------------
 Iteration:  23
 File base:  ./fastqs/symlinks/SAMPLE_BM2_DSm2_7080_S14
@@ -9355,7 +9282,6 @@ File base:  ./fastqs/symlinks/SAMPLE_BM2_DSm2_7080_S14
 
 Submitted batch job 7993589
 trim_galore job submitted for ./fastqs/symlinks/SAMPLE_BM2_DSm2_7080_S14_R1_001.fastq.gz and ./fastqs/symlinks/SAMPLE_BM2_DSm2_7080_S14_R3_001.fastq.gz
-
 
 # --------------------------------------
 Iteration:  24
@@ -9367,7 +9293,6 @@ File base:  ./fastqs/symlinks/SAMPLE_BM3_DSm2_7079_S15
 Submitted batch job 7993590
 trim_galore job submitted for ./fastqs/symlinks/SAMPLE_BM3_DSm2_7079_S15_R1_001.fastq.gz and ./fastqs/symlinks/SAMPLE_BM3_DSm2_7079_S15_R3_001.fastq.gz
 
-
 # --------------------------------------
 Iteration:  25
 File base:  ./fastqs/symlinks/SAMPLE_BM4_DSp2_5781_S16
@@ -9377,7 +9302,6 @@ File base:  ./fastqs/symlinks/SAMPLE_BM4_DSp2_5781_S16
 
 Submitted batch job 7993591
 trim_galore job submitted for ./fastqs/symlinks/SAMPLE_BM4_DSp2_5781_S16_R1_001.fastq.gz and ./fastqs/symlinks/SAMPLE_BM4_DSp2_5781_S16_R3_001.fastq.gz
-
 
 # --------------------------------------
 Iteration:  26
@@ -9389,7 +9313,6 @@ File base:  ./fastqs/symlinks/SAMPLE_BM5_DSp2_7080_S17
 Submitted batch job 7993592
 trim_galore job submitted for ./fastqs/symlinks/SAMPLE_BM5_DSp2_7080_S17_R1_001.fastq.gz and ./fastqs/symlinks/SAMPLE_BM5_DSp2_7080_S17_R3_001.fastq.gz
 
-
 # --------------------------------------
 Iteration:  27
 File base:  ./fastqs/symlinks/SAMPLE_BM6_DSp2_7079_S18
@@ -9399,7 +9322,6 @@ File base:  ./fastqs/symlinks/SAMPLE_BM6_DSp2_7079_S18
 
 Submitted batch job 7993593
 trim_galore job submitted for ./fastqs/symlinks/SAMPLE_BM6_DSp2_7079_S18_R1_001.fastq.gz and ./fastqs/symlinks/SAMPLE_BM6_DSp2_7079_S18_R3_001.fastq.gz
-
 
 # --------------------------------------
 Iteration:  28
@@ -9411,7 +9333,6 @@ File base:  ./fastqs/symlinks/SAMPLE_BM7_DSp24_5781_S19
 Submitted batch job 7993594
 trim_galore job submitted for ./fastqs/symlinks/SAMPLE_BM7_DSp24_5781_S19_R1_001.fastq.gz and ./fastqs/symlinks/SAMPLE_BM7_DSp24_5781_S19_R3_001.fastq.gz
 
-
 # --------------------------------------
 Iteration:  29
 File base:  ./fastqs/symlinks/SAMPLE_BM8_DSp24_7080_S20
@@ -9421,7 +9342,6 @@ File base:  ./fastqs/symlinks/SAMPLE_BM8_DSp24_7080_S20
 
 Submitted batch job 7993595
 trim_galore job submitted for ./fastqs/symlinks/SAMPLE_BM8_DSp24_7080_S20_R1_001.fastq.gz and ./fastqs/symlinks/SAMPLE_BM8_DSp24_7080_S20_R3_001.fastq.gz
-
 
 # --------------------------------------
 Iteration:  30
@@ -9433,7 +9353,6 @@ File base:  ./fastqs/symlinks/SAMPLE_BM9_DSp24_7079_S21
 Submitted batch job 7993596
 trim_galore job submitted for ./fastqs/symlinks/SAMPLE_BM9_DSp24_7079_S21_R1_001.fastq.gz and ./fastqs/symlinks/SAMPLE_BM9_DSp24_7079_S21_R3_001.fastq.gz
 
-
 # --------------------------------------
 Iteration:  31
 File base:  ./fastqs/symlinks/SAMPLE_Bp10_DSp48_5782_S10
@@ -9443,7 +9362,6 @@ File base:  ./fastqs/symlinks/SAMPLE_Bp10_DSp48_5782_S10
 
 Submitted batch job 7993597
 trim_galore job submitted for ./fastqs/symlinks/SAMPLE_Bp10_DSp48_5782_S10_R1_001.fastq.gz and ./fastqs/symlinks/SAMPLE_Bp10_DSp48_5782_S10_R3_001.fastq.gz
-
 
 # --------------------------------------
 Iteration:  32
@@ -9455,7 +9373,6 @@ File base:  ./fastqs/symlinks/SAMPLE_Bp11_DSp48_7081_S11
 Submitted batch job 7993598
 trim_galore job submitted for ./fastqs/symlinks/SAMPLE_Bp11_DSp48_7081_S11_R1_001.fastq.gz and ./fastqs/symlinks/SAMPLE_Bp11_DSp48_7081_S11_R3_001.fastq.gz
 
-
 # --------------------------------------
 Iteration:  33
 File base:  ./fastqs/symlinks/SAMPLE_Bp12_DSp48_7078_S12
@@ -9465,7 +9382,6 @@ File base:  ./fastqs/symlinks/SAMPLE_Bp12_DSp48_7078_S12
 
 Submitted batch job 7993599
 trim_galore job submitted for ./fastqs/symlinks/SAMPLE_Bp12_DSp48_7078_S12_R1_001.fastq.gz and ./fastqs/symlinks/SAMPLE_Bp12_DSp48_7078_S12_R3_001.fastq.gz
-
 
 # --------------------------------------
 Iteration:  34
@@ -9477,7 +9393,6 @@ File base:  ./fastqs/symlinks/SAMPLE_Bp1_DSm2_5782_S1
 Submitted batch job 7993600
 trim_galore job submitted for ./fastqs/symlinks/SAMPLE_Bp1_DSm2_5782_S1_R1_001.fastq.gz and ./fastqs/symlinks/SAMPLE_Bp1_DSm2_5782_S1_R3_001.fastq.gz
 
-
 # --------------------------------------
 Iteration:  35
 File base:  ./fastqs/symlinks/SAMPLE_Bp2_DSm2_7081_S2
@@ -9487,7 +9402,6 @@ File base:  ./fastqs/symlinks/SAMPLE_Bp2_DSm2_7081_S2
 
 Submitted batch job 7993601
 trim_galore job submitted for ./fastqs/symlinks/SAMPLE_Bp2_DSm2_7081_S2_R1_001.fastq.gz and ./fastqs/symlinks/SAMPLE_Bp2_DSm2_7081_S2_R3_001.fastq.gz
-
 
 # --------------------------------------
 Iteration:  36
@@ -9499,7 +9413,6 @@ File base:  ./fastqs/symlinks/SAMPLE_Bp3_DSm2_7078_S3
 Submitted batch job 7993602
 trim_galore job submitted for ./fastqs/symlinks/SAMPLE_Bp3_DSm2_7078_S3_R1_001.fastq.gz and ./fastqs/symlinks/SAMPLE_Bp3_DSm2_7078_S3_R3_001.fastq.gz
 
-
 # --------------------------------------
 Iteration:  37
 File base:  ./fastqs/symlinks/SAMPLE_Bp4_DSp2_5782_S4
@@ -9509,7 +9422,6 @@ File base:  ./fastqs/symlinks/SAMPLE_Bp4_DSp2_5782_S4
 
 Submitted batch job 7993603
 trim_galore job submitted for ./fastqs/symlinks/SAMPLE_Bp4_DSp2_5782_S4_R1_001.fastq.gz and ./fastqs/symlinks/SAMPLE_Bp4_DSp2_5782_S4_R3_001.fastq.gz
-
 
 # --------------------------------------
 Iteration:  38
@@ -9521,7 +9433,6 @@ File base:  ./fastqs/symlinks/SAMPLE_Bp5_DSp2_7081_S5
 Submitted batch job 7993604
 trim_galore job submitted for ./fastqs/symlinks/SAMPLE_Bp5_DSp2_7081_S5_R1_001.fastq.gz and ./fastqs/symlinks/SAMPLE_Bp5_DSp2_7081_S5_R3_001.fastq.gz
 
-
 # --------------------------------------
 Iteration:  39
 File base:  ./fastqs/symlinks/SAMPLE_Bp6_DSp2_7078_S6
@@ -9531,7 +9442,6 @@ File base:  ./fastqs/symlinks/SAMPLE_Bp6_DSp2_7078_S6
 
 Submitted batch job 7993605
 trim_galore job submitted for ./fastqs/symlinks/SAMPLE_Bp6_DSp2_7078_S6_R1_001.fastq.gz and ./fastqs/symlinks/SAMPLE_Bp6_DSp2_7078_S6_R3_001.fastq.gz
-
 
 # --------------------------------------
 Iteration:  40
@@ -9543,7 +9453,6 @@ File base:  ./fastqs/symlinks/SAMPLE_Bp7_DSp24_5782_S7
 Submitted batch job 7993606
 trim_galore job submitted for ./fastqs/symlinks/SAMPLE_Bp7_DSp24_5782_S7_R1_001.fastq.gz and ./fastqs/symlinks/SAMPLE_Bp7_DSp24_5782_S7_R3_001.fastq.gz
 
-
 # --------------------------------------
 Iteration:  41
 File base:  ./fastqs/symlinks/SAMPLE_Bp8_DSp24_7081_S8
@@ -9553,7 +9462,6 @@ File base:  ./fastqs/symlinks/SAMPLE_Bp8_DSp24_7081_S8
 
 Submitted batch job 7993607
 trim_galore job submitted for ./fastqs/symlinks/SAMPLE_Bp8_DSp24_7081_S8_R1_001.fastq.gz and ./fastqs/symlinks/SAMPLE_Bp8_DSp24_7081_S8_R3_001.fastq.gz
-
 
 # --------------------------------------
 Iteration:  42
@@ -9565,7 +9473,6 @@ File base:  ./fastqs/symlinks/SAMPLE_Bp9_DSp24_7078_S9
 Submitted batch job 7993608
 trim_galore job submitted for ./fastqs/symlinks/SAMPLE_Bp9_DSp24_7078_S9_R1_001.fastq.gz and ./fastqs/symlinks/SAMPLE_Bp9_DSp24_7078_S9_R3_001.fastq.gz
 
-
 # --------------------------------------
 Iteration:  43
 File base:  ./fastqs/symlinks/Sample_CT10_7718_pIAA_Q_Nascent_S5
@@ -9575,7 +9482,6 @@ File base:  ./fastqs/symlinks/Sample_CT10_7718_pIAA_Q_Nascent_S5
 
 Submitted batch job 7993609
 trim_galore job submitted for ./fastqs/symlinks/Sample_CT10_7718_pIAA_Q_Nascent_S5_R1_001.fastq.gz and ./fastqs/symlinks/Sample_CT10_7718_pIAA_Q_Nascent_S5_R3_001.fastq.gz
-
 
 # --------------------------------------
 Iteration:  44
@@ -9587,7 +9493,6 @@ File base:  ./fastqs/symlinks/Sample_CT10_7718_pIAA_Q_SteadyState_S10
 Submitted batch job 7993610
 trim_galore job submitted for ./fastqs/symlinks/Sample_CT10_7718_pIAA_Q_SteadyState_S10_R1_001.fastq.gz and ./fastqs/symlinks/Sample_CT10_7718_pIAA_Q_SteadyState_S10_R3_001.fastq.gz
 
-
 # --------------------------------------
 Iteration:  45
 File base:  ./fastqs/symlinks/Sample_CT2_6125_pIAA_Q_Nascent_S1
@@ -9597,7 +9502,6 @@ File base:  ./fastqs/symlinks/Sample_CT2_6125_pIAA_Q_Nascent_S1
 
 Submitted batch job 7993611
 trim_galore job submitted for ./fastqs/symlinks/Sample_CT2_6125_pIAA_Q_Nascent_S1_R1_001.fastq.gz and ./fastqs/symlinks/Sample_CT2_6125_pIAA_Q_Nascent_S1_R3_001.fastq.gz
-
 
 # --------------------------------------
 Iteration:  46
@@ -9609,7 +9513,6 @@ File base:  ./fastqs/symlinks/Sample_CT2_6125_pIAA_Q_SteadyState_S6
 Submitted batch job 7993612
 trim_galore job submitted for ./fastqs/symlinks/Sample_CT2_6125_pIAA_Q_SteadyState_S6_R1_001.fastq.gz and ./fastqs/symlinks/Sample_CT2_6125_pIAA_Q_SteadyState_S6_R3_001.fastq.gz
 
-
 # --------------------------------------
 Iteration:  47
 File base:  ./fastqs/symlinks/Sample_CT4_6126_pIAA_Q_Nascent_S2
@@ -9619,7 +9522,6 @@ File base:  ./fastqs/symlinks/Sample_CT4_6126_pIAA_Q_Nascent_S2
 
 Submitted batch job 7993613
 trim_galore job submitted for ./fastqs/symlinks/Sample_CT4_6126_pIAA_Q_Nascent_S2_R1_001.fastq.gz and ./fastqs/symlinks/Sample_CT4_6126_pIAA_Q_Nascent_S2_R3_001.fastq.gz
-
 
 # --------------------------------------
 Iteration:  48
@@ -9631,7 +9533,6 @@ File base:  ./fastqs/symlinks/Sample_CT4_6126_pIAA_Q_SteadyState_S7
 Submitted batch job 7993614
 trim_galore job submitted for ./fastqs/symlinks/Sample_CT4_6126_pIAA_Q_SteadyState_S7_R1_001.fastq.gz and ./fastqs/symlinks/Sample_CT4_6126_pIAA_Q_SteadyState_S7_R3_001.fastq.gz
 
-
 # --------------------------------------
 Iteration:  49
 File base:  ./fastqs/symlinks/Sample_CT6_7714_pIAA_Q_Nascent_S3
@@ -9641,7 +9542,6 @@ File base:  ./fastqs/symlinks/Sample_CT6_7714_pIAA_Q_Nascent_S3
 
 Submitted batch job 7993615
 trim_galore job submitted for ./fastqs/symlinks/Sample_CT6_7714_pIAA_Q_Nascent_S3_R1_001.fastq.gz and ./fastqs/symlinks/Sample_CT6_7714_pIAA_Q_Nascent_S3_R3_001.fastq.gz
-
 
 # --------------------------------------
 Iteration:  50
@@ -9653,7 +9553,6 @@ File base:  ./fastqs/symlinks/Sample_CT6_7714_pIAA_Q_SteadyState_S8
 Submitted batch job 7993616
 trim_galore job submitted for ./fastqs/symlinks/Sample_CT6_7714_pIAA_Q_SteadyState_S8_R1_001.fastq.gz and ./fastqs/symlinks/Sample_CT6_7714_pIAA_Q_SteadyState_S8_R3_001.fastq.gz
 
-
 # --------------------------------------
 Iteration:  51
 File base:  ./fastqs/symlinks/Sample_CT8_7716_pIAA_Q_Nascent_S4
@@ -9663,7 +9562,6 @@ File base:  ./fastqs/symlinks/Sample_CT8_7716_pIAA_Q_Nascent_S4
 
 Submitted batch job 7993617
 trim_galore job submitted for ./fastqs/symlinks/Sample_CT8_7716_pIAA_Q_Nascent_S4_R1_001.fastq.gz and ./fastqs/symlinks/Sample_CT8_7716_pIAA_Q_Nascent_S4_R3_001.fastq.gz
-
 
 # --------------------------------------
 Iteration:  52
@@ -9675,7 +9573,6 @@ File base:  ./fastqs/symlinks/Sample_CT8_7716_pIAA_Q_SteadyState_S9
 Submitted batch job 7993618
 trim_galore job submitted for ./fastqs/symlinks/Sample_CT8_7716_pIAA_Q_SteadyState_S9_R1_001.fastq.gz and ./fastqs/symlinks/Sample_CT8_7716_pIAA_Q_SteadyState_S9_R3_001.fastq.gz
 
-
 # --------------------------------------
 Iteration:  53
 File base:  ./fastqs/symlinks/Sample_CU11_5782_Q_Nascent_S11
@@ -9685,7 +9582,6 @@ File base:  ./fastqs/symlinks/Sample_CU11_5782_Q_Nascent_S11
 
 Submitted batch job 7993619
 trim_galore job submitted for ./fastqs/symlinks/Sample_CU11_5782_Q_Nascent_S11_R1_001.fastq.gz and ./fastqs/symlinks/Sample_CU11_5782_Q_Nascent_S11_R3_001.fastq.gz
-
 
 # --------------------------------------
 Iteration:  54
@@ -9831,7 +9727,6 @@ FastQC job submitted for ./fastqs/trim_galore/5781_G1_IN_S5_R1_001_val_1.fq.gz
 Submitted batch job 7998783
 FastQC job submitted for ./fastqs/trim_galore/5781_G1_IN_S5_R3_001_val_2.fq.gz
 
-
 # --------------------------------------
 Iteration:  1
 File base:  ./fastqs/trim_galore/5781_G1_IP_S1
@@ -9844,7 +9739,6 @@ FastQC job submitted for ./fastqs/trim_galore/5781_G1_IP_S1_R1_001_val_1.fq.gz
 
 Submitted batch job 7998785
 FastQC job submitted for ./fastqs/trim_galore/5781_G1_IP_S1_R3_001_val_2.fq.gz
-
 
 # --------------------------------------
 Iteration:  2
@@ -9859,7 +9753,6 @@ FastQC job submitted for ./fastqs/trim_galore/5781_Q_IN_S6_R1_001_val_1.fq.gz
 Submitted batch job 7998787
 FastQC job submitted for ./fastqs/trim_galore/5781_Q_IN_S6_R3_001_val_2.fq.gz
 
-
 # --------------------------------------
 Iteration:  3
 File base:  ./fastqs/trim_galore/5781_Q_IP_S2
@@ -9872,7 +9765,6 @@ FastQC job submitted for ./fastqs/trim_galore/5781_Q_IP_S2_R1_001_val_1.fq.gz
 
 Submitted batch job 7998789
 FastQC job submitted for ./fastqs/trim_galore/5781_Q_IP_S2_R3_001_val_2.fq.gz
-
 
 # --------------------------------------
 Iteration:  4
@@ -9887,7 +9779,6 @@ FastQC job submitted for ./fastqs/trim_galore/5782_G1_IN_S7_R1_001_val_1.fq.gz
 Submitted batch job 7998791
 FastQC job submitted for ./fastqs/trim_galore/5782_G1_IN_S7_R3_001_val_2.fq.gz
 
-
 # --------------------------------------
 Iteration:  5
 File base:  ./fastqs/trim_galore/5782_G1_IP_S3
@@ -9900,7 +9791,6 @@ FastQC job submitted for ./fastqs/trim_galore/5782_G1_IP_S3_R1_001_val_1.fq.gz
 
 Submitted batch job 7998793
 FastQC job submitted for ./fastqs/trim_galore/5782_G1_IP_S3_R3_001_val_2.fq.gz
-
 
 # --------------------------------------
 Iteration:  6
@@ -9915,7 +9805,6 @@ FastQC job submitted for ./fastqs/trim_galore/5782_Q_IN_S8_R1_001_val_1.fq.gz
 Submitted batch job 7998795
 FastQC job submitted for ./fastqs/trim_galore/5782_Q_IN_S8_R3_001_val_2.fq.gz
 
-
 # --------------------------------------
 Iteration:  7
 File base:  ./fastqs/trim_galore/5782_Q_IP_S4
@@ -9928,7 +9817,6 @@ FastQC job submitted for ./fastqs/trim_galore/5782_Q_IP_S4_R1_001_val_1.fq.gz
 
 Submitted batch job 7998797
 FastQC job submitted for ./fastqs/trim_galore/5782_Q_IP_S4_R3_001_val_2.fq.gz
-
 
 # --------------------------------------
 Iteration:  8
@@ -9943,7 +9831,6 @@ FastQC job submitted for ./fastqs/trim_galore/CW10_7747_8day_Q_IN_S5_R1_001_val_
 Submitted batch job 7998799
 FastQC job submitted for ./fastqs/trim_galore/CW10_7747_8day_Q_IN_S5_R3_001_val_2.fq.gz
 
-
 # --------------------------------------
 Iteration:  9
 File base:  ./fastqs/trim_galore/CW10_7747_8day_Q_PD_S11
@@ -9956,7 +9843,6 @@ FastQC job submitted for ./fastqs/trim_galore/CW10_7747_8day_Q_PD_S11_R1_001_val
 
 Submitted batch job 7998801
 FastQC job submitted for ./fastqs/trim_galore/CW10_7747_8day_Q_PD_S11_R3_001_val_2.fq.gz
-
 
 # --------------------------------------
 Iteration:  10
@@ -9971,7 +9857,6 @@ FastQC job submitted for ./fastqs/trim_galore/CW12_7748_8day_Q_IN_S6_R1_001_val_
 Submitted batch job 7998803
 FastQC job submitted for ./fastqs/trim_galore/CW12_7748_8day_Q_IN_S6_R3_001_val_2.fq.gz
 
-
 # --------------------------------------
 Iteration:  11
 File base:  ./fastqs/trim_galore/CW12_7748_8day_Q_PD_S12
@@ -9984,7 +9869,6 @@ FastQC job submitted for ./fastqs/trim_galore/CW12_7748_8day_Q_PD_S12_R1_001_val
 
 Submitted batch job 7998805
 FastQC job submitted for ./fastqs/trim_galore/CW12_7748_8day_Q_PD_S12_R3_001_val_2.fq.gz
-
 
 # --------------------------------------
 Iteration:  12
@@ -9999,7 +9883,6 @@ FastQC job submitted for ./fastqs/trim_galore/CW2_5781_8day_Q_IN_S1_R1_001_val_1
 Submitted batch job 7998807
 FastQC job submitted for ./fastqs/trim_galore/CW2_5781_8day_Q_IN_S1_R3_001_val_2.fq.gz
 
-
 # --------------------------------------
 Iteration:  13
 File base:  ./fastqs/trim_galore/CW2_5781_8day_Q_PD_S7
@@ -10012,7 +9895,6 @@ FastQC job submitted for ./fastqs/trim_galore/CW2_5781_8day_Q_PD_S7_R1_001_val_1
 
 Submitted batch job 7998809
 FastQC job submitted for ./fastqs/trim_galore/CW2_5781_8day_Q_PD_S7_R3_001_val_2.fq.gz
-
 
 # --------------------------------------
 Iteration:  14
@@ -10027,7 +9909,6 @@ FastQC job submitted for ./fastqs/trim_galore/CW4_5782_8day_Q_IN_S2_R1_001_val_1
 Submitted batch job 7998811
 FastQC job submitted for ./fastqs/trim_galore/CW4_5782_8day_Q_IN_S2_R3_001_val_2.fq.gz
 
-
 # --------------------------------------
 Iteration:  15
 File base:  ./fastqs/trim_galore/CW4_5782_8day_Q_PD_S8
@@ -10040,7 +9921,6 @@ FastQC job submitted for ./fastqs/trim_galore/CW4_5782_8day_Q_PD_S8_R1_001_val_1
 
 Submitted batch job 7998813
 FastQC job submitted for ./fastqs/trim_galore/CW4_5782_8day_Q_PD_S8_R3_001_val_2.fq.gz
-
 
 # --------------------------------------
 Iteration:  16
@@ -10055,7 +9935,6 @@ FastQC job submitted for ./fastqs/trim_galore/CW6_7078_8day_Q_IN_S3_R1_001_val_1
 Submitted batch job 7998815
 FastQC job submitted for ./fastqs/trim_galore/CW6_7078_8day_Q_IN_S3_R3_001_val_2.fq.gz
 
-
 # --------------------------------------
 Iteration:  17
 File base:  ./fastqs/trim_galore/CW6_7078_8day_Q_PD_S9
@@ -10068,7 +9947,6 @@ FastQC job submitted for ./fastqs/trim_galore/CW6_7078_8day_Q_PD_S9_R1_001_val_1
 
 Submitted batch job 7998817
 FastQC job submitted for ./fastqs/trim_galore/CW6_7078_8day_Q_PD_S9_R3_001_val_2.fq.gz
-
 
 # --------------------------------------
 Iteration:  18
@@ -10083,7 +9961,6 @@ FastQC job submitted for ./fastqs/trim_galore/CW8_7079_8day_Q_IN_S4_R1_001_val_1
 Submitted batch job 7998819
 FastQC job submitted for ./fastqs/trim_galore/CW8_7079_8day_Q_IN_S4_R3_001_val_2.fq.gz
 
-
 # --------------------------------------
 Iteration:  19
 File base:  ./fastqs/trim_galore/CW8_7079_8day_Q_PD_S10
@@ -10096,7 +9973,6 @@ FastQC job submitted for ./fastqs/trim_galore/CW8_7079_8day_Q_PD_S10_R1_001_val_
 
 Submitted batch job 7998821
 FastQC job submitted for ./fastqs/trim_galore/CW8_7079_8day_Q_PD_S10_R3_001_val_2.fq.gz
-
 
 # --------------------------------------
 Iteration:  20
@@ -10111,7 +9987,6 @@ FastQC job submitted for ./fastqs/trim_galore/SAMPLE_BM10_DSp48_5781_S22_R1_001_
 Submitted batch job 7998823
 FastQC job submitted for ./fastqs/trim_galore/SAMPLE_BM10_DSp48_5781_S22_R3_001_val_2.fq.gz
 
-
 # --------------------------------------
 Iteration:  21
 File base:  ./fastqs/trim_galore/SAMPLE_BM11_DSp48_7080_S23
@@ -10124,7 +9999,6 @@ FastQC job submitted for ./fastqs/trim_galore/SAMPLE_BM11_DSp48_7080_S23_R1_001_
 
 Submitted batch job 7998825
 FastQC job submitted for ./fastqs/trim_galore/SAMPLE_BM11_DSp48_7080_S23_R3_001_val_2.fq.gz
-
 
 # --------------------------------------
 Iteration:  22
@@ -10139,7 +10013,6 @@ FastQC job submitted for ./fastqs/trim_galore/SAMPLE_BM1_DSm2_5781_S13_R1_001_va
 Submitted batch job 7998827
 FastQC job submitted for ./fastqs/trim_galore/SAMPLE_BM1_DSm2_5781_S13_R3_001_val_2.fq.gz
 
-
 # --------------------------------------
 Iteration:  23
 File base:  ./fastqs/trim_galore/SAMPLE_BM2_DSm2_7080_S14
@@ -10152,7 +10025,6 @@ FastQC job submitted for ./fastqs/trim_galore/SAMPLE_BM2_DSm2_7080_S14_R1_001_va
 
 Submitted batch job 7998829
 FastQC job submitted for ./fastqs/trim_galore/SAMPLE_BM2_DSm2_7080_S14_R3_001_val_2.fq.gz
-
 
 # --------------------------------------
 Iteration:  24
@@ -10167,7 +10039,6 @@ FastQC job submitted for ./fastqs/trim_galore/SAMPLE_BM3_DSm2_7079_S15_R1_001_va
 Submitted batch job 7998831
 FastQC job submitted for ./fastqs/trim_galore/SAMPLE_BM3_DSm2_7079_S15_R3_001_val_2.fq.gz
 
-
 # --------------------------------------
 Iteration:  25
 File base:  ./fastqs/trim_galore/SAMPLE_BM4_DSp2_5781_S16
@@ -10180,7 +10051,6 @@ FastQC job submitted for ./fastqs/trim_galore/SAMPLE_BM4_DSp2_5781_S16_R1_001_va
 
 Submitted batch job 7998833
 FastQC job submitted for ./fastqs/trim_galore/SAMPLE_BM4_DSp2_5781_S16_R3_001_val_2.fq.gz
-
 
 # --------------------------------------
 Iteration:  26
@@ -10195,7 +10065,6 @@ FastQC job submitted for ./fastqs/trim_galore/SAMPLE_BM5_DSp2_7080_S17_R1_001_va
 Submitted batch job 7998835
 FastQC job submitted for ./fastqs/trim_galore/SAMPLE_BM5_DSp2_7080_S17_R3_001_val_2.fq.gz
 
-
 # --------------------------------------
 Iteration:  27
 File base:  ./fastqs/trim_galore/SAMPLE_BM6_DSp2_7079_S18
@@ -10208,7 +10077,6 @@ FastQC job submitted for ./fastqs/trim_galore/SAMPLE_BM6_DSp2_7079_S18_R1_001_va
 
 Submitted batch job 7998837
 FastQC job submitted for ./fastqs/trim_galore/SAMPLE_BM6_DSp2_7079_S18_R3_001_val_2.fq.gz
-
 
 # --------------------------------------
 Iteration:  28
@@ -10223,7 +10091,6 @@ FastQC job submitted for ./fastqs/trim_galore/SAMPLE_BM7_DSp24_5781_S19_R1_001_v
 Submitted batch job 7998839
 FastQC job submitted for ./fastqs/trim_galore/SAMPLE_BM7_DSp24_5781_S19_R3_001_val_2.fq.gz
 
-
 # --------------------------------------
 Iteration:  29
 File base:  ./fastqs/trim_galore/SAMPLE_BM8_DSp24_7080_S20
@@ -10236,7 +10103,6 @@ FastQC job submitted for ./fastqs/trim_galore/SAMPLE_BM8_DSp24_7080_S20_R1_001_v
 
 Submitted batch job 7998841
 FastQC job submitted for ./fastqs/trim_galore/SAMPLE_BM8_DSp24_7080_S20_R3_001_val_2.fq.gz
-
 
 # --------------------------------------
 Iteration:  30
@@ -10251,7 +10117,6 @@ FastQC job submitted for ./fastqs/trim_galore/SAMPLE_BM9_DSp24_7079_S21_R1_001_v
 Submitted batch job 7998843
 FastQC job submitted for ./fastqs/trim_galore/SAMPLE_BM9_DSp24_7079_S21_R3_001_val_2.fq.gz
 
-
 # --------------------------------------
 Iteration:  31
 File base:  ./fastqs/trim_galore/SAMPLE_Bp10_DSp48_5782_S10
@@ -10264,7 +10129,6 @@ FastQC job submitted for ./fastqs/trim_galore/SAMPLE_Bp10_DSp48_5782_S10_R1_001_
 
 Submitted batch job 7998845
 FastQC job submitted for ./fastqs/trim_galore/SAMPLE_Bp10_DSp48_5782_S10_R3_001_val_2.fq.gz
-
 
 # --------------------------------------
 Iteration:  32
@@ -10279,7 +10143,6 @@ FastQC job submitted for ./fastqs/trim_galore/SAMPLE_Bp11_DSp48_7081_S11_R1_001_
 Submitted batch job 7998847
 FastQC job submitted for ./fastqs/trim_galore/SAMPLE_Bp11_DSp48_7081_S11_R3_001_val_2.fq.gz
 
-
 # --------------------------------------
 Iteration:  33
 File base:  ./fastqs/trim_galore/SAMPLE_Bp12_DSp48_7078_S12
@@ -10292,7 +10155,6 @@ FastQC job submitted for ./fastqs/trim_galore/SAMPLE_Bp12_DSp48_7078_S12_R1_001_
 
 Submitted batch job 7998849
 FastQC job submitted for ./fastqs/trim_galore/SAMPLE_Bp12_DSp48_7078_S12_R3_001_val_2.fq.gz
-
 
 # --------------------------------------
 Iteration:  34
@@ -10307,7 +10169,6 @@ FastQC job submitted for ./fastqs/trim_galore/SAMPLE_Bp1_DSm2_5782_S1_R1_001_val
 Submitted batch job 7998851
 FastQC job submitted for ./fastqs/trim_galore/SAMPLE_Bp1_DSm2_5782_S1_R3_001_val_2.fq.gz
 
-
 # --------------------------------------
 Iteration:  35
 File base:  ./fastqs/trim_galore/SAMPLE_Bp2_DSm2_7081_S2
@@ -10320,7 +10181,6 @@ FastQC job submitted for ./fastqs/trim_galore/SAMPLE_Bp2_DSm2_7081_S2_R1_001_val
 
 Submitted batch job 7998853
 FastQC job submitted for ./fastqs/trim_galore/SAMPLE_Bp2_DSm2_7081_S2_R3_001_val_2.fq.gz
-
 
 # --------------------------------------
 Iteration:  36
@@ -10335,7 +10195,6 @@ FastQC job submitted for ./fastqs/trim_galore/SAMPLE_Bp3_DSm2_7078_S3_R1_001_val
 Submitted batch job 7998855
 FastQC job submitted for ./fastqs/trim_galore/SAMPLE_Bp3_DSm2_7078_S3_R3_001_val_2.fq.gz
 
-
 # --------------------------------------
 Iteration:  37
 File base:  ./fastqs/trim_galore/SAMPLE_Bp4_DSp2_5782_S4
@@ -10348,7 +10207,6 @@ FastQC job submitted for ./fastqs/trim_galore/SAMPLE_Bp4_DSp2_5782_S4_R1_001_val
 
 Submitted batch job 7998857
 FastQC job submitted for ./fastqs/trim_galore/SAMPLE_Bp4_DSp2_5782_S4_R3_001_val_2.fq.gz
-
 
 # --------------------------------------
 Iteration:  38
@@ -10363,7 +10221,6 @@ FastQC job submitted for ./fastqs/trim_galore/SAMPLE_Bp5_DSp2_7081_S5_R1_001_val
 Submitted batch job 7998859
 FastQC job submitted for ./fastqs/trim_galore/SAMPLE_Bp5_DSp2_7081_S5_R3_001_val_2.fq.gz
 
-
 # --------------------------------------
 Iteration:  39
 File base:  ./fastqs/trim_galore/SAMPLE_Bp6_DSp2_7078_S6
@@ -10376,7 +10233,6 @@ FastQC job submitted for ./fastqs/trim_galore/SAMPLE_Bp6_DSp2_7078_S6_R1_001_val
 
 Submitted batch job 7998861
 FastQC job submitted for ./fastqs/trim_galore/SAMPLE_Bp6_DSp2_7078_S6_R3_001_val_2.fq.gz
-
 
 # --------------------------------------
 Iteration:  40
@@ -10391,7 +10247,6 @@ FastQC job submitted for ./fastqs/trim_galore/SAMPLE_Bp7_DSp24_5782_S7_R1_001_va
 Submitted batch job 7998863
 FastQC job submitted for ./fastqs/trim_galore/SAMPLE_Bp7_DSp24_5782_S7_R3_001_val_2.fq.gz
 
-
 # --------------------------------------
 Iteration:  41
 File base:  ./fastqs/trim_galore/SAMPLE_Bp8_DSp24_7081_S8
@@ -10404,7 +10259,6 @@ FastQC job submitted for ./fastqs/trim_galore/SAMPLE_Bp8_DSp24_7081_S8_R1_001_va
 
 Submitted batch job 7998865
 FastQC job submitted for ./fastqs/trim_galore/SAMPLE_Bp8_DSp24_7081_S8_R3_001_val_2.fq.gz
-
 
 # --------------------------------------
 Iteration:  42
@@ -10419,7 +10273,6 @@ FastQC job submitted for ./fastqs/trim_galore/SAMPLE_Bp9_DSp24_7078_S9_R1_001_va
 Submitted batch job 7998867
 FastQC job submitted for ./fastqs/trim_galore/SAMPLE_Bp9_DSp24_7078_S9_R3_001_val_2.fq.gz
 
-
 # --------------------------------------
 Iteration:  43
 File base:  ./fastqs/trim_galore/Sample_CT10_7718_pIAA_Q_Nascent_S5
@@ -10432,7 +10285,6 @@ FastQC job submitted for ./fastqs/trim_galore/Sample_CT10_7718_pIAA_Q_Nascent_S5
 
 Submitted batch job 7998869
 FastQC job submitted for ./fastqs/trim_galore/Sample_CT10_7718_pIAA_Q_Nascent_S5_R3_001_val_2.fq.gz
-
 
 # --------------------------------------
 Iteration:  44
@@ -10447,7 +10299,6 @@ FastQC job submitted for ./fastqs/trim_galore/Sample_CT10_7718_pIAA_Q_SteadyStat
 Submitted batch job 7998871
 FastQC job submitted for ./fastqs/trim_galore/Sample_CT10_7718_pIAA_Q_SteadyState_S10_R3_001_val_2.fq.gz
 
-
 # --------------------------------------
 Iteration:  45
 File base:  ./fastqs/trim_galore/Sample_CT2_6125_pIAA_Q_Nascent_S1
@@ -10460,7 +10311,6 @@ FastQC job submitted for ./fastqs/trim_galore/Sample_CT2_6125_pIAA_Q_Nascent_S1_
 
 Submitted batch job 7998873
 FastQC job submitted for ./fastqs/trim_galore/Sample_CT2_6125_pIAA_Q_Nascent_S1_R3_001_val_2.fq.gz
-
 
 # --------------------------------------
 Iteration:  46
@@ -10475,7 +10325,6 @@ FastQC job submitted for ./fastqs/trim_galore/Sample_CT2_6125_pIAA_Q_SteadyState
 Submitted batch job 7998875
 FastQC job submitted for ./fastqs/trim_galore/Sample_CT2_6125_pIAA_Q_SteadyState_S6_R3_001_val_2.fq.gz
 
-
 # --------------------------------------
 Iteration:  47
 File base:  ./fastqs/trim_galore/Sample_CT4_6126_pIAA_Q_Nascent_S2
@@ -10488,7 +10337,6 @@ FastQC job submitted for ./fastqs/trim_galore/Sample_CT4_6126_pIAA_Q_Nascent_S2_
 
 Submitted batch job 7998877
 FastQC job submitted for ./fastqs/trim_galore/Sample_CT4_6126_pIAA_Q_Nascent_S2_R3_001_val_2.fq.gz
-
 
 # --------------------------------------
 Iteration:  48
@@ -10503,7 +10351,6 @@ FastQC job submitted for ./fastqs/trim_galore/Sample_CT4_6126_pIAA_Q_SteadyState
 Submitted batch job 7998879
 FastQC job submitted for ./fastqs/trim_galore/Sample_CT4_6126_pIAA_Q_SteadyState_S7_R3_001_val_2.fq.gz
 
-
 # --------------------------------------
 Iteration:  49
 File base:  ./fastqs/trim_galore/Sample_CT6_7714_pIAA_Q_Nascent_S3
@@ -10516,7 +10363,6 @@ FastQC job submitted for ./fastqs/trim_galore/Sample_CT6_7714_pIAA_Q_Nascent_S3_
 
 Submitted batch job 7998881
 FastQC job submitted for ./fastqs/trim_galore/Sample_CT6_7714_pIAA_Q_Nascent_S3_R3_001_val_2.fq.gz
-
 
 # --------------------------------------
 Iteration:  50
@@ -10531,7 +10377,6 @@ FastQC job submitted for ./fastqs/trim_galore/Sample_CT6_7714_pIAA_Q_SteadyState
 Submitted batch job 7998883
 FastQC job submitted for ./fastqs/trim_galore/Sample_CT6_7714_pIAA_Q_SteadyState_S8_R3_001_val_2.fq.gz
 
-
 # --------------------------------------
 Iteration:  51
 File base:  ./fastqs/trim_galore/Sample_CT8_7716_pIAA_Q_Nascent_S4
@@ -10544,7 +10389,6 @@ FastQC job submitted for ./fastqs/trim_galore/Sample_CT8_7716_pIAA_Q_Nascent_S4_
 
 Submitted batch job 7998885
 FastQC job submitted for ./fastqs/trim_galore/Sample_CT8_7716_pIAA_Q_Nascent_S4_R3_001_val_2.fq.gz
-
 
 # --------------------------------------
 Iteration:  52
@@ -10559,7 +10403,6 @@ FastQC job submitted for ./fastqs/trim_galore/Sample_CT8_7716_pIAA_Q_SteadyState
 Submitted batch job 7998887
 FastQC job submitted for ./fastqs/trim_galore/Sample_CT8_7716_pIAA_Q_SteadyState_S9_R3_001_val_2.fq.gz
 
-
 # --------------------------------------
 Iteration:  53
 File base:  ./fastqs/trim_galore/Sample_CU11_5782_Q_Nascent_S11
@@ -10572,7 +10415,6 @@ FastQC job submitted for ./fastqs/trim_galore/Sample_CU11_5782_Q_Nascent_S11_R1_
 
 Submitted batch job 7998889
 FastQC job submitted for ./fastqs/trim_galore/Sample_CU11_5782_Q_Nascent_S11_R3_001_val_2.fq.gz
-
 
 # --------------------------------------
 Iteration:  54
@@ -10622,8 +10464,10 @@ fi
 <details>
 <br />
 
+<a id="write-and-run-the-script-submit_star_unmapped-rmsh"></a>
+### Write and run the script `submit_star_unmapped-rm.sh`
 <a id="assign-variables-and-arrays"></a>
-### Assign variables and arrays
+#### Assign variables and arrays
 <details>
 <summary><i>Code: Assign variables and arrays</i></summary>
 
@@ -10680,13 +10524,11 @@ done
 # echo "${#fq_pre[@]}"  # 55
 #   ., "${fq_r1[37]}"
 #   ., "${fq_r2[37]}"
-# echo "${fq_r2[37]}"
+# echo "${fq_pre[37]}"
 ```
 </details>
 <br />
 
-<a id="write-and-run-the-script-submit_star_unmapped-rmsh"></a>
-### Write and run the script `submit_star_unmapped-rm.sh`
 <a id="use-a-heredoc-to-write-the-script-submit_star_unmapped-rmsh"></a>
 #### Use a `HEREDOC` to write the script, `submit_star_unmapped-rm.sh`
 <details>
@@ -10769,7 +10611,6 @@ script
 <a id="run-submit_star_unmapped-rmsh-on-fqgz-files"></a>
 #### Run `submit_star_unmapped-rm.sh` on `fq.gz` files
 *For a given read pair, allow up to 10 multimappers*
-
 <details>
 <summary><i>Code: Run submit_star_unmapped-rm.sh on fq.gz files</i></summary>
 
@@ -10789,6 +10630,7 @@ for (( i=0; i<=y; i++ )); do
     echo "      outdir:  ./bams/unmapped-rm/SC_KL_20S"
     echo "      genome:  ${dir_genome}"
     echo "multimappers:  10"
+    echo ""
 
     sbatch "./sh_err_out/${script_name}" \
     	"${fq_r1[${i}]}" \
@@ -10797,7 +10639,6 @@ for (( i=0; i<=y; i++ )); do
     	"${dir_genome}" \
     	10
     
-    echo ""
     sleep 1  # Slow down rate of job submission
 
     echo ""
@@ -10823,7 +10664,6 @@ multimappers:  10
 
 Submitted batch job 7998902
 
-
 # --------------------------------------
    Iteration:  1
    File base:  ./fastqs/trim_galore/5781_G1_IP_S1
@@ -10835,7 +10675,6 @@ Submitted batch job 7998902
 multimappers:  10
 
 Submitted batch job 7998903
-
 
 # --------------------------------------
    Iteration:  2
@@ -10849,7 +10688,6 @@ multimappers:  10
 
 Submitted batch job 7998904
 
-
 # --------------------------------------
    Iteration:  3
    File base:  ./fastqs/trim_galore/5781_Q_IP_S2
@@ -10861,7 +10699,6 @@ Submitted batch job 7998904
 multimappers:  10
 
 Submitted batch job 7998905
-
 
 # --------------------------------------
    Iteration:  4
@@ -10875,7 +10712,6 @@ multimappers:  10
 
 Submitted batch job 7998906
 
-
 # --------------------------------------
    Iteration:  5
    File base:  ./fastqs/trim_galore/5782_G1_IP_S3
@@ -10887,7 +10723,6 @@ Submitted batch job 7998906
 multimappers:  10
 
 Submitted batch job 7998907
-
 
 # --------------------------------------
    Iteration:  6
@@ -10901,7 +10736,6 @@ multimappers:  10
 
 Submitted batch job 7998908
 
-
 # --------------------------------------
    Iteration:  7
    File base:  ./fastqs/trim_galore/5782_Q_IP_S4
@@ -10913,7 +10747,6 @@ Submitted batch job 7998908
 multimappers:  10
 
 Submitted batch job 7998909
-
 
 # --------------------------------------
    Iteration:  8
@@ -10927,7 +10760,6 @@ multimappers:  10
 
 Submitted batch job 7998910
 
-
 # --------------------------------------
    Iteration:  9
    File base:  ./fastqs/trim_galore/CW10_7747_8day_Q_PD_S11
@@ -10939,7 +10771,6 @@ Submitted batch job 7998910
 multimappers:  10
 
 Submitted batch job 7998911
-
 
 # --------------------------------------
    Iteration:  10
@@ -10953,7 +10784,6 @@ multimappers:  10
 
 Submitted batch job 7998912
 
-
 # --------------------------------------
    Iteration:  11
    File base:  ./fastqs/trim_galore/CW12_7748_8day_Q_PD_S12
@@ -10965,7 +10795,6 @@ Submitted batch job 7998912
 multimappers:  10
 
 Submitted batch job 7998913
-
 
 # --------------------------------------
    Iteration:  12
@@ -10979,7 +10808,6 @@ multimappers:  10
 
 Submitted batch job 7998914
 
-
 # --------------------------------------
    Iteration:  13
    File base:  ./fastqs/trim_galore/CW2_5781_8day_Q_PD_S7
@@ -10991,7 +10819,6 @@ Submitted batch job 7998914
 multimappers:  10
 
 Submitted batch job 7998915
-
 
 # --------------------------------------
    Iteration:  14
@@ -11005,7 +10832,6 @@ multimappers:  10
 
 Submitted batch job 7998916
 
-
 # --------------------------------------
    Iteration:  15
    File base:  ./fastqs/trim_galore/CW4_5782_8day_Q_PD_S8
@@ -11017,7 +10843,6 @@ Submitted batch job 7998916
 multimappers:  10
 
 Submitted batch job 7998917
-
 
 # --------------------------------------
    Iteration:  16
@@ -11031,7 +10856,6 @@ multimappers:  10
 
 Submitted batch job 7998918
 
-
 # --------------------------------------
    Iteration:  17
    File base:  ./fastqs/trim_galore/CW6_7078_8day_Q_PD_S9
@@ -11043,7 +10867,6 @@ Submitted batch job 7998918
 multimappers:  10
 
 Submitted batch job 7998919
-
 
 # --------------------------------------
    Iteration:  18
@@ -11057,7 +10880,6 @@ multimappers:  10
 
 Submitted batch job 7998920
 
-
 # --------------------------------------
    Iteration:  19
    File base:  ./fastqs/trim_galore/CW8_7079_8day_Q_PD_S10
@@ -11069,7 +10891,6 @@ Submitted batch job 7998920
 multimappers:  10
 
 Submitted batch job 7998921
-
 
 # --------------------------------------
    Iteration:  20
@@ -11083,7 +10904,6 @@ multimappers:  10
 
 Submitted batch job 7998922
 
-
 # --------------------------------------
    Iteration:  21
    File base:  ./fastqs/trim_galore/SAMPLE_BM11_DSp48_7080_S23
@@ -11095,7 +10915,6 @@ Submitted batch job 7998922
 multimappers:  10
 
 Submitted batch job 7998923
-
 
 # --------------------------------------
    Iteration:  22
@@ -11109,7 +10928,6 @@ multimappers:  10
 
 Submitted batch job 7998924
 
-
 # --------------------------------------
    Iteration:  23
    File base:  ./fastqs/trim_galore/SAMPLE_BM2_DSm2_7080_S14
@@ -11121,7 +10939,6 @@ Submitted batch job 7998924
 multimappers:  10
 
 Submitted batch job 7998925
-
 
 # --------------------------------------
    Iteration:  24
@@ -11135,7 +10952,6 @@ multimappers:  10
 
 Submitted batch job 7998926
 
-
 # --------------------------------------
    Iteration:  25
    File base:  ./fastqs/trim_galore/SAMPLE_BM4_DSp2_5781_S16
@@ -11147,7 +10963,6 @@ Submitted batch job 7998926
 multimappers:  10
 
 Submitted batch job 7998927
-
 
 # --------------------------------------
    Iteration:  26
@@ -11161,7 +10976,6 @@ multimappers:  10
 
 Submitted batch job 7998928
 
-
 # --------------------------------------
    Iteration:  27
    File base:  ./fastqs/trim_galore/SAMPLE_BM6_DSp2_7079_S18
@@ -11173,7 +10987,6 @@ Submitted batch job 7998928
 multimappers:  10
 
 Submitted batch job 7998929
-
 
 # --------------------------------------
    Iteration:  28
@@ -11187,7 +11000,6 @@ multimappers:  10
 
 Submitted batch job 7998930
 
-
 # --------------------------------------
    Iteration:  29
    File base:  ./fastqs/trim_galore/SAMPLE_BM8_DSp24_7080_S20
@@ -11199,7 +11011,6 @@ Submitted batch job 7998930
 multimappers:  10
 
 Submitted batch job 7998931
-
 
 # --------------------------------------
    Iteration:  30
@@ -11213,7 +11024,6 @@ multimappers:  10
 
 Submitted batch job 7998932
 
-
 # --------------------------------------
    Iteration:  31
    File base:  ./fastqs/trim_galore/SAMPLE_Bp10_DSp48_5782_S10
@@ -11225,7 +11035,6 @@ Submitted batch job 7998932
 multimappers:  10
 
 Submitted batch job 7998933
-
 
 # --------------------------------------
    Iteration:  32
@@ -11239,7 +11048,6 @@ multimappers:  10
 
 Submitted batch job 7998934
 
-
 # --------------------------------------
    Iteration:  33
    File base:  ./fastqs/trim_galore/SAMPLE_Bp12_DSp48_7078_S12
@@ -11251,7 +11059,6 @@ Submitted batch job 7998934
 multimappers:  10
 
 Submitted batch job 7998935
-
 
 # --------------------------------------
    Iteration:  34
@@ -11265,7 +11072,6 @@ multimappers:  10
 
 Submitted batch job 7998936
 
-
 # --------------------------------------
    Iteration:  35
    File base:  ./fastqs/trim_galore/SAMPLE_Bp2_DSm2_7081_S2
@@ -11277,7 +11083,6 @@ Submitted batch job 7998936
 multimappers:  10
 
 Submitted batch job 7998937
-
 
 # --------------------------------------
    Iteration:  36
@@ -11291,7 +11096,6 @@ multimappers:  10
 
 Submitted batch job 7998938
 
-
 # --------------------------------------
    Iteration:  37
    File base:  ./fastqs/trim_galore/SAMPLE_Bp4_DSp2_5782_S4
@@ -11303,7 +11107,6 @@ Submitted batch job 7998938
 multimappers:  10
 
 Submitted batch job 7998939
-
 
 # --------------------------------------
    Iteration:  38
@@ -11317,7 +11120,6 @@ multimappers:  10
 
 Submitted batch job 7998940
 
-
 # --------------------------------------
    Iteration:  39
    File base:  ./fastqs/trim_galore/SAMPLE_Bp6_DSp2_7078_S6
@@ -11329,7 +11131,6 @@ Submitted batch job 7998940
 multimappers:  10
 
 Submitted batch job 7998941
-
 
 # --------------------------------------
    Iteration:  40
@@ -11343,7 +11144,6 @@ multimappers:  10
 
 Submitted batch job 7998942
 
-
 # --------------------------------------
    Iteration:  41
    File base:  ./fastqs/trim_galore/SAMPLE_Bp8_DSp24_7081_S8
@@ -11355,7 +11155,6 @@ Submitted batch job 7998942
 multimappers:  10
 
 Submitted batch job 7998943
-
 
 # --------------------------------------
    Iteration:  42
@@ -11369,7 +11168,6 @@ multimappers:  10
 
 Submitted batch job 7998944
 
-
 # --------------------------------------
    Iteration:  43
    File base:  ./fastqs/trim_galore/Sample_CT10_7718_pIAA_Q_Nascent_S5
@@ -11381,7 +11179,6 @@ Submitted batch job 7998944
 multimappers:  10
 
 Submitted batch job 7998945
-
 
 # --------------------------------------
    Iteration:  44
@@ -11395,7 +11192,6 @@ multimappers:  10
 
 Submitted batch job 7998946
 
-
 # --------------------------------------
    Iteration:  45
    File base:  ./fastqs/trim_galore/Sample_CT2_6125_pIAA_Q_Nascent_S1
@@ -11407,7 +11203,6 @@ Submitted batch job 7998946
 multimappers:  10
 
 Submitted batch job 7998947
-
 
 # --------------------------------------
    Iteration:  46
@@ -11421,7 +11216,6 @@ multimappers:  10
 
 Submitted batch job 7998948
 
-
 # --------------------------------------
    Iteration:  47
    File base:  ./fastqs/trim_galore/Sample_CT4_6126_pIAA_Q_Nascent_S2
@@ -11433,7 +11227,6 @@ Submitted batch job 7998948
 multimappers:  10
 
 Submitted batch job 7998949
-
 
 # --------------------------------------
    Iteration:  48
@@ -11447,7 +11240,6 @@ multimappers:  10
 
 Submitted batch job 7998950
 
-
 # --------------------------------------
    Iteration:  49
    File base:  ./fastqs/trim_galore/Sample_CT6_7714_pIAA_Q_Nascent_S3
@@ -11459,7 +11251,6 @@ Submitted batch job 7998950
 multimappers:  10
 
 Submitted batch job 7998951
-
 
 # --------------------------------------
    Iteration:  50
@@ -11473,7 +11264,6 @@ multimappers:  10
 
 Submitted batch job 7998952
 
-
 # --------------------------------------
    Iteration:  51
    File base:  ./fastqs/trim_galore/Sample_CT8_7716_pIAA_Q_Nascent_S4
@@ -11485,7 +11275,6 @@ Submitted batch job 7998952
 multimappers:  10
 
 Submitted batch job 7998953
-
 
 # --------------------------------------
    Iteration:  52
@@ -11499,7 +11288,6 @@ multimappers:  10
 
 Submitted batch job 7998954
 
-
 # --------------------------------------
    Iteration:  53
    File base:  ./fastqs/trim_galore/Sample_CU11_5782_Q_Nascent_S11
@@ -11511,7 +11299,6 @@ Submitted batch job 7998954
 multimappers:  10
 
 Submitted batch job 7998955
-
 
 # --------------------------------------
    Iteration:  54
@@ -11531,10 +11318,906 @@ Submitted batch job 7998956
 <a id="write-and-run-the-script-submit_star_unmapped-wsh"></a>
 ### Write and run the script `submit_star_unmapped-w.sh`
 `#PICKUPHERE` `#INPROGRESS`
+<a id="assign-variables-and-arrays-1"></a>
+#### Assign variables and arrays
+<details>
+<summary><i>Code: Assign variables and arrays</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN
+
+#  Variables
+script_name="submit_star_unmapped-w.sh"  # echo "${script_name}"
+threads=16  # echo "${threads}"
+dir_genome="${HOME}/genomes/combined_SC_KL_20S/STAR"  # ., "${dir_genome}"
+
+#  Arrays
+unset fq_bases
+typeset -a fq_bases
+while IFS=" " read -r -d $'\0'; do
+    fq_bases+=( "${REPLY%_R?_001_val_?.fq.gz}" )
+done < <(\
+    find "./fastqs/trim_galore" \
+        -type f \
+        -name "*_val_?.fq.gz" \
+        -print0 \
+            | sort -z \
+)
+# echo_test "${fq_bases[@]}"
+# echo "${#fq_bases[@]}"  # 110
+
+IFS=" " read -r -a fq_bases \
+    <<< "$(\
+        tr ' ' '\n' \
+            <<< "${fq_bases[@]}" \
+                | sort -u \
+                | tr '\n' ' '\
+    )"
+# echo_test "${fq_bases[@]}"
+# echo "${#fq_bases[@]}"  # 55
+
+unset fq_r1
+unset fq_r2
+unset fq_pre
+typeset -a fq_r1
+typeset -a fq_r2
+typeset -a fq_pre
+for i in "${fq_bases[@]}"; do
+    fq_r1+=( "${i}_R1_001_val_1.fq.gz" )
+    fq_r2+=( "${i}_R3_001_val_2.fq.gz" )
+    fq_pre+=( "$(basename "${i}")" )
+done
+# echo_test "${fq_r1[@]}"
+# echo_test "${fq_r2[@]}"
+# echo_test "${fq_pre[@]}"
+# echo "${#fq_r1[@]}"  # 55
+# echo "${#fq_r2[@]}"  # 55
+# echo "${#fq_pre[@]}"  # 55
+#   ., "${fq_r1[37]}"
+#   ., "${fq_r2[37]}"
+# echo "${fq_pre[37]}"
+```
+</details>
+<br />
+
 <a id="use-a-heredoc-to-write-the-script-submit_star_unmapped-wsh"></a>
 #### Use a `HEREDOC` to write the script, `submit_star_unmapped-w.sh`
+<details>
+<summary><i>Code: Use a HEREDOC to write the script, submit_star_unmapped-w.sh</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+if [[ -f "./sh_err_out/${script_name}" ]]; then
+	rm "./sh_err_out/${script_name}"
+fi
+cat << script > "./sh_err_out/${script_name}"
+#!/bin/bash
+
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=${threads}
+#SBATCH --error=./sh_err_out/err_out/${script_name%.sh}.%J.err.txt
+#SBATCH --output=./sh_err_out/err_out/${script_name%.sh}.%J.out.txt
+
+#  ${script_name}
+#  KA
+#  $(date '+%Y-%m%d')
+
+read_1="\${1}"
+read_2="\${2}"
+prefix="\${3}"
+dir_genome="\${4}"
+multimappers="\${5}"
+
+echo -e "STAR \\ \n\
+    --runMode alignReads \\ \n\
+    --runThreadN "\${SLURM_CPUS_ON_NODE}" \\ \n\
+    --outSAMtype BAM SortedByCoordinate \\ \n\
+    --outSAMunmapped Within \\ \n\
+    --outSAMattributes All \\ \n\
+    --genomeDir "\${dir_genome}" \\ \n\
+    --readFilesIn "\${read_1}" "\${read_2}" \\ \n\
+    --readFilesCommand zcat \\ \n\
+    --outFileNamePrefix "\${prefix}" \\ \n\
+    --limitBAMsortRAM 4000000000 \\ \n\
+    --outFilterMultimapNmax "\${multimappers}" \\ \n\
+    --winAnchorMultimapNmax 1000 \\ \n\
+    --alignSJoverhangMin 8 \\ \n\
+    --alignSJDBoverhangMin 1 \\ \n\
+    --outFilterMismatchNmax 999 \\ \n\
+    --outMultimapperOrder Random \\ \n\
+    --alignEndsType EndToEnd \\ \n\
+    --alignIntronMin 4 \\ \n\
+    --alignIntronMax 5000 \\ \n\
+    --alignMatesGapMax 5000"
+
+STAR \\
+    --runMode alignReads \\
+    --runThreadN "\${SLURM_CPUS_ON_NODE}" \\
+    --outSAMtype BAM SortedByCoordinate \\
+    --outSAMunmapped Within \\
+    --outSAMattributes All \\
+    --genomeDir "\${dir_genome}" \\
+    --readFilesIn "\${read_1}" "\${read_2}" \\
+    --readFilesCommand zcat \\
+    --outFileNamePrefix "\${prefix}" \\
+    --limitBAMsortRAM 4000000000 \\
+    --outFilterMultimapNmax "\${multimappers}" \\
+    --winAnchorMultimapNmax 1000 \\
+    --alignSJoverhangMin 8 \\
+    --alignSJDBoverhangMin 1 \\
+    --outFilterMismatchNmax 999 \\
+    --outMultimapperOrder Random \\
+    --alignEndsType EndToEnd \\
+    --alignIntronMin 4 \\
+    --alignIntronMax 5000 \\
+    --alignMatesGapMax 5000
+script
+# vi "./sh_err_out/${script_name}"  # :q
+```
+</details>
+<br />
+
 <a id="run-submit_star_unmapped-wsh-on-fqgz-files"></a>
 #### Run `submit_star_unmapped-w.sh` on `fq.gz` files
+*For a given read pair, allow up to 10 multimappers*
+<details>
+<summary><i>Code: Run submit_star_unmapped-w.sh on fq.gz files</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+x="${#fq_bases[@]}"  # echo "${x}"
+y=$(( x - 1 ))  # echo "${y}"
+for (( i=0; i<=y; i++ )); do
+    echo "# --------------------------------------"
+    echo "   Iteration:  ${i}"
+    echo "   File base:  ${fq_bases[${i}]}"
+    echo "          r1:  ${fq_r1[${i}]}"
+    echo "          r2:  ${fq_r2[${i}]}"
+    echo "      prefix:  ${fq_pre[${i}]}"
+    echo "      outdir:  ./bams/unmapped-w/SC_KL_20S"
+    echo "      genome:  ${dir_genome}"
+    echo "multimappers:  10"
+    echo ""
+
+    sbatch "./sh_err_out/${script_name}" \
+    	"${fq_r1[${i}]}" \
+    	"${fq_r2[${i}]}" \
+    	"./bams/unmapped-w/SC_KL_20S/${fq_pre[${i}]}." \
+    	"${dir_genome}" \
+    	10
+    
+    sleep 1  # Slow down rate of job submission
+
+    echo ""
+    echo ""
+done
+```
+</details>
+<br />
+
+<details>
+<summary><i>Printed: Run submit_star_unmapped-w.sh on fq.gz files</i></summary>
+
+```txt
+# --------------------------------------
+   Iteration:  0
+   File base:  ./fastqs/trim_galore/5781_G1_IN_S5
+          r1:  ./fastqs/trim_galore/5781_G1_IN_S5_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/5781_G1_IN_S5_R3_001_val_2.fq.gz
+      prefix:  5781_G1_IN_S5
+      outdir:  ./bams/unmapped-w/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 8054458
+
+
+# --------------------------------------
+   Iteration:  1
+   File base:  ./fastqs/trim_galore/5781_G1_IP_S1
+          r1:  ./fastqs/trim_galore/5781_G1_IP_S1_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/5781_G1_IP_S1_R3_001_val_2.fq.gz
+      prefix:  5781_G1_IP_S1
+      outdir:  ./bams/unmapped-w/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 8054459
+
+
+# --------------------------------------
+   Iteration:  2
+   File base:  ./fastqs/trim_galore/5781_Q_IN_S6
+          r1:  ./fastqs/trim_galore/5781_Q_IN_S6_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/5781_Q_IN_S6_R3_001_val_2.fq.gz
+      prefix:  5781_Q_IN_S6
+      outdir:  ./bams/unmapped-w/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 8054460
+
+
+# --------------------------------------
+   Iteration:  3
+   File base:  ./fastqs/trim_galore/5781_Q_IP_S2
+          r1:  ./fastqs/trim_galore/5781_Q_IP_S2_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/5781_Q_IP_S2_R3_001_val_2.fq.gz
+      prefix:  5781_Q_IP_S2
+      outdir:  ./bams/unmapped-w/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 8054461
+
+
+# --------------------------------------
+   Iteration:  4
+   File base:  ./fastqs/trim_galore/5782_G1_IN_S7
+          r1:  ./fastqs/trim_galore/5782_G1_IN_S7_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/5782_G1_IN_S7_R3_001_val_2.fq.gz
+      prefix:  5782_G1_IN_S7
+      outdir:  ./bams/unmapped-w/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 8054462
+
+
+# --------------------------------------
+   Iteration:  5
+   File base:  ./fastqs/trim_galore/5782_G1_IP_S3
+          r1:  ./fastqs/trim_galore/5782_G1_IP_S3_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/5782_G1_IP_S3_R3_001_val_2.fq.gz
+      prefix:  5782_G1_IP_S3
+      outdir:  ./bams/unmapped-w/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 8054463
+
+
+# --------------------------------------
+   Iteration:  6
+   File base:  ./fastqs/trim_galore/5782_Q_IN_S8
+          r1:  ./fastqs/trim_galore/5782_Q_IN_S8_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/5782_Q_IN_S8_R3_001_val_2.fq.gz
+      prefix:  5782_Q_IN_S8
+      outdir:  ./bams/unmapped-w/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 8054464
+
+
+# --------------------------------------
+   Iteration:  7
+   File base:  ./fastqs/trim_galore/5782_Q_IP_S4
+          r1:  ./fastqs/trim_galore/5782_Q_IP_S4_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/5782_Q_IP_S4_R3_001_val_2.fq.gz
+      prefix:  5782_Q_IP_S4
+      outdir:  ./bams/unmapped-w/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 8054465
+
+
+# --------------------------------------
+   Iteration:  8
+   File base:  ./fastqs/trim_galore/CW10_7747_8day_Q_IN_S5
+          r1:  ./fastqs/trim_galore/CW10_7747_8day_Q_IN_S5_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/CW10_7747_8day_Q_IN_S5_R3_001_val_2.fq.gz
+      prefix:  CW10_7747_8day_Q_IN_S5
+      outdir:  ./bams/unmapped-w/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 8054466
+
+
+# --------------------------------------
+   Iteration:  9
+   File base:  ./fastqs/trim_galore/CW10_7747_8day_Q_PD_S11
+          r1:  ./fastqs/trim_galore/CW10_7747_8day_Q_PD_S11_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/CW10_7747_8day_Q_PD_S11_R3_001_val_2.fq.gz
+      prefix:  CW10_7747_8day_Q_PD_S11
+      outdir:  ./bams/unmapped-w/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 8054467
+
+
+# --------------------------------------
+   Iteration:  10
+   File base:  ./fastqs/trim_galore/CW12_7748_8day_Q_IN_S6
+          r1:  ./fastqs/trim_galore/CW12_7748_8day_Q_IN_S6_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/CW12_7748_8day_Q_IN_S6_R3_001_val_2.fq.gz
+      prefix:  CW12_7748_8day_Q_IN_S6
+      outdir:  ./bams/unmapped-w/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 8054468
+
+
+# --------------------------------------
+   Iteration:  11
+   File base:  ./fastqs/trim_galore/CW12_7748_8day_Q_PD_S12
+          r1:  ./fastqs/trim_galore/CW12_7748_8day_Q_PD_S12_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/CW12_7748_8day_Q_PD_S12_R3_001_val_2.fq.gz
+      prefix:  CW12_7748_8day_Q_PD_S12
+      outdir:  ./bams/unmapped-w/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 8054469
+
+
+# --------------------------------------
+   Iteration:  12
+   File base:  ./fastqs/trim_galore/CW2_5781_8day_Q_IN_S1
+          r1:  ./fastqs/trim_galore/CW2_5781_8day_Q_IN_S1_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/CW2_5781_8day_Q_IN_S1_R3_001_val_2.fq.gz
+      prefix:  CW2_5781_8day_Q_IN_S1
+      outdir:  ./bams/unmapped-w/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 8054470
+
+
+# --------------------------------------
+   Iteration:  13
+   File base:  ./fastqs/trim_galore/CW2_5781_8day_Q_PD_S7
+          r1:  ./fastqs/trim_galore/CW2_5781_8day_Q_PD_S7_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/CW2_5781_8day_Q_PD_S7_R3_001_val_2.fq.gz
+      prefix:  CW2_5781_8day_Q_PD_S7
+      outdir:  ./bams/unmapped-w/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 8054471
+
+
+# --------------------------------------
+   Iteration:  14
+   File base:  ./fastqs/trim_galore/CW4_5782_8day_Q_IN_S2
+          r1:  ./fastqs/trim_galore/CW4_5782_8day_Q_IN_S2_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/CW4_5782_8day_Q_IN_S2_R3_001_val_2.fq.gz
+      prefix:  CW4_5782_8day_Q_IN_S2
+      outdir:  ./bams/unmapped-w/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 8054472
+
+
+# --------------------------------------
+   Iteration:  15
+   File base:  ./fastqs/trim_galore/CW4_5782_8day_Q_PD_S8
+          r1:  ./fastqs/trim_galore/CW4_5782_8day_Q_PD_S8_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/CW4_5782_8day_Q_PD_S8_R3_001_val_2.fq.gz
+      prefix:  CW4_5782_8day_Q_PD_S8
+      outdir:  ./bams/unmapped-w/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 8054473
+
+
+# --------------------------------------
+   Iteration:  16
+   File base:  ./fastqs/trim_galore/CW6_7078_8day_Q_IN_S3
+          r1:  ./fastqs/trim_galore/CW6_7078_8day_Q_IN_S3_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/CW6_7078_8day_Q_IN_S3_R3_001_val_2.fq.gz
+      prefix:  CW6_7078_8day_Q_IN_S3
+      outdir:  ./bams/unmapped-w/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 8054474
+
+
+# --------------------------------------
+   Iteration:  17
+   File base:  ./fastqs/trim_galore/CW6_7078_8day_Q_PD_S9
+          r1:  ./fastqs/trim_galore/CW6_7078_8day_Q_PD_S9_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/CW6_7078_8day_Q_PD_S9_R3_001_val_2.fq.gz
+      prefix:  CW6_7078_8day_Q_PD_S9
+      outdir:  ./bams/unmapped-w/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 8054475
+
+
+# --------------------------------------
+   Iteration:  18
+   File base:  ./fastqs/trim_galore/CW8_7079_8day_Q_IN_S4
+          r1:  ./fastqs/trim_galore/CW8_7079_8day_Q_IN_S4_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/CW8_7079_8day_Q_IN_S4_R3_001_val_2.fq.gz
+      prefix:  CW8_7079_8day_Q_IN_S4
+      outdir:  ./bams/unmapped-w/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 8054476
+
+
+# --------------------------------------
+   Iteration:  19
+   File base:  ./fastqs/trim_galore/CW8_7079_8day_Q_PD_S10
+          r1:  ./fastqs/trim_galore/CW8_7079_8day_Q_PD_S10_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/CW8_7079_8day_Q_PD_S10_R3_001_val_2.fq.gz
+      prefix:  CW8_7079_8day_Q_PD_S10
+      outdir:  ./bams/unmapped-w/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 8054477
+
+
+# --------------------------------------
+   Iteration:  20
+   File base:  ./fastqs/trim_galore/SAMPLE_BM10_DSp48_5781_S22
+          r1:  ./fastqs/trim_galore/SAMPLE_BM10_DSp48_5781_S22_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/SAMPLE_BM10_DSp48_5781_S22_R3_001_val_2.fq.gz
+      prefix:  SAMPLE_BM10_DSp48_5781_S22
+      outdir:  ./bams/unmapped-w/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 8054478
+
+
+# --------------------------------------
+   Iteration:  21
+   File base:  ./fastqs/trim_galore/SAMPLE_BM11_DSp48_7080_S23
+          r1:  ./fastqs/trim_galore/SAMPLE_BM11_DSp48_7080_S23_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/SAMPLE_BM11_DSp48_7080_S23_R3_001_val_2.fq.gz
+      prefix:  SAMPLE_BM11_DSp48_7080_S23
+      outdir:  ./bams/unmapped-w/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 8054479
+
+
+# --------------------------------------
+   Iteration:  22
+   File base:  ./fastqs/trim_galore/SAMPLE_BM1_DSm2_5781_S13
+          r1:  ./fastqs/trim_galore/SAMPLE_BM1_DSm2_5781_S13_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/SAMPLE_BM1_DSm2_5781_S13_R3_001_val_2.fq.gz
+      prefix:  SAMPLE_BM1_DSm2_5781_S13
+      outdir:  ./bams/unmapped-w/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 8054480
+
+
+# --------------------------------------
+   Iteration:  23
+   File base:  ./fastqs/trim_galore/SAMPLE_BM2_DSm2_7080_S14
+          r1:  ./fastqs/trim_galore/SAMPLE_BM2_DSm2_7080_S14_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/SAMPLE_BM2_DSm2_7080_S14_R3_001_val_2.fq.gz
+      prefix:  SAMPLE_BM2_DSm2_7080_S14
+      outdir:  ./bams/unmapped-w/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 8054481
+
+
+# --------------------------------------
+   Iteration:  24
+   File base:  ./fastqs/trim_galore/SAMPLE_BM3_DSm2_7079_S15
+          r1:  ./fastqs/trim_galore/SAMPLE_BM3_DSm2_7079_S15_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/SAMPLE_BM3_DSm2_7079_S15_R3_001_val_2.fq.gz
+      prefix:  SAMPLE_BM3_DSm2_7079_S15
+      outdir:  ./bams/unmapped-w/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 8054482
+
+
+# --------------------------------------
+   Iteration:  25
+   File base:  ./fastqs/trim_galore/SAMPLE_BM4_DSp2_5781_S16
+          r1:  ./fastqs/trim_galore/SAMPLE_BM4_DSp2_5781_S16_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/SAMPLE_BM4_DSp2_5781_S16_R3_001_val_2.fq.gz
+      prefix:  SAMPLE_BM4_DSp2_5781_S16
+      outdir:  ./bams/unmapped-w/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 8054483
+
+
+# --------------------------------------
+   Iteration:  26
+   File base:  ./fastqs/trim_galore/SAMPLE_BM5_DSp2_7080_S17
+          r1:  ./fastqs/trim_galore/SAMPLE_BM5_DSp2_7080_S17_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/SAMPLE_BM5_DSp2_7080_S17_R3_001_val_2.fq.gz
+      prefix:  SAMPLE_BM5_DSp2_7080_S17
+      outdir:  ./bams/unmapped-w/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 8054484
+
+
+# --------------------------------------
+   Iteration:  27
+   File base:  ./fastqs/trim_galore/SAMPLE_BM6_DSp2_7079_S18
+          r1:  ./fastqs/trim_galore/SAMPLE_BM6_DSp2_7079_S18_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/SAMPLE_BM6_DSp2_7079_S18_R3_001_val_2.fq.gz
+      prefix:  SAMPLE_BM6_DSp2_7079_S18
+      outdir:  ./bams/unmapped-w/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 8054485
+
+
+# --------------------------------------
+   Iteration:  28
+   File base:  ./fastqs/trim_galore/SAMPLE_BM7_DSp24_5781_S19
+          r1:  ./fastqs/trim_galore/SAMPLE_BM7_DSp24_5781_S19_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/SAMPLE_BM7_DSp24_5781_S19_R3_001_val_2.fq.gz
+      prefix:  SAMPLE_BM7_DSp24_5781_S19
+      outdir:  ./bams/unmapped-w/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 8054486
+
+
+# --------------------------------------
+   Iteration:  29
+   File base:  ./fastqs/trim_galore/SAMPLE_BM8_DSp24_7080_S20
+          r1:  ./fastqs/trim_galore/SAMPLE_BM8_DSp24_7080_S20_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/SAMPLE_BM8_DSp24_7080_S20_R3_001_val_2.fq.gz
+      prefix:  SAMPLE_BM8_DSp24_7080_S20
+      outdir:  ./bams/unmapped-w/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 8054487
+
+
+# --------------------------------------
+   Iteration:  30
+   File base:  ./fastqs/trim_galore/SAMPLE_BM9_DSp24_7079_S21
+          r1:  ./fastqs/trim_galore/SAMPLE_BM9_DSp24_7079_S21_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/SAMPLE_BM9_DSp24_7079_S21_R3_001_val_2.fq.gz
+      prefix:  SAMPLE_BM9_DSp24_7079_S21
+      outdir:  ./bams/unmapped-w/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 8054488
+
+
+# --------------------------------------
+   Iteration:  31
+   File base:  ./fastqs/trim_galore/SAMPLE_Bp10_DSp48_5782_S10
+          r1:  ./fastqs/trim_galore/SAMPLE_Bp10_DSp48_5782_S10_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/SAMPLE_Bp10_DSp48_5782_S10_R3_001_val_2.fq.gz
+      prefix:  SAMPLE_Bp10_DSp48_5782_S10
+      outdir:  ./bams/unmapped-w/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 8054489
+
+
+# --------------------------------------
+   Iteration:  32
+   File base:  ./fastqs/trim_galore/SAMPLE_Bp11_DSp48_7081_S11
+          r1:  ./fastqs/trim_galore/SAMPLE_Bp11_DSp48_7081_S11_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/SAMPLE_Bp11_DSp48_7081_S11_R3_001_val_2.fq.gz
+      prefix:  SAMPLE_Bp11_DSp48_7081_S11
+      outdir:  ./bams/unmapped-w/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 8054490
+
+
+# --------------------------------------
+   Iteration:  33
+   File base:  ./fastqs/trim_galore/SAMPLE_Bp12_DSp48_7078_S12
+          r1:  ./fastqs/trim_galore/SAMPLE_Bp12_DSp48_7078_S12_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/SAMPLE_Bp12_DSp48_7078_S12_R3_001_val_2.fq.gz
+      prefix:  SAMPLE_Bp12_DSp48_7078_S12
+      outdir:  ./bams/unmapped-w/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 8054491
+
+
+# --------------------------------------
+   Iteration:  34
+   File base:  ./fastqs/trim_galore/SAMPLE_Bp1_DSm2_5782_S1
+          r1:  ./fastqs/trim_galore/SAMPLE_Bp1_DSm2_5782_S1_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/SAMPLE_Bp1_DSm2_5782_S1_R3_001_val_2.fq.gz
+      prefix:  SAMPLE_Bp1_DSm2_5782_S1
+      outdir:  ./bams/unmapped-w/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 8054492
+
+
+# --------------------------------------
+   Iteration:  35
+   File base:  ./fastqs/trim_galore/SAMPLE_Bp2_DSm2_7081_S2
+          r1:  ./fastqs/trim_galore/SAMPLE_Bp2_DSm2_7081_S2_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/SAMPLE_Bp2_DSm2_7081_S2_R3_001_val_2.fq.gz
+      prefix:  SAMPLE_Bp2_DSm2_7081_S2
+      outdir:  ./bams/unmapped-w/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 8054493
+
+
+# --------------------------------------
+   Iteration:  36
+   File base:  ./fastqs/trim_galore/SAMPLE_Bp3_DSm2_7078_S3
+          r1:  ./fastqs/trim_galore/SAMPLE_Bp3_DSm2_7078_S3_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/SAMPLE_Bp3_DSm2_7078_S3_R3_001_val_2.fq.gz
+      prefix:  SAMPLE_Bp3_DSm2_7078_S3
+      outdir:  ./bams/unmapped-w/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 8054494
+
+
+# --------------------------------------
+   Iteration:  37
+   File base:  ./fastqs/trim_galore/SAMPLE_Bp4_DSp2_5782_S4
+          r1:  ./fastqs/trim_galore/SAMPLE_Bp4_DSp2_5782_S4_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/SAMPLE_Bp4_DSp2_5782_S4_R3_001_val_2.fq.gz
+      prefix:  SAMPLE_Bp4_DSp2_5782_S4
+      outdir:  ./bams/unmapped-w/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 8054495
+
+
+# --------------------------------------
+   Iteration:  38
+   File base:  ./fastqs/trim_galore/SAMPLE_Bp5_DSp2_7081_S5
+          r1:  ./fastqs/trim_galore/SAMPLE_Bp5_DSp2_7081_S5_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/SAMPLE_Bp5_DSp2_7081_S5_R3_001_val_2.fq.gz
+      prefix:  SAMPLE_Bp5_DSp2_7081_S5
+      outdir:  ./bams/unmapped-w/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 8054496
+
+
+# --------------------------------------
+   Iteration:  39
+   File base:  ./fastqs/trim_galore/SAMPLE_Bp6_DSp2_7078_S6
+          r1:  ./fastqs/trim_galore/SAMPLE_Bp6_DSp2_7078_S6_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/SAMPLE_Bp6_DSp2_7078_S6_R3_001_val_2.fq.gz
+      prefix:  SAMPLE_Bp6_DSp2_7078_S6
+      outdir:  ./bams/unmapped-w/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 8054497
+
+
+# --------------------------------------
+   Iteration:  40
+   File base:  ./fastqs/trim_galore/SAMPLE_Bp7_DSp24_5782_S7
+          r1:  ./fastqs/trim_galore/SAMPLE_Bp7_DSp24_5782_S7_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/SAMPLE_Bp7_DSp24_5782_S7_R3_001_val_2.fq.gz
+      prefix:  SAMPLE_Bp7_DSp24_5782_S7
+      outdir:  ./bams/unmapped-w/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 8054498
+
+
+# --------------------------------------
+   Iteration:  41
+   File base:  ./fastqs/trim_galore/SAMPLE_Bp8_DSp24_7081_S8
+          r1:  ./fastqs/trim_galore/SAMPLE_Bp8_DSp24_7081_S8_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/SAMPLE_Bp8_DSp24_7081_S8_R3_001_val_2.fq.gz
+      prefix:  SAMPLE_Bp8_DSp24_7081_S8
+      outdir:  ./bams/unmapped-w/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 8054499
+
+
+# --------------------------------------
+   Iteration:  42
+   File base:  ./fastqs/trim_galore/SAMPLE_Bp9_DSp24_7078_S9
+          r1:  ./fastqs/trim_galore/SAMPLE_Bp9_DSp24_7078_S9_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/SAMPLE_Bp9_DSp24_7078_S9_R3_001_val_2.fq.gz
+      prefix:  SAMPLE_Bp9_DSp24_7078_S9
+      outdir:  ./bams/unmapped-w/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 8054500
+
+
+# --------------------------------------
+   Iteration:  43
+   File base:  ./fastqs/trim_galore/Sample_CT10_7718_pIAA_Q_Nascent_S5
+          r1:  ./fastqs/trim_galore/Sample_CT10_7718_pIAA_Q_Nascent_S5_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/Sample_CT10_7718_pIAA_Q_Nascent_S5_R3_001_val_2.fq.gz
+      prefix:  Sample_CT10_7718_pIAA_Q_Nascent_S5
+      outdir:  ./bams/unmapped-w/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 8054501
+
+
+# --------------------------------------
+   Iteration:  44
+   File base:  ./fastqs/trim_galore/Sample_CT10_7718_pIAA_Q_SteadyState_S10
+          r1:  ./fastqs/trim_galore/Sample_CT10_7718_pIAA_Q_SteadyState_S10_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/Sample_CT10_7718_pIAA_Q_SteadyState_S10_R3_001_val_2.fq.gz
+      prefix:  Sample_CT10_7718_pIAA_Q_SteadyState_S10
+      outdir:  ./bams/unmapped-w/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 8054502
+
+
+# --------------------------------------
+   Iteration:  45
+   File base:  ./fastqs/trim_galore/Sample_CT2_6125_pIAA_Q_Nascent_S1
+          r1:  ./fastqs/trim_galore/Sample_CT2_6125_pIAA_Q_Nascent_S1_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/Sample_CT2_6125_pIAA_Q_Nascent_S1_R3_001_val_2.fq.gz
+      prefix:  Sample_CT2_6125_pIAA_Q_Nascent_S1
+      outdir:  ./bams/unmapped-w/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 8054503
+
+
+# --------------------------------------
+   Iteration:  46
+   File base:  ./fastqs/trim_galore/Sample_CT2_6125_pIAA_Q_SteadyState_S6
+          r1:  ./fastqs/trim_galore/Sample_CT2_6125_pIAA_Q_SteadyState_S6_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/Sample_CT2_6125_pIAA_Q_SteadyState_S6_R3_001_val_2.fq.gz
+      prefix:  Sample_CT2_6125_pIAA_Q_SteadyState_S6
+      outdir:  ./bams/unmapped-w/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 8054504
+
+
+# --------------------------------------
+   Iteration:  47
+   File base:  ./fastqs/trim_galore/Sample_CT4_6126_pIAA_Q_Nascent_S2
+          r1:  ./fastqs/trim_galore/Sample_CT4_6126_pIAA_Q_Nascent_S2_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/Sample_CT4_6126_pIAA_Q_Nascent_S2_R3_001_val_2.fq.gz
+      prefix:  Sample_CT4_6126_pIAA_Q_Nascent_S2
+      outdir:  ./bams/unmapped-w/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 8054505
+
+
+# --------------------------------------
+   Iteration:  48
+   File base:  ./fastqs/trim_galore/Sample_CT4_6126_pIAA_Q_SteadyState_S7
+          r1:  ./fastqs/trim_galore/Sample_CT4_6126_pIAA_Q_SteadyState_S7_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/Sample_CT4_6126_pIAA_Q_SteadyState_S7_R3_001_val_2.fq.gz
+      prefix:  Sample_CT4_6126_pIAA_Q_SteadyState_S7
+      outdir:  ./bams/unmapped-w/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 8054506
+
+
+# --------------------------------------
+   Iteration:  49
+   File base:  ./fastqs/trim_galore/Sample_CT6_7714_pIAA_Q_Nascent_S3
+          r1:  ./fastqs/trim_galore/Sample_CT6_7714_pIAA_Q_Nascent_S3_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/Sample_CT6_7714_pIAA_Q_Nascent_S3_R3_001_val_2.fq.gz
+      prefix:  Sample_CT6_7714_pIAA_Q_Nascent_S3
+      outdir:  ./bams/unmapped-w/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 8054507
+
+
+# --------------------------------------
+   Iteration:  50
+   File base:  ./fastqs/trim_galore/Sample_CT6_7714_pIAA_Q_SteadyState_S8
+          r1:  ./fastqs/trim_galore/Sample_CT6_7714_pIAA_Q_SteadyState_S8_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/Sample_CT6_7714_pIAA_Q_SteadyState_S8_R3_001_val_2.fq.gz
+      prefix:  Sample_CT6_7714_pIAA_Q_SteadyState_S8
+      outdir:  ./bams/unmapped-w/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 8054508
+
+
+# --------------------------------------
+   Iteration:  51
+   File base:  ./fastqs/trim_galore/Sample_CT8_7716_pIAA_Q_Nascent_S4
+          r1:  ./fastqs/trim_galore/Sample_CT8_7716_pIAA_Q_Nascent_S4_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/Sample_CT8_7716_pIAA_Q_Nascent_S4_R3_001_val_2.fq.gz
+      prefix:  Sample_CT8_7716_pIAA_Q_Nascent_S4
+      outdir:  ./bams/unmapped-w/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 8054510
+
+
+# --------------------------------------
+   Iteration:  52
+   File base:  ./fastqs/trim_galore/Sample_CT8_7716_pIAA_Q_SteadyState_S9
+          r1:  ./fastqs/trim_galore/Sample_CT8_7716_pIAA_Q_SteadyState_S9_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/Sample_CT8_7716_pIAA_Q_SteadyState_S9_R3_001_val_2.fq.gz
+      prefix:  Sample_CT8_7716_pIAA_Q_SteadyState_S9
+      outdir:  ./bams/unmapped-w/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 8054511
+
+
+# --------------------------------------
+   Iteration:  53
+   File base:  ./fastqs/trim_galore/Sample_CU11_5782_Q_Nascent_S11
+          r1:  ./fastqs/trim_galore/Sample_CU11_5782_Q_Nascent_S11_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/Sample_CU11_5782_Q_Nascent_S11_R3_001_val_2.fq.gz
+      prefix:  Sample_CU11_5782_Q_Nascent_S11
+      outdir:  ./bams/unmapped-w/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 8054512
+
+
+# --------------------------------------
+   Iteration:  54
+   File base:  ./fastqs/trim_galore/Sample_CU12_5782_Q_SteadyState_S12
+          r1:  ./fastqs/trim_galore/Sample_CU12_5782_Q_SteadyState_S12_R1_001_val_1.fq.gz
+          r2:  ./fastqs/trim_galore/Sample_CU12_5782_Q_SteadyState_S12_R3_001_val_2.fq.gz
+      prefix:  Sample_CU12_5782_Q_SteadyState_S12
+      outdir:  ./bams/unmapped-w/SC_KL_20S
+      genome:  /home/kalavatt/genomes/combined_SC_KL_20S/STAR
+multimappers:  10
+
+Submitted batch job 8054513
+```
 
 <a id="clean-up-results-from-star-alignment-then-index-bams"></a>
 ### Clean up results from `STAR` alignment, then index `bam`s
@@ -11543,11 +12226,20 @@ Submitted batch job 7998956
 <details>
 <summary><i>Code, notes: Clean up/rename results of `STAR` alignment</i></summary>
 
+Moving forward, perform the following steps:
+1. `rm -r *._STARtmp`
+2. `rename 's/.Log./.multi-10.Log./g' *`
+3. `rename 's/.SJ.out.tab/.multi-10.SJ.tab/g' *`
+4. `rename 's/.Aligned.sortedByCoord././g' *`
+5. `rename 's/.out.bam/.multi-10.bam/g' *`
+
+<a id="in-bamsunmapped-rmsc_kl_20s"></a>
+##### In `bams/unmapped-rm/SC_KL_20S`
 ```bash
 #!/bin/bash
 #DONTRUN #CONTINUE
 
-cd bams/SC_KL_20S \
+cd bams/unmapped-rm/SC_KL_20S \
 	|| echo "cd'ing failed; check on this..."
 
 #  Working things out...
@@ -11567,12 +12259,33 @@ rename 's/.Aligned.sortedByCoord././g' *
 
 ```
 
-Moving forward, perform the following steps:
-1. `rm -r *._STARtmp`
-2. `rename 's/.Log./.multi-10.Log./g' *`
-3. `rename 's/.SJ.out.tab/.multi-10.SJ.tab/g' *`
-4. `rename 's/.Aligned.sortedByCoord././g' *`
-5. `rename 's/.out.bam/.multi-10.bam/g' *`
+<a id="in-bamsunmapped-wsc_kl_20s"></a>
+##### In `bams/unmapped-w/SC_KL_20S`
+`#PICKUPHERE` `#INPROGRESS`
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+cd bams/unmapped-w/SC_KL_20S \
+	|| echo "cd'ing failed; check on this..."
+
+#  Working things out...
+rm -r *._STARtmp
+
+rename -n 's/.out./.multi-10./g' *
+rename 's/.out./.multi-10./g' *
+
+rename -n 's/.Log./.multi-10.Log./g' *
+rename 's/.Log./.multi-10.Log./g' *
+
+rename -n 's/.SJ.multi-10.tab/.multi-10.SJ.tab/g' *
+rename 's/.SJ.multi-10.tab/.multi-10.SJ.tab/g' *
+
+rename -n 's/.Aligned.sortedByCoord././g' *
+rename 's/.Aligned.sortedByCoord././g' *
+
+```
+
 </details>
 <br />
 
@@ -12007,7 +12720,7 @@ What does this mean? The answer from Alex Dobin, author of `STAR`, is [here](htt
 #DONTRUN #CONTINUE
 
 pwd
-# /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0115/bams/SC_KL_20S
+# /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0115/bams/unmapped-rm/SC_KL_20S
 
 if [[ -f warnings-alignTranscriptsPerReadNmax.txt ]]; then
 	rm warnings_alignTranscriptsPerReadNmax.txt
@@ -12150,7 +12863,7 @@ done < <(\
 <a id="use-a-heredoc-to-write-the-script-submit_samtools-indexsh"></a>
 #### Use a `HEREDOC` to write the script, `submit_samtools-index.sh`
 <details>
-<summary><i>Code: Use a HEREDOC to write the script, submit_samtools-index.s</i></summary>
+<summary><i>Code: Use a HEREDOC to write the script, submit_samtools-index.sh</i></summary>
 
 ```bash
 #!/bin/bash
@@ -12219,14 +12932,12 @@ done
 
 Submitted batch job 8010831
 
-
 # --------------------------------------
    Iteration:  1
         File:  ./bams/unmapped-rm/SC_KL_20S/5781_G1_IP_S1.multi-10.bam
       outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010832
-
 
 # --------------------------------------
    Iteration:  2
@@ -12235,14 +12946,12 @@ Submitted batch job 8010832
 
 Submitted batch job 8010833
 
-
 # --------------------------------------
    Iteration:  3
         File:  ./bams/unmapped-rm/SC_KL_20S/5781_Q_IP_S2.multi-10.bam
       outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010834
-
 
 # --------------------------------------
    Iteration:  4
@@ -12251,14 +12960,12 @@ Submitted batch job 8010834
 
 Submitted batch job 8010835
 
-
 # --------------------------------------
    Iteration:  5
         File:  ./bams/unmapped-rm/SC_KL_20S/5782_G1_IP_S3.multi-10.bam
       outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010836
-
 
 # --------------------------------------
    Iteration:  6
@@ -12267,14 +12974,12 @@ Submitted batch job 8010836
 
 Submitted batch job 8010837
 
-
 # --------------------------------------
    Iteration:  7
         File:  ./bams/unmapped-rm/SC_KL_20S/5782_Q_IP_S4.multi-10.bam
       outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010838
-
 
 # --------------------------------------
    Iteration:  8
@@ -12283,14 +12988,12 @@ Submitted batch job 8010838
 
 Submitted batch job 8010839
 
-
 # --------------------------------------
    Iteration:  9
         File:  ./bams/unmapped-rm/SC_KL_20S/CW10_7747_8day_Q_PD_S11.multi-10.bam
       outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010840
-
 
 # --------------------------------------
    Iteration:  10
@@ -12299,14 +13002,12 @@ Submitted batch job 8010840
 
 Submitted batch job 8010841
 
-
 # --------------------------------------
    Iteration:  11
         File:  ./bams/unmapped-rm/SC_KL_20S/CW12_7748_8day_Q_PD_S12.multi-10.bam
       outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010842
-
 
 # --------------------------------------
    Iteration:  12
@@ -12315,14 +13016,12 @@ Submitted batch job 8010842
 
 Submitted batch job 8010843
 
-
 # --------------------------------------
    Iteration:  13
         File:  ./bams/unmapped-rm/SC_KL_20S/CW2_5781_8day_Q_PD_S7.multi-10.bam
       outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010844
-
 
 # --------------------------------------
    Iteration:  14
@@ -12331,14 +13030,12 @@ Submitted batch job 8010844
 
 Submitted batch job 8010845
 
-
 # --------------------------------------
    Iteration:  15
         File:  ./bams/unmapped-rm/SC_KL_20S/CW4_5782_8day_Q_PD_S8.multi-10.bam
       outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010846
-
 
 # --------------------------------------
    Iteration:  16
@@ -12347,14 +13044,12 @@ Submitted batch job 8010846
 
 Submitted batch job 8010847
 
-
 # --------------------------------------
    Iteration:  17
         File:  ./bams/unmapped-rm/SC_KL_20S/CW6_7078_8day_Q_PD_S9.multi-10.bam
       outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010848
-
 
 # --------------------------------------
    Iteration:  18
@@ -12363,14 +13058,12 @@ Submitted batch job 8010848
 
 Submitted batch job 8010849
 
-
 # --------------------------------------
    Iteration:  19
         File:  ./bams/unmapped-rm/SC_KL_20S/CW8_7079_8day_Q_PD_S10.multi-10.bam
       outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010850
-
 
 # --------------------------------------
    Iteration:  20
@@ -12379,14 +13072,12 @@ Submitted batch job 8010850
 
 Submitted batch job 8010851
 
-
 # --------------------------------------
    Iteration:  21
         File:  ./bams/unmapped-rm/SC_KL_20S/SAMPLE_BM11_DSp48_7080_S23.multi-10.bam
       outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010852
-
 
 # --------------------------------------
    Iteration:  22
@@ -12395,14 +13086,12 @@ Submitted batch job 8010852
 
 Submitted batch job 8010853
 
-
 # --------------------------------------
    Iteration:  23
         File:  ./bams/unmapped-rm/SC_KL_20S/SAMPLE_BM2_DSm2_7080_S14.multi-10.bam
       outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010854
-
 
 # --------------------------------------
    Iteration:  24
@@ -12411,14 +13100,12 @@ Submitted batch job 8010854
 
 Submitted batch job 8010855
 
-
 # --------------------------------------
    Iteration:  25
         File:  ./bams/unmapped-rm/SC_KL_20S/SAMPLE_BM4_DSp2_5781_S16.multi-10.bam
       outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010856
-
 
 # --------------------------------------
    Iteration:  26
@@ -12427,14 +13114,12 @@ Submitted batch job 8010856
 
 Submitted batch job 8010857
 
-
 # --------------------------------------
    Iteration:  27
         File:  ./bams/unmapped-rm/SC_KL_20S/SAMPLE_BM6_DSp2_7079_S18.multi-10.bam
       outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010858
-
 
 # --------------------------------------
    Iteration:  28
@@ -12443,14 +13128,12 @@ Submitted batch job 8010858
 
 Submitted batch job 8010859
 
-
 # --------------------------------------
    Iteration:  29
         File:  ./bams/unmapped-rm/SC_KL_20S/SAMPLE_BM8_DSp24_7080_S20.multi-10.bam
       outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010860
-
 
 # --------------------------------------
    Iteration:  30
@@ -12459,14 +13142,12 @@ Submitted batch job 8010860
 
 Submitted batch job 8010861
 
-
 # --------------------------------------
    Iteration:  31
         File:  ./bams/unmapped-rm/SC_KL_20S/SAMPLE_Bp10_DSp48_5782_S10.multi-10.bam
       outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010862
-
 
 # --------------------------------------
    Iteration:  32
@@ -12475,14 +13156,12 @@ Submitted batch job 8010862
 
 Submitted batch job 8010863
 
-
 # --------------------------------------
    Iteration:  33
         File:  ./bams/unmapped-rm/SC_KL_20S/SAMPLE_Bp12_DSp48_7078_S12.multi-10.bam
       outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010864
-
 
 # --------------------------------------
    Iteration:  34
@@ -12491,14 +13170,12 @@ Submitted batch job 8010864
 
 Submitted batch job 8010865
 
-
 # --------------------------------------
    Iteration:  35
         File:  ./bams/unmapped-rm/SC_KL_20S/SAMPLE_Bp2_DSm2_7081_S2.multi-10.bam
       outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010866
-
 
 # --------------------------------------
    Iteration:  36
@@ -12507,14 +13184,12 @@ Submitted batch job 8010866
 
 Submitted batch job 8010867
 
-
 # --------------------------------------
    Iteration:  37
         File:  ./bams/unmapped-rm/SC_KL_20S/SAMPLE_Bp4_DSp2_5782_S4.multi-10.bam
       outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010868
-
 
 # --------------------------------------
    Iteration:  38
@@ -12523,14 +13198,12 @@ Submitted batch job 8010868
 
 Submitted batch job 8010869
 
-
 # --------------------------------------
    Iteration:  39
         File:  ./bams/unmapped-rm/SC_KL_20S/SAMPLE_Bp6_DSp2_7078_S6.multi-10.bam
       outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010870
-
 
 # --------------------------------------
    Iteration:  40
@@ -12539,14 +13212,12 @@ Submitted batch job 8010870
 
 Submitted batch job 8010871
 
-
 # --------------------------------------
    Iteration:  41
         File:  ./bams/unmapped-rm/SC_KL_20S/SAMPLE_Bp8_DSp24_7081_S8.multi-10.bam
       outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010872
-
 
 # --------------------------------------
    Iteration:  42
@@ -12555,14 +13226,12 @@ Submitted batch job 8010872
 
 Submitted batch job 8010873
 
-
 # --------------------------------------
    Iteration:  43
         File:  ./bams/unmapped-rm/SC_KL_20S/Sample_CT10_7718_pIAA_Q_Nascent_S5.multi-10.bam
       outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010874
-
 
 # --------------------------------------
    Iteration:  44
@@ -12571,14 +13240,12 @@ Submitted batch job 8010874
 
 Submitted batch job 8010875
 
-
 # --------------------------------------
    Iteration:  45
         File:  ./bams/unmapped-rm/SC_KL_20S/Sample_CT2_6125_pIAA_Q_Nascent_S1.multi-10.bam
       outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010876
-
 
 # --------------------------------------
    Iteration:  46
@@ -12587,14 +13254,12 @@ Submitted batch job 8010876
 
 Submitted batch job 8010877
 
-
 # --------------------------------------
    Iteration:  47
         File:  ./bams/unmapped-rm/SC_KL_20S/Sample_CT4_6126_pIAA_Q_Nascent_S2.multi-10.bam
       outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010878
-
 
 # --------------------------------------
    Iteration:  48
@@ -12603,14 +13268,12 @@ Submitted batch job 8010878
 
 Submitted batch job 8010879
 
-
 # --------------------------------------
    Iteration:  49
         File:  ./bams/unmapped-rm/SC_KL_20S/Sample_CT6_7714_pIAA_Q_Nascent_S3.multi-10.bam
       outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010880
-
 
 # --------------------------------------
    Iteration:  50
@@ -12619,14 +13282,12 @@ Submitted batch job 8010880
 
 Submitted batch job 8010881
 
-
 # --------------------------------------
    Iteration:  51
         File:  ./bams/unmapped-rm/SC_KL_20S/Sample_CT8_7716_pIAA_Q_Nascent_S4.multi-10.bam
       outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010882
-
 
 # --------------------------------------
    Iteration:  52
@@ -12635,14 +13296,12 @@ Submitted batch job 8010882
 
 Submitted batch job 8010883
 
-
 # --------------------------------------
    Iteration:  53
         File:  ./bams/unmapped-rm/SC_KL_20S/Sample_CU11_5782_Q_Nascent_S11.multi-10.bam
       outdir:  ./bams/unmapped-rm/SC_KL_20S
 
 Submitted batch job 8010884
-
 
 # --------------------------------------
    Iteration:  54
@@ -13020,3 +13679,13 @@ done
 
 </details>
 <br />
+<br />
+
+<a id="open-tabs-todo"></a>
+## Open tabs (`#TODO`)
+Open tabs in browser (prior to closing them), morning of 2022-0119
+
+`#2022_transcriptome-construction`
+a. https://rnabio.org/module-02-alignment/0002/06/01/Alignment_QC/
+b. https://multiqc.info/docs/
+c. https://umi-tools.readthedocs.io/en/latest/QUICK_START.html
