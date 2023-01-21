@@ -8,21 +8,22 @@
 <!-- MarkdownTOC -->
 
 1. [Get situated](#get-situated)
-	1. [Insights from troubleshooting and debugging](#insights-from-troubleshooting-and-debugging)
+     1. [Insights from troubleshooting and debugging](#insights-from-troubleshooting-and-debugging)
 1. [Example 1](#example-1)
-	1. [Get situated](#get-situated-1)
-	1. [Make `commandlist`](#make-commandlist)
-	1. [Make `command_array.sh`](#make-command_arraysh)
-		1. [Understanding the contents of `command_array.sh`](#understanding-the-contents-of-command_arraysh)
-	1. [Run `command_array.sh`](#run-command_arraysh)
+     1. [Get situated](#get-situated-1)
+     1. [Make `commandlist`](#make-commandlist)
+     1. [Make `command_array.sh`](#make-command_arraysh)
+          1. [Examine the contents of `command_array.sh`](#examine-the-contents-of-command_arraysh)
+          1. [Understanding the contents of `command_array.sh`](#understanding-the-contents-of-command_arraysh)
+     1. [Run `command_array.sh`](#run-command_arraysh)
 1. [Example 2](#example-2)
 1. [Example 3](#example-3)
-	1. [Get situated](#get-situated-2)
-	1. [Make `analysis.sh`](#make-analysissh)
-	1. [Make `filelist.txt`](#make-filelisttxt)
-		1. [Make the files in `filelist.txt`](#make-the-files-in-filelisttxt)
-	1. [Make `job_array.sh`](#make-job_arraysh)
-	1. [Run `job_array.sh`](#run-job_arraysh)
+     1. [Get situated](#get-situated-2)
+     1. [Make `analysis.sh`](#make-analysissh)
+     1. [Make `filelist.txt`](#make-filelisttxt)
+          1. [Make the files in `filelist.txt`](#make-the-files-in-filelisttxt)
+     1. [Make `job_array.sh`](#make-job_arraysh)
+     1. [Run `job_array.sh`](#run-job_arraysh)
 1. [`#TODO`s, notes, etc.](#todos-notes-etc)
 
 <!-- /MarkdownTOC -->
@@ -137,6 +138,7 @@ sleep 8
 sleep 2
 sleep 6
 """
+
 echo "${contents}" >> "${ex_1}/commandlist"
 sed -i '1d' "${ex_1}/commandlist"
 # head "${ex_1}/commandlist"
@@ -167,6 +169,7 @@ contents="""
 command=\"\$(awk \"NR == \${SLURM_ARRAY_TASK_ID}\" \"${ex_1}/commandlist\")\"
 srun \${command}
 """
+
 echo "${contents}" >> "${ex_1}/command_array.sh"
 sed -i '1d' "${ex_1}/command_array.sh"
 cat -n "${ex_1}/command_array.sh"
@@ -199,6 +202,9 @@ cat -n "${ex_1}/command_array.sh"
 </details>
 <br />
 
+<a id="examine-the-contents-of-command_arraysh"></a>
+#### Examine the contents of `command_array.sh`
+
 <a id="understanding-the-contents-of-command_arraysh"></a>
 #### Understanding the contents of `command_array.sh`
 <details>
@@ -209,7 +215,7 @@ cat -n "${ex_1}/command_array.sh"
 	+ In our case, we want this range to match the number of commands in our "`commandlist`" file.
 - <u>Line 6</u> utilizes one of `SLURM`’s built in variables, called `SLURM_ARRAY_TASK_ID`.
 	+ This accesses the specific task `ID` of the current task in the job array (e.g., `1` for the first task) and can be used like any bash variable.
-	+ In this example, "`sed`" is being used to get the contents of a particular line in the "`commandlist`" file using `SLURM_ARRAY_TASK_ID`.
+	+ In this example, ~~"`sed`"~~ "`awk`" is being used to get the contents of a particular line in the "`commandlist`" file using `SLURM_ARRAY_TASK_ID`.
 	+ For the first task, the "`command`" variable will be "`sleep 5`".
 - <u>Line 3</u> uses a shorthand method of accessing the job array `ID` and array task `ID` and embedding them into the name of the output file.
 	+ The "`%A`" represents the `SLURM_ARRAY_JOB_ID` variable (e.g., `1212985`) and the "`%a`" represents the `SLURM_ARRAY_TASK_ID` variable (e.g., `1`).
@@ -317,6 +323,7 @@ angle <- strtoi(args[3], base=10L)
 area = (1/2)*side_a*side_b*sin(angle*pi/180)
 sprintf(\"The area of a triangle with sides %i and %i with angle %i degrees is %f\", side_a, side_b, angle, area)
 """
+
 echo "${contents}" >> "${ex_2}/area_of_triangle.R"
 sed -i '1d' "${ex_2}/area_of_triangle.R"
 cat -n "${ex_2}/area_of_triangle.R"
@@ -341,6 +348,7 @@ module load R
 # variable angle in degrees between them (Side-Angle-Side)
 srun Rscript ${ex_2}/area_of_triangle.R 5 8 \${SLURM_ARRAY_TASK_ID}
 """
+
 echo "${contents}" >> "${ex_2}/job_array_triangle.sh"
 sed -i '1d' "${ex_2}/job_array_triangle.sh"
 cat -n "${ex_2}/job_array_triangle.sh"
@@ -523,6 +531,7 @@ echo \"\${CHKSUM}\" > \"\${2}/\${BASE}_sum\"
 echo \"Analysis of \${BASE} has been completed at:\"
 date
 """
+
 echo "${contents}" >> "${ex_3}/analysis.sh"
 sed -i '1d' "${ex_3}/analysis.sh"
 chmod 777 "${ex_3}/analysis.sh"
@@ -600,6 +609,7 @@ $(pwd)/${ex_3}/file_3.txt
 $(pwd)/${ex_3}/file_4.txt
 $(pwd)/${ex_3}/file_5.txt
 """
+
 echo "${contents}" >> "${ex_3}/filelist.txt"
 sed -i '1d' "${ex_3}/filelist.txt"
 cat -n "${ex_3}/filelist.txt"
@@ -719,6 +729,7 @@ name=\"\$(
 
 srun \"./${ex_3}/analysis.sh\" \"\${name}\" \"${ex_3}\"
 """
+
 echo "${contents}" >> "${ex_3}/job_array.sh"
 sed -i '1d' "${ex_3}/job_array.sh"
 cat -n "${ex_3}/job_array.sh"

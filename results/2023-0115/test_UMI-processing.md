@@ -9,10 +9,11 @@
 1. [Experiment description](#experiment-description)
 1. [Install `fgbio`](#install-fgbio)
 1. [Try a trial run with `AnnotateBamWithUmis`](#try-a-trial-run-with-annotatebamwithumis)
-	1. [Make a directory for the trial with `AnnotateBamWithUmis`](#make-a-directory-for-the-trial-with-annotatebamwithumis)
-	1. [Locations of datasets](#locations-of-datasets)
-	1. [Set up necessary variables](#set-up-necessary-variables)
-	1. [Run the command](#run-the-command)
+  1. [Make a directory for the trial with `AnnotateBamWithUmis`](#make-a-directory-for-the-trial-with-annotatebamwithumis)
+  1. [Locations of datasets](#locations-of-datasets)
+  1. [Set up necessary variables](#set-up-necessary-variables)
+  1. [Run the command](#run-the-command)
+1. [Open tabs \(`#TODO`\)](#open-tabs-todo)
 
 <!-- /MarkdownTOC -->
 </details>
@@ -338,4 +339,9 @@ fgbio AnnotateBamWithUmis \
     --fastq="${p_fq}/${f_fq}" \
     --output="${p_out}/${f_out}"
 ```
+<br />
+<br />
 
+<a id="open-tabs-todo"></a>
+## Open tabs (`#TODO`)
+https://www.biostars.org/p/357359/#358546

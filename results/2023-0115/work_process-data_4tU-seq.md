@@ -59,9 +59,15 @@
 		1. [Run `submit_star_unmapped-w.sh` on `fq.gz` files](#run-submit_star_unmapped-wsh-on-fqgz-files)
 	1. [Clean up results from `STAR` alignment, then index `bam`s](#clean-up-results-from-star-alignment-then-index-bams)
 		1. [Clean up/rename results of `STAR` alignment](#clean-uprename-results-of-star-alignment)
-			1. [In `bams/unmapped-rm/SC_KL_20S`](#in-bamsunmapped-rmsc_kl_20s)
-			1. [In `bams/unmapped-w/SC_KL_20S`](#in-bamsunmapped-wsc_kl_20s)
+			1. [In `bams/unmapped-rm/SC_KL_20S`...](#in-bamsunmapped-rmsc_kl_20s)
+			1. [In `bams/unmapped-w/SC_KL_20S`...](#in-bamsunmapped-wsc_kl_20s)
 		1. [Check on `*.Log.out` warning messages: "`WARNING: not enough space allocated for transcript.`"](#check-on-logout-warning-messages-warning-not-enough-space-allocated-for-transcript)
+			1. [Code for `bams/unmapped-rm/SC_KL_20S`...](#code-for-bamsunmapped-rmsc_kl_20s)
+			1. [Code for `bams/unmapped-w/SC_KL_20S`...](#code-for-bamsunmapped-wsc_kl_20s)
+			1. [Printed for `bams/unmapped-rm/SC_KL_20S`...](#printed-for-bamsunmapped-rmsc_kl_20s)
+			1. [Printed for `bams/unmapped-w/SC_KL_20S`...](#printed-for-bamsunmapped-wsc_kl_20s)
+	1. [Isolate, examine problematic reads](#isolate-examine-problematic-reads)
+		1. [Rough draft work](#rough-draft-work)
 	1. [Index the `bam`s](#index-the-bams)
 		1. [Get situated](#get-situated-6)
 		1. [Set up necessary variables, get `bam`s of interest into an array](#set-up-necessary-variables-get-bams-of-interest-into-an-array)
@@ -72,7 +78,7 @@
 		1. [Try/troubleshoot a test run with `split_bam_by_species.sh`](#trytroubleshoot-a-test-run-with-split_bam_by_speciessh)
 		1. [Submit jobs to make `bam`s for species-specific alignments](#submit-jobs-to-make-bams-for-species-specific-alignments)
 			1. [Set up necessary variables, get `bam`s of interest into an array](#set-up-necessary-variables-get-bams-of-interest-into-an-array-1)
-			1. [Run `split_bam_by_species.sh` on `bam`s](#run-split_bam_by_speciessh-on-bams)
+			1. [Run `split_bam_by_species.sh` on `bam`s: Trial w/"`SC`"](#run-split_bam_by_speciessh-on-bams-trial-wsc)
 		1. [Create `bam`s w/o *K.lactis* and *20S* alignments: composed of *S. cerevisiae*](#create-bams-wo-klactis-and-20s-alignments-composed-of-s-cerevisiae)
 		1. [Create `bam`s w/o *S. cerevisiae* and *20S* alignments: composed of *K. lactis*](#create-bams-wo-s-cerevisiae-and-20s-alignments-composed-of-k-lactis)
 		1. [Create `bam`s w/o *S. cerevisiae* and *K. lactis* alignments: composed of *20S*](#create-bams-wo-s-cerevisiae-and-k-lactis-alignments-composed-of-20s)
@@ -107,11 +113,11 @@ Some things I have checked so far:
 - I opened up both split and unsplit bams&mdash;splitting script seems to be assigning strand correctly (this is `bam_split_paired_end.sh`) 
 - Additionally, from looking at `bam`s in `IGV`, it doesn't seem like the `7078` `bam` is much bigger than the `7079` `bam`, even though file size indicates they should be different magnitudes 
 - How `bigwig`s are made seems to matter substantially
-	+ When `7078` reverse is made using `CPM` and no filter for read quality, it has very low levels everywhere
-	+ However, when the same `bigwig` is made with `MAPQ` filter of `3` or greater, it has much higher `CPM` across the board 
+    + When `7078` reverse is made using `CPM` and no filter for read quality, it has very low levels everywhere
+    + However, when the same `bigwig` is made with `MAPQ` filter of `3` or greater, it has much higher `CPM` across the board 
 - I have compared `FastQC` for `7078` `R1` and `7079` `R1`
-	+ They look similar with the main issue being lots of 20S virus
-	+ `7078` `R3` does have over representation of "Illumina Single End PCR Primer 1 (97% over 34 bp)", but so does `7079` `R3`&mdash;perhaps trimmomatic would help? I have not looked at `WT`
+    + They look similar with the main issue being lots of 20S virus
+    + `7078` `R3` does have over representation of "Illumina Single End PCR Primer 1 (97% over 34 bp)", but so does `7079` `R3`&mdash;perhaps trimmomatic would help? I have not looked at `WT`
 - <u>Steady state</u> RNA sequencing from `7078` done a year prior had a normal reverse to forward ratio of `1` to `2` (found in `TRF4_SSRNA_April2022`)
 
 My current working hypothesis is that, somewhere in the genome, there are a bunch of low quality reads on the reverse strand, but I have yet to find the region. I am currently running scripts to count reads mapping to each chromosome, and perhaps that will tell me more about what is going on. 
@@ -139,26 +145,26 @@ conda activate Trinity_env
 
 #  cd into '2022_transcriptome-construction/results', e.g.,
 transcriptome && 
-	{
-		cd "results/2023-0115" || echo "cd'ing failed; check on this..."
-	}
+    {
+        cd "results/2023-0115" || echo "cd'ing failed; check on this..."
+    }
 
 if [[ ! -d "2023-0115" ]]; then
-	mkdir -p 2023-0115/notebook
-	# mkdir: created directory '2023-0115'
-	# mkdir: created directory '2023-0115/notebook'
+    mkdir -p 2023-0115/notebook
+    # mkdir: created directory '2023-0115'
+    # mkdir: created directory '2023-0115/notebook'
 
-	mkdir -p 2023-0115/sh_err_out/err_out
-	# mkdir: created directory '2023-0115/sh_err_out'
-	# mkdir: created directory '2023-0115/sh_err_out/err_out'
+    mkdir -p 2023-0115/sh_err_out/err_out
+    # mkdir: created directory '2023-0115/sh_err_out'
+    # mkdir: created directory '2023-0115/sh_err_out/err_out'
 fi
 
 cd 2023-0115 || echo "cd'ing failed; check on this..."
 
 if [[ ! -f README.md ]]; then
-	touch README.md
-	echo "Troubleshooting issues encountered by AG, and general 4tU-seq work too" \
-		>> README.md
+    touch README.md
+    echo "Troubleshooting issues encountered by AG, and general 4tU-seq work too" \
+        >> README.md
 fi
 ```
 </details>
@@ -549,7 +555,7 @@ AGAAAG.<..GGAGIGGGIIGGGGGGGGGGGG.GGGGAGGGGIIGIGGGG
 
 # -------------------------------------
 cd ~/tsukiyamalab/alisong/WTQvsG1/Unaligned_UMI/Project_ccucinot \
-	|| echo "cd'ing failed; check on this..."
+    || echo "cd'ing failed; check on this..."
 
 zcat 5781_G1_IN_S5_R1_001.fastq.gz | wc -l
 # 54893212
@@ -600,7 +606,7 @@ zcat 5781_G1_IN_S5_R3_001.fastq.gz | tail -8
 
 # -------------------------------------
 cd ~/tsukiyamalab/alisong/WTQvsG1/Project_ccucinot/Sample_5781_G1_IN \
-	|| echo "cd'ing failed; check on this..."
+    || echo "cd'ing failed; check on this..."
 
 cat 5781_G1_IN_merged_R1.fastq | wc -l
 # 55955368
@@ -697,72 +703,72 @@ cd "${dir}"
 
 #  20S ------------------------------------------------------------------------
 cd 20S \
-	|| echo "cd'ing failed; check on this..."
+    || echo "cd'ing failed; check on this..."
 
 
 #  rm *.sam files ---------------------
 find . \
-	-type f \
-	-name "*.sam" \
-	-exec \
-		ls -lhaFG {} \;
+    -type f \
+    -name "*.sam" \
+    -exec \
+        ls -lhaFG {} \;
 
 find . \
-	-type f \
-	-name "*.sam" \
-	-exec \
-		rm {} \;
+    -type f \
+    -name "*.sam" \
+    -exec \
+        rm {} \;
 
 find . \
-	-type f \
-	-name "*.sam" \
-	-exec \
-		ls -lhaFG {} \;
+    -type f \
+    -name "*.sam" \
+    -exec \
+        ls -lhaFG {} \;
 
 
 #  Compressed fastqs already? ---------
 find . \
-	-type f \
-	-name "*.fastq.gz" \
-	-exec \
-		ls -lhaFG {} \;
+    -type f \
+    -name "*.fastq.gz" \
+    -exec \
+        ls -lhaFG {} \;
 #  No...
 
 
 #  rm *_merged_R?.fastq files ---------
 find . \
-	-type f \
-	-name "*.fastq" \
-	-exec \
-		ls -lhaFG {} \;
+    -type f \
+    -name "*.fastq" \
+    -exec \
+        ls -lhaFG {} \;
 
 find . \
-	-type f \
-	-name "*_merged_R?.fastq" \
-	-exec \
-		ls -lhaFG {} \;
+    -type f \
+    -name "*_merged_R?.fastq" \
+    -exec \
+        ls -lhaFG {} \;
 
 # find . \
-# 	-type f \
-# 	-name "*_merged_R?.fastq" \
-# 	-exec \
-# 		rm {} \;
+#     -type f \
+#     -name "*_merged_R?.fastq" \
+#     -exec \
+#         rm {} \;
 #NOTE 1/2 Keep the *merged*fastq files b/c the merge operation actually needed
 #NOTE 2/2 to take place
 
 
 #  'core' files from segfaults --------
 find . \
-	-type f \
-	-name "core" \
-	-exec \
-		ls -lhaFG {} \;
+    -type f \
+    -name "core" \
+    -exec \
+        ls -lhaFG {} \;
 
 find . \
-	-type f \
-	-name "core" \
-	-exec \
-		rm {} \;
+    -type f \
+    -name "core" \
+    -exec \
+        rm {} \;
 
 
 #  run pigz, remaining *.fastq files --
@@ -774,22 +780,22 @@ while IFS=" " read -r -d $'\0'; do
     fq_gz+=( "${REPLY}" )
 done < <(\
     find "${dir}" \
-		-type f \
-		-name "*.fastq" \
+        -type f \
+        -name "*.fastq" \
         -print0
 )
 echo_test "${fq_gz[@]}"
 echo "${#fq_gz[@]}"
 
 for i in "${fq_gz[@]}"; do
-	echo "Compressing ${i}..."
-	echo " dirname:  $(dirname "${i}")"
-	echo "basename:  $(basename "${i}")"
-	
-	cd -- "$(dirname "${i}")"
-	pigz -p 32 --force "$(basename "${i}")"
-	
-	echo ""
+    echo "Compressing ${i}..."
+    echo " dirname:  $(dirname "${i}")"
+    echo "basename:  $(basename "${i}")"
+    
+    cd -- "$(dirname "${i}")"
+    pigz -p 32 --force "$(basename "${i}")"
+    
+    echo ""
 done
 #NOTE 1/2 Many segmentation faults; need read/write permissions from AG, then
 #NOTE 2/2 can clean everything up
@@ -1177,63 +1183,63 @@ cd "${dir}"
 
 #  Project_ccucinot -----------------------------------------------------------
 cd Project_ccucinot \
-	|| echo "cd'ing failed; check on this..."
+    || echo "cd'ing failed; check on this..."
 
 
 #  rm *.sam files ---------------------
 find . \
-	-type f \
-	-name "*.sam" \
-	-exec \
-		ls -lhaFG {} \;
+    -type f \
+    -name "*.sam" \
+    -exec \
+        ls -lhaFG {} \;
 
 find . \
-	-type f \
-	-name "*.sam" \
-	-exec \
-		rm {} \;
+    -type f \
+    -name "*.sam" \
+    -exec \
+        rm {} \;
 
 find . \
-	-type f \
-	-name "*.sam" \
-	-exec \
-		ls -lhaFG {} \;
+    -type f \
+    -name "*.sam" \
+    -exec \
+        ls -lhaFG {} \;
 
 
 #  rm *_merged_R?.fastq files ---------
 find . \
-	-type f \
-	-name "*.fastq" \
-	-exec \
-		ls -lhaFG {} \;
+    -type f \
+    -name "*.fastq" \
+    -exec \
+        ls -lhaFG {} \;
 
 find . \
-	-type f \
-	-name "*_merged_R?.fastq" \
-	-exec \
-		ls -lhaFG {} \;
+    -type f \
+    -name "*_merged_R?.fastq" \
+    -exec \
+        ls -lhaFG {} \;
 
 # find . \
-# 	-type f \
-# 	-name "*_merged_R?.fastq" \
-# 	-exec \
-# 		rm {} \;
+#     -type f \
+#     -name "*_merged_R?.fastq" \
+#     -exec \
+#         rm {} \;
 #NOTE 1/2 Keep the *merged*fastq files b/c the merge operation actually needed
 #NOTE 2/2 to take place
 
 
 #  'core' files from segfaults --------
 find . \
-	-type f \
-	-name "core" \
-	-exec \
-		ls -lhaFG {} \;
+    -type f \
+    -name "core" \
+    -exec \
+        ls -lhaFG {} \;
 
 find . \
-	-type f \
-	-name "core" \
-	-exec \
-		rm {} \;
+    -type f \
+    -name "core" \
+    -exec \
+        rm {} \;
 
 
 #  run pigz, remaining *.fastq files --
@@ -1245,22 +1251,22 @@ while IFS=" " read -r -d $'\0'; do
     fq_gz+=( "${REPLY}" )
 done < <(\
     find "${dir}" \
-		-type f \
-		-name "*.fastq" \
+        -type f \
+        -name "*.fastq" \
         -print0
 )
 echo_test "${fq_gz[@]}"
 echo "${#fq_gz[@]}"
 
 for i in "${fq_gz[@]}"; do
-	echo "Compressing ${i}..."
-	echo " dirname:  $(dirname "${i}")"
-	echo "basename:  $(basename "${i}")"
-	
-	cd -- "$(dirname "${i}")"
-	pigz -p 32 --force "$(basename "${i}")"
-	
-	echo ""
+    echo "Compressing ${i}..."
+    echo " dirname:  $(dirname "${i}")"
+    echo "basename:  $(basename "${i}")"
+    
+    cd -- "$(dirname "${i}")"
+    pigz -p 32 --force "$(basename "${i}")"
+    
+    echo ""
 done
 ```
 </details>
@@ -1643,63 +1649,63 @@ cd "${dir}"
 
 #  de_novo_annotation ---------------------------------------------------------
 cd de_novo_annotation \
-	|| echo "cd'ing failed; check on this..."
+    || echo "cd'ing failed; check on this..."
 
 
 #  rm *.sam files ---------------------
 find . \
-	-type f \
-	-name "*.sam" \
-	-exec \
-		ls -lhaFG {} \;
+    -type f \
+    -name "*.sam" \
+    -exec \
+        ls -lhaFG {} \;
 
 find . \
-	-type f \
-	-name "*.sam" \
-	-exec \
-		rm {} \;
+    -type f \
+    -name "*.sam" \
+    -exec \
+        rm {} \;
 
 find . \
-	-type f \
-	-name "*.sam" \
-	-exec \
-		ls -lhaFG {} \;
+    -type f \
+    -name "*.sam" \
+    -exec \
+        ls -lhaFG {} \;
 
 
 #  rm *_merged_R?.fastq files ---------
 find . \
-	-type f \
-	-name "*.fastq" \
-	-exec \
-		ls -lhaFG {} \;
+    -type f \
+    -name "*.fastq" \
+    -exec \
+        ls -lhaFG {} \;
 
 find . \
-	-type f \
-	-name "*_merged_R?.fastq" \
-	-exec \
-		ls -lhaFG {} \;
+    -type f \
+    -name "*_merged_R?.fastq" \
+    -exec \
+        ls -lhaFG {} \;
 
 # find . \
-# 	-type f \
-# 	-name "*_merged_R?.fastq" \
-# 	-exec \
-# 		rm {} \;
+#     -type f \
+#     -name "*_merged_R?.fastq" \
+#     -exec \
+#         rm {} \;
 #NOTE 1/2 Keep the *merged*fastq files b/c the merge operation actually needed
 #NOTE 2/2 to take place
 
 
 #  'core' files from segfaults --------
 find . \
-	-type f \
-	-name "core" \
-	-exec \
-		ls -lhaFG {} \;
+    -type f \
+    -name "core" \
+    -exec \
+        ls -lhaFG {} \;
 
 find . \
-	-type f \
-	-name "core" \
-	-exec \
-		rm {} \;
+    -type f \
+    -name "core" \
+    -exec \
+        rm {} \;
 
 
 #  run pigz, remaining *.fastq files --
@@ -1711,22 +1717,22 @@ while IFS=" " read -r -d $'\0'; do
     fq_gz+=( "${REPLY}" )
 done < <(\
     find "${dir}" \
-		-type f \
-		-name "*.fastq" \
+        -type f \
+        -name "*.fastq" \
         -print0
 )
 echo_test "${fq_gz[@]}"
 echo "${#fq_gz[@]}"
 
 for i in "${fq_gz[@]}"; do
-	echo "Compressing ${i}..."
-	echo " dirname:  $(dirname "${i}")"
-	echo "basename:  $(basename "${i}")"
-	
-	cd -- "$(dirname "${i}")"
-	pigz -p 32 --force "$(basename "${i}")"
-	
-	echo ""
+    echo "Compressing ${i}..."
+    echo " dirname:  $(dirname "${i}")"
+    echo "basename:  $(basename "${i}")"
+    
+    cd -- "$(dirname "${i}")"
+    pigz -p 32 --force "$(basename "${i}")"
+    
+    echo ""
 done
 ```
 </details>
@@ -1760,63 +1766,63 @@ cd "${dir}"
 
 #  Project_ccucinot -----------------------------------------------------------
 cd Project_ccucinot_test \
-	|| echo "cd'ing failed; check on this..."
+    || echo "cd'ing failed; check on this..."
 
 
 #  rm *.sam files ---------------------
 find . \
-	-type f \
-	-name "*.sam" \
-	-exec \
-		ls -lhaFG {} \;
+    -type f \
+    -name "*.sam" \
+    -exec \
+        ls -lhaFG {} \;
 
 find . \
-	-type f \
-	-name "*.sam" \
-	-exec \
-		rm {} \;
+    -type f \
+    -name "*.sam" \
+    -exec \
+        rm {} \;
 
 find . \
-	-type f \
-	-name "*.sam" \
-	-exec \
-		ls -lhaFG {} \;
+    -type f \
+    -name "*.sam" \
+    -exec \
+        ls -lhaFG {} \;
 
 
 #  rm *_merged_R?.fastq files ---------
 find . \
-	-type f \
-	-name "*.fastq" \
-	-exec \
-		ls -lhaFG {} \;
+    -type f \
+    -name "*.fastq" \
+    -exec \
+        ls -lhaFG {} \;
 
 find . \
-	-type f \
-	-name "*_merged_R?.fastq" \
-	-exec \
-		ls -lhaFG {} \;
+    -type f \
+    -name "*_merged_R?.fastq" \
+    -exec \
+        ls -lhaFG {} \;
 
 # find . \
-# 	-type f \
-# 	-name "*_merged_R?.fastq" \
-# 	-exec \
-# 		rm {} \;
+#     -type f \
+#     -name "*_merged_R?.fastq" \
+#     -exec \
+#         rm {} \;
 #NOTE 1/2 Keep the *merged*fastq files b/c the merge operation actually needed
 #NOTE 2/2 to take place
 
 
 #  'core' files from segfaults --------
 find . \
-	-type f \
-	-name "core" \
-	-exec \
-		ls -lhaFG {} \;
+    -type f \
+    -name "core" \
+    -exec \
+        ls -lhaFG {} \;
 
 find . \
-	-type f \
-	-name "core" \
-	-exec \
-		rm {} \;
+    -type f \
+    -name "core" \
+    -exec \
+        rm {} \;
 
 
 #  run pigz, remaining *.fastq files --
@@ -1828,22 +1834,22 @@ while IFS=" " read -r -d $'\0'; do
     fq_gz+=( "${REPLY}" )
 done < <(\
     find "${dir}" \
-		-type f \
-		-name "*.fastq" \
+        -type f \
+        -name "*.fastq" \
         -print0
 )
 echo_test "${fq_gz[@]}"
 echo "${#fq_gz[@]}"
 
 for i in "${fq_gz[@]}"; do
-	echo "Compressing ${i}..."
-	echo " dirname:  $(dirname "${i}")"
-	echo "basename:  $(basename "${i}")"
-	
-	cd -- "$(dirname "${i}")"
-	pigz -p 32 --force "$(basename "${i}")"
-	
-	echo ""
+    echo "Compressing ${i}..."
+    echo " dirname:  $(dirname "${i}")"
+    echo "basename:  $(basename "${i}")"
+    
+    cd -- "$(dirname "${i}")"
+    pigz -p 32 --force "$(basename "${i}")"
+    
+    echo ""
 done
 ```
 </details>
@@ -1962,63 +1968,63 @@ cd "${dir}"
 
 #  Project_ccucinot -----------------------------------------------------------
 cd automation_of_annotation \
-	|| echo "cd'ing failed; check on this..."
+    || echo "cd'ing failed; check on this..."
 
 
 #  rm *.sam files ---------------------
 find . \
-	-type f \
-	-name "*.sam" \
-	-exec \
-		ls -lhaFG {} \;
+    -type f \
+    -name "*.sam" \
+    -exec \
+        ls -lhaFG {} \;
 
 find . \
-	-type f \
-	-name "*.sam" \
-	-exec \
-		rm {} \;
+    -type f \
+    -name "*.sam" \
+    -exec \
+        rm {} \;
 
 find . \
-	-type f \
-	-name "*.sam" \
-	-exec \
-		ls -lhaFG {} \;
+    -type f \
+    -name "*.sam" \
+    -exec \
+        ls -lhaFG {} \;
 
 
 #  rm *_merged_R?.fastq files ---------
 find . \
-	-type f \
-	-name "*.fastq" \
-	-exec \
-		ls -lhaFG {} \;
+    -type f \
+    -name "*.fastq" \
+    -exec \
+        ls -lhaFG {} \;
 
 find . \
-	-type f \
-	-name "*_merged_R?.fastq" \
-	-exec \
-		ls -lhaFG {} \;
+    -type f \
+    -name "*_merged_R?.fastq" \
+    -exec \
+        ls -lhaFG {} \;
 
 # find . \
-# 	-type f \
-# 	-name "*_merged_R?.fastq" \
-# 	-exec \
-# 		rm {} \;
+#     -type f \
+#     -name "*_merged_R?.fastq" \
+#     -exec \
+#         rm {} \;
 #NOTE 1/2 Keep the *merged*fastq files b/c the merge operation actually needed
 #NOTE 2/2 to take place
 
 
 #  'core' files from segfaults --------
 find . \
-	-type f \
-	-name "core" \
-	-exec \
-		ls -lhaFG {} \;
+    -type f \
+    -name "core" \
+    -exec \
+        ls -lhaFG {} \;
 
 find . \
-	-type f \
-	-name "core" \
-	-exec \
-		rm {} \;
+    -type f \
+    -name "core" \
+    -exec \
+        rm {} \;
 
 
 #  run pigz, remaining *.fastq files --
@@ -2030,22 +2036,22 @@ while IFS=" " read -r -d $'\0'; do
     fq_gz+=( "${REPLY}" )
 done < <(\
     find "${dir}" \
-		-type f \
-		-name "*.fastq" \
+        -type f \
+        -name "*.fastq" \
         -print0
 )
 echo_test "${fq_gz[@]}"
 echo "${#fq_gz[@]}"
 
 for i in "${fq_gz[@]}"; do
-	echo "Compressing ${i}..."
-	echo " dirname:  $(dirname "${i}")"
-	echo "basename:  $(basename "${i}")"
-	
-	cd -- "$(dirname "${i}")"
-	pigz -p 32 --force "$(basename "${i}")"
-	
-	echo ""
+    echo "Compressing ${i}..."
+    echo " dirname:  $(dirname "${i}")"
+    echo "basename:  $(basename "${i}")"
+    
+    cd -- "$(dirname "${i}")"
+    pigz -p 32 --force "$(basename "${i}")"
+    
+    echo ""
 done
 ```
 </details>
@@ -2129,7 +2135,7 @@ Use the files in "`~/tsukiyamalab/alisong/TRF4_SSRNA_April2022/UMI_information/P
 #DONTRUN #CONTINUE
 
 cd ~/tsukiyamalab/alisong/TRF4_SSRNA_April2022/UMI_information/Project_agreenla \
-	|| echo "cd'ing failed; check on this..."
+    || echo "cd'ing failed; check on this..."
 
 .,
 # total 42G
@@ -2252,7 +2258,7 @@ cd ~/tsukiyamalab/alisong/TRF4_SSRNA_April2022/UMI_information/Project_agreenla 
 # -rw-r----- 1 agreenla 538M Sep 29 18:48 SAMPLE_Bp9_DSp24_7078_S9_R3_001.fastq.gz
 
 cd ~/tsukiyamalab/alisong/TRF4_SSRNA_April2022 \
-	|| echo "cd'ing failed; check on this..."
+    || echo "cd'ing failed; check on this..."
 .,
 # total 952K
 # drwxrws---  7 agreenla  401 Jan 16 11:12  ./
@@ -2500,7 +2506,7 @@ find . -type f -name "*.fastq" | sort
 # -rw-rw---- 1 agreenla 4.2G Apr 20  2022 SAMPLE_Bp12_DSp48_7078/Bp12_DSp48_7078_merged_R2.fastq
 
 cd SAMPLE_BM10_DSp48_5781/ \
-	|| echo "cd'ing failed; check on this..."
+    || echo "cd'ing failed; check on this..."
 # /home/kalavatt/tsukiyamalab/alisong/TRF4_SSRNA_April2022/Project_agreenla/SAMPLE_BM10_DSp48_5781
 
 .,
@@ -2540,42 +2546,42 @@ cd "${dir}"
 
 #  rm *.sam files ---------------------
 find ${dir} \
-	-type f \
-	-name "*.sam" \
-	-exec \
-		ls -lhaFG {} \;
+    -type f \
+    -name "*.sam" \
+    -exec \
+        ls -lhaFG {} \;
 
 find ${dir} \
-	-type f \
-	-name "*.sam" \
-	-exec \
-		rm {} \;
+    -type f \
+    -name "*.sam" \
+    -exec \
+        rm {} \;
 
 find ${dir} \
-	-type f \
-	-name "*.sam" \
-	-exec \
-		ls -lhaFG {} \;
+    -type f \
+    -name "*.sam" \
+    -exec \
+        ls -lhaFG {} \;
 
 
 #  rm *_merged_R?.fastq files ---------
 find ${dir} \
-	-type f \
-	-name "*.fastq" \
-	-exec \
-		ls -lhaFG {} \;
+    -type f \
+    -name "*.fastq" \
+    -exec \
+        ls -lhaFG {} \;
 
 find ${dir} \
-	-type f \
-	-name "*_merged_R?.fastq" \
-	-exec \
-		ls -lhaFG {} \;
+    -type f \
+    -name "*_merged_R?.fastq" \
+    -exec \
+        ls -lhaFG {} \;
 
 find ${dir} \
-	-type f \
-	-name "*_merged_R?.fastq" \
-	-exec \
-		rm {} \;
+    -type f \
+    -name "*_merged_R?.fastq" \
+    -exec \
+        rm {} \;
 
 
 #  run pigz, remaining *.fastq files --
@@ -2585,22 +2591,22 @@ while IFS=" " read -r -d $'\0'; do
     fq_gz+=( "${REPLY}" )
 done < <(\
     find ${dir} \
-		-type f \
-		-name "*.fastq" \
+        -type f \
+        -name "*.fastq" \
         -print0
 )
 echo_test "${fq_gz[@]}"
 echo "${#fq_gz[@]}"
 
 for i in "${fq_gz[@]}"; do
-	echo "Compressing ${i}..."
-	echo " dirname:  $(dirname "${i}")"
-	echo "basename:  $(basename "${i}")"
-	
-	cd -- "$(dirname "${i}")"
-	pigz -p 32 "$(basename "${i}")"
-	
-	echo ""
+    echo "Compressing ${i}..."
+    echo " dirname:  $(dirname "${i}")"
+    echo "basename:  $(basename "${i}")"
+    
+    cd -- "$(dirname "${i}")"
+    pigz -p 32 "$(basename "${i}")"
+    
+    echo ""
 done
 ```
 </details>
@@ -3187,7 +3193,8 @@ basename:  SAMPLE_Bp8_DSp24_7081_S8_R2_001.fastq
 <details>
 <summary><i>Notes, etc.: Nab3_Nrd1_Depletion datasets</i></summary>
 
-Use the files in "`~/tsukiyamalab/alisong/Nab3_Nrd1_Depletion/Sequencing/Project_agreenla/{5782_7714,6125_7718,6126_7716}/*_R{1,3}_001.fastq.gz`" ~~`#TBD`~~ `#DEKHO`
+~~Use the files in "`~/tsukiyamalab/alisong/Nab3_Nrd1_Depletion/Sequencing/Project_agreenla/{5782_7714,6125_7718,6126_7716}/*_R{1,3}_001.fastq.gz`"~~ ~~`#TBD`~~ ~~`#DEKHO`~~  
+`#TODO` There's a new path to properly multiplexed, UMI-associated files; paste that path here
 
 <details>
 <summary><i>Scratch work to determine the above</i></summary>
@@ -3197,7 +3204,7 @@ Use the files in "`~/tsukiyamalab/alisong/Nab3_Nrd1_Depletion/Sequencing/Project
 #DONTRUN #CONTINUE
 
 cd ~/tsukiyamalab/alisong/Nab3_Nrd1_Depletion/Sequencing/Project_agreenla \
-	|| echo "cd'ing failed; check on this..."
+    || echo "cd'ing failed; check on this..."
 
 .,
 # total 584K
@@ -3270,42 +3277,42 @@ cd "${dir}"
 
 #  rm *.sam files ---------------------
 find ${dir} \
-	-type f \
-	-name "*.sam" \
-	-exec \
-		ls -lhaFG {} \;
+    -type f \
+    -name "*.sam" \
+    -exec \
+        ls -lhaFG {} \;
 
 find ${dir} \
-	-type f \
-	-name "*.sam" \
-	-exec \
-		rm {} \;
+    -type f \
+    -name "*.sam" \
+    -exec \
+        rm {} \;
 
 find ${dir} \
-	-type f \
-	-name "*.sam" \
-	-exec \
-		ls -lhaFG {} \;
+    -type f \
+    -name "*.sam" \
+    -exec \
+        ls -lhaFG {} \;
 
 
 #  rm *_merged_R?.fastq files ---------
 find ${dir} \
-	-type f \
-	-name "*.fastq" \
-	-exec \
-		ls -lhaFG {} \;
+    -type f \
+    -name "*.fastq" \
+    -exec \
+        ls -lhaFG {} \;
 
 # find ${dir} \
-# 	-type f \
-# 	-name "*_merged_R?.fastq" \
-# 	-exec \
-# 		ls -lhaFG {} \;
+#     -type f \
+#     -name "*_merged_R?.fastq" \
+#     -exec \
+#         ls -lhaFG {} \;
 #
 # find ${dir} \
-# 	-type f \
-# 	-name "*_merged_R?.fastq" \
-# 	-exec \
-# 		rm {} \;
+#     -type f \
+#     -name "*_merged_R?.fastq" \
+#     -exec \
+#         rm {} \;
 #NOTE No "merged" .fastq files in these directories
 
 
@@ -3316,22 +3323,22 @@ while IFS=" " read -r -d $'\0'; do
     fq_gz+=( "${REPLY}" )
 done < <(\
     find ${dir} \
-		-type f \
-		-name "*.fastq" \
+        -type f \
+        -name "*.fastq" \
         -print0
 )
 echo_test "${fq_gz[@]}"
 echo "${#fq_gz[@]}"
 
 for i in "${fq_gz[@]}"; do
-	echo "Compressing ${i}..."
-	echo " dirname:  $(dirname "${i}")"
-	echo "basename:  $(basename "${i}")"
-	
-	cd -- "$(dirname "${i}")"
-	pigz -p 32 "$(basename "${i}")"
-	
-	echo ""
+    echo "Compressing ${i}..."
+    echo " dirname:  $(dirname "${i}")"
+    echo "basename:  $(basename "${i}")"
+    
+    cd -- "$(dirname "${i}")"
+    pigz -p 32 "$(basename "${i}")"
+    
+    echo ""
 done
 ```
 </details>
@@ -3595,7 +3602,8 @@ basename:  Sample_CT6_7714_pIAA_Q_Nascent_S3_R3_001.fastq
 
 ~~Use the files in "`~/tsukiyamalab/alisong/rtr1_rrp6_wt/Sequencinfg/Project_agreenla/Fastq`" `#TBD`~~  
 ~~Use the files in "`~/tsukiyamalab/alisong/rtr1_rrp6_wt/Project_agreenla/*_R{1,3}_001.fastq.gz`"~~  
-Use the files in "`~/tsukiyamalab/alisong/rtr1_rrp6_wt/Sequencinfg/Project_agreenla/Fastq/{CW10_7747_8day_Q_IN,CW10_7747_8day_Q_PD,CW12_7748_8day_Q_IN,CW12_7748_8day_Q_PD,CW2_5781_8day_Q_IN,CW2_5781_8day_Q_PD,CW4_5782_8day_Q_IN,CW4_5782_8day_Q_PD,CW6_7078_8day_Q_IN,CW6_7078_8day_Q_PD,CW8_7079_8day_Q_IN,CW8_7079_8day_Q_PD}` `#DEKHO`
+~~Use the files in "`~/tsukiyamalab/alisong/rtr1_rrp6_wt/Sequencinfg/Project_agreenla/Fastq/{CW10_7747_8day_Q_IN,CW10_7747_8day_Q_PD,CW12_7748_8day_Q_IN,CW12_7748_8day_Q_PD,CW2_5781_8day_Q_IN,CW2_5781_8day_Q_PD,CW4_5782_8day_Q_IN,CW4_5782_8day_Q_PD,CW6_7078_8day_Q_IN,CW6_7078_8day_Q_PD,CW8_7079_8day_Q_IN,CW8_7079_8day_Q_PD}`~~ ~~`#DEKHO`~~  
+`#TODO` There's a new path to properly multiplexed, UMI-associated files; paste that path here
 
 <details>
 <summary><i>Scratch work to determine the above</i></summary>
@@ -3605,7 +3613,7 @@ Use the files in "`~/tsukiyamalab/alisong/rtr1_rrp6_wt/Sequencinfg/Project_agree
 #DONTRUN #CONTINUE
 
 cd ~/tsukiyamalab/alisong/rtr1_rrp6_wt/Sequencinfg/Project_agreenla/Fastq \
-	|| echo "cd'ing failed; check on this..."
+    || echo "cd'ing failed; check on this..."
 
 # .,
 # total 1.2M
@@ -3651,7 +3659,7 @@ cd CW10_7747_8day_Q_IN/
 # -rw-rw----  1 agreenla 6.9G Dec 21 12:23 CW10_7747_8day_Q_IN_S5_R3_001.fastq
 
 cd ~/tsukiyamalab/alisong/rtr1_rrp6_wt \
-	|| echo "cd'ing failed; check on this..."
+    || echo "cd'ing failed; check on this..."
 
 .,
 # total 896K
@@ -3745,42 +3753,42 @@ cd "${dir}"
 
 #  rm *.sam files ---------------------
 find ${dir} \
-	-type f \
-	-name "*.sam" \
-	-exec \
-		ls -lhaFG {} \;
+    -type f \
+    -name "*.sam" \
+    -exec \
+        ls -lhaFG {} \;
 
 find ${dir} \
-	-type f \
-	-name "*.sam" \
-	-exec \
-		rm {} \;
+    -type f \
+    -name "*.sam" \
+    -exec \
+        rm {} \;
 
 find ${dir} \
-	-type f \
-	-name "*.sam" \
-	-exec \
-		ls -lhaFG {} \;
+    -type f \
+    -name "*.sam" \
+    -exec \
+        ls -lhaFG {} \;
 
 
 #  rm *_merged_R?.fastq files ---------
 find ${dir} \
-	-type f \
-	-name "*.fastq" \
-	-exec \
-		ls -lhaFG {} \;
+    -type f \
+    -name "*.fastq" \
+    -exec \
+        ls -lhaFG {} \;
 
 find ${dir} \
-	-type f \
-	-name "*_merged_R?.fastq" \
-	-exec \
-		ls -lhaFG {} \;
+    -type f \
+    -name "*_merged_R?.fastq" \
+    -exec \
+        ls -lhaFG {} \;
 
 find ${dir} \
-	-type f \
-	-name "*_merged_R?.fastq" \
-	-exec \
-		rm {} \;
+    -type f \
+    -name "*_merged_R?.fastq" \
+    -exec \
+        rm {} \;
 
 
 #  run pigz, remaining *.fastq files --
@@ -3790,22 +3798,22 @@ while IFS=" " read -r -d $'\0'; do
     fq_gz+=( "${REPLY}" )
 done < <(\
     find ${dir} \
-		-type f \
-		-name "*.fastq" \
+        -type f \
+        -name "*.fastq" \
         -print0
 )
 echo_test "${fq_gz[@]}"
 echo "${#fq_gz[@]}"
 
 for i in "${fq_gz[@]}"; do
-	echo "Compressing ${i}..."
-	echo " dirname:  $(dirname "${i}")"
-	echo "basename:  $(basename "${i}")"
-	
-	cd -- "$(dirname "${i}")"
-	pigz -p 32 "$(basename "${i}")"
-	
-	echo ""
+    echo "Compressing ${i}..."
+    echo " dirname:  $(dirname "${i}")"
+    echo "basename:  $(basename "${i}")"
+    
+    cd -- "$(dirname "${i}")"
+    pigz -p 32 "$(basename "${i}")"
+    
+    echo ""
 done
 ```
 </details>
@@ -4207,23 +4215,23 @@ fi
 unset dir_fqs
 typeset -a dir_fqs
 dir_fqs=(
-	"${HOME}/tsukiyamalab/alisong/WTQvsG1/Unaligned_UMI/Project_ccucinot"
-	"${HOME}/tsukiyamalab/alisong/TRF4_SSRNA_April2022/UMI_information/Project_agreenla"
-	"${HOME}/tsukiyamalab/alisong/Nab3_Nrd1_Depletion/Sequencing/Project_agreenla/5782_7714"
-	"${HOME}/tsukiyamalab/alisong/Nab3_Nrd1_Depletion/Sequencing/Project_agreenla/6125_7718"
-	"${HOME}/tsukiyamalab/alisong/Nab3_Nrd1_Depletion/Sequencing/Project_agreenla/6126_7716"
-	"${HOME}/tsukiyamalab/alisong/rtr1_rrp6_wt/Sequencinfg/Project_agreenla/Fastq/CW10_7747_8day_Q_IN"
-	"${HOME}/tsukiyamalab/alisong/rtr1_rrp6_wt/Sequencinfg/Project_agreenla/Fastq/CW10_7747_8day_Q_PD"
-	"${HOME}/tsukiyamalab/alisong/rtr1_rrp6_wt/Sequencinfg/Project_agreenla/Fastq/CW12_7748_8day_Q_IN"
-	"${HOME}/tsukiyamalab/alisong/rtr1_rrp6_wt/Sequencinfg/Project_agreenla/Fastq/CW12_7748_8day_Q_PD"
-	"${HOME}/tsukiyamalab/alisong/rtr1_rrp6_wt/Sequencinfg/Project_agreenla/Fastq/CW2_5781_8day_Q_IN"
-	"${HOME}/tsukiyamalab/alisong/rtr1_rrp6_wt/Sequencinfg/Project_agreenla/Fastq/CW2_5781_8day_Q_PD"
-	"${HOME}/tsukiyamalab/alisong/rtr1_rrp6_wt/Sequencinfg/Project_agreenla/Fastq/CW4_5782_8day_Q_IN"
-	"${HOME}/tsukiyamalab/alisong/rtr1_rrp6_wt/Sequencinfg/Project_agreenla/Fastq/CW4_5782_8day_Q_PD"
-	"${HOME}/tsukiyamalab/alisong/rtr1_rrp6_wt/Sequencinfg/Project_agreenla/Fastq/CW6_7078_8day_Q_IN"
-	"${HOME}/tsukiyamalab/alisong/rtr1_rrp6_wt/Sequencinfg/Project_agreenla/Fastq/CW6_7078_8day_Q_PD"
-	"${HOME}/tsukiyamalab/alisong/rtr1_rrp6_wt/Sequencinfg/Project_agreenla/Fastq/CW8_7079_8day_Q_IN"
-	"${HOME}/tsukiyamalab/alisong/rtr1_rrp6_wt/Sequencinfg/Project_agreenla/Fastq/CW8_7079_8day_Q_PD"
+    "${HOME}/tsukiyamalab/alisong/WTQvsG1/Unaligned_UMI/Project_ccucinot"
+    "${HOME}/tsukiyamalab/alisong/TRF4_SSRNA_April2022/UMI_information/Project_agreenla"
+    "${HOME}/tsukiyamalab/alisong/Nab3_Nrd1_Depletion/Sequencing/Project_agreenla/5782_7714"
+    "${HOME}/tsukiyamalab/alisong/Nab3_Nrd1_Depletion/Sequencing/Project_agreenla/6125_7718"
+    "${HOME}/tsukiyamalab/alisong/Nab3_Nrd1_Depletion/Sequencing/Project_agreenla/6126_7716"
+    "${HOME}/tsukiyamalab/alisong/rtr1_rrp6_wt/Sequencinfg/Project_agreenla/Fastq/CW10_7747_8day_Q_IN"
+    "${HOME}/tsukiyamalab/alisong/rtr1_rrp6_wt/Sequencinfg/Project_agreenla/Fastq/CW10_7747_8day_Q_PD"
+    "${HOME}/tsukiyamalab/alisong/rtr1_rrp6_wt/Sequencinfg/Project_agreenla/Fastq/CW12_7748_8day_Q_IN"
+    "${HOME}/tsukiyamalab/alisong/rtr1_rrp6_wt/Sequencinfg/Project_agreenla/Fastq/CW12_7748_8day_Q_PD"
+    "${HOME}/tsukiyamalab/alisong/rtr1_rrp6_wt/Sequencinfg/Project_agreenla/Fastq/CW2_5781_8day_Q_IN"
+    "${HOME}/tsukiyamalab/alisong/rtr1_rrp6_wt/Sequencinfg/Project_agreenla/Fastq/CW2_5781_8day_Q_PD"
+    "${HOME}/tsukiyamalab/alisong/rtr1_rrp6_wt/Sequencinfg/Project_agreenla/Fastq/CW4_5782_8day_Q_IN"
+    "${HOME}/tsukiyamalab/alisong/rtr1_rrp6_wt/Sequencinfg/Project_agreenla/Fastq/CW4_5782_8day_Q_PD"
+    "${HOME}/tsukiyamalab/alisong/rtr1_rrp6_wt/Sequencinfg/Project_agreenla/Fastq/CW6_7078_8day_Q_IN"
+    "${HOME}/tsukiyamalab/alisong/rtr1_rrp6_wt/Sequencinfg/Project_agreenla/Fastq/CW6_7078_8day_Q_PD"
+    "${HOME}/tsukiyamalab/alisong/rtr1_rrp6_wt/Sequencinfg/Project_agreenla/Fastq/CW8_7079_8day_Q_IN"
+    "${HOME}/tsukiyamalab/alisong/rtr1_rrp6_wt/Sequencinfg/Project_agreenla/Fastq/CW8_7079_8day_Q_PD"
 )
 echo_test "${dir_fqs[@]}"
 echo "${#dir_fqs[@]}"  # 17
@@ -4238,16 +4246,16 @@ while IFS=" " read -r -d $'\0'; do
     full_fq+=( "${REPLY}" )
     file_fq+=( "$(basename "${REPLY}")" )
 done < <(\
-	for i in $(seq 0 "${y}"); do
-	    find "${dir_fqs[${i}]}" \
-	        -type f \
-	        \( \
-	        	-name "*_R1_001.fastq.gz" \
-	        	-o -name "*_R3_001.fastq.gz" \
-	        \) \
-	        -print0 \
-	            | sort -z
-	done
+    for i in $(seq 0 "${y}"); do
+        find "${dir_fqs[${i}]}" \
+            -type f \
+            \( \
+                -name "*_R1_001.fastq.gz" \
+                -o -name "*_R3_001.fastq.gz" \
+            \) \
+            -print0 \
+                | sort -z
+    done
 )
 echo_test "${full_fq[@]}"
 echo_test "${file_fq[@]}"
@@ -4259,12 +4267,12 @@ echo "${#file_fq[@]}"  # 110
 x="${#full_fq[@]}"  # echo "${x}"
 y=$(( x - 1 ))  # echo "${y}"
 for (( i=0; i<=y; i++ )); do
-	echo "Iteration:  ${i}"
-	echo "     Hard:  ${full_fq[${i}]}"
-	echo "     Soft:  ./fastqs/symlinks/${file_fq[${i}]}"
-	
-	ln -s "${full_fq[${i}]}" "./fastqs/symlinks/${file_fq[${i}]}"
-	echo ""
+    echo "Iteration:  ${i}"
+    echo "     Hard:  ${full_fq[${i}]}"
+    echo "     Soft:  ./fastqs/symlinks/${file_fq[${i}]}"
+    
+    ln -s "${full_fq[${i}]}" "./fastqs/symlinks/${file_fq[${i}]}"
+    echo ""
 done
 
 cd "./fastqs/symlinks" && .,
@@ -4274,8 +4282,8 @@ zcat "${file_fq[50]}" | awk 'NR%4==2{print length($0)}' | head -1
 tab="$(echo -e "\t")"
 echo "file${tab}length"
 for i in "${file_fq[@]}"; do
-	length="$(zcat "${i}" | awk 'NR%4==2{print length($0)}' | head -1)"
-	echo "${i}${tab}${length}"
+    length="$(zcat "${i}" | awk 'NR%4==2{print length($0)}' | head -1)"
+    echo "${i}${tab}${length}"
 done
 
 cd -
@@ -6434,9 +6442,9 @@ Trinity_env
 
 #  cd into '2022_transcriptome-construction/results', e.g.,
 transcriptome && 
-	{
-		cd "results/2023-0115" || echo "cd'ing failed; check on this..."
-	}
+    {
+        cd "results/2023-0115" || echo "cd'ing failed; check on this..."
+    }
 
 unset fq_bases
 typeset -a fq_bases
@@ -6453,12 +6461,12 @@ echo_test "${fq_bases[@]}"
 echo "${#fq_bases[@]}"
 
 IFS=" " read -r -a fq_bases \
-	<<< "$(\
-		tr ' ' '\n' \
-			<<< "${fq_bases[@]}" \
-				| sort -u \
-				| tr '\n' ' '\
-	)"
+    <<< "$(\
+        tr ' ' '\n' \
+            <<< "${fq_bases[@]}" \
+                | sort -u \
+                | tr '\n' ' '\
+    )"
 echo_test "${fq_bases[@]}"
 echo "${#fq_bases[@]}"
 ```
@@ -6596,12 +6604,12 @@ echo "${#fq_bases[@]}"
 110
 
 ❯ IFS=" " read -r -a fq_bases \
-> 	<<< "$(\
-> 		tr ' ' '\n' \
-> 			<<< "${fq_bases[@]}" \
-> 				| sort -u \
-> 				| tr '\n' ' '\
-> 	)"
+>     <<< "$(\
+>         tr ' ' '\n' \
+>             <<< "${fq_bases[@]}" \
+>                 | sort -u \
+>                 | tr '\n' ' '\
+>     )"
 ❯ echo_test "${fq_bases[@]}"
 ./fastqs/symlinks/5781_G1_IN_S5
 ./fastqs/symlinks/5781_G1_IP_S1
@@ -6667,7 +6675,6 @@ echo "${#fq_bases[@]}"
 
 <a id="run-atria-to-learn-about-adapter-contamination"></a>
 ### Run `atria` to learn about adapter contamination
-`#DEKHO`
 <details>
 <summary><i>Code: Run atria to learn about adapter contamination</i></summary>
 
@@ -6683,19 +6690,19 @@ alias atria="\${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/soft
 # ., "${fq_bases[0]}_R3_001.fastq.gz"
 #
 # atria --detect-adapter \
-# 	-r "${fq_bases[0]}_R1_001.fastq.gz" \
-# 	-R "${fq_bases[0]}_R3_001.fastq.gz"
+#     -r "${fq_bases[0]}_R1_001.fastq.gz" \
+#     -R "${fq_bases[0]}_R3_001.fastq.gz"
 
 x="${#fq_bases[@]}"  # echo "${x}"
 y=$(( x - 1 ))  # echo "${y}"
 for (( i=0; i<=y; i++ )); do
-	echo "Iteration:  ${i}"
-	echo "   Sample:  ${fq_bases[${i}]}"
-	atria --detect-adapter \
-		--threads 32 \
-		-r "${fq_bases[${i}]}_R1_001.fastq.gz" \
-		-R "${fq_bases[${i}]}_R3_001.fastq.gz"
-	echo ""
+    echo "Iteration:  ${i}"
+    echo "   Sample:  ${fq_bases[${i}]}"
+    atria --detect-adapter \
+        --threads 32 \
+        -r "${fq_bases[${i}]}_R1_001.fastq.gz" \
+        -R "${fq_bases[${i}]}_R3_001.fastq.gz"
+    echo ""
 done
 ```
 </details>
@@ -6833,7 +6840,7 @@ pigz 2.6
 │ │          Adapter │ Occurance │ Identity │
 │ ├──────────────────┼───────────┼──────────┤
 │ │ AGATCGGAAGAGCGTC │      3091 │ 0.996684 │
-│ │ GATCGGAAGAGCGTCG │      3065 │ 0.935685 │
+│ │ GATCGGAAGAGCGTCG │      3065 │ 0.925685 │
 │ │ AGATCGGAAGAGCGGT │      2951 │ 0.875021 │
 │ │ TCGTCGGCAGCGTCAG │        11 │    0.875 │
 │ │ AGATCGGAAGAGCTCG │         8 │ 0.882812 │
@@ -8016,7 +8023,6 @@ pigz 2.6
 ### Run `FastQC` on `fastq` files
 <a id="get-situated-2"></a>
 #### Get situated
-`#DEKHO`
 <details>
 <summary><i>Code: Get situated</i></summary>
 
@@ -8032,9 +8038,9 @@ Trinity_env
 
 #  cd into '2022_transcriptome-construction/results', e.g.,
 transcriptome && 
-	{
-		cd "results/2023-0115" || echo "cd'ing failed; check on this..."
-	}
+    {
+        cd "results/2023-0115" || echo "cd'ing failed; check on this..."
+    }
 
 #  Make a directory for storing the FastQC results
 if [[ ! -d "./FastQC" ]]; then
@@ -8062,12 +8068,12 @@ echo_test "${fq_bases[@]}"
 echo "${#fq_bases[@]}"
 
 IFS=" " read -r -a fq_bases \
-	<<< "$(\
-		tr ' ' '\n' \
-			<<< "${fq_bases[@]}" \
-				| sort -u \
-				| tr '\n' ' '\
-	)"
+    <<< "$(\
+        tr ' ' '\n' \
+            <<< "${fq_bases[@]}" \
+                | sort -u \
+                | tr '\n' ' '\
+    )"
 echo_test "${fq_bases[@]}"
 echo "${#fq_bases[@]}"
 
@@ -8076,8 +8082,8 @@ unset fq_r2
 typeset -a fq_r1
 typeset -a fq_r2
 for i in "${fq_bases[@]}"; do
-	fq_r1+=("${i}_R1_001.fastq.gz")
-	fq_r2+=("${i}_R3_001.fastq.gz")
+    fq_r1+=("${i}_R1_001.fastq.gz")
+    fq_r2+=("${i}_R3_001.fastq.gz")
 done
 # echo_test "${fq_r1[@]}"
 # echo_test "${fq_r2[@]}"
@@ -8138,29 +8144,29 @@ script
 x="${#fq_bases[@]}"  # echo "${x}"
 y=$(( x - 1 ))  # echo "${y}"
 for (( i=0; i<=y; i++ )); do
-	echo "# --------------------------------------"
-	echo "Iteration:  ${i}"
-	echo "File base:  ${fq_bases[${i}]}"
-	echo "       r1:  ${fq_r1[${i}]}"
-	echo "       r2:  ${fq_r2[${i}]}"
-	echo "   outdir:  ./FastQC/symlinks"
-	echo ""
-	
-	#  For r1
-	sbatch "./sh_err_out/${script_name}" \
-		"${fq_r1[${i}]}" \
-		"./FastQC/symlinks"
-	echo "FastQC job submitted for ${fq_r1[${i}]}"
-	echo ""
+    echo "# --------------------------------------"
+    echo "Iteration:  ${i}"
+    echo "File base:  ${fq_bases[${i}]}"
+    echo "       r1:  ${fq_r1[${i}]}"
+    echo "       r2:  ${fq_r2[${i}]}"
+    echo "   outdir:  ./FastQC/symlinks"
+    echo ""
+    
+    #  For r1
+    sbatch "./sh_err_out/${script_name}" \
+        "${fq_r1[${i}]}" \
+        "./FastQC/symlinks"
+    echo "FastQC job submitted for ${fq_r1[${i}]}"
+    echo ""
 
-	#  For r2
-	sbatch "./sh_err_out/${script_name}" \
-		"${fq_r2[${i}]}" \
-		"./FastQC/symlinks"
-	echo "FastQC job submitted for ${fq_r2[${i}]}"
-	
-	echo ""
-	echo ""
+    #  For r2
+    sbatch "./sh_err_out/${script_name}" \
+        "${fq_r2[${i}]}" \
+        "./FastQC/symlinks"
+    echo "FastQC job submitted for ${fq_r2[${i}]}"
+    
+    echo ""
+    echo ""
 done
 ```
 </details>
@@ -8905,9 +8911,9 @@ Trinity_env
 
 #  cd into '2022_transcriptome-construction/results', e.g.,
 transcriptome && 
-	{
-		cd "results/2023-0115" || echo "cd'ing failed; check on this..."
-	}
+    {
+        cd "results/2023-0115" || echo "cd'ing failed; check on this..."
+    }
 
 #  Make directory if necessary
 if [[ ! -d "./fastqs/trim_galore" ]]; then
@@ -8924,8 +8930,8 @@ unset fq_r2
 typeset -a fq_r1
 typeset -a fq_r2
 for i in "${fq_bases[@]}"; do
-	fq_r1+=("${i}_R1_001.fastq.gz")
-	fq_r2+=("${i}_R3_001.fastq.gz")
+    fq_r1+=("${i}_R1_001.fastq.gz")
+    fq_r2+=("${i}_R3_001.fastq.gz")
 done
 # echo_test "${fq_r1[@]}"
 # echo_test "${fq_r2[@]}"
@@ -9018,22 +9024,22 @@ script
 x="${#fq_bases[@]}"  # echo "${x}"
 y=$(( x - 1 ))  # echo "${y}"
 for (( i=0; i<=y; i++ )); do
-	echo "# --------------------------------------"
-	echo "Iteration:  ${i}"
-	echo "File base:  ${fq_bases[${i}]}"
-	echo "       r1:  ${fq_r1[${i}]}"
-	echo "       r2:  ${fq_r2[${i}]}"
-	echo "   outdir:  ./fastqs/trim_galore"
-	echo ""
-	
-	sbatch "./sh_err_out/${script_name}" \
-		"${fq_r1[${i}]}" \
-		"${fq_r2[${i}]}" \
-		"./fastqs/trim_galore"
-	echo "trim_galore job submitted for ${fq_r1[${i}]} and ${fq_r2[${i}]}"
-	
-	echo ""
-	echo ""
+    echo "# --------------------------------------"
+    echo "Iteration:  ${i}"
+    echo "File base:  ${fq_bases[${i}]}"
+    echo "       r1:  ${fq_r1[${i}]}"
+    echo "       r2:  ${fq_r2[${i}]}"
+    echo "   outdir:  ./fastqs/trim_galore"
+    echo ""
+    
+    sbatch "./sh_err_out/${script_name}" \
+        "${fq_r1[${i}]}" \
+        "${fq_r2[${i}]}" \
+        "./fastqs/trim_galore"
+    echo "trim_galore job submitted for ${fq_r1[${i}]} and ${fq_r2[${i}]}"
+    
+    echo ""
+    echo ""
 done
 ```
 </details>
@@ -9050,7 +9056,7 @@ File base:  ./fastqs/symlinks/5781_G1_IN_S5
        r2:  ./fastqs/symlinks/5781_G1_IN_S5_R3_001.fastq.gz
    outdir:  ./fastqs/trim_galore
 
-Submitted batch job 7993566
+Submitted batch job 7992566
 trim_galore job submitted for ./fastqs/symlinks/5781_G1_IN_S5_R1_001.fastq.gz and ./fastqs/symlinks/5781_G1_IN_S5_R3_001.fastq.gz
 
 # --------------------------------------
@@ -9060,7 +9066,7 @@ File base:  ./fastqs/symlinks/5781_G1_IP_S1
        r2:  ./fastqs/symlinks/5781_G1_IP_S1_R3_001.fastq.gz
    outdir:  ./fastqs/trim_galore
 
-Submitted batch job 7993567
+Submitted batch job 7992567
 trim_galore job submitted for ./fastqs/symlinks/5781_G1_IP_S1_R1_001.fastq.gz and ./fastqs/symlinks/5781_G1_IP_S1_R3_001.fastq.gz
 
 # --------------------------------------
@@ -9070,7 +9076,7 @@ File base:  ./fastqs/symlinks/5781_Q_IN_S6
        r2:  ./fastqs/symlinks/5781_Q_IN_S6_R3_001.fastq.gz
    outdir:  ./fastqs/trim_galore
 
-Submitted batch job 7993568
+Submitted batch job 7992568
 trim_galore job submitted for ./fastqs/symlinks/5781_Q_IN_S6_R1_001.fastq.gz and ./fastqs/symlinks/5781_Q_IN_S6_R3_001.fastq.gz
 
 # --------------------------------------
@@ -9080,7 +9086,7 @@ File base:  ./fastqs/symlinks/5781_Q_IP_S2
        r2:  ./fastqs/symlinks/5781_Q_IP_S2_R3_001.fastq.gz
    outdir:  ./fastqs/trim_galore
 
-Submitted batch job 7993569
+Submitted batch job 7992569
 trim_galore job submitted for ./fastqs/symlinks/5781_Q_IP_S2_R1_001.fastq.gz and ./fastqs/symlinks/5781_Q_IP_S2_R3_001.fastq.gz
 
 # --------------------------------------
@@ -9598,7 +9604,6 @@ trim_galore job submitted for ./fastqs/symlinks/Sample_CU12_5782_Q_SteadyState_S
 
 <a id="run-fastqc-on-trim_galore-processed-fastq-files"></a>
 ### Run `FastQC` on `trim_galore`-processed `fastq` files
-`#PICKUPHERE`
 <a id="get-situated-4"></a>
 #### Get situated
 <details>
@@ -9614,9 +9619,9 @@ Trinity_env
 
 #  cd into '2022_transcriptome-construction/results', e.g.,
 transcriptome && 
-	{
-		cd "results/2023-0115" || echo "cd'ing failed; check on this..."
-	}
+    {
+        cd "results/2023-0115" || echo "cd'ing failed; check on this..."
+    }
 
 #  Make directory if necessary
 if [[ ! -d "./FastQC/trim_galore" ]]; then
@@ -9643,12 +9648,12 @@ done < <(\
 # echo "${#t_bases[@]}"  # 100
 
 IFS=" " read -r -a t_bases \
-	<<< "$(\
-		tr ' ' '\n' \
-			<<< "${t_bases[@]}" \
-				| sort -u \
-				| tr '\n' ' '\
-	)"
+    <<< "$(\
+        tr ' ' '\n' \
+            <<< "${t_bases[@]}" \
+                | sort -u \
+                | tr '\n' ' '\
+    )"
 # echo_test "${t_bases[@]}"
 # echo "${#t_bases[@]}"  # 55
 
@@ -9657,8 +9662,8 @@ unset t_r2
 typeset -a t_r1
 typeset -a t_r2
 for i in "${t_bases[@]}"; do
-	t_r1+=("${i}_R1_001_val_1.fq.gz")
-	t_r2+=("${i}_R3_001_val_2.fq.gz")
+    t_r1+=("${i}_R1_001_val_1.fq.gz")
+    t_r2+=("${i}_R3_001_val_2.fq.gz")
 done
 # echo_test "${t_r1[@]}"
 # echo_test "${t_r2[@]}"
@@ -9682,29 +9687,29 @@ done
 x="${#t_bases[@]}"  # echo "${x}"
 y=$(( x - 1 ))  # echo "${y}"
 for (( i=0; i<=y; i++ )); do
-	echo "# --------------------------------------"
-	echo "Iteration:  ${i}"
-	echo "File base:  ${t_bases[${i}]}"
-	echo "       r1:  ${t_r1[${i}]}"
-	echo "       r2:  ${t_r2[${i}]}"
-	echo "   outdir:  ./FastQC/trim_galore"
-	echo ""
+    echo "# --------------------------------------"
+    echo "Iteration:  ${i}"
+    echo "File base:  ${t_bases[${i}]}"
+    echo "       r1:  ${t_r1[${i}]}"
+    echo "       r2:  ${t_r2[${i}]}"
+    echo "   outdir:  ./FastQC/trim_galore"
+    echo ""
 
-	#  For r1
-	sbatch "./sh_err_out/${script_name}" \
-		"${t_r1[${i}]}" \
-		"./FastQC/trim_galore"
-	echo "FastQC job submitted for ${t_r1[${i}]}"
-	echo ""
+    #  For r1
+    sbatch "./sh_err_out/${script_name}" \
+        "${t_r1[${i}]}" \
+        "./FastQC/trim_galore"
+    echo "FastQC job submitted for ${t_r1[${i}]}"
+    echo ""
 
-	#  For r2
-	sbatch "./sh_err_out/${script_name}" \
-		"${t_r2[${i}]}" \
-		"./FastQC/trim_galore"
-	echo "FastQC job submitted for ${t_r2[${i}]}"
+    #  For r2
+    sbatch "./sh_err_out/${script_name}" \
+        "${t_r2[${i}]}" \
+        "./FastQC/trim_galore"
+    echo "FastQC job submitted for ${t_r2[${i}]}"
 
-	echo ""
-	echo ""
+    echo ""
+    echo ""
 done
 ```
 </details>
@@ -10452,16 +10457,16 @@ Trinity_env
 
 #  cd into '2022_transcriptome-construction/results', e.g.,
 transcriptome && 
-	{
-		cd "results/2023-0115" || echo "cd'ing failed; check on this..."
-	}
+    {
+        cd "results/2023-0115" || echo "cd'ing failed; check on this..."
+    }
 
 #  Directory
 if [[ ! -d "./bams" ]]; then
-	mkdir -p bams/{unmapped-rm,unmapped-w}/{SC_KL_20S,SC,SC_KL,KL,20S}
+    mkdir -p bams/{unmapped-rm,unmapped-w}/{SC_KL_20S,SC,SC_KL,KL,20S}
 fi
 ```
-<details>
+</details>
 <br />
 
 <a id="write-and-run-the-script-submit_star_unmapped-rmsh"></a>
@@ -10539,7 +10544,7 @@ done
 #DONTRUN #CONTINUE
 
 if [[ -f "./sh_err_out/${script_name}" ]]; then
-	rm "./sh_err_out/${script_name}"
+    rm "./sh_err_out/${script_name}"
 fi
 cat << script > "./sh_err_out/${script_name}"
 #!/bin/bash
@@ -10633,11 +10638,11 @@ for (( i=0; i<=y; i++ )); do
     echo ""
 
     sbatch "./sh_err_out/${script_name}" \
-    	"${fq_r1[${i}]}" \
-    	"${fq_r2[${i}]}" \
-    	"./bams/unmapped-rm/SC_KL_20S/${fq_pre[${i}]}." \
-    	"${dir_genome}" \
-    	10
+        "${fq_r1[${i}]}" \
+        "${fq_r2[${i}]}" \
+        "./bams/unmapped-rm/SC_KL_20S/${fq_pre[${i}]}." \
+        "${dir_genome}" \
+        10
     
     sleep 1  # Slow down rate of job submission
 
@@ -11317,7 +11322,6 @@ Submitted batch job 7998956
 
 <a id="write-and-run-the-script-submit_star_unmapped-wsh"></a>
 ### Write and run the script `submit_star_unmapped-w.sh`
-`#PICKUPHERE` `#INPROGRESS`
 <a id="assign-variables-and-arrays-1"></a>
 #### Assign variables and arrays
 <details>
@@ -11391,7 +11395,7 @@ done
 #DONTRUN #CONTINUE
 
 if [[ -f "./sh_err_out/${script_name}" ]]; then
-	rm "./sh_err_out/${script_name}"
+    rm "./sh_err_out/${script_name}"
 fi
 cat << script > "./sh_err_out/${script_name}"
 #!/bin/bash
@@ -11485,11 +11489,11 @@ for (( i=0; i<=y; i++ )); do
     echo ""
 
     sbatch "./sh_err_out/${script_name}" \
-    	"${fq_r1[${i}]}" \
-    	"${fq_r2[${i}]}" \
-    	"./bams/unmapped-w/SC_KL_20S/${fq_pre[${i}]}." \
-    	"${dir_genome}" \
-    	10
+        "${fq_r1[${i}]}" \
+        "${fq_r2[${i}]}" \
+        "./bams/unmapped-w/SC_KL_20S/${fq_pre[${i}]}." \
+        "${dir_genome}" \
+        10
     
     sleep 1  # Slow down rate of job submission
 
@@ -12218,13 +12222,15 @@ multimappers:  10
 
 Submitted batch job 8054513
 ```
+</details>
+<br />
 
 <a id="clean-up-results-from-star-alignment-then-index-bams"></a>
 ### Clean up results from `STAR` alignment, then index `bam`s
 <a id="clean-uprename-results-of-star-alignment"></a>
 #### Clean up/rename results of `STAR` alignment
 <details>
-<summary><i>Code, notes: Clean up/rename results of `STAR` alignment</i></summary>
+<summary><i>Notes: Clean up/rename results of `STAR` alignment</i></summary>
 
 Moving forward, perform the following steps:
 1. `rm -r *._STARtmp`
@@ -12232,42 +12238,398 @@ Moving forward, perform the following steps:
 3. `rename 's/.SJ.out.tab/.multi-10.SJ.tab/g' *`
 4. `rename 's/.Aligned.sortedByCoord././g' *`
 5. `rename 's/.out.bam/.multi-10.bam/g' *`
+</details>
+<br />
 
 <a id="in-bamsunmapped-rmsc_kl_20s"></a>
-##### In `bams/unmapped-rm/SC_KL_20S`
+##### In `bams/unmapped-rm/SC_KL_20S`...
+<details>
+<summary><i>Code: In bams/unmapped-rm/SC_KL_20S...</i></summary>
+
 ```bash
 #!/bin/bash
 #DONTRUN #CONTINUE
 
 cd bams/unmapped-rm/SC_KL_20S \
-	|| echo "cd'ing failed; check on this..."
+    || echo "cd'ing failed; check on this..."
 
 #  Working things out...
 rm -r *._STARtmp
 
-rename -n 's/.out./.multi-10./g' *
-rename 's/.out./.multi-10./g' *
-
 rename -n 's/.Log./.multi-10.Log./g' *
 rename 's/.Log./.multi-10.Log./g' *
 
-rename -n 's/.SJ.multi-10.tab/.multi-10.SJ.tab/g' *
-rename 's/.SJ.multi-10.tab/.multi-10.SJ.tab/g' *
+rename -n 's/.SJ.out.tab/.multi-10.SJ.tab/g' *
+rename 's/.SJ.out.tab/.multi-10.SJ.tab/g' *
 
 rename -n 's/.Aligned.sortedByCoord././g' *
 rename 's/.Aligned.sortedByCoord././g' *
 
+rename -n 's/.out.bam/.multi-10.bam/g' *
+rename 's/.out.bam/.multi-10.bam/g' *
 ```
+</details>
+<br />
+
+<details>
+<summary><i>Printed: In bams/unmapped-rm/SC_KL_20S...</i></summary>
+
+```txt
+❯ rename -n 's/.Log./.multi-10.Log./g' *
+'5781_G1_IN_S5.Log.final.out' would be renamed to '5781_G1_IN_S5.multi-10.Log.final.out'
+'5781_G1_IN_S5.Log.out' would be renamed to '5781_G1_IN_S5.multi-10.Log.out'
+'5781_G1_IN_S5.Log.progress.out' would be renamed to '5781_G1_IN_S5.multi-10.Log.progress.out'
+'5781_G1_IP_S1.Log.final.out' would be renamed to '5781_G1_IP_S1.multi-10.Log.final.out'
+'5781_G1_IP_S1.Log.out' would be renamed to '5781_G1_IP_S1.multi-10.Log.out'
+'5781_G1_IP_S1.Log.progress.out' would be renamed to '5781_G1_IP_S1.multi-10.Log.progress.out'
+'5781_Q_IN_S6.Log.final.out' would be renamed to '5781_Q_IN_S6.multi-10.Log.final.out'
+'5781_Q_IN_S6.Log.out' would be renamed to '5781_Q_IN_S6.multi-10.Log.out'
+'5781_Q_IN_S6.Log.progress.out' would be renamed to '5781_Q_IN_S6.multi-10.Log.progress.out'
+'5781_Q_IP_S2.Log.final.out' would be renamed to '5781_Q_IP_S2.multi-10.Log.final.out'
+'5781_Q_IP_S2.Log.out' would be renamed to '5781_Q_IP_S2.multi-10.Log.out'
+'5781_Q_IP_S2.Log.progress.out' would be renamed to '5781_Q_IP_S2.multi-10.Log.progress.out'
+'5782_G1_IN_S7.Log.final.out' would be renamed to '5782_G1_IN_S7.multi-10.Log.final.out'
+'5782_G1_IN_S7.Log.out' would be renamed to '5782_G1_IN_S7.multi-10.Log.out'
+'5782_G1_IN_S7.Log.progress.out' would be renamed to '5782_G1_IN_S7.multi-10.Log.progress.out'
+'5782_G1_IP_S3.Log.final.out' would be renamed to '5782_G1_IP_S3.multi-10.Log.final.out'
+'5782_G1_IP_S3.Log.out' would be renamed to '5782_G1_IP_S3.multi-10.Log.out'
+'5782_G1_IP_S3.Log.progress.out' would be renamed to '5782_G1_IP_S3.multi-10.Log.progress.out'
+'5782_Q_IN_S8.Log.final.out' would be renamed to '5782_Q_IN_S8.multi-10.Log.final.out'
+'5782_Q_IN_S8.Log.out' would be renamed to '5782_Q_IN_S8.multi-10.Log.out'
+'5782_Q_IN_S8.Log.progress.out' would be renamed to '5782_Q_IN_S8.multi-10.Log.progress.out'
+'5782_Q_IP_S4.Log.final.out' would be renamed to '5782_Q_IP_S4.multi-10.Log.final.out'
+'5782_Q_IP_S4.Log.out' would be renamed to '5782_Q_IP_S4.multi-10.Log.out'
+'5782_Q_IP_S4.Log.progress.out' would be renamed to '5782_Q_IP_S4.multi-10.Log.progress.out'
+'CW10_7747_8day_Q_IN_S5.Log.final.out' would be renamed to 'CW10_7747_8day_Q_IN_S5.multi-10.Log.final.out'
+'CW10_7747_8day_Q_IN_S5.Log.out' would be renamed to 'CW10_7747_8day_Q_IN_S5.multi-10.Log.out'
+'CW10_7747_8day_Q_IN_S5.Log.progress.out' would be renamed to 'CW10_7747_8day_Q_IN_S5.multi-10.Log.progress.out'
+'CW10_7747_8day_Q_PD_S11.Log.final.out' would be renamed to 'CW10_7747_8day_Q_PD_S11.multi-10.Log.final.out'
+'CW10_7747_8day_Q_PD_S11.Log.out' would be renamed to 'CW10_7747_8day_Q_PD_S11.multi-10.Log.out'
+'CW10_7747_8day_Q_PD_S11.Log.progress.out' would be renamed to 'CW10_7747_8day_Q_PD_S11.multi-10.Log.progress.out'
+'CW12_7748_8day_Q_IN_S6.Log.final.out' would be renamed to 'CW12_7748_8day_Q_IN_S6.multi-10.Log.final.out'
+'CW12_7748_8day_Q_IN_S6.Log.out' would be renamed to 'CW12_7748_8day_Q_IN_S6.multi-10.Log.out'
+'CW12_7748_8day_Q_IN_S6.Log.progress.out' would be renamed to 'CW12_7748_8day_Q_IN_S6.multi-10.Log.progress.out'
+'CW12_7748_8day_Q_PD_S12.Log.final.out' would be renamed to 'CW12_7748_8day_Q_PD_S12.multi-10.Log.final.out'
+'CW12_7748_8day_Q_PD_S12.Log.out' would be renamed to 'CW12_7748_8day_Q_PD_S12.multi-10.Log.out'
+'CW12_7748_8day_Q_PD_S12.Log.progress.out' would be renamed to 'CW12_7748_8day_Q_PD_S12.multi-10.Log.progress.out'
+'CW2_5781_8day_Q_IN_S1.Log.final.out' would be renamed to 'CW2_5781_8day_Q_IN_S1.multi-10.Log.final.out'
+'CW2_5781_8day_Q_IN_S1.Log.out' would be renamed to 'CW2_5781_8day_Q_IN_S1.multi-10.Log.out'
+'CW2_5781_8day_Q_IN_S1.Log.progress.out' would be renamed to 'CW2_5781_8day_Q_IN_S1.multi-10.Log.progress.out'
+'CW2_5781_8day_Q_PD_S7.Log.final.out' would be renamed to 'CW2_5781_8day_Q_PD_S7.multi-10.Log.final.out'
+'CW2_5781_8day_Q_PD_S7.Log.out' would be renamed to 'CW2_5781_8day_Q_PD_S7.multi-10.Log.out'
+'CW2_5781_8day_Q_PD_S7.Log.progress.out' would be renamed to 'CW2_5781_8day_Q_PD_S7.multi-10.Log.progress.out'
+'CW4_5782_8day_Q_IN_S2.Log.final.out' would be renamed to 'CW4_5782_8day_Q_IN_S2.multi-10.Log.final.out'
+'CW4_5782_8day_Q_IN_S2.Log.out' would be renamed to 'CW4_5782_8day_Q_IN_S2.multi-10.Log.out'
+'CW4_5782_8day_Q_IN_S2.Log.progress.out' would be renamed to 'CW4_5782_8day_Q_IN_S2.multi-10.Log.progress.out'
+'CW4_5782_8day_Q_PD_S8.Log.final.out' would be renamed to 'CW4_5782_8day_Q_PD_S8.multi-10.Log.final.out'
+'CW4_5782_8day_Q_PD_S8.Log.out' would be renamed to 'CW4_5782_8day_Q_PD_S8.multi-10.Log.out'
+'CW4_5782_8day_Q_PD_S8.Log.progress.out' would be renamed to 'CW4_5782_8day_Q_PD_S8.multi-10.Log.progress.out'
+'CW6_7078_8day_Q_IN_S3.Log.final.out' would be renamed to 'CW6_7078_8day_Q_IN_S3.multi-10.Log.final.out'
+'CW6_7078_8day_Q_IN_S3.Log.out' would be renamed to 'CW6_7078_8day_Q_IN_S3.multi-10.Log.out'
+'CW6_7078_8day_Q_IN_S3.Log.progress.out' would be renamed to 'CW6_7078_8day_Q_IN_S3.multi-10.Log.progress.out'
+'CW6_7078_8day_Q_PD_S9.Log.final.out' would be renamed to 'CW6_7078_8day_Q_PD_S9.multi-10.Log.final.out'
+'CW6_7078_8day_Q_PD_S9.Log.out' would be renamed to 'CW6_7078_8day_Q_PD_S9.multi-10.Log.out'
+'CW6_7078_8day_Q_PD_S9.Log.progress.out' would be renamed to 'CW6_7078_8day_Q_PD_S9.multi-10.Log.progress.out'
+'CW8_7079_8day_Q_IN_S4.Log.final.out' would be renamed to 'CW8_7079_8day_Q_IN_S4.multi-10.Log.final.out'
+'CW8_7079_8day_Q_IN_S4.Log.out' would be renamed to 'CW8_7079_8day_Q_IN_S4.multi-10.Log.out'
+'CW8_7079_8day_Q_IN_S4.Log.progress.out' would be renamed to 'CW8_7079_8day_Q_IN_S4.multi-10.Log.progress.out'
+'CW8_7079_8day_Q_PD_S10.Log.final.out' would be renamed to 'CW8_7079_8day_Q_PD_S10.multi-10.Log.final.out'
+'CW8_7079_8day_Q_PD_S10.Log.out' would be renamed to 'CW8_7079_8day_Q_PD_S10.multi-10.Log.out'
+'CW8_7079_8day_Q_PD_S10.Log.progress.out' would be renamed to 'CW8_7079_8day_Q_PD_S10.multi-10.Log.progress.out'
+'SAMPLE_BM10_DSp48_5781_S22.Log.final.out' would be renamed to 'SAMPLE_BM10_DSp48_5781_S22.multi-10.Log.final.out'
+'SAMPLE_BM10_DSp48_5781_S22.Log.out' would be renamed to 'SAMPLE_BM10_DSp48_5781_S22.multi-10.Log.out'
+'SAMPLE_BM10_DSp48_5781_S22.Log.progress.out' would be renamed to 'SAMPLE_BM10_DSp48_5781_S22.multi-10.Log.progress.out'
+'SAMPLE_BM11_DSp48_7080_S23.Log.final.out' would be renamed to 'SAMPLE_BM11_DSp48_7080_S23.multi-10.Log.final.out'
+'SAMPLE_BM11_DSp48_7080_S23.Log.out' would be renamed to 'SAMPLE_BM11_DSp48_7080_S23.multi-10.Log.out'
+'SAMPLE_BM11_DSp48_7080_S23.Log.progress.out' would be renamed to 'SAMPLE_BM11_DSp48_7080_S23.multi-10.Log.progress.out'
+'SAMPLE_BM1_DSm2_5781_S13.Log.final.out' would be renamed to 'SAMPLE_BM1_DSm2_5781_S13.multi-10.Log.final.out'
+'SAMPLE_BM1_DSm2_5781_S13.Log.out' would be renamed to 'SAMPLE_BM1_DSm2_5781_S13.multi-10.Log.out'
+'SAMPLE_BM1_DSm2_5781_S13.Log.progress.out' would be renamed to 'SAMPLE_BM1_DSm2_5781_S13.multi-10.Log.progress.out'
+'SAMPLE_BM2_DSm2_7080_S14.Log.final.out' would be renamed to 'SAMPLE_BM2_DSm2_7080_S14.multi-10.Log.final.out'
+'SAMPLE_BM2_DSm2_7080_S14.Log.out' would be renamed to 'SAMPLE_BM2_DSm2_7080_S14.multi-10.Log.out'
+'SAMPLE_BM2_DSm2_7080_S14.Log.progress.out' would be renamed to 'SAMPLE_BM2_DSm2_7080_S14.multi-10.Log.progress.out'
+'SAMPLE_BM3_DSm2_7079_S15.Log.final.out' would be renamed to 'SAMPLE_BM3_DSm2_7079_S15.multi-10.Log.final.out'
+'SAMPLE_BM3_DSm2_7079_S15.Log.out' would be renamed to 'SAMPLE_BM3_DSm2_7079_S15.multi-10.Log.out'
+'SAMPLE_BM3_DSm2_7079_S15.Log.progress.out' would be renamed to 'SAMPLE_BM3_DSm2_7079_S15.multi-10.Log.progress.out'
+'SAMPLE_BM4_DSp2_5781_S16.Log.final.out' would be renamed to 'SAMPLE_BM4_DSp2_5781_S16.multi-10.Log.final.out'
+'SAMPLE_BM4_DSp2_5781_S16.Log.out' would be renamed to 'SAMPLE_BM4_DSp2_5781_S16.multi-10.Log.out'
+'SAMPLE_BM4_DSp2_5781_S16.Log.progress.out' would be renamed to 'SAMPLE_BM4_DSp2_5781_S16.multi-10.Log.progress.out'
+'SAMPLE_BM5_DSp2_7080_S17.Log.final.out' would be renamed to 'SAMPLE_BM5_DSp2_7080_S17.multi-10.Log.final.out'
+'SAMPLE_BM5_DSp2_7080_S17.Log.out' would be renamed to 'SAMPLE_BM5_DSp2_7080_S17.multi-10.Log.out'
+'SAMPLE_BM5_DSp2_7080_S17.Log.progress.out' would be renamed to 'SAMPLE_BM5_DSp2_7080_S17.multi-10.Log.progress.out'
+'SAMPLE_BM6_DSp2_7079_S18.Log.final.out' would be renamed to 'SAMPLE_BM6_DSp2_7079_S18.multi-10.Log.final.out'
+'SAMPLE_BM6_DSp2_7079_S18.Log.out' would be renamed to 'SAMPLE_BM6_DSp2_7079_S18.multi-10.Log.out'
+'SAMPLE_BM6_DSp2_7079_S18.Log.progress.out' would be renamed to 'SAMPLE_BM6_DSp2_7079_S18.multi-10.Log.progress.out'
+'SAMPLE_BM7_DSp24_5781_S19.Log.final.out' would be renamed to 'SAMPLE_BM7_DSp24_5781_S19.multi-10.Log.final.out'
+'SAMPLE_BM7_DSp24_5781_S19.Log.out' would be renamed to 'SAMPLE_BM7_DSp24_5781_S19.multi-10.Log.out'
+'SAMPLE_BM7_DSp24_5781_S19.Log.progress.out' would be renamed to 'SAMPLE_BM7_DSp24_5781_S19.multi-10.Log.progress.out'
+'SAMPLE_BM8_DSp24_7080_S20.Log.final.out' would be renamed to 'SAMPLE_BM8_DSp24_7080_S20.multi-10.Log.final.out'
+'SAMPLE_BM8_DSp24_7080_S20.Log.out' would be renamed to 'SAMPLE_BM8_DSp24_7080_S20.multi-10.Log.out'
+'SAMPLE_BM8_DSp24_7080_S20.Log.progress.out' would be renamed to 'SAMPLE_BM8_DSp24_7080_S20.multi-10.Log.progress.out'
+'SAMPLE_BM9_DSp24_7079_S21.Log.final.out' would be renamed to 'SAMPLE_BM9_DSp24_7079_S21.multi-10.Log.final.out'
+'SAMPLE_BM9_DSp24_7079_S21.Log.out' would be renamed to 'SAMPLE_BM9_DSp24_7079_S21.multi-10.Log.out'
+'SAMPLE_BM9_DSp24_7079_S21.Log.progress.out' would be renamed to 'SAMPLE_BM9_DSp24_7079_S21.multi-10.Log.progress.out'
+'SAMPLE_Bp10_DSp48_5782_S10.Log.final.out' would be renamed to 'SAMPLE_Bp10_DSp48_5782_S10.multi-10.Log.final.out'
+'SAMPLE_Bp10_DSp48_5782_S10.Log.out' would be renamed to 'SAMPLE_Bp10_DSp48_5782_S10.multi-10.Log.out'
+'SAMPLE_Bp10_DSp48_5782_S10.Log.progress.out' would be renamed to 'SAMPLE_Bp10_DSp48_5782_S10.multi-10.Log.progress.out'
+'SAMPLE_Bp11_DSp48_7081_S11.Log.final.out' would be renamed to 'SAMPLE_Bp11_DSp48_7081_S11.multi-10.Log.final.out'
+'SAMPLE_Bp11_DSp48_7081_S11.Log.out' would be renamed to 'SAMPLE_Bp11_DSp48_7081_S11.multi-10.Log.out'
+'SAMPLE_Bp11_DSp48_7081_S11.Log.progress.out' would be renamed to 'SAMPLE_Bp11_DSp48_7081_S11.multi-10.Log.progress.out'
+'SAMPLE_Bp12_DSp48_7078_S12.Log.final.out' would be renamed to 'SAMPLE_Bp12_DSp48_7078_S12.multi-10.Log.final.out'
+'SAMPLE_Bp12_DSp48_7078_S12.Log.out' would be renamed to 'SAMPLE_Bp12_DSp48_7078_S12.multi-10.Log.out'
+'SAMPLE_Bp12_DSp48_7078_S12.Log.progress.out' would be renamed to 'SAMPLE_Bp12_DSp48_7078_S12.multi-10.Log.progress.out'
+'SAMPLE_Bp1_DSm2_5782_S1.Log.final.out' would be renamed to 'SAMPLE_Bp1_DSm2_5782_S1.multi-10.Log.final.out'
+'SAMPLE_Bp1_DSm2_5782_S1.Log.out' would be renamed to 'SAMPLE_Bp1_DSm2_5782_S1.multi-10.Log.out'
+'SAMPLE_Bp1_DSm2_5782_S1.Log.progress.out' would be renamed to 'SAMPLE_Bp1_DSm2_5782_S1.multi-10.Log.progress.out'
+'SAMPLE_Bp2_DSm2_7081_S2.Log.final.out' would be renamed to 'SAMPLE_Bp2_DSm2_7081_S2.multi-10.Log.final.out'
+'SAMPLE_Bp2_DSm2_7081_S2.Log.out' would be renamed to 'SAMPLE_Bp2_DSm2_7081_S2.multi-10.Log.out'
+'SAMPLE_Bp2_DSm2_7081_S2.Log.progress.out' would be renamed to 'SAMPLE_Bp2_DSm2_7081_S2.multi-10.Log.progress.out'
+'SAMPLE_Bp3_DSm2_7078_S3.Log.final.out' would be renamed to 'SAMPLE_Bp3_DSm2_7078_S3.multi-10.Log.final.out'
+'SAMPLE_Bp3_DSm2_7078_S3.Log.out' would be renamed to 'SAMPLE_Bp3_DSm2_7078_S3.multi-10.Log.out'
+'SAMPLE_Bp3_DSm2_7078_S3.Log.progress.out' would be renamed to 'SAMPLE_Bp3_DSm2_7078_S3.multi-10.Log.progress.out'
+'SAMPLE_Bp4_DSp2_5782_S4.Log.final.out' would be renamed to 'SAMPLE_Bp4_DSp2_5782_S4.multi-10.Log.final.out'
+'SAMPLE_Bp4_DSp2_5782_S4.Log.out' would be renamed to 'SAMPLE_Bp4_DSp2_5782_S4.multi-10.Log.out'
+'SAMPLE_Bp4_DSp2_5782_S4.Log.progress.out' would be renamed to 'SAMPLE_Bp4_DSp2_5782_S4.multi-10.Log.progress.out'
+'SAMPLE_Bp5_DSp2_7081_S5.Log.final.out' would be renamed to 'SAMPLE_Bp5_DSp2_7081_S5.multi-10.Log.final.out'
+'SAMPLE_Bp5_DSp2_7081_S5.Log.out' would be renamed to 'SAMPLE_Bp5_DSp2_7081_S5.multi-10.Log.out'
+'SAMPLE_Bp5_DSp2_7081_S5.Log.progress.out' would be renamed to 'SAMPLE_Bp5_DSp2_7081_S5.multi-10.Log.progress.out'
+'SAMPLE_Bp6_DSp2_7078_S6.Log.final.out' would be renamed to 'SAMPLE_Bp6_DSp2_7078_S6.multi-10.Log.final.out'
+'SAMPLE_Bp6_DSp2_7078_S6.Log.out' would be renamed to 'SAMPLE_Bp6_DSp2_7078_S6.multi-10.Log.out'
+'SAMPLE_Bp6_DSp2_7078_S6.Log.progress.out' would be renamed to 'SAMPLE_Bp6_DSp2_7078_S6.multi-10.Log.progress.out'
+'SAMPLE_Bp7_DSp24_5782_S7.Log.final.out' would be renamed to 'SAMPLE_Bp7_DSp24_5782_S7.multi-10.Log.final.out'
+'SAMPLE_Bp7_DSp24_5782_S7.Log.out' would be renamed to 'SAMPLE_Bp7_DSp24_5782_S7.multi-10.Log.out'
+'SAMPLE_Bp7_DSp24_5782_S7.Log.progress.out' would be renamed to 'SAMPLE_Bp7_DSp24_5782_S7.multi-10.Log.progress.out'
+'SAMPLE_Bp8_DSp24_7081_S8.Log.final.out' would be renamed to 'SAMPLE_Bp8_DSp24_7081_S8.multi-10.Log.final.out'
+'SAMPLE_Bp8_DSp24_7081_S8.Log.out' would be renamed to 'SAMPLE_Bp8_DSp24_7081_S8.multi-10.Log.out'
+'SAMPLE_Bp8_DSp24_7081_S8.Log.progress.out' would be renamed to 'SAMPLE_Bp8_DSp24_7081_S8.multi-10.Log.progress.out'
+'SAMPLE_Bp9_DSp24_7078_S9.Log.final.out' would be renamed to 'SAMPLE_Bp9_DSp24_7078_S9.multi-10.Log.final.out'
+'SAMPLE_Bp9_DSp24_7078_S9.Log.out' would be renamed to 'SAMPLE_Bp9_DSp24_7078_S9.multi-10.Log.out'
+'SAMPLE_Bp9_DSp24_7078_S9.Log.progress.out' would be renamed to 'SAMPLE_Bp9_DSp24_7078_S9.multi-10.Log.progress.out'
+'Sample_CT10_7718_pIAA_Q_Nascent_S5.Log.final.out' would be renamed to 'Sample_CT10_7718_pIAA_Q_Nascent_S5.multi-10.Log.final.out'
+'Sample_CT10_7718_pIAA_Q_Nascent_S5.Log.out' would be renamed to 'Sample_CT10_7718_pIAA_Q_Nascent_S5.multi-10.Log.out'
+'Sample_CT10_7718_pIAA_Q_Nascent_S5.Log.progress.out' would be renamed to 'Sample_CT10_7718_pIAA_Q_Nascent_S5.multi-10.Log.progress.out'
+'Sample_CT10_7718_pIAA_Q_SteadyState_S10.Log.final.out' would be renamed to 'Sample_CT10_7718_pIAA_Q_SteadyState_S10.multi-10.Log.final.out'
+'Sample_CT10_7718_pIAA_Q_SteadyState_S10.Log.out' would be renamed to 'Sample_CT10_7718_pIAA_Q_SteadyState_S10.multi-10.Log.out'
+'Sample_CT10_7718_pIAA_Q_SteadyState_S10.Log.progress.out' would be renamed to 'Sample_CT10_7718_pIAA_Q_SteadyState_S10.multi-10.Log.progress.out'
+'Sample_CT2_6125_pIAA_Q_Nascent_S1.Log.final.out' would be renamed to 'Sample_CT2_6125_pIAA_Q_Nascent_S1.multi-10.Log.final.out'
+'Sample_CT2_6125_pIAA_Q_Nascent_S1.Log.out' would be renamed to 'Sample_CT2_6125_pIAA_Q_Nascent_S1.multi-10.Log.out'
+'Sample_CT2_6125_pIAA_Q_Nascent_S1.Log.progress.out' would be renamed to 'Sample_CT2_6125_pIAA_Q_Nascent_S1.multi-10.Log.progress.out'
+'Sample_CT2_6125_pIAA_Q_SteadyState_S6.Log.final.out' would be renamed to 'Sample_CT2_6125_pIAA_Q_SteadyState_S6.multi-10.Log.final.out'
+'Sample_CT2_6125_pIAA_Q_SteadyState_S6.Log.out' would be renamed to 'Sample_CT2_6125_pIAA_Q_SteadyState_S6.multi-10.Log.out'
+'Sample_CT2_6125_pIAA_Q_SteadyState_S6.Log.progress.out' would be renamed to 'Sample_CT2_6125_pIAA_Q_SteadyState_S6.multi-10.Log.progress.out'
+'Sample_CT4_6126_pIAA_Q_Nascent_S2.Log.final.out' would be renamed to 'Sample_CT4_6126_pIAA_Q_Nascent_S2.multi-10.Log.final.out'
+'Sample_CT4_6126_pIAA_Q_Nascent_S2.Log.out' would be renamed to 'Sample_CT4_6126_pIAA_Q_Nascent_S2.multi-10.Log.out'
+'Sample_CT4_6126_pIAA_Q_Nascent_S2.Log.progress.out' would be renamed to 'Sample_CT4_6126_pIAA_Q_Nascent_S2.multi-10.Log.progress.out'
+'Sample_CT4_6126_pIAA_Q_SteadyState_S7.Log.final.out' would be renamed to 'Sample_CT4_6126_pIAA_Q_SteadyState_S7.multi-10.Log.final.out'
+'Sample_CT4_6126_pIAA_Q_SteadyState_S7.Log.out' would be renamed to 'Sample_CT4_6126_pIAA_Q_SteadyState_S7.multi-10.Log.out'
+'Sample_CT4_6126_pIAA_Q_SteadyState_S7.Log.progress.out' would be renamed to 'Sample_CT4_6126_pIAA_Q_SteadyState_S7.multi-10.Log.progress.out'
+'Sample_CT6_7714_pIAA_Q_Nascent_S3.Log.final.out' would be renamed to 'Sample_CT6_7714_pIAA_Q_Nascent_S3.multi-10.Log.final.out'
+'Sample_CT6_7714_pIAA_Q_Nascent_S3.Log.out' would be renamed to 'Sample_CT6_7714_pIAA_Q_Nascent_S3.multi-10.Log.out'
+'Sample_CT6_7714_pIAA_Q_Nascent_S3.Log.progress.out' would be renamed to 'Sample_CT6_7714_pIAA_Q_Nascent_S3.multi-10.Log.progress.out'
+'Sample_CT6_7714_pIAA_Q_SteadyState_S8.Log.final.out' would be renamed to 'Sample_CT6_7714_pIAA_Q_SteadyState_S8.multi-10.Log.final.out'
+'Sample_CT6_7714_pIAA_Q_SteadyState_S8.Log.out' would be renamed to 'Sample_CT6_7714_pIAA_Q_SteadyState_S8.multi-10.Log.out'
+'Sample_CT6_7714_pIAA_Q_SteadyState_S8.Log.progress.out' would be renamed to 'Sample_CT6_7714_pIAA_Q_SteadyState_S8.multi-10.Log.progress.out'
+'Sample_CT8_7716_pIAA_Q_Nascent_S4.Log.final.out' would be renamed to 'Sample_CT8_7716_pIAA_Q_Nascent_S4.multi-10.Log.final.out'
+'Sample_CT8_7716_pIAA_Q_Nascent_S4.Log.out' would be renamed to 'Sample_CT8_7716_pIAA_Q_Nascent_S4.multi-10.Log.out'
+'Sample_CT8_7716_pIAA_Q_Nascent_S4.Log.progress.out' would be renamed to 'Sample_CT8_7716_pIAA_Q_Nascent_S4.multi-10.Log.progress.out'
+'Sample_CT8_7716_pIAA_Q_SteadyState_S9.Log.final.out' would be renamed to 'Sample_CT8_7716_pIAA_Q_SteadyState_S9.multi-10.Log.final.out'
+'Sample_CT8_7716_pIAA_Q_SteadyState_S9.Log.out' would be renamed to 'Sample_CT8_7716_pIAA_Q_SteadyState_S9.multi-10.Log.out'
+'Sample_CT8_7716_pIAA_Q_SteadyState_S9.Log.progress.out' would be renamed to 'Sample_CT8_7716_pIAA_Q_SteadyState_S9.multi-10.Log.progress.out'
+'Sample_CU11_5782_Q_Nascent_S11.Log.final.out' would be renamed to 'Sample_CU11_5782_Q_Nascent_S11.multi-10.Log.final.out'
+'Sample_CU11_5782_Q_Nascent_S11.Log.out' would be renamed to 'Sample_CU11_5782_Q_Nascent_S11.multi-10.Log.out'
+'Sample_CU11_5782_Q_Nascent_S11.Log.progress.out' would be renamed to 'Sample_CU11_5782_Q_Nascent_S11.multi-10.Log.progress.out'
+'Sample_CU12_5782_Q_SteadyState_S12.Log.final.out' would be renamed to 'Sample_CU12_5782_Q_SteadyState_S12.multi-10.Log.final.out'
+'Sample_CU12_5782_Q_SteadyState_S12.Log.out' would be renamed to 'Sample_CU12_5782_Q_SteadyState_S12.multi-10.Log.out'
+'Sample_CU12_5782_Q_SteadyState_S12.Log.progress.out' would be renamed to 'Sample_CU12_5782_Q_SteadyState_S12.multi-10.Log.progress.out'
+
+
+❯ rename -n 's/.SJ.out.tab/.multi-10.SJ.tab/g' *
+'5781_G1_IN_S5.SJ.out.tab' would be renamed to '5781_G1_IN_S5.multi-10.SJ.tab'
+'5781_G1_IP_S1.SJ.out.tab' would be renamed to '5781_G1_IP_S1.multi-10.SJ.tab'
+'5781_Q_IN_S6.SJ.out.tab' would be renamed to '5781_Q_IN_S6.multi-10.SJ.tab'
+'5781_Q_IP_S2.SJ.out.tab' would be renamed to '5781_Q_IP_S2.multi-10.SJ.tab'
+'5782_G1_IN_S7.SJ.out.tab' would be renamed to '5782_G1_IN_S7.multi-10.SJ.tab'
+'5782_G1_IP_S3.SJ.out.tab' would be renamed to '5782_G1_IP_S3.multi-10.SJ.tab'
+'5782_Q_IN_S8.SJ.out.tab' would be renamed to '5782_Q_IN_S8.multi-10.SJ.tab'
+'5782_Q_IP_S4.SJ.out.tab' would be renamed to '5782_Q_IP_S4.multi-10.SJ.tab'
+'CW10_7747_8day_Q_IN_S5.SJ.out.tab' would be renamed to 'CW10_7747_8day_Q_IN_S5.multi-10.SJ.tab'
+'CW10_7747_8day_Q_PD_S11.SJ.out.tab' would be renamed to 'CW10_7747_8day_Q_PD_S11.multi-10.SJ.tab'
+'CW12_7748_8day_Q_IN_S6.SJ.out.tab' would be renamed to 'CW12_7748_8day_Q_IN_S6.multi-10.SJ.tab'
+'CW12_7748_8day_Q_PD_S12.SJ.out.tab' would be renamed to 'CW12_7748_8day_Q_PD_S12.multi-10.SJ.tab'
+'CW2_5781_8day_Q_IN_S1.SJ.out.tab' would be renamed to 'CW2_5781_8day_Q_IN_S1.multi-10.SJ.tab'
+'CW2_5781_8day_Q_PD_S7.SJ.out.tab' would be renamed to 'CW2_5781_8day_Q_PD_S7.multi-10.SJ.tab'
+'CW4_5782_8day_Q_IN_S2.SJ.out.tab' would be renamed to 'CW4_5782_8day_Q_IN_S2.multi-10.SJ.tab'
+'CW4_5782_8day_Q_PD_S8.SJ.out.tab' would be renamed to 'CW4_5782_8day_Q_PD_S8.multi-10.SJ.tab'
+'CW6_7078_8day_Q_IN_S3.SJ.out.tab' would be renamed to 'CW6_7078_8day_Q_IN_S3.multi-10.SJ.tab'
+'CW6_7078_8day_Q_PD_S9.SJ.out.tab' would be renamed to 'CW6_7078_8day_Q_PD_S9.multi-10.SJ.tab'
+'CW8_7079_8day_Q_IN_S4.SJ.out.tab' would be renamed to 'CW8_7079_8day_Q_IN_S4.multi-10.SJ.tab'
+'CW8_7079_8day_Q_PD_S10.SJ.out.tab' would be renamed to 'CW8_7079_8day_Q_PD_S10.multi-10.SJ.tab'
+'SAMPLE_BM10_DSp48_5781_S22.SJ.out.tab' would be renamed to 'SAMPLE_BM10_DSp48_5781_S22.multi-10.SJ.tab'
+'SAMPLE_BM11_DSp48_7080_S23.SJ.out.tab' would be renamed to 'SAMPLE_BM11_DSp48_7080_S23.multi-10.SJ.tab'
+'SAMPLE_BM1_DSm2_5781_S13.SJ.out.tab' would be renamed to 'SAMPLE_BM1_DSm2_5781_S13.multi-10.SJ.tab'
+'SAMPLE_BM2_DSm2_7080_S14.SJ.out.tab' would be renamed to 'SAMPLE_BM2_DSm2_7080_S14.multi-10.SJ.tab'
+'SAMPLE_BM3_DSm2_7079_S15.SJ.out.tab' would be renamed to 'SAMPLE_BM3_DSm2_7079_S15.multi-10.SJ.tab'
+'SAMPLE_BM4_DSp2_5781_S16.SJ.out.tab' would be renamed to 'SAMPLE_BM4_DSp2_5781_S16.multi-10.SJ.tab'
+'SAMPLE_BM5_DSp2_7080_S17.SJ.out.tab' would be renamed to 'SAMPLE_BM5_DSp2_7080_S17.multi-10.SJ.tab'
+'SAMPLE_BM6_DSp2_7079_S18.SJ.out.tab' would be renamed to 'SAMPLE_BM6_DSp2_7079_S18.multi-10.SJ.tab'
+'SAMPLE_BM7_DSp24_5781_S19.SJ.out.tab' would be renamed to 'SAMPLE_BM7_DSp24_5781_S19.multi-10.SJ.tab'
+'SAMPLE_BM8_DSp24_7080_S20.SJ.out.tab' would be renamed to 'SAMPLE_BM8_DSp24_7080_S20.multi-10.SJ.tab'
+'SAMPLE_BM9_DSp24_7079_S21.SJ.out.tab' would be renamed to 'SAMPLE_BM9_DSp24_7079_S21.multi-10.SJ.tab'
+'SAMPLE_Bp10_DSp48_5782_S10.SJ.out.tab' would be renamed to 'SAMPLE_Bp10_DSp48_5782_S10.multi-10.SJ.tab'
+'SAMPLE_Bp11_DSp48_7081_S11.SJ.out.tab' would be renamed to 'SAMPLE_Bp11_DSp48_7081_S11.multi-10.SJ.tab'
+'SAMPLE_Bp12_DSp48_7078_S12.SJ.out.tab' would be renamed to 'SAMPLE_Bp12_DSp48_7078_S12.multi-10.SJ.tab'
+'SAMPLE_Bp1_DSm2_5782_S1.SJ.out.tab' would be renamed to 'SAMPLE_Bp1_DSm2_5782_S1.multi-10.SJ.tab'
+'SAMPLE_Bp2_DSm2_7081_S2.SJ.out.tab' would be renamed to 'SAMPLE_Bp2_DSm2_7081_S2.multi-10.SJ.tab'
+'SAMPLE_Bp3_DSm2_7078_S3.SJ.out.tab' would be renamed to 'SAMPLE_Bp3_DSm2_7078_S3.multi-10.SJ.tab'
+'SAMPLE_Bp4_DSp2_5782_S4.SJ.out.tab' would be renamed to 'SAMPLE_Bp4_DSp2_5782_S4.multi-10.SJ.tab'
+'SAMPLE_Bp5_DSp2_7081_S5.SJ.out.tab' would be renamed to 'SAMPLE_Bp5_DSp2_7081_S5.multi-10.SJ.tab'
+'SAMPLE_Bp6_DSp2_7078_S6.SJ.out.tab' would be renamed to 'SAMPLE_Bp6_DSp2_7078_S6.multi-10.SJ.tab'
+'SAMPLE_Bp7_DSp24_5782_S7.SJ.out.tab' would be renamed to 'SAMPLE_Bp7_DSp24_5782_S7.multi-10.SJ.tab'
+'SAMPLE_Bp8_DSp24_7081_S8.SJ.out.tab' would be renamed to 'SAMPLE_Bp8_DSp24_7081_S8.multi-10.SJ.tab'
+'SAMPLE_Bp9_DSp24_7078_S9.SJ.out.tab' would be renamed to 'SAMPLE_Bp9_DSp24_7078_S9.multi-10.SJ.tab'
+'Sample_CT10_7718_pIAA_Q_Nascent_S5.SJ.out.tab' would be renamed to 'Sample_CT10_7718_pIAA_Q_Nascent_S5.multi-10.SJ.tab'
+'Sample_CT10_7718_pIAA_Q_SteadyState_S10.SJ.out.tab' would be renamed to 'Sample_CT10_7718_pIAA_Q_SteadyState_S10.multi-10.SJ.tab'
+'Sample_CT2_6125_pIAA_Q_Nascent_S1.SJ.out.tab' would be renamed to 'Sample_CT2_6125_pIAA_Q_Nascent_S1.multi-10.SJ.tab'
+'Sample_CT2_6125_pIAA_Q_SteadyState_S6.SJ.out.tab' would be renamed to 'Sample_CT2_6125_pIAA_Q_SteadyState_S6.multi-10.SJ.tab'
+'Sample_CT4_6126_pIAA_Q_Nascent_S2.SJ.out.tab' would be renamed to 'Sample_CT4_6126_pIAA_Q_Nascent_S2.multi-10.SJ.tab'
+'Sample_CT4_6126_pIAA_Q_SteadyState_S7.SJ.out.tab' would be renamed to 'Sample_CT4_6126_pIAA_Q_SteadyState_S7.multi-10.SJ.tab'
+'Sample_CT6_7714_pIAA_Q_Nascent_S3.SJ.out.tab' would be renamed to 'Sample_CT6_7714_pIAA_Q_Nascent_S3.multi-10.SJ.tab'
+'Sample_CT6_7714_pIAA_Q_SteadyState_S8.SJ.out.tab' would be renamed to 'Sample_CT6_7714_pIAA_Q_SteadyState_S8.multi-10.SJ.tab'
+'Sample_CT8_7716_pIAA_Q_Nascent_S4.SJ.out.tab' would be renamed to 'Sample_CT8_7716_pIAA_Q_Nascent_S4.multi-10.SJ.tab'
+'Sample_CT8_7716_pIAA_Q_SteadyState_S9.SJ.out.tab' would be renamed to 'Sample_CT8_7716_pIAA_Q_SteadyState_S9.multi-10.SJ.tab'
+'Sample_CU11_5782_Q_Nascent_S11.SJ.out.tab' would be renamed to 'Sample_CU11_5782_Q_Nascent_S11.multi-10.SJ.tab'
+'Sample_CU12_5782_Q_SteadyState_S12.SJ.out.tab' would be renamed to 'Sample_CU12_5782_Q_SteadyState_S12.multi-10.SJ.tab'
+
+
+❯ rename -n 's/.Aligned.sortedByCoord././g' *
+'5781_G1_IN_S5.Aligned.sortedByCoord.out.bam' would be renamed to '5781_G1_IN_S5.out.bam'
+'5781_G1_IP_S1.Aligned.sortedByCoord.out.bam' would be renamed to '5781_G1_IP_S1.out.bam'
+'5781_Q_IN_S6.Aligned.sortedByCoord.out.bam' would be renamed to '5781_Q_IN_S6.out.bam'
+'5781_Q_IP_S2.Aligned.sortedByCoord.out.bam' would be renamed to '5781_Q_IP_S2.out.bam'
+'5782_G1_IN_S7.Aligned.sortedByCoord.out.bam' would be renamed to '5782_G1_IN_S7.out.bam'
+'5782_G1_IP_S3.Aligned.sortedByCoord.out.bam' would be renamed to '5782_G1_IP_S3.out.bam'
+'5782_Q_IN_S8.Aligned.sortedByCoord.out.bam' would be renamed to '5782_Q_IN_S8.out.bam'
+'5782_Q_IP_S4.Aligned.sortedByCoord.out.bam' would be renamed to '5782_Q_IP_S4.out.bam'
+'CW10_7747_8day_Q_IN_S5.Aligned.sortedByCoord.out.bam' would be renamed to 'CW10_7747_8day_Q_IN_S5.out.bam'
+'CW10_7747_8day_Q_PD_S11.Aligned.sortedByCoord.out.bam' would be renamed to 'CW10_7747_8day_Q_PD_S11.out.bam'
+'CW12_7748_8day_Q_IN_S6.Aligned.sortedByCoord.out.bam' would be renamed to 'CW12_7748_8day_Q_IN_S6.out.bam'
+'CW12_7748_8day_Q_PD_S12.Aligned.sortedByCoord.out.bam' would be renamed to 'CW12_7748_8day_Q_PD_S12.out.bam'
+'CW2_5781_8day_Q_IN_S1.Aligned.sortedByCoord.out.bam' would be renamed to 'CW2_5781_8day_Q_IN_S1.out.bam'
+'CW2_5781_8day_Q_PD_S7.Aligned.sortedByCoord.out.bam' would be renamed to 'CW2_5781_8day_Q_PD_S7.out.bam'
+'CW4_5782_8day_Q_IN_S2.Aligned.sortedByCoord.out.bam' would be renamed to 'CW4_5782_8day_Q_IN_S2.out.bam'
+'CW4_5782_8day_Q_PD_S8.Aligned.sortedByCoord.out.bam' would be renamed to 'CW4_5782_8day_Q_PD_S8.out.bam'
+'CW6_7078_8day_Q_IN_S3.Aligned.sortedByCoord.out.bam' would be renamed to 'CW6_7078_8day_Q_IN_S3.out.bam'
+'CW6_7078_8day_Q_PD_S9.Aligned.sortedByCoord.out.bam' would be renamed to 'CW6_7078_8day_Q_PD_S9.out.bam'
+'CW8_7079_8day_Q_IN_S4.Aligned.sortedByCoord.out.bam' would be renamed to 'CW8_7079_8day_Q_IN_S4.out.bam'
+'CW8_7079_8day_Q_PD_S10.Aligned.sortedByCoord.out.bam' would be renamed to 'CW8_7079_8day_Q_PD_S10.out.bam'
+'SAMPLE_BM10_DSp48_5781_S22.Aligned.sortedByCoord.out.bam' would be renamed to 'SAMPLE_BM10_DSp48_5781_S22.out.bam'
+'SAMPLE_BM11_DSp48_7080_S23.Aligned.sortedByCoord.out.bam' would be renamed to 'SAMPLE_BM11_DSp48_7080_S23.out.bam'
+'SAMPLE_BM1_DSm2_5781_S13.Aligned.sortedByCoord.out.bam' would be renamed to 'SAMPLE_BM1_DSm2_5781_S13.out.bam'
+'SAMPLE_BM2_DSm2_7080_S14.Aligned.sortedByCoord.out.bam' would be renamed to 'SAMPLE_BM2_DSm2_7080_S14.out.bam'
+'SAMPLE_BM3_DSm2_7079_S15.Aligned.sortedByCoord.out.bam' would be renamed to 'SAMPLE_BM3_DSm2_7079_S15.out.bam'
+'SAMPLE_BM4_DSp2_5781_S16.Aligned.sortedByCoord.out.bam' would be renamed to 'SAMPLE_BM4_DSp2_5781_S16.out.bam'
+'SAMPLE_BM5_DSp2_7080_S17.Aligned.sortedByCoord.out.bam' would be renamed to 'SAMPLE_BM5_DSp2_7080_S17.out.bam'
+'SAMPLE_BM6_DSp2_7079_S18.Aligned.sortedByCoord.out.bam' would be renamed to 'SAMPLE_BM6_DSp2_7079_S18.out.bam'
+'SAMPLE_BM7_DSp24_5781_S19.Aligned.sortedByCoord.out.bam' would be renamed to 'SAMPLE_BM7_DSp24_5781_S19.out.bam'
+'SAMPLE_BM8_DSp24_7080_S20.Aligned.sortedByCoord.out.bam' would be renamed to 'SAMPLE_BM8_DSp24_7080_S20.out.bam'
+'SAMPLE_BM9_DSp24_7079_S21.Aligned.sortedByCoord.out.bam' would be renamed to 'SAMPLE_BM9_DSp24_7079_S21.out.bam'
+'SAMPLE_Bp10_DSp48_5782_S10.Aligned.sortedByCoord.out.bam' would be renamed to 'SAMPLE_Bp10_DSp48_5782_S10.out.bam'
+'SAMPLE_Bp11_DSp48_7081_S11.Aligned.sortedByCoord.out.bam' would be renamed to 'SAMPLE_Bp11_DSp48_7081_S11.out.bam'
+'SAMPLE_Bp12_DSp48_7078_S12.Aligned.sortedByCoord.out.bam' would be renamed to 'SAMPLE_Bp12_DSp48_7078_S12.out.bam'
+'SAMPLE_Bp1_DSm2_5782_S1.Aligned.sortedByCoord.out.bam' would be renamed to 'SAMPLE_Bp1_DSm2_5782_S1.out.bam'
+'SAMPLE_Bp2_DSm2_7081_S2.Aligned.sortedByCoord.out.bam' would be renamed to 'SAMPLE_Bp2_DSm2_7081_S2.out.bam'
+'SAMPLE_Bp3_DSm2_7078_S3.Aligned.sortedByCoord.out.bam' would be renamed to 'SAMPLE_Bp3_DSm2_7078_S3.out.bam'
+'SAMPLE_Bp4_DSp2_5782_S4.Aligned.sortedByCoord.out.bam' would be renamed to 'SAMPLE_Bp4_DSp2_5782_S4.out.bam'
+'SAMPLE_Bp5_DSp2_7081_S5.Aligned.sortedByCoord.out.bam' would be renamed to 'SAMPLE_Bp5_DSp2_7081_S5.out.bam'
+'SAMPLE_Bp6_DSp2_7078_S6.Aligned.sortedByCoord.out.bam' would be renamed to 'SAMPLE_Bp6_DSp2_7078_S6.out.bam'
+'SAMPLE_Bp7_DSp24_5782_S7.Aligned.sortedByCoord.out.bam' would be renamed to 'SAMPLE_Bp7_DSp24_5782_S7.out.bam'
+'SAMPLE_Bp8_DSp24_7081_S8.Aligned.sortedByCoord.out.bam' would be renamed to 'SAMPLE_Bp8_DSp24_7081_S8.out.bam'
+'SAMPLE_Bp9_DSp24_7078_S9.Aligned.sortedByCoord.out.bam' would be renamed to 'SAMPLE_Bp9_DSp24_7078_S9.out.bam'
+'Sample_CT10_7718_pIAA_Q_Nascent_S5.Aligned.sortedByCoord.out.bam' would be renamed to 'Sample_CT10_7718_pIAA_Q_Nascent_S5.out.bam'
+'Sample_CT10_7718_pIAA_Q_SteadyState_S10.Aligned.sortedByCoord.out.bam' would be renamed to 'Sample_CT10_7718_pIAA_Q_SteadyState_S10.out.bam'
+'Sample_CT2_6125_pIAA_Q_Nascent_S1.Aligned.sortedByCoord.out.bam' would be renamed to 'Sample_CT2_6125_pIAA_Q_Nascent_S1.out.bam'
+'Sample_CT2_6125_pIAA_Q_SteadyState_S6.Aligned.sortedByCoord.out.bam' would be renamed to 'Sample_CT2_6125_pIAA_Q_SteadyState_S6.out.bam'
+'Sample_CT4_6126_pIAA_Q_Nascent_S2.Aligned.sortedByCoord.out.bam' would be renamed to 'Sample_CT4_6126_pIAA_Q_Nascent_S2.out.bam'
+'Sample_CT4_6126_pIAA_Q_SteadyState_S7.Aligned.sortedByCoord.out.bam' would be renamed to 'Sample_CT4_6126_pIAA_Q_SteadyState_S7.out.bam'
+'Sample_CT6_7714_pIAA_Q_Nascent_S3.Aligned.sortedByCoord.out.bam' would be renamed to 'Sample_CT6_7714_pIAA_Q_Nascent_S3.out.bam'
+'Sample_CT6_7714_pIAA_Q_SteadyState_S8.Aligned.sortedByCoord.out.bam' would be renamed to 'Sample_CT6_7714_pIAA_Q_SteadyState_S8.out.bam'
+'Sample_CT8_7716_pIAA_Q_Nascent_S4.Aligned.sortedByCoord.out.bam' would be renamed to 'Sample_CT8_7716_pIAA_Q_Nascent_S4.out.bam'
+'Sample_CT8_7716_pIAA_Q_SteadyState_S9.Aligned.sortedByCoord.out.bam' would be renamed to 'Sample_CT8_7716_pIAA_Q_SteadyState_S9.out.bam'
+'Sample_CU11_5782_Q_Nascent_S11.Aligned.sortedByCoord.out.bam' would be renamed to 'Sample_CU11_5782_Q_Nascent_S11.out.bam'
+'Sample_CU12_5782_Q_SteadyState_S12.Aligned.sortedByCoord.out.bam' would be renamed to 'Sample_CU12_5782_Q_SteadyState_S12.out.bam'
+
+
+❯ rename -n 's/.out.bam/.multi-10.bam/g' *
+'5781_G1_IN_S5.out.bam' would be renamed to '5781_G1_IN_S5.multi-10.bam'
+'5781_G1_IP_S1.out.bam' would be renamed to '5781_G1_IP_S1.multi-10.bam'
+'5781_Q_IN_S6.out.bam' would be renamed to '5781_Q_IN_S6.multi-10.bam'
+'5781_Q_IP_S2.out.bam' would be renamed to '5781_Q_IP_S2.multi-10.bam'
+'5782_G1_IN_S7.out.bam' would be renamed to '5782_G1_IN_S7.multi-10.bam'
+'5782_G1_IP_S3.out.bam' would be renamed to '5782_G1_IP_S3.multi-10.bam'
+'5782_Q_IN_S8.out.bam' would be renamed to '5782_Q_IN_S8.multi-10.bam'
+'5782_Q_IP_S4.out.bam' would be renamed to '5782_Q_IP_S4.multi-10.bam'
+'CW10_7747_8day_Q_IN_S5.out.bam' would be renamed to 'CW10_7747_8day_Q_IN_S5.multi-10.bam'
+'CW10_7747_8day_Q_PD_S11.out.bam' would be renamed to 'CW10_7747_8day_Q_PD_S11.multi-10.bam'
+'CW12_7748_8day_Q_IN_S6.out.bam' would be renamed to 'CW12_7748_8day_Q_IN_S6.multi-10.bam'
+'CW12_7748_8day_Q_PD_S12.out.bam' would be renamed to 'CW12_7748_8day_Q_PD_S12.multi-10.bam'
+'CW2_5781_8day_Q_IN_S1.out.bam' would be renamed to 'CW2_5781_8day_Q_IN_S1.multi-10.bam'
+'CW2_5781_8day_Q_PD_S7.out.bam' would be renamed to 'CW2_5781_8day_Q_PD_S7.multi-10.bam'
+'CW4_5782_8day_Q_IN_S2.out.bam' would be renamed to 'CW4_5782_8day_Q_IN_S2.multi-10.bam'
+'CW4_5782_8day_Q_PD_S8.out.bam' would be renamed to 'CW4_5782_8day_Q_PD_S8.multi-10.bam'
+'CW6_7078_8day_Q_IN_S3.out.bam' would be renamed to 'CW6_7078_8day_Q_IN_S3.multi-10.bam'
+'CW6_7078_8day_Q_PD_S9.out.bam' would be renamed to 'CW6_7078_8day_Q_PD_S9.multi-10.bam'
+'CW8_7079_8day_Q_IN_S4.out.bam' would be renamed to 'CW8_7079_8day_Q_IN_S4.multi-10.bam'
+'CW8_7079_8day_Q_PD_S10.out.bam' would be renamed to 'CW8_7079_8day_Q_PD_S10.multi-10.bam'
+'SAMPLE_BM10_DSp48_5781_S22.out.bam' would be renamed to 'SAMPLE_BM10_DSp48_5781_S22.multi-10.bam'
+'SAMPLE_BM11_DSp48_7080_S23.out.bam' would be renamed to 'SAMPLE_BM11_DSp48_7080_S23.multi-10.bam'
+'SAMPLE_BM1_DSm2_5781_S13.out.bam' would be renamed to 'SAMPLE_BM1_DSm2_5781_S13.multi-10.bam'
+'SAMPLE_BM2_DSm2_7080_S14.out.bam' would be renamed to 'SAMPLE_BM2_DSm2_7080_S14.multi-10.bam'
+'SAMPLE_BM3_DSm2_7079_S15.out.bam' would be renamed to 'SAMPLE_BM3_DSm2_7079_S15.multi-10.bam'
+'SAMPLE_BM4_DSp2_5781_S16.out.bam' would be renamed to 'SAMPLE_BM4_DSp2_5781_S16.multi-10.bam'
+'SAMPLE_BM5_DSp2_7080_S17.out.bam' would be renamed to 'SAMPLE_BM5_DSp2_7080_S17.multi-10.bam'
+'SAMPLE_BM6_DSp2_7079_S18.out.bam' would be renamed to 'SAMPLE_BM6_DSp2_7079_S18.multi-10.bam'
+'SAMPLE_BM7_DSp24_5781_S19.out.bam' would be renamed to 'SAMPLE_BM7_DSp24_5781_S19.multi-10.bam'
+'SAMPLE_BM8_DSp24_7080_S20.out.bam' would be renamed to 'SAMPLE_BM8_DSp24_7080_S20.multi-10.bam'
+'SAMPLE_BM9_DSp24_7079_S21.out.bam' would be renamed to 'SAMPLE_BM9_DSp24_7079_S21.multi-10.bam'
+'SAMPLE_Bp10_DSp48_5782_S10.out.bam' would be renamed to 'SAMPLE_Bp10_DSp48_5782_S10.multi-10.bam'
+'SAMPLE_Bp11_DSp48_7081_S11.out.bam' would be renamed to 'SAMPLE_Bp11_DSp48_7081_S11.multi-10.bam'
+'SAMPLE_Bp12_DSp48_7078_S12.out.bam' would be renamed to 'SAMPLE_Bp12_DSp48_7078_S12.multi-10.bam'
+'SAMPLE_Bp1_DSm2_5782_S1.out.bam' would be renamed to 'SAMPLE_Bp1_DSm2_5782_S1.multi-10.bam'
+'SAMPLE_Bp2_DSm2_7081_S2.out.bam' would be renamed to 'SAMPLE_Bp2_DSm2_7081_S2.multi-10.bam'
+'SAMPLE_Bp3_DSm2_7078_S3.out.bam' would be renamed to 'SAMPLE_Bp3_DSm2_7078_S3.multi-10.bam'
+'SAMPLE_Bp4_DSp2_5782_S4.out.bam' would be renamed to 'SAMPLE_Bp4_DSp2_5782_S4.multi-10.bam'
+'SAMPLE_Bp5_DSp2_7081_S5.out.bam' would be renamed to 'SAMPLE_Bp5_DSp2_7081_S5.multi-10.bam'
+'SAMPLE_Bp6_DSp2_7078_S6.out.bam' would be renamed to 'SAMPLE_Bp6_DSp2_7078_S6.multi-10.bam'
+'SAMPLE_Bp7_DSp24_5782_S7.out.bam' would be renamed to 'SAMPLE_Bp7_DSp24_5782_S7.multi-10.bam'
+'SAMPLE_Bp8_DSp24_7081_S8.out.bam' would be renamed to 'SAMPLE_Bp8_DSp24_7081_S8.multi-10.bam'
+'SAMPLE_Bp9_DSp24_7078_S9.out.bam' would be renamed to 'SAMPLE_Bp9_DSp24_7078_S9.multi-10.bam'
+'Sample_CT10_7718_pIAA_Q_Nascent_S5.out.bam' would be renamed to 'Sample_CT10_7718_pIAA_Q_Nascent_S5.multi-10.bam'
+'Sample_CT10_7718_pIAA_Q_SteadyState_S10.out.bam' would be renamed to 'Sample_CT10_7718_pIAA_Q_SteadyState_S10.multi-10.bam'
+'Sample_CT2_6125_pIAA_Q_Nascent_S1.out.bam' would be renamed to 'Sample_CT2_6125_pIAA_Q_Nascent_S1.multi-10.bam'
+'Sample_CT2_6125_pIAA_Q_SteadyState_S6.out.bam' would be renamed to 'Sample_CT2_6125_pIAA_Q_SteadyState_S6.multi-10.bam'
+'Sample_CT4_6126_pIAA_Q_Nascent_S2.out.bam' would be renamed to 'Sample_CT4_6126_pIAA_Q_Nascent_S2.multi-10.bam'
+'Sample_CT4_6126_pIAA_Q_SteadyState_S7.out.bam' would be renamed to 'Sample_CT4_6126_pIAA_Q_SteadyState_S7.multi-10.bam'
+'Sample_CT6_7714_pIAA_Q_Nascent_S3.out.bam' would be renamed to 'Sample_CT6_7714_pIAA_Q_Nascent_S3.multi-10.bam'
+'Sample_CT6_7714_pIAA_Q_SteadyState_S8.out.bam' would be renamed to 'Sample_CT6_7714_pIAA_Q_SteadyState_S8.multi-10.bam'
+'Sample_CT8_7716_pIAA_Q_Nascent_S4.out.bam' would be renamed to 'Sample_CT8_7716_pIAA_Q_Nascent_S4.multi-10.bam'
+'Sample_CT8_7716_pIAA_Q_SteadyState_S9.out.bam' would be renamed to 'Sample_CT8_7716_pIAA_Q_SteadyState_S9.multi-10.bam'
+'Sample_CU11_5782_Q_Nascent_S11.out.bam' would be renamed to 'Sample_CU11_5782_Q_Nascent_S11.multi-10.bam'
+'Sample_CU12_5782_Q_SteadyState_S12.out.bam' would be renamed to 'Sample_CU12_5782_Q_SteadyState_S12.multi-10.bam'
+```
+</details>
+<br />
 
 <a id="in-bamsunmapped-wsc_kl_20s"></a>
-##### In `bams/unmapped-w/SC_KL_20S`
-`#PICKUPHERE` `#INPROGRESS`
+##### In `bams/unmapped-w/SC_KL_20S`...
+<details>
+<summary><i>Code: In bams/unmapped-w/SC_KL_20S...</i></summary>
+
 ```bash
 #!/bin/bash
 #DONTRUN #CONTINUE
 
 cd bams/unmapped-w/SC_KL_20S \
-	|| echo "cd'ing failed; check on this..."
+    || echo "cd'ing failed; check on this..."
 
 #  Working things out...
 rm -r *._STARtmp
@@ -12283,14 +12645,12 @@ rename 's/.SJ.multi-10.tab/.multi-10.SJ.tab/g' *
 
 rename -n 's/.Aligned.sortedByCoord././g' *
 rename 's/.Aligned.sortedByCoord././g' *
-
 ```
-
 </details>
 <br />
 
 <details>
-<summary><i>Printed: Clean up/rename results of `STAR` alignment</i></summary>
+<summary><i>Printed: In bams/unmapped-w/SC_KL_20S...</i></summary>
 
 ```txt
 ❯ rename -n 's/.out./.multi-10./g' *
@@ -12715,25 +13075,54 @@ What does this mean? The answer from Alex Dobin, author of `STAR`, is [here](htt
 <details>
 <summary><i>Code: Check on *.Log.out warning messages: "WARNING: not enough space allocated for transcript."</i></summary>
 
+<a id="code-for-bamsunmapped-rmsc_kl_20s"></a>
+##### Code for `bams/unmapped-rm/SC_KL_20S`...
 ```bash
 #!/bin/bash
 #DONTRUN #CONTINUE
 
-pwd
+transcriptome && cd results/2023-0115
+cd bams/unmapped-rm/SC_KL_20S
 # /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0115/bams/unmapped-rm/SC_KL_20S
 
 if [[ -f warnings-alignTranscriptsPerReadNmax.txt ]]; then
-	rm warnings_alignTranscriptsPerReadNmax.txt
+    rm warnings_alignTranscriptsPerReadNmax.txt
 fi
 touch warnings_alignTranscriptsPerReadNmax.txt
 
 for i in *.Log.out; do
-	tally="$(\
-		grep "WARNING: not enough space allocated for transcript" "${i}" \
-			| wc -l\
-	)"
-	echo -e "${i}\t${tally}" >> warnings_alignTranscriptsPerReadNmax.txt
-	# echo ""
+    tally="$(\
+        grep "WARNING: not enough space allocated for transcript" "${i}" \
+            | wc -l\
+    )"
+    echo -e "${i}\t${tally}" >> warnings_alignTranscriptsPerReadNmax.txt
+    # echo ""
+done
+# cat warnings_alignTranscriptsPerReadNmax.txt
+```
+
+<a id="code-for-bamsunmapped-wsc_kl_20s"></a>
+##### Code for `bams/unmapped-w/SC_KL_20S`...
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+transcriptome && cd results/2023-0115
+cd bams/unmapped-w/SC_KL_20S
+# /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0115/bams/unmapped-w/SC_KL_20S
+
+if [[ -f warnings-alignTranscriptsPerReadNmax.txt ]]; then
+    rm warnings_alignTranscriptsPerReadNmax.txt
+fi
+touch warnings_alignTranscriptsPerReadNmax.txt
+
+for i in *.Log.out; do
+    tally="$(\
+        grep "WARNING: not enough space allocated for transcript" "${i}" \
+            | wc -l\
+    )"
+    echo -e "${i}\t${tally}" >> warnings_alignTranscriptsPerReadNmax.txt
+    # echo ""
 done
 # cat warnings_alignTranscriptsPerReadNmax.txt
 ```
@@ -12743,67 +13132,532 @@ done
 <details>
 <summary><i>Printed: Check on *.Log.out warning messages: "WARNING: not enough space allocated for transcript."</i></summary>
 
+<a id="printed-for-bamsunmapped-rmsc_kl_20s"></a>
+##### Printed for `bams/unmapped-rm/SC_KL_20S`...
 ```txt
 ❯ cat warnings_alignTranscriptsPerReadNmax.txt
-5781_G1_IN_S5.multi-10.Log.out	0
-5781_G1_IP_S1.multi-10.Log.out	0
-5781_Q_IN_S6.multi-10.Log.out	0
-5781_Q_IP_S2.multi-10.Log.out	0
-5782_G1_IN_S7.multi-10.Log.out	0
-5782_G1_IP_S3.multi-10.Log.out	0
-5782_Q_IN_S8.multi-10.Log.out	1
-5782_Q_IP_S4.multi-10.Log.out	0
-CW10_7747_8day_Q_IN_S5.multi-10.Log.out	3
-CW10_7747_8day_Q_PD_S11.multi-10.Log.out	0
-CW12_7748_8day_Q_IN_S6.multi-10.Log.out	1
-CW12_7748_8day_Q_PD_S12.multi-10.Log.out	3
-CW2_5781_8day_Q_IN_S1.multi-10.Log.out	0
-CW2_5781_8day_Q_PD_S7.multi-10.Log.out	1
-CW4_5782_8day_Q_IN_S2.multi-10.Log.out	5
-CW4_5782_8day_Q_PD_S8.multi-10.Log.out	6
-CW6_7078_8day_Q_IN_S3.multi-10.Log.out	4
-CW6_7078_8day_Q_PD_S9.multi-10.Log.out	4
-CW8_7079_8day_Q_IN_S4.multi-10.Log.out	0
-CW8_7079_8day_Q_PD_S10.multi-10.Log.out	1
-SAMPLE_BM10_DSp48_5781_S22.multi-10.Log.out	1
-SAMPLE_BM11_DSp48_7080_S23.multi-10.Log.out	1
-SAMPLE_BM1_DSm2_5781_S13.multi-10.Log.out	2
-SAMPLE_BM2_DSm2_7080_S14.multi-10.Log.out	0
-SAMPLE_BM3_DSm2_7079_S15.multi-10.Log.out	0
-SAMPLE_BM4_DSp2_5781_S16.multi-10.Log.out	0
-SAMPLE_BM5_DSp2_7080_S17.multi-10.Log.out	1
-SAMPLE_BM6_DSp2_7079_S18.multi-10.Log.out	0
-SAMPLE_BM7_DSp24_5781_S19.multi-10.Log.out	0
-SAMPLE_BM8_DSp24_7080_S20.multi-10.Log.out	2
-SAMPLE_BM9_DSp24_7079_S21.multi-10.Log.out	4
-SAMPLE_Bp10_DSp48_5782_S10.multi-10.Log.out	1
-SAMPLE_Bp11_DSp48_7081_S11.multi-10.Log.out	2
-SAMPLE_Bp12_DSp48_7078_S12.multi-10.Log.out	0
-SAMPLE_Bp1_DSm2_5782_S1.multi-10.Log.out	2
-SAMPLE_Bp2_DSm2_7081_S2.multi-10.Log.out	3
-SAMPLE_Bp3_DSm2_7078_S3.multi-10.Log.out	1
-SAMPLE_Bp4_DSp2_5782_S4.multi-10.Log.out	0
-SAMPLE_Bp5_DSp2_7081_S5.multi-10.Log.out	1
-SAMPLE_Bp6_DSp2_7078_S6.multi-10.Log.out	1
-SAMPLE_Bp7_DSp24_5782_S7.multi-10.Log.out	4
-SAMPLE_Bp8_DSp24_7081_S8.multi-10.Log.out	1
-SAMPLE_Bp9_DSp24_7078_S9.multi-10.Log.out	0
-Sample_CT10_7718_pIAA_Q_Nascent_S5.multi-10.Log.out	3
-Sample_CT10_7718_pIAA_Q_SteadyState_S10.multi-10.Log.out	6
-Sample_CT2_6125_pIAA_Q_Nascent_S1.multi-10.Log.out	9
-Sample_CT2_6125_pIAA_Q_SteadyState_S6.multi-10.Log.out	3
-Sample_CT4_6126_pIAA_Q_Nascent_S2.multi-10.Log.out	6
-Sample_CT4_6126_pIAA_Q_SteadyState_S7.multi-10.Log.out	5
-Sample_CT6_7714_pIAA_Q_Nascent_S3.multi-10.Log.out	2
-Sample_CT6_7714_pIAA_Q_SteadyState_S8.multi-10.Log.out	6
-Sample_CT8_7716_pIAA_Q_Nascent_S4.multi-10.Log.out	6
-Sample_CT8_7716_pIAA_Q_SteadyState_S9.multi-10.Log.out	9
-Sample_CU11_5782_Q_Nascent_S11.multi-10.Log.out	4
-Sample_CU12_5782_Q_SteadyState_S12.multi-10.Log.out	4
+5781_G1_IN_S5.multi-10.Log.out    0
+5781_G1_IP_S1.multi-10.Log.out    0
+5781_Q_IN_S6.multi-10.Log.out    0
+5781_Q_IP_S2.multi-10.Log.out    0
+5782_G1_IN_S7.multi-10.Log.out    0
+5782_G1_IP_S3.multi-10.Log.out    0
+5782_Q_IN_S8.multi-10.Log.out    1
+5782_Q_IP_S4.multi-10.Log.out    0
+CW10_7747_8day_Q_IN_S5.multi-10.Log.out    3
+CW10_7747_8day_Q_PD_S11.multi-10.Log.out    0
+CW12_7748_8day_Q_IN_S6.multi-10.Log.out    1
+CW12_7748_8day_Q_PD_S12.multi-10.Log.out    3
+CW2_5781_8day_Q_IN_S1.multi-10.Log.out    0
+CW2_5781_8day_Q_PD_S7.multi-10.Log.out    1
+CW4_5782_8day_Q_IN_S2.multi-10.Log.out    5
+CW4_5782_8day_Q_PD_S8.multi-10.Log.out    6
+CW6_7078_8day_Q_IN_S3.multi-10.Log.out    4
+CW6_7078_8day_Q_PD_S9.multi-10.Log.out    4
+CW8_7079_8day_Q_IN_S4.multi-10.Log.out    0
+CW8_7079_8day_Q_PD_S10.multi-10.Log.out    1
+SAMPLE_BM10_DSp48_5781_S22.multi-10.Log.out    1
+SAMPLE_BM11_DSp48_7080_S23.multi-10.Log.out    1
+SAMPLE_BM1_DSm2_5781_S13.multi-10.Log.out    2
+SAMPLE_BM2_DSm2_7080_S14.multi-10.Log.out    0
+SAMPLE_BM3_DSm2_7079_S15.multi-10.Log.out    0
+SAMPLE_BM4_DSp2_5781_S16.multi-10.Log.out    0
+SAMPLE_BM5_DSp2_7080_S17.multi-10.Log.out    1
+SAMPLE_BM6_DSp2_7079_S18.multi-10.Log.out    0
+SAMPLE_BM7_DSp24_5781_S19.multi-10.Log.out    0
+SAMPLE_BM8_DSp24_7080_S20.multi-10.Log.out    2
+SAMPLE_BM9_DSp24_7079_S21.multi-10.Log.out    4
+SAMPLE_Bp10_DSp48_5782_S10.multi-10.Log.out    1
+SAMPLE_Bp11_DSp48_7081_S11.multi-10.Log.out    2
+SAMPLE_Bp12_DSp48_7078_S12.multi-10.Log.out    0
+SAMPLE_Bp1_DSm2_5782_S1.multi-10.Log.out    2
+SAMPLE_Bp2_DSm2_7081_S2.multi-10.Log.out    3
+SAMPLE_Bp3_DSm2_7078_S3.multi-10.Log.out    1
+SAMPLE_Bp4_DSp2_5782_S4.multi-10.Log.out    0
+SAMPLE_Bp5_DSp2_7081_S5.multi-10.Log.out    1
+SAMPLE_Bp6_DSp2_7078_S6.multi-10.Log.out    1
+SAMPLE_Bp7_DSp24_5782_S7.multi-10.Log.out    4
+SAMPLE_Bp8_DSp24_7081_S8.multi-10.Log.out    1
+SAMPLE_Bp9_DSp24_7078_S9.multi-10.Log.out    0
+Sample_CT10_7718_pIAA_Q_Nascent_S5.multi-10.Log.out    3
+Sample_CT10_7718_pIAA_Q_SteadyState_S10.multi-10.Log.out    6
+Sample_CT2_6125_pIAA_Q_Nascent_S1.multi-10.Log.out    9
+Sample_CT2_6125_pIAA_Q_SteadyState_S6.multi-10.Log.out    3
+Sample_CT4_6126_pIAA_Q_Nascent_S2.multi-10.Log.out    6
+Sample_CT4_6126_pIAA_Q_SteadyState_S7.multi-10.Log.out    5
+Sample_CT6_7714_pIAA_Q_Nascent_S3.multi-10.Log.out    2
+Sample_CT6_7714_pIAA_Q_SteadyState_S8.multi-10.Log.out    6
+Sample_CT8_7716_pIAA_Q_Nascent_S4.multi-10.Log.out    6
+Sample_CT8_7716_pIAA_Q_SteadyState_S9.multi-10.Log.out    9
+Sample_CU11_5782_Q_Nascent_S11.multi-10.Log.out    4
+Sample_CU12_5782_Q_SteadyState_S12.multi-10.Log.out    4
+```
+
+<a id="printed-for-bamsunmapped-wsc_kl_20s"></a>
+##### Printed for `bams/unmapped-w/SC_KL_20S`...
+```txt
+❯ cat warnings_alignTranscriptsPerReadNmax.txt
+5781_G1_IN_S5.multi-10.Log.out    0
+5781_G1_IP_S1.multi-10.Log.out    0
+5781_Q_IN_S6.multi-10.Log.out    0
+5781_Q_IP_S2.multi-10.Log.out    0
+5782_G1_IN_S7.multi-10.Log.out    0
+5782_G1_IP_S3.multi-10.Log.out    0
+5782_Q_IN_S8.multi-10.Log.out    1
+5782_Q_IP_S4.multi-10.Log.out    0
+CW10_7747_8day_Q_IN_S5.multi-10.Log.out    3
+CW10_7747_8day_Q_PD_S11.multi-10.Log.out    0
+CW12_7748_8day_Q_IN_S6.multi-10.Log.out    1
+CW12_7748_8day_Q_PD_S12.multi-10.Log.out    3
+CW2_5781_8day_Q_IN_S1.multi-10.Log.out    0
+CW2_5781_8day_Q_PD_S7.multi-10.Log.out    1
+CW4_5782_8day_Q_IN_S2.multi-10.Log.out    5
+CW4_5782_8day_Q_PD_S8.multi-10.Log.out    6
+CW6_7078_8day_Q_IN_S3.multi-10.Log.out    4
+CW6_7078_8day_Q_PD_S9.multi-10.Log.out    4
+CW8_7079_8day_Q_IN_S4.multi-10.Log.out    0
+CW8_7079_8day_Q_PD_S10.multi-10.Log.out    1
+SAMPLE_BM10_DSp48_5781_S22.multi-10.Log.out    1
+SAMPLE_BM11_DSp48_7080_S23.multi-10.Log.out    1
+SAMPLE_BM1_DSm2_5781_S13.multi-10.Log.out    2
+SAMPLE_BM2_DSm2_7080_S14.multi-10.Log.out    0
+SAMPLE_BM3_DSm2_7079_S15.multi-10.Log.out    0
+SAMPLE_BM4_DSp2_5781_S16.multi-10.Log.out    0
+SAMPLE_BM5_DSp2_7080_S17.multi-10.Log.out    1
+SAMPLE_BM6_DSp2_7079_S18.multi-10.Log.out    0
+SAMPLE_BM7_DSp24_5781_S19.multi-10.Log.out    0
+SAMPLE_BM8_DSp24_7080_S20.multi-10.Log.out    2
+SAMPLE_BM9_DSp24_7079_S21.multi-10.Log.out    4
+SAMPLE_Bp10_DSp48_5782_S10.multi-10.Log.out    1
+SAMPLE_Bp11_DSp48_7081_S11.multi-10.Log.out    2
+SAMPLE_Bp12_DSp48_7078_S12.multi-10.Log.out    0
+SAMPLE_Bp1_DSm2_5782_S1.multi-10.Log.out    2
+SAMPLE_Bp2_DSm2_7081_S2.multi-10.Log.out    3
+SAMPLE_Bp3_DSm2_7078_S3.multi-10.Log.out    1
+SAMPLE_Bp4_DSp2_5782_S4.multi-10.Log.out    0
+SAMPLE_Bp5_DSp2_7081_S5.multi-10.Log.out    1
+SAMPLE_Bp6_DSp2_7078_S6.multi-10.Log.out    1
+SAMPLE_Bp7_DSp24_5782_S7.multi-10.Log.out    4
+SAMPLE_Bp8_DSp24_7081_S8.multi-10.Log.out    1
+SAMPLE_Bp9_DSp24_7078_S9.multi-10.Log.out    0
+Sample_CT10_7718_pIAA_Q_Nascent_S5.multi-10.Log.out    3
+Sample_CT10_7718_pIAA_Q_SteadyState_S10.multi-10.Log.out    6
+Sample_CT2_6125_pIAA_Q_Nascent_S1.multi-10.Log.out    9
+Sample_CT2_6125_pIAA_Q_SteadyState_S6.multi-10.Log.out    3
+Sample_CT4_6126_pIAA_Q_Nascent_S2.multi-10.Log.out    6
+Sample_CT4_6126_pIAA_Q_SteadyState_S7.multi-10.Log.out    5
+Sample_CT6_7714_pIAA_Q_Nascent_S3.multi-10.Log.out    2
+Sample_CT6_7714_pIAA_Q_SteadyState_S8.multi-10.Log.out    6
+Sample_CT8_7716_pIAA_Q_Nascent_S4.multi-10.Log.out    6
+Sample_CT8_7716_pIAA_Q_SteadyState_S9.multi-10.Log.out    9
+Sample_CU11_5782_Q_Nascent_S11.multi-10.Log.out    4
+Sample_CU12_5782_Q_SteadyState_S12.multi-10.Log.out    4
 ```
 </details>
 <br />
 
+<a id="isolate-examine-problematic-reads"></a>
+### Isolate, examine problematic reads
+`#HERE` `#DEKHO`
+<a id="rough-draft-work"></a>
+#### Rough draft work
+<details>
+<summary><i>Notes, code: Rough draft work</i></summary>
+
+- `-f INT`   only include reads with all bits set in `INT` set in `FLAG` `[0]`
+- `-F INT`   only include reads with none of the bits set in `INT` set in `FLAG` `[0]`
+- i.e., `-f INT`: required flag
+- i.e., `-F INT`: filtering flag
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+#  Get situated
+grabnode  # 4, default settings
+Trinity_env
+
+transcriptome && cd results/2023-0115
+cd bams/unmapped-w/SC_KL_20S
+
+save="rough-draft-work"  # echo "${save}"
+mkdir "${save}"  # ., "${save}"
+
+
+#  Get bams of interest into an array ---------------------
+unset bams
+typeset -a bams
+bams=(
+    "CW6_7078_8day_Q_IN_S3.multi-10.bam"
+    "CW6_7078_8day_Q_PD_S9.multi-10.bam"
+    "CW8_7079_8day_Q_IN_S4.multi-10.bam"
+    "CW8_7079_8day_Q_PD_S10.multi-10.bam"
+)
+echo_test "${bams[@]}"
+
+
+#  Check flagstats
+for i in "${bams[@]}"; do
+    echo "${i}"
+    samtools flagstat "${i}"
+    echo ""
+done
+
+
+#  Isolate unmapped reads ---------------------------------
+for i in "${bams[@]}"; do
+    echo "Started: ${i}: Isolate unmapped reads..."
+    samtools view -@ "${SLURM_CPUS_ON_NODE}" \
+        -h \
+        -f 12 \
+        "${i}" \
+        -b \
+            -o "${save}/${i/.bam/.f-12.bam}"
+    echo "Completed: ${i}: Isolate unmapped reads..."
+    echo ""
+done
+
+
+#  Isolate secondary alignments ---------------------------
+for i in "${bams[@]}"; do
+    echo "Started: ${i}: Isolate secondary alignments..."
+    samtools view -@ "${SLURM_CPUS_ON_NODE}" \
+        -h \
+        -f 256 \
+        "${i}" \
+        -b \
+            -o "${save}/${i/.bam/.f-256.bam}"
+    echo "Completed: ${i}: Isolate secondary alignments..."
+    echo ""
+done
+
+
+#  Extract reads that didn’t map properly as pairs --------
+#+ - novocraft.com/documentation/novoalign-2/novoalign-ngs-quick-start-tutorial/1040-2/
+#+ - gist.github.com/darencard/72ddd9e6c08aaff5ff64ca512a04a6dd
+for i in "${bams[@]}"; do
+    echo "Started: ${i}: Extract reads that didn’t map properly as pairs..."
+    # R1 unmapped, R2 mapped
+    samtools view -@ "${SLURM_CPUS_ON_NODE}" \
+        -h \
+        -f 4 \
+        -F 264 \
+        "${i}" \
+        -b \
+            -o "${save}/${i/.bam/.f-4.F-264.bam}"
+
+    # R1 mapped, R2 unmapped
+    samtools view -@ "${SLURM_CPUS_ON_NODE}" \
+        -h \
+        -f 8 \
+        -F 260 \
+        "${i}" \
+        -b \
+            -o "${save}/${i/.bam/.f-8.F-260.bam}"
+
+    # R1 & R2 unmapped
+    samtools view -@ "${SLURM_CPUS_ON_NODE}" \
+        -h \
+        -f 12 \
+        -F 256 \
+        "${i}" \
+        -b \
+            -o "${save}/${i/.bam/.f-12.F-256.bam}"
+    echo "Completed: ${i}: Extract reads that didn’t map properly as pairs..."
+    echo ""
+done
+
+#  Merge bams fr/extracting reads that didn't map properly as pairs
+for i in "${bams[@]}"; do
+    echo "Started: ${i}: Merge bams fr/extracting reads that didn't map properly as pairs..."
+    samtools merge -@ "${SLURM_CPUS_ON_NODE}" \
+        "${save}/${i/.bam/.f-4-8-12.F-264-260-256.bam}" \
+        "${save}/${i/.bam/.f-4.F-264.bam}" \
+        "${save}/${i/.bam/.f-8.F-260.bam}" \
+        "${save}/${i/.bam/.f-12.F-256.bam}"
+    echo "Completed: ${i}: Merge bams fr/extracting reads that didn't map properly as pairs..."
+    echo ""
+done
+
+#  Clean up outfiles fr/the preceding two loops
+mkdir -p "${save}/f-4-8-12.F-264-260-256"
+mv \
+    "${save}/"*{f-4.F-264,f-8.F-260,f-12.F-256,f-4-8-12.F-264-260-256}".bam" \
+    "${save}/f-4-8-12.F-264-260-256"
+
+#  Extract valid alignments while excluding invalid alignments ----------------
+#  i.e., select for alignments that are 'paired' and 'mapped in a proper pair'
+#+ (=3) while filtering out alignments that are 'unmapped', the 'mate is
+#+ unmapped', and 'not primary alignment' (=268)
+for i in "${bams[@]}"; do
+    echo "Started: ${i}:"
+    echo "    Extract valid alignments while excluding invalid alignments..."
+    samtools view -@ "${SLURM_CPUS_ON_NODE}" \
+        -h \
+        -f 3 \
+        -F 268 \
+        "${i}" \
+        -b \
+            -o "${save}/${i/.bam/.f-3.F-268.bam}"
+    echo "Completed: ${i}:"
+    echo "    Extract valid alignments while excluding invalid alignments..."
+    echo ""
+done
+```
+`#PICKUPHERE`
+</details>
+<br />
+
+<details>
+<summary><i>Printed: Rough draft work</i></summary>
+
+```txt
+❯ mkdir rough-draft-work/
+mkdir: created directory 'rough-draft-work/'
+
+
+❯ for i in "${bams[@]}"; do
+>     echo "${i}"
+>     samtools flagstat "${i}"
+>     echo ""
+> done
+CW6_7078_8day_Q_IN_S3.multi-10.bam
+200921342 + 0 in total (QC-passed reads + QC-failed reads)
+93869180 + 0 secondary
+0 + 0 supplementary
+0 + 0 duplicates
+198276812 + 0 mapped (98.68% : N/A)
+107052162 + 0 paired in sequencing
+53526081 + 0 read1
+53526081 + 0 read2
+104407632 + 0 properly paired (97.53% : N/A)
+104407632 + 0 with itself and mate mapped
+0 + 0 singletons (0.00% : N/A)
+0 + 0 with mate mapped to a different chr
+0 + 0 with mate mapped to a different chr (mapQ>=5)
+
+CW6_7078_8day_Q_PD_S9.multi-10.bam
+111427434 + 0 in total (QC-passed reads + QC-failed reads)
+29292956 + 0 secondary
+0 + 0 supplementary
+0 + 0 duplicates
+107328954 + 0 mapped (96.32% : N/A)
+82134478 + 0 paired in sequencing
+41067239 + 0 read1
+41067239 + 0 read2
+78035998 + 0 properly paired (95.01% : N/A)
+78035998 + 0 with itself and mate mapped
+0 + 0 singletons (0.00% : N/A)
+0 + 0 with mate mapped to a different chr
+0 + 0 with mate mapped to a different chr (mapQ>=5)
+
+CW8_7079_8day_Q_IN_S4.multi-10.bam
+127670524 + 0 in total (QC-passed reads + QC-failed reads)
+41870716 + 0 secondary
+0 + 0 supplementary
+0 + 0 duplicates
+124242164 + 0 mapped (97.31% : N/A)
+85799808 + 0 paired in sequencing
+42899904 + 0 read1
+42899904 + 0 read2
+82371448 + 0 properly paired (96.00% : N/A)
+82371448 + 0 with itself and mate mapped
+0 + 0 singletons (0.00% : N/A)
+0 + 0 with mate mapped to a different chr
+0 + 0 with mate mapped to a different chr (mapQ>=5)
+
+CW8_7079_8day_Q_PD_S10.multi-10.bam
+108690214 + 0 in total (QC-passed reads + QC-failed reads)
+28651384 + 0 secondary
+0 + 0 supplementary
+0 + 0 duplicates
+103710152 + 0 mapped (95.42% : N/A)
+80038830 + 0 paired in sequencing
+40019415 + 0 read1
+40019415 + 0 read2
+75058768 + 0 properly paired (93.78% : N/A)
+75058768 + 0 with itself and mate mapped
+0 + 0 singletons (0.00% : N/A)
+0 + 0 with mate mapped to a different chr
+0 + 0 with mate mapped to a different chr (mapQ>=5)
+
+
+❯ for i in "${bams[@]}"; do
+>     echo "Started: ${i}: Isolate unmapped reads..."
+>     samtools view -@ "${SLURM_CPUS_ON_NODE}" \
+>         -h \
+>         -f 12 \
+>         "${i}" \
+>         -b \
+>             -o "${save}/${i/.bam/.f-12.bam}"
+>     echo "Completed: ${i}: Isolate unmapped reads..."
+>     echo ""
+> done
+Started: CW6_7078_8day_Q_IN_S3.multi-10.bam: Isolate unmapped reads...
+Completed: CW6_7078_8day_Q_IN_S3.multi-10.bam: Isolate unmapped reads...
+
+Started: CW6_7078_8day_Q_PD_S9.multi-10.bam: Isolate unmapped reads...
+Completed: CW6_7078_8day_Q_PD_S9.multi-10.bam: Isolate unmapped reads...
+
+Started: CW8_7079_8day_Q_IN_S4.multi-10.bam: Isolate unmapped reads...
+Completed: CW8_7079_8day_Q_IN_S4.multi-10.bam: Isolate unmapped reads...
+
+Started: CW8_7079_8day_Q_PD_S10.multi-10.bam: Isolate unmapped reads...
+Completed: CW8_7079_8day_Q_PD_S10.multi-10.bam: Isolate unmapped reads...
+
+
+
+❯ for i in "${bams[@]}"; do
+>     echo "Started: ${i}: Isolate secondary alignments..."
+>     samtools view -@ "${SLURM_CPUS_ON_NODE}" \
+>         -h \
+>         -f 256 \
+>         "${i}" \
+>         -b \
+>             -o "${save}/${i/.bam/.f-256.bam}"
+>     echo "Completed: ${i}: Isolate secondary alignments..."
+>     echo ""
+> done
+Started: CW6_7078_8day_Q_IN_S3.multi-10.bam: Isolate secondary reads...
+Completed: CW6_7078_8day_Q_IN_S3.multi-10.bam: Isolate secondary reads...
+
+Started: CW6_7078_8day_Q_PD_S9.multi-10.bam: Isolate secondary reads...
+Completed: CW6_7078_8day_Q_PD_S9.multi-10.bam: Isolate secondary reads...
+
+Started: CW8_7079_8day_Q_IN_S4.multi-10.bam: Isolate secondary reads...
+Completed: CW8_7079_8day_Q_IN_S4.multi-10.bam: Isolate secondary reads...
+
+Started: CW8_7079_8day_Q_PD_S10.multi-10.bam: Isolate secondary reads...
+Completed: CW8_7079_8day_Q_PD_S10.multi-10.bam: Isolate secondary reads...
+
+
+❯ for i in "${bams[@]}"; do
+>     echo "Started: ${i}: Extract reads that didn’t map properly as pairs..."
+>     # R1 unmapped, R2 mapped
+>     samtools view -@ "${SLURM_CPUS_ON_NODE}" \
+>         -h \
+>         -f 4 \
+>         -F 264 \
+>         "${i}" \
+>         -b \
+>             -o "${save}/${i/.bam/.f-4.F-264.bam}"
+> 
+>     # R1 mapped, R2 unmapped
+>     samtools view -@ "${SLURM_CPUS_ON_NODE}" \
+>         -h \
+>         -f 8 \
+>         -F 260 \
+>         "${i}" \
+>         -b \
+>             -o "${save}/${i/.bam/.f-8.F-260.bam}"
+> 
+>     # R1 & R2 unmapped
+>     samtools view -@ "${SLURM_CPUS_ON_NODE}" \
+>         -h \
+>         -f 12 \
+>         -F 256 \
+>         "${i}" \
+>         -b \
+>             -o "${save}/${i/.bam/.f-12.F-256.bam}"
+>     echo "Completed: ${i}: Extract reads that didn’t map properly as pairs..."
+>     echo ""
+> done
+Started: CW6_7078_8day_Q_IN_S3.multi-10.bam: Extract reads that didn’t map properly as pairs...
+Completed: CW6_7078_8day_Q_IN_S3.multi-10.bam: Extract reads that didn’t map properly as pairs...
+
+Started: CW6_7078_8day_Q_PD_S9.multi-10.bam: Extract reads that didn’t map properly as pairs...
+Completed: CW6_7078_8day_Q_PD_S9.multi-10.bam: Extract reads that didn’t map properly as pairs...
+
+Started: CW8_7079_8day_Q_IN_S4.multi-10.bam: Extract reads that didn’t map properly as pairs...
+Completed: CW8_7079_8day_Q_IN_S4.multi-10.bam: Extract reads that didn’t map properly as pairs...
+
+Started: CW8_7079_8day_Q_PD_S10.multi-10.bam: Extract reads that didn’t map properly as pairs...
+Completed: CW8_7079_8day_Q_PD_S10.multi-10.bam: Extract reads that didn’t map properly as pairs...
+
+
+❯ for i in "${bams[@]}"; do
+>     echo "Started: ${i}: Merge bams fr/extracting reads that didn't map properly as pairs..."
+>     samtools merge -@ "${SLURM_CPUS_ON_NODE}" \
+>         "${save}/${i/.bam/.f-4-8-12.F-264-260-256.bam}" \
+>         "${save}/${i/.bam/.f-4.F-264.bam}" \
+>         "${save}/${i/.bam/.f-8.F-260.bam}" \
+>         "${save}/${i/.bam/.f-12.F-256.bam}"
+>     echo "Completed: ${i}: Merge bams fr/extracting reads that didn't map properly as pairs..."
+>     echo ""
+> done
+Started: CW6_7078_8day_Q_IN_S3.multi-10.bam: Merge bams fr/extracting reads that didn't map properly as pairs...
+Completed: CW6_7078_8day_Q_IN_S3.multi-10.bam: Merge bams fr/extracting reads that didn't map properly as pairs...
+
+Started: CW6_7078_8day_Q_PD_S9.multi-10.bam: Merge bams fr/extracting reads that didn't map properly as pairs...
+Completed: CW6_7078_8day_Q_PD_S9.multi-10.bam: Merge bams fr/extracting reads that didn't map properly as pairs...
+
+Started: CW8_7079_8day_Q_IN_S4.multi-10.bam: Merge bams fr/extracting reads that didn't map properly as pairs...
+Completed: CW8_7079_8day_Q_IN_S4.multi-10.bam: Merge bams fr/extracting reads that didn't map properly as pairs...
+
+Started: CW8_7079_8day_Q_PD_S10.multi-10.bam: Merge bams fr/extracting reads that didn't map properly as pairs...
+Completed: CW8_7079_8day_Q_PD_S10.multi-10.bam: Merge bams fr/extracting reads that didn't map properly as pairs...
+
+
+❯ mkdir -p "${save}/f-4-8-12.F-264-260-256"
+mkdir: created directory 'rough-draft-work/f-4-8-12.F-264-260-256'
+
+
+❯ mv \
+>     "${save}/"*{f-4.F-264,f-8.F-260,f-12.F-256,f-4-8-12.F-264-260-256}".bam" \
+>     "${save}/f-4-8-12.F-264-260-256"
+renamed 'rough-draft-work/CW6_7078_8day_Q_IN_S3.multi-10.f-4.F-264.bam' -> 'rough-draft-work/f-4-8-12.F-264-260-256/CW6_7078_8day_Q_IN_S3.multi-10.f-4.F-264.bam'
+renamed 'rough-draft-work/CW6_7078_8day_Q_PD_S9.multi-10.f-4.F-264.bam' -> 'rough-draft-work/f-4-8-12.F-264-260-256/CW6_7078_8day_Q_PD_S9.multi-10.f-4.F-264.bam'
+renamed 'rough-draft-work/CW8_7079_8day_Q_IN_S4.multi-10.f-4.F-264.bam' -> 'rough-draft-work/f-4-8-12.F-264-260-256/CW8_7079_8day_Q_IN_S4.multi-10.f-4.F-264.bam'
+renamed 'rough-draft-work/CW8_7079_8day_Q_PD_S10.multi-10.f-4.F-264.bam' -> 'rough-draft-work/f-4-8-12.F-264-260-256/CW8_7079_8day_Q_PD_S10.multi-10.f-4.F-264.bam'
+renamed 'rough-draft-work/CW6_7078_8day_Q_IN_S3.multi-10.f-8.F-260.bam' -> 'rough-draft-work/f-4-8-12.F-264-260-256/CW6_7078_8day_Q_IN_S3.multi-10.f-8.F-260.bam'
+renamed 'rough-draft-work/CW6_7078_8day_Q_PD_S9.multi-10.f-8.F-260.bam' -> 'rough-draft-work/f-4-8-12.F-264-260-256/CW6_7078_8day_Q_PD_S9.multi-10.f-8.F-260.bam'
+renamed 'rough-draft-work/CW8_7079_8day_Q_IN_S4.multi-10.f-8.F-260.bam' -> 'rough-draft-work/f-4-8-12.F-264-260-256/CW8_7079_8day_Q_IN_S4.multi-10.f-8.F-260.bam'
+renamed 'rough-draft-work/CW8_7079_8day_Q_PD_S10.multi-10.f-8.F-260.bam' -> 'rough-draft-work/f-4-8-12.F-264-260-256/CW8_7079_8day_Q_PD_S10.multi-10.f-8.F-260.bam'
+renamed 'rough-draft-work/CW6_7078_8day_Q_IN_S3.multi-10.f-12.F-256.bam' -> 'rough-draft-work/f-4-8-12.F-264-260-256/CW6_7078_8day_Q_IN_S3.multi-10.f-12.F-256.bam'
+renamed 'rough-draft-work/CW6_7078_8day_Q_PD_S9.multi-10.f-12.F-256.bam' -> 'rough-draft-work/f-4-8-12.F-264-260-256/CW6_7078_8day_Q_PD_S9.multi-10.f-12.F-256.bam'
+renamed 'rough-draft-work/CW8_7079_8day_Q_IN_S4.multi-10.f-12.F-256.bam' -> 'rough-draft-work/f-4-8-12.F-264-260-256/CW8_7079_8day_Q_IN_S4.multi-10.f-12.F-256.bam'
+renamed 'rough-draft-work/CW8_7079_8day_Q_PD_S10.multi-10.f-12.F-256.bam' -> 'rough-draft-work/f-4-8-12.F-264-260-256/CW8_7079_8day_Q_PD_S10.multi-10.f-12.F-256.bam'
+renamed 'rough-draft-work/CW6_7078_8day_Q_IN_S3.multi-10.f-4-8-12.F-264-260-256.bam' -> 'rough-draft-work/f-4-8-12.F-264-260-256/CW6_7078_8day_Q_IN_S3.multi-10.f-4-8-12.F-264-260-256.bam'
+renamed 'rough-draft-work/CW6_7078_8day_Q_PD_S9.multi-10.f-4-8-12.F-264-260-256.bam' -> 'rough-draft-work/f-4-8-12.F-264-260-256/CW6_7078_8day_Q_PD_S9.multi-10.f-4-8-12.F-264-260-256.bam'
+renamed 'rough-draft-work/CW8_7079_8day_Q_IN_S4.multi-10.f-4-8-12.F-264-260-256.bam' -> 'rough-draft-work/f-4-8-12.F-264-260-256/CW8_7079_8day_Q_IN_S4.multi-10.f-4-8-12.F-264-260-256.bam'
+renamed 'rough-draft-work/CW8_7079_8day_Q_PD_S10.multi-10.f-4-8-12.F-264-260-256.bam' -> 'rough-draft-work/f-4-8-12.F-264-260-256/CW8_7079_8day_Q_PD_S10.multi-10.f-4-8-12.F-264-260-256.bam'
+
+
+❯ for i in "${bams[@]}"; do
+>     echo "Started: ${i}:"
+>     echo "    Extract valid alignments while excluding invalid alignments..."
+>     samtools view -@ "${SLURM_CPUS_ON_NODE}" \
+>         -h \
+>         -f 3 \
+>         -F 268 \
+>         "${i}" \
+>         -b \
+>             -o "${save}/${i/.bam/.f-3.F-268.bam}"
+>     echo "Completed: ${i}:"
+>     echo "    Extract valid alignments while excluding invalid alignments..."
+>     echo ""
+> done
+Started: CW6_7078_8day_Q_IN_S3.multi-10.bam:
+    Extract valid alignments while excluding invalid alignments...
+Completed: CW6_7078_8day_Q_IN_S3.multi-10.bam:
+    Extract valid alignments while excluding invalid alignments...
+
+Started: CW6_7078_8day_Q_PD_S9.multi-10.bam:
+    Extract valid alignments while excluding invalid alignments...
+Completed: CW6_7078_8day_Q_PD_S9.multi-10.bam:
+    Extract valid alignments while excluding invalid alignments...
+
+Started: CW8_7079_8day_Q_IN_S4.multi-10.bam:
+    Extract valid alignments while excluding invalid alignments...
+Completed: CW8_7079_8day_Q_IN_S4.multi-10.bam:
+    Extract valid alignments while excluding invalid alignments...
+
+Started: CW8_7079_8day_Q_PD_S10.multi-10.bam:
+    Extract valid alignments while excluding invalid alignments...
+Completed: CW8_7079_8day_Q_PD_S10.multi-10.bam:
+    Extract valid alignments while excluding invalid alignments...
+```
+</details>
+<br />
 
 <a id="index-the-bams"></a>
 ### Index the `bam`s
@@ -12822,9 +13676,9 @@ Trinity_env
 
 #  cd into '2022_transcriptome-construction/results', e.g.,
 transcriptome && 
-	{
-		cd "results/2023-0115" || echo "cd'ing failed; check on this..."
-	}
+    {
+        cd "results/2023-0115" || echo "cd'ing failed; check on this..."
+    }
 ```
 </details>
 <br />
@@ -13315,6 +14169,7 @@ Submitted batch job 8010885
 
 <a id="create-bams-composed-of-alignments-to-specific-species"></a>
 ### Create `bam`s composed of alignments to specific species
+`#DEKHO`
 <a id="get-situated-7"></a>
 #### Get situated
 <details>
@@ -13330,12 +14185,12 @@ Trinity_env
 
 #  cd into '2022_transcriptome-construction/results', e.g.,
 transcriptome && 
-	{
-		cd "results/2023-0115" || echo "cd'ing failed; check on this..."
-	}
+    {
+        cd "results/2023-0115" || echo "cd'ing failed; check on this..."
+    }
 
 if [[ ! -d "./bams" ]]; then
-	mkdir -p bams/{unmapped-rm,unmapped-w}/{SC_KL_20S,SC,SC_KL,KL,20S}
+    mkdir -p bams/{unmapped-rm,unmapped-w}/{SC_KL_20S,SC,SC_KL,KL,20S}
 fi
 ```
 
@@ -13436,10 +14291,10 @@ Arguments:
 
 #  Initial try
 bash ../../bin/split_bam_by_species.sh \
-	-i "./bams/unmapped-rm/SC_KL_20S/CW10_7747_8day_Q_IN_S5.multi-10.bam" \
-	-o "./bams" \
-	-s "virus_20S" \
-	-t 1
+    -i "./bams/unmapped-rm/SC_KL_20S/CW10_7747_8day_Q_IN_S5.multi-10.bam" \
+    -o "./bams" \
+    -s "virus_20S" \
+    -t 1
 # "Safe mode" is FALSE.
 # ./bams doesn't exist; mkdir'ing it.
 #
@@ -13454,10 +14309,10 @@ bash ../../bin/split_bam_by_species.sh \
 #  Try again after editing main() in split_bam_by_species.sh and
 #+ check_exists_directory() in functions.sh
 bash ../../bin/split_bam_by_species.sh \
-	-i "./bams/unmapped-rm/SC_KL_20S/CW10_7747_8day_Q_IN_S5.multi-10.bam" \
-	-o "./bams" \
-	-s "KL_all" \
-	-t 1
+    -i "./bams/unmapped-rm/SC_KL_20S/CW10_7747_8day_Q_IN_S5.multi-10.bam" \
+    -o "./bams" \
+    -s "KL_all" \
+    -t 1
 # "Safe mode" is FALSE.
 # ./bams doesn't exist; mkdir'ing it.
 #
@@ -13466,10 +14321,10 @@ bash ../../bin/split_bam_by_species.sh \
 
 #  Adjust check_exists_directory(), change it to FALSE in the main script
 bash ../../bin/split_bam_by_species.sh \
-	-i "./bams/unmapped-rm/SC_KL_20S/CW10_7747_8day_Q_IN_S5.multi-10.bam" \
-	-o "./bams" \
-	-s "SC_Mito" \
-	-t 1
+    -i "./bams/unmapped-rm/SC_KL_20S/CW10_7747_8day_Q_IN_S5.multi-10.bam" \
+    -o "./bams" \
+    -s "SC_Mito" \
+    -t 1
 # "Safe mode" is FALSE.
 # ./bams doesn't exist; mkdir'ing it.
 #
@@ -13479,10 +14334,10 @@ bash ../../bin/split_bam_by_species.sh \
 #  After pushing the changes to split_bam_by_species.sh and function.sh (I had
 #+ not done that for the previous two tests)
 bash ../../bin/split_bam_by_species.sh \
-	-i "./bams/unmapped-rm/SC_KL_20S/CW10_7747_8day_Q_IN_S5.multi-10.bam" \
-	-o "./bams" \
-	-s "SC_XII" \
-	-t 1
+    -i "./bams/unmapped-rm/SC_KL_20S/CW10_7747_8day_Q_IN_S5.multi-10.bam" \
+    -o "./bams" \
+    -s "SC_XII" \
+    -t 1
 # "Safe mode" is FALSE.
 #
 #
@@ -13492,20 +14347,20 @@ bash ../../bin/split_bam_by_species.sh \
 
 #  When writing the outfile, strip away the path associated with infile
 bash ../../bin/split_bam_by_species.sh \
-	-i "./bams/unmapped-rm/SC_KL_20S/CW10_7747_8day_Q_IN_S5.multi-10.bam" \
-	-o "./bams" \
-	-s "SC_XII" \
-	-t 1
+    -i "./bams/unmapped-rm/SC_KL_20S/CW10_7747_8day_Q_IN_S5.multi-10.bam" \
+    -o "./bams" \
+    -s "SC_XII" \
+    -t 1
 # "Safe mode" is FALSE.
 #
 #
 # Running ../../bin/split_bam_by_species.sh...
 
 bash ../../bin/split_bam_by_species.sh \
-	-i "./bams/unmapped-rm/SC_KL_20S/CW10_7747_8day_Q_IN_S5.multi-10.bam" \
-	-o "./bams" \
-	-s "SC_VII" \
-	-t 1
+    -i "./bams/unmapped-rm/SC_KL_20S/CW10_7747_8day_Q_IN_S5.multi-10.bam" \
+    -o "./bams" \
+    -s "SC_VII" \
+    -t 1
 # "Safe mode" is FALSE.
 #
 #
@@ -13554,9 +14409,9 @@ Trinity_env
 
 #  cd into '2022_transcriptome-construction/results', e.g.,
 transcriptome && 
-	{
-		cd "results/2023-0115" || echo "cd'ing failed; check on this..."
-	}
+    {
+        cd "results/2023-0115" || echo "cd'ing failed; check on this..."
+    }
 
 #  Variables
 script_name="../../bin/split_bam_by_species.sh"  # echo "${script_name}"
@@ -13580,8 +14435,8 @@ done < <(\
 </details>
 <br />
 
-<a id="run-split_bam_by_speciessh-on-bams"></a>
-##### Run `split_bam_by_species.sh` on `bam`s
+<a id="run-split_bam_by_speciessh-on-bams-trial-wsc"></a>
+##### Run `split_bam_by_species.sh` on `bam`s: Trial w/"`SC`"
 `#PICKUPHERE` `#STILLNEEDTODOTHIS`
 <details>
 <summary><i>Notes, code: Run split_bam_by_species.sh on bams</i></summary>
@@ -13594,16 +14449,23 @@ x="${#bams[@]}"  # echo "${x}"
 y=$(( x - 1 ))  # echo "${y}"
 for (( i=0; i<=y; i++ )); do
     echo "# --------------------------------------"
-    echo "   Iteration:  ${i}"
-    echo "        File:  ${bams[${i}]}"
+    echo "   iteration:  ${i}"
+    echo "        file:  ${bams[${i}]}"
+    echo "      outdir:  ./bams/unmapped-rm/SC"
+    echo "       split:  SC_all"
+    echo "     threads:  ${threads}"
     echo ""
 
-    echo "       split: "
-    sbatch ../../bin/split_bam_by_species.sh \
-		-i "${i}" \
-		-o "./bams" \
-		-s "" \
-		-t 1
+    sbatch \
+        --nodes=1 \
+        --cpus-per-task="${threads}" \
+        --error="./sh_err_out/err_out/$(basename ${script_name} .sh).%J.err.txt" \
+        --output="./sh_err_out/err_out/$(basename ${script_name} .sh).%J.out.txt" \
+        "${script_name}" \
+            -i "${bams[${i}]}" \
+            -o "./bams/unmapped-rm/SC" \
+            -s "SC_all" \
+            -t "${threads}"
 
     echo ""
     echo ""
@@ -13683,9 +14545,14 @@ done
 
 <a id="open-tabs-todo"></a>
 ## Open tabs (`#TODO`)
+<details>
+<summary><i>Open tabs (#TODO)</i></summary>
+
 Open tabs in browser (prior to closing them), morning of 2022-0119
 
 `#2022_transcriptome-construction`
 a. https://rnabio.org/module-02-alignment/0002/06/01/Alignment_QC/
 b. https://multiqc.info/docs/
 c. https://umi-tools.readthedocs.io/en/latest/QUICK_START.html
+</details>
+<br />

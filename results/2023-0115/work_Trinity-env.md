@@ -84,4 +84,9 @@ mamba install \
 # mamba search -c bioconda trim-galore
 mamba install -c bioconda trim-galore=0.6.7
 # Wow, now mamba installation of trim-galore works
+
+mamba install -c conda-forge ripgrep
 ```
+
+`#NOTE` The version of samtools installed is 1.3&mdash;it's quite old  
+`#TODO` Check on the versions of the other installed `bioconda` packages
