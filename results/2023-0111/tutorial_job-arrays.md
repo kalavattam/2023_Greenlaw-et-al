@@ -204,6 +204,16 @@ cat -n "${ex_1}/command_array.sh"
 
 <a id="examine-the-contents-of-command_arraysh"></a>
 #### Examine the contents of `command_array.sh`
+<details>
+<summary><i>Code: Examine the contents of command_array.sh</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+```
+</details>
+<br />
 
 <a id="understanding-the-contents-of-command_arraysh"></a>
 #### Understanding the contents of `command_array.sh`
