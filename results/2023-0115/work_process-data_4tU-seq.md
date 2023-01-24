@@ -14516,12 +14516,389 @@ done
 <a id="scraps"></a>
 ## *Scraps*
 <details>
-<summary><i>Code: </i></summary>
+<summary><i>Printed: Mamba installations on my local FHCC machine (2023-0123)</i></summary>
 
-```bash
+`#TODO` Record this information in the proper location
+```txt
 #!/bin/bash
 #DONTRUN #CONTINUE
 
+
+❯ Trinity_env
+
+
+❯ mamba install -c bioconda bioconductor-ramwas
+                  __    __    __    __
+                 /  \  /  \  /  \  /  \
+                /    \/    \/    \/    \
+███████████████/  /██/  /██/  /██/  /████████████████████████
+              /  / \   / \   / \   / \  \____
+             /  /   \_/   \_/   \_/   \    o \__,
+            / _/                       \_____/  `
+            |/
+        ███╗   ███╗ █████╗ ███╗   ███╗██████╗  █████╗
+        ████╗ ████║██╔══██╗████╗ ████║██╔══██╗██╔══██╗
+        ██╔████╔██║███████║██╔████╔██║██████╔╝███████║
+        ██║╚██╔╝██║██╔══██║██║╚██╔╝██║██╔══██╗██╔══██║
+        ██║ ╚═╝ ██║██║  ██║██║ ╚═╝ ██║██████╔╝██║  ██║
+        ╚═╝     ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝╚═════╝ ╚═╝  ╚═╝
+
+        mamba (0.27.0) supported by @QuantStack
+
+        GitHub:  https://github.com/mamba-org/mamba
+        Twitter: https://twitter.com/QuantStack
+
+█████████████████████████████████████████████████████████████
+
+
+Looking for: ['bioconductor-ramwas']
+
+bioconda/osx-64                                      3.8MB @   4.0MB/s  1.0s
+bioconda/noarch                                      4.1MB @   3.8MB/s  1.2s
+conda-forge/noarch                                  11.0MB @   4.6MB/s  2.6s
+conda-forge/osx-64                                  26.4MB @   4.5MB/s  6.6s
+
+Pinned packages:
+  - python 3.7.*
+
+
+Transaction
+
+  Prefix: /Users/kalavatt/mambaforge/envs/Trinity_env
+
+  Updating specs:
+
+   - bioconductor-ramwas
+   - ca-certificates
+   - certifi
+   - openssl
+
+
+  Package                              Version  Build                 Channel                  Size
+─────────────────────────────────────────────────────────────────────────────────────────────────────
+  Install:
+─────────────────────────────────────────────────────────────────────────────────────────────────────
+
+  + bioconductor-annotationdbi          1.60.0  r42hdfd78af_0         bioconda/noarch           5MB
+  + bioconductor-biobase                2.58.0  r42h3be46a4_0         bioconda/osx-64           3MB
+  + bioconductor-biocfilecache           2.6.0  r42hdfd78af_0         bioconda/noarch         596kB
+  + bioconductor-biomart                2.54.0  r42hdfd78af_0         bioconda/noarch         926kB
+  + bioconductor-delayedarray           0.24.0  r42h3be46a4_0         bioconda/osx-64           3MB
+  + bioconductor-genomicalignments      1.34.0  r42h3be46a4_0         bioconda/osx-64           2MB
+  + bioconductor-keggrest               1.38.0  r42hdfd78af_0         bioconda/noarch         199kB
+  + bioconductor-matrixgenerics         1.10.0  r42hdfd78af_0         bioconda/noarch         353kB
+  + bioconductor-ramwas                 1.22.0  r42h3be46a4_0         bioconda/osx-64           4MB
+  + bioconductor-summarizedexperiment   1.28.0  r42hdfd78af_0         bioconda/noarch           3MB
+  + libllvm13                           13.0.1  h64f94b2_2            conda-forge/osx-64       27MB
+  + r-askpass                              1.1  r42h815d134_3         conda-forge/osx-64       29kB
+  + r-assertthat                         0.2.1  r42hc72bb7e_3         conda-forge/noarch       73kB
+  + r-bit                                4.0.5  r42h815d134_0         conda-forge/osx-64        1MB
+  + r-bit64                              4.0.5  r42h815d134_1         conda-forge/osx-64      545kB
+  + r-blob                               1.2.3  r42hc72bb7e_1         conda-forge/noarch       66kB
+  + r-cachem                             1.0.6  r42h815d134_1         conda-forge/osx-64       74kB
+  + r-curl                               4.3.3  r42h815d134_1         conda-forge/osx-64      709kB
+  + r-dbi                                1.1.3  r42hc72bb7e_1         conda-forge/noarch      789kB
+  + r-dbplyr                             2.3.0  r42hc72bb7e_0         conda-forge/noarch        1MB
+  + r-digest                            0.6.31  r42h49197e3_0         conda-forge/osx-64      184kB
+  + r-dplyr                             1.0.10  r42h49197e3_1         conda-forge/osx-64        1MB
+  + r-ellipsis                           0.3.2  r42h815d134_1         conda-forge/osx-64       42kB
+  + r-fansi                              1.0.4  r42h815d134_0         conda-forge/osx-64      309kB
+  + r-fastmap                            1.1.0  r42h49197e3_1         conda-forge/osx-64       71kB
+  + r-filelock                           1.0.2  r42h815d134_1003      conda-forge/osx-64       30kB
+  + r-filematrix                           1.3  r42hc72bb7e_1003      conda-forge/noarch        1MB
+  + r-foreach                            1.5.2  r42hc72bb7e_1         conda-forge/noarch      138kB
+  + r-generics                           0.1.3  r42hc72bb7e_1         conda-forge/noarch       95kB
+  + r-glmnet                             4.1_2  r42h1e4e481_1         conda-forge/osx-64        2MB
+  + r-hms                                1.1.2  r42hc72bb7e_1         conda-forge/noarch      110kB
+  + r-httr                               1.4.4  r42hc72bb7e_1         conda-forge/noarch      509kB
+  + r-iterators                         1.0.14  r42hc72bb7e_1         conda-forge/noarch      359kB
+  + r-jsonlite                           1.8.4  r42h815d134_0         conda-forge/osx-64      629kB
+  + r-kernsmooth                       2.23_20  r42hc309deb_1         conda-forge/osx-64      101kB
+  + r-lattice                          0.20_45  r42h815d134_1         conda-forge/osx-64        1MB
+  + r-matrix                             1.5_3  r42hce01bf1_0         conda-forge/osx-64        5MB
+  + r-matrixstats                       0.63.0  r42h815d134_0         conda-forge/osx-64      452kB
+  + r-memoise                            2.0.1  r42hc72bb7e_1         conda-forge/noarch       59kB
+  + r-mime                                0.12  r42h815d134_1         conda-forge/osx-64       52kB
+  + r-openssl                            2.0.5  r42hfeb9312_0         conda-forge/osx-64      628kB
+  + r-pillar                             1.8.1  r42hc72bb7e_1         conda-forge/noarch      694kB
+  + r-pkgconfig                          2.0.3  r42hc72bb7e_2         conda-forge/noarch       27kB
+  + r-plogr                              0.2.0  r42hc72bb7e_1004      conda-forge/noarch       21kB
+  + r-png                                0.1_8  r42hbf2103b_0         conda-forge/osx-64       57kB
+  + r-prettyunits                        1.1.1  r42hc72bb7e_2         conda-forge/noarch       43kB
+  + r-progress                           1.2.2  r42hc72bb7e_3         conda-forge/noarch       94kB
+  + r-purrr                              1.0.1  r42h815d134_0         conda-forge/osx-64      482kB
+  + r-r6                                 2.5.1  r42hc72bb7e_1         conda-forge/noarch       93kB
+  + r-rappdirs                           0.3.3  r42h815d134_1         conda-forge/osx-64       52kB
+  + r-rsqlite                           2.2.20  r42h49197e3_0         conda-forge/osx-64        1MB
+  + r-shape                              1.4.6  r42ha770c72_1         conda-forge/noarch      813kB
+  + r-survival                           3.5_0  r42h815d134_0         conda-forge/osx-64        6MB
+  + r-sys                                3.4.1  r42h815d134_0         conda-forge/osx-64       48kB
+  + r-tibble                             3.1.8  r42h815d134_1         conda-forge/osx-64      716kB
+  + r-tidyselect                         1.2.0  r42hbe3e9c8_0         conda-forge/osx-64      222kB
+  + r-utf8                               1.2.2  r42h815d134_1         conda-forge/osx-64      162kB
+  + r-withr                              2.5.0  r42hc72bb7e_1         conda-forge/noarch      246kB
+  + r-xml2                               1.3.3  r42h3576887_2         conda-forge/osx-64      330kB
+
+  Change:
+─────────────────────────────────────────────────────────────────────────────────────────────────────
+
+  - cryptography                        38.0.2  py37h1818b49_1        conda-forge
+  + cryptography                        38.0.2  py37hbf3704f_1        conda-forge/osx-64     Cached
+  - libssh2                             1.10.0  h7535e13_3            conda-forge
+  + libssh2                             1.10.0  h47af595_3            conda-forge/osx-64     Cached
+  - mysql-common                        8.0.31  h7ebae80_0            conda-forge
+  + mysql-common                        8.0.31  hc4b2c72_0            conda-forge/osx-64        2MB
+  - mysql-libs                          8.0.31  hc37e033_0            conda-forge
+  + mysql-libs                          8.0.31  h8658499_0            conda-forge/osx-64        2MB
+  - python                              3.7.12  haf480d7_100_cpython  conda-forge
+  + python                              3.7.12  hf3644f1_100_cpython  conda-forge/osx-64     Cached
+  - qt-webengine                        5.15.4  h72ca1e5_3            conda-forge
+  + qt-webengine                        5.15.4  h1d4dd28_3            conda-forge/osx-64       54MB
+  - sigtool                              0.1.3  h57ddcff_0            conda-forge
+  + sigtool                              0.1.3  h88f4db0_0            conda-forge/osx-64     Cached
+
+  Upgrade:
+─────────────────────────────────────────────────────────────────────────────────────────────────────
+
+  - curl                                7.86.0  h57eb407_1            conda-forge
+  + curl                                7.87.0  h6df9250_0            conda-forge/osx-64      141kB
+  - gettext                             0.21.0  h7535e17_0            anaconda
+  + gettext                             0.21.1  h8a4c099_0            conda-forge/osx-64     Cached
+  - glib                                2.74.0  hbc0c0cd_0            conda-forge
+  + glib                                2.74.1  hbc0c0cd_1            conda-forge/osx-64      483kB
+  - glib-tools                          2.74.0  hbc0c0cd_0            conda-forge
+  + glib-tools                          2.74.1  hbc0c0cd_1            conda-forge/osx-64       99kB
+  - gst-plugins-base                    1.20.3  h37e1711_2            conda-forge
+  + gst-plugins-base                    1.21.3  h37e1711_1            conda-forge/osx-64        2MB
+  - gstreamer                           1.20.3  h1d18e73_2            conda-forge
+  + gstreamer                           1.21.3  h1d18e73_1            conda-forge/osx-64        2MB
+  - harfbuzz                             5.3.0  h08f8713_0            conda-forge
+  + harfbuzz                             6.0.0  h08f8713_0            conda-forge/osx-64        1MB
+  - krb5                                1.19.3  hb49756b_0            conda-forge
+  + krb5                                1.20.1  h049b76e_0            conda-forge/osx-64        1MB
+  - libcurl                             7.86.0  h57eb407_1            conda-forge
+  + libcurl                             7.87.0  h6df9250_0            conda-forge/osx-64      333kB
+  - libglib                             2.74.0  h3ba3332_0            conda-forge
+  + libglib                             2.74.1  h4c723e1_1            conda-forge/osx-64        3MB
+  - libnghttp2                          1.47.0  h7cbc4dc_1            conda-forge
+  + libnghttp2                          1.51.0  he2ab024_0            conda-forge/osx-64      608kB
+  - libpq                                 14.5  h4aa9af9_3            conda-forge
+  + libpq                                 15.1  h3640bf0_3            conda-forge/osx-64        2MB
+  - libxml2                             2.9.14  hea49891_4            conda-forge
+  + libxml2                             2.10.3  hb9e07b5_0            conda-forge/osx-64     Cached
+  - openssl                             1.1.1s  hfd90126_1            conda-forge
+  + openssl                              3.0.7  hfd90126_1            conda-forge/osx-64     Cached
+  - pango                              1.50.11  h7fca291_0            conda-forge
+  + pango                              1.50.12  hbd9bf65_1            conda-forge/osx-64      412kB
+  - pcre2                                10.37  h3f55489_1            conda-forge
+  + pcre2                                10.40  h1c4e4bc_0            conda-forge/osx-64        3MB
+  - qt                                  5.15.4  hb3ad848_0            conda-forge
+  + qt                                  5.15.6  h93fa01e_0            conda-forge/osx-64       17kB
+  - qt-main                             5.15.4  h938c29d_2            conda-forge
+  + qt-main                             5.15.6  haeff654_6            conda-forge/osx-64       47MB
+  - r-base                               4.2.1  he54549f_2            conda-forge
+  + r-base                               4.2.2  h6e3643f_2            conda-forge/osx-64       24MB
+
+  Downgrade:
+─────────────────────────────────────────────────────────────────────────────────────────────────────
+
+  - libclang                            14.0.6  default_h55ffa42_0    conda-forge
+  + libclang                            13.0.1  default_he082bbe_0    conda-forge/osx-64        8MB
+
+  Summary:
+
+  Install: 59 packages
+  Change: 7 packages
+  Upgrade: 19 packages
+  Downgrade: 1 packages
+
+  Total download: 232MB
+
+─────────────────────────────────────────────────────────────────────────────────────────────────────
+
+Confirm changes: [Y/n] Y
+libnghttp2                                         608.0kB @   8.3MB/s  0.1s
+krb5                                                 1.1MB @  12.4MB/s  0.1s
+mysql-common                                         2.0MB @  17.5MB/s  0.1s
+harfbuzz                                             1.2MB @  10.1MB/s  0.0s
+pango                                              411.8kB @   3.0MB/s  0.0s
+r-fastmap                                           71.4kB @ 510.9kB/s  0.0s
+pcre2                                                2.6MB @  17.5MB/s  0.1s
+gstreamer                                            1.8MB @  11.1MB/s  0.0s
+r-matrixstats                                      451.9kB @   2.7MB/s  0.0s
+r-jsonlite                                         628.6kB @   3.6MB/s  0.0s
+r-ellipsis                                          42.1kB @ 239.2kB/s  0.0s
+r-curl                                             709.0kB @   3.6MB/s  0.0s
+r-cachem                                            73.6kB @ 348.3kB/s  0.0s
+r-blob                                              66.4kB @ 268.9kB/s  0.0s
+r-assertthat                                        73.2kB @ 259.6kB/s  0.0s
+r-r6                                                92.6kB @ 288.3kB/s  0.0s
+r-filematrix                                         1.2MB @   2.4MB/s  0.2s
+r-filelock                                          29.9kB @  59.3kB/s  0.3s
+r-hms                                              110.1kB @ 213.6kB/s  0.0s
+r-httr                                             509.2kB @ 937.5kB/s  0.0s
+r-tibble                                           715.8kB @   1.2MB/s  0.1s
+r-dplyr                                              1.2MB @   1.8MB/s  0.1s
+bioconductor-matrixgenerics                        352.7kB @ 499.4kB/s  0.2s
+bioconductor-summarizedexperiment                    2.8MB @   3.6MB/s  0.1s
+bioconductor-biocfilecache                         596.2kB @ 699.2kB/s  0.1s
+libllvm13                                           26.5MB @  30.8MB/s  0.9s
+curl                                               141.3kB @ 157.4kB/s  0.0s
+libglib                                              3.1MB @   3.4MB/s  0.1s
+r-png                                               57.4kB @  61.0kB/s  0.0s
+libpq                                                2.3MB @   2.4MB/s  0.1s
+r-bit                                                1.2MB @   1.2MB/s  0.1s
+r-rappdirs                                          52.0kB @  52.2kB/s  0.0s
+r-fansi                                            309.1kB @ 287.7kB/s  0.1s
+qt                                                  16.7kB @  15.1kB/s  0.0s
+r-pkgconfig                                         26.6kB @  23.5kB/s  0.0s
+gst-plugins-base                                     2.4MB @   2.0MB/s  0.2s
+r-shape                                            812.9kB @ 678.7kB/s  0.1s
+r-memoise                                           59.0kB @  48.8kB/s  0.0s
+r-progress                                          94.4kB @  76.7kB/s  0.0s
+r-matrix                                             4.6MB @   3.6MB/s  0.3s
+r-tidyselect                                       222.0kB @ 177.0kB/s  0.0s
+bioconductor-delayedarray                            2.5MB @   1.8MB/s  0.2s
+qt-main                                             47.3MB @  33.6MB/s  1.2s
+bioconductor-genomicalignments                       2.4MB @   1.7MB/s  0.2s
+glib-tools                                          98.6kB @  69.8kB/s  0.0s
+r-purrr                                            482.1kB @ 331.8kB/s  0.0s
+r-lattice                                            1.2MB @ 799.6kB/s  0.1s
+r-askpass                                           28.5kB @  19.1kB/s  0.0s
+r-kernsmooth                                       101.0kB @  66.5kB/s  0.1s
+r-plogr                                             21.2kB @  13.9kB/s  0.0s
+r-generics                                          94.5kB @  61.7kB/s  0.0s
+r-prettyunits                                       43.3kB @  28.0kB/s  0.0s
+bioconductor-keggrest                              199.5kB @ 127.8kB/s  0.0s
+libclang                                             8.4MB @   5.2MB/s  0.3s
+glib                                               482.7kB @ 299.7kB/s  0.0s
+r-sys                                               48.4kB @  29.7kB/s  0.0s
+qt-webengine                                        54.1MB @  33.2MB/s  1.4s
+r-xml2                                             329.7kB @ 199.8kB/s  0.0s
+bioconductor-annotationdbi                           5.2MB @   3.1MB/s  0.1s
+r-dbi                                              789.4kB @ 470.8kB/s  0.0s
+libcurl                                            332.7kB @ 194.0kB/s  0.0s
+r-dbplyr                                             1.1MB @ 608.1kB/s  0.1s
+bioconductor-biobase                                 2.5MB @   1.4MB/s  0.1s
+r-utf8                                             162.0kB @  92.5kB/s  0.0s
+r-survival                                           6.0MB @   3.4MB/s  0.1s
+r-openssl                                          627.8kB @ 355.1kB/s  0.0s
+r-pillar                                           693.5kB @ 389.7kB/s  0.0s
+r-foreach                                          138.4kB @  76.6kB/s  0.0s
+r-glmnet                                             1.9MB @   1.0MB/s  0.1s
+r-bit64                                            544.6kB @ 299.1kB/s  0.1s
+mysql-libs                                           2.0MB @   1.1MB/s  0.0s
+r-withr                                            245.9kB @ 132.8kB/s  0.0s
+bioconductor-biomart                               926.1kB @ 497.7kB/s  0.0s
+r-iterators                                        359.2kB @ 191.3kB/s  0.0s
+r-digest                                           183.7kB @  97.4kB/s  0.0s
+r-mime                                              51.9kB @  27.5kB/s  0.0s
+bioconductor-ramwas                                  3.6MB @   1.9MB/s  0.4s
+r-rsqlite                                            1.2MB @ 637.5kB/s  0.1s
+r-base                                              24.4MB @  11.0MB/s  0.4s
+Preparing transaction: done
+Verifying transaction: done
+Executing transaction: done
+
+
+❯ R-Trinity
+
+
+❯ mamba install -c conda-forge r-knitr r-markdown r-rmarkdown
+                  __    __    __    __
+                 /  \  /  \  /  \  /  \
+                /    \/    \/    \/    \
+███████████████/  /██/  /██/  /██/  /████████████████████████
+              /  / \   / \   / \   / \  \____
+             /  /   \_/   \_/   \_/   \    o \__,
+            / _/                       \_____/  `
+            |/
+        ███╗   ███╗ █████╗ ███╗   ███╗██████╗  █████╗
+        ████╗ ████║██╔══██╗████╗ ████║██╔══██╗██╔══██╗
+        ██╔████╔██║███████║██╔████╔██║██████╔╝███████║
+        ██║╚██╔╝██║██╔══██║██║╚██╔╝██║██╔══██╗██╔══██║
+        ██║ ╚═╝ ██║██║  ██║██║ ╚═╝ ██║██████╔╝██║  ██║
+        ╚═╝     ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝╚═════╝ ╚═╝  ╚═╝
+
+        mamba (0.27.0) supported by @QuantStack
+
+        GitHub:  https://github.com/mamba-org/mamba
+        Twitter: https://twitter.com/QuantStack
+
+█████████████████████████████████████████████████████████████
+
+
+Looking for: ['r-knitr', 'r-markdown', 'r-rmarkdown']
+
+conda-forge/osx-64                                          Using cache
+conda-forge/noarch                                          Using cache
+
+Pinned packages:
+  - python 3.7.*
+
+
+Transaction
+
+  Prefix: /Users/kalavatt/mambaforge/envs/Trinity_env
+
+  Updating specs:
+
+   - r-knitr
+   - r-markdown
+   - r-rmarkdown
+   - ca-certificates
+   - certifi
+   - openssl
+
+
+  Package         Version  Build             Channel                 Size
+───────────────────────────────────────────────────────────────────────────
+  Install:
+───────────────────────────────────────────────────────────────────────────
+
+  + r-base64enc     0.1_3  r42h815d134_1005  conda-forge/osx-64      45kB
+  + r-bslib         0.4.2  r42hc72bb7e_0     conda-forge/noarch       4MB
+  + r-commonmark    1.8.1  r42h815d134_0     conda-forge/osx-64     135kB
+  + r-evaluate       0.20  r42hc72bb7e_0     conda-forge/noarch      87kB
+  + r-fs            1.5.2  r42h49197e3_2     conda-forge/osx-64     311kB
+  + r-highr          0.10  r42hc72bb7e_0     conda-forge/noarch      57kB
+  + r-htmltools     0.5.4  r42h49197e3_0     conda-forge/osx-64     351kB
+  + r-jquerylib     0.1.4  r42hc72bb7e_1     conda-forge/noarch     379kB
+  + r-knitr          1.41  r42hc72bb7e_0     conda-forge/noarch       1MB
+  + r-markdown        1.4  r42hc72bb7e_0     conda-forge/noarch     125kB
+  + r-rmarkdown      2.20  r42hc72bb7e_0     conda-forge/noarch       3MB
+  + r-sass          0.4.4  r42h49197e3_0     conda-forge/osx-64       2MB
+  + r-tinytex        0.43  r42hc72bb7e_0     conda-forge/noarch     142kB
+  + r-xfun           0.36  r42h49197e3_0     conda-forge/osx-64     395kB
+  + r-yaml          2.3.6  r42h815d134_0     conda-forge/osx-64     116kB
+
+  Summary:
+
+  Install: 15 packages
+
+  Total download: 12MB
+
+───────────────────────────────────────────────────────────────────────────
+
+Confirm changes: [Y/n] Y
+r-xfun                                             394.7kB @   5.8MB/s  0.1s
+r-base64enc                                         44.6kB @ 604.3kB/s  0.1s
+r-commonmark                                       135.4kB @   1.8MB/s  0.1s
+r-fs                                               310.9kB @   4.1MB/s  0.1s
+r-yaml                                             116.4kB @   1.5MB/s  0.1s
+r-markdown                                         124.7kB @   1.3MB/s  0.0s
+r-tinytex                                          142.2kB @   1.3MB/s  0.0s
+r-sass                                               2.1MB @  17.0MB/s  0.1s
+r-highr                                             57.1kB @ 454.5kB/s  0.0s
+r-htmltools                                        351.0kB @   2.2MB/s  0.0s
+r-evaluate                                          86.7kB @ 527.6kB/s  0.0s
+r-knitr                                              1.3MB @   7.4MB/s  0.0s
+r-rmarkdown                                          2.8MB @  15.3MB/s  0.1s
+r-bslib                                              4.1MB @  21.5MB/s  0.1s
+r-jquerylib                                        378.6kB @   2.0MB/s  0.0s
+Preparing transaction: done
+Verifying transaction: done
+Executing transaction: done
 ```
 </details>
 <br />
