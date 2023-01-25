@@ -8,23 +8,33 @@
 <!-- MarkdownTOC -->
 
 1. [Get situated](#get-situated)
-     1. [Insights from troubleshooting and debugging](#insights-from-troubleshooting-and-debugging)
+    1. [Insights from troubleshooting and debugging](#insights-from-troubleshooting-and-debugging)
 1. [Example 1](#example-1)
-     1. [Get situated](#get-situated-1)
-     1. [Make `commandlist`](#make-commandlist)
-     1. [Make `command_array.sh`](#make-command_arraysh)
-          1. [Examine the contents of `command_array.sh`](#examine-the-contents-of-command_arraysh)
-          1. [Understanding the contents of `command_array.sh`](#understanding-the-contents-of-command_arraysh)
-     1. [Run `command_array.sh`](#run-command_arraysh)
+    1. [Get situated](#get-situated-1)
+    1. [Make `commandlist`](#make-commandlist)
+    1. [Make `command_array.sh`](#make-command_arraysh)
+        1. [Understanding the contents of `command_array.sh`](#understanding-the-contents-of-command_arraysh)
+    1. [Run `command_array.sh`](#run-command_arraysh)
 1. [Example 2](#example-2)
 1. [Example 3](#example-3)
-     1. [Get situated](#get-situated-2)
-     1. [Make `analysis.sh`](#make-analysissh)
-     1. [Make `filelist.txt`](#make-filelisttxt)
-          1. [Make the files in `filelist.txt`](#make-the-files-in-filelisttxt)
-     1. [Make `job_array.sh`](#make-job_arraysh)
-     1. [Run `job_array.sh`](#run-job_arraysh)
+    1. [Get situated](#get-situated-2)
+    1. [Make `analysis.sh`](#make-analysissh)
+    1. [Make `filelist.txt`](#make-filelisttxt)
+        1. [Make the files in `filelist.txt`](#make-the-files-in-filelisttxt)
+    1. [Make `job_array.sh`](#make-job_arraysh)
+    1. [Run `job_array.sh`](#run-job_arraysh)
 1. [`#TODO`s, notes, etc.](#todos-notes-etc)
+1. [Using job arrays for `Trinity` job submissions](#using-job-arrays-for-trinity-job-submissions)
+    1. [Examine and edit the current job-submission script](#examine-and-edit-the-current-job-submission-script)
+        1. [Survey the current script](#survey-the-current-script)
+        1. [Adapt script to take a header-ed list of arguments](#adapt-script-to-take-a-header-ed-list-of-arguments)
+    1. [Create an appropriate list to be used with modified script](#create-an-appropriate-list-to-be-used-with-modified-script)
+        1. [Getting file, directory info into a deduplicated associative array](#getting-file-directory-info-into-a-deduplicated-associative-array)
+        1. [Define variables](#define-variables)
+        1. [Set up directory for storing results of these tests](#set-up-directory-for-storing-results-of-these-tests)
+        1. [Generate the list](#generate-the-list)
+    1. [Write out the list-ready, adapted script \(`echo` test\) using a `HEREDOC`](#write-out-the-list-ready-adapted-script-echo-test-using-a-heredoc)
+    1. [Do a test run of the script and list](#do-a-test-run-of-the-script-and-list)
 
 <!-- /MarkdownTOC -->
 </details>
@@ -112,6 +122,9 @@ Additional details [here](https://bugs.schedmd.com/show_bug.cgi?id=14298).
 #DONTRUN #CONTINUE
 
 dir="tutorial_job-arrays"  # echo "${dir}"
+if [[ -d "${dir}" ]]; then
+     mv -f "${dir}" "bak.${dir}"
+fi
 ex_1="${dir}/example_1"  # echo "${ex_1}"
 mkdir -p "${ex_1}"
 ```
@@ -183,7 +196,7 @@ cat -n "${ex_1}/command_array.sh"
 </details>
 <br />
 
-<mark>___\*Note above that the variable passed to `srun` must be quoted&mdash;or else `srun` will attempt to access a file.___</mark>
+<mark>___\*Note above that the variable passed to `srun` must <u>not be quoted</u>&mdash;or else `srun` will attempt to access a file.___</mark>
 
 <details>
 <summary><i>Printed to terminal: Make command_array.sh</i></summary>
@@ -198,19 +211,6 @@ cat -n "${ex_1}/command_array.sh"
      6	command="$(awk "NR == ${SLURM_ARRAY_TASK_ID}" "tutorial_job-arrays/example_1/commandlist")"
      7	srun ${command}
      8
-```
-</details>
-<br />
-
-<a id="examine-the-contents-of-command_arraysh"></a>
-#### Examine the contents of `command_array.sh`
-<details>
-<summary><i>Code: Examine the contents of command_array.sh</i></summary>
-
-```bash
-#!/bin/bash
-#DONTRUN #CONTINUE
-
 ```
 </details>
 <br />
@@ -373,7 +373,7 @@ skal
 #  Check on outfiles ------------------
 ., "${ex_2}"
 
-cat "${ex_2}/area_of_triangle_5_8_9.out"
+cat "${ex_2}/area_of_triangle_5_8_"*".out"
 ```
 </details>
 <br />
@@ -453,7 +453,21 @@ drwxrws--- 4 kalavatt  54 Jan 14 16:03 ../
 -rw-rw---- 1 kalavatt 473 Jan 14 16:13 area_of_triangle.R
 -rw-rw---- 1 kalavatt 376 Jan 14 16:19 job_array_triangle.sh
 
-❯ cat "${ex_2}/area_of_triangle_5_8_9.out"
+❯ cat "${ex_2}/area_of_triangle_5_8_"*".out"
+[1] "The area of a triangle with sides 5 and 8 with angle 10 degrees is 3.472964"
+[1] "The area of a triangle with sides 5 and 8 with angle 11 degrees is 3.816180"
+[1] "The area of a triangle with sides 5 and 8 with angle 12 degrees is 4.158234"
+[1] "The area of a triangle with sides 5 and 8 with angle 13 degrees is 4.499021"
+[1] "The area of a triangle with sides 5 and 8 with angle 14 degrees is 4.838438"
+[1] "The area of a triangle with sides 5 and 8 with angle 15 degrees is 5.176381"
+[1] "The area of a triangle with sides 5 and 8 with angle 1 degrees is 0.349048"
+[1] "The area of a triangle with sides 5 and 8 with angle 2 degrees is 0.697990"
+[1] "The area of a triangle with sides 5 and 8 with angle 3 degrees is 1.046719"
+[1] "The area of a triangle with sides 5 and 8 with angle 4 degrees is 1.395129"
+[1] "The area of a triangle with sides 5 and 8 with angle 5 degrees is 1.743115"
+[1] "The area of a triangle with sides 5 and 8 with angle 6 degrees is 2.090569"
+[1] "The area of a triangle with sides 5 and 8 with angle 7 degrees is 2.437387"
+[1] "The area of a triangle with sides 5 and 8 with angle 8 degrees is 2.783462"
 [1] "The area of a triangle with sides 5 and 8 with angle 9 degrees is 3.128689"
 ```
 </details>
@@ -534,7 +548,7 @@ date
 echo \"Sleeping for \${RAND} seconds …\"
 sleep \"\${RAND}\"
 
-#  Now, actually do something, calculating the checksum for the infile
+#  Now, actually do something: Calculate the checksum for the infile
 CHKSUM=\"\$(md5sum \${1})\"
 echo \"\${CHKSUM}\" > \"\${2}/\${BASE}_sum\"
 
@@ -581,7 +595,7 @@ cat -n "${ex_3}/analysis.sh"
     24	echo "Sleeping for ${RAND} seconds …"
     25	sleep "${RAND}"
     26
-    27	#  Now, actually do something, calculating the checksum for the infile
+    27	#  Now, actually do something: Calculate the checksum for the infile
     28	CHKSUM="$(md5sum ${1})"
     29	echo "${CHKSUM}" > "${2}/${BASE}_sum"
     30
@@ -710,7 +724,7 @@ Instead, we need to do, e.g.,
 ```bash
 awk "NR == ${SLURM_ARRAY_TASK_ID}" "${ex_3}/filelist.txt"
 ```
-*(There are many other ways to do this, including alternative ways to do it with `sed`. Anyway, this is why you see the use of "`awk`" and not "`sed`" in [Example 1](#make-command_arraysh)&mdash;something I spent (too much) time troubleshooting yesterday.)*
+*(There are many other ways to do this, including alternative ways to do it with `sed`. Anyway, this is why you see the use of "`awk`" and not "`sed`" in [Example 1](#make-command_arraysh)&mdash;something I spent (too much) time troubleshooting yesterday (2023-0114).)*
 </details>
 <br />
 
@@ -744,6 +758,7 @@ echo "${contents}" >> "${ex_3}/job_array.sh"
 sed -i '1d' "${ex_3}/job_array.sh"
 cat -n "${ex_3}/job_array.sh"
 
+#  Scraps
 # SLURM_ARRAY_TASK_ID=1
 # name="$(
 #     awk "NR == ${SLURM_ARRAY_TASK_ID}" "tutorial_job-arrays/example_3/filelist.txt"
@@ -793,7 +808,7 @@ skal
 #  Check on outfiles ------------------
 ., "${ex_3}"
 
-cat "${ex_3}/analysis_1.out"
+cat "${ex_3}/analysis_"*".out"
 
 # cd "${ex_3}" && rm -- *.out && cd -
 ```
@@ -829,13 +844,32 @@ cat "${ex_3}/analysis_1.out"
 
 ❯ ., "${ex_3}"
 
-❯ cat "${ex_3}/analysis_1.out"
+❯ cat "${ex_3}/analysis_"*".out"
 Beginning the analysis of file_1.txt at:
-Sun Jan 15 11:21:36 PST 2023
-Sleeping for 5 seconds …
-md5sum: tutorial_job-arrays/example_3//home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0111/tutorial_job-arrays/example_3/file_1.txt: No such file or directory
+Tue Jan 24 13:21:16 PST 2023
+Sleeping for 3 seconds …
 Analysis of file_1.txt has been completed at:
-Sun Jan 15 11:21:41 PST 2023
+Tue Jan 24 13:21:19 PST 2023
+Beginning the analysis of file_2.txt at:
+Tue Jan 24 13:21:16 PST 2023
+Sleeping for 3 seconds …
+Analysis of file_2.txt has been completed at:
+Tue Jan 24 13:21:19 PST 2023
+Beginning the analysis of file_3.txt at:
+Tue Jan 24 13:21:16 PST 2023
+Sleeping for 5 seconds …
+Analysis of file_3.txt has been completed at:
+Tue Jan 24 13:21:21 PST 2023
+Beginning the analysis of file_4.txt at:
+Tue Jan 24 13:21:16 PST 2023
+Sleeping for 2 seconds …
+Analysis of file_4.txt has been completed at:
+Tue Jan 24 13:21:18 PST 2023
+Beginning the analysis of file_5.txt at:
+Tue Jan 24 13:21:19 PST 2023
+Sleeping for 1 seconds …
+Analysis of file_5.txt has been completed at:
+Tue Jan 24 13:21:20 PST 2023
 ```
 </details>
 <br />
@@ -869,3 +903,725 @@ I'm going to have to write and run a few tests first to get all the pieces worki
 Also, I really need to get started with the troubleshooting for Alison&mdash;get started with that ~~`#TOMORROW`~~`#TODAY`
 </details>
 <br />
+<br />
+
+<a id="using-job-arrays-for-trinity-job-submissions"></a>
+## Using job arrays for `Trinity` job submissions
+<a id="examine-and-edit-the-current-job-submission-script"></a>
+### Examine and edit the current job-submission script
+<a id="survey-the-current-script"></a>
+#### Survey the current script
+<details>
+<summary><i>Code: Survey the current script</i></summary>
+
+```bash
+#!/bin/bash
+
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=${threads}
+#SBATCH --error=./sh_err_out/err_out/${script_name%.sh}.%J.err.txt
+#SBATCH --output=./sh_err_out/err_out/${script_name%.sh}.%J.out.txt
+
+#  ${script_name}
+#  KA
+#  $(date '+%Y-%m%d')
+
+
+#  ------------------------------------
+print_message_exit() {
+    # Print a message and exit
+    #
+    # :param 1: message to be printed <chr>
+    echo "${1}"
+    exit 1
+}
+
+
+check_directory_exists() {
+    # Check that a directory exists; exit if it does not
+    # 
+    # :param 1: directory, including path <chr>
+    [[ -d "${1}" ]] ||
+        {
+            echo -e "Exiting: Directory ${1} does not exist.\n"
+            exit 1
+        }
+}
+
+
+check_file_exists() {
+    # Check that a file exists; exit if it does not
+    # 
+    # :param 1: file, including path <chr>
+    [[ -f "${1}" ]] ||
+        {
+            echo -e "Exiting: File ${1} does not exist.\n"
+            exit 1
+        }
+}
+
+
+check_value_integer() {
+    # Check that a value is an integer; exit if not
+    # 
+    # :param 1: value to be checked for positive \"integer\" data type
+    # :param 2: string specifying what argument is being tests <chr> 
+    [[ ! "${1}" =~ ^[0-9]+$ ]] &&
+        {
+            echo -e "Exiting: Argument for ${2} must be a positive integer.\n"
+            exit 1
+        }
+}
+
+
+calculate_run_time() {
+    # Calculate run time for chunk of code
+    #
+    # :param 1: start time in <'date +%s' format>
+    # :param 2: end time in <'date +%s' format>
+    # :param 3: message to be displayed when printing the run time <chr>
+    run_time="$(echo "${2}" - "${1}" | bc -l)"
+    
+    echo ""
+    echo "${3}"
+    printf 'Run time: %dh:%dm:%ds\n' \
+    $(( run_time/3600 )) $(( run_time%3600/60 )) $(( run_time%60 ))
+    echo ""
+}
+
+
+#  ------------------------------------
+help="""
+${0}
+-c  {catalog}        directory containing .fastq.gz files, including path; to
+                     be mounted to the Trinity container at '/data' <chr>
+-l  {left_1}         first of two .fastq.gz files for 'left' reads <chr>
+-b  {left_2}         second of two .fastq.gz files for 'left' reads <chr>
+-r  {right_1}        first of two .fastq.gz files for 'right' reads <chr>
+-d  {right_2}        second of two .fastq.gz files for 'right' reads <chr>
+-o  {out}            path for Trinity outfiles; prefix for filenames derived
+                     from the following four arguments <chr>
+-k  {min_kmer_cov}   minimum count for k-mers to be assembled by Inchworm;
+                     e.g., using a setting of 2 means that singleton k-mers
+                     will not be included in initial Inchworm contigs
+                     <int >= 1> [default: 1]
+-i  {min_iso_ratio}  minimum fraction of average k-mer coverage between two
+                     Inchworm contigs; required for gluing <float>
+                     [default: 0.05]
+-g  {min_glue}       minimum number of reads needed to glue two Inchworm
+                     contigs together <int >= 1> [default: 2]
+-f  {glue_factor}    fraction of maximum (Inchworm pair coverage) for read glue
+                     support <float> [default: 0.05]
+"""
+
+while getopts "c:l:b:r:d:o:k:i:g:f:" opt; do
+    case "${opt}" in
+        c) catalog="${OPTARG}" ;;
+        l) left_1="${OPTARG}" ;;
+        b) left_2="${OPTARG}" ;;
+        r) right_1="${OPTARG}" ;;
+        d) right_2="${OPTARG}" ;;
+        o) out="${OPTARG}" ;;
+        k) min_kmer_cov="${OPTARG}" ;;
+        i) min_iso_ratio="${OPTARG}" ;;
+        g) min_glue="${OPTARG}" ;;
+        f) glue_factor="${OPTARG}" ;;
+        *) print_message_exit "${help}" ;;
+    esac
+done
+
+[[ -z "${catalog}" ]] && print_message_exit "${help}"
+[[ -z "${left_1}" ]] && print_message_exit "${help}"
+[[ -z "${left_2}" ]] && print_message_exit "${help}"
+[[ -z "${right_1}" ]] && print_message_exit "${help}"
+[[ -z "${right_2}" ]] && print_message_exit "${help}"
+[[ -z "${out}" ]] && print_message_exit "${help}"
+[[ -z "${min_kmer_cov}" ]] && min_kmer_cov=1
+[[ -z "${min_iso_ratio}" ]] && min_iso_ratio=0.05
+[[ -z "${min_glue}" ]] && min_glue=2
+[[ -z "${glue_factor}" ]] && glue_factor=0.05
+
+
+#  ------------------------------------
+check_directory_exists "${catalog}"
+# check_file_exists "${left_1}"
+# check_file_exists "${left_2}"
+# check_file_exists "${right_1}"
+# check_file_exists "${right_2}"
+check_value_integer "${min_kmer_cov}" "{min_kmer_cov}"
+check_value_integer "${min_glue}" "{min_glue}"
+
+#TODO 1/2 In the echo test and submission script, check_file_exists() will lead
+#TODO 2/2 to exit b/c not accessing container mount
+#TODO Check that directory portion of {out} exists
+#TODO check_value_float "${min_iso_ratio}" "{min_iso_ratio}"
+#TODO check_value_float "${glue_factor}" "{glue_factor}"
+
+
+#  Echo -------------------------------
+time_start="$(date +%s)"
+
+parallel --header : --colsep " " -k -j 1 echo \
+    'singularity run \
+        --bind {catalog}:/data \
+        --bind {scratch}:/loc/scratch \
+        ~/singularity-docker-etc/Trinity.sif \
+            Trinity \
+                --verbose \
+                --max_memory {j_mem} \
+                --CPU {j_cor} \
+                --SS_lib_type FR \
+                --seqType fq \
+                --left {left_1},{left_2} \
+                --right {right_1},{right_2} \
+                --jaccard_clip \
+                --output {out} \
+                --full_cleanup \
+                --min_kmer_cov {min_kmer_cov} \
+                --min_iso_ratio {min_iso_ratio} \
+                --min_glue {min_glue} \
+                --glue_factor {glue_factor} \
+                --max_reads_per_graph 2000 \
+                --normalize_max_read_cov 200 \
+                --group_pairs_distance 700 \
+                --min_contig_length 200' \
+::: catalog "${catalog}" \
+::: scratch "/fh/scratch/delete30/tsukiyama_t" \
+::: j_mem "50G" \
+::: j_cor "${SLURM_CPUS_ON_NODE}" \
+::: left_1 "${left_1}" \
+:::+ left_2 "${left_2}" \
+:::+ right_1 "${right_1}" \
+:::+ right_2 "${right_2}" \
+:::+ out "${out}" \
+::: min_kmer_cov "${min_kmer_cov}" \
+::: min_iso_ratio "${min_iso_ratio}" \
+::: min_glue "${min_glue}" \
+::: glue_factor "${glue_factor}"
+
+
+#  Run --------------------------------
+parallel --header : --colsep " " -k -j 1 \
+    'singularity run \
+        --bind {catalog}:/data \
+        --bind {scratch}:/loc/scratch \
+        ~/singularity-docker-etc/Trinity.sif \
+            Trinity \
+                --verbose \
+                --max_memory {j_mem} \
+                --CPU {j_cor} \
+                --SS_lib_type FR \
+                --seqType fq \
+                --left {left_1},{left_2} \
+                --right {right_1},{right_2} \
+                --jaccard_clip \
+                --output {out} \
+                --full_cleanup \
+                --min_kmer_cov {min_kmer_cov} \
+                --min_iso_ratio {min_iso_ratio} \
+                --min_glue {min_glue} \
+                --glue_factor {glue_factor} \
+                --max_reads_per_graph 2000 \
+                --normalize_max_read_cov 200 \
+                --group_pairs_distance 700 \
+                --min_contig_length 200' \
+::: catalog "${catalog}" \
+::: scratch "/fh/scratch/delete30/tsukiyama_t" \
+::: j_mem "50G" \
+::: j_cor "${SLURM_CPUS_ON_NODE}" \
+::: left_1 "${left_1}" \
+:::+ left_2 "${left_2}" \
+:::+ right_1 "${right_1}" \
+:::+ right_2 "${right_2}" \
+:::+ out "${out}" \
+::: min_kmer_cov "${min_kmer_cov}" \
+::: min_iso_ratio "${min_iso_ratio}" \
+::: min_glue "${min_glue}" \
+::: glue_factor "${glue_factor}"
+
+time_end="$(date +%s)"
+```
+</details>
+
+<a id="adapt-script-to-take-a-header-ed-list-of-arguments"></a>
+#### Adapt script to take a header-ed list of arguments
+<details>
+<summary><i>Code: Adapt script to take a header-ed list of arguments</i></summary>
+
+```bash
+
+```
+</details>
+<br />
+
+<a id="create-an-appropriate-list-to-be-used-with-modified-script"></a>
+### Create an appropriate list to be used with modified script
+<a id="getting-file-directory-info-into-a-deduplicated-associative-array"></a>
+#### Getting file, directory info into a deduplicated associative array
+<details>
+<summary><i>Code: Getting file, directory info into a deduplicated associative array</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+#  Create an array of files of interest, including relative paths -------------
+unset d_in_base
+typeset -a d_in_base=(
+    files_processed-full/fastq*split/EndToEnd
+)
+# echoTest "${d_in_base[@]}"
+# echo "${#d_in_base[@]}"
+
+
+#  Get necessary file/path info into separate arrays ------
+unset f_in
+unset d_in
+typeset -a f_in
+typeset -a d_in
+for i in "${d_in_base[@]}"; do
+    # i="${d_in_base[0]}"
+    echo "#  Working with files in... --------------------------------"
+    echo "#+ ${i}"
+    # ., "${i}"
+
+    while IFS=" " read -r -d $'\0'; do
+        f_in+=( "$(echo "$(basename "${REPLY%.?.fq.gz}")" | cut -d $'_' -f 2-)" )
+        d_in+=( "$(dirname "${REPLY}")" )
+    done < <(\
+        find "${i}" \
+            -type f \
+            -name "*_Q_IP_*_1_*.?.fq.gz" \
+            -print0
+    )
+
+    echo ""
+done
+echoTest "${f_in[@]}"
+echoTest "${d_in[@]}"
+
+
+#  Rejoin the path and file info before dedup'ing ---------
+unset d_f_rejoin
+typeset -a d_f_rejoin
+for i in $(seq 0 $(echo "${#f_in[@]}" - 1 | bc)); do
+    d_f_rejoin+=( "${d_in[${i}]}/${f_in[${i}]}" )
+done
+echoTest "${d_f_rejoin[@]}"
+
+
+#  Remove duplicate elements from the "rejoin" array ------
+IFS=" " read -r -a d_f_rejoin \
+    <<< "$(\
+        tr ' ' '\n' \
+            <<< "${d_f_rejoin[@]}" \
+                | sort -u \
+                | tr '\n' ' '\
+    )"
+echoTest "${d_f_rejoin[@]}"
+
+
+#  "Unjoin" the "rejoin" array ----------------------------
+unset f_in
+unset d_in
+typeset -a f_in
+typeset -a d_in
+for i in "${d_f_rejoin[@]}"; do
+    echo "#  Working with... ------------------------------------------"
+    echo "#+ ${i}"
+
+    f_in+=( "$(basename "${i%.?.fq.gz}")" )
+    d_in+=( "$(dirname "${i}")" )
+
+    echo ""
+done
+echoTest "${f_in[@]}"
+echoTest "${d_in[@]}"
+```
+</details>
+<br />
+
+<a id="define-variables"></a>
+#### Define variables
+<details>
+<summary><i>Code: Define variables</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+script_name="submit_Trinity-GF_optimization.sh"
+threads=8
+catalog="$(dirname "$(pwd)")/2022-1201/files_processed-full/fastq_trim-rcor-cor_split/EndToEnd"
+file_1="${d_in[0]}/5781_${f_in[0]}.1.fq.gz"
+d_base="files_Trinity-GF/$(echo "${file_1}" | cut -d "/" -f 1)" 
+d_mid="$(\
+    echo $(basename "${file_1}" ".Aligned.sortedByCoord.out.sc_all.1.fq.gz") \
+        | cut -d $'_' -f 2- \
+)"
+left_1="/data/5781_${f_in[0]}.1.fq.gz"
+left_2="/data/5782_${f_in[0]}.1.fq.gz"
+right_1="/data/5781_${f_in[0]}.2.fq.gz"
+right_2="/data/5782_${f_in[0]}.2.fq.gz"
+out="${d_base}/${d_mid}"
+min_kmer_cov=1  # 2 4 8 16 32 64 128 256 512
+min_iso_ratio=0.01  # 0.05
+min_glue=1  # 2 4
+glue_factor=0.005  # 0.01 0.05 0.1
+```
+</details>
+<br />
+
+<a id="set-up-directory-for-storing-results-of-these-tests"></a>
+#### Set up directory for storing results of these tests
+<details>
+<summary><i>Code: Set up directory for storing results of these tests</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+store="tutorial_job-arrays/test_list"
+if [[ ! -d "${store}" ]]; then
+    mkdir -p "${store}"
+fi
+```
+</details>
+<br />
+
+<a id="generate-the-list"></a>
+#### Generate the list
+<details>
+<summary><i>Code: Generate the list</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+if [[ -f "${store}/test_list.txt" ]]; then
+    rm "${store}/test_list.txt"
+fi
+echo "catalog" \
+    "scratch" \
+    "j_mem"  \
+    "j_cor" \
+    "left_1" \
+    "left_2" \
+    "right_1" \
+    "right_2" \
+    "out" \
+    "min_kmer_cov" \
+    "min_iso_ratio" \
+    "min_glue" \
+    "glue_factor" \
+        >> "${store}/test_list.txt"
+
+echo "${catalog}" \
+    "/fh/scratch/delete30/tsukiyama_t" \
+    "50G" \
+    "\${SLURM_CPUS_ON_NODE}" \
+    "${left_1}" \
+    "${left_2}" \
+    "${right_1}" \
+    "${right_2}" \
+    "${out}" \
+    "${min_kmer_cov}" \
+    "${min_iso_ratio}" \
+    "${min_glue}" \
+    "${glue_factor}" \
+        >> "${store}/test_list.txt"
+# vi "${store}/test_list.txt"
+```
+</details>
+<br />
+
+<a id="write-out-the-list-ready-adapted-script-echo-test-using-a-heredoc"></a>
+### Write out the list-ready, adapted script (`echo` test) using a `HEREDOC`
+Actually, doing some further adaptations to the list to actually handle taking
+in a list
+<details>
+<summary><i>Code: Write out the list-ready, adapted script (echo test) using a HEREDOC</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+if [[ -f "./sh_err_out/${script_name}" ]]; then
+    rm "./sh_err_out/${script_name}"
+fi
+cat << script > "./sh_err_out/${script_name}"
+#!/bin/bash
+
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=${threads}
+#SBATCH --error=./sh_err_out/err_out/${script_name%.sh}.%J.err.txt
+#SBATCH --output=./sh_err_out/err_out/${script_name%.sh}.%J.out.txt
+
+#  ${script_name}
+#  KA
+#  $(date '+%Y-%m%d')
+
+
+#  ------------------------------------
+print_message_exit() {
+    # Print a message and exit
+    #
+    # :param 1: message to be printed <chr>
+    echo "\${1}"
+    exit 1
+}
+
+
+check_directory_exists() {
+    # Check that a directory exists; exit if it does not
+    # 
+    # :param 1: directory, including path <chr>
+    [[ -d "\${1}" ]] ||
+        {
+            echo -e "Exiting: Directory \${1} does not exist.\n"
+            exit 1
+        }
+}
+
+
+check_file_exists() {
+    # Check that a file exists; exit if it does not
+    # 
+    # :param 1: file, including path <chr>
+    [[ -f "\${1}" ]] ||
+        {
+            echo -e "Exiting: File \${1} does not exist.\n"
+            exit 1
+        }
+}
+
+
+check_value_integer() {
+    # Check that a value is an integer; exit if not
+    # 
+    # :param 1: value to be checked for positive \"integer\" data type
+    # :param 2: string specifying what argument is being tests <chr> 
+    [[ ! "\${1}" =~ ^[0-9]+$ ]] &&
+        {
+            echo -e "Exiting: Argument for \${2} must be a positive integer.\n"
+            exit 1
+        }
+}
+
+
+calculate_run_time() {
+    # Calculate run time for chunk of code
+    #
+    # :param 1: start time in <'date +%s' format>
+    # :param 2: end time in <'date +%s' format>
+    # :param 3: message to be displayed when printing the run time <chr>
+    run_time="\$(echo "\${2}" - "\${1}" | bc -l)"
+    
+    echo ""
+    echo "$\{3}"
+    printf 'Run time: %dh:%dm:%ds\n' \
+    \$(( run_time/3600 )) \$(( run_time%3600/60 )) \$(( run_time%60 ))
+    echo ""
+}
+
+
+#  ------------------------------------
+help="""
+\${0}
+The script takes in a single file in which the following arguments specified:
+-a  {arguments}  space-delimited list of arguments for the below arguments;
+                 list is header-ed with the names of variables for the
+                 arguments (in brackets below)
+                 
+                 #TODO Not yet all of the elements in the list are shown below,
+                 below, so take care of that
+
+    -c  {catalog}        directory containing .fastq.gz files, including path;
+                         to be mounted to the Trinity container at '/data'
+                         <chr>
+    -l  {left_1}         first of two .fastq.gz files for 'left' reads <chr>
+    -b  {left_2}         second of two .fastq.gz files for 'left' reads <chr>
+    -r  {right_1}        first of two .fastq.gz files for 'right' reads <chr>
+    -d  {right_2}        second of two .fastq.gz files for 'right' reads <chr>
+    -o  {out}            path for Trinity outfiles; prefix for filenames
+                         derived from the following four arguments <chr>
+    -k  {min_kmer_cov}   minimum count for k-mers to be assembled by Inchworm;
+                         e.g., using a setting of 2 means that singleton k-mers
+                         will not be included in initial Inchworm contigs
+                         <int >= 1> [default: 1]
+    -i  {min_iso_ratio}  minimum fraction of average k-mer coverage between two
+                         Inchworm contigs; required for gluing <float>
+                         [default: 0.05]
+    -g  {min_glue}       minimum number of reads needed to glue two Inchworm
+                         contigs together <int >= 1> [default: 2]
+    -f  {glue_factor}    fraction of maximum (Inchworm pair coverage) for read
+                         glue support <float> [default: 0.05]
+"""
+
+# while getopts "c:l:b:r:d:o:k:i:g:f:" opt; do
+while getopts "a:" opt; do
+    case "\${opt}" in
+        a) arguments="\${OPTARG}" ;;
+        # c) catalog="\${OPTARG}" ;;
+        # l) left_1="\${OPTARG}" ;;
+        # b) left_2="\${OPTARG}" ;;
+        # r) right_1="\${OPTARG}" ;;
+        # d) right_2="\${OPTARG}" ;;
+        # o) out="\${OPTARG}" ;;
+        # k) min_kmer_cov="\${OPTARG}" ;;
+        # i) min_iso_ratio="\${OPTARG}" ;;
+        # g) min_glue="\${OPTARG}" ;;
+        # f) glue_factor="\${OPTARG}" ;;
+        # *) print_message_exit "\${help}" ;;
+    esac
+done
+
+[[ -z "\${arguments}" ]] && print_message_exit "\${help}"
+# [[ -z "\${catalog}" ]] && print_message_exit "\${help}"
+# [[ -z "\${left_1}" ]] && print_message_exit "\${help}"
+# [[ -z "\${left_2}" ]] && print_message_exit "\${help}"
+# [[ -z "\${right_1}" ]] && print_message_exit "\${help}"
+# [[ -z "\${right_2}" ]] && print_message_exit "\${help}"
+# [[ -z "\${out}" ]] && print_message_exit "\${help}"
+# [[ -z "\${min_kmer_cov}" ]] && min_kmer_cov=1
+# [[ -z "\${min_iso_ratio}" ]] && min_iso_ratio=0.05
+# [[ -z "\${min_glue}" ]] && min_glue=2
+# [[ -z "\${glue_factor}" ]] && glue_factor=0.05
+
+
+#  ------------------------------------
+check_file_exists "\${arguments}"
+# check_directory_exists "\${catalog}"
+# check_file_exists "\${left_1}"
+# check_file_exists "\${left_2}"
+# check_file_exists "\${right_1}"
+# check_file_exists "\${right_2}"
+# check_value_integer "\${min_kmer_cov}" "{min_kmer_cov}"
+# check_value_integer "\${min_glue}" "{min_glue}"
+
+#TODO 1/2 In the echo test and submission script, check_file_exists() will lead
+#TODO 2/2 to exit b/c not accessing container mount
+#TODO Check that directory portion of {out} exists
+#TODO check_value_float "\${min_iso_ratio}" "{min_iso_ratio}"
+#TODO check_value_float "\${glue_factor}" "{glue_factor}"
+
+
+#  Echo -------------------------------
+time_start="\$(date +%s)"
+
+parallel --header : --colsep " " -k -j 1 echo \
+    'singularity run \
+        --bind {catalog}:/data \
+        --bind {scratch}:/loc/scratch \
+        ~/singularity-docker-etc/Trinity.sif \
+            Trinity \
+                --verbose \
+                --max_memory {j_mem} \
+                --CPU {j_cor} \
+                --SS_lib_type FR \
+                --seqType fq \
+                --left {left_1},{left_2} \
+                --right {right_1},{right_2} \
+                --jaccard_clip \
+                --output {out} \
+                --full_cleanup \
+                --min_kmer_cov {min_kmer_cov} \
+                --min_iso_ratio {min_iso_ratio} \
+                --min_glue {min_glue} \
+                --glue_factor {glue_factor} \
+                --max_reads_per_graph 2000 \
+                --normalize_max_read_cov 200 \
+                --group_pairs_distance 700 \
+                --min_contig_length 200' \
+:::: "\${arguments}"
+
+
+#  Run --------------------------------
+# parallel --header : --colsep " " -k -j 1 \
+#     'singularity run \
+#         --bind {catalog}:/data \
+#         --bind {scratch}:/loc/scratch \
+#         ~/singularity-docker-etc/Trinity.sif \
+#             Trinity \
+#                 --verbose \
+#                 --max_memory {j_mem} \
+#                 --CPU {j_cor} \
+#                 --SS_lib_type FR \
+#                 --seqType fq \
+#                 --left {left_1},{left_2} \
+#                 --right {right_1},{right_2} \
+#                 --jaccard_clip \
+#                 --output {out} \
+#                 --full_cleanup \
+#                 --min_kmer_cov {min_kmer_cov} \
+#                 --min_iso_ratio {min_iso_ratio} \
+#                 --min_glue {min_glue} \
+#                 --glue_factor {glue_factor} \
+#                 --max_reads_per_graph 2000 \
+#                 --normalize_max_read_cov 200 \
+#                 --group_pairs_distance 700 \
+#                 --min_contig_length 200' \
+# :::: "\${arguments}"
+
+time_end="\$(date +%s)"
+script
+# vi "./sh_err_out/${script_name}"  # :q
+# cat "./sh_err_out/${script_name}"
+```
+</details>
+<br />
+
+<a id="do-a-test-run-of-the-script-and-list"></a>
+### Do a test run of the script and list
+<details>
+<summary><i>Code: Do a test run of the script and list</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+bash "./sh_err_out/${script_name}" -a "${store}/test_list.txt"
+```
+</details>
+<br />
+
+<details>
+<summary><i>Printed: Do a test run of the script and list</i></summary>
+
+*Original*
+```txt
+❯ bash "./sh_err_out/${script_name}" -a "${store}/test_list.txt"
+singularity run --bind /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201/files_processed-full/fastq_trim-rcor-cor_split/EndToEnd:/data --bind /fh/scratch/delete30/tsukiyama_t:/loc/scratch /home/kalavatt/singularity-docker-etc/Trinity.sif Trinity --verbose --max_memory 50G --CPU ${SLURM_CPUS_ON_NODE} --SS_lib_type FR --seqType fq --left /data/5781_Q_IP_merged.trim-rcor.multi-hit-mode_1_EndToEnd.Aligned.sortedByCoord.out.sc_all.1.fq.gz,/data/5782_Q_IP_merged.trim-rcor.multi-hit-mode_1_EndToEnd.Aligned.sortedByCoord.out.sc_all.1.fq.gz --right /data/5781_Q_IP_merged.trim-rcor.multi-hit-mode_1_EndToEnd.Aligned.sortedByCoord.out.sc_all.2.fq.gz,/data/5782_Q_IP_merged.trim-rcor.multi-hit-mode_1_EndToEnd.Aligned.sortedByCoord.out.sc_all.2.fq.gz --jaccard_clip --output files_Trinity-GF/files_processed-full/Q_IP_merged.trim-rcor.multi-hit-mode_1_EndToEnd --full_cleanup --min_kmer_cov 1 --min_iso_ratio 0.01 --min_glue 1 --glue_factor 0.005 --max_reads_per_graph 2000 --normalize_max_read_cov 200 --group_pairs_distance 700 --min_contig_length 200
+```
+
+*Reformatted*
+```txt
+❯ bash "./sh_err_out/${script_name}" -a "${store}/test_list.txt"
+
+singularity run \
+    --bind /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201/files_processed-full/fastq_trim-rcor-cor_split/EndToEnd:/data \
+    --bind /fh/scratch/delete30/tsukiyama_t:/loc/scratch /home/kalavatt/singularity-docker-etc/Trinity.sif \
+        Trinity \
+            --verbose \
+            --max_memory 50G \
+            --CPU ${SLURM_CPUS_ON_NODE} \
+            --SS_lib_type FR \
+            --seqType fq \
+            --left /data/5781_Q_IP_merged.trim-rcor.multi-hit-mode_1_EndToEnd.Aligned.sortedByCoord.out.sc_all.1.fq.gz,/data/5782_Q_IP_merged.trim-rcor.multi-hit-mode_1_EndToEnd.Aligned.sortedByCoord.out.sc_all.1.fq.gz \
+            --right /data/5781_Q_IP_merged.trim-rcor.multi-hit-mode_1_EndToEnd.Aligned.sortedByCoord.out.sc_all.2.fq.gz,/data/5782_Q_IP_merged.trim-rcor.multi-hit-mode_1_EndToEnd.Aligned.sortedByCoord.out.sc_all.2.fq.gz \
+            --jaccard_clip \
+            --output files_Trinity-GF/files_processed-full/Q_IP_merged.trim-rcor.multi-hit-mode_1_EndToEnd \
+            --full_cleanup \
+            --min_kmer_cov 1 \
+            --min_iso_ratio 0.01 \
+            --min_glue 1 \
+            --glue_factor 0.005 \
+            --max_reads_per_graph 2000 \
+            --normalize_max_read_cov 200 \
+            --group_pairs_distance 700 \
+            --min_contig_length 200
+```
+Looks like all the information is making it into the script
+</details>
+<br />
+
