@@ -24,17 +24,23 @@
     1. [Make `job_array.sh`](#make-job_arraysh)
     1. [Run `job_array.sh`](#run-job_arraysh)
 1. [`#TODO`s, notes, etc.](#todos-notes-etc)
-1. [Using job arrays for `Trinity` job submissions](#using-job-arrays-for-trinity-job-submissions)
+1. [Write and run initial tests: Use lists with `Trinity` job submissions](#write-and-run-initial-tests-use-lists-with-trinity-job-submissions)
     1. [Examine and edit the current job-submission script](#examine-and-edit-the-current-job-submission-script)
         1. [Survey the current script](#survey-the-current-script)
-        1. [Adapt script to take a header-ed list of arguments](#adapt-script-to-take-a-header-ed-list-of-arguments)
+        1. [Adapt the script to take a header-ed list of arguments](#adapt-the-script-to-take-a-header-ed-list-of-arguments)
     1. [Create an appropriate list to be used with modified script](#create-an-appropriate-list-to-be-used-with-modified-script)
-        1. [Getting file, directory info into a deduplicated associative array](#getting-file-directory-info-into-a-deduplicated-associative-array)
+        1. [Get file, directory info into a deduplicated associative array](#get-file-directory-info-into-a-deduplicated-associative-array)
         1. [Define variables](#define-variables)
-        1. [Set up directory for storing results of these tests](#set-up-directory-for-storing-results-of-these-tests)
+        1. [Set up directory for storing results from these tests](#set-up-directory-for-storing-results-from-these-tests)
         1. [Generate the list](#generate-the-list)
     1. [Write out the list-ready, adapted script \(`echo` test\) using a `HEREDOC`](#write-out-the-list-ready-adapted-script-echo-test-using-a-heredoc)
     1. [Do a test run of the script and list](#do-a-test-run-of-the-script-and-list)
+1. [Write a code chunk to generate lists of arguments](#write-a-code-chunk-to-generate-lists-of-arguments)
+    1. [Get situated](#get-situated-3)
+    1. [Get file, directory info into a deduplicated associative array](#get-file-directory-info-into-a-deduplicated-associative-array-1)
+    1. [Define variables necessary for the list generation and the main script](#define-variables-necessary-for-the-list-generation-and-the-main-script)
+    1. [Set up directory for storing results from these tests](#set-up-directory-for-storing-results-from-these-tests-1)
+    1. [Write code for generating lists with permutations of parameters](#write-code-for-generating-lists-with-permutations-of-parameters)
 
 <!-- /MarkdownTOC -->
 </details>
@@ -905,8 +911,8 @@ Also, I really need to get started with the troubleshooting for Alison&mdash;get
 <br />
 <br />
 
-<a id="using-job-arrays-for-trinity-job-submissions"></a>
-## Using job arrays for `Trinity` job submissions
+<a id="write-and-run-initial-tests-use-lists-with-trinity-job-submissions"></a>
+## Write and run initial tests: Use lists with `Trinity` job submissions
 <a id="examine-and-edit-the-current-job-submission-script"></a>
 ### Examine and edit the current job-submission script
 <a id="survey-the-current-script"></a>
@@ -1143,8 +1149,8 @@ time_end="$(date +%s)"
 ```
 </details>
 
-<a id="adapt-script-to-take-a-header-ed-list-of-arguments"></a>
-#### Adapt script to take a header-ed list of arguments
+<a id="adapt-the-script-to-take-a-header-ed-list-of-arguments"></a>
+#### Adapt the script to take a header-ed list of arguments
 <details>
 <summary><i>Code: Adapt script to take a header-ed list of arguments</i></summary>
 
@@ -1156,8 +1162,8 @@ time_end="$(date +%s)"
 
 <a id="create-an-appropriate-list-to-be-used-with-modified-script"></a>
 ### Create an appropriate list to be used with modified script
-<a id="getting-file-directory-info-into-a-deduplicated-associative-array"></a>
-#### Getting file, directory info into a deduplicated associative array
+<a id="get-file-directory-info-into-a-deduplicated-associative-array"></a>
+#### Get file, directory info into a deduplicated associative array
 <details>
 <summary><i>Code: Getting file, directory info into a deduplicated associative array</i></summary>
 
@@ -1272,10 +1278,10 @@ glue_factor=0.005  # 0.01 0.05 0.1
 </details>
 <br />
 
-<a id="set-up-directory-for-storing-results-of-these-tests"></a>
-#### Set up directory for storing results of these tests
+<a id="set-up-directory-for-storing-results-from-these-tests"></a>
+#### Set up directory for storing results from these tests
 <details>
-<summary><i>Code: Set up directory for storing results of these tests</i></summary>
+<summary><i>Code: Set up directory for storing results from these tests</i></summary>
 
 ```bash
 #!/bin/bash
@@ -1624,4 +1630,263 @@ singularity run \
 Looks like all the information is making it into the script
 </details>
 <br />
+<br />
 
+<a id="write-a-code-chunk-to-generate-lists-of-arguments"></a>
+## Write a code chunk to generate lists of arguments
+<a id="get-situated-3"></a>
+### Get situated
+<details>
+<summary><i>Code: Get situated</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN
+
+mwd() {
+    transcriptome \
+        && cd "./results/2023-0111" \
+        || echo "cd'ing failed; check on this"
+}
+
+
+mwd
+
+Trinity_env
+```
+</details>
+<br />
+
+<a id="get-file-directory-info-into-a-deduplicated-associative-array-1"></a>
+### Get file, directory info into a deduplicated associative array
+<details>
+<summary><i>Code: Getting file, directory info into a deduplicated associative array</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+#  Create an array of files of interest, including relative paths -------------
+unset d_in_base
+typeset -a d_in_base=(
+    files_processed-full/fastq*split/EndToEnd
+)
+# echoTest "${d_in_base[@]}"
+# echo "${#d_in_base[@]}"
+
+
+#  Get necessary file/path info into separate arrays ------
+unset f_in
+unset d_in
+typeset -a f_in
+typeset -a d_in
+for i in "${d_in_base[@]}"; do
+    # i="${d_in_base[0]}"
+    echo "#  Working with files in... --------------------------------"
+    echo "#+ ${i}"
+    # ., "${i}"
+
+    while IFS=" " read -r -d $'\0'; do
+        f_in+=( "$(echo "$(basename "${REPLY%.?.fq.gz}")" | cut -d $'_' -f 2-)" )
+        d_in+=( "$(dirname "${REPLY}")" )
+    done < <(\
+        find "${i}" \
+            -type f \
+            -name "*_Q_IP_*_1_*.?.fq.gz" \
+            -print0
+    )
+
+    echo ""
+done
+echoTest "${f_in[@]}"
+echoTest "${d_in[@]}"
+
+
+#  Rejoin the path and file info before dedup'ing ---------
+unset d_f_rejoin
+typeset -a d_f_rejoin
+for i in $(seq 0 $(echo "${#f_in[@]}" - 1 | bc)); do
+    d_f_rejoin+=( "${d_in[${i}]}/${f_in[${i}]}" )
+done
+echoTest "${d_f_rejoin[@]}"
+
+
+#  Remove duplicate elements from the "rejoin" array ------
+IFS=" " read -r -a d_f_rejoin \
+    <<< "$(\
+        tr ' ' '\n' \
+            <<< "${d_f_rejoin[@]}" \
+                | sort -u \
+                | tr '\n' ' '\
+    )"
+echoTest "${d_f_rejoin[@]}"
+
+
+#  "Unjoin" the "rejoin" array ----------------------------
+unset f_in
+unset d_in
+typeset -a f_in
+typeset -a d_in
+for i in "${d_f_rejoin[@]}"; do
+    echo "#  Working with... ------------------------------------------"
+    echo "#+ ${i}"
+
+    f_in+=( "$(basename "${i%.?.fq.gz}")" )
+    d_in+=( "$(dirname "${i}")" )
+
+    echo ""
+done
+echoTest "${f_in[@]}"
+echoTest "${d_in[@]}"
+```
+</details>
+<br />
+
+<a id="define-variables-necessary-for-the-list-generation-and-the-main-script"></a>
+### Define variables necessary for the list generation and the main script
+<details>
+<summary><i>Code: Define variables</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+#  Basic variables: script name and no. threads -------------------------------
+script_name="submit_Trinity-GF_optimization.sh"
+threads=8
+
+
+#  Variables for directories to be mounted to the Trinity container -----------
+catalog="$(dirname "$(pwd)")/2022-1201/files_processed-full/fastq_trim-rcor-cor_split/EndToEnd"
+scratch="/fh/scratch/delete30/tsukiyama_t"
+
+
+#  Variables that define the max memory, no. threads used by Trinity ----------
+j_mem="50G"
+j_cor="${threads}"
+
+
+#  Variables and arrays necessary to define the .fq.gz infiles ----------------
+file_1="${d_in[0]}/5781_${f_in[0]}.1.fq.gz"
+d_base="files_Trinity-GF/$(echo "${file_1}" | cut -d "/" -f 1)" 
+d_mid="$(\
+    echo $(basename "${file_1}" ".Aligned.sortedByCoord.out.sc_all.1.fq.gz") \
+        | cut -d $'_' -f 2- \
+)"
+f_in+=( "something" )  # echoTest "${f_in[@]}"
+f_in+=( "something_else" )  # echoTest "${f_in[@]}"
+
+unset left_1
+unset left_2
+unset right_1
+unset right_2
+typeset -a left_1
+typeset -a left_2
+typeset -a right_1
+typeset -a right_2
+for i in "${f_in[@]}"; do
+    left_1+=( "/data/5781_${i}.1.fq.gz")
+    left_2+=( "/data/5782_${i}.1.fq.gz" )
+    right_1+=( "/data/5781_${i}.2.fq.gz" )
+    right_2+=( "/data/5782_${i}.2.fq.gz" )
+done
+echoTest "${left_1[@]}"
+echoTest "${left_2[@]}"
+echoTest "${right_1[@]}"
+echoTest "${right_2[@]}"
+
+
+#  Variables necessary to define Trinity outdirectories -----------------------
+unset out
+typeset -a out
+out=(
+    "${d_base}/${d_mid}"
+    "${d_base}/something"
+    "${d_base}/something_else"
+)
+echoTest "${out[@]}"
+# out="${d_base}/${d_mid}"  # echo "${out}"
+
+typeset -a min_kmer_cov=(1 2 4 8 16)
+typeset -a min_iso_ratio=(0.01 0.05)
+typeset -a min_glue=(1 2 4)
+typeset -a glue_factor=(0.005 0.01 0.05 0.1)
+```
+</details>
+<br />
+
+<a id="set-up-directory-for-storing-results-from-these-tests-1"></a>
+### Set up directory for storing results from these tests
+<details>
+<summary><i>Code: Set up directory for storing results from these tests</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+store="tutorial_job-arrays/test_list_multi"
+if [[ ! -d "${store}" ]]; then
+    mkdir -p "${store}"
+fi
+```
+</details>
+<br />
+
+<a id="write-code-for-generating-lists-with-permutations-of-parameters"></a>
+### Write code for generating lists with permutations of parameters
+<details>
+<summary><i>Code: Write code for generating lists with permutations of parameters</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+#  Body
+parallel --header : --colsep "\t" -k -j 1 echo \
+"{catalog} \
+{scratch} \
+{j_mem}  \
+{j_cor} \
+{left_1} \
+{left_2} \
+{right_1} \
+{right_2} \
+{out} \
+{min_kmer_cov} \
+{min_iso_ratio} \
+{min_glue} \
+{glue_factor}" \
+::: catalog "${}" \
+::: scratch "${}" \
+::: j_mem "${}"  \
+::: j_cor "${}" \
+:::+ left_1 "${}" \
+:::+ left_2 "${}" \
+:::+ right_1 "${}" \
+:::+ right_2 "${}" \
+:::+ out "${}" \
+::: min_kmer_cov "${}" \
+::: min_iso_ratio "${}" \
+::: min_glue "${}" \
+::: glue_factor "${}" \
+    >> "${store}/test_list_multi.txt"
+
+
+
+echo "${catalog}" \
+    # "/fh/scratch/delete30/tsukiyama_t" \
+    # "50G" \
+    "\${SLURM_CPUS_ON_NODE}" \
+    "${left_1}" \
+    "${left_2}" \
+    "${right_1}" \
+    "${right_2}" \
+    "${out}" \
+    "${min_kmer_cov}" \
+    "${min_iso_ratio}" \
+    "${min_glue}" \
+    "${glue_factor}" \
+        >> echo "${store}/test_list.txt"
+```
+</details>
+<br />
