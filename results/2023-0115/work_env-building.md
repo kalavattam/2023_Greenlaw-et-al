@@ -1,7 +1,6 @@
 
-`#work_Trinity-env.md`
+`#work_env-building.md`
 
-Rebuilding the `Trinity_env` `conda`/`mamba` environment
 
 ## Install `miniconda`
 ```bash
@@ -45,8 +44,10 @@ pip() {
 alias conda=extended_conda
 ```
 Put `extended_conda()` and `pip()` in `.bash_functions`; put `alias conda=extended_conda` in `.bash_aliases`
+<br />
+<br />
 
-
+## Rebuilding `Trinity_env`
 ```bash
 #!/bin/env
 #DONTRUN #CREATE
@@ -86,7 +87,37 @@ mamba install -c bioconda trim-galore=0.6.7
 # Wow, now mamba installation of trim-galore works
 
 mamba install -c conda-forge ripgrep
+
+mamba install -c bioconda fgbio
+
+mamba install -c conda-forge pybktree
+#  Installed in an effort to get the below working; however, after installing
+#+ it, it requested a 2.7-version of package python_abi, but this is a python
+#+ 3.10 environment, so something like mamba install -c conda-forge
+#+ python_abi=2.7 is not possible here; thus, decided to create a separate
+#+ environment for umi_tools
+#+
+#+ Anyway, pbktree is now an "orphan package" in the environment and does not
+#+ need to be included in the final build .yml for Trinity_env
 ```
 
 `#NOTE` The version of samtools installed is 1.3&mdash;it's quite old  
 `#TODO` Check on the versions of the other installed `bioconda` packages
+`#NOTE` So there are obvious improvements that need to happen befor finalizing a `.yml`
+<br />
+<br />
+
+## Building a `umi_tools_env`
+```bash
+#!/bin/env
+#DONTRUN #CREATE
+
+# grabnode  # 1, default settings
+
+# conda create \
+#     -n umi_tools_env \
+#     -c bioconda umi_tools=1.1.2=py38hbff2b2d_1
+
+# source activate umi_tools_env
+```
+`#NOTE` For now, just use the FHCC cluster installation, `UMI-tools/1.0.1-foss-2019b-Python-3.7.4`

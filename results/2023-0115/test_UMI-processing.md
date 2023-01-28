@@ -7,12 +7,12 @@
 
 1. [Get situated](#get-situated)
 1. [Experiment description](#experiment-description)
-1. [Install `fgbio`](#install-fgbio)
+    1. [Documentation for `AnnotateBamWithUmis`](#documentation-for-annotatebamwithumis)
 1. [Try a trial run with `AnnotateBamWithUmis`](#try-a-trial-run-with-annotatebamwithumis)
-  1. [Make a directory for the trial with `AnnotateBamWithUmis`](#make-a-directory-for-the-trial-with-annotatebamwithumis)
-  1. [Locations of datasets](#locations-of-datasets)
-  1. [Set up necessary variables](#set-up-necessary-variables)
-  1. [Run the command](#run-the-command)
+    1. [Make a directory for the trial with `AnnotateBamWithUmis`](#make-a-directory-for-the-trial-with-annotatebamwithumis)
+    1. [Locations of datasets](#locations-of-datasets)
+    1. [Set up necessary variables](#set-up-necessary-variables)
+    1. [Run the command](#run-the-command)
 1. [Open tabs \(`#TODO`\)](#open-tabs-todo)
 
 <!-- /MarkdownTOC -->
@@ -21,46 +21,24 @@
 
 <a id="get-situated"></a>
 ## Get situated
+<details>
+<summary><i>Code: Get situated</i></summary>
+
 ```bash
 #!/bin/bash
 #DONTRUN
 
-grabnode  # 1 core, 100 GB memory, then default settings
+grabnode  # 1 core, 100, 200, or 750 GB memory, then default settings
 
-transcriptome && cd results/2023-0115
+transcriptome && \
+    {
+        cd results/2023-0115 \
+            || echo "cd'ing failed; check on this..."
+    }
 
 source activate Trinity_env
 ```
-
-<detials>
-<summary><i>Printed: Get situated</i></summary>
-
-```txt
-❯ grabnode
-How many CPUs/cores would you like to grab on the node? [1-36] 1
-How much memory (GB) would you like to grab? [20]
-Please enter the max number of days you would like to grab this node: [1-7]
-Do you need a GPU ? [y/N]
-
-You have requested 1 CPUs on this node/server for 1 days or until you type exit.
-
-Warning: If you exit this shell before your jobs are finished, your jobs
-on this node/server will be terminated. Please use sbatch for larger jobs.
-
-Shared PI folders can be found in: /fh/fast, /fh/scratch and /fh/secure.
-
-Requesting Queue: campus-new cores: 1 memory: 20 gpu: NONE
-srun: job 8061283 queued and waiting for resources
-srun: job 8061283 has been allocated resources
-
-
-❯ transcriptome && cd results/2023-0115
-/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0115
-
-
-❯ source activate Trinity_env
-```
-</detials>
+</details>
 <br />
 <br />
 
@@ -68,221 +46,22 @@ srun: job 8061283 has been allocated resources
 ## Experiment description
 Follow approach to add UMI sequences to `fastq` read names described [here](https://www.biostars.org/p/357359/#358546): Working directly with already-aligned data  
 [`AnnotateBamWithUmis` documentation](https://fulcrumgenomics.github.io/fgbio/tools/latest/AnnotateBamWithUmis.html)
-<br />
-<br />
 
-<a id="install-fgbio"></a>
-## Install `fgbio`
-```bash
-#!/bin/bash
-#DONTRUN #CONTINUE
+<a id="documentation-for-annotatebamwithumis"></a>
+### Documentation for `AnnotateBamWithUmis`
+AnnotateBamWithUmis  
+Overview  
+Group: SAM/BAM
 
-mamba install -c bioconda fgbio
-```
+Annotates existing BAM files with UMIs (Unique Molecular Indices, aka Molecular IDs, Molecular barcodes) from separate FASTQ files. Takes an existing BAM file and either one FASTQ file with UMI reads or multiple FASTQs if there are multiple UMIs per template, matches the reads between the files based on read names, and produces an output BAM file where each record is annotated with an optional tag (specified by `attribute`) that contains the read sequence of the UMI. Trailing read numbers (`/1` or `/2`) are removed from FASTQ read names, as is any text after whitespace, before matching. If multiple UMI segments are specified (see `--read-structure`) across one or more FASTQs, they are delimited in the same order as FASTQs are specified on the command line. The delimiter is controlled by the `--delimiter` option.
 
-<details>
-<summary><i>Printed: Install fgbio</i></summary>
+The `--read-structure` option may be used to specify which bases in the FASTQ contain UMI bases. Otherwise it is assumed the FASTQ contains only UMI bases.
 
-```txt
-                  __    __    __    __
-                 /  \  /  \  /  \  /  \
-                /    \/    \/    \/    \
-███████████████/  /██/  /██/  /██/  /████████████████████████
-              /  / \   / \   / \   / \  \____
-             /  /   \_/   \_/   \_/   \    o \__,
-            / _/                       \_____/  `
-            |/
-        ███╗   ███╗ █████╗ ███╗   ███╗██████╗  █████╗
-        ████╗ ████║██╔══██╗████╗ ████║██╔══██╗██╔══██╗
-        ██╔████╔██║███████║██╔████╔██║██████╔╝███████║
-        ██║╚██╔╝██║██╔══██║██║╚██╔╝██║██╔══██╗██╔══██║
-        ██║ ╚═╝ ██║██║  ██║██║ ╚═╝ ██║██████╔╝██║  ██║
-        ╚═╝     ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝╚═════╝ ╚═╝  ╚═╝
+The `--sorted` option may be used to indicate that the FASTQ has the same reads and is sorted in the same order as the BAM file.
 
-        mamba (0.15.3) supported by @QuantStack
+At the end of execution, reports how many records were processed and how many were missing UMIs. If any read from the BAM file did not have a matching UMI read in the FASTQ file, the program will exit with a non-zero exit status. The `--fail-fast` option may be specified to cause the program to terminate the first time it finds a records without a matching UMI.
 
-        GitHub:  https://github.com/mamba-org/mamba
-        Twitter: https://twitter.com/QuantStack
-
-█████████████████████████████████████████████████████████████
-
-
-Looking for: ['fgbio']
-
-pkgs/r/linux-64          [====================] (00m:00s) No change
-pkgs/main/noarch         [====================] (00m:00s) No change
-pkgs/r/noarch            [====================] (00m:00s) No change
-bioconda/noarch          [====================] (00m:00s) Done
-pkgs/main/linux-64       [====================] (00m:01s) Done
-bioconda/linux-64        [====================] (00m:01s) Done
-
-Pinned packages:
-  - python 3.9.*
-
-
-Transaction
-
-  Prefix: /home/kalavatt/miniconda3
-
-  Updating specs:
-
-   - fgbio
-   - ca-certificates
-   - certifi
-   - openssl
-
-
-  Package                                   Version  Build           Channel                  Size
-────────────────────────────────────────────────────────────────────────────────────────────────────
-  Install:
-────────────────────────────────────────────────────────────────────────────────────────────────────
-
-  + _r-mutex                                  1.0.0  anacondar_1     pkgs/main/linux-64     Cached
-  + _sysroot_linux-64_curr_repodata_hack          3  haa98f57_10     pkgs/main/noarch       Cached
-  + binutils_impl_linux-64                     2.38  h2a08ee3_1      pkgs/main/linux-64     Cached
-  + binutils_linux-64                        2.38.0  hc2dff05_0      pkgs/main/linux-64     Cached
-  + blas                                        1.0  openblas        pkgs/main/linux-64      46 KB
-  + bwidget                                  1.9.11  1               pkgs/main/linux-64     Cached
-  + cairo                                    1.16.0  h19f5f5c_2      pkgs/main/linux-64     Cached
-  + curl                                     7.82.0  h7f8727e_0      pkgs/main/linux-64      95 KB
-  + dbus                                    1.13.18  hb2f20db_0      pkgs/main/linux-64     Cached
-  + expat                                     2.4.9  h6a678d5_0      pkgs/main/linux-64     Cached
-  + fgbio                                     2.1.0  hdfd78af_0      bioconda/noarch         37 MB
-  + fontconfig                               2.13.1  h6c09931_0      pkgs/main/linux-64     Cached
-  + freetype                                 2.12.1  h4a9f257_0      pkgs/main/linux-64     Cached
-  + fribidi                                  1.0.10  h7b6447c_0      pkgs/main/linux-64     Cached
-  + gcc_impl_linux-64                        11.2.0  h1234567_1      pkgs/main/linux-64     Cached
-  + gcc_linux-64                             11.2.0  h5c386dc_0      pkgs/main/linux-64     Cached
-  + gfortran_impl_linux-64                   11.2.0  h1234567_1      pkgs/main/linux-64      10 MB
-  + gfortran_linux-64                        11.2.0  hc2dff05_0      pkgs/main/linux-64     Cached
-  + glib                                     2.69.1  h4ff587b_1      pkgs/main/linux-64     Cached
-  + graphite2                                1.3.14  h295c915_1      pkgs/main/linux-64     Cached
-  + gxx_impl_linux-64                        11.2.0  h1234567_1      pkgs/main/linux-64     Cached
-  + gxx_linux-64                             11.2.0  hc2dff05_0      pkgs/main/linux-64     Cached
-  + harfbuzz                                  4.3.0  hd55b92a_0      pkgs/main/linux-64     Cached
-  + jpeg                                         9e  h7f8727e_0      pkgs/main/linux-64     Cached
-  + kernel-headers_linux-64                  3.10.0  h57e8cba_10     pkgs/main/noarch       Cached
-  + lerc                                        3.0  h295c915_0      pkgs/main/linux-64     Cached
-  + libdeflate                                  1.8  h7f8727e_5      pkgs/main/linux-64     Cached
-  + libgcc-devel_linux-64                    11.2.0  h1234567_1      pkgs/main/linux-64     Cached
-  + libgfortran-ng                           11.2.0  h00389a5_1      pkgs/main/linux-64     Cached
-  + libgfortran5                             11.2.0  h1234567_1      pkgs/main/linux-64     Cached
-  + libopenblas                              0.3.21  h043d6bf_0      pkgs/main/linux-64       5 MB
-  + libstdcxx-devel_linux-64                 11.2.0  h1234567_1      pkgs/main/linux-64     Cached
-  + libtiff                                   4.4.0  hecacb30_0      pkgs/main/linux-64     Cached
-  + libwebp-base                              1.2.4  h5eee18b_0      pkgs/main/linux-64     Cached
-  + libxcb                                     1.15  h7f8727e_0      pkgs/main/linux-64     Cached
-  + make                                      4.2.1  h1bed415_1      pkgs/main/linux-64     Cached
-  + openjdk                                 11.0.13  h87a67e3_0      pkgs/main/linux-64     Cached
-  + pango                                    1.50.7  h05da053_0      pkgs/main/linux-64     Cached
-  + pcre                                       8.45  h295c915_0      pkgs/main/linux-64     Cached
-  + pcre2                                     10.37  he7ceb23_1      pkgs/main/linux-64     839 KB
-  + pixman                                   0.40.0  h7f8727e_1      pkgs/main/linux-64     Cached
-  + r-base                                    4.2.0  h1ae530e_0      pkgs/r/linux-64        Cached
-  + r-cli                                     3.3.0  r42h884c59f_0   pkgs/r/linux-64        Cached
-  + r-colorspace                              2.0_3  r42h76d94ec_0   pkgs/r/linux-64          2 MB
-  + r-crayon                                  1.5.1  r42h6115d3f_0   pkgs/r/noarch          158 KB
-  + r-digest                                 0.6.29  r42h884c59f_0   pkgs/r/linux-64        Cached
-  + r-ellipsis                                0.3.2  r42h76d94ec_0   pkgs/r/linux-64         40 KB
-  + r-fansi                                   1.0.3  r42h76d94ec_0   pkgs/r/linux-64        315 KB
-  + r-farver                                  2.1.0  r42h884c59f_0   pkgs/r/linux-64        Cached
-  + r-ggplot2                                 3.3.6  r42h6115d3f_0   pkgs/r/noarch            4 MB
-  + r-glue                                    1.6.2  r42h76d94ec_0   pkgs/r/linux-64        147 KB
-  + r-gtable                                  0.3.0  r42h6115d3f_0   pkgs/r/noarch          391 KB
-  + r-isoband                                 0.2.5  r42h884c59f_0   pkgs/r/linux-64        Cached
-  + r-labeling                                0.4.2  r42h6115d3f_0   pkgs/r/noarch           65 KB
-  + r-lattice                               0.20_45  r42h76d94ec_0   pkgs/r/linux-64          1 MB
-  + r-lifecycle                               1.0.1  r42h142f84f_0   pkgs/r/noarch          Cached
-  + r-magrittr                                2.0.3  r42h76d94ec_0   pkgs/r/linux-64        203 KB
-  + r-mass                                   7.3_57  r42h76d94ec_0   pkgs/r/linux-64          1 MB
-  + r-matrix                                  1.4_1  r42h76d94ec_0   pkgs/r/linux-64          4 MB
-  + r-mgcv                                   1.8_40  r42h76d94ec_0   pkgs/r/linux-64          3 MB
-  + r-munsell                                 0.5.0  r42h6115d3f_0   pkgs/r/noarch          238 KB
-  + r-nlme                                  3.1_157  r42h640688f_0   pkgs/r/linux-64          2 MB
-  + r-pillar                                  1.7.0  r42h6115d3f_0   pkgs/r/noarch          662 KB
-  + r-pkgconfig                               2.0.3  r42h6115d3f_0   pkgs/r/noarch           23 KB
-  + r-r6                                      2.5.1  r42h6115d3f_0   pkgs/r/noarch           86 KB
-  + r-rcolorbrewer                            1.1_3  r42h6115d3f_0   pkgs/r/noarch           57 KB
-  + r-rlang                                   1.0.2  r42h884c59f_0   pkgs/r/linux-64        Cached
-  + r-scales                                  1.2.0  r42h6115d3f_0   pkgs/r/noarch          583 KB
-  + r-tibble                                  3.1.7  r42h76d94ec_0   pkgs/r/linux-64        635 KB
-  + r-utf8                                    1.2.2  r42h76d94ec_0   pkgs/r/linux-64        140 KB
-  + r-vctrs                                   0.4.1  r42h884c59f_0   pkgs/r/linux-64        Cached
-  + r-viridislite                             0.4.0  r42h6115d3f_0   pkgs/r/noarch            1 MB
-  + r-withr                                   2.5.0  r42h6115d3f_0   pkgs/r/noarch          226 KB
-  + sysroot_linux-64                           2.17  h57e8cba_10     pkgs/main/noarch       Cached
-  + tktable                                    2.10  h14c3975_0      pkgs/main/linux-64     Cached
-
-  Change:
-────────────────────────────────────────────────────────────────────────────────────────────────────
-
-  - ucsc-gtftogenepred                          357  1               installed
-  + ucsc-gtftogenepred                          357  0               bioconda/linux-64        2 MB
-
-  Upgrade:
-────────────────────────────────────────────────────────────────────────────────────────────────────
-
-  - certifi                               2022.9.24  py39h06a4308_0  installed
-  + certifi                               2022.12.7  py39h06a4308_0  pkgs/main/linux-64     150 KB
-  - ld_impl_linux-64                         2.35.1  h7274673_9      installed
-  + ld_impl_linux-64                           2.38  h1181459_1      pkgs/main/linux-64     Cached
-  - openssl                                  1.1.1q  h7f8727e_0      installed
-  + openssl                                  1.1.1s  h7f8727e_0      pkgs/main/linux-64     Cached
-  - zlib                                     1.2.11  h7f8727e_4      installed
-  + zlib                                     1.2.13  h5eee18b_0      pkgs/main/linux-64     Cached
-  - zstd                                      1.5.0  ha4553b6_1      installed
-  + zstd                                      1.5.2  ha4553b6_0      pkgs/main/linux-64     Cached
-
-  Summary:
-
-  Install: 75 packages
-  Change: 1 packages
-  Upgrade: 5 packages
-
-  Total download: 79 MB
-
-────────────────────────────────────────────────────────────────────────────────────────────────────
-
-Confirm changes: [Y/n] Y
-Finished blas                                 (00m:00s)              46 KB    647 KB/s
-Finished curl                                 (00m:00s)              95 KB      1 MB/s
-Finished certifi                              (00m:00s)             150 KB      2 MB/s
-Finished r-magrittr                           (00m:00s)             203 KB      2 MB/s
-Finished r-ellipsis                           (00m:00s)              40 KB    403 KB/s
-Finished pcre2                                (00m:00s)             839 KB      8 MB/s
-Finished r-glue                               (00m:00s)             147 KB    873 KB/s
-Finished r-pkgconfig                          (00m:00s)              23 KB    133 KB/s
-Finished r-rcolorbrewer                       (00m:00s)              57 KB    320 KB/s
-Finished r-munsell                            (00m:00s)             238 KB      1 MB/s
-Finished r-viridislite                        (00m:00s)               1 MB      6 MB/s
-Finished r-lattice                            (00m:00s)               1 MB      5 MB/s
-Finished r-withr                              (00m:00s)             226 KB    903 KB/s
-Finished r-labeling                           (00m:00s)              65 KB    244 KB/s
-Finished r-colorspace                         (00m:00s)               2 MB      9 MB/s
-Finished r-tibble                             (00m:00s)             635 KB      2 MB/s
-Finished r-crayon                             (00m:00s)             158 KB    352 KB/s
-Finished libopenblas                          (00m:00s)               5 MB     16 MB/s
-Finished r-ggplot2                            (00m:00s)               4 MB      8 MB/s
-Finished r-mass                               (00m:00s)               1 MB      2 MB/s
-Finished r-pillar                             (00m:00s)             662 KB      1 MB/s
-Finished r-r6                                 (00m:00s)              86 KB    141 KB/s
-Finished r-matrix                             (00m:00s)               4 MB      7 MB/s
-Finished r-scales                             (00m:00s)             583 KB    923 KB/s
-Finished r-fansi                              (00m:00s)             315 KB    478 KB/s
-Finished r-utf8                               (00m:00s)             140 KB    206 KB/s
-Finished r-mgcv                               (00m:00s)               3 MB      4 MB/s
-Finished r-gtable                             (00m:00s)             391 KB    560 KB/s
-Finished r-nlme                               (00m:00s)               2 MB      3 MB/s
-Finished gfortran_impl_linux-64               (00m:00s)              10 MB     14 MB/s
-Finished ucsc-gtftogenepred                   (00m:00s)               2 MB      2 MB/s
-Finished fgbio                                (00m:00s)              37 MB     26 MB/s
-Downloading  [====================================================================================================] (00m:18s)   43.86 MB/s
-Extracting   [====================================================================================================] (00m:17s)      32 / 32
-Preparing transaction: done
-Verifying transaction: done
-Executing transaction: done
-```
-</details>
+In order to avoid sorting the input files, the entire UMI fastq file(s) is read into memory. As a result the program needs to be run with memory proportional the size of the (uncompressed) fastq(s). Use the `--sorted` option to traverse the UMI fastq and BAM files assuming they are in the same order. More precisely, the UMI fastq file will be traversed first, reading in the next set of BAM reads with same read name as the UMI’s read name. Those BAM reads will be annotated. If no BAM reads exist for the UMI, no logging or error will be reported.
 <br />
 <br />
 
@@ -290,13 +69,17 @@ Executing transaction: done
 ## Try a trial run with `AnnotateBamWithUmis`
 <a id="make-a-directory-for-the-trial-with-annotatebamwithumis"></a>
 ### Make a directory for the trial with `AnnotateBamWithUmis`
+<details>
+<summary><i>Code: Make a directory for the trial with AnnotateBamWithUmis</i></summary>
+
 ```bash
 #!/bin/bash
 #DONTRUN #CONTINUE
 
-mkdir test_UMI-processing_AnnotateBamWithUmis \
-	&& cd test_UMI-processing_AnnotateBamWithUmis
+mkdir test_UMI-processing_AnnotateBamWithUmis
 ```
+</details>
+<br />
 
 <a id="locations-of-datasets"></a>
 ### Locations of datasets
@@ -307,12 +90,15 @@ mkdir test_UMI-processing_AnnotateBamWithUmis \
 
 <a id="set-up-necessary-variables"></a>
 ### Set up necessary variables
+<details>
+<summary><i>Code: Set up necessary variables</i></summary>
+
 ```bash
 #!/bin/bash
 #DONTRUN #CONTINUE
 
 p_bam="${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0115/bams/unmapped-w/SC_KL_20S"
-f_bam="5782_Q_IN_S8.Aligned.sortedByCoord.out.bam"
+f_bam="5782_Q_IN_S8.multi-10.bam"
 
 p_fq="${HOME}/tsukiyamalab/alisong/WTQvsG1/Unaligned_UMI/Project_ccucinot"
 f_fq="5782_Q_IN_S8_R2_001.fastq.gz"
@@ -326,19 +112,152 @@ echo "${p_fq}"
 echo "${f_fq}"
 echo "${p_out}"
 echo "${f_out}"
+
+., "${p_bam}/${f_bam}"
+., "${p_fq}/${f_fq}"
 ```
+</details>
+<br />
 
 <a id="run-the-command"></a>
 ### Run the command
+<details>
+<summary><i>Code: Run the command</i></summary>
+
 ```bash
 #!/bin/bash
 #DONTRUN #CONTINUE
 
+fgbio AnnotateBamWithUmis --help
 fgbio AnnotateBamWithUmis \
     --input="${p_bam}/${f_bam}" \
     --fastq="${p_fq}/${f_fq}" \
     --output="${p_out}/${f_out}"
 ```
+</details>
+<br />
+
+<details>
+<summary><i>Printed: Run the command</i></summary>
+
+For `grabnode` with 1 core, 100 GB memory, and default settings
+```txt
+❯ fgbio AnnotateBamWithUmis \
+>     --input="${p_bam}/${f_bam}" \
+>     --fastq="${p_fq}/${f_fq}" \
+>     --output="${p_out}/${f_out}"
+[2023/01/27 16:13:12 | FgBioMain | Info] Executing AnnotateBamWithUmis from fgbio version 1.3.0 as kalavatt@gizmok33 on JRE 11.0.13+7-b1751.21 with snappy, IntelInflater, and IntelDeflater
+[2023/01/27 16:13:12 | AnnotateBamWithUmis | Info] Reading in UMIs from FASTQ.
+[2023/01/27 16:16:49 | FgBioMain | Info] AnnotateBamWithUmis failed. Elapsed time: 3.66 minutes.
+Exception in thread "main" java.lang.OutOfMemoryError: Java heap space
+    at java.base/java.lang.StringUTF16.compress(StringUTF16.java:160)
+    at java.base/java.lang.String.<init>(String.java:3214)
+    at java.base/java.lang.String.<init>(String.java:276)
+    at java.base/java.io.BufferedReader.readLine(BufferedReader.java:358)
+    at java.base/java.io.BufferedReader.readLine(BufferedReader.java:392)
+    at scala.io.BufferedSource$BufferedLineIterator.hasNext(BufferedSource.scala:73)
+    at scala.collection.Iterator$SliceIterator.hasNext(Iterator.scala:1219)
+    at scala.collection.immutable.List.prependedAll(List.scala:155)
+    at scala.collection.IterableOnceOps.toList(IterableOnce.scala:1258)
+    at scala.collection.IterableOnceOps.toList$(IterableOnce.scala:1258)
+    at scala.collection.AbstractIterator.toList(Iterator.scala:1279)
+    at com.fulcrumgenomics.fastq.FastqSource.fetchNextRecord(FastqSource.scala:101)
+    at com.fulcrumgenomics.fastq.FastqSource.$anonfun$next$8(FastqSource.scala:94)
+    at com.fulcrumgenomics.fastq.FastqSource$$Lambda$397/0x00000001005a8c40.apply$mcV$sp(Unknown Source)
+    at com.fulcrumgenomics.commons.CommonsDef.yieldAndThen(CommonsDef.scala:74)
+    at com.fulcrumgenomics.commons.CommonsDef.yieldAndThen$(CommonsDef.scala:72)
+    at com.fulcrumgenomics.commons.CommonsDef$.yieldAndThen(CommonsDef.scala:422)
+    at com.fulcrumgenomics.fastq.FastqSource.next(FastqSource.scala:94)
+    at com.fulcrumgenomics.fastq.FastqSource.next(FastqSource.scala:84)
+    at scala.collection.Iterator$$anon$9.next(Iterator.scala:575)
+    at scala.collection.mutable.Growable.addAll(Growable.scala:62)
+    at scala.collection.mutable.Growable.addAll$(Growable.scala:59)
+    at scala.collection.immutable.MapBuilderImpl.addAll(Map.scala:683)
+    at scala.collection.immutable.Map$.from(Map.scala:634)
+    at scala.collection.IterableOnceOps.toMap(IterableOnce.scala:1263)
+    at scala.collection.IterableOnceOps.toMap$(IterableOnce.scala:1262)
+    at scala.collection.AbstractIterator.toMap(Iterator.scala:1279)
+    at com.fulcrumgenomics.umi.AnnotateBamWithUmis.execute(AnnotateBamWithUmis.scala:81)
+    at com.fulcrumgenomics.cmdline.FgBioMain.makeItSo(FgBioMain.scala:110)
+    at com.fulcrumgenomics.cmdline.FgBioMain.makeItSoAndExit(FgBioMain.scala:86)
+    at com.fulcrumgenomics.cmdline.FgBioMain$.main(FgBioMain.scala:50)
+    at com.fulcrumgenomics.cmdline.FgBioMain.main(FgBioMain.scala)
+```
+
+For `grabnode` with 1 core, 200 GB memory, and default settings
+```txt
+❯ fgbio AnnotateBamWithUmis \
+>     --input="${p_bam}/${f_bam}" \
+>     --fastq="${p_fq}/${f_fq}" \
+>     --output="${p_out}/${f_out}"
+[2023/01/27 16:22:14 | FgBioMain | Info] Executing AnnotateBamWithUmis from fgbio version 1.3.0 as kalavatt@gizmok163 on JRE 11.0.13+7-b1751.21 with snappy, IntelInflater, and IntelDeflater
+[2023/01/27 16:22:14 | AnnotateBamWithUmis | Info] Reading in UMIs from FASTQ.
+[2023/01/27 16:25:45 | FgBioMain | Info] AnnotateBamWithUmis failed. Elapsed time: 3.55 minutes.
+Exception in thread "main" java.lang.OutOfMemoryError: Java heap space
+    at scala.collection.immutable.List.prependedAll(List.scala:156)
+    at scala.collection.IterableOnceOps.toList(IterableOnce.scala:1258)
+    at scala.collection.IterableOnceOps.toList$(IterableOnce.scala:1258)
+    at scala.collection.AbstractIterator.toList(Iterator.scala:1279)
+    at com.fulcrumgenomics.fastq.FastqSource.fetchNextRecord(FastqSource.scala:101)
+    at com.fulcrumgenomics.fastq.FastqSource.$anonfun$next$8(FastqSource.scala:94)
+    at com.fulcrumgenomics.fastq.FastqSource$$Lambda$397/0x00000001005a8c40.apply$mcV$sp(Unknown Source)
+    at com.fulcrumgenomics.commons.CommonsDef.yieldAndThen(CommonsDef.scala:74)
+    at com.fulcrumgenomics.commons.CommonsDef.yieldAndThen$(CommonsDef.scala:72)
+    at com.fulcrumgenomics.commons.CommonsDef$.yieldAndThen(CommonsDef.scala:422)
+    at com.fulcrumgenomics.fastq.FastqSource.next(FastqSource.scala:94)
+    at com.fulcrumgenomics.fastq.FastqSource.next(FastqSource.scala:84)
+    at scala.collection.Iterator$$anon$9.next(Iterator.scala:575)
+    at scala.collection.mutable.Growable.addAll(Growable.scala:62)
+    at scala.collection.mutable.Growable.addAll$(Growable.scala:59)
+    at scala.collection.immutable.MapBuilderImpl.addAll(Map.scala:683)
+    at scala.collection.immutable.Map$.from(Map.scala:634)
+    at scala.collection.IterableOnceOps.toMap(IterableOnce.scala:1263)
+    at scala.collection.IterableOnceOps.toMap$(IterableOnce.scala:1262)
+    at scala.collection.AbstractIterator.toMap(Iterator.scala:1279)
+    at com.fulcrumgenomics.umi.AnnotateBamWithUmis.execute(AnnotateBamWithUmis.scala:81)
+    at com.fulcrumgenomics.cmdline.FgBioMain.makeItSo(FgBioMain.scala:110)
+    at com.fulcrumgenomics.cmdline.FgBioMain.makeItSoAndExit(FgBioMain.scala:86)
+    at com.fulcrumgenomics.cmdline.FgBioMain$.main(FgBioMain.scala:50)
+    at com.fulcrumgenomics.cmdline.FgBioMain.main(FgBioMain.scala)
+```
+
+For `grabnode` with 1 core, 750 GB memory, and default settings
+```txt
+❯ fgbio AnnotateBamWithUmis \
+>     --input="${p_bam}/${f_bam}" \
+>     --fastq="${p_fq}/${f_fq}" \
+>     --output="${p_out}/${f_out}"
+[2023/01/27 16:30:22 | FgBioMain | Info] Executing AnnotateBamWithUmis from fgbio version 1.3.0 as kalavatt@gizmok15 on JRE 11.0.13+7-b1751.21 with snappy, IntelInflater, and IntelDeflater
+[2023/01/27 16:30:22 | AnnotateBamWithUmis | Info] Reading in UMIs from FASTQ.
+[2023/01/27 16:33:45 | FgBioMain | Info] AnnotateBamWithUmis failed. Elapsed time: 3.42 minutes.
+Exception in thread "main" java.lang.OutOfMemoryError: Java heap space
+    at scala.collection.immutable.List.prependedAll(List.scala:156)
+    at scala.collection.IterableOnceOps.toList(IterableOnce.scala:1258)
+    at scala.collection.IterableOnceOps.toList$(IterableOnce.scala:1258)
+    at scala.collection.AbstractIterator.toList(Iterator.scala:1279)
+    at com.fulcrumgenomics.fastq.FastqSource.fetchNextRecord(FastqSource.scala:101)
+    at com.fulcrumgenomics.fastq.FastqSource.$anonfun$next$8(FastqSource.scala:94)
+    at com.fulcrumgenomics.fastq.FastqSource$$Lambda$397/0x00000001005a8c40.apply$mcV$sp(Unknown Source)
+    at com.fulcrumgenomics.commons.CommonsDef.yieldAndThen(CommonsDef.scala:74)
+    at com.fulcrumgenomics.commons.CommonsDef.yieldAndThen$(CommonsDef.scala:72)
+    at com.fulcrumgenomics.commons.CommonsDef$.yieldAndThen(CommonsDef.scala:422)
+    at com.fulcrumgenomics.fastq.FastqSource.next(FastqSource.scala:94)
+    at com.fulcrumgenomics.fastq.FastqSource.next(FastqSource.scala:84)
+    at scala.collection.Iterator$$anon$9.next(Iterator.scala:575)
+    at scala.collection.mutable.Growable.addAll(Growable.scala:62)
+    at scala.collection.mutable.Growable.addAll$(Growable.scala:59)
+    at scala.collection.immutable.MapBuilderImpl.addAll(Map.scala:683)
+    at scala.collection.immutable.Map$.from(Map.scala:634)
+    at scala.collection.IterableOnceOps.toMap(IterableOnce.scala:1263)
+    at scala.collection.IterableOnceOps.toMap$(IterableOnce.scala:1262)
+    at scala.collection.AbstractIterator.toMap(Iterator.scala:1279)
+    at com.fulcrumgenomics.umi.AnnotateBamWithUmis.execute(AnnotateBamWithUmis.scala:81)
+    at com.fulcrumgenomics.cmdline.FgBioMain.makeItSo(FgBioMain.scala:110)
+    at com.fulcrumgenomics.cmdline.FgBioMain.makeItSoAndExit(FgBioMain.scala:86)
+    at com.fulcrumgenomics.cmdline.FgBioMain$.main(FgBioMain.scala:50)
+    at com.fulcrumgenomics.cmdline.FgBioMain.main(FgBioMain.scala)
+```
+</details>
 <br />
 <br />
 
