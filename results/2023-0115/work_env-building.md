@@ -99,6 +99,8 @@ mamba install -c conda-forge pybktree
 #+
 #+ Anyway, pbktree is now an "orphan package" in the environment and does not
 #+ need to be included in the final build .yml for Trinity_env
+
+mamba install -c bioconda -c conda-forge multiqc
 ```
 
 `#NOTE` The version of samtools installed is 1.3&mdash;it's quite old  

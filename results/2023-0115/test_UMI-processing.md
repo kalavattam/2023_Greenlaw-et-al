@@ -28,6 +28,9 @@
         1. [Check `umi_tools dedup --help`](#check-umi_tools-dedup---help)
             1. [`--help`](#--help-1)
             1. [`--help-extended`](#--help-extended-1)
+        1. [Check `umi_tools group --help`](#check-umi_tools-group---help)
+            1. [`--help`](#--help-2)
+            1. [`--help-extended`](#--help-extended-2)
     1. [Make a directory for the trial with `umi_tools extract`, etc.](#make-a-directory-for-the-trial-with-umi_tools-extract-etc)
         1. [Code](#code-5)
     1. [Set up necessary variables](#set-up-necessary-variables-1)
@@ -58,6 +61,14 @@
         1. [Printed](#printed-5)
     1. [Rename STAR outfiles](#rename-star-outfiles)
         1. [Code](#code-15)
+1. [Winging it](#winging-it)
+    1. [Get situated](#get-situated-3)
+        1. [Code](#code-16)
+    1. [Index `.bam`s \(serially\)](#index-bams-serially)
+        1. [Code *\(Window 2, 16 cores\)*](#code-window-2-16-cores)
+    1. [Perform a trial run of `umi_tools dedup`](#perform-a-trial-run-of-umi_tools-dedup)
+        1. [Code *\(Window 1&mdash;1 core, 100 GB RAM&mdash;hereafter\)*](#code-window-1mdash1-core-100-gb-rammdashhereafter)
+1. [Links of interest/learning about `umi_tools`](#links-of-interestlearning-about-umi_tools)
 
 <!-- /MarkdownTOC -->
 </details>
@@ -356,7 +367,7 @@ ml UMI-tools/1.0.1-foss-2019b-Python-3.7.4
 <a id="--help"></a>
 ##### `--help`
 <details>
-<summary><i>Printed: Check umi_tools extract --help</i></summary>
+<summary><i>--help</i></summary>
 
 ```txt
 ❯ umi_tools extract --help
@@ -466,6 +477,8 @@ Options:
                         random seed to initialize number generator with
                         [none].
 ```
+</details>
+<br />
 
 <a id="--help-extended"></a>
 ##### `--help-extended`
@@ -834,15 +847,10 @@ Options:
                         [none].
 ```
 </details>
-</details>
 <br />
 
 <a id="check-umi_tools-dedup---help"></a>
 #### Check `umi_tools dedup --help`
-<details>
-<summary><i>Printed: Check umi_tools dedup --help</i></summary>
-<br />
-
 <a id="--help-1"></a>
 ##### `--help`
 <details>
@@ -1524,6 +1532,713 @@ Options:
                         [none].
 ```
 </details>
+<br />
+
+<a id="check-umi_tools-group---help"></a>
+#### Check `umi_tools group --help`
+<a id="--help-2"></a>
+##### `--help`
+<details>
+<summary><i>--help</i></summary>
+
+```txt
+❯ umi_tools group --help
+UMI-Tools: Version 1.0.1
+
+group - Group reads based on their UMI
+
+Usage: umi_tools group --output-bam [OPTIONS] [--stdin=INFILE.bam] [--stdout=OUTFILE.bam]
+
+       note: If --stdout is ommited, standard out is output. To
+             generate a valid BAM file on standard out, please
+             redirect log with --log=LOGFILE or --log2stderr
+
+For full UMI-tools documentation, see https://umi-tools.readthedocs.io/en/latest/
+
+Options:
+  --version             show program's version number and exit
+  --umi-group-tag=UMI_GROUP_TAG
+                        tag for the outputted umi group
+
+  group-specific options:
+    --group-out=TSV     Outfile name for file mapping read id to read group
+    --output-bam        output a bam file with read groups tagged using the UG
+                        tag[default=False]
+
+  Barcode extraction options:
+    --extract-umi-method=GET_UMI_METHOD
+                        how is the read UMI +/ cell barcode encoded?
+                        [default=read_id]
+    --umi-separator=UMI_SEP
+                        separator between read id and UMI
+    --umi-tag=UMI_TAG   tag containing umi
+    --umi-tag-split=UMI_TAG_SPLIT
+                        split UMI in tag and take the first element
+    --umi-tag-delimiter=UMI_TAG_DELIM
+                        concatenate UMI in tag separated by delimiter
+    --cell-tag=CELL_TAG
+                        tag containing cell barcode
+    --cell-tag-split=CELL_TAG_SPLIT
+                        split cell barcode in tag and take the first
+                        elementfor e.g 10X GEM tags
+    --cell-tag-delimiter=CELL_TAG_DELIM
+                        concatenate cell barcode in tag separated by delimiter
+
+  UMI grouping options:
+    --method=METHOD     method to use for umi grouping [default=directional]
+    --edit-distance-threshold=THRESHOLD
+                        Edit distance theshold at which to join two UMIs when
+                        grouping UMIs. [default=1]
+    --spliced-is-unique
+                        Treat a spliced read as different to an unspliced one
+                        [default=False]
+    --soft-clip-threshold=SOFT_CLIP_THRESHOLD
+                        number of bases clipped from 5' end before read is
+                        counted as spliced [default=4]
+    --read-length       use read length in addition to position and UMI to
+                        identify possible duplicates [default=False]
+
+  single-cell RNA-Seq options:
+    --per-gene          Group/Dedup/Count per gene. Must combine with either
+                        --gene-tag or --per-contig
+    --gene-tag=GENE_TAG
+                        Gene is defined by this bam tag [default=none]
+    --assigned-status-tag=ASSIGNED_TAG
+                        Bam tag describing whether read is assigned to a gene
+                        By defualt, this is set as the same tag as --gene-tag
+    --skip-tags-regex=SKIP_REGEX
+                        Used with --gene-tag. Ignore reads where the gene-tag
+                        matches this regex
+    --per-contig        group/dedup/count UMIs per contig (field 3 in BAM;
+                        RNAME), e.g for transcriptome where contig = gene
+    --gene-transcript-map=GENE_TRANSCRIPT_MAP
+                        File mapping transcripts to genes (tab separated)
+    --per-cell          group/dedup/count per cell
+
+  group/dedup options:
+    --buffer-whole-contig
+                        Read whole contig before outputting bundles:
+                        guarantees that no reads are missed, but increases
+                        memory usage
+    --multimapping-detection-method=DETECTION_METHOD
+                        Some aligners identify multimapping using bam tags.
+                        Setting this option to NH, X0 or XT will use these
+                        tags when selecting the best read amongst reads with
+                        the same position and umi [default=none]
+
+  SAM/BAM options:
+    --mapping-quality=MAPPING_QUALITY
+                        Minimum mapping quality for a read to be retained
+                        [default=0]
+    --unmapped-reads=UNMAPPED_READS
+                        How to handle unmapped reads. Options are 'discard',
+                        'use' or 'correct' [default=discard]
+    --chimeric-pairs=CHIMERIC_PAIRS
+                        How to handle chimeric read pairs. Options are
+                        'discard', 'use' or 'correct' [default=use]
+    --unpaired-reads=UNPAIRED_READS
+                        How to handle unpaired reads. Options are 'discard',
+                        'use' or 'correct' [default=use]
+    --ignore-umi        Ignore UMI and dedup only on position
+    --chrom=CHROM       Restrict to one chromosome
+    --subset=SUBSET     Use only a fraction of reads, specified by subset
+    -i, --in-sam        Input file is in sam format [default=False]
+    --paired            paired input BAM. [default=False]
+    -o, --out-sam       Output alignments in sam format [default=False]
+    --no-sort-output    Don't Sort the output
+
+  input/output options:
+    -I FILE, --stdin=FILE
+                        file to read stdin from [default = stdin].
+    -L FILE, --log=FILE
+                        file with logging information [default = stdout].
+    -E FILE, --error=FILE
+                        file with error information [default = stderr].
+    -S FILE, --stdout=FILE
+                        file where output is to go [default = stdout].
+    --temp-dir=FILE     Directory for temporary files. If not set, the bash
+                        environmental variable TMPDIR is used[default = None].
+    --log2stderr        send logging information to stderr [default = False].
+    --compresslevel=COMPRESSLEVEL
+                        Level of Gzip compression to use. Default (6)
+                        matchesGNU gzip rather than python gzip default (which
+                        is 9)
+
+  profiling options:
+    --timeit=TIMEIT_FILE
+                        store timeing information in file [none].
+    --timeit-name=TIMEIT_NAME
+                        name in timing file for this class of jobs [all].
+    --timeit-header     add header for timing information [none].
+
+  common options:
+    -v LOGLEVEL, --verbose=LOGLEVEL
+                        loglevel [1]. The higher, the more output.
+    -h, --help          output short help (command line options only).
+    --help-extended     Output full documentation
+    --random-seed=RANDOM_SEED
+                        random seed to initialize number generator with
+                        [none].
+```
+</details>
+<br />
+
+<a id="--help-extended-2"></a>
+##### `--help-extended`
+<details>
+<summary><i>--help-extended</i></summary>
+
+```txt
+❯ umi_tools group --help-extended
+UMI-Tools: Version 1.0.1
+
+group - Group reads based on their UMI
+
+Usage: umi_tools group --output-bam [OPTIONS] [--stdin=INFILE.bam] [--stdout=OUTFILE.bam]
+
+       note: If --stdout is ommited, standard out is output. To
+             generate a valid BAM file on standard out, please
+             redirect log with --log=LOGFILE or --log2stderr
+
+For full UMI-tools documentation, see https://umi-tools.readthedocs.io/en/latest/
+
+
+==============================================================
+Group - Group reads based on their UMI and mapping coordinates
+==============================================================
+
+*Identify groups of reads based on their genomic coordinate and UMI*
+
+The group command can be used to create two types of outfile: a tagged
+BAM or a flatfile describing the read groups
+
+To generate the tagged-BAM file, use the option ``--output-bam`` and
+provide a filename with the ``--stdout``/``-S`` option. Alternatively,
+if you do not provide a filename, the bam file will be outputted to
+the stdout. If you have provided the ``--log``/``-L`` option to send
+the logging output elsewhere, you can pipe the output from the group
+command directly to e.g samtools view like so::
+
+    umi_tools group -I inf.bam --group-out=grouped.tsv --output-bam
+    --log=group.log --paired | samtools view - |less
+
+The tagged-BAM file will have two tagged per read:
+
+ - UG
+   Unique_id. 0-indexed unique id number for each group of reads
+   with the same genomic position and UMI or UMIs inferred to be
+   from the same true UMI + errors
+ - BX
+   Final UMI. The inferred true UMI for the group
+
+To generate the flatfile describing the read groups, include the
+``--group-out=<filename>`` option. The columns of the read groups file are
+below. The first five columns relate to the read. The final 3 columns
+relate to the group.
+
+  - read_id
+      read identifier
+
+  - contig
+      alignment contig
+
+  - position
+      Alignment position. Note that this position is not the start
+      position of the read in the BAM file but the start of the read
+      taking into account the read strand and cigar
+
+  - gene
+      The gene assignment for the read. Note, this will be NA unless the
+      --per-gene option is specified
+
+  - umi
+      The read UMI
+
+  - umi_count
+      The number of times this UMI is observed for reads at the same
+      position
+
+  - final_umi
+      The inferred true UMI for the group
+
+  - final_umi_count
+      The total number of reads within the group
+
+  - unique_id
+      The unique id for the group
+
+
+group-specific options
+----------------------
+
+"""""""""""
+--group-out
+"""""""""""
+   Outfile name for file mapping read id to read group
+
+
+
+
+Extracting barcodes
+-------------------
+
+It is assumed that the FASTQ files were processed with `umi_tools
+extract` before mapping and thus the UMI is the last word of the read
+name. e.g::
+
+    @HISEQ:87:00000000_AATT
+
+where `AATT` is the UMI sequeuence.
+
+If you have used an alternative method which does not separate the
+read id and UMI with a "_", such as bcl2fastq which uses ":", you can
+specify the separator with the option ``--umi-separator=<sep>``,
+replacing <sep> with e.g ":".
+
+Alternatively, if your UMIs are encoded in a tag, you can specify this
+by setting the option --extract-umi-method=tag and set the tag name
+with the --umi-tag option. For example, if your UMIs are encoded in
+the 'UM' tag, provide the following options:
+``--extract-umi-method=tag`` ``--umi-tag=UM``
+
+Finally, if you have used umis to extract the UMI +/- cell barcode,
+you can specify ``--extract-umi-method=umis``
+
+The start position of a read is considered to be the start of its alignment
+minus any soft clipped bases. A read aligned at position 500 with
+cigar 2S98M will be assumed to start at position 498.
+
+""""""""""""""""""""""""
+``--extract-umi-method``
+""""""""""""""""""""""""
+      How are the barcodes encoded in the read?
+
+      Options are:
+
+      - read_id (default)
+            Barcodes are contained at the end of the read separated as
+            specified with ``--umi-separator`` option
+
+      - tag
+            Barcodes contained in a tag(s), see ``--umi-tag``/``--cell-tag``
+            options
+
+      - umis
+            Barcodes were extracted using umis (https://github.com/vals/umis)
+
+"""""""""""""""""""""""""""""""
+``--umi-separator=[SEPARATOR]``
+"""""""""""""""""""""""""""""""
+      Separator between read id and UMI. See ``--extract-umi-method``
+      above. Default=``_``
+
+"""""""""""""""""""
+``--umi-tag=[TAG]``
+"""""""""""""""""""
+      Tag which contains UMI. See ``--extract-umi-method`` above
+
+"""""""""""""""""""""""""""
+``--umi-tag-split=[SPLIT]``
+"""""""""""""""""""""""""""
+      Separate the UMI in tag by SPLIT and take the first element
+
+"""""""""""""""""""""""""""""""""""
+``--umi-tag-delimiter=[DELIMITER]``
+"""""""""""""""""""""""""""""""""""
+      Separate the UMI in by DELIMITER and concatenate the elements
+
+""""""""""""""""""""
+``--cell-tag=[TAG]``
+""""""""""""""""""""
+      Tag which contains cell barcode. See `--extract-umi-method` above
+
+""""""""""""""""""""""""""""
+``--cell-tag-split=[SPLIT]``
+""""""""""""""""""""""""""""
+      Separate the cell barcode in tag by SPLIT and take the first element
+
+""""""""""""""""""""""""""""""""""""
+``--cell-tag-delimiter=[DELIMITER]``
+""""""""""""""""""""""""""""""""""""
+      Separate the cell barcode in by DELIMITER and concatenate the elements
+
+
+UMI grouping options
+---------------------------
+
+""""""""""""
+``--method``
+""""""""""""
+    What method to use to identify group of reads with the same (or
+    similar) UMI(s)?
+
+    All methods start by identifying the reads with the same mapping position.
+
+    The simplest methods, unique and percentile, group reads with
+    the exact same UMI. The network-based methods, cluster, adjacency and
+    directional, build networks where nodes are UMIs and edges connect UMIs
+    with an edit distance <= threshold (usually 1). The groups of reads
+    are then defined from the network in a method-specific manner. For all
+    the network-based methods, each read group is equivalent to one read
+    count for the gene.
+
+      - unique
+          Reads group share the exact same UMI
+
+      - percentile
+          Reads group share the exact same UMI. UMIs with counts < 1% of the
+          median counts for UMIs at the same position are ignored.
+
+      - cluster
+          Identify clusters of connected UMIs (based on hamming distance
+          threshold). Each network is a read group
+
+      - adjacency
+          Cluster UMIs as above. For each cluster, select the node (UMI)
+          with the highest counts. Visit all nodes one edge away. If all
+          nodes have been visited, stop. Otherwise, repeat with remaining
+          nodes until all nodes have been visted. Each step
+          defines a read group.
+
+      - directional (default)
+          Identify clusters of connected UMIs (based on hamming distance
+          threshold) and umi A counts >= (2* umi B counts) - 1. Each
+          network is a read group.
+
+"""""""""""""""""""""""""""""
+``--edit-distance-threshold``
+"""""""""""""""""""""""""""""
+       For the adjacency and cluster methods the threshold for the
+       edit distance to connect two UMIs in the network can be
+       increased. The default value of 1 works best unless the UMI is
+       very long (>14bp).
+
+"""""""""""""""""""""""
+``--spliced-is-unique``
+"""""""""""""""""""""""
+       Causes two reads that start in the same position on the same
+       strand and having the same UMI to be considered unique if one is
+spliced
+       and the other is not. (Uses the 'N' cigar operation to test for
+       splicing).
+
+"""""""""""""""""""""""""
+``--soft-clip-threshold``
+"""""""""""""""""""""""""
+       Mappers that soft clip will sometimes do so rather than mapping a
+       spliced read if there is only a small overhang over the exon
+       junction. By setting this option, you can treat reads with at least
+       this many bases soft-clipped at the 3' end as spliced. Default=4.
+
+""""""""""""""""""""""""""""""""""""""""""""""
+``--multimapping-detection-method=[NH/X0/XT]``
+""""""""""""""""""""""""""""""""""""""""""""""
+      If the sam/bam contains tags to identify multimapping reads, you can
+      specify for use when selecting the best read at a given loci.
+      Supported tags are "NH", "X0" and "XT". If not specified, the read
+      with the highest mapping quality will be selected.
+
+"""""""""""""""""
+``--read-length``
+"""""""""""""""""
+      Use the read length as a criteria when deduping, for e.g sRNA-Seq.
+
+
+Single-cell RNA-Seq options
+---------------------------
+
+""""""""""""""
+``--per-gene``
+""""""""""""""
+      Reads will be grouped together if they have the same gene.  This
+      is useful if your library prep generates PCR duplicates with non
+      identical alignment positions such as CEL-Seq. Note this option
+      is hardcoded to be on with the count command. I.e counting is
+      always performed per-gene. Must be combined with either
+      ``--gene-tag`` or ``--per-contig`` option.
+
+""""""""""""""
+``--gene-tag``
+""""""""""""""
+      Deduplicate per gene. The gene information is encoded in the bam
+      read tag specified
+
+"""""""""""""""""""""""""
+``--assigned-status-tag``
+"""""""""""""""""""""""""
+      BAM tag which describes whether a read is assigned to a
+      gene. Defaults to the same value as given for ``--gene-tag``
+
+"""""""""""""""""""""
+``--skip-tags-regex``
+"""""""""""""""""""""
+      Use in conjunction with the ``--assigned-status-tag`` option to
+      skip any reads where the tag matches this regex.  Default
+      (``"^[__|Unassigned]"``) matches anything which starts with "__"
+      or "Unassigned":
+
+""""""""""""""""
+``--per-contig``
+""""""""""""""""
+      Deduplicate per contig (field 3 in BAM; RNAME).
+      All reads with the same contig will be considered to have the
+      same alignment position. This is useful if you have aligned to a
+      reference transcriptome with one transcript per gene. If you
+      have aligned to a transcriptome with more than one transcript
+      per gene, you can supply a map between transcripts and gene
+      using the ``--gene-transcript-map`` option
+
+"""""""""""""""""""""""""
+``--gene-transcript-map``
+"""""""""""""""""""""""""
+      File mapping genes to transcripts (tab separated), e.g::
+
+          gene1   transcript1
+          gene1   transcript2
+          gene2   transcript3
+
+""""""""""""""
+``--per-cell``
+""""""""""""""
+      Reads will only be grouped together if they have the same cell
+      barcode. Can be combined with ``--per-gene``.
+
+SAM/BAM Options
+---------------
+
+"""""""""""""""""""""
+``--mapping-quality``
+"""""""""""""""""""""
+      Minimium mapping quality (MAPQ) for a read to be retained. Default is 0.
+
+""""""""""""""""""""
+``--unmapped-reads``
+""""""""""""""""""""
+     How should unmapped reads be handled. Options are:
+      - discard (default)
+          Discard all unmapped reads
+      - use
+          If read2 is unmapped, deduplicate using read1 only. Requires
+          ``--paired``
+      - output
+          Output unmapped reads/read pairs without UMI
+          grouping/deduplication. Only available in umi_tools group
+
+""""""""""""""""""""
+``--chimeric-pairs``
+""""""""""""""""""""
+     How should chimeric read pairs be handled. Options are:
+      - discard
+          Discard all chimeric read pairs
+      - use (default)
+          Deduplicate using read1 only
+      - output
+          Output chimeric read pairs without UMI
+          grouping/deduplication.  Only available in umi_tools group
+
+""""""""""""""""""""
+``--unpaired-reads``
+""""""""""""""""""""
+     How should unpaired reads be handled. Options are:
+      - discard
+          Discard all unpaired reads
+      - use (default)
+          Deduplicate using read1 only
+      - output
+          Output unpaired reads without UMI
+          grouping/deduplication. Only available in umi_tools group
+
+""""""""""""""""
+``--ignore-umi``
+""""""""""""""""
+      Ignore the UMI and group reads using mapping coordinates only
+
+""""""""""""
+``--subset``
+""""""""""""
+      Only consider a fraction of the reads, chosen at random. This is useful
+      for doing saturation analyses.
+
+"""""""""""
+``--chrom``
+"""""""""""
+      Only consider a single chromosome. This is useful for
+      debugging/testing purposes
+
+
+Input/Output Options
+---------------------
+
+"""""""""""""""""""""""
+``--in-sam, --out-sam``
+"""""""""""""""""""""""
+      By default, inputs are assumed to be in BAM format and outputs are
+written
+      in BAM format. Use these options to specify the use of SAM format for
+      input or output.
+
+""""""""""""
+``--paired``
+""""""""""""
+       BAM is paired end - output both read pairs. This will also
+       force the use of the template length to determine reads with
+       the same mapping coordinates.
+
+
+Group/Dedup options
+-------------------
+
+""""""""""""""""""""
+``--no-sort-output``
+""""""""""""""""""""
+       By default, output is sorted. This involves the
+       use of a temporary unsorted file since reads are considered in
+       the order of their start position which may not be the same
+       as their alignment coordinate due to soft-clipping and reverse
+       alignments. The temp file will be saved (in ``--temp-dir``) and deleted
+       when it has been sorted to the outfile. Use this option to turn
+       off sorting.
+
+
+"""""""""""""""""""""""""
+``--buffer-whole-contig``
+"""""""""""""""""""""""""
+      forces dedup to parse an entire contig before yielding any reads
+      for deduplication. This is the only way to absolutely guarantee
+      that all reads with the same start position are grouped together
+      for deduplication since dedup uses the start position of the
+      read, not the alignment coordinate on which the reads are
+      sorted. However, by default, dedup reads for another 1000bp
+      before outputting read groups which will avoid any reads being
+      missed with short read sequencing (<1000bp).
+
+
+
+Options:
+  --version             show program's version number and exit
+  --umi-group-tag=UMI_GROUP_TAG
+                        tag for the outputted umi group
+
+  group-specific options:
+    --group-out=TSV     Outfile name for file mapping read id to read group
+    --output-bam        output a bam file with read groups tagged using the UG
+                        tag[default=False]
+
+  Barcode extraction options:
+    --extract-umi-method=GET_UMI_METHOD
+                        how is the read UMI +/ cell barcode encoded?
+                        [default=read_id]
+    --umi-separator=UMI_SEP
+                        separator between read id and UMI
+    --umi-tag=UMI_TAG   tag containing umi
+    --umi-tag-split=UMI_TAG_SPLIT
+                        split UMI in tag and take the first element
+    --umi-tag-delimiter=UMI_TAG_DELIM
+                        concatenate UMI in tag separated by delimiter
+    --cell-tag=CELL_TAG
+                        tag containing cell barcode
+    --cell-tag-split=CELL_TAG_SPLIT
+                        split cell barcode in tag and take the first
+                        elementfor e.g 10X GEM tags
+    --cell-tag-delimiter=CELL_TAG_DELIM
+                        concatenate cell barcode in tag separated by delimiter
+
+  UMI grouping options:
+    --method=METHOD     method to use for umi grouping [default=directional]
+    --edit-distance-threshold=THRESHOLD
+                        Edit distance theshold at which to join two UMIs when
+                        grouping UMIs. [default=1]
+    --spliced-is-unique
+                        Treat a spliced read as different to an unspliced one
+                        [default=False]
+    --soft-clip-threshold=SOFT_CLIP_THRESHOLD
+                        number of bases clipped from 5' end before read is
+                        counted as spliced [default=4]
+    --read-length       use read length in addition to position and UMI to
+                        identify possible duplicates [default=False]
+
+  single-cell RNA-Seq options:
+    --per-gene          Group/Dedup/Count per gene. Must combine with either
+                        --gene-tag or --per-contig
+    --gene-tag=GENE_TAG
+                        Gene is defined by this bam tag [default=none]
+    --assigned-status-tag=ASSIGNED_TAG
+                        Bam tag describing whether read is assigned to a gene
+                        By defualt, this is set as the same tag as --gene-tag
+    --skip-tags-regex=SKIP_REGEX
+                        Used with --gene-tag. Ignore reads where the gene-tag
+                        matches this regex
+    --per-contig        group/dedup/count UMIs per contig (field 3 in BAM;
+                        RNAME), e.g for transcriptome where contig = gene
+    --gene-transcript-map=GENE_TRANSCRIPT_MAP
+                        File mapping transcripts to genes (tab separated)
+    --per-cell          group/dedup/count per cell
+
+  group/dedup options:
+    --buffer-whole-contig
+                        Read whole contig before outputting bundles:
+                        guarantees that no reads are missed, but increases
+                        memory usage
+    --multimapping-detection-method=DETECTION_METHOD
+                        Some aligners identify multimapping using bam tags.
+                        Setting this option to NH, X0 or XT will use these
+                        tags when selecting the best read amongst reads with
+                        the same position and umi [default=none]
+
+  SAM/BAM options:
+    --mapping-quality=MAPPING_QUALITY
+                        Minimum mapping quality for a read to be retained
+                        [default=0]
+    --unmapped-reads=UNMAPPED_READS
+                        How to handle unmapped reads. Options are 'discard',
+                        'use' or 'correct' [default=discard]
+    --chimeric-pairs=CHIMERIC_PAIRS
+                        How to handle chimeric read pairs. Options are
+                        'discard', 'use' or 'correct' [default=use]
+    --unpaired-reads=UNPAIRED_READS
+                        How to handle unpaired reads. Options are 'discard',
+                        'use' or 'correct' [default=use]
+    --ignore-umi        Ignore UMI and dedup only on position
+    --chrom=CHROM       Restrict to one chromosome
+    --subset=SUBSET     Use only a fraction of reads, specified by subset
+    -i, --in-sam        Input file is in sam format [default=False]
+    --paired            paired input BAM. [default=False]
+    -o, --out-sam       Output alignments in sam format [default=False]
+    --no-sort-output    Don't Sort the output
+
+  input/output options:
+    -I FILE, --stdin=FILE
+                        file to read stdin from [default = stdin].
+    -L FILE, --log=FILE
+                        file with logging information [default = stdout].
+    -E FILE, --error=FILE
+                        file with error information [default = stderr].
+    -S FILE, --stdout=FILE
+                        file where output is to go [default = stdout].
+    --temp-dir=FILE     Directory for temporary files. If not set, the bash
+                        environmental variable TMPDIR is used[default = None].
+    --log2stderr        send logging information to stderr [default = False].
+    --compresslevel=COMPRESSLEVEL
+                        Level of Gzip compression to use. Default (6)
+                        matchesGNU gzip rather than python gzip default (which
+                        is 9)
+
+  profiling options:
+    --timeit=TIMEIT_FILE
+                        store timeing information in file [none].
+    --timeit-name=TIMEIT_NAME
+                        name in timing file for this class of jobs [all].
+    --timeit-header     add header for timing information [none].
+
+  common options:
+    -v LOGLEVEL, --verbose=LOGLEVEL
+                        loglevel [1]. The higher, the more output.
+    -h, --help          output short help (command line options only).
+    --help-extended     Output full documentation
+    --random-seed=RANDOM_SEED
+                        random seed to initialize number generator with
+                        [none].
+```
 </details>
 <br />
 
@@ -4031,7 +4746,7 @@ check_file_exists() {
 
 #  ------------------------------------
 #TODO Help message
-#  
+#  ...
 
 while getopts "a:" opt; do
     case "\${opt}" in
@@ -4202,8 +4917,259 @@ sbatch "${store_lists}/${script_submit}"
 #!/bin/bash
 #DONTRUN #CONTINUE
 
+cd test_UMI-processing_umi-tools/STAR \
+    || echo "cd'ing failed; check on this..."
 
+rename 's/Aligned/.Aligned/g' *
+rename 's/Log/.Log/g' *
+rename 's/SJ/.SJ/g' *
+rename 's/.Aligned.sortedByCoord.out//g' *
+
+rmr *_STARtmp
+```
+</details>
+<br />
+<br />
+
+<a id="winging-it"></a>
+## Winging it
+<a id="get-situated-3"></a>
+### Get situated
+<a id="code-16"></a>
+#### Code
+<details>
+<summary><i>Code: Get situated</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN
+
+grabnode  # Window 1: 1 core, 100 GB RAM, default settings
+grabnode  # Window 2: 16 cores, default settings
+
+#  Do the following in both windows
+transcriptome && \
+    {
+        cd results/2023-0115 \
+            || echo "cd'ing failed; check on this..."
+    }
+
+cd test_UMI-processing_umi-tools/STAR \
+    || echo "cd'ing failed; check on this..."
+
+source activate Trinity_env
+ml UMI-tools/1.0.1-foss-2019b-Python-3.7.4
+ml SAMtools/1.16.1-GCC-11.2.0
 ```
 </details>
 <br />
 
+<a id="index-bams-serially"></a>
+### Index `.bam`s (serially)
+<a id="code-window-2-16-cores"></a>
+#### Code *(Window 2, 16 cores)*
+<details>
+<summary><i>Code: Index .bams (serially)</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+for i in *.bam; do
+    echo "${i}"
+    samtools index \
+        -@ "${SLURM_CPUS_ON_NODE}" \
+        "${i}"
+done
+# exit  # exit from Window 2 (16 cores) when completed
+```
+</details>
+<br />
+
+<a id="perform-a-trial-run-of-umi_tools-dedup"></a>
+### Perform a trial run of `umi_tools dedup`
+<a id="code-window-1mdash1-core-100-gb-rammdashhereafter"></a>
+#### Code *(Window 1&mdash;1 core, 100 GB RAM&mdash;hereafter)*
+<details>
+<summary><i>Code: Perform a trial run of umi_tools dedup</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+#  Basic parameters with filtering out of unmapped reads ----------------------
+#+ 
+#+ Here, the UMI grouping method is 'directional', which is the program default
+#+ 
+#+ 5782-U
+bam="5782_Q_IN_S8.UMIs.bam"
+scratch="/fh/scratch/delete30/tsukiyama_t"
+umi_tools dedup \
+    --paired \
+    --stdin="${bam}" \
+    --stdout="${bam%.bam}.dedu.bam" \
+    --temp-dir="${scratch}" \
+    --output-stats="${bam%.bam}.stats" \
+    --log="${bam%.bam}.stdout.txt" \
+    --error="${bam%.bam}.stderr.txt" \
+    --timeit="${bam%.bam}.time.txt" \
+    --timeit-header
+
+#+ 5782-U-T
+bam="5782_Q_IN_S8.UMIs_trim.bam"
+scratch="/fh/scratch/delete30/tsukiyama_t"
+umi_tools dedup \
+    --paired \
+    --stdin="${bam}" \
+    --stdout="${bam%.bam}.dedu.bam" \
+    --temp-dir="${scratch}" \
+    --output-stats="${bam%.bam}.stats" \
+    --log="${bam%.bam}.stdout.txt" \
+    --error="${bam%.bam}.stderr.txt" \
+    --timeit="${bam%.bam}.time.txt" \
+    --timeit-header
+
+mkdir umi-tools_dedup_basic_rm-unmapped_5782/
+mv *.time.txt \
+    *.dedu.bam \
+    *.std{out,err}.txt \
+    5782_Q_IN_S8.UMIs*stats*tsv \
+        umi-tools_basic_rm-unmapped_5782/
+
+
+#  Adjusting parameters, retaining but not processing unmapped reads ----------
+#+ 
+#+ 5782-U
+bam="5782_Q_IN_S8.UMIs.bam"
+scratch="/fh/scratch/delete30/tsukiyama_t"
+umi_tools dedup \
+    --paired \
+    --spliced-is-unique \
+    --unmapped-reads="output" \
+    --stdin="${bam}" \
+    --stdout="${bam%.bam}.dedu.bam" \
+    --temp-dir="${scratch}" \
+    --output-stats="${bam%.bam}.stats" \
+    --log="${bam%.bam}.stdout.txt" \
+    --error="${bam%.bam}.stderr.txt" \
+    --timeit="${bam%.bam}.time.txt" \
+    --timeit-header
+
+#+ 5782-U-T
+bam="5782_Q_IN_S8.UMIs_trim.bam"
+scratch="/fh/scratch/delete30/tsukiyama_t"
+umi_tools dedup \
+    --paired \
+    --spliced-is-unique \
+    --unmapped-reads="output" \
+    --stdin="${bam}" \
+    --stdout="${bam%.bam}.dedu.bam" \
+    --temp-dir="${scratch}" \
+    --output-stats="${bam%.bam}.stats" \
+    --log="${bam%.bam}.stdout.txt" \
+    --error="${bam%.bam}.stderr.txt" \
+    --timeit="${bam%.bam}.time.txt" \
+    --timeit-header
+
+#NOTE Can't call umi_tools dedup in the above manner:
+# Traceback (most recent call last):
+#   File "/app/software/UMI-tools/1.0.1-foss-2019b-Python-3.7.4/bin/umi_tools", line 8, in <module>
+#     sys.exit(main())
+#   File "/app/software/UMI-tools/1.0.1-foss-2019b-Python-3.7.4/lib/python3.7/site-packages/umi_tools/umi_tools.py", line 61, in main
+#     module.main(sys.argv)
+#   File "/app/software/UMI-tools/1.0.1-foss-2019b-Python-3.7.4/lib/python3.7/site-packages/umi_tools/dedup.py", line 154, in main
+#     U.validateSamOptions(options, group=False)
+#   File "/app/software/UMI-tools/1.0.1-foss-2019b-Python-3.7.4/lib/python3.7/site-packages/umi_tools/Utilities.py", line 1182, in validateSamOptions
+#     raise ValueError("Cannot use --unmapped-reads=output. If you want "
+# ValueError: Cannot use --unmapped-reads=output. If you want to retain unmapped without deduplicating them, use the group command
+
+
+#  Adjusting parameters, retaining but not processing unmapped reads ----------
+#+ The difference fr/the above: Using --unmapped-reads="use" as opposed to
+#+ --unmapped-reads="output", which results in the above-noted error
+#+ 
+#+ 5782-U
+bam="5782_Q_IN_S8.UMIs.bam"
+scratch="/fh/scratch/delete30/tsukiyama_t"
+umi_tools dedup \
+    --paired \
+    --spliced-is-unique \
+    --unmapped-reads="use" \
+    --stdin="${bam}" \
+    --stdout="${bam%.bam}.dedu.bam" \
+    --temp-dir="${scratch}" \
+    --output-stats="${bam%.bam}.stats" \
+    --log="${bam%.bam}.stdout.txt" \
+    --error="${bam%.bam}.stderr.txt" \
+    --timeit="${bam%.bam}.time.txt" \
+    --timeit-header
+
+#+ 5782-U-T
+bam="5782_Q_IN_S8.UMIs_trim.bam"
+scratch="/fh/scratch/delete30/tsukiyama_t"
+umi_tools dedup \
+    --paired \
+    --spliced-is-unique \
+    --unmapped-reads="use" \
+    --stdin="${bam}" \
+    --stdout="${bam%.bam}.dedu.bam" \
+    --temp-dir="${scratch}" \
+    --output-stats="${bam%.bam}.stats" \
+    --log="${bam%.bam}.stdout.txt" \
+    --error="${bam%.bam}.stderr.txt" \
+    --timeit="${bam%.bam}.time.txt" \
+    --timeit-header
+
+mkdir umi-tools_dedup_adjusted_rm-unmapped_5782/
+mv *.time.txt \
+    *.dedu.bam \
+    *.std{out,err}.txt \
+    5782_Q_IN_S8.UMIs*stats*tsv \
+        umi-tools_adjusted_rm-unmapped_5782/
+
+
+#  Running umi_tools group ----------------------------------------------------
+#+ 5782-U
+bam="5782_Q_IN_S8.UMIs.bam"
+stem="${bam%.bam}.group"
+scratch="/fh/scratch/delete30/tsukiyama_t"
+umi_tools group \
+    --paired \
+    --spliced-is-unique \
+    --unmapped-reads="use" \
+    --stdin="${bam}" \
+    --temp-dir="${scratch}" \
+    --group-out="${stem}.tsv" \
+    --log="${stem}.stdout.txt" \
+    --error="${stem}.stderr.txt" \
+    --timeit="${stem}.time.txt" \
+    --timeit-header
+
+#+ 5782-U-T
+bam="5782_Q_IN_S8.UMIs_trim.bam"
+stem="${bam%.bam}.group"
+scratch="/fh/scratch/delete30/tsukiyama_t"
+umi_tools group \
+    --paired \
+    --spliced-is-unique \
+    --unmapped-reads="use" \
+    --stdin="${bam}" \
+    --temp-dir="${scratch}" \
+    --group-out="${stem}.tsv" \
+    --log="${stem}.stdout.txt" \
+    --error="${stem}.stderr.txt" \
+    --timeit="${stem}.time.txt" \
+    --timeit-header
+
+for i in *.tsv; do gzip "${i}"; done
+
+```
+</details>
+<br />
+<br />
+
+<a id="links-of-interestlearning-about-umi_tools"></a>
+## Links of interest/learning about `umi_tools`
+- [Biostars: Tool to analyze bulk RNAseq data with UMI]([https://www.biostars.org/p/405375/)
+- [Biostars: Bulk RNA-Seq pipeline suggestion incorporating UMIs](https://www.biostars.org/p/413672/)
+- `#NOTE In particular, this post is helpful and suggests that how I called umi_tools initially is valid`
