@@ -61,14 +61,35 @@
         1. [Printed](#printed-5)
     1. [Rename STAR outfiles](#rename-star-outfiles)
         1. [Code](#code-15)
-1. [Winging it](#winging-it)
-    1. [Get situated](#get-situated-3)
-        1. [Code](#code-16)
+1. [Try another experiment&mdash;but with `Bowtie 2` alignment](#try-another-experimentmdashbut-with-bowtie-2-alignment)
+    1. [Make a directory for the trial with `umi_tools extract`, etc.](#make-a-directory-for-the-trial-with-umi_tools-extract-etc-1)
+    1. [Set up necessary variables](#set-up-necessary-variables-2)
+    1. [Run `umi_tools extract`](#run-umi_tools-extract-1)
+    1. [Run `trim_galore` on UMI-containing `fastq.gz` files](#run-trim_galore-on-umi-containing-fastqgz-files-1)
+    1. [Run `Bowtie 2` on untrimmed and trimmed UMI-containing `fastq.gz` files](#run-bowtie-2-on-untrimmed-and-trimmed-umi-containing-fastqgz-files)
+        1. [Get situated](#get-situated-3)
+            1. [Code](#code-16)
+        1. [Set up necessary variables, array, outdir, etc.](#set-up-necessary-variables-array-outdir-etc-1)
+            1. [Code](#code-17)
+        1. [Write code for generating lists with permutations of parameters](#write-code-for-generating-lists-with-permutations-of-parameters-1)
+            1. [Code](#code-18)
+        1. [Break the multi-line list into individual per-line `.txt` files](#break-the-multi-line-list-into-individual-per-line-txt-files-1)
+            1. [Code](#code-19)
+        1. [Use `HEREDOC`s to write the run and submit scripts, `run_bowtie2_test.sh` and `submit_bowtie2_test.sh`](#use-heredocs-to-write-the-run-and-submit-scripts-run_bowtie2_testsh-and-submit_bowtie2_testsh)
+            1. [Code](#code-20)
+                1. [`run_bowtie2_test.sh`](#run_bowtie2_testsh)
+                1. [`submit_bowtie2_test.sh`](#submit_bowtie2_testsh)
+    1. [Use `sbatch` to run the 'submission' and 'run' scripts](#use-sbatch-to-run-the-submission-and-run-scripts-1)
+        1. [Code](#code-21)
+1. [Doing the UMI deduplication manually, then assessing results](#doing-the-umi-deduplication-manually-then-assessing-results)
+    1. [Get situated](#get-situated-4)
+        1. [Code](#code-22)
     1. [Index `.bam`s \(serially\)](#index-bams-serially)
         1. [Code *\(Window 2, 16 cores\)*](#code-window-2-16-cores)
     1. [Perform a trial run of `umi_tools dedup`](#perform-a-trial-run-of-umi_tools-dedup)
         1. [Code *\(Window 1&mdash;1 core, 100 GB RAM&mdash;hereafter\)*](#code-window-1mdash1-core-100-gb-rammdashhereafter)
 1. [Links of interest/learning about `umi_tools`](#links-of-interestlearning-about-umi_tools)
+1. [Miscellaneous](#miscellaneous)
 
 <!-- /MarkdownTOC -->
 </details>
@@ -4409,7 +4430,7 @@ prefix=(
     "test_UMI-processing_umi-tools/STAR/5782_Q_IN_S8.UMIs_trim"
     "test_UMI-processing_umi-tools/STAR/5782_Q_IN_S8.UMIs"
     "test_UMI-processing_umi-tools/STAR/5782_Q_IN_S8.nada"
-    "test_UMI-processing_umi-tools/STAR/Sample_CT10_7718_pIAA_Q_Nascent_S5.trim"
+    "test_UMI-processing_umi-tools/STAR/Sample_CT10_7718_pIAA_Q_Nascent_S5.nada_trim"
     "test_UMI-processing_umi-tools/STAR/Sample_CT10_7718_pIAA_Q_Nascent_S5.UMIs"
 )
 echoTest "${prefix[@]}"
@@ -4437,145 +4458,6 @@ if [[ ! -d "${store_lists}" ]]; then mkdir -p "${store_lists}"; fi
 list="test_list_multi.txt"
 max_id_job=8
 max_id_task=4
-```
-</details>
-<br />
-
-<details>
-<summary><i>Printed: Set up necessary variables, array, outdir, etc.</i></summary>
-
-```txt
-❯ for i in "${!array[@]}"; do
->     echo "   key     (left)  ${i}"
->     echo " value    (right)  ${array["${i}"]}"
->     echo "prefix  (for bam)  ${p_out}/$(basename "${i%_R1_*}")"
->     echo ""
-> done
-   key     (left)  test_UMI-processing_umi-tools/Sample_CT10_7718_pIAA_Q_Nascent_S5_R1_001.UMIs_val_1.fq.gz
- value    (right)  test_UMI-processing_umi-tools/Sample_CT10_7718_pIAA_Q_Nascent_S5_R3_001.UMIs_val_2.fq.gz
-prefix  (for bam)  test_UMI-processing_umi-tools/STAR/Sample_CT10_7718_pIAA_Q_Nascent_S5
-
-   key     (left)  fastqs/trim_galore/5782_Q_IN_S8_R1_001_val_1.fq.gz
- value    (right)  fastqs/trim_galore/5782_Q_IN_S8_R3_001_val_2.fq.gz
-prefix  (for bam)  test_UMI-processing_umi-tools/STAR/5782_Q_IN_S8
-
-   key     (left)  fastqs/symlinks/Sample_CT10_7718_pIAA_Q_Nascent_S5_R1_001.fastq.gz
- value    (right)  fastqs/symlinks/Sample_CT10_7718_pIAA_Q_Nascent_S5_R3_001.fastq.gz
-prefix  (for bam)  test_UMI-processing_umi-tools/STAR/Sample_CT10_7718_pIAA_Q_Nascent_S5
-
-   key     (left)  test_UMI-processing_umi-tools/5782_Q_IN_S8_R1_001.UMIs_val_1.fq.gz
- value    (right)  test_UMI-processing_umi-tools/5782_Q_IN_S8_R3_001.UMIs_val_2.fq.gz
-prefix  (for bam)  test_UMI-processing_umi-tools/STAR/5782_Q_IN_S8
-
-   key     (left)  test_UMI-processing_umi-tools/5782_Q_IN_S8_R1_001.UMIs.fastq.gz
- value    (right)  test_UMI-processing_umi-tools/5782_Q_IN_S8_R3_001.UMIs.fastq.gz
-prefix  (for bam)  test_UMI-processing_umi-tools/STAR/5782_Q_IN_S8
-
-   key     (left)  fastqs/symlinks/5782_Q_IN_S8_R1_001.fastq.gz
- value    (right)  fastqs/symlinks/5782_Q_IN_S8_R3_001.fastq.gz
-prefix  (for bam)  test_UMI-processing_umi-tools/STAR/5782_Q_IN_S8
-
-   key     (left)  fastqs/trim_galore/Sample_CT10_7718_pIAA_Q_Nascent_S5_R1_001_val_1.fq.gz
- value    (right)  fastqs/trim_galore/Sample_CT10_7718_pIAA_Q_Nascent_S5_R3_001_val_2.fq.gz
-prefix  (for bam)  test_UMI-processing_umi-tools/STAR/Sample_CT10_7718_pIAA_Q_Nascent_S5
-
-   key     (left)  test_UMI-processing_umi-tools/Sample_CT10_7718_pIAA_Q_Nascent_S5_R1_001.UMIs.fastq.gz
- value    (right)  test_UMI-processing_umi-tools/Sample_CT10_7718_pIAA_Q_Nascent_S5_R3_001.UMIs.fastq.gz
-prefix  (for bam)  test_UMI-processing_umi-tools/STAR/Sample_CT10_7718_pIAA_Q_Nascent_S5
-
-❯ echoTest "${read_l[@]}"
-test_UMI-processing_umi-tools/Sample_CT10_7718_pIAA_Q_Nascent_S5_R1_001.UMIs_val_1.fq.gz
-fastqs/trim_galore/5782_Q_IN_S8_R1_001_val_1.fq.gz
-fastqs/symlinks/Sample_CT10_7718_pIAA_Q_Nascent_S5_R1_001.fastq.gz
-test_UMI-processing_umi-tools/5782_Q_IN_S8_R1_001.UMIs_val_1.fq.gz
-test_UMI-processing_umi-tools/5782_Q_IN_S8_R1_001.UMIs.fastq.gz
-fastqs/symlinks/5782_Q_IN_S8_R1_001.fastq.gz
-fastqs/trim_galore/Sample_CT10_7718_pIAA_Q_Nascent_S5_R1_001_val_1.fq.gz
-test_UMI-processing_umi-tools/Sample_CT10_7718_pIAA_Q_Nascent_S5_R1_001.UMIs.fastq.gz
-
-❯ echoTest "${read_r[@]}"
-test_UMI-processing_umi-tools/Sample_CT10_7718_pIAA_Q_Nascent_S5_R3_001.UMIs_val_2.fq.gz
-fastqs/trim_galore/5782_Q_IN_S8_R3_001_val_2.fq.gz
-fastqs/symlinks/Sample_CT10_7718_pIAA_Q_Nascent_S5_R3_001.fastq.gz
-test_UMI-processing_umi-tools/5782_Q_IN_S8_R3_001.UMIs_val_2.fq.gz
-test_UMI-processing_umi-tools/5782_Q_IN_S8_R3_001.UMIs.fastq.gz
-fastqs/symlinks/5782_Q_IN_S8_R3_001.fastq.gz
-fastqs/trim_galore/Sample_CT10_7718_pIAA_Q_Nascent_S5_R3_001_val_2.fq.gz
-test_UMI-processing_umi-tools/Sample_CT10_7718_pIAA_Q_Nascent_S5_R3_001.UMIs.fastq.gz
-
-❯ #  Check that everything lines up...
-❯ for i in {0..7}; do
->     echo "   key     (left)  ${read_l["${i}"]}"
->     echo " value    (right)  ${read_r["${i}"]}"
->     echo "prefix  (for bam)  ${prefix["${i}"]}"
->     echo ""
-> done
-   key     (left)  test_UMI-processing_umi-tools/Sample_CT10_7718_pIAA_Q_Nascent_S5_R1_001.UMIs_val_1.fq.gz
- value    (right)  test_UMI-processing_umi-tools/Sample_CT10_7718_pIAA_Q_Nascent_S5_R3_001.UMIs_val_2.fq.gz
-prefix  (for bam)  test_UMI-processing_umi-tools/STAR/Sample_CT10_7718_pIAA_Q_Nascent_S5.UMIs_trim
-
-   key     (left)  fastqs/trim_galore/5782_Q_IN_S8_R1_001_val_1.fq.gz
- value    (right)  fastqs/trim_galore/5782_Q_IN_S8_R3_001_val_2.fq.gz
-prefix  (for bam)  test_UMI-processing_umi-tools/STAR/5782_Q_IN_S8.nada_trim
-
-   key     (left)  fastqs/symlinks/Sample_CT10_7718_pIAA_Q_Nascent_S5_R1_001.fastq.gz
- value    (right)  fastqs/symlinks/Sample_CT10_7718_pIAA_Q_Nascent_S5_R3_001.fastq.gz
-prefix  (for bam)  test_UMI-processing_umi-tools/STAR/Sample_CT10_7718_pIAA_Q_Nascent_S5.nada
-
-   key     (left)  test_UMI-processing_umi-tools/5782_Q_IN_S8_R1_001.UMIs_val_1.fq.gz
- value    (right)  test_UMI-processing_umi-tools/5782_Q_IN_S8_R3_001.UMIs_val_2.fq.gz
-prefix  (for bam)  test_UMI-processing_umi-tools/STAR/5782_Q_IN_S8.UMIs_trim
-
-   key     (left)  test_UMI-processing_umi-tools/5782_Q_IN_S8_R1_001.UMIs.fastq.gz
- value    (right)  test_UMI-processing_umi-tools/5782_Q_IN_S8_R3_001.UMIs.fastq.gz
-prefix  (for bam)  test_UMI-processing_umi-tools/STAR/5782_Q_IN_S8.UMIs
-
-   key     (left)  fastqs/symlinks/5782_Q_IN_S8_R1_001.fastq.gz
- value    (right)  fastqs/symlinks/5782_Q_IN_S8_R3_001.fastq.gz
-prefix  (for bam)  test_UMI-processing_umi-tools/STAR/5782_Q_IN_S8.nada
-
-   key     (left)  fastqs/trim_galore/Sample_CT10_7718_pIAA_Q_Nascent_S5_R1_001_val_1.fq.gz
- value    (right)  fastqs/trim_galore/Sample_CT10_7718_pIAA_Q_Nascent_S5_R3_001_val_2.fq.gz
-prefix  (for bam)  test_UMI-processing_umi-tools/STAR/Sample_CT10_7718_pIAA_Q_Nascent_S5.trim
-
-   key     (left)  test_UMI-processing_umi-tools/Sample_CT10_7718_pIAA_Q_Nascent_S5_R1_001.UMIs.fastq.gz
- value    (right)  test_UMI-processing_umi-tools/Sample_CT10_7718_pIAA_Q_Nascent_S5_R3_001.UMIs.fastq.gz
-prefix  (for bam)  test_UMI-processing_umi-tools/STAR/Sample_CT10_7718_pIAA_Q_Nascent_S5.UMIs
-```
-
-*Manually reformatted*
-```txt
-   key     (left)       test_UMI-processing_umi-tools/Sample_CT10_7718_pIAA_Q_Nascent_S5_R1_001.UMIs_val_1.fq.gz
- value    (right)       test_UMI-processing_umi-tools/Sample_CT10_7718_pIAA_Q_Nascent_S5_R3_001.UMIs_val_2.fq.gz
-prefix  (for bam)  test_UMI-processing_umi-tools/STAR/Sample_CT10_7718_pIAA_Q_Nascent_S5.UMIs_trim
-
-   key     (left)                  fastqs/trim_galore/5782_Q_IN_S8_R1_001_val_1.fq.gz
- value    (right)                  fastqs/trim_galore/5782_Q_IN_S8_R3_001_val_2.fq.gz
-prefix  (for bam)  test_UMI-processing_umi-tools/STAR/5782_Q_IN_S8.nada_trim
-
-   key     (left)                     fastqs/symlinks/Sample_CT10_7718_pIAA_Q_Nascent_S5_R1_001.fastq.gz
- value    (right)                     fastqs/symlinks/Sample_CT10_7718_pIAA_Q_Nascent_S5_R3_001.fastq.gz
-prefix  (for bam)  test_UMI-processing_umi-tools/STAR/Sample_CT10_7718_pIAA_Q_Nascent_S5.nada
-
-   key     (left)       test_UMI-processing_umi-tools/5782_Q_IN_S8_R1_001.UMIs_val_1.fq.gz
- value    (right)       test_UMI-processing_umi-tools/5782_Q_IN_S8_R3_001.UMIs_val_2.fq.gz
-prefix  (for bam)  test_UMI-processing_umi-tools/STAR/5782_Q_IN_S8.UMIs_trim
-
-   key     (left)       test_UMI-processing_umi-tools/5782_Q_IN_S8_R1_001.UMIs.fastq.gz
- value    (right)       test_UMI-processing_umi-tools/5782_Q_IN_S8_R3_001.UMIs.fastq.gz
-prefix  (for bam)  test_UMI-processing_umi-tools/STAR/5782_Q_IN_S8.UMIs
-
-   key     (left)                     fastqs/symlinks/5782_Q_IN_S8_R1_001.fastq.gz
- value    (right)                     fastqs/symlinks/5782_Q_IN_S8_R3_001.fastq.gz
-prefix  (for bam)  test_UMI-processing_umi-tools/STAR/5782_Q_IN_S8.nada
-
-   key     (left)                  fastqs/trim_galore/Sample_CT10_7718_pIAA_Q_Nascent_S5_R1_001_val_1.fq.gz
- value    (right)                  fastqs/trim_galore/Sample_CT10_7718_pIAA_Q_Nascent_S5_R3_001_val_2.fq.gz
-prefix  (for bam)  test_UMI-processing_umi-tools/STAR/Sample_CT10_7718_pIAA_Q_Nascent_S5.trim
-
-   key     (left)       test_UMI-processing_umi-tools/Sample_CT10_7718_pIAA_Q_Nascent_S5_R1_001.UMIs.fastq.gz
- value    (right)       test_UMI-processing_umi-tools/Sample_CT10_7718_pIAA_Q_Nascent_S5_R3_001.UMIs.fastq.gz
-prefix  (for bam)  test_UMI-processing_umi-tools/STAR/Sample_CT10_7718_pIAA_Q_Nascent_S5.UMIs
 ```
 </details>
 <br />
@@ -4647,7 +4529,7 @@ dir_genome read_1 read_2 prefix multimappers
 /home/kalavatt/genomes/combined_SC_KL_20S/STAR test_UMI-processing_umi-tools/5782_Q_IN_S8_R1_001.UMIs_val_1.fq.gz test_UMI-processing_umi-tools/5782_Q_IN_S8_R3_001.UMIs_val_2.fq.gz test_UMI-processing_umi-tools/STAR/5782_Q_IN_S8.UMIs_trim 1
 /home/kalavatt/genomes/combined_SC_KL_20S/STAR test_UMI-processing_umi-tools/5782_Q_IN_S8_R1_001.UMIs.fastq.gz test_UMI-processing_umi-tools/5782_Q_IN_S8_R3_001.UMIs.fastq.gz test_UMI-processing_umi-tools/STAR/5782_Q_IN_S8.UMIs 1
 /home/kalavatt/genomes/combined_SC_KL_20S/STAR fastqs/symlinks/5782_Q_IN_S8_R1_001.fastq.gz fastqs/symlinks/5782_Q_IN_S8_R3_001.fastq.gz test_UMI-processing_umi-tools/STAR/5782_Q_IN_S8.nada 1
-/home/kalavatt/genomes/combined_SC_KL_20S/STAR fastqs/trim_galore/Sample_CT10_7718_pIAA_Q_Nascent_S5_R1_001_val_1.fq.gz fastqs/trim_galore/Sample_CT10_7718_pIAA_Q_Nascent_S5_R3_001_val_2.fq.gz test_UMI-processing_umi-tools/STAR/Sample_CT10_7718_pIAA_Q_Nascent_S5.trim 1
+/home/kalavatt/genomes/combined_SC_KL_20S/STAR fastqs/trim_galore/Sample_CT10_7718_pIAA_Q_Nascent_S5_R1_001_val_1.fq.gz fastqs/trim_galore/Sample_CT10_7718_pIAA_Q_Nascent_S5_R3_001_val_2.fq.gz test_UMI-processing_umi-tools/STAR/Sample_CT10_7718_pIAA_Q_Nascent_S5.nada_trim 1
 /home/kalavatt/genomes/combined_SC_KL_20S/STAR test_UMI-processing_umi-tools/Sample_CT10_7718_pIAA_Q_Nascent_S5_R1_001.UMIs.fastq.gz test_UMI-processing_umi-tools/Sample_CT10_7718_pIAA_Q_Nascent_S5_R3_001.UMIs.fastq.gz test_UMI-processing_umi-tools/STAR/Sample_CT10_7718_pIAA_Q_Nascent_S5.UMIs 1
 ```
 </details>
@@ -4693,7 +4575,7 @@ sed 1d "${store_lists}/${list}" | while read -r line; do
 done
 #  ., "${store_lists}"
 #  vi "${store_lists}/${list%.txt}.4.txt"  # :q
-# cat "${store_lists}/${list%.txt}.4.txt"  # :q
+# cat "${store_lists}/${list%.txt}.4.txt"
 ```
 </details>
 <br />
@@ -4763,27 +4645,7 @@ check_file_exists "\${arguments}"
 time_start="\$(date +%s)"
 
 parallel --header : --colsep " " -k -j 1 echo \
-    'STAR \
-        --runMode alignReads \
-        --runThreadN {threads} \
-        --outSAMtype BAM SortedByCoordinate \
-        --outSAMunmapped Within \
-        --outSAMattributes All \
-        --genomeDir {dir_genome} \
-        --readFilesIn {read_1} {read_2} \
-        --readFilesCommand zcat \
-        --outFileNamePrefix {prefix} \
-        --limitBAMsortRAM 4000000000 \
-        --outFilterMultimapNmax {multimappers} \
-        --winAnchorMultimapNmax 1000 \
-        --alignSJoverhangMin 8 \
-        --alignSJDBoverhangMin 1 \
-        --outFilterMismatchNmax 999 \
-        --outMultimapperOrder Random \
-        --alignEndsType EndToEnd \
-        --alignIntronMin 4 \
-        --alignIntronMax 5000 \
-        --alignMatesGapMax 5000' \
+    '' \
 :::: "\${arguments}"
 
 #  Run --------------------------------
@@ -4931,11 +4793,495 @@ rmr *_STARtmp
 <br />
 <br />
 
-<a id="winging-it"></a>
-## Winging it
+<a id="try-another-experimentmdashbut-with-bowtie-2-alignment"></a>
+## Try another experiment&mdash;but with `Bowtie 2` alignment
+<a id="make-a-directory-for-the-trial-with-umi_tools-extract-etc-1"></a>
+### Make a directory for the trial with `umi_tools extract`, etc.
+*Done [above](#make-a-directory-for-the-trial-with-umi_tools-extract-etc)*
+
+<a id="set-up-necessary-variables-2"></a>
+### Set up necessary variables
+*Done [above](#set-up-necessary-variables-1)*
+
+<a id="run-umi_tools-extract-1"></a>
+### Run `umi_tools extract`
+*Done [above](#run-umi_tools-extract)*
+
+<a id="run-trim_galore-on-umi-containing-fastqgz-files-1"></a>
+### Run `trim_galore` on UMI-containing `fastq.gz` files
+*Done [above](#run-trim_galore-on-umi-containing-fastqgz-files)*
+
+<a id="run-bowtie-2-on-untrimmed-and-trimmed-umi-containing-fastqgz-files"></a>
+### Run `Bowtie 2` on untrimmed and trimmed UMI-containing `fastq.gz` files
 <a id="get-situated-3"></a>
-### Get situated
+#### Get situated
 <a id="code-16"></a>
+##### Code
+<details>
+<summary><i>Code: Get situated</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+#  Stay on rhino; don't get on gizmo
+
+transcriptome && \
+    {
+        cd results/2023-0115 \
+            || echo "cd'ing failed; check on this..."
+    }
+
+source activate Trinity_env
+ml SAMtools/1.16.1-GCC-11.2.0
+ml Bowtie2/2.4.4-GCC-11.2.0
+```
+</details>
+<br />
+
+<a id="set-up-necessary-variables-array-outdir-etc-1"></a>
+#### Set up necessary variables, array, outdir, etc.
+<a id="code-17"></a>
+##### Code
+<details>
+<summary><i>Code: Set up necessary variables, array, outdir, etc.</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+#  ----------------
+p_nada_in_sym="fastqs/symlinks"  # ., "${p_nada_in_sym}"
+p_nada_in_trm="fastqs/trim_galore"  # ., "${p_nada_in_trm}"
+
+nada_1_l="${p_nada_in_sym}/5782_Q_IN_S8_R1_001.fastq.gz"  # ., "${nada_1_l}"
+nada_1_r="${p_nada_in_sym}/5782_Q_IN_S8_R3_001.fastq.gz"  # ., "${nada_1_r}"
+nada_1_trim_l="${p_nada_in_trm}/5782_Q_IN_S8_R1_001_val_1.fq.gz"  # ., "${nada_1_trim_l}"
+nada_1_trim_r="${p_nada_in_trm}/5782_Q_IN_S8_R3_001_val_2.fq.gz"  # ., "${nada_1_trim_r}"
+
+nada_2_l="${p_nada_in_sym}/Sample_CT10_7718_pIAA_Q_Nascent_S5_R1_001.fastq.gz"  # ., "${nada_2_l}"
+nada_2_r="${p_nada_in_sym}/Sample_CT10_7718_pIAA_Q_Nascent_S5_R3_001.fastq.gz"  # ., "${nada_2_r}"
+nada_2_trim_l="${p_nada_in_trm}/Sample_CT10_7718_pIAA_Q_Nascent_S5_R1_001_val_1.fq.gz"  # ., "${nada_2_trim_l}"
+nada_2_trim_r="${p_nada_in_trm}/Sample_CT10_7718_pIAA_Q_Nascent_S5_R3_001_val_2.fq.gz"  # ., "${nada_2_trim_r}"
+
+#  ----------------
+p_umi_in="test_UMI-processing_umi-tools"
+
+umi_1_l="${p_umi_in}/5782_Q_IN_S8_R1_001.UMIs.fastq.gz"  # ., "${umi_1_l}"
+umi_1_r="${p_umi_in}/5782_Q_IN_S8_R3_001.UMIs.fastq.gz"  # ., "${umi_1_r}"
+umi_1_trim_l="${p_umi_in}/5782_Q_IN_S8_R1_001.UMIs_val_1.fq.gz"  # ., "${umi_1_trim_l}"
+umi_1_trim_r="${p_umi_in}/5782_Q_IN_S8_R3_001.UMIs_val_2.fq.gz"  # ., "${umi_1_trim_r}"
+
+umi_2_l="${p_umi_in}/Sample_CT10_7718_pIAA_Q_Nascent_S5_R1_001.UMIs.fastq.gz"  # ., "${umi_2_l}"
+umi_2_r="${p_umi_in}/Sample_CT10_7718_pIAA_Q_Nascent_S5_R3_001.UMIs.fastq.gz"  # ., "${umi_2_r}"
+umi_2_trim_l="${p_umi_in}/Sample_CT10_7718_pIAA_Q_Nascent_S5_R1_001.UMIs_val_1.fq.gz"  # ., "${umi_2_trim_l}"
+umi_2_trim_r="${p_umi_in}/Sample_CT10_7718_pIAA_Q_Nascent_S5_R3_001.UMIs_val_2.fq.gz"  # ., "${umi_2_trim_r}"
+
+#  ----------------
+p_out="${p_umi_in}/Bowtie2"  # echo "${p_out}"
+if [[ ! -d "${p_out}" ]]; then mkdir -p "${p_out}"; fi
+
+#  ----------------
+unset array
+typeset -A array=(
+    ["${nada_1_l}"]="${nada_1_r}"
+    ["${nada_1_trim_l}"]="${nada_1_trim_r}"
+    ["${nada_2_l}"]="${nada_2_r}"
+    ["${nada_2_trim_l}"]="${nada_2_trim_r}"
+    ["${umi_1_l}"]="${umi_1_r}"
+    ["${umi_1_trim_l}"]="${umi_1_trim_r}"
+    ["${umi_2_l}"]="${umi_2_r}"
+    ["${umi_2_trim_l}"]="${umi_2_trim_r}"
+)
+
+unset read_l && typeset -a read_l
+unset read_r && typeset -a read_r
+for i in "${!array[@]}"; do
+    echo "   key     (left)  ${i}"
+    echo " value    (right)  ${array["${i}"]}"
+    echo ""
+
+    read_l+=( "${i}" )
+    read_r+=( "${array["${i}"]}" )
+done
+echoTest "${read_l[@]}"
+echoTest "${read_r[@]}"
+
+unset prefix && typeset -a prefix
+prefix=(
+    "test_UMI-processing_umi-tools/Bowtie2/Sample_CT10_7718_pIAA_Q_Nascent_S5.UMIs_trim"
+    "test_UMI-processing_umi-tools/Bowtie2/5782_Q_IN_S8.nada_trim"
+    "test_UMI-processing_umi-tools/Bowtie2/Sample_CT10_7718_pIAA_Q_Nascent_S5.nada"
+    "test_UMI-processing_umi-tools/Bowtie2/5782_Q_IN_S8.UMIs_trim"
+    "test_UMI-processing_umi-tools/Bowtie2/5782_Q_IN_S8.UMIs"
+    "test_UMI-processing_umi-tools/Bowtie2/5782_Q_IN_S8.nada"
+    "test_UMI-processing_umi-tools/Bowtie2/Sample_CT10_7718_pIAA_Q_Nascent_S5.nada_trim"
+    "test_UMI-processing_umi-tools/Bowtie2/Sample_CT10_7718_pIAA_Q_Nascent_S5.UMIs"
+)
+echoTest "${prefix[@]}"
+
+#  Check that everything lines up...
+for i in {0..7}; do
+    echo "   key     (left)  ${read_l["${i}"]}"
+    echo " value    (right)  ${read_r["${i}"]}"
+    echo "prefix  (for bam)  ${prefix["${i}"]}"
+    echo ""
+done
+
+#  ----------------
+script_run="run_bowtie2_test.sh"  # echo "${script_run}"
+script_submit="submit_bowtie2_test.sh"  # echo "${script_submit}"
+threads=8  # echo "${threads}"
+dir_genome="${HOME}/genomes/combined_SC_KL_20S/Bowtie2/combined_SC_KL_20S"  # ., "${dir_genome}"*
+
+store_lists="test_UMI-processing_umi-tools/lists"  # ., "${store_lists}"
+store_scripts="sh_err_out"  # ., "${store_scripts}"
+store_err_out="${store_scripts}/err_out"  # ., "${store_err_out}" | head -20
+if [[ ! -d "${store_lists}" ]]; then mkdir -p "${store_lists}"; fi
+
+list="test_list_Bowtie2_multi.txt"  # echo "${list}"
+max_id_job=8  # echo "${max_id_job}"
+max_id_task=4  # echo "${max_id_task}"
+
+
+#  ----------------
+#  Spot checks
+., "${p_nada_in_sym}"
+., "${p_nada_in_trm}"
+
+., "${nada_1_l}"
+., "${nada_1_r}"
+., "${nada_1_trim_l}"
+., "${nada_1_trim_r}"
+., "${nada_2_l}"
+., "${nada_2_r}"
+., "${nada_2_trim_l}"
+., "${nada_2_trim_r}"
+
+., "${umi_1_l}"
+., "${umi_1_r}"
+., "${umi_1_trim_l}"
+., "${umi_1_trim_r}"
+., "${umi_2_l}"
+., "${umi_2_r}"
+., "${umi_2_trim_l}"
+., "${umi_2_trim_r}"
+
+echo "${p_out}"
+
+echoTest "${read_l[@]}"
+echoTest "${read_r[@]}"
+echoTest "${prefix[@]}"
+
+echo "${script_run}"
+echo "${script_submit}"
+echo "${threads}"
+., "${dir_genome}"*
+echo "${multimappers}"
+
+., "${store_lists}"
+., "${store_scripts}"
+., "${store_err_out}" | head -50
+
+echo "${list}"
+echo "${max_id_job}"
+echo "${max_id_task}"
+```
+</details>
+<br />
+
+<a id="write-code-for-generating-lists-with-permutations-of-parameters-1"></a>
+#### Write code for generating lists with permutations of parameters
+<a id="code-18"></a>
+##### Code
+<details>
+<summary><i>Code: Write code for generating lists with permutations of parameters</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+#  Header
+if [[ -f "${store_lists}/${list}" ]]; then
+    rm "${store_lists}/${list}"
+fi
+echo "threads \
+dir_genome \
+read_1 \
+read_2 \
+prefix" \
+    > "${store_lists}/${list}"
+#  ., "${store_lists}/${list}"
+#  vi "${store_lists}/${list}"
+# cat "${store_lists}/${list}"
+
+#  Body
+parallel --header : --colsep " " -k -j 1 echo \
+"{threads} \
+{dir_genome} \
+{read_1} \
+{read_2} \
+{prefix}" \
+::: threads "${threads}" \
+::: dir_genome "${dir_genome}" \
+::: read_1 "${read_l[@]}" \
+:::+ read_2 "${read_r[@]}"  \
+:::+ prefix "${prefix[@]}" \
+    >> "${store_lists}/${list}"
+#        ., "${store_lists}/${list}"
+#     wc -l "${store_lists}/${list}"
+#  head -20 "${store_lists}/${list}"
+```
+</details>
+<br />
+
+<a id="break-the-multi-line-list-into-individual-per-line-txt-files-1"></a>
+#### Break the multi-line list into individual per-line `.txt` files
+<a id="code-19"></a>
+##### Code
+<details>
+<summary><i>Code: Break the multi-line list into individual per-line .txt files</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+if [[ -f "${store_lists}/${list%.txt}.4.txt" ]]; then
+    # rm "${store_lists}/"${list%.txt}.{?,??,???}.txt
+    rm "${store_lists}/"${list%.txt}.?.txt
+fi
+#  ., "${store_lists}"
+#  vi "${store_lists}/${list}"  # :q
+# cat "${store_lists}/${list}"  # :q
+
+typeset -i i=0
+sed 1d "${store_lists}/${list}" | while read -r line; do
+    #  Increment with each line
+    i=$(( i + 1 ))
+
+    #  File for job submission
+    individual="${list%.txt}.${i}.txt"  # echo "${individual}"
+
+    #  If present, remove infile with header and single-line body
+    [[ ! -e "${store_lists}/${individual}" ]] || rm "${store_lists}/${individual}"
+    # echo "${store_lists}/${individual}"
+
+    #  Generate infile with header and single-line body
+    # echo "$(head -n 1 ${list})" >> "${individual}"
+    head -n 1 "${store_lists}/${list}" >> "${store_lists}/${individual}"  # cat "${store_lists}/${individual}"
+    echo "${line}" >> "${store_lists}/${individual}"  # cat "${store_lists}/${individual}"
+
+    # echo "Created file: ${store_lists}/${individual}"
+done
+#  ., "${store_lists}"
+#  vi "${store_lists}/${list%.txt}.4.txt"  # :q
+# cat "${store_lists}/${list%.txt}.4.txt"
+```
+</details>
+<br />
+
+<a id="use-heredocs-to-write-the-run-and-submit-scripts-run_bowtie2_testsh-and-submit_bowtie2_testsh"></a>
+#### Use `HEREDOC`s to write the run and submit scripts, `run_bowtie2_test.sh` and `submit_bowtie2_test.sh`
+<a id="code-20"></a>
+##### Code
+<details>
+<summary><i>Code: Use HEREDOCs to write the script, run_bowtie2_test.sh and submit_bowtie2_test.sh</i></summary>
+
+<a id="run_bowtie2_testsh"></a>
+###### `run_bowtie2_test.sh`
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+if [[ -f "./${store_scripts}/${script_run}" ]]; then
+    rm "./${store_scripts}/${script_run}"
+fi
+cat << script > "./${store_scripts}/${script_run}"
+#!/bin/bash
+
+#  ${script_run}
+#  KA
+#  $(date '+%Y-%m%d')
+
+
+#  ------------------------------------
+print_message_exit() {
+    # Print a message and exit
+    #
+    # :param 1: message to be printed <chr>
+    echo "\${1}"
+    exit 1
+}
+
+
+check_file_exists() {
+    # Check that a file exists; exit if it does not
+    # 
+    # :param 1: file, including path <chr>
+    [[ -f "\${1}" ]] ||
+        {
+            echo -e "Exiting: File \${1} does not exist.\n"
+            exit 1
+        }
+}
+
+
+#  ------------------------------------
+#TODO Help message
+#  ...
+
+while getopts "a:" opt; do
+    case "\${opt}" in
+        a) arguments="\${OPTARG}" ;;
+        *) print_message_exit "\${help}" ;;
+    esac
+done
+
+[[ -z "\${arguments}" ]] && print_message_exit "\${help}"
+check_file_exists "\${arguments}"
+
+
+#  Echo -------------------------------
+parallel --header : --colsep " " -k -j 1 echo -e \
+    'bowtie2 \
+        -p {threads} \
+        -x {dir_genome} \
+        -1 {read_1} \
+        -2 {read_2} \
+        --trim5 1 \
+        --local \
+        --very-sensitive-local \
+        --no-unal \
+        --no-mixed \
+        --no-discordant \
+        --phred33 \
+        -I 10 \
+        -X 700 \
+        --no-overlap \
+        --no-dovetail \
+            | samtools sort \
+                -@ {threads} \
+                -o {prefix}.bam \
+                - \
+    \n \
+    samtools index \
+        -@ {threads} \
+        {prefix}.bam' \
+:::: "\${arguments}"
+
+#  Run --------------------------------
+parallel --header : --colsep " " -k -j 1 \
+    'bowtie2 \
+        -p {threads} \
+        -x {dir_genome} \
+        -1 {read_1} \
+        -2 {read_2} \
+        --trim5 1 \
+        --local \
+        --very-sensitive-local \
+        --no-unal \
+        --no-mixed \
+        --no-discordant \
+        --phred33 \
+        -I 10 \
+        -X 700 \
+        --no-overlap \
+        --no-dovetail \
+            | samtools sort \
+                -@ {threads} \
+                -o {prefix}.bam \
+                - \
+
+    samtools index \
+        -@ {threads} \
+        {prefix}.bam' \
+:::: "\${arguments}"
+
+script
+chmod +x "./${store_scripts}/${script_run}"
+#  ., "./${store_scripts}/${script_run}"
+#  vi "./${store_scripts}/${script_run}"
+# cat "./${store_scripts}/${script_run}"
+```
+
+<a id="submit_bowtie2_testsh"></a>
+###### `submit_bowtie2_test.sh`
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+if [[ -f "${store_lists}/${script_submit}" ]]; then
+    rm "${store_lists}/${script_submit}"
+fi
+cat << script > "${store_lists}/${script_submit}"
+#!/bin/bash
+
+#SBATCH --job-name=${script_run}
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=${threads}
+#SBATCH --error=./${store_err_out}/${script_run%.sh}.%A-%a.err.txt
+#SBATCH --output=./${store_err_out}/${script_run%.sh}.%A-%a.out.txt
+#SBATCH --array=1-${max_id_job}%${max_id_task}
+
+#  ${script_submit}
+#  KA
+#  $(date '+%Y-%m%d')
+
+name="\$(
+    cat "./${store_lists}/${list%.txt}.\${SLURM_ARRAY_TASK_ID}.txt" \
+        | awk -v OFS='\t' 'FNR == 2 { print \$5 }' \
+        | sed 's:.*/::'
+)"
+
+ln -f \
+    ${store_err_out}/${script_run%.sh}.\${SLURM_ARRAY_JOB_ID}-\${SLURM_ARRAY_TASK_ID}.out.txt \
+    ${store_err_out}/\${name}.\${SLURM_ARRAY_JOB_ID}-\${SLURM_ARRAY_TASK_ID}.out.txt
+
+ln -f \
+    ${store_err_out}/${script_run%.sh}.\${SLURM_ARRAY_JOB_ID}-\${SLURM_ARRAY_TASK_ID}.err.txt \
+    ${store_err_out}/\${name}.\${SLURM_ARRAY_JOB_ID}-\${SLURM_ARRAY_TASK_ID}.err.txt
+
+srun \
+    "${store_scripts}/${script_run}" \
+        -a "./${store_lists}/${list%.txt}.\${SLURM_ARRAY_TASK_ID}.txt"
+
+rm \
+    ${store_err_out}/${script_run%.sh}.\${SLURM_ARRAY_JOB_ID}-\${SLURM_ARRAY_TASK_ID}.out.txt
+
+rm \
+    ${store_err_out}/${script_run%.sh}.\${SLURM_ARRAY_JOB_ID}-\${SLURM_ARRAY_TASK_ID}.err.txt
+script
+#  ., "${store_lists}/${script_submit}"
+#  vi "${store_lists}/${script_submit}"  # :q
+# cat "${store_lists}/${script_submit}"
+```
+</details>
+<br />
+
+<a id="use-sbatch-to-run-the-submission-and-run-scripts-1"></a>
+### Use `sbatch` to run the 'submission' and 'run' scripts
+<a id="code-21"></a>
+#### Code
+<details>
+<summary><i>Code: Use sbatch to run the 'submission' and 'run' scripts</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+sbatch "${store_lists}/${script_submit}"
+
+cd ${store_err_out} && .,f | tail -20
+```
+</details>
+<br />
+<br />
+
+<a id="doing-the-umi-deduplication-manually-then-assessing-results"></a>
+## Doing the UMI deduplication manually, then assessing results
+<a id="get-situated-4"></a>
+### Get situated
+<a id="code-22"></a>
 #### Code
 <details>
 <summary><i>Code: Get situated</i></summary>
@@ -4993,6 +5339,7 @@ done
 <details>
 <summary><i>Code: Perform a trial run of umi_tools dedup</i></summary>
 
+`#DEKHO`
 ```bash
 #!/bin/bash
 #DONTRUN #CONTINUE
@@ -5036,40 +5383,67 @@ mv *.time.txt \
     5782_Q_IN_S8.UMIs*stats*tsv \
         umi-tools_basic_rm-unmapped_5782/
 
+#+ 7718-U
+bam="Sample_CT10_7718_pIAA_Q_Nascent_S5.UMIs.bam"
+scratch="/fh/scratch/delete30/tsukiyama_t"
+umi_tools dedup \
+    --paired \
+    --stdin="${bam}" \
+    --stdout="${bam%.bam}.dedu.bam" \
+    --temp-dir="${scratch}" \
+    --output-stats="${bam%.bam}.stats" \
+    --log="${bam%.bam}.stdout.txt" \
+    --error="${bam%.bam}.stderr.txt" \
+    --timeit="${bam%.bam}.time.txt" \
+    --timeit-header
+
+#+ 7718-U-T
+bam="Sample_CT10_7718_pIAA_Q_Nascent_S5.UMIs_trim.bam"
+scratch="/fh/scratch/delete30/tsukiyama_t"
+umi_tools dedup \
+    --paired \
+    --stdin="${bam}" \
+    --stdout="${bam%.bam}.dedu.bam" \
+    --temp-dir="${scratch}" \
+    --output-stats="${bam%.bam}.stats" \
+    --log="${bam%.bam}.stdout.txt" \
+    --error="${bam%.bam}.stderr.txt" \
+    --timeit="${bam%.bam}.time.txt" \
+    --timeit-header
 
 #  Adjusting parameters, retaining but not processing unmapped reads ----------
 #+ 
 #+ 5782-U
-bam="5782_Q_IN_S8.UMIs.bam"
-scratch="/fh/scratch/delete30/tsukiyama_t"
-umi_tools dedup \
-    --paired \
-    --spliced-is-unique \
-    --unmapped-reads="output" \
-    --stdin="${bam}" \
-    --stdout="${bam%.bam}.dedu.bam" \
-    --temp-dir="${scratch}" \
-    --output-stats="${bam%.bam}.stats" \
-    --log="${bam%.bam}.stdout.txt" \
-    --error="${bam%.bam}.stderr.txt" \
-    --timeit="${bam%.bam}.time.txt" \
-    --timeit-header
-
-#+ 5782-U-T
-bam="5782_Q_IN_S8.UMIs_trim.bam"
-scratch="/fh/scratch/delete30/tsukiyama_t"
-umi_tools dedup \
-    --paired \
-    --spliced-is-unique \
-    --unmapped-reads="output" \
-    --stdin="${bam}" \
-    --stdout="${bam%.bam}.dedu.bam" \
-    --temp-dir="${scratch}" \
-    --output-stats="${bam%.bam}.stats" \
-    --log="${bam%.bam}.stdout.txt" \
-    --error="${bam%.bam}.stderr.txt" \
-    --timeit="${bam%.bam}.time.txt" \
-    --timeit-header
+# bam="5782_Q_IN_S8.UMIs.bam"
+# scratch="/fh/scratch/delete30/tsukiyama_t"
+# umi_tools dedup \
+#     --paired \
+#     --spliced-is-unique \
+#     --unmapped-reads="output" \
+#     --stdin="${bam}" \
+#     --stdout="${bam%.bam}.dedu.bam" \
+#     --temp-dir="${scratch}" \
+#     --output-stats="${bam%.bam}.stats" \
+#     --log="${bam%.bam}.stdout.txt" \
+#     --error="${bam%.bam}.stderr.txt" \
+#     --timeit="${bam%.bam}.time.txt" \
+#     --timeit-header
+#
+# #+ 5782-U-T
+# bam="5782_Q_IN_S8.UMIs_trim.bam"
+# scratch="/fh/scratch/delete30/tsukiyama_t"
+# umi_tools dedup \
+#     --paired \
+#     --spliced-is-unique \
+#     --unmapped-reads="output" \
+#     --stdin="${bam}" \
+#     --stdout="${bam%.bam}.dedu.bam" \
+#     --temp-dir="${scratch}" \
+#     --output-stats="${bam%.bam}.stats" \
+#     --log="${bam%.bam}.stdout.txt" \
+#     --error="${bam%.bam}.stderr.txt" \
+#     --timeit="${bam%.bam}.time.txt" \
+#     --timeit-header
 
 #NOTE Can't call umi_tools dedup in the above manner:
 # Traceback (most recent call last):
@@ -5162,14 +5536,104 @@ umi_tools group \
     --timeit-header
 
 for i in *.tsv; do gzip "${i}"; done
-
+mkdir umi-tools_group_adjusted_rm-unmapped_5782/
+mv *.group.* umi-tools_group_adjusted_rm-unmapped_5782/
 ```
 </details>
 <br />
 <br />
 
+*Scraps&mdash;to be organized*
+```bash
+bam="Sample_CT10_7718_pIAA_Q_Nascent_S5.UMIs_trim.bam"
+scratch="/fh/scratch/delete30/tsukiyama_t"
+umi_tools dedup \
+    --paired \
+    --stdin="${bam}" \
+    --stdout="${bam%.bam}.dedu.bam" \
+    --temp-dir="${scratch}" \
+    --output-stats="${bam%.bam}.stats" \
+    --log="${bam%.bam}.stdout.txt" \
+    --error="${bam%.bam}.stderr.txt" \
+    --timeit="${bam%.bam}.time.txt" \
+    --timeit-header
+
+# -------
+bam="Sample_CT10_7718_pIAA_Q_Nascent_S5.UMIs.bam"
+scratch="/fh/scratch/delete30/tsukiyama_t"
+umi_tools dedup \
+    --paired \
+    --spliced-is-unique \
+    --unmapped-reads="use" \
+    --stdin="${bam}" \
+    --stdout="${bam%.bam}.dedu.bam" \
+    --temp-dir="${scratch}" \
+    --output-stats="${bam%.bam}.stats" \
+    --log="${bam%.bam}.stdout.txt" \
+    --error="${bam%.bam}.stderr.txt" \
+    --timeit="${bam%.bam}.time.txt" \
+    --timeit-header
+
+bam="Sample_CT10_7718_pIAA_Q_Nascent_S5.UMIs_trim.bam"
+scratch="/fh/scratch/delete30/tsukiyama_t"
+umi_tools dedup \
+    --paired \
+    --spliced-is-unique \
+    --unmapped-reads="use" \
+    --stdin="${bam}" \
+    --stdout="${bam%.bam}.dedu.bam" \
+    --temp-dir="${scratch}" \
+    --output-stats="${bam%.bam}.stats" \
+    --log="${bam%.bam}.stdout.txt" \
+    --error="${bam%.bam}.stderr.txt" \
+    --timeit="${bam%.bam}.time.txt" \
+    --timeit-header
+
+# -------
+bam="Sample_CT10_7718_pIAA_Q_Nascent_S5.UMIs.bam"
+stem="${bam%.bam}.group"
+scratch="/fh/scratch/delete30/tsukiyama_t"
+umi_tools group \
+    --paired \
+    --spliced-is-unique \
+    --unmapped-reads="use" \
+    --stdin="${bam}" \
+    --temp-dir="${scratch}" \
+    --group-out="${stem}.tsv" \
+    --log="${stem}.stdout.txt" \
+    --error="${stem}.stderr.txt" \
+    --timeit="${stem}.time.txt" \
+    --timeit-header
+
+bam="Sample_CT10_7718_pIAA_Q_Nascent_S5.UMIs_trim.bam"
+stem="${bam%.bam}.group"
+scratch="/fh/scratch/delete30/tsukiyama_t"
+umi_tools group \
+    --paired \
+    --spliced-is-unique \
+    --unmapped-reads="use" \
+    --stdin="${bam}" \
+    --temp-dir="${scratch}" \
+    --group-out="${stem}.tsv" \
+    --log="${stem}.stdout.txt" \
+    --error="${stem}.stderr.txt" \
+    --timeit="${stem}.time.txt" \
+    --timeit-header
+
+echo "Done."
+```
+
 <a id="links-of-interestlearning-about-umi_tools"></a>
 ## Links of interest/learning about `umi_tools`
 - [Biostars: Tool to analyze bulk RNAseq data with UMI]([https://www.biostars.org/p/405375/)
 - [Biostars: Bulk RNA-Seq pipeline suggestion incorporating UMIs](https://www.biostars.org/p/413672/)
-- `#NOTE In particular, this post is helpful and suggests that how I called umi_tools initially is valid`
+- `#NOTE In particular, this post is helpful and suggests that how I initially called umi_tools is valid`
+- You studied up on [this post](https://dnatech.genomecenter.ucdavis.edu/faqs/should-i-remove-pcr-duplicates-from-my-rna-seq-data/), 'Should I remove PCR duplicates from my RNA-seq data?', in another post
+- [An important post](https://dnatech.genomecenter.ucdavis.edu/faqs/what-are-umis-and-why-are-they-used-in-high-throughput-sequencing/) related to, and part of the same series as, the above
+<br />
+<br />
+
+<a id="miscellaneous"></a>
+## Miscellaneous
+- MultiQC is not working with the output of `umi_tools`: Filed a GitHub issue [here](https://github.com/ewels/MultiQC/issues/1852)
+<br />
