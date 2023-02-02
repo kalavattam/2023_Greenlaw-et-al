@@ -88,6 +88,7 @@
         1. [Code *\(Window 2, 16 cores\)*](#code-window-2-16-cores)
     1. [Perform a trial run of `umi_tools dedup`](#perform-a-trial-run-of-umi_tools-dedup)
         1. [Code *\(Window 1&mdash;1 core, 100 GB RAM&mdash;hereafter\)*](#code-window-1mdash1-core-100-gb-rammdashhereafter)
+            1. [Scraps](#scraps)
 1. [Links of interest/learning about `umi_tools`](#links-of-interestlearning-about-umi_tools)
 1. [Miscellaneous](#miscellaneous)
 
@@ -5305,7 +5306,6 @@ cd test_UMI-processing_umi-tools/STAR \
 
 source activate Trinity_env
 ml UMI-tools/1.0.1-foss-2019b-Python-3.7.4
-ml SAMtools/1.16.1-GCC-11.2.0
 ```
 </details>
 <br />
@@ -5458,7 +5458,7 @@ umi_tools dedup \
 # ValueError: Cannot use --unmapped-reads=output. If you want to retain unmapped without deduplicating them, use the group command
 
 
-#  Adjusting parameters, retaining but not processing unmapped reads ----------
+#  Adjusting parameters, retaining and processing unmapped reads --------------
 #+ The difference fr/the above: Using --unmapped-reads="use" as opposed to
 #+ --unmapped-reads="output", which results in the above-noted error
 #+ 
@@ -5543,6 +5543,8 @@ mv *.group.* umi-tools_group_adjusted_rm-unmapped_5782/
 <br />
 <br />
 
+<a id="scraps"></a>
+##### Scraps
 *Scraps&mdash;to be organized*
 ```bash
 bam="Sample_CT10_7718_pIAA_Q_Nascent_S5.UMIs_trim.bam"
@@ -5621,6 +5623,64 @@ umi_tools group \
     --timeit-header
 
 echo "Done."
+
+#  Re: Bowtie 2-aligned datasets
+cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0115/test_UMI-processing_umi-tools/Bowtie2"
+
+for i in *.bam; do
+    echo "### ${i} ###"
+    echo ""
+
+    echo "## Basic parameters with filtering out of unmapped reads ##"
+    bam="${i}"
+    scratch="/fh/scratch/delete30/tsukiyama_t"
+    umi_tools dedup \
+        --paired \
+        --stdin="${bam}" \
+        --stdout="${bam%.bam}.dedu-basic.bam" \
+        --temp-dir="${scratch}" \
+        --output-stats="${bam%.bam}.dedu-basic.stats" \
+        --log="${bam%.bam}.dedu-basic.stdout.txt" \
+        --error="${bam%.bam}.dedu-basic.stderr.txt" \
+        --timeit="${bam%.bam}.dedu-basic.time.txt" \
+        --timeit-header
+    echo ""
+
+    echo "## Adjusting parameters, retaining and processing unmapped reads ##"
+    bam="${i}"
+    scratch="/fh/scratch/delete30/tsukiyama_t"
+    umi_tools dedup \
+        --paired \
+        --spliced-is-unique \
+        --unmapped-reads="use" \
+        --stdin="${bam}" \
+        --stdout="${bam%.bam}.dedu-adjusted.bam" \
+        --temp-dir="${scratch}" \
+        --output-stats="${bam%.bam}.dedu-adjusted.stats" \
+        --log="${bam%.bam}.dedu-adjusted.stdout.txt" \
+        --error="${bam%.bam}.dedu-adjusted.stderr.txt" \
+        --timeit="${bam%.bam}.dedu-adjusted.time.txt" \
+        --timeit-header
+    echo ""
+
+    echo "## Running umi_tools group ##"
+    bam="${i}"
+    stem="${bam%.bam}.group"
+    scratch="/fh/scratch/delete30/tsukiyama_t"
+    umi_tools group \
+        --paired \
+        --spliced-is-unique \
+        --unmapped-reads="use" \
+        --stdin="${bam}" \
+        --temp-dir="${scratch}" \
+        --group-out="${stem}.tsv" \
+        --log="${stem}.stdout.txt" \
+        --error="${stem}.stderr.txt" \
+        --timeit="${stem}.time.txt" \
+        --timeit-header
+    echo ""
+    echo ""
+done
 ```
 
 <a id="links-of-interestlearning-about-umi_tools"></a>
