@@ -86,9 +86,10 @@
         1. [Code](#code-22)
     1. [Index `.bam`s \(serially\)](#index-bams-serially)
         1. [Code *\(Window 2, 16 cores\)*](#code-window-2-16-cores)
-    1. [Perform a trial run of `umi_tools dedup`](#perform-a-trial-run-of-umi_tools-dedup)
+    1. [Perform a trial run of `umi_tools dedup` and `umi_tools group`](#perform-a-trial-run-of-umi_tools-dedup-and-umi_tools-group)
         1. [Code *\(Window 1&mdash;1 core, 100 GB RAM&mdash;hereafter\)*](#code-window-1mdash1-core-100-gb-rammdashhereafter)
-            1. [Scraps](#scraps)
+    1. [How do the results compare to `picard MarkDuplicates`?](#how-do-the-results-compare-to-picard-markduplicates)
+        1. [Code](#code-23)
 1. [Links of interest/learning about `umi_tools`](#links-of-interestlearning-about-umi_tools)
 1. [Miscellaneous](#miscellaneous)
 
@@ -5271,8 +5272,7 @@ script
 #DONTRUN #CONTINUE
 
 sbatch "${store_lists}/${script_submit}"
-
-cd ${store_err_out} && .,f | tail -20
+# cd ${store_err_out} && .,f | tail -20 && cd -
 ```
 </details>
 <br />
@@ -5332,8 +5332,8 @@ done
 </details>
 <br />
 
-<a id="perform-a-trial-run-of-umi_tools-dedup"></a>
-### Perform a trial run of `umi_tools dedup`
+<a id="perform-a-trial-run-of-umi_tools-dedup-and-umi_tools-group"></a>
+### Perform a trial run of `umi_tools dedup` and `umi_tools group`
 <a id="code-window-1mdash1-core-100-gb-rammdashhereafter"></a>
 #### Code *(Window 1&mdash;1 core, 100 GB RAM&mdash;hereafter)*
 <details>
@@ -5344,307 +5344,28 @@ done
 #!/bin/bash
 #DONTRUN #CONTINUE
 
-#  Basic parameters with filtering out of unmapped reads ----------------------
-#+ 
-#+ Here, the UMI grouping method is 'directional', which is the program default
-#+ 
-#+ 5782-U
-bam="5782_Q_IN_S8.UMIs.bam"
-scratch="/fh/scratch/delete30/tsukiyama_t"
-umi_tools dedup \
-    --paired \
-    --stdin="${bam}" \
-    --stdout="${bam%.bam}.dedu.bam" \
-    --temp-dir="${scratch}" \
-    --output-stats="${bam%.bam}.stats" \
-    --log="${bam%.bam}.stdout.txt" \
-    --error="${bam%.bam}.stderr.txt" \
-    --timeit="${bam%.bam}.time.txt" \
-    --timeit-header
+#  Run the below loop in the following two directories
+#+   - ${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0115/test_UMI-processing_umi-tools/STAR
+#+   - ${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0115/test_UMI-processing_umi-tools/Bowtie2
 
-#+ 5782-U-T
-bam="5782_Q_IN_S8.UMIs_trim.bam"
-scratch="/fh/scratch/delete30/tsukiyama_t"
-umi_tools dedup \
-    --paired \
-    --stdin="${bam}" \
-    --stdout="${bam%.bam}.dedu.bam" \
-    --temp-dir="${scratch}" \
-    --output-stats="${bam%.bam}.stats" \
-    --log="${bam%.bam}.stdout.txt" \
-    --error="${bam%.bam}.stderr.txt" \
-    --timeit="${bam%.bam}.time.txt" \
-    --timeit-header
-
-mkdir umi-tools_dedup_basic_rm-unmapped_5782/
-mv *.time.txt \
-    *.dedu.bam \
-    *.std{out,err}.txt \
-    5782_Q_IN_S8.UMIs*stats*tsv \
-        umi-tools_basic_rm-unmapped_5782/
-
-#+ 7718-U
-bam="Sample_CT10_7718_pIAA_Q_Nascent_S5.UMIs.bam"
-scratch="/fh/scratch/delete30/tsukiyama_t"
-umi_tools dedup \
-    --paired \
-    --stdin="${bam}" \
-    --stdout="${bam%.bam}.dedu.bam" \
-    --temp-dir="${scratch}" \
-    --output-stats="${bam%.bam}.stats" \
-    --log="${bam%.bam}.stdout.txt" \
-    --error="${bam%.bam}.stderr.txt" \
-    --timeit="${bam%.bam}.time.txt" \
-    --timeit-header
-
-#+ 7718-U-T
-bam="Sample_CT10_7718_pIAA_Q_Nascent_S5.UMIs_trim.bam"
-scratch="/fh/scratch/delete30/tsukiyama_t"
-umi_tools dedup \
-    --paired \
-    --stdin="${bam}" \
-    --stdout="${bam%.bam}.dedu.bam" \
-    --temp-dir="${scratch}" \
-    --output-stats="${bam%.bam}.stats" \
-    --log="${bam%.bam}.stdout.txt" \
-    --error="${bam%.bam}.stderr.txt" \
-    --timeit="${bam%.bam}.time.txt" \
-    --timeit-header
-
-#  Adjusting parameters, retaining but not processing unmapped reads ----------
-#+ 
-#+ 5782-U
-# bam="5782_Q_IN_S8.UMIs.bam"
-# scratch="/fh/scratch/delete30/tsukiyama_t"
-# umi_tools dedup \
-#     --paired \
-#     --spliced-is-unique \
-#     --unmapped-reads="output" \
-#     --stdin="${bam}" \
-#     --stdout="${bam%.bam}.dedu.bam" \
-#     --temp-dir="${scratch}" \
-#     --output-stats="${bam%.bam}.stats" \
-#     --log="${bam%.bam}.stdout.txt" \
-#     --error="${bam%.bam}.stderr.txt" \
-#     --timeit="${bam%.bam}.time.txt" \
-#     --timeit-header
-#
-# #+ 5782-U-T
-# bam="5782_Q_IN_S8.UMIs_trim.bam"
-# scratch="/fh/scratch/delete30/tsukiyama_t"
-# umi_tools dedup \
-#     --paired \
-#     --spliced-is-unique \
-#     --unmapped-reads="output" \
-#     --stdin="${bam}" \
-#     --stdout="${bam%.bam}.dedu.bam" \
-#     --temp-dir="${scratch}" \
-#     --output-stats="${bam%.bam}.stats" \
-#     --log="${bam%.bam}.stdout.txt" \
-#     --error="${bam%.bam}.stderr.txt" \
-#     --timeit="${bam%.bam}.time.txt" \
-#     --timeit-header
-
-#NOTE Can't call umi_tools dedup in the above manner:
-# Traceback (most recent call last):
-#   File "/app/software/UMI-tools/1.0.1-foss-2019b-Python-3.7.4/bin/umi_tools", line 8, in <module>
-#     sys.exit(main())
-#   File "/app/software/UMI-tools/1.0.1-foss-2019b-Python-3.7.4/lib/python3.7/site-packages/umi_tools/umi_tools.py", line 61, in main
-#     module.main(sys.argv)
-#   File "/app/software/UMI-tools/1.0.1-foss-2019b-Python-3.7.4/lib/python3.7/site-packages/umi_tools/dedup.py", line 154, in main
-#     U.validateSamOptions(options, group=False)
-#   File "/app/software/UMI-tools/1.0.1-foss-2019b-Python-3.7.4/lib/python3.7/site-packages/umi_tools/Utilities.py", line 1182, in validateSamOptions
-#     raise ValueError("Cannot use --unmapped-reads=output. If you want "
-# ValueError: Cannot use --unmapped-reads=output. If you want to retain unmapped without deduplicating them, use the group command
-
-
-#  Adjusting parameters, retaining and processing unmapped reads --------------
-#+ The difference fr/the above: Using --unmapped-reads="use" as opposed to
-#+ --unmapped-reads="output", which results in the above-noted error
-#+ 
-#+ 5782-U
-bam="5782_Q_IN_S8.UMIs.bam"
-scratch="/fh/scratch/delete30/tsukiyama_t"
-umi_tools dedup \
-    --paired \
-    --spliced-is-unique \
-    --unmapped-reads="use" \
-    --stdin="${bam}" \
-    --stdout="${bam%.bam}.dedu.bam" \
-    --temp-dir="${scratch}" \
-    --output-stats="${bam%.bam}.stats" \
-    --log="${bam%.bam}.stdout.txt" \
-    --error="${bam%.bam}.stderr.txt" \
-    --timeit="${bam%.bam}.time.txt" \
-    --timeit-header
-
-#+ 5782-U-T
-bam="5782_Q_IN_S8.UMIs_trim.bam"
-scratch="/fh/scratch/delete30/tsukiyama_t"
-umi_tools dedup \
-    --paired \
-    --spliced-is-unique \
-    --unmapped-reads="use" \
-    --stdin="${bam}" \
-    --stdout="${bam%.bam}.dedu.bam" \
-    --temp-dir="${scratch}" \
-    --output-stats="${bam%.bam}.stats" \
-    --log="${bam%.bam}.stdout.txt" \
-    --error="${bam%.bam}.stderr.txt" \
-    --timeit="${bam%.bam}.time.txt" \
-    --timeit-header
-
-mkdir umi-tools_dedup_adjusted_rm-unmapped_5782/
-mv *.time.txt \
-    *.dedu.bam \
-    *.std{out,err}.txt \
-    5782_Q_IN_S8.UMIs*stats*tsv \
-        umi-tools_adjusted_rm-unmapped_5782/
-
-
-#  Running umi_tools group ----------------------------------------------------
-#+ 5782-U
-bam="5782_Q_IN_S8.UMIs.bam"
-stem="${bam%.bam}.group"
-scratch="/fh/scratch/delete30/tsukiyama_t"
-umi_tools group \
-    --paired \
-    --spliced-is-unique \
-    --unmapped-reads="use" \
-    --stdin="${bam}" \
-    --temp-dir="${scratch}" \
-    --group-out="${stem}.tsv" \
-    --log="${stem}.stdout.txt" \
-    --error="${stem}.stderr.txt" \
-    --timeit="${stem}.time.txt" \
-    --timeit-header
-
-#+ 5782-U-T
-bam="5782_Q_IN_S8.UMIs_trim.bam"
-stem="${bam%.bam}.group"
-scratch="/fh/scratch/delete30/tsukiyama_t"
-umi_tools group \
-    --paired \
-    --spliced-is-unique \
-    --unmapped-reads="use" \
-    --stdin="${bam}" \
-    --temp-dir="${scratch}" \
-    --group-out="${stem}.tsv" \
-    --log="${stem}.stdout.txt" \
-    --error="${stem}.stderr.txt" \
-    --timeit="${stem}.time.txt" \
-    --timeit-header
-
-for i in *.tsv; do gzip "${i}"; done
-mkdir umi-tools_group_adjusted_rm-unmapped_5782/
-mv *.group.* umi-tools_group_adjusted_rm-unmapped_5782/
-```
-</details>
-<br />
-<br />
-
-<a id="scraps"></a>
-##### Scraps
-*Scraps&mdash;to be organized*
-```bash
-bam="Sample_CT10_7718_pIAA_Q_Nascent_S5.UMIs_trim.bam"
-scratch="/fh/scratch/delete30/tsukiyama_t"
-umi_tools dedup \
-    --paired \
-    --stdin="${bam}" \
-    --stdout="${bam%.bam}.dedu.bam" \
-    --temp-dir="${scratch}" \
-    --output-stats="${bam%.bam}.stats" \
-    --log="${bam%.bam}.stdout.txt" \
-    --error="${bam%.bam}.stderr.txt" \
-    --timeit="${bam%.bam}.time.txt" \
-    --timeit-header
-
-# -------
-bam="Sample_CT10_7718_pIAA_Q_Nascent_S5.UMIs.bam"
-scratch="/fh/scratch/delete30/tsukiyama_t"
-umi_tools dedup \
-    --paired \
-    --spliced-is-unique \
-    --unmapped-reads="use" \
-    --stdin="${bam}" \
-    --stdout="${bam%.bam}.dedu.bam" \
-    --temp-dir="${scratch}" \
-    --output-stats="${bam%.bam}.stats" \
-    --log="${bam%.bam}.stdout.txt" \
-    --error="${bam%.bam}.stderr.txt" \
-    --timeit="${bam%.bam}.time.txt" \
-    --timeit-header
-
-bam="Sample_CT10_7718_pIAA_Q_Nascent_S5.UMIs_trim.bam"
-scratch="/fh/scratch/delete30/tsukiyama_t"
-umi_tools dedup \
-    --paired \
-    --spliced-is-unique \
-    --unmapped-reads="use" \
-    --stdin="${bam}" \
-    --stdout="${bam%.bam}.dedu.bam" \
-    --temp-dir="${scratch}" \
-    --output-stats="${bam%.bam}.stats" \
-    --log="${bam%.bam}.stdout.txt" \
-    --error="${bam%.bam}.stderr.txt" \
-    --timeit="${bam%.bam}.time.txt" \
-    --timeit-header
-
-# -------
-bam="Sample_CT10_7718_pIAA_Q_Nascent_S5.UMIs.bam"
-stem="${bam%.bam}.group"
-scratch="/fh/scratch/delete30/tsukiyama_t"
-umi_tools group \
-    --paired \
-    --spliced-is-unique \
-    --unmapped-reads="use" \
-    --stdin="${bam}" \
-    --temp-dir="${scratch}" \
-    --group-out="${stem}.tsv" \
-    --log="${stem}.stdout.txt" \
-    --error="${stem}.stderr.txt" \
-    --timeit="${stem}.time.txt" \
-    --timeit-header
-
-bam="Sample_CT10_7718_pIAA_Q_Nascent_S5.UMIs_trim.bam"
-stem="${bam%.bam}.group"
-scratch="/fh/scratch/delete30/tsukiyama_t"
-umi_tools group \
-    --paired \
-    --spliced-is-unique \
-    --unmapped-reads="use" \
-    --stdin="${bam}" \
-    --temp-dir="${scratch}" \
-    --group-out="${stem}.tsv" \
-    --log="${stem}.stdout.txt" \
-    --error="${stem}.stderr.txt" \
-    --timeit="${stem}.time.txt" \
-    --timeit-header
-
-echo "Done."
-
-#  Re: Bowtie 2-aligned datasets
-cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0115/test_UMI-processing_umi-tools/Bowtie2"
-
-for i in *.bam; do
+for i in *UMIs*.bam; do
     echo "### ${i} ###"
     echo ""
 
-    echo "## Basic parameters with filtering out of unmapped reads ##"
-    bam="${i}"
-    scratch="/fh/scratch/delete30/tsukiyama_t"
-    umi_tools dedup \
-        --paired \
-        --stdin="${bam}" \
-        --stdout="${bam%.bam}.dedu-basic.bam" \
-        --temp-dir="${scratch}" \
-        --output-stats="${bam%.bam}.dedu-basic.stats" \
-        --log="${bam%.bam}.dedu-basic.stdout.txt" \
-        --error="${bam%.bam}.dedu-basic.stderr.txt" \
-        --timeit="${bam%.bam}.dedu-basic.time.txt" \
-        --timeit-header
-    echo ""
+    # echo "## Basic parameters with filtering out of unmapped reads ##"
+    # bam="${i}"
+    # scratch="/fh/scratch/delete30/tsukiyama_t"
+    # umi_tools dedup \
+    #     --paired \
+    #     --stdin="${bam}" \
+    #     --stdout="${bam%.bam}.dedu-basic.bam" \
+    #     --temp-dir="${scratch}" \
+    #     --output-stats="${bam%.bam}.dedu-basic.stats" \
+    #     --log="${bam%.bam}.dedu-basic.stdout.txt" \
+    #     --error="${bam%.bam}.dedu-basic.stderr.txt" \
+    #     --timeit="${bam%.bam}.dedu-basic.time.txt" \
+    #     --timeit-header
+    # echo ""
 
     echo "## Adjusting parameters, retaining and processing unmapped reads ##"
     bam="${i}"
@@ -5663,7 +5384,7 @@ for i in *.bam; do
         --timeit-header
     echo ""
 
-    echo "## Running umi_tools group ##"
+    echo "## Running umi_tools group (with the adjusted parameters) ##"
     bam="${i}"
     stem="${bam%.bam}.group"
     scratch="/fh/scratch/delete30/tsukiyama_t"
@@ -5680,8 +5401,40 @@ for i in *.bam; do
         --timeit-header
     echo ""
     echo ""
+
+    for i in *.tsv *.txt; do gzip "${i}"; done
 done
 ```
+</details>
+<br />
+
+<a id="how-do-the-results-compare-to-picard-markduplicates"></a>
+### How do the results compare to `picard MarkDuplicates`?
+<a id="code-23"></a>
+#### Code
+<details>
+<summary><i>Code: </i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+module purge
+ml picard/2.25.1-Java-11
+
+for i in *.bam; do
+    echo "## ${i} ##"
+    bam="${i}"
+    java -jar "${EBROOTPICARD}/picard.jar" \
+        MarkDuplicates \
+            -I "${bam}" \
+            -O "${bam%.bam}.mark-dup.bam" \
+            -M "${bam%.bam}.mark-dup.met.txt"
+done
+```
+</details>
+<br />
+<br />
 
 <a id="links-of-interestlearning-about-umi_tools"></a>
 ## Links of interest/learning about `umi_tools`

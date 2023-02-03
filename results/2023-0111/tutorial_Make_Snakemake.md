@@ -28,6 +28,7 @@
 ## Notes
 - Following along with information [here](https://vincebuffalo.com/blog/2020/03/04/understanding-snakemake.html), "Understanding Snakemake," by Vince Buffalo, 2020-03-04
 - Run on local machine
+- Important details on Bioinformatics workflows, and how they differ from general data workflows, [here](https://www.bsiranosian.com/bioinformatics/why-are-bioinformatics-workflows-different/)
 <br />
 <br />
 
