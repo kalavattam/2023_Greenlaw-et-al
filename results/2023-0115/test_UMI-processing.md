@@ -90,6 +90,10 @@
         1. [Code *\(Window 1&mdash;1 core, 100 GB RAM&mdash;hereafter\)*](#code-window-1mdash1-core-100-gb-rammdashhereafter)
     1. [How do the results compare to `picard MarkDuplicates`?](#how-do-the-results-compare-to-picard-markduplicates)
         1. [Code](#code-23)
+    1. [How do the numbers of alignments compare...](#how-do-the-numbers-of-alignments-compare)
+        1. [Code](#code-24)
+    1. [Assess values for `umi_tools`-treated data](#assess-values-for-umi_tools-treated-data)
+        1. [Code](#code-25)
 1. [Links of interest/learning about `umi_tools`](#links-of-interestlearning-about-umi_tools)
 1. [Miscellaneous](#miscellaneous)
 
@@ -5413,7 +5417,7 @@ done
 <a id="code-23"></a>
 #### Code
 <details>
-<summary><i>Code: </i></summary>
+<summary><i>Code: How do the results compare to picard MarkDuplicates?</i></summary>
 
 ```bash
 #!/bin/bash
@@ -5431,6 +5435,133 @@ for i in *.bam; do
             -O "${bam%.bam}.mark-dup.bam" \
             -M "${bam%.bam}.mark-dup.met.txt"
 done
+```
+</details>
+<br />
+
+<a id="how-do-the-numbers-of-alignments-compare"></a>
+### How do the numbers of alignments compare...
+between *positional-`AND`-UMI deduplication* and *positional-`NOT`-UMI deduplication*? Want an explicit readout of this...
+
+<a id="code-24"></a>
+#### Code
+<details>
+<summary><i>Code: How do the numbers of alignments compare between positional-AND-UMI deduplication and positional-NOT-UMI deduplication?</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+module purge
+ml UMI-tools/1.0.1-foss-2019b-Python-3.7.4
+
+cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0115/test_UMI-processing_umi-tools" \
+    || echo "cd'ing failed; check on this"
+
+cd STAR/ \
+    || echo "cd'ing failed; check on this"
+
+for i in *UMIs*.bam; do
+    echo "### ${i} ###"
+    echo ""
+
+    echo "## Adjusting parameters, retaining and processing unmapped reads ##"
+    bam="${i}"
+    scratch="/fh/scratch/delete30/tsukiyama_t"
+    umi_tools dedup \
+        --ignore-umi \
+        --paired \
+        --spliced-is-unique \
+        --unmapped-reads="use" \
+        --stdin="${bam}" \
+        --stdout="${bam%.bam}.pos-only.bam" \
+        --temp-dir="${scratch}" \
+        --log="${bam%.bam}.pos-only.stdout.txt" \
+        --error="${bam%.bam}.pos-only.stderr.txt" \
+        --timeit="${bam%.bam}.pos-only.time.txt" \
+        --timeit-header
+    echo ""
+    echo ""
+
+    for i in *.tsv *.txt; do gzip "${i}"; done
+done
+
+cd ../Bowtie2/ \
+    || echo "cd'ing failed; check on this"
+
+for i in *UMIs*.bam; do
+    echo "### ${i} ###"
+    echo ""
+
+    echo "## Adjusting parameters, retaining and processing unmapped reads ##"
+    bam="${i}"
+    scratch="/fh/scratch/delete30/tsukiyama_t"
+    umi_tools dedup \
+        --ignore-umi \
+        --paired \
+        --spliced-is-unique \
+        --unmapped-reads="use" \
+        --stdin="${bam}" \
+        --stdout="${bam%.bam}.pos-only.bam" \
+        --temp-dir="${scratch}" \
+        --log="${bam%.bam}.pos-only.stdout.txt" \
+        --error="${bam%.bam}.pos-only.stderr.txt" \
+        --timeit="${bam%.bam}.pos-only.time.txt" \
+        --timeit-header
+    echo ""
+    echo ""
+
+    for i in *.tsv *.txt; do gzip "${i}"; done
+done
+```
+</details>
+<br />
+
+<a id="assess-values-for-umi_tools-treated-data"></a>
+### Assess values for `umi_tools`-treated data
+<a id="code-25"></a>
+#### Code
+<details>
+<summary><i>Code: Assess values for umi_tools-treated data</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0115/test_UMI-processing_umi-tools/" \
+    || echo "cd'ing failed; check on this"
+Trinity_env
+
+unset bams_b
+typeset -a bams_b
+while IFS=" " read -r -d $'\0'; do
+    bams_b+=( "${REPLY}" )
+done < <(\
+    find "./Bowtie2" \
+        -type f \
+        \( -name *".bam" ! -name *".mark-dup.bam" \) \
+        -print0 \
+            | sort -z \
+)
+echoTest "${bams_b[@]}"
+echo "${#bams_b[@]}"
+
+echo "${bams_b["${#bams_b[@]}"]}"
+
+file="counts_Bowtie2.txt"
+if [[ -f "${file}" ]]; then rm "${file}"; fi
+touch "${file}" \
+    && echo "aligner"$'\t'"sample" >> "${file}"
+
+for i in $(seq 0 "${#bams_b[@]}"); do
+    echo "## ${i} ##"
+    aligner="$(dirname "${bams_b["${i}"]}" | sed 's/\.\///g')"
+    sample="$(echo "$(basename "${bams_b["${i}"]}")")"
+    count="$(samtools view -c "${bams_b["${i}"]}")"
+
+    echo "${aligner}"$'\t'"${sample}"$'\t'"${count}" >> "${file}"
+done
+cat "${file}"
 ```
 </details>
 <br />

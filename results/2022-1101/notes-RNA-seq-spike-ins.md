@@ -7,31 +7,44 @@
 <summary><b><font size="+2">Table of Contents</font></b></summary>
 <!-- MarkdownTOC -->
 
-1. [RNA-seq: Information on bamCoverage, spike-ins with DESeq2](#rna-seq-information-on-bamcoverage-spike-ins-with-deseq2)
-    1. [Looking into the use of bamCoverage with RNA-seq data](#looking-into-the-use-of-bamcoverage-with-rna-seq-data)
+1. [RNA-seq: Information on `bamCoverage`, spike-ins with `DESeq2`](#rna-seq-information-on-bamcoverage-spike-ins-with-deseq2)
+    1. [Looking into the use of `bamCoverage` with RNA-seq data](#looking-into-the-use-of-bamcoverage-with-rna-seq-data)
     1. [Looking into the use of spike-ins prior to running `DESeq2`](#looking-into-the-use-of-spike-ins-prior-to-running-deseq2)
         1. [Related email from me to Alison](#related-email-from-me-to-alison)
         1. [Moving forward](#moving-forward)
             1. [Related email from me to Alison](#related-email-from-me-to-alison-1)
 1. [On how to use `DESeq2` with KL-normalized data](#on-how-to-use-deseq2-with-kl-normalized-data)
-    1. [Message to Mike Love, author of DESeq2](#message-to-mike-love-author-of-deseq2)
+    1. [First message to Mike Love, author of DESeq2](#first-message-to-mike-love-author-of-deseq2)
+    1. [Second message to Mike Love, author of DESeq2](#second-message-to-mike-love-author-of-deseq2)
+        1. [Final](#final)
+        1. [Second](#second)
+        1. [Original](#original)
     1. [Message fr/AG](#message-frag)
     1. [More message w/AG regarding normalization](#more-message-wag-regarding-normalization)
     1. [Messages with Matt and AG regarding UMI deduplication](#messages-with-matt-and-ag-regarding-umi-deduplication)
     1. [Another one for UMIs](#another-one-for-umis)
     1. [Another UMI one](#another-umi-one)
-    1. [Notes from discussing things with AG as I put together the message to Bioconductor/Mike Love](#notes-from-discussing-things-with-ag-as-i-put-together-the-message-to-bioconductormike-love)
+    1. [Notes from discussing things with AG as I put together the first message to `Bioconductor`/Mike Love](#notes-from-discussing-things-with-ag-as-i-put-together-the-first-message-to-bioconductormike-love)
+1. [Open tabs related to QC `#TBO`](#open-tabs-related-to-qc-tbo)
+1. [Links `#TBO`](#links-tbo)
+    1. [Materials examined when formulating `Bioconductor` posts](#materials-examined-when-formulating-bioconductor-posts)
+        1. [`Bioconductor` posts](#bioconductor-posts)
+        1. [`DESeq2` vignette](#deseq2-vignette)
+        1. [`rdrr.io`](#rdrrio)
+    1. [`Biostars`](#biostars)
+    1. [Material to further look into](#material-to-further-look-into)
+1. [Email chains `#TBO`](#email-chains-tbo)
 
 <!-- /MarkdownTOC -->
 </details>
 <br />
 
 <a id="rna-seq-information-on-bamcoverage-spike-ins-with-deseq2"></a>
-## RNA-seq: Information on bamCoverage, spike-ins with DESeq2
+## RNA-seq: Information on `bamCoverage`, spike-ins with `DESeq2`
 <a id="looking-into-the-use-of-bamcoverage-with-rna-seq-data"></a>
-### Looking into the use of bamCoverage with RNA-seq data
+### Looking into the use of `bamCoverage` with RNA-seq data
 <a id="todo-return-to-this-line-of-thinking-later-for-now-focus-on-pcr-deduplication-using-umi-tools-and-the-umi-containing-fastq-files-from-fhcc-bioinformatics"></a>
-`#TODO` Return to this line of thinking later; for now, focus on PCR deduplication using UMI-tools and the UMI-containing `.fastq` files from FHCC Bioinformatics
+`#TODO` Return to this line of thinking later; for now, focus on PCR deduplication using `umi_tools` and the UMI-containing `.fastq` files from FHCC Bioinformatics
 - [Purpose of bamCoverage RPKM normalization methods](https://www.biostars.org/p/9474318/)
 - [bamCoverage and RNA-seq data](https://github.com/deeptools/deepTools/issues/401)
 - [Normalization with deepTools](https://www.biostars.org/p/473442/)
@@ -91,9 +104,8 @@ While walking around, it occurred to me that you could filter the counts matrix 
 <a id="on-how-to-use-deseq2-with-kl-normalized-data"></a>
 ## On how to use `DESeq2` with KL-normalized data
 
-<a id="message-to-mike-love-author-of-deseq2"></a>
-### Message to Mike Love, author of DESeq2
-
+<a id="first-message-to-mike-love-author-of-deseq2"></a>
+### First message to Mike Love, author of DESeq2
 [Link](https://support.bioconductor.org/p/9149000/)
 
 Hi,
@@ -128,43 +140,97 @@ We'll greatly appreciate any input or advice you can give us. Thank you!
 
 -Kris
 
+<a id="second-message-to-mike-love-author-of-deseq2"></a>
+### Second message to Mike Love, author of DESeq2
+<a id="final"></a>
+#### Final
+[Link](https://support.bioconductor.org/p/9149231/)
+
+Hi,
+
+I want to clarify what is going on under the hood when a user runs `DESeq2::estimateSizeFactors()` with the `controlGenes` argument. So, if my understanding is correct, all the steps of size-factor estimation take place, except they are applied only to the genes assigned to `controlGenes` (except for the final step, which is to apply the calculated size factor to all sample-wise genes) rather than the default of all genes supplied to `DESeq2::estimateSizeFactors()`—is that right?
+
+*A related follow up question:* Are there any circumstances in which a user that has spike-in `controlGenes` for their samples would ***not*** want to use them?
+
+Thanks,  
+Kris
+
+<a id="second"></a>
+#### Second
+Hi,
+
+I want to clarify what is going on under the hood when a user runs `DESeq2::estimateSizeFactors()` with the `controlGenes` argument. So, if my understanding is correct, all the steps of size-factor estimation take place, except they are applied only to the genes assigned to `controlGenes` (except for the final step, which is to apply the calculated size factor to all sample-wise genes) rather than the default of all genes supplied to `DESeq2::estimateSizeFactors()`—is that right?
+
+A related follow up question: Are there any circumstances in which a user that has spike-in controlGenes for their samples would not want to use them?
+
+For example, we have both *nascent* and *steady-state* RNA-seq data for cycling cells (**C**) and non-cycling cells (**N**). The four samples are spiked with cells from a different species, and these spike-in cells are cycling. We want to perform differential gene expression analyses for **N** versus **C**. We know ahead of time that **N** has markedly lower and different transcription than **C**. They think that it is not appropriate to use the spike-in cells (which are cycling) for `controlGene`-styled size-factor estimation because of this comparison between non-cycling and cycling cells. My thinking is that, because they're expected to be stable across conditions, they ***should*** be used for *steady-state* **N** versus *steady-state* **C**, and *nascent* **N** versus *nascent* **C**. Is this reasonable?
+
+What I am less sure about is steady *steady-state* **N** versus *nascent* **C**, and *nascent* **N** versus *steady-state* **C**—because I am not sure that *nascent* and *steady-state* transcription in the spike-ins is stable across conditions. Is this a situation where a user would not want to use the `controlGene`s? 
+
+Thanks,  
+Kris
+
+<a id="original"></a>
+#### Original
+Hi,
+
+I want to clarify what is going on under the hood when a user runs `DESeq2::estimateSizeFactors()` with the `controlGenes` argument. So, if my understanding is correct, all the steps of size-factor estimation take place, except they are applied only to the genes assigned to `controlGenes` (except for step 7 below, which is applied to all sample-wise genes) rather than the default of all genes supplied to `DESeq2::estimateSizeFactors()`—is that right?
+
+So, put another way, use the `controlGenes`, rather than all genes, to do the following steps:
+1. log-transform values
+2. average e/row (geometric mean)
+3. filter out genes with undefined values
+4. subtract row-wise geometric mean fr/log-transformed values
+5. take sample-wise median
+6. transform median from log to "normal"; resulting value is the scaling factor
+7. for each sample, divide original read count by the related scaling factor
+
+*A related follow up question:* Are there any circumstances in which a user that has spike-in `controlGenes` for their samples would ***not*** want to use them?
+
+For example, my colleagues have generated RNA-seq data for cycling cells (**C**) and non-cycling cells (**N**). Both samples are spiked with cells from a different species, and these spike-in cells are cycling. We want to perform differential gene expression analyses for **N** versus **C**. We know ahead of time that **N** has markedly lower and different transcription than **C**. They think that it is not appropriate to use the spike-in cells (which are cycling) for `controlGene`-styled size-factor estimation because of this comparison between non-cycling and cycling cells. Is this indeed a situation where a user would not want to use `controlGene`-styled size-factor estimation?
+
+Thanks,  
+Kris
+
+
 <a id="message-frag"></a>
 ### Message fr/AG
 https://support.bioconductor.org/p/88763/
 
-This suggests EdgeR is better for non-interger counts. I am going mess around with getting EdgeR to run in case this is the approach we want. 
+This suggests `EdgeR` is better for non-integer counts. I am going mess around with getting `EdgeR` to run in case this is the approach we want. 
 
 Alison 
 
 
 <a id="more-message-wag-regarding-normalization"></a>
 ### More message w/AG regarding normalization
-Message submitted to the Bioconductor forum, which is frequented by Mike Love, the author of DESeq2: https://support.bioconductor.org/p/9149000/
+Message submitted to the `Bioconductor` forum, which is frequented by Mike Love, the author of DESeq2: https://support.bioconductor.org/p/9149000/
  
-From: Greenlaw, Alison C <agreenla@fredhutch.org>
-Date: Monday, January 23, 2023 at 11:12 AM
-To: Alavattam, Kris <kalavatt@fredhutch.org>
+From: Greenlaw, Alison C <agreenla@fredhutch.org>  
+Date: Monday, January 23, 2023 at 11:12 AM  
+To: Alavattam, Kris <kalavatt@fredhutch.org>  
 Subject: Re: Deseq2 math (is confusing)
 
 That’s great news, as I have been thinking about this a lot. Looking forward to another perspective! 
  
-Alison 
-From: Alavattam, Kris <kalavatt@fredhutch.org>
-Sent: Monday, January 23, 2023 11:09:17 AM
-To: Greenlaw, Alison C <agreenla@fredhutch.org>
+Alison
+
+From: Alavattam, Kris <kalavatt@fredhutch.org>  
+Sent: Monday, January 23, 2023 11:09:17 AM  
+To: Greenlaw, Alison C <agreenla@fredhutch.org>  
 Subject: Re: Deseq2 math (is confusing)
  
 Hi Alison,
  
 Talked with Toshi about it a bit this morning. Probably easier to just chat about this stuff together when you come in.
  
-Thanks,
+Thanks,  
 Kris
  
  
-From: Greenlaw, Alison C <agreenla@fredhutch.org>
-Date: Friday, January 20, 2023 at 6:44 PM
-To: Alavattam, Kris <kalavatt@fredhutch.org>
+From: Greenlaw, Alison C <agreenla@fredhutch.org>  
+Date: Friday, January 20, 2023 at 6:44 PM  
+To: Alavattam, Kris <kalavatt@fredhutch.org>  
 Subject: Deseq2 math (is confusing)
 
 Hi Kris - 
@@ -192,41 +258,43 @@ Ah, I understand. Thanks for explaining!
  
 -Kris
  
-From: Fitzgibbon, Matthew P <mfitzgib@fredhutch.org>
-Date: Friday, January 20, 2023 at 3:39 PM
-To: Alavattam, Kris <kalavatt@fredhutch.org>, Greenlaw, Alison C <agreenla@fredhutch.org>
+From: Fitzgibbon, Matthew P <mfitzgib@fredhutch.org>  
+Date: Friday, January 20, 2023 at 3:39 PM  
+To: Alavattam, Kris <kalavatt@fredhutch.org>, Greenlaw, Alison C <agreenla@fredhutch.org>  
 Subject: Re: UMI question + small update
 
 Hi Kris, No, the "/shared/ngs/illumina" volume is really just a hallucination, induced by a piece of software called the automounter. The data really live in Tsukiyama Lab "fast" storage, on a big NAS produced by Dell / Isilon. For example, these two paths:
- 
+
+```txt
 /shared/ngs/illumina/agreenla/210216_D00300_1177_BHKCHKBCX3/Unaligned_UMIs/Project_agreenla/
 /fh/fast/tsukiyama_t/SR/ngs/illumina/agreenla/210216_D00300_1177_BHKCHKBCX3/Unaligned_UMIs/Project_agreenla/
- 
+```
 point to the same underlying data. You can think of that second form as the "real" location of the data, and that one will be easier to get to via Samba mounts, "net use" on Windows, etc.
  
-Best,
+Best,  
 -Matt
  
-From: Alavattam, Kris <kalavatt@fredhutch.org>
-Sent: Friday, January 20, 2023 3:29 PM
-To: Fitzgibbon, Matthew P <mfitzgib@fredhutch.org>; Greenlaw, Alison C <agreenla@fredhutch.org>
+From: Alavattam, Kris <kalavatt@fredhutch.org>  
+Sent: Friday, January 20, 2023 3:29 PM  
+To: Fitzgibbon, Matthew P <mfitzgib@fredhutch.org>; Greenlaw, Alison C <agreenla@fredhutch.org>  
 Subject: Re: UMI question + small update
  
 Thanks, Matt! That’s good to know. I will keep your message in my records for plannedanalyses with some of these older data. Just for my own knowledge: the directories where you keep the data—the /shared/ngs/illumina/* directories—are they temporary and do we need to move the files out of there?
  
-Thanks,
+Thanks,  
 Kris
  
-From: Fitzgibbon, Matthew P <mfitzgib@fredhutch.org>
-Date: Friday, January 20, 2023 at 3:20 PM
-To: Greenlaw, Alison C <agreenla@fredhutch.org>
-Cc: Alavattam, Kris <kalavatt@fredhutch.org>
+From: Fitzgibbon, Matthew P <mfitzgib@fredhutch.org>  
+Date: Friday, January 20, 2023 at 3:20 PM  
+To: Greenlaw, Alison C <agreenla@fredhutch.org>  
+Cc: Alavattam, Kris <kalavatt@fredhutch.org>  
 Subject: Re: UMI question + small update
 
 Hi Alison & Kris, This discussion prompted me to go back through previous Tsukiyama Lab runs to check for UMIs that may have been masked. I found one old HiSeq run for Christine (/shared/ngs/illumina/ccucinot/200128_D00300_0897_BHCHGFBCX3) that is annotated as Ovation SoLo but did not seem to have UMI reads generated in that same directory at all. I've redone the demultiplexing for that run and placed in an Unaligned_UMI folder.
  
 All of the other runs that I found with 16bp index reads appear to have R2 files that contain unmasked UMIs as hoped. I checked the following runs:
- 
+
+```txt
 /fh/fast/tsukiyama_t/SR/ngs/illumina/agreenla/210216_D00300_1177_BHKCHKBCX3/Unaligned_UMIs/Project_agreenla/
 /fh/fast/tsukiyama_t/SR/ngs/illumina/agreenla/220414_VH00699_101_AAAWYTFM5/Unaligned_UMI/Project_agreenla/
 /fh/fast/tsukiyama_t/SR/ngs/illumina/agreenla/221010_VH01189_10_AAC57JMM5/Unaligned/Project_agreenla/
@@ -240,26 +308,26 @@ All of the other runs that I found with 16bp index reads appear to have R2 files
 /fh/fast/tsukiyama_t/SR/ngs/illumina/mspain/180123_SN367_1095_AH7M5FBCX2/Unaligned/Project_mspain/
 /fh/fast/tsukiyama_t/SR/ngs/illumina/sswygert/180814_D00300_0588_AHKTYJBCX2/Unaligned/Project_sswygert/
 /fh/fast/tsukiyama_t/SR/ngs/illumina/sswygert/180816_D00300_0592_AHKHHNBCX2/Unaligned/Project_sswygert/
+```
+Let me know if there are any I missed or if data from older runs (e.g. `200128_D00300_0897_BHCHGFBCX3`) are still under active use in the lab. Would like to update anyone who might be interested.
  
-Let me know if there are any I missed or if data from older runs (e.g. 200128_D00300_0897_BHCHGFBCX3) are still under active use in the lab. Would like to update anyone who might be interested.
- 
-Cheers,
+Cheers,  
 -Matt
  
  
-From: Greenlaw, Alison C <agreenla@fredhutch.org>
-Sent: Thursday, January 19, 2023 12:50 PM
-To: Fitzgibbon, Matthew P <mfitzgib@fredhutch.org>
+From: Greenlaw, Alison C <agreenla@fredhutch.org>  
+Sent: Thursday, January 19, 2023 12:50 PM  
+To: Fitzgibbon, Matthew P <mfitzgib@fredhutch.org>  
 Subject: Re: UMI question + small update
  
 Awesome! Thanks so much for all your help, Matt. I am glad we were able to recover the UMI information!
  
 Best, 
 Alison 
-From: Fitzgibbon, Matthew P <mfitzgib@fredhutch.org>
-Sent: Thursday, January 19, 2023 10:27 AM
-To: Greenlaw, Alison C <agreenla@fredhutch.org>
-Cc: Alavattam, Kris <kalavatt@fredhutch.org>
+From: Fitzgibbon, Matthew P <mfitzgib@fredhutch.org>  
+Sent: Thursday, January 19, 2023 10:27 AM  
+To: Greenlaw, Alison C <agreenla@fredhutch.org>  
+Cc: Alavattam, Kris <kalavatt@fredhutch.org>  
 Subject: Re: UMI question + small update
  
 Hi Alison,
@@ -268,9 +336,10 @@ A few different threads here, so will address a couple first:
  
 Found an additional demux setting that I think has successfully recovered the UMIs in those two runs. Basically, you have to explicitly tell the demultiplexer to not "mask" reads shorter than 35bp; we routinely set this to 8bp to prevent the UMIs from being converted to N's but in this case we also needed to change an adapter setting even though we're not doing adapter trimming. The _R2 files in these locations have been updated:
  
-/shared/ngs/illumina/agreenla/221010_VH01189_10_AAC57JMM5/Unaligned/Project_agreenla
-/shared/ngs/illumina/agreenla/221220_VH00699_238_AACH7FFM5/Unaligned/Project_agreenla
- 
+```txt
+/shared/ngs/illumina/agreenla/221010_VH01189_10_AAC57JMM5/Unaligned/Project_agreenla  
+/shared/ngs/illumina/agreenla/221220_VH00699_238_AACH7FFM5/Unaligned/Project_agreenla  
+```
 None of the other file content (e.g. the _R1 & _R3 reads) should have changed, but I copied everything over as a block anyway just to make sure none of the files get out of phase.
  
 Kris, was great to get to meet briefly this morning. The approach of using UMItools to append UMI to read name (then maybe breaking it out to a tag in the BAM file post-alignment) sounds like a good approach. Similar to what some of the single-cell pipelines, like cellranger, do internally.
@@ -283,19 +352,19 @@ It hasn't seen any substantive update in about six years (and is python2) so the
  
 Let me know how the updated fastq files are looking!
  
-Best,
+Best,  
 -Matt
  
-Matt Fitzgibbon
-Director, Bioinformatics Shared Resource
-Fred Hutchinson Cancer Center
-Seattle, WA 98109
+Matt Fitzgibbon  
+Director, Bioinformatics Shared Resource  
+Fred Hutchinson Cancer Center  
+Seattle, WA 98109  
 mfitzgib@fredhutch.org
  
-From: Greenlaw, Alison C <agreenla@fredhutch.org>
-Sent: Wednesday, January 18, 2023 3:00 PM
-To: Fitzgibbon, Matthew P <mfitzgib@fredhutch.org>
-Cc: Alavattam, Kris <kalavatt@fredhutch.org>
+From: Greenlaw, Alison C <agreenla@fredhutch.org>  
+Sent: Wednesday, January 18, 2023 3:00 PM  
+To: Fitzgibbon, Matthew P <mfitzgib@fredhutch.org>  
+Cc: Alavattam, Kris <kalavatt@fredhutch.org>  
 Subject: UMI question + small update
  
 Hi Matt - 
@@ -310,18 +379,18 @@ Kris and I are currently working to pull out the unaligned and low quality align
  
 Thanks so much for all your help!! 
  
-Best, 
+Best,   
 Alison
 
 <a id="another-one-for-umis"></a>
 ### Another one for UMIs
-FWIW, some notes I began to take on handling spike-in normalization:
+FWIW, some notes I began to take on handling spike-in normalization:  
 https://github.com/kalavattam/2022_transcriptome-construction/blob/main/results/2022-1101/notes-RNA-seq-spike-ins.md
  
  
-From: Alavattam, Kris <kalavatt@fredhutch.org>
-Date: Thursday, January 19, 2023 at 12:11 PM
-To: Greenlaw, Alison C <agreenla@fredhutch.org>
+From: Alavattam, Kris <kalavatt@fredhutch.org>  
+Date: Thursday, January 19, 2023 at 12:11 PM  
+To: Greenlaw, Alison C <agreenla@fredhutch.org>  
 Subject: Re: UMI
 
 Let’s see, how about you move on to working with control genes—I’ll take a bit of time to test our options for UMI processing.
@@ -329,21 +398,23 @@ Let’s see, how about you move on to working with control genes—I’ll take a
 Thanks,
 Kris
  
-From: Greenlaw, Alison C <agreenla@fredhutch.org>
-Date: Thursday, January 19, 2023 at 11:57 AM
-To: Alavattam, Kris <kalavatt@fredhutch.org>
+From: Greenlaw, Alison C <agreenla@fredhutch.org>  
+Date: Thursday, January 19, 2023 at 11:57 AM  
+To: Alavattam, Kris <kalavatt@fredhutch.org>  
 Subject: Re: UMI
 
 I’m happy to try the next parts if you want to focus on others things. If you would rather finish it off , I will go back to figuring out control genes! 
  
 Alison
-From: Alavattam, Kris <kalavatt@fredhutch.org>
-Sent: Thursday, January 19, 2023 11:33:38 AM
-To: Greenlaw, Alison C <agreenla@fredhutch.org>
+
+From: Alavattam, Kris <kalavatt@fredhutch.org>  
+Sent: Thursday, January 19, 2023 11:33:38 AM  
+To: Greenlaw, Alison C <agreenla@fredhutch.org>  
 Subject: Re: UMI
  
 Looks like the info in the Biostars forum you found yesterday works:
- 
+
+```
 ❯ cd ~/tsukiyamalab/alisong/umi_test
  
 ❯ zcat 5781_G1_IN_S5_R1.processed.fastq.gz | head
@@ -369,27 +440,26 @@ CTGAANGCATCCATCGTTGAAACTTTCNTCGACGCCGCCTCATCTACTGA
 GGGAA#<<AGGGGGIIIGGA.AGGGGG#<GGAGGIGIIIAGIGGGIGGIG
 @D00300:1007:HGV5NBCX3:1:1103:1395:2129 1:N:0:GTCGAGAA
 CNATGTGAAGAAAGCGGGCGCAGATGTTGTTATATGCCAATGGGGGTTTG
- 
+```
+
 I’ll move forward with the UMI processing.
  
 -Kris
  
-From: Greenlaw, Alison C <agreenla@fredhutch.org>
-Date: Wednesday, January 18, 2023 at 4:38 PM
-To: Alavattam, Kris <kalavatt@fredhutch.org>
+From: Greenlaw, Alison C <agreenla@fredhutch.org>  
+Date: Wednesday, January 18, 2023 at 4:38 PM  
+To: Alavattam, Kris <kalavatt@fredhutch.org>  
 Subject: Re: UMI
 
-~/tsukiyamalab/alisong/umi_test$ 
+`~/tsukiyamalab/alisong/umi_test`
  
-From: Greenlaw, Alison C
-Sent: Wednesday, January 18, 2023 4:23 PM
-To: Alavattam, Kris <kalavatt@fredhutch.org>
+From: Greenlaw, Alison C  
+Sent: Wednesday, January 18, 2023 4:23 PM  
+To: Alavattam, Kris <kalavatt@fredhutch.org>  
 Subject: UMI
  
-https://www.biostars.org/p/357359/
-add UMI sequences to fastq read name - Biostar: S
-Dear all, I have paired-end fastq data generated with Illumina bcl2fastqv2.19 & sequenced on a Novaseq.The i5index is 7bp long, the i7 8bp long
-www.biostars.org
+https://www.biostars.org/p/357359/  
+add UMI sequences to fastq read name - Biostar: S  
 
 
 <a id="another-umi-one"></a>
@@ -399,14 +469,14 @@ That’s great news! Thanks so much for your help!
 Alison
 
 
-From: Alavattam, Kris <kalavatt@fredhutch.org>
-Sent: Thursday, January 19, 2023 9:50:52 AM
-To: Greenlaw, Alison C <agreenla@fredhutch.org>
-Cc: Tsukiyama, Toshio <ttsukiya@fredhutch.org>
+From: Alavattam, Kris <kalavatt@fredhutch.org>  
+Sent: Thursday, January 19, 2023 9:50:52 AM  
+To: Greenlaw, Alison C <agreenla@fredhutch.org>  
+Cc: Tsukiyama, Toshio <ttsukiya@fredhutch.org>  
 Subject: Response from Matt regarding the UMI issue
  
  
-Hi Alison,
+Hi Alison,  
 cc Toshi
  
 Good news! Matt stopped by the lab this morning. He still has the raw sequencing data output by the Illumina sequencer, and he is working on resolving our issues now. It turns out that, for some reason he’s not entirely sure of, a certain parameter needed to have been set when he was doing the demultiplexing/UMI-generation work—even though this particular parameter did not need to be set with previous demultiplexing/UMI-generation work (e.g., the work associated with the WT-Q-vs-G1 and TRF4 datasets).
@@ -419,12 +489,12 @@ We talked about the transcriptome assembly work a bit too, and I explained to Ma
  
 Anyway, we should expect to get the updated files and the link to the tecan repo sometime later today.
  
-Thanks,
+Thanks,  
 Kris
 
 
-<a id="notes-from-discussing-things-with-ag-as-i-put-together-the-message-to-bioconductormike-love"></a>
-### Notes from discussing things with AG as I put together the message to Bioconductor/Mike Love
+<a id="notes-from-discussing-things-with-ag-as-i-put-together-the-first-message-to-bioconductormike-love"></a>
+### Notes from discussing things with AG as I put together the first message to `Bioconductor`/Mike Love
 We want to assess the significant differences in normalized EXP versus normalize CTRL, e.g., assigning
 
 Given that we've depleted a tx termination factor, many genes have increased tx; however, where to set is not functionally obvious.
@@ -438,7 +508,68 @@ We do the spike-in at the cell level; any changes thereafter, we can theoretical
 Given our conditions, we suspect that genes are more upregulated than are downregulated, but how can we reasonably find the "unchanging points." Inputting these spike-in sequences with the controlGenes gives drastic results: More than half of all the genes in the genome are statistically significantly unregulated. This seems extreme to us, although it could be true.
 
 Suggestion that's mathematically appropriate and precise, rather than--just b/c it seems like this is not the norm for how people use DESeq2, and it's not easy to Google this and come up with an answer
+<br />
+<br />
 
-Open tabs, related to QC
-https://www.metagenomics.wiki/tools/samtools/converting-bam-to-fastq
-https://rnabio.org/module-02-alignment/0002/06/01/Alignment_QC/#
+<a id="open-tabs-related-to-qc-tbo"></a>
+## Open tabs related to QC `#TBO`
+- [On converting `bam`s to `fastq`s](https://www.metagenomics.wiki/tools/samtools/converting-bam-to-fastq)
+- [Alignment QC of RNA-seq data (Griffith Lab)](https://rnabio.org/module-02-alignment/0002/06/01/Alignment_QC/#)
+<br />
+<br />
+
+<a id="links-tbo"></a>
+## Links `#TBO`
+<a id="materials-examined-when-formulating-bioconductor-posts"></a>
+### Materials examined when formulating `Bioconductor` posts
+<a id="bioconductor-posts"></a>
+#### `Bioconductor` posts
+- [`ControlGenes`/housekeeping genes `DESeq2`](https://support.bioconductor.org/p/130660/)
+    + Another Bioconductor post on how to call `controlGenes`
+- [Normalize to a housekeeping gene in `DESEq2`](https://support.bioconductor.org/p/p133150/)
+- [Housekeeping genes vary across contrast groups, using `DESeq2` on NanoString data](https://support.bioconductor.org/p/9141678/)
+- [Incorporating spike-ins to RNA-seq analysis](https://support.bioconductor.org/p/9143354/)
+- [`DESeq2` `estimateSizeFactors` with control genes](https://support.bioconductor.org/p/115682/)
+- [`DESeq2` `estimateSizeFactors` `controlGenes` return an error](https://support.bioconductor.org/p/103826/)
+    + `Bioconductor` post on how to refer to the spike-in genes when calling `estimateSizeFactors()`
+
+<a id="deseq2-vignette"></a>
+#### `DESeq2` vignette
+- [Control features for estimating size factors](http://bioconductor.org/packages/devel/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#control-features-for-estimating-size-factors)
+
+<a id="rdrrio"></a>
+#### `rdrr.io`
+- [`estimateSizeFactors`](https://rdrr.io/bioc/DESeq2/man/estimateSizeFactors.html)
+
+<a id="biostars"></a>
+### `Biostars`
+- [How to contrast gene expression level using like control some HouseKeeping Genes after a DEG using DESEQ2](https://www.biostars.org/p/400532/#400543)
+    + Nice, simple explanation of `controlGenes` and its purpose in this `Biostars` post
+
+<a id="material-to-further-look-into"></a>
+### Material to further look into
+- [`RUVg` (`RUVSeq`) seems to be something useful and worth considering for our work](https://www.google.com/search?q=ruvg+normalization&oq=ruvg+normalization&aqs=chrome..69i57.2410j0j7&sourceid=chrome&ie=UTF-8)
+- [Confused about using `RUVg` in getting negative control genes using `RUVg` (`Bioconductor`)](https://support.bioconductor.org/p/9144949/)
+<br />
+<br />
+
+<a id="email-chains-tbo"></a>
+## Email chains `#TBO`
+- [Using `DESeq2` scaling factors in the generation of `bigwig`s](https://outlook.office.com/mail/id/AAQkAGQ2MWM4OTBhLWZjNTItNGFlZS05OTg3LTA2MTA2NjJkNzU3ZAAQALWZ%2F1g2TixHsmcItlSvLMw%3D)
+    + Me to Alison
+    + 2023-0124
+- [`DESeq2` math (is confusing)](https://outlook.office.com/mail/id/AAQkAGQ2MWM4OTBhLWZjNTItNGFlZS05OTg3LTA2MTA2NjJkNzU3ZAAQABU533NW37pKvXRIDCuLO70%3D)
+    + Between me and Alison
+    + 2023-0120-0124
+- [Variance](https://outlook.office.com/mail/id/AAQkAGQ2MWM4OTBhLWZjNTItNGFlZS05OTg3LTA2MTA2NjJkNzU3ZAAQAAXbHUPN%2FzZFj8Q5y42kbhE%3D)
+    + Between me and Alison
+    + 2022-1115-1117
+- [Code snippet for making a dds from counts matrix, then `rlog`-transforming it, then...](https://outlook.office.com/mail/id/AAQkAGQ2MWM4OTBhLWZjNTItNGFlZS05OTg3LTA2MTA2NjJkNzU3ZAAQAMOGut2ppC9NggrVTSmvfb8%3D)
+    + Between me and Alison
+    + 2022-1115
+- [A question and a thought](https://outlook.office.com/mail/id/AAQkAGQ2MWM4OTBhLWZjNTItNGFlZS05OTg3LTA2MTA2NjJkNzU3ZAAQAElsJPNmy%2FBIqpkqHwG4Dg8%3D)
+    + Between me and Alison
+    + 2022-1103
+- [More thinking about `estimateSizeFactors` with `controlGenes`](https://outlook.office.com/mail/id/AAQkAGQ2MWM4OTBhLWZjNTItNGFlZS05OTg3LTA2MTA2NjJkNzU3ZAAQABQLBQokcp1Huq5me3WutFU%3D)
+    + Between me and Alison
+    + 2022-1103
