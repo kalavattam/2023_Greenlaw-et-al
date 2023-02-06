@@ -8,42 +8,42 @@
 <!-- MarkdownTOC -->
 
 1. [Symlink to `*R{1,2,3}*.fastq.gz`](#symlink-to-r123fastqgz)
-	1. [Notes](#notes)
-	1. [Code](#code)
+    1. [Notes](#notes)
+    1. [Code](#code)
 1. [Get `fastq` file stems into arrays](#get-fastq-file-stems-into-arrays)
-	1. [Code](#code-1)
+    1. [Code](#code-1)
 1. [Append UMIs to `fastq`s `R1` and `R3`](#append-umis-to-fastqs-r1-and-r3)
-	1. [01 Get situated, make a directory for the processed `R1` and `R3` `fastq`s](#01-get-situated-make-a-directory-for-the-processed-r1-and-r3-fastqs)
-		1. [Code](#code-2)
-	1. [02 Set up necessary variables](#02-set-up-necessary-variables)
-		1. [Code](#code-3)
-	1. [03 Generate lists of arguments](#03-generate-lists-of-arguments)
-		1. [03a Generate the full list](#03a-generate-the-full-list)
-			1. [Code](#code-4)
-		1. [03b Break the full, multi-line list into individual per-line lists](#03b-break-the-full-multi-line-list-into-individual-per-line-lists)
-			1. [Code](#code-5)
-	1. [04 Use a `HEREDOC` to write a '`run`' script](#04-use-a-heredoc-to-write-a-run-script)
-		1. [Code](#code-6)
-	1. [05 Use a `HEREDOC` to write '`submit`' script](#05-use-a-heredoc-to-write-submit-script)
-		1. [Code](#code-7)
-	1. [06 Use `sbatch` to run the '`submission`' and '`run`' scripts](#06-use-sbatch-to-run-the-submission-and-run-scripts)
-		1. [Code](#code-8)
+    1. [01 Get situated, make a directory for the processed `R1` and `R3` `fastq`s](#01-get-situated-make-a-directory-for-the-processed-r1-and-r3-fastqs)
+        1. [Code](#code-2)
+    1. [02 Set up necessary variables](#02-set-up-necessary-variables)
+        1. [Code](#code-3)
+    1. [03 Generate lists of arguments](#03-generate-lists-of-arguments)
+        1. [03a Generate the full list](#03a-generate-the-full-list)
+            1. [Code](#code-4)
+        1. [03b Break the full, multi-line list into individual per-line lists](#03b-break-the-full-multi-line-list-into-individual-per-line-lists)
+            1. [Code](#code-5)
+    1. [04 Use a `HEREDOC` to write a '`run`' script](#04-use-a-heredoc-to-write-a-run-script)
+        1. [Code](#code-6)
+    1. [05 Use a `HEREDOC` to write '`submit`' script](#05-use-a-heredoc-to-write-submit-script)
+        1. [Code](#code-7)
+    1. [06 Use `sbatch` to run the '`submission`' and '`run`' scripts](#06-use-sbatch-to-run-the-submission-and-run-scripts)
+        1. [Code](#code-8)
 1. [Perform adapter and quality trimming of the `fastq`s](#perform-adapter-and-quality-trimming-of-the-fastqs)
-	1. [01 Get situated, make a directory for the adapter/quality-trimmed `R1` and `R3` `fastq`s](#01-get-situated-make-a-directory-for-the-adapterquality-trimmed-r1-and-r3-fastqs)
-		1. [Code](#code-9)
-	1. [02 Set up necessary variables](#02-set-up-necessary-variables-1)
-		1. [Code](#code-10)
-	1. [03 Generate lists of arguments](#03-generate-lists-of-arguments-1)
-		1. [03a Generate the full list](#03a-generate-the-full-list-1)
-			1. [Code](#code-11)
-		1. [03b Break the full, multi-line list into individual per-line lists](#03b-break-the-full-multi-line-list-into-individual-per-line-lists-1)
-			1. [Code](#code-12)
-	1. [04 Use a `HEREDOC` to write a '`run`' script](#04-use-a-heredoc-to-write-a-run-script-1)
-		1. [Code](#code-13)
-	1. [05 Use a `HEREDOC` to write '`submit`' script](#05-use-a-heredoc-to-write-submit-script-1)
-		1. [Code](#code-14)
-	1. [06 Use `sbatch` to run the '`submission`' and '`run`' scripts](#06-use-sbatch-to-run-the-submission-and-run-scripts-1)
-		1. [Code](#code-15)
+    1. [01 Get situated, make a directory for the adapter/quality-trimmed `R1` and `R3` `fastq`s](#01-get-situated-make-a-directory-for-the-adapterquality-trimmed-r1-and-r3-fastqs)
+        1. [Code](#code-9)
+    1. [02 Set up necessary variables](#02-set-up-necessary-variables-1)
+        1. [Code](#code-10)
+    1. [03 Generate lists of arguments](#03-generate-lists-of-arguments-1)
+        1. [03a Generate the full list](#03a-generate-the-full-list-1)
+            1. [Code](#code-11)
+        1. [03b Break the full, multi-line list into individual per-line lists](#03b-break-the-full-multi-line-list-into-individual-per-line-lists-1)
+            1. [Code](#code-12)
+    1. [04 Use a `HEREDOC` to write a '`run`' script](#04-use-a-heredoc-to-write-a-run-script-1)
+        1. [Code](#code-13)
+    1. [05 Use a `HEREDOC` to write '`submit`' script](#05-use-a-heredoc-to-write-submit-script-1)
+        1. [Code](#code-14)
+    1. [06 Use `sbatch` to run the '`submission`' and '`run`' scripts](#06-use-sbatch-to-run-the-submission-and-run-scripts-1)
+        1. [Code](#code-15)
 1. [Scraps](#scraps)
 
 <!-- /MarkdownTOC -->
@@ -816,7 +816,8 @@ parallel --header : --colsep " " -k -j 1 echo \
         -r {r1_pro} \
         -R {r3_pro} \
         -o {outdir} \
-        --no-length-filtration' \
+        --no-length-filtration \
+        --stats' \
 :::: "\${arguments}"
 echo ""
 
@@ -828,7 +829,8 @@ parallel --header : --colsep " " -k -j 1 \
         -r {r1_pro} \
         -R {r3_pro} \
         -o {outdir} \
-        --no-length-filtration' \
+        --no-length-filtration \
+        --stats' \
 :::: "\${arguments}"
 
 script
