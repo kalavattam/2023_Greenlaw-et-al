@@ -282,6 +282,7 @@ tin.py \
 - If I wanted to have a `gff3` for *20S*, I can follow these tactics:
 	+ [link](https://www.biostars.org/p/9496608/)
 	+ *My previous work in, e.g., [this notebook](../2022-1021/notebook.md#on-making-a-gff-from-the-trinity-assembled-transcriptome)*
+- Additional approaches to generating the files needed by `picard` are desscribed [here (resource from the Griffith Lab)](https://rnabio.org/module-02-alignment/0002/06/01/Alignment_QC/#Using%20Picard)
 <br />
 <br />
 

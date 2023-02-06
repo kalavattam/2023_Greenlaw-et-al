@@ -1,5 +1,7 @@
 
 `#test_UMI-processing.md`
+<br />
+<br />
 
 <details>
 <summary><b><font size="+2"><i>Table of contents</i></font></b></summary>
@@ -175,10 +177,15 @@ mkdir test_UMI-processing_AnnotateBamWithUmis
 
 <a id="locations-of-datasets"></a>
 ### Locations of datasets
+<details>
+<summary><i>Locations of datasets</i></summary>
+
 - `WTQvsG1`: `~/tsukiyamalab/alisong/WTQvsG1/Unaligned_UMI/Project_ccucinot`
 - `TRF4_SSRNA_April2022`: `~/tsukiyamalab/alisong/TRF4_SSRNA_April2022/UMI_information/Project_agreenla`
 - `Nab3_Nrd1_Depletion`: `~/tsukiyamalab/alisong/Nab3_Nrd1_Depletion/sequencing-data_updated_2023-0119`
 - `rtr1_rrp6_wt`: `~/tsukiyamalab/alisong/rtr1_rrp6_wt/sequencing-data_updated_2023-0119`
+</details>
+<br />
 
 <a id="set-up-necessary-variables"></a>
 ### Set up necessary variables
@@ -5309,7 +5316,6 @@ cd test_UMI-processing_umi-tools/STAR \
     || echo "cd'ing failed; check on this..."
 
 source activate Trinity_env
-ml UMI-tools/1.0.1-foss-2019b-Python-3.7.4
 ```
 </details>
 <br />
@@ -5324,6 +5330,9 @@ ml UMI-tools/1.0.1-foss-2019b-Python-3.7.4
 ```bash
 #!/bin/bash
 #DONTRUN #CONTINUE
+
+module purge
+ml SAMtools/1.16.1-GCC-11.2.0
 
 for i in *.bam; do
     echo "${i}"
@@ -5351,6 +5360,9 @@ done
 #  Run the below loop in the following two directories
 #+   - ${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0115/test_UMI-processing_umi-tools/STAR
 #+   - ${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0115/test_UMI-processing_umi-tools/Bowtie2
+
+module purge
+ml UMI-tools/1.0.1-foss-2019b-Python-3.7.4
 
 for i in *UMIs*.bam; do
     echo "### ${i} ###"
@@ -5561,7 +5573,7 @@ for i in $(seq 0 "${#bams_b[@]}"); do
 
     echo "${aligner}"$'\t'"${sample}"$'\t'"${count}" >> "${file}"
 done
-cat "${file}"
+# cat "${file}"
 ```
 </details>
 <br />
@@ -5569,15 +5581,23 @@ cat "${file}"
 
 <a id="links-of-interestlearning-about-umi_tools"></a>
 ## Links of interest/learning about `umi_tools`
+<details>
+<summary><i>Links of interest/learning about umi_tools</i></summary>
+
 - [Biostars: Tool to analyze bulk RNAseq data with UMI]([https://www.biostars.org/p/405375/)
 - [Biostars: Bulk RNA-Seq pipeline suggestion incorporating UMIs](https://www.biostars.org/p/413672/)
 - `#NOTE In particular, this post is helpful and suggests that how I initially called umi_tools is valid`
 - You studied up on [this post](https://dnatech.genomecenter.ucdavis.edu/faqs/should-i-remove-pcr-duplicates-from-my-rna-seq-data/), 'Should I remove PCR duplicates from my RNA-seq data?', in another post
 - [An important post](https://dnatech.genomecenter.ucdavis.edu/faqs/what-are-umis-and-why-are-they-used-in-high-throughput-sequencing/) related to, and part of the same series as, the above
+</details>
 <br />
 <br />
 
 <a id="miscellaneous"></a>
 ## Miscellaneous
+<details>
+<summary><i>Miscellaneous</i></summary>
+
 - MultiQC is not working with the output of `umi_tools`: Filed a GitHub issue [here](https://github.com/ewels/MultiQC/issues/1852)
+<details>
 <br />
