@@ -176,6 +176,8 @@ mamba install \
 # In addition: Warning message:
 # package ‘tidyverse’ was built under R version 4.2.1
 # Execution halted
+
+mamba install -c bioconda bbmap=39.01  # Dependency for downsample-fastqs.sh
 ```
 </details>
 

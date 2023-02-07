@@ -81,7 +81,16 @@
         1. [Code](#code-30)
     1. [06 Use `sbatch` to run the '`submission`' and '`run`' scripts](#06-use-sbatch-to-run-the-submission-and-run-scripts-3)
         1. [Code](#code-31)
-1. [Scraps](#scraps)
+1. [V Align kmer-cor. \(`Trinity`\) & uncor. \(expression analyses\) data](#v-align-kmer-cor-trinity--uncor-expression-analyses-data)
+    1. [01 Get situated, make a directory for symlinked `fastq`s and `bam`s](#01-get-situated-make-a-directory-for-symlinked-fastqs-and-bams)
+        1. [Get situated, make a directory for symlinked fastqs and bams](#get-situated-make-a-directory-for-symlinked-fastqs-and-bams)
+            1. [Code](#code-32)
+        1. [Establish relative paths for symlinking](#establish-relative-paths-for-symlinking)
+            1. [Code](#code-33)
+        1. [Establish relative paths for symlinking](#establish-relative-paths-for-symlinking-1)
+            1. [Code](#code-34)
+    1. [02 Set up necessary variables](#02-set-up-necessary-variables-4)
+        1. [Code](#code-35)
 
 <!-- /MarkdownTOC -->
 </details>
@@ -89,7 +98,7 @@
 <br />
 
 <a id="pre-symlink-to-r123fastqgz"></a>
-## PRE Symlink to `*R{1,2,3}*.fastq.gz`
+## <u>PRE</u> Symlink to `*R{1,2,3}*.fastq.gz`
 <a id="notes"></a>
 ### Notes
 <details>
@@ -194,7 +203,7 @@ done
 <br />
 
 <a id="pre-get-fastq-file-stems-into-arrays"></a>
-## PRE Get `fastq` file stems into arrays
+## <u>PRE</u> Get `fastq` file stems into arrays
 <a id="get-situated"></a>
 ### Get situated
 <a id="code-1"></a>
@@ -350,7 +359,7 @@ echo "${#r3_cor_cln[@]}"
 <br />
 
 <a id="i-append-umis-to-fastqs-r1-and-r3"></a>
-## I Append UMIs to `fastq`s `R1` and `R3`
+## <u>I</u> Append UMIs to `fastq`s `R1` and `R3`
 <a id="01-get-situated-make-a-directory-for-the-processed-r1-and-r3-fastqs"></a>
 ### 01 Get situated, make a directory for the processed `R1` and `R3` `fastq`s
 <a id="code-4"></a>
@@ -689,7 +698,10 @@ script
 #!/bin/bash
 #DONTRUN #CONTINUE
 
-module purge
+if [[ "${CONDA_DEFAULT_ENV}" != "base" ]]; then 
+    conda deactivate
+fi
+Trinity_env
 ml UMI-tools/1.0.1-foss-2019b-Python-3.7.4
 
 sbatch "${store_scripts}/${script_submit}"
@@ -699,7 +711,7 @@ sbatch "${store_scripts}/${script_submit}"
 <br />
 
 <a id="ii-perform-adapter-and-quality-trimming-of-the-fastqs"></a>
-## II Perform adapter and quality trimming of the `fastq`s
+## <u>II</u> Perform adapter and quality trimming of the `fastq`s
 <a id="01-get-situated-make-a-directory-for-the-adapterquality-trimmed-r1-and-r3-fastqs"></a>
 ### 01 Get situated, make a directory for the adapter/quality-trimmed `R1` and `R3` `fastq`s
 <a id="code-11"></a>
@@ -1021,7 +1033,11 @@ script
 #!/bin/bash
 #DONTRUN #CONTINUE
 
+if [[ "${CONDA_DEFAULT_ENV}" != "base" ]]; then 
+    conda deactivate
+fi
 module purge
+atria_env
 
 sbatch "${store_scripts}/${script_submit}"
 ```
@@ -1030,7 +1046,7 @@ sbatch "${store_scripts}/${script_submit}"
 <br />
 
 <a id="iii-perform-kmer-correction-with-rcorrector"></a>
-## III Perform kmer correction with `rcorrector`
+## <u>III</u> Perform kmer correction with `rcorrector`
 *(for transcriptome-assembly experiments)*
 
 <a id="01-get-situated-make-a-directory-for-kmer-corrected-fastqs"></a>
@@ -1358,9 +1374,9 @@ fi
 module purge
 
 sbatch "${store_scripts}/${script_submit}"
-# alias crj=".,f ./sh_err_out/err_out/ | tail -220"
-# alias grj="cd ./sh_err_out/err_out/ && .,f | tail -220"
-# alias t220=".,f | tail -220"
+alias crj=".,f ./sh_err_out/err_out/ | tail -220"
+alias grj="cd ./sh_err_out/err_out/ && .,f | tail -220"
+alias t220=".,f | tail -220"
 
 #TODO 1/2 So that tmp_* files are written/read from scratch, get this code 
 #TODO 2/2 running from scratch 
@@ -1370,7 +1386,7 @@ sbatch "${store_scripts}/${script_submit}"
 <br />
 
 <a id="iv-correct-the-rcorrected-fastqs"></a>
-## IV "Correct" the `rcorrect`ed `fastq`s
+## <u>IV</u> "Correct" the `rcorrect`ed `fastq`s
 <a id="01-get-situated-make-a-directory-for-kmer-corrected-fastqs-1"></a>
 ### 01 Get situated, make a directory for kmer-corrected `fastq`s
 <a id="code-25"></a>
@@ -1644,15 +1660,195 @@ sbatch "${store_scripts}/${script_submit}"
 <br />
 <br />
 
-<a id="scraps"></a>
-## Scraps
+<a id="v-align-kmer-cor-trinity--uncor-expression-analyses-data"></a>
+## <u>V</u> Align kmer-cor. (`Trinity`) & uncor. (expression analyses) data
+<a id="01-get-situated-make-a-directory-for-symlinked-fastqs-and-bams"></a>
+### 01 Get situated, make a directory for symlinked `fastq`s and `bam`s
+<a id="get-situated-make-a-directory-for-symlinked-fastqs-and-bams"></a>
+#### Get situated, make a directory for symlinked fastqs and bams
+<a id="code-32"></a>
+##### Code
 <details>
-<summary><i>Code: </i></summary>
+<summary><i>Code: Get situated, make a directory for symlinked fastqs and bams</i></summary>
 
 ```bash
 #!/bin/bash
 #DONTRUN #CONTINUE
 
+transcriptome && 
+    {
+        cd "results/2023-0115" \
+            || echo "cd'ing failed; check on this..."
+    }
+
+if [[ "${CONDA_DEFAULT_ENV}" != "base" ]]; then 
+    conda deactivate
+fi
+module purge
+source activate Trinity_env
+
+if [[ ! -d "./bams_UMI-dedup" ]]; then
+    mkdir -p "./bams_UMI-dedup/to-align_umi-extracted_trimmed_kmer-corrected"
+    mkdir -p "./bams_UMI-dedup/to-align_umi-extracted_trimmed"
+fi
 ```
 </details>
 <br />
+
+<a id="establish-relative-paths-for-symlinking"></a>
+#### Establish relative paths for symlinking
+<a id="code-33"></a>
+##### Code
+<details>
+<summary><i>Code: Establish relative paths for symlinking</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+find_relative_path() {
+    realpath --relative-to="${1}" "${2}"
+}
+
+
+p_kmer_cor_path="$(
+    find_relative_path \
+        "bams_UMI-dedup/to-align_trimmed_kmer-cor/" \
+        "fastqs_UMI-dedup/rcorrector_clean-up/"
+)"
+# echo "${p_kmer_cor_path}"
+
+p_kmer_uncor_path="$(
+    find_relative_path \
+        "bams_UMI-dedup/to-align_trimmed_no-kmer-cor/" \
+        "fastqs_UMI-dedup/atria_trim/"
+)"
+# echo "${p_kmer_no_cor}"
+
+
+#  Get source and target files to symlink into respective arrays
+#  UMI-extracted (u), trimmed (t), kmer-corrected (k) files
+unset fq_kmer_cor_init
+unset fq_kmer_cor_sym
+typeset -a fq_kmer_cor_init
+typeset -a fq_kmer_cor_sym
+while IFS=" " read -r -d $'\0'; do
+    fq_kmer_cor_init+=(
+        "$(echo "${p_kmer_cor_path}/$(basename "${REPLY}")")"
+    )
+    fq_kmer_cor_sym+=("$(
+        echo "$(basename "${REPLY%.UMI.atria.cor.rm-unfx.fq.gz}").fq.gz" \
+            | sed 's:_S[0-9]\+_:_:g; s:sample_::I' \
+            | sed 's:_R1:_UTK_R1:g; s:_R3:_UTK_R3:g'
+    )")
+done < <(\
+    find "./fastqs_UMI-dedup/rcorrector_clean-up" \
+        -type f \
+        -name "*.fq.gz" \
+        -print0 \
+            | sort -z \
+)
+# echo_test "${fq_kmer_cor_init[@]}"
+# echo_test "${fq_kmer_cor_sym[@]}"
+# echo "${#fq_kmer_cor_init[@]}"
+# echo "${#fq_kmer_cor_sym[@]}"
+
+#  UMI-extracted (u), trimmed (t) files
+unset fq_kmer_uncor_init
+unset fq_kmer_uncor_sym
+typeset -a fq_kmer_uncor_init
+typeset -a fq_kmer_uncor_sym
+while IFS=" " read -r -d $'\0'; do
+    fq_kmer_uncor_init+=(
+        "$(echo "${p_kmer_uncor_path}/$(basename "${REPLY}")")"
+    )
+    fq_kmer_uncor_sym+=("$(
+        echo "$(basename "${REPLY%.UMI.atria.fq.gz}").fq.gz" \
+            | sed 's:_S[0-9]\+_:_:g; s:sample_::I' \
+            | sed 's:_R1:_UT_R1:g; s:_R3:_UT_R3:g'
+    )")
+done < <(\
+    find "./fastqs_UMI-dedup/atria_trim" \
+        -maxdepth 1 \
+        -type f \
+        -name "*.fq.gz" \
+        -print0 \
+            | sort -z \
+)
+# echo_test "${fq_kmer_uncor_init[@]}"
+# echo_test "${fq_kmer_uncor_sym[@]}"
+# echo "${#fq_kmer_uncor_init[@]}"
+# echo "${#fq_kmer_uncor_sym[@]}"
+```
+</details>
+<br />
+
+<a id="establish-relative-paths-for-symlinking-1"></a>
+#### Establish relative paths for symlinking
+<a id="code-34"></a>
+##### Code
+<details>
+<summary><i>Code: Create the symlinks</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+cd "./bams_UMI-dedup/to-align_umi-extracted_trimmed_kmer-corrected" ||
+    echo "cd'ing failed; check on this..."
+for (( i = 0; i <= $(( ${#fq_kmer_cor_init[@]} - 1 )); i++ )); do
+    echo "${fq_kmer_cor_init["${i}"]}"
+    echo "${fq_kmer_cor_sym["${i}"]}"
+    ln -s "${fq_kmer_cor_init["${i}"]}" "${fq_kmer_cor_sym["${i}"]}"
+    echo ""
+done
+# .,
+
+cd "../to-align_umi-extracted_trimmed" ||
+    echo "cd'ing failed; check on this..."
+for (( i = 0; i <= $(( ${#fq_kmer_uncor_init[@]} - 1 )); i++ )); do
+    echo "${fq_kmer_uncor_init["${i}"]}"
+    echo "${fq_kmer_uncor_sym["${i}"]}"
+    ln -s "${fq_kmer_uncor_init["${i}"]}" "${fq_kmer_uncor_sym["${i}"]}"
+    echo ""
+done
+# .,
+
+
+#  Get back to the head working directory
+transcriptome && 
+    {
+        cd "results/2023-0115" \
+            || echo "cd'ing failed; check on this..."
+    }
+```
+</details>
+<br />
+
+<a id="02-set-up-necessary-variables-4"></a>
+### 02 Set up necessary variables
+<a id="code-35"></a>
+#### Code
+<details>
+<summary><i>Code: Set up necessary variables</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+script_run="run_STAR.sh"  # echo "${script_run}"
+script_submit="submit_run_STAR.sh"  # echo "${script_submit}"
+threads=8  # echo "${threads}"
+
+store_scripts="sh_err_out"  # echo "${store_scripts}"
+store_err_out="sh_err_out/err_out"  # echo "${store_err_out}"
+store_lists="fastqs_UMI-dedup/rcorrector/lists"  # echo "${store_lists}"
+
+list="rcorrector.txt"  # echo "${list}"
+max_id_job="${#fq_bases[@]}"  # echo "${max_id_job}"
+max_id_task=8  # echo "${max_id_task}"
+```
+</details>
+<br />
+
+
