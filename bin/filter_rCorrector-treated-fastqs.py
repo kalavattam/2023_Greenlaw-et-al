@@ -5,14 +5,14 @@ author: adam h freedman
 afreedman405 at gmail.com
 date: Fri Aug 26 10:55:18 EDT 2016
 
-edited by Kris Aalavattam
+updated, edited by Kris Aalavattam
 kalavatt at fredhutch.org
 kalavattam at gmail.com
 date: Tue Nov 29 06:41:46 PST 2022
 
-This script, which has been updated from Python 2 to 3, takes as input 
-Rcorrector error-corrected Illumina paired-end reads in fastq format and does
-the following:
+This script, which has been updated from its original Python 2 to 3, takes as
+input Rcorrector error-corrected Illumina paired-end reads in fastq format and
+does the following:
 
     1. The script removes any reads that Rcorrector indentifed as containing an
        error that can't be corrected, typically low complexity sequences. For
@@ -23,19 +23,21 @@ the following:
        fixed.
 
     3. The script writes a log with counts of
-       (a) read pairs that were removed because one end was unfixable,
+       (a) read pairs that were removed because one or both ends are unfixable,
        (b) corrected left and right reads, and
-       (c) total number of read pairs containing at least one corrected read.
+       (c) total numbers of read pairs containing at least one corrected read.
 
-This script only handles paired-end reads. Also, the script handles
-either unzipped or gzipped files on the fly, so long as the gzipped files end
-with 'gz'. The script can write either uncompressed or gzipped fastq outfiles.
+The script handles only paired-end reads. Also, the script handles either
+unzipped or gzipped files on the fly, so long as the gzipped files end with
+with the extension 'gz'. The script can write either uncompressed or gzipped
+fastq outfiles.
 """
 
 import sys
 import gzip
 from itertools import zip_longest
 import argparse
+import os
 from os.path import basename
 
 def get_input_streams(r1file,r2file):
@@ -51,7 +53,6 @@ def get_input_streams(r1file,r2file):
 
 def grouper(iterable, n, fillvalue=None):
     "Collect data into fixed-length chunks or blocks"
-    # grouper('ABCDEFG', 3, 'x') --> ABC DEF Gxx
     args = [iter(iterable)] * n
     return zip_longest(fillvalue=fillvalue, *args)
 
@@ -98,22 +99,48 @@ if __name__=="__main__":
     )
     opts = parser.parse_args()
 
+    # # Test (2023-0206)
+    # parser = argparse.ArgumentParser(
+    #     description='Options for filtering, logging rCorrector fastq output'
+    # )
+    # opts = parser.parse_args()
+    # opts.reads_left="./5781_G1_IN_S5_R1.UMI.atria.cor.fq.gz"
+    # opts.reads_right="./5781_G1_IN_S5_R3.UMI.atria.cor.fq.gz"
+    # opts.sample_id="5781_G1_IN_S5"
+    # opts.dir_out=os.getcwd() + '/' + 'tmp'
+    # opts.gzip_out=True
+
     if opts.gzip_out is False:
+        #TODO 1/5 Below assumes the infile ends with either the suffix
+        #TODO 2/5 '.fastq.gz' or the suffix '.fq.gz' (or 'something.something'
+        #TODO 3/5 because of [:-2]); so, write code to check if ending suffix
+        #TODO 4/5 is or is not '.gz', then handle the below join/split
+        #TODO 5/5 appropriately
         r1out = open(
-            opts.dir_out + '/unfixrm.%s' % basename(opts.reads_left).replace('.gz', ''),
+            opts.dir_out + '/' '%s.rm-unfx.%s' \
+                % (".".join(basename(opts.reads_left).split(".")[:-2]), "fq"),
             'w'
         )
         r2out = open(
-            opts.dir_out + '/unfixrm.%s' % basename(opts.reads_right).replace('.gz', ''),
+            opts.dir_out + '/' '%s.rm-unfx.%s' \
+                % (".".join(basename(opts.reads_right).split(".")[:-2]), "fq"),
             'w'
         )
     elif opts.gzip_out is True:
         r1out = gzip.open(
-            opts.dir_out + '/unfixrm.%s' % basename(opts.reads_left),
+            opts.dir_out + '/' '%s.rm-unfx.%s' \
+                % (
+                    ".".join(basename(opts.reads_left).split(".")[:-2]),
+                    "fq.gz"
+                ),
             'wt'
         )
         r2out = gzip.open(
-            opts.dir_out + '/unfixrm.%s' % basename(opts.reads_right),
+            opts.dir_out + '/' '%s.rm-unfx.%s' \
+                % (
+                    ".".join(basename(opts.reads_right).split(".")[:-2]),
+                    "fq.gz"
+                ),
             'wt'
         )
     else:
@@ -166,53 +193,57 @@ if __name__=="__main__":
     total_unfixable = unfix_r1_count + unfix_r2_count + unfix_both_count
     total_retained = counter - total_unfixable
 
-    unfix_log = open(opts.sample_id + '.counts.txt', 'w')
+    unfix_log = open(
+        opts.dir_out + '/' + opts.sample_id + '.counts.txt', 'w'
+    )
     unfix_log.write(
         (
-         'total PE reads\t%s\n'
-         'removed PE reads\t%s\n'
-         'retained PE reads\t%s\n'
-         'R1 corrected\t%s\n'
-         'R2 corrected\t%s\n'
-         'pairs corrected\t%s\n'
-         'R1 unfixable\t%s\n'
-         'R2 unfixable\t%s\n'
-         'both reads unfixable\t%s\n'
+            'total PE reads\t%s\n'
+            'removed PE reads\t%s\n'
+            'retained PE reads\t%s\n'
+            'R1 corrected\t%s\n'
+            'R2 corrected\t%s\n'
+            'pairs corrected\t%s\n'
+            'R1 unfixable\t%s\n'
+            'R2 unfixable\t%s\n'
+            'both reads unfixable\t%s\n'
         ) % (
-         counter,
-         total_unfixable,
-         total_retained,
-         r1_cor_count,
-         r2_cor_count,
-         pair_cor_count,
-         unfix_r1_count,
-         unfix_r2_count,
-         unfix_both_count
+            counter,
+            total_unfixable,
+            total_retained,
+            r1_cor_count,
+            r2_cor_count,
+            pair_cor_count,
+            unfix_r1_count,
+            unfix_r2_count,
+            unfix_both_count
         )
     )
 
-    unfix_pct=open(opts.sample_id + '.proportions.txt', 'w')
+    unfix_pct=open(
+        opts.dir_out + '/' + opts.sample_id + '.proportions.txt', 'w'
+    )
     unfix_pct.write(
         (
-         'total PE reads\t%s\n'
-         'removed PE reads\t%s\n'
-         'retained PE reads\t%s\n'
-         'R1 corrected\t%s\n'
-         'R2 corrected\t%s\n'
-         'pairs corrected\t%s\n'
-         'R1 unfixable\t%s\n'
-         'R2 unfixable\t%s\n'
-         'both reads unfixable\t%s\n'
+            'total PE reads\t%s\n'
+            'removed PE reads\t%s\n'
+            'retained PE reads\t%s\n'
+            'R1 corrected\t%s\n'
+            'R2 corrected\t%s\n'
+            'pairs corrected\t%s\n'
+            'R1 unfixable\t%s\n'
+            'R2 unfixable\t%s\n'
+            'both reads unfixable\t%s\n'
         ) % (
-         (counter / counter) * 100,
-         (total_unfixable / counter) * 100,
-         (total_retained / counter) * 100,
-         (r1_cor_count / counter) * 100,
-         (r2_cor_count / counter) * 100,
-         (pair_cor_count / counter) * 100,
-         (unfix_r1_count / counter) * 100,
-         (unfix_r2_count / counter) * 100,
-         (unfix_both_count / counter) * 100
+                (counter / counter) * 100,
+                (total_unfixable / counter) * 100,
+                (total_retained / counter) * 100,
+                (r1_cor_count / counter) * 100,
+                (r2_cor_count / counter) * 100,
+                (pair_cor_count / counter) * 100,
+                (unfix_r1_count / counter) * 100,
+                (unfix_r2_count / counter) * 100,
+                (unfix_both_count / counter) * 100
         )
     )
 

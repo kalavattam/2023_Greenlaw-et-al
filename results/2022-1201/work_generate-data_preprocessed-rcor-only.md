@@ -114,52 +114,52 @@ IFS=" " read -r -a infile_prefix \
 
 
 # #  Generate job submission script ---------------------------------------------
-# script_name="submit_run-rcorrector.sh"
-# threads=8
-#
-# if [[ -f "./sh_err_out/${script_name}" ]]; then
-#         rm "./sh_err_out/${script_name}"
-# fi
-# cat << script > "./sh_err_out/${script_name}"
-# #!/bin/bash
-#
-# #SBATCH --nodes=1
-# #SBATCH --cpus-per-task=${threads}
-# #SBATCH --error=./sh_err_out/err_out/${script_name%.sh}.%J.err.txt
-# #SBATCH --output=./sh_err_out/err_out/${script_name%.sh}.%J.out.txt
-#
-# #  ${script_name}
-# #  KA
-# #  $(date '+%Y-%m%d')
-#
-# read_1="\${1}"
-# read_2="\${2}"
-# outdir="\${3}"
-# threads="\${4}"
-#
-# parallel --header : --colsep " " -k -j 1 echo \\
-# "run_rcorrector.pl \\
-#     -t {threads} \\
-#     -1 {read_1} \\
-#     -2 {read_2} \\
-#     -od {outdir}" \\
-# ::: threads "\${threads}" \\
-# ::: read_1 "\${read_1}" \\
-# ::: read_2 "\${read_2}" \\
-# ::: outdir "\${outdir}"
-#
-# parallel --header : --colsep " " -k -j 1 \\
-# "run_rcorrector.pl \\
-#     -t {threads} \\
-#     -1 {read_1} \\
-#     -2 {read_2} \\
-#     -od {outdir}" \\
-# ::: threads "\${threads}" \\
-# ::: read_1 "\${read_1}" \\
-# ::: read_2 "\${read_2}" \\
-# ::: outdir "\${outdir}"
-# script
-# # vi "./sh_err_out/${script_name}"  # :q
+script_name="submit_run-rcorrector.sh"
+threads=8
+
+if [[ -f "./sh_err_out/${script_name}" ]]; then
+        rm "./sh_err_out/${script_name}"
+fi
+cat << script > "./sh_err_out/${script_name}"
+#!/bin/bash
+
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=${threads}
+#SBATCH --error=./sh_err_out/err_out/${script_name%.sh}.%J.err.txt
+#SBATCH --output=./sh_err_out/err_out/${script_name%.sh}.%J.out.txt
+
+#  ${script_name}
+#  KA
+#  $(date '+%Y-%m%d')
+
+read_1="\${1}"
+read_2="\${2}"
+outdir="\${3}"
+threads="\${4}"
+
+parallel --header : --colsep " " -k -j 1 echo \\
+"run_rcorrector.pl \\
+    -t {threads} \\
+    -1 {read_1} \\
+    -2 {read_2} \\
+    -od {outdir}" \\
+::: threads "\${threads}" \\
+::: read_1 "\${read_1}" \\
+::: read_2 "\${read_2}" \\
+::: outdir "\${outdir}"
+
+parallel --header : --colsep " " -k -j 1 \\
+"run_rcorrector.pl \\
+    -t {threads} \\
+    -1 {read_1} \\
+    -2 {read_2} \\
+    -od {outdir}" \\
+::: threads "\${threads}" \\
+::: read_1 "\${read_1}" \\
+::: read_2 "\${read_2}" \\
+::: outdir "\${outdir}"
+script
+# vi "./sh_err_out/${script_name}"  # :q
 
 
 #  Run the jobs ---------------------------------------------------------------

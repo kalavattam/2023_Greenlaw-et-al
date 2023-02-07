@@ -9,14 +9,25 @@
 
 1. [Notes](#notes)
 1. [Get situated](#get-situated)
-	1. [Install dependencies](#install-dependencies)
+    1. [Code](#code)
+    1. [Install dependencies](#install-dependencies)
+        1. [Code](#code-1)
+        1. [Printed](#printed)
 1. [Run a test with `Make`](#run-a-test-with-make)
-	1. [Use a `HEREDOC` to write the `Makefile`](#use-a-heredoc-to-write-the-makefile)
-	1. [Run `Make` with the `Makefile`](#run-make-with-the-makefile)
-	1. [Now, play around with it](#now-play-around-with-it)
-	1. [On some important *automatic variables* made available in `Make`](#on-some-important-automatic-variables-made-available-in-make)
-		1. [Clean up](#clean-up)
-		1. [Make a new `Makefile` containing *automatic variables*](#make-a-new-makefile-containing-automatic-variables)
+    1. [Use a `HEREDOC` to write the `Makefile`](#use-a-heredoc-to-write-the-makefile)
+        1. [Code](#code-2)
+    1. [Run `Make` with the `Makefile`](#run-make-with-the-makefile)
+        1. [Code](#code-3)
+        1. [Printed](#printed-1)
+    1. [Now, play around with it](#now-play-around-with-it)
+        1. [Code](#code-4)
+        1. [Printed](#printed-2)
+    1. [On some important *automatic variables* made available in `Make`](#on-some-important-automatic-variables-made-available-in-make)
+        1. [Clean up](#clean-up)
+            1. [Code](#code-5)
+        1. [Make a new `Makefile` containing *automatic variables*](#make-a-new-makefile-containing-automatic-variables)
+            1. [Code](#code-6)
+            1. [Printed](#printed-3)
 1. [On `Snakemake`](#on-snakemake)
 
 <!-- /MarkdownTOC -->
@@ -34,6 +45,8 @@
 
 <a id="get-situated"></a>
 ## Get situated
+<a id="code"></a>
+### Code
 <details>
 <summary><i>Code: Get situated</i></summary>
 
@@ -51,6 +64,8 @@ source activate Trinity_env
 
 <a id="install-dependencies"></a>
 ### Install dependencies
+<a id="code-1"></a>
+#### Code
 <details>
 <summary><i>Code: Install dependencies</i></summary>
 
@@ -64,6 +79,8 @@ mamba install -c bioconda snakemake
 </details>
 <br />
 
+<a id="printed"></a>
+#### Printed
 <details>
 <summary><i>Printed: Install dependencies</i></summary>
 
@@ -392,7 +409,8 @@ Executing transaction: done
 ## Run a test with `Make`
 <a id="use-a-heredoc-to-write-the-makefile"></a>
 ### Use a `HEREDOC` to write the `Makefile`
-
+<a id="code-2"></a>
+#### Code
 <details>
 <summary><i>Code: Use a HEREDOC to write the Makefile</i></summary>
 
@@ -420,7 +438,8 @@ mf
 
 <a id="run-make-with-the-makefile"></a>
 ### Run `Make` with the `Makefile`
-
+<a id="code-3"></a>
+#### Code
 <details>
 <summary><i>Code: Run Make with the Makefile</i></summary>
 
@@ -434,6 +453,8 @@ make all
 </details>
 <br />
 
+<a id="printed-1"></a>
+#### Printed
 <details>
 <summary><i>Printed: Run Make with the Makefile</i></summary>
 
@@ -462,6 +483,8 @@ bioawk -c fastx '{print $name "\t" length($seq)}' Drosophila_melanogaster.BDGP6.
 
 <a id="now-play-around-with-it"></a>
 ### Now, play around with it
+<a id="code-4"></a>
+#### Code
 <details>
 <summary><i>Code: Now, play around with it</i></summary>
 
@@ -480,8 +503,10 @@ make all  # Runs all downstream steps
 </details>
 <br />
 
+<a id="printed-2"></a>
+#### Printed
 <details>
-<summary><i>Printed: </i></summary>
+<summary><i>Printed: Now, play around with it</i></summary>
 
 ```txt
 ❯ rm Dmel_BDGP6.28_seqlens.tsv
@@ -520,6 +545,8 @@ bioawk -c fastx '{print $name "\t" length($seq)}' Drosophila_melanogaster.BDGP6.
 
 <a id="clean-up"></a>
 #### Clean up
+<a id="code-5"></a>
+##### Code
 <details>
 <summary><i>Code: Clean up</i></summary>
 
@@ -537,6 +564,8 @@ rm \
 
 <a id="make-a-new-makefile-containing-automatic-variables"></a>
 #### Make a new `Makefile` containing *automatic variables*
+<a id="code-6"></a>
+##### Code
 <details>
 <summary><i>Code: Make a new Makefile containing automatic variables</i></summary>
 
@@ -564,6 +593,8 @@ make all
 </details>
 <br />
 
+<a id="printed-3"></a>
+##### Printed
 <details>
 <summary><i>Printed: Make a new Makefile containing automatic variables</i></summary>
 
