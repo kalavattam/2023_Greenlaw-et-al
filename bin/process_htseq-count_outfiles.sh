@@ -252,33 +252,9 @@ Arguments:
     -i \"timecourse\" \\
     -s \"antisense_transcript\"
 #  Outfile will be \"./out/htseq-count.combined.timecourse.antisense_transcript.txt\"
-
-❯ head \"./out/htseq-count.combined.timecourse.antisense_transcript.txt\"
-BM1_DSm2_5781_sorted_sorted2antisense_transcript.txt    BM2_DSm2_7080_sorted_sorted2antisense_transcript.txt    BM3_DSm2_7079_sorted_sorted2antisense_transcript.txt    BM4_DSp2_5781_sorted_sorted2antisense_transcript.txt    BM5_DSp2_7080_sorted_sorted2antisense_transcript.txt    BM6_DSp2_7079_sorted_sorted2antisense_transcript.txt    BM7_DSp24_5781_sorted_sorted2antisense_transcript.txt    BM8_DSp24_7080_sorted_sorted2antisense_transcript.txt    BM9_DSp24_7079_sorted_sorted2antisense_transcript.txt    BM10_DSp48_5781_sorted_sorted2antisense_transcript.txt    BM11_DSp48_7080_sorted_sorted2antisense_transcript.txt    Bp1_DSm2_5782_sorted_sorted2antisense_transcript.txt    Bp2_DSm2_7081_sorted_sorted2antisense_transcript.txt    Bp3_DSm2_7078_sorted_sorted2antisense_transcript.txt    Bp4_DSp2_5782_sorted_sorted2antisense_transcript.txt    Bp5_DSp2_7081_sorted_sorted2antisense_transcript.txt    Bp6_DSp2_7078_sorted_sorted2antisense_transcript.txt    Bp7_DSp24_5782_sorted_sorted2antisense_transcript.txt    Bp8_DSp24_7081_sorted_sorted2antisense_transcript.txt    Bp9_DSp24_7078_sorted_sorted2antisense_transcript.txt    Bp10_DSp48_5782_sorted_sorted2antisense_transcript.txt    Bp11_DSp48_7081_sorted_sorted2antisense_transcript.txt    Bp12_DSp48_7078_sorted_sorted2antisense_transcript.txt
-Unit10    6    41    61    70    199    149    46    194    146    123    345    6    27    58    73    212    190    55    223    124    101    305    269
-Unit100    875    790    1399    614    715    977    660    720    1060    566    575    610    807    914    536    761    903    600    847    849    565    535    951
-Unit101    170    95    145    21    45    71    39    76    54    9    8    129    92    82    28    33    55    16    47    52    9    12    11
-Unit102    357    490    626    198    384    418    90    277    230    128    182    282    470    433    178    373    427    82    209    171    115    183    157
-Unit103    221    470    613    495    421    475    70    375    231    44    295    150    508    449    652    472    320    66    318    196    56    261    192
-Unit104    66    125    170    19    112    93    8    106    73    18    91    52    156    134    21    80    73    8    120    50    23    169    29
-Unit105    5    33    61    13    36    44    10    45    32    7    31    3    39    53    8    32    29    6    52    40    11    25    18
-Unit106    35    80    179    13    84    129    7    57    62    6    34    30    106    130    18    81    136    14    58    62    6    21    26
-Unit107    36    151    253    39    169    270    74    316    232    174    329    19    111    212    53    215    233    91    324    205    150    390    329
-
-❯ tail \"./out/htseq-count.combined.timecourse.antisense_transcript.txt\"
-Unit95    91    64    85    30    77    70    39    84    56    28    47    76    92    68    55    79    76    56    82    40    21    36    37
-Unit96    40    105    122    9    61    54    13    49    49    2    32    27    121    100    15    74    60    9    90    43    4    36    16
-Unit97    40    57    116    33    193    234    86    442    238    592    2386    30    72    94    24    197    252    92    647    191    507    1952    1291
-Unit98    23    83    158    7    34    58    5    24    20    1    15    24    82    94    8    35    48    1    30    24    3    13    10
-Unit99    781    716    1252    590    653    940    591    801    1093    525    553    553    743    897    673    676    914    589    798    862    537    522    900
-__no_feature    10883361    10636972    11055170    8816313    10510602    10163454    6195421    7878710    7845727    4141391    4815582    8314800    9764870    8592440    8968118    11251758    9509848    6613218    8055458    5985487    3853393    4600992    5291018
-__ambiguous    140    245    337    77    180    188    57    133    148    53    102    110    250    244    99    219    223    63    155    108    40    129    120
-__too_low_aQual    6208937    6762356    6657561    6189830    7992973    6610857    7121099    6959077    6245814    6669217    5737359    5418116    6305014    5251447    7109843    7353005    6005371    6760985    7201603    5448027    5762715    6193437    6767390
-__not_aligned    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0
-__alignment_not_unique    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0
 """
 
-while getopts "u:d:o:i:s" opt; do
+while getopts "u:d:o:i:s:" opt; do
     case "${opt}" in
         u) safe_mode="${OPTARG}" ;;
         d) dir_q="${OPTARG}" ;;
@@ -290,17 +266,40 @@ while getopts "u:d:o:i:s" opt; do
 done
 
 [[ -z "${safe_mode}" ]] && safe_mode=FALSE
-[[ -z "${dir_q}" ]] && print_usage
-[[ -z "${dir_o}" ]] && print_usage
-[[ -z "${identifier}" ]] && print_usage
-[[ -z "${string}" ]] && string="mRNA"
+[[ -z "${dir_q}" ]] && \
+    {
+        echo "Argument -d [dir_q (infile/query directory)] is empty"
+        echo "Printing help message and exiting..."
+        echo ""
+        print_usage
+    }
+[[ -z "${dir_o}" ]] && \
+    {
+        echo "Argument -o [dir_o (outfile directory)] is empty"
+        echo "Printing help message and exiting..."
+        echo ""
+        print_usage
+    }
+[[ -z "${identifier}" ]] && \
+    {
+        echo "Argument -i [identifier] is empty"
+        echo "Printing help message and exiting..."
+        echo ""
+        print_usage
+    }
+[[ -z "${string}" ]] && \
+    {
+        string="mRNA"
+        echo "Argument -s [string] is empty, so it is set to its default \
+        value of 'mRNA'"
+    }
 
-#TEST  (2023-0206)
+#TEST  (2023-0207)
 # safe_mode=FALSE
-# dir_q="${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0115/tmp"  # cd "${dir_q}"
-# dir_o="${dir_q}/out"  # ., "${dir_o}"
-# identifier="timecourse"
-# string="antisense_transcript"
+# dir_q="."  # cd "${dir_q}"
+# dir_o="./test.KA.2023-0207"  # ., "${dir_o}"
+# identifier="test.KA.2023-0207"
+# string="CUT"
 #
 # echo "${safe_mode}"
 # echo "${dir_q}"
@@ -321,9 +320,10 @@ check_etc
 #  ------------------------------------
 #  Assign path and name for the tempfile and outfile
 #  ------------------------------------
-file_t="${dir_o}/htseq-count.combined.${identifier}.${string}.tmp.txt"  # echo "${file_t}"
-file_o="${file_t/.tmp.txt/.txt}"  # echo "${file_o}"
-
+file_t="${dir_o}/htseq-count.combined.${identifier}.${string}.tmp.txt"
+file_o="${file_t/.tmp.txt/.txt}"
+echo "${file_t}"
+echo "${file_o}"
 
 #  ------------------------------------
 #  If present, then remove the temp- and outfile
@@ -378,21 +378,22 @@ paste ${files[*]} | cut -f "1,${joined%,}" > "${file_t}"
 
 #  ------------------------------------
 #  Strip paths from individual files, then save the filenames into a new array,
-#+ which will be used to name the columns in the outfile
+#+ col_names, which will be used to name the columns in the outfile
 #  ------------------------------------
-unset filenames
-typeset -a filenames
+unset col_names
+typeset -a col_names
+col_names+=( "features" )
 for i in "${files[@]}"; do
-    filenames+=( "$(basename "${i}")" )
+    col_names+=( "$(basename "${i}")" )
 done
-# echo_test "${filenames[@]}"
+# echo_test "${col_names[@]}"
 
 
 #  ------------------------------------
-#  To the tempfile, add the filenames as column names
+#  To the tempfile, add the filenames/col_names as column names
 #  ------------------------------------
 sed -i "1i\
-$(echo ${filenames[*]})
+$(echo ${col_names[*]})
 " "${file_t}"
 # head "${file_t}"
 
