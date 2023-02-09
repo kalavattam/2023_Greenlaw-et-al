@@ -101,28 +101,27 @@ main() {
 #  Handle arguments
 #  ------------------------------------
 help="""
-exclude_bam_alignments-unmapped.sh
-----------------------------------
+#  ------------------------------------
+#  exclude_bam_alignments-unmapped.sh
+#  ------------------------------------
 Filter out unmapped alignments from a bam infile. Optionally, run samtools
 flagstat on the filtered .bam outfile.
 
 Name(s) of outfile(s) will be derived from the infile.
 
 Dependencies:
-  - samtools >= #TBD
+    - samtools >= #TBD
 
 Arguments:
-  -h  print this help message and exit
-  -u  use safe mode <lgl; default: FALSE>
-  -i  bam infile, including path <chr>
-  -o  outfile directory, including path; if not found, will be mkdir'd <chr>  #TODO
-  -f  run samtools flagstat on bams <lgl; default: FALSE>
-  -t  number of threads <int >= 1; default: 1>
+    -u  use safe mode <lgl; default: FALSE>
+    -i  bam infile, including path <chr>
+    -o  outfile directory, including path; if not found, will be mkdir'd <chr>  #TODO
+    -f  run samtools flagstat on bams <lgl; default: FALSE>
+    -t  number of threads <int >= 1; default: 1>
 """
 
-while getopts "h:u:i:o:f:t:" opt; do
+while getopts "u:i:o:f:t:" opt; do
     case "${opt}" in
-        h) echo "${help}" && exit ;;
         u) safe_mode="${OPTARG}" ;;
         i) infile="${OPTARG}" ;;
         o) outdir="${OPTARG}" ;;
