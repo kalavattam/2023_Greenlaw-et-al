@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#  exclude_bam_reads-unmapped.sh
+#  downsample_fastqs.sh
 #  KA
 
 
@@ -98,43 +98,25 @@ check_exists_directory() {
             [[ -d "${2}" ]] ||
                 {
                     printf "%s\n" "Exiting: ${2} does not exist."
-                    exit 1
+                    # exit 1
                 }
             ;;
         *) \
             printf "%s\n" "Exiting: param 1 is not \"TRUE\" or \"FALSE\"."
             printf "%s\n" "${what}"
-            exit 1
-            ;;
-    esac
-}
-
-
-check_argument_flagstat() {
-    case "$(convert_chr_lower "${flagstat}")" in
-        true | t) \
-            flagstat=1
-            printf "%s\n" "\"Run samtools flagstat\" is TRUE."
-            ;;
-        false | f) \
-            flagstat=0
-            printf "%s\n" "\"Run samtools flagstat\" is FALSE."
-            ;;
-        *) \
-            printf "%s\n\n" "Exiting: \"flagstat\" argument must be TRUE or FALSE.\n"
             # exit 1
             ;;
     esac
 }
 
 
-check_argument_threads() {
+check_argument_downsample() {
     what="""
-    check_argument_threads()
+    check_argument_downsample()
     ---------------
-    Check the value assigned to variable for threads/cores in script
+    Check the downsampling value assigned to variable in script
 
-    :param 1: value assigned to variable for threads/cores <int >= 1>
+    :param 1: value assigned to variable for downsampling <int >= 1>
     :return: NA
 
     #TODO Checks...
@@ -181,39 +163,60 @@ print_usage() {
     #TODO Checks...
     """
     echo "${1}"
-    exit 1
+    # exit 1
 }
 
 
 check_etc() {
     #  ------------------------------------
-    #  Check depencies, and check and make variable assignments 
+    #  Check and make variable assignments 
     #  ------------------------------------
     #  Check for necessary dependencies; exit if not found
-    check_dependency samtools
+    check_dependency reformat.sh
 
     #  Evaluate "${safe_mode}"
     check_argument_safe_mode "${safe_mode}"
 
-    #  Check that "${infile}" exists
-    check_exists_file "${infile}"
+    #  Check that "${infile_1}" and "${infile_2}" exists
+    check_exists_file "${infile_1}"
+    check_exists_file "${infile_2}"
+    #TODO 1/2 Some kind of check that "${infile_1}" and "${infile_2}" are an
+    #TODO 2/2 appropriate pair
 
-    #  If TRUE, then make "${outdir}" if it does not exist; if FALSE (i.e.,
-    #+ "${outdir}" does not exist), then exit
+    #  If TRUE exist, then make "${outdir}" if it does not exist; if FALSE,
+    #+ then exit if "${outdir}" does not exist
     check_exists_directory TRUE "${outdir}"
 
-    #  Check on value assigned to "${threads}"
-    check_argument_threads "${threads}"
+    #  Check on value assigned to "${downsample}"
+    check_argument_downsample "${downsample}"
 
-    #  Check on value assigned to "${flagstat}"
-    check_argument_flagstat
-    
-    echo ""
+    #  ------------------------------------
+    #  Establish outfile names based on infile extensions
+    #  ------------------------------------
+    ult="$(echo "${infile_1}" | awk -F "." '{ print $NF }')"
+    pen="$(echo "${infile_1}" | awk -F "." '{ print $(NF - 1) }')"
 
-    #TODO Not sure if I want these assignments in this function...
-    #  Make additional variable assignments from the arguments
-    base="$(basename "${infile}")"
-    outfile="${base%.bam}.exclude-unmapped.bam"
+    if [[ "${ult}" == "gz" ]]; then
+        if [[ "${pen}" == "fq" || "${pen}" == "fastq" ]]; then
+            stem_1="$(basename "${infile_1%."${pen}"."${ult}"}")"
+            stem_2="$(basename "${infile_2%."${pen}"."${ult}"}")"
+            extension="sample-${downsample}.${pen}.${ult}"
+            outfile_1="${outdir}/${stem_1}.${extension}"
+            outfile_2="${outdir}/${stem_2}.${extension}"
+        else
+            echo "Exiting: Penultimate extension must be \"fq\" or \"fastq\""
+            # exit 1
+        fi
+    elif [[ "${ult}" == "fq" || "${ult}" == "fastq" ]]; then
+        stem_1="$(basename "${infile_1%."${ult}"}")"
+        stem_2="$(basename "${infile_2%."${ult}"}")"
+        extension="sample-${downsample}.${ult}.gz"
+        outfile_1="${outdir}/${stem_1}.${extension}"
+        outfile_2="${outdir}/${stem_2}.${extension}"
+    else
+        echo "Exiting: Extension must be \"gz\", \"fq\", or \"fastq\""
+        # exit 1
+    fi
 
     echo ""
 }
@@ -221,33 +224,14 @@ check_etc() {
 
 main() {
     #  ------------------------------------
-    #  Run samtools to exclude unmapped reads from bam infile
+    #  Run reformat.sh (BBMap)
     #  ------------------------------------
-    echo ""
-    echo "Running ${0}... "
-
-    echo "Filtering out unmapped reads..."
-
-    samtools view \
-        -@ "${threads}" \
-        -b -F 0x4 -F 0x8 \
-        "${infile}" \
-        -o "${outdir}/${outfile}"
-    check_exit $? "samtools"
-
-
-    #  ------------------------------------
-    #  Run flagstat on filtered bam outfile (optional)
-    #  ------------------------------------
-    if [[ $((flagstat)) -eq 1 ]]; then
-        samtools flagstat \
-            -@ "${threads}" \
-            "${outdir}/${outfile}" \
-                > "${outdir}/${outfile%.bam}.flagstat.txt" &
-        check_exit $? "samtools"
-
-        wait
-    fi
+    reformat.sh \
+        in1="${infile_1}" \
+        in2="${infile_2}" \
+        out1="${outfile_1}" \
+        out2="${outfile_2}" \
+        samplereadstarget="${downsample}"    
 }
 
 
@@ -256,41 +240,48 @@ main() {
 #  ------------------------------------
 help="""
 #  ------------------------------------
-#  exclude_bam_alignments-unmapped.sh
+#  downsample_fastqs.sh
 #  ------------------------------------
-Filter out unmapped alignments from a bam infile. Optionally, run samtools
-flagstat on the filtered bam outfile.
-
-Name(s) of outfile(s) will be derived from the infile.
+Randomly extract a subset of read pairs from paired-end fastq files. Number of
+read pairs to be extracted is specified by the user. Script does not allow for
+upsampling. Name(s) of outfile(s) will be derived from the infile. Outfiles
+will gzip'd.
 
 Dependencies:
-    - samtools >= version #TBD
+    - reformat.sh (part of BBMap) >= version #TBD
 
 Arguments:
-    -u  safe_mode  use safe mode: TRUE or FALSE <lgl> [default: FALSE]
-    -i  infile     bam infile, including path <chr>
-    -o  outdir     outfile directory, including path; if not found, will be
-                   mkdir'd <chr>
-    -f  flagstat   run samtools flagstat on bams <lgl> [default: FALSE]
-    -t  threads    number of threads <int >= 1> [default: 1]
+    -u  safe_mode   use safe mode: TRUE or FALSE <lgl> [default: FALSE]
+    -1  infile_1    \"first\" fastq infile, including path <chr>
+    -2  infile_2    \"second\" fastq infile, including path <chr>
+    -o  outdir      outfile directory, including path; if not found, will be
+                    mkdir'd <chr>
+    -d  downsample  number of read pairs to sample <int >= 0>
 """
 
-while getopts "u:i:o:f:t:" opt; do
+while getopts "u:1:2:o:d:" opt; do
     case "${opt}" in
         u) safe_mode="${OPTARG}" ;;
-        i) infile="${OPTARG}" ;;
+        1) infile_1="${OPTARG}" ;;
+        2) infile_2="${OPTARG}" ;;
         o) outdir="${OPTARG}" ;;
-        f) flagstat="${OPTARG}" ;;
-        t) threads="${OPTARG}" ;;
+        d) downsample="${OPTARG}" ;;
         *) print_usage "${help}" ;;
     esac
 done
 
 [[ -z "${safe_mode}" ]] && safe_mode=FALSE
-[[ -z "${infile}" ]] && print_usage "${help}"
+[[ -z "${infile_1}" ]] && print_usage "${help}"
+[[ -z "${infile_2}" ]] && print_usage "${help}"
 [[ -z "${outdir}" ]] && print_usage "${help}"
-[[ -z "${flagstat}" ]] && flagstat=FALSE
-[[ -z "${threads}" ]] && threads=1
+[[ -z "${downsample}" ]] && print_usage "${help}"
+
+#TEST (2023-0209)
+# safe_mode=FALSE
+# infile_1="./results/2023-0115/fastqs_UMI-dedup/rcorrector/5781_G1_IN_S5_R1.UMI.atria.cor.fq.gz"
+# infile_2="./results/2023-0115/fastqs_UMI-dedup/rcorrector/5781_G1_IN_S5_R3.UMI.atria.cor.fq.gz"
+# outdir="."
+# downsample=50000
 
 
 #  ------------------------------------
@@ -300,6 +291,6 @@ check_etc
 
 
 #  ------------------------------------
-#  Run samtools to exclude unmapped alignments from bam infile, etc.
+#  Run reformat.sh (BBMap)
 #  ------------------------------------
 main

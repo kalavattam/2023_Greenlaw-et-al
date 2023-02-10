@@ -4,23 +4,11 @@
 #  KA
 
 
-#  ------------------------------------
-#  Source external functions into environment
-#  ------------------------------------
-# functions="$(dirname "${BASH_SOURCE}")/functions.sh"
-# if [[ -f "${functions}" ]]; then
-#     source "${functions}"
-# else
-#     printf "%s\n" "Exiting: functions.sh not found."
-#     exit 1
-# fi
-
-
 check_dependency() {
     what="""
     check_dependency()
     ------------------
-    Check if program is available in "\${PATH}"; exit if not
+    Check if program is available in \"\${PATH}\"; exit if not
     
     :param 1: program to be checked <chr>
     :return: NA
@@ -42,15 +30,14 @@ check_argument_safe_mode() {
     what="""
     check_argument_safe_mode()
     --------------------------
-    Run script in \"safe mode\" (\`set -Eeuxo pipefail\`) if specified; assumes
-    variable \"\${safe_mode}\" is defined
+    Run script in \"safe mode\" (\`set -Eeuxo pipefail\`) if specified
     
-    :param \"\${safe_mode}\": value assigned to variable within script <lgl>
+    :param 1: run script in safe mode: TRUE or FALSE <lgl> [default: FALSE]
     :return: NA
 
-    #TODO Check that params are not empty or inappropriate formats or strings
+    #TODO Check that param is not empty or inappropriate format/string
     """
-    case "$(convert_chr_lower "${safe_mode}")" in
+    case "$(convert_chr_lower "${1}")" in
         true | t) \
             printf "%s\n" "-u: \"Safe mode\" is TRUE."
             set -Eeuxo pipefail
@@ -73,11 +60,13 @@ check_exists_file() {
     
     :param 1: file, including path <chr>
     :return: NA
+
+    #TODO Check that param is not an inappropriate format/string
     """
     if [[ -z "${1}" ]]; then
         printf "%s\n" "${what}"
     elif [[ ! -f "${1}" ]]; then
-        printf "%s\n\n" "Exiting: File '${1}' does not exist."
+        printf "%s\n\n" "Exiting: File \"${1}\" does not exist."
         # exit 1
     else
         :
@@ -85,35 +74,37 @@ check_exists_file() {
 }
 
 
-check_exists_directory() {  #TODO Fix this function
+check_exists_directory() {
     what="""
     check_exists_directory()
     ------------------------
     Check that a directory exists; if it doesn't, then either make it or exit
     
-    :param 1: create directory if not found: "TRUE" or "FALSE"
-              <lgl; default: FALSE>
+    :param 1: create directory if not found: TRUE or FALSE <lgl>
     :param 2: directory, including path <chr>
+    :return: NA
+
+    #TODO Check that params are not empty or inappropriate formats/strings
     """
     case "$(convert_chr_lower "${1}")" in
         true | t) \
-            [[ ! -d "${2}" ]] &&
+            [[ -d "${2}" ]] ||
                 {
                     printf "%s\n" "${2} doesn't exist; mkdir'ing it."
                     mkdir -p "${2}"
                 }
             ;;
         false | f) \
-            [[ ! -d "${2}" ]] &&
+            [[ -d "${2}" ]] ||
                 {
                     printf "%s\n" "Exiting: ${2} does not exist."
-                    # exit 1
+                    exit 1
                 }
             ;;
         *) \
             printf "%s\n" "Exiting: param 1 is not \"TRUE\" or \"FALSE\"."
             printf "%s\n" "${what}"
-            # exit 1
+            exit 1
             ;;
     esac
 }
@@ -123,22 +114,39 @@ check_argument_threads() {
     what="""
     check_argument_threads()
     ---------------
-    Check the value assigned to \"\${threads}\" in script; assumes variable
-    \"\${threads}\" is defined
+    Check the value assigned to variable for threads/cores in script
 
-    :param \"\${threads}\": value assigned to variable within script <int >= 1>
+    :param 1: value assigned to variable for threads/cores <int >= 1>
     :return: NA
 
     #TODO Checks...
-    #TODO Change to :param #: input
     """
-    case "${threads}" in
+    case "${1}" in
         '' | *[!0-9]*) \
-            printf "%s\n" "Exiting: \"\${threads}\" must be an integer >= 1."
+            printf "%s\n" "Exiting: argument must be an integer >= 1."
             # exit 1
             ;;
         *) : ;;
     esac
+}
+
+
+split_with_samtools() {
+    what="""
+    split_with_samtools()
+    ---------------------
+    Use samtools to filter a bam file such that it contains only chromosome(s)
+    specified with ${0} argument -s
+
+    :param 1: threads <int >= 1>
+    :param 2: bam infile, including path <chr>
+    :param 3: chromosomes to retain <chr>
+    :param 4: bam outfile, including path <chr>
+    :return: param 2 filtered to include only param 3 in param 4
+
+    #TODO Checks...
+    """
+    samtools view -@ "${1}" -h "${2}" ${3} -o "${4}"
 }
 
 
@@ -149,13 +157,13 @@ convert_chr_lower() {
     Convert alphabetical characters in a string to lowercase letters
     
     :param 1: string <chr>
-    :return: converted string <stdout>
+    :return: converted string (stdout) <chr>
     """
     if [[ -z "${1}" ]]; then
         printf "%s\n" "${what}"
     else
         string_in="${1}"
-        string_out="$(printf %s "${1}" | tr '[:upper:]' '[:lower:]')"
+        string_out="$(printf %s "${string_in}" | tr '[:upper:]' '[:lower:]')"
 
         echo "${string_out}"
     fi
@@ -166,16 +174,14 @@ print_usage() {
     what="""
     print_usage()
     -------------
-    Print the script's help message and exit; assumes variable \"\${help}\" is
-    defined
+    Print the script's help message and exit
 
-    :param \"\${help}\": help message assigned to a variable within script
-    :return: help message <stdout>
+    :param 1: help message assigned to a variable within script <chr>
+    :return: help message (stdout) <chr>
 
     #TODO Checks...
-    #TODO Change to :param #: input
     """
-    echo "${help}"
+    echo "${1}"
     exit 1
 }
 
@@ -188,14 +194,14 @@ check_etc() {
     check_dependency samtools
 
     #  Evaluate "${safe_mode}"
-    check_argument_safe_mode
+    check_argument_safe_mode "${safe_mode}"
 
     #  Check that "${infile}" exists
     check_exists_file "${infile}"
 
     #  If TRUE exist, then make "${outdir}" if it does not exist; if FALSE,
     #+ then exit if "${outdir}" does not exist
-    check_exists_directory FALSE "${outdir}"  #TODO Fix this function
+    check_exists_directory FALSE "${outdir}"
 
     #  Check on the specified value for "${split}"
     case "$(echo "${split}" | tr '[:upper:]' '[:lower:]')" in
@@ -221,31 +227,13 @@ check_etc() {
     esac
 
     #  Check on value assigned to "${threads}"
-    check_argument_threads
+    check_argument_threads "${threads}"
 
+    #TODO Not sure if I want this assignment in this function...
     #  Make additional variable assignments from the arguments
     outfile="$(basename "${infile}")"
 
     echo ""
-}
-
-
-split_with_samtools() {
-    what="""
-    split_with_samtools()
-    ---------------------
-    Use samtools to filter a bam file such that it contains only chromosome(s)
-    specified with ${0} argument -s
-
-    :param 1: threads <int >= 1>
-    :param 2: bam infile, including path <chr>
-    :param 3: chromosomes to retain <chr>
-    :param 4: bam outfile, including path <chr>
-    :return: param 2 filtered to include only param 3 in param 4
-
-    #TODO Checks...
-    """
-    samtools view -@ "${1}" -h "${2}" ${3} -o "${4}"
 }
 
 
@@ -297,15 +285,16 @@ main() {
 #  Handle arguments, assign variables
 #  ------------------------------------
 help="""
-split_bam_by_species.sh
------------------------
-Take user-input .bam files containing alignments to S. cerevisiae, K. lactis,
-and 20 S narnavirus, and split them into distinct .bam files for each species,
+#  ------------------------------------
+#  split_bam_by_species.sh
+#  ------------------------------------
+Take user-input bam files containing alignments to S. cerevisiae, K. lactis,
+and 20 S narnavirus, and split them into distinct bam files for each species,
 with three splits for S. cerevisiae: all S. cerevisiae chromosomes not
 including chromosome M, all S. cerevisiae including chromosome M, and S.
 cerevisiae chromosome M only.
 
-Names of chromosomes in .bam infiles must be in the following format:
+Names of chromosomes in bam infiles must be in the following format:
   - S. cerevisiae (SC)
     - I
     - II
@@ -335,50 +324,52 @@ Names of chromosomes in .bam infiles must be in the following format:
   - 20 S narnavirus
     - 20S
 
-The split .bam files are saved to a user-defined out directory.
+(That is, chrI, chrII, chrA, etc. format is not accepted.)
+
+The split bam files are saved to a user-defined out directory.
 
 Dependencies:
-  - samtools >= #TBD
+    - samtools >= version #TBD
 
 Arguments:
-  -h  print this help message and exit
-  -u  use safe mode: \"TRUE\" or \"FALSE\" <lgl; default: FALSE>
-  -i  bam infile, including path <chr>
-  -o  outfile directory, including path; if not found, will be mkdir'd <chr>
-  -s  what to split out; options: SC_all, SC_no_Mito, SC_VII, SC_XII,
-      SC_VII_XII, SC_Mito, KL_all, virus_20S <chr; default: SC_all>
+    -u  safe_mode  use safe mode: TRUE or FALSE <lgl> [default: FALSE]
+    -i  infile     bam infile, including path <chr>
+    -o  outdir     outfile directory, including path; if not found, will be
+                   mkdir'd <chr>
+    -s  split      what to split out; options: SC_all, SC_no_Mito, SC_VII,
+                   SC_XII, SC_VII_XII, SC_Mito, KL_all, virus_20S <chr>
+                   [default: SC_all]
 
-            SC_all  return all SC chromosomes, including Mito (default)
-        SC_no_Mito  return all SC chromosomes, excluding Mito
-            SC_VII  return only SC chromosome VII
-            SC_XII  return only SC chromosome XII
-        SC_VII_XII  return only SC chromosomes VII and XII
-           SC_Mito  return only SC chromosome Mito
-            KL_all  return all KL chromosomes
-         virus_20S  return only 20 S narnavirus
+                       SC_all  return all SC chromosomes, including Mito
+                   SC_no_Mito  return all SC chromosomes, excluding Mito
+                       SC_VII  return only SC chromosome VII
+                       SC_XII  return only SC chromosome XII
+                   SC_VII_XII  return only SC chromosomes VII and XII
+                      SC_Mito  return only SC chromosome Mito
+                       KL_all  return all KL chromosomes
+                    virus_20S  return only 20S narnavirus
 
-  -t  number of threads <int >= 1; default: 1>
+    -t  threads    number of threads <int >= 1; default: 1>
 """
 
-while getopts "h:u:i:o:s:t:" opt; do
+while getopts "u:i:o:s:t:" opt; do
     case "${opt}" in
-        h) echo "${help}" && exit ;;
         u) safe_mode="${OPTARG}" ;;
         i) infile="${OPTARG}" ;;
         o) outdir="${OPTARG}" ;;
         s) split="${OPTARG}" ;;
         t) threads="${OPTARG}" ;;
-        *) print_usage ;;
+        *) print_usage "${help}" ;;
     esac
 done
 
 [[ -z "${safe_mode}" ]] && safe_mode=FALSE
-[[ -z "${infile}" ]] && print_usage
-[[ -z "${outdir}" ]] && print_usage
+[[ -z "${infile}" ]] && print_usage "${help}"
+[[ -z "${outdir}" ]] && print_usage "${help}"
 [[ -z "${split}" ]] && split="SC_all"
 [[ -z "${threads}" ]] && threads=1
 
-# #TEST
+#TEST (undated)
 # safe_mode=FALSE
 # infile="${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1025/align_process_fastqs/bam/5781_G1_IN_merged.bam"
 # outdir="${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1025/align_process_fastqs/bam"
@@ -394,6 +385,14 @@ done
 # ls -lhaFG "${infile}"
 # ls -lhaFG "${outdir}"
 
+
+#  ------------------------------------
+#  Check dependencies, and check and make variable assignments 
+#  ------------------------------------
 check_etc
 
+
+#  ------------------------------------
+#  Run samtools to split bam infiles
+#  ------------------------------------
 main

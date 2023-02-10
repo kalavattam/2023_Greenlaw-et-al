@@ -79,132 +79,6 @@ list_tally_flags() {
 }
 
 
-check_argument_safe_mode() {
-	what="""
-	check_argument_safe_mode()
-	--------------------------
-    Run script in \"safe mode\" (\`set -Eeuxo pipefail\`) if specified; assumes
-    variable \"\${safe_mode}\" is defined
-    
-    :param \"\${safe_mode}\": value assigned to variable within script <lgl>
-    :return: NA
-
-    #TODO Check that params are not empty or inappropriate formats or strings
-	"""
-	case "$(convert_chr_lower "${safe_mode}")" in
-	    true | t) \
-	        printf "%s\n" "-u: \"Safe mode\" is TRUE."
-	        set -Eeuxo pipefail
-	        ;;
-	    false | f) \
-	        printf "%s\n" "\"Safe mode\" is FALSE." ;;
-	    *) \
-	        printf "%s\n" "Exiting: \"Safe mode\" must be TRUE or FALSE."
-	        # exit 1
-	        ;;
-	esac
-}
-
-
-check_argument_threads() {
-	what="""
-	check_argument_threads()
-	---------------
-	Check the value assigned to \"\${threads}\" in script; assumes variable
-	\"\${threads}\" is defined
-
-	:param \"\${threads}\": value assigned to variable within script <int >= 1>
-	:return: NA
-
-	#TODO Checks...
-	#TODO Change to :param #: input
-	"""
-	case "${threads}" in
-	    '' | *[!0-9]*) \
-	        printf "%s\n" "Exiting: \"\${threads}\" must be an integer >= 1."
-	        # exit 1
-	        ;;
-	    *) : ;;
-	esac
-}
-
-
-check_dependency() {
-	what="""
-	check_dependency()
-	------------------
-    Check if program is available in "\${PATH}"; exit if not
-    
-    :param 1: program to be checked <chr>
-    :return: NA
-	"""
-	if [[ -z "${1}" ]]; then
-		printf "%s\n" "${what}"
-	else
-	    command -v "${1}" &>/dev/null ||
-	        {
-	            printf "%s\n" "Exiting: \"${1}\" not found in \"\${PATH}\"."
-	            printf "%s\n\n" "         Check your env or install \"${1}\"?"
-	            # exit 1
-	        }
-	fi
-}
-
-
-check_exists_file() {
-	what="""
-	check_exists_file()
-	-------------------
-	Check that a file exists; exit if it doesn't
-	
-	:param 1: file, including path <chr>
-	:return: NA
-	"""
-	if [[ -z "${1}" ]]; then
-		printf "%s\n" "${what}"
-	elif [[ ! -f "${1}" ]]; then
-        printf "%s\n\n" "Exiting: File '${1}' does not exist."
-        # exit 1
-    else
-    	:
-    fi
-}
-
-
-check_exists_directory() {  #TODO Fix this function
-	what="""
-	check_exists_directory()
-	------------------------
-	Check that a directory exists; if it doesn't, then either make it or exit
-	
-	:param 1: create directory if not found: "TRUE" or "FALSE"
-	          <lgl; default: FALSE>
-	:param 2: directory, including path <chr>
-	"""
-	case "$(convert_chr_lower "${1}")" in
-        true | t) \
-            [[ ! -d "${2}" ]] &&
-			    {
-			        printf "%s\n" "${2} doesn't exist; mkdir'ing it."
-        			mkdir -p "${2}"
-			    }
-            ;;
-        false | f) \
-            [[ ! -d "${2}" ]] &&
-			    {
-			        printf "%s\n" "Exiting: ${2} does not exist."
-			        # exit 1
-			    }
-            ;;
-        *) \
-            printf "%s\n" "Exiting: param 1 is not \"TRUE\" or \"FALSE\"."
-            printf "%s\n" "${what}"
-            # exit 1
-            ;;
-    esac
-}
-
-
 check_exit() {
 	what="""
 	check_exit()
@@ -224,26 +98,6 @@ check_exit() {
 }
 
 
-convert_chr_lower() {
-	what="""
-	convert_chr_lower()
-	-------------------
-	Convert alphabetical characters in a string to lowercase letters
-	
-	:param 1: string <chr>
-	:return: converted string <stdout>
-	"""
-	if [[ -z "${1}" ]]; then
-		printf "%s\n" "${what}"
-	else
-		string_in="${1}"
-		string_out="$(printf %s "${1}" | tr '[:upper:]' '[:lower:]')"
-
-		echo "${string_out}"
-	fi
-}
-
-
 err() {
 	what="""
 	err()
@@ -257,22 +111,4 @@ err() {
 	"""
     echo "${1} exited unexpectedly"
     # exit 1
-}
-
-
-print_usage() {
-    what="""
-    print_usage()
-    -------------
-    Print the script's help message and exit; assumes variable \"\${help}\" is
-    defined
-
-    :param \"\${help}\": help message assigned to a variable within script
-    :return: help message <stdout>
-
-    #TODO Checks...
-    #TODO Change to :param #: input
-    """
-    echo "${help}"
-    exit 1
 }
