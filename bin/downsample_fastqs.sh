@@ -163,14 +163,29 @@ print_usage() {
     #TODO Checks...
     """
     echo "${1}"
-    # exit 1
+    exit 1
 }
 
 
 check_etc() {
-    #  ------------------------------------
-    #  Check and make variable assignments 
-    #  ------------------------------------
+    what="""
+    check_etc()
+    -----------
+    Check depencies, and check and make variable assignments 
+
+    #TODO Checks, etc., and a means to print the contents of variable what
+
+    :global safe_mode:
+    :global infile_1:
+    :global infile_2:
+    :global outdir:
+    :global downsample:
+    :return global stem_1:
+    :return global stem_2:
+    :return global extension:
+    :return global outfile_1:
+    :return global outfile_2:
+    """
     #  Check for necessary dependencies; exit if not found
     check_dependency reformat.sh
 
@@ -190,9 +205,10 @@ check_etc() {
     #  Check on value assigned to "${downsample}"
     check_argument_downsample "${downsample}"
 
-    #  ------------------------------------
-    #  Establish outfile names based on infile extensions
-    #  ------------------------------------
+    #TODO Not sure if I want these assignments in this function...
+    local pen
+    local ult
+
     ult="$(echo "${infile_1}" | awk -F "." '{ print $NF }')"
     pen="$(echo "${infile_1}" | awk -F "." '{ print $(NF - 1) }')"
 
@@ -223,9 +239,21 @@ check_etc() {
 
 
 main() {
-    #  ------------------------------------
-    #  Run reformat.sh (BBMap)
-    #  ------------------------------------
+    what="""
+    main()
+    ------
+    Run reformat.sh (BBMap)
+
+    #TODO Checks, etc., and a means to print the contents of variable what
+    
+    :global infile_1:
+    :global infile_2:
+    :global outfile_1:
+    :global outfile_2:
+    :global downsample:
+    :return: file \"\${outfile_1}\"
+    :return: file \"\${outfile_2}\"
+    """
     reformat.sh \
         in1="${infile_1}" \
         in2="${infile_2}" \

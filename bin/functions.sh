@@ -3,93 +3,19 @@
 #  functions.sh
 #  KA
 
-calculate_run_time() {
-	what="""
-	calculate_run_time()
-	--------------------
-    Calculate run time for chunk of code
-    
-    :param 1: start time in \$(date +%s) format
-    :param 2: end time in \$(date +%s) format
-    :param 3: message to be displayed when printing the run time <chr>
-    
-    #TODO Check that params are not empty or inappropriate formats or strings
-    """
-    run_time="$(echo "${2}" - "${1}" | bc -l)"
-    
-    echo ""
-    echo "${3}"
-    printf 'Run time: %dh:%dm:%ds\n' \
-    	$(( run_time/3600 )) \
-    	$(( run_time%3600/60 )) \
-    	$(( run_time%60 ))
-    echo ""
-}
-
-
-display_spinning_icon() {
-	what="""
-	display_spinning_icon()
-	-----------------------
-    Display \"spinning icon\" while a background process runs
-    
-    :param 1: PID of the last program the shell ran in the background (int)
-    :param 2: message to be displayed next to the spinning icon (chr)
-
-    #TODO Checks...
-	"""
-    spin="/|\\–"
-    i=0
-    while kill -0 "${1}" 2> /dev/null; do
-        i=$(( (i + 1) % 4 ))
-        printf "\r${spin:$i:1} %s" "${2}"
-        sleep .15
-    done
-}
-
-
-list_tally_flags() {
-	what="""
-	list_tally_flags()
-	------------------
-    List and tally flags in a bam infile; function acts on a bam infile to
-    perform piped commands (samtools view, cut, sort, uniq -c, sort -nr) that
-    list and tally flags; function writes the results to a txt outfile, the
-    name of which is derived from the txt infile
-    
-    :param 1: name of bam infile, including path (chr)
-
-    #TODO Checks...
-    """
-    start="$(date +%s)"
-    
-    samtools view "${1}" \
-        | cut -d$'\t' -f 2 \
-        | sort \
-        | uniq -c \
-        | sort -nr \
-            > "${1/.bam/.flags.txt}" &
-    display_spinning_icon $! \
-    "Running piped commands (samtools view, cut, sort, uniq -c, sort -nr) on $(basename "${1}")... "
-        
-    end="$(date +%s)"
-    echo ""
-    calculate_run_time "${start}" "${end}"  \
-    "List and tally flags in $(basename "${1}")."
-}
-
 
 check_exit() {
-	what="""
-	check_exit()
-	------------
+    what="""
+    check_exit()
+    ------------
     Check the exit code of a child process
     
+    #TODO Check that params are not empty or inappropriate formats or strings
+
     :param 1: exit code <int >= 0>
     :param 2: program/package <chr>
-
-    #TODO Check that params are not empty or inappropriate formats or strings
-	"""
+    :return: message <chr>
+    """
     if [[ "${1}" == "0" ]]; then
         echo "${2} completed: $(date)"
     else
@@ -99,16 +25,109 @@ check_exit() {
 
 
 err() {
-	what="""
-	err()
-	-----
+    what="""
+    err()
+    -----
     Print an error meassage, then exit with code 1
     
+    #TODO Check that param is not empty or inappropriate format or string
+    
     :param 1: program/package <chr>
-    :return: error message <stdout>
-	
-	#TODO Check that param is not empty or inappropriate format or string
-	"""
+    :return: error message (stdout) <chr>
+    """
     echo "${1} exited unexpectedly"
     # exit 1
 }
+
+
+check_arguments_mode() {
+    what="""
+    check_arguments_mode()
+    ----------------------
+    Calculate run time for chunk of code
+
+    :param 1: start time in \$(date +%s) format
+    :param 2: end time in \$(date +%s) format
+    :param 3: message to be displayed when printing the run time <chr>
+    :return: message <chr>
+    """
+    case "$(convert_chr_lower "${mode_1}")" in
+        true | t | 1) \
+            case "$(convert_chr_lower "${mode_2}")" in
+                true | t | 1) \
+                    echo "Exiting: Both modes 1 and 2 are TRUE."
+                    echo "         Only one of the modes can be TRUE."
+                    exit 1
+                    ;;
+                false | f | 0) \
+                    case "$(convert_chr_lower "${mode_3}")" in
+                        true | t | 1) \
+                            echo "Exiting: Both modes 1 and 3 are TRUE."
+                            echo "         Only one of the modes can be TRUE."
+                            exit 1
+                            ;;
+                        false | f | 0) \
+                            echo "Running 'mode_1'"
+                            mode=1
+                            ;;
+                        *) \
+                            printf "%s\n" "Exiting: Mode 3 is neither T nor F."
+                            exit 1
+                    esac
+                    ;;
+                *) \
+                    printf "%s\n" "Exiting: 'mode_2' is neither T nor F."
+                    exit 1
+                    ;;
+            esac
+            ;;
+        false | f | 0) \
+            case "$(convert_chr_lower "${mode_2}")" in
+                true | t | 1) \
+                    case "$(convert_chr_lower "${mode_3}")" in
+                        true | t | 1) \
+                            echo "Exiting: Both modes 2 and 3 are TRUE."
+                            echo "         Only one of the modes can be TRUE."
+                            exit 1
+                            ;;
+                        false | f | 0) \
+                            echo "Running 'mode_2'"
+                            mode=2
+                            ;;
+                        *) \
+                            printf "%s\n" "Exiting: Mode 2 is neither T nor F."
+                            exit 1
+                    esac
+                    ;;
+                false | f | 0) \
+                    case "$(convert_chr_lower "${mode_3}")" in
+                        true | t | 1) \
+                            echo "Running 'mode_3'"
+                            mode=3
+                            ;;
+                        false | f | 0) \
+                            echo "Exiting: Modes 1, 2, and 3 are all FALSE."
+                            echo "         One of the modes must be TRUE."
+                            exit 1
+                            ;;
+                        *) \
+                            printf "%s\n" "Exiting: Mode 3 is neither T nor F."
+                            exit 1
+                    esac
+                    ;;
+                *) \
+                    printf "%s\n" "Exiting: Mode 1 is neither T nor F."
+                    exit 1
+                    ;;
+            esac
+            ;;
+        *) \
+            printf "%s\n" "Exiting: Mode 1 is neither T nor F."
+            exit 1
+            ;;
+    esac
+}
+
+
+
+
