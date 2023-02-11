@@ -1,43 +1,7 @@
 #!/bin/bash
 
-#  exclude_bam_alignments-non-primary.sh
+#  separate_split_bam.sh
 #  KA
-
-
-check_exit() {
-    what="""
-    check_exit()
-    ------------
-    Check the exit code of a child process
-    
-    #TODO Check that params are not empty or inappropriate formats or strings
-
-    :param 1: exit code <int >= 0>
-    :param 2: program/package <chr>
-    :return: message <chr>
-    """
-    if [[ "${1}" == "0" ]]; then
-        echo "${2} completed: $(date)"
-    else
-        err "Error: ${2} returned exit code ${1}"
-    fi
-}
-
-
-err() {
-    what="""
-    err()
-    -----
-    Print an error meassage, then exit with code 1
-    
-    #TODO Check that param is not empty or inappropriate format or string
-    
-    :param 1: program/package <chr>
-    :return: error message (stdout) <chr>
-    """
-    echo "${1} exited unexpectedly"
-    # exit 1
-}
 
 
 check_dependency() {
@@ -67,18 +31,18 @@ check_argument_safe_mode() {
     check_argument_safe_mode()
     --------------------------
     Run script in \"safe mode\" (\`set -Eeuxo pipefail\`) if specified
-    
-    :param 1: run script in safe mode: TRUE or FALSE <lgl> [default: FALSE]
-    :return: NA
 
     #TODO Check that param is not empty or inappropriate format/string
+
+    :param 1: run script in safe mode: TRUE or FALSE <lgl> [default: FALSE]
+    :return: NA    
     """
     case "$(convert_chr_lower "${1}")" in
-        true | t) \
+        true | t | 1) \
             printf "%s\n" "-u: \"Safe mode\" is TRUE."
             set -Eeuxo pipefail
             ;;
-        false | f) \
+        false | f | 0) \
             printf "%s\n" "\"Safe mode\" is FALSE." ;;
         *) \
             printf "%s\n" "Exiting: \"Safe mode\" must be TRUE or FALSE."
@@ -123,14 +87,14 @@ check_exists_directory() {
     :return: NA    
     """
     case "$(convert_chr_lower "${1}")" in
-        true | t) \
+        true | t | 1) \
             [[ -d "${2}" ]] ||
                 {
                     printf "%s\n" "${2} doesn't exist; mkdir'ing it."
                     mkdir -p "${2}"
                 }
             ;;
-        false | f) \
+        false | f | 0) \
             [[ -d "${2}" ]] ||
                 {
                     printf "%s\n" "Exiting: ${2} does not exist."
@@ -138,7 +102,7 @@ check_exists_directory() {
                 }
             ;;
         *) \
-            printf "%s\n" "Exiting: param 1 is not \"TRUE\" or \"FALSE\"."
+            printf "%s\n" "Exiting: param 1 is not TRUE or FALSE."
             printf "%s\n" "${what}"
             exit 1
             ;;
@@ -167,14 +131,75 @@ check_argument_threads() {
 }
 
 
+check_argument_unmapped() {
+    #TODO Description (what), checks, etc.
+    case "$(convert_chr_lower "${1}")" in
+        true | t | 1) \
+            unmapped=1
+            printf "%s\n" "\"Target 'unmapped' reads\" is TRUE."
+            ;;
+        false | f | 0) \
+            unmapped=0
+            printf "%s\n" "\"Target 'unmapped' reads\" is FALSE."
+            ;;
+        *) \
+            printf "%s\n\n" "Exiting: \"unmapped\" argument must be TRUE or FALSE.\n"
+            # exit 1
+            ;;
+    esac
+}
+
+
+check_argument_secondary() {
+    #TODO Description (what), checks, etc.
+    case "$(convert_chr_lower "${1}")" in
+        true | t | 1) \
+            secondary=1
+            printf "%s\n" "\"Target 'secondary' alignments\" is TRUE."
+            ;;
+        false | f | 0) \
+            secondary=0
+            printf "%s\n" "\"Target 'secondary' alignments\" is FALSE."
+            ;;
+        *) \
+            printf "%s\n\n" "Exiting: \"secondary\" argument must be TRUE or FALSE.\n"
+            # exit 1
+            ;;
+    esac
+}
+
+
+check_argument_mode() {
+    #TODO Description (what), checks, etc.
+    case "$(convert_chr_lower "${1}")" in
+        1) \
+            mode=1
+            printf "%s\n" "\"Run in '{in,ex}clusion' mode\" is set to '1'."
+            ;;
+        2) \
+            mode=2
+            printf "%s\n" "\"Run in '{in,ex}clusion' mode\" is set to '2'."
+            ;;
+        3) \
+            mode=3
+            printf "%s\n" "\"Run in '{in,ex}clusion' mode\" is set to '3'."
+            ;;
+        *) \
+            printf "%s\n\n" "Exiting: \"{in,ex}clusion mode\" argument must be 1, 2, or 3.\n"
+            # exit 1
+            ;;
+    esac
+}
+
+
 check_argument_flagstat() {
     #TODO Description (what), checks, etc.
     case "$(convert_chr_lower "${1}")" in
-        true | t) \
+        true | t | 1) \
             flagstat=1
             printf "%s\n" "\"Run samtools flagstat\" is TRUE."
             ;;
-        false | f) \
+        false | f | 0) \
             flagstat=0
             printf "%s\n" "\"Run samtools flagstat\" is FALSE."
             ;;
@@ -278,11 +303,11 @@ list_tally_flags() {
 check_argument_list_etc() {
     #TODO Description (what), checks, etc.
     case "$(convert_chr_lower "${1}")" in
-        true | t) \
+        true | t | 1) \
             list_etc=1
             printf "%s\n" "\"Run list_tally_flags()\" is TRUE."
             ;;
-        false | f) \
+        false | f | 0) \
             list_etc=0
             printf "%s\n" "\"Run list_tally_flags()\" is FALSE."
             ;;
@@ -334,7 +359,7 @@ check_etc() {
     what="""
     check_etc()
     -----------
-    Check depencies, and check and make variable assignments 
+    Check dependencies, and check and make variable assignments 
 
     #TODO Checks, etc., and a means to print the contents of variable what
 
@@ -343,32 +368,44 @@ check_etc() {
     :global outdir:
     :global threads:
     :global flagstat:
-    :return: :global base:
-    :return: :global outfile:
+    :return global base:
+    :return global outfile:
     """
     #  Check for necessary dependencies; exit if not found
     check_dependency samtools
 
     #  Evaluate "${safe_mode}"
-    check_argument_safe_mode
+    check_argument_safe_mode "${safe_mode}"
 
     #  Check that "${infile}" exists
     check_exists_file "${infile}"
 
-    #  If TRUE exist, then make "${outdir}" if it does not exist; if FALSE,
-    #+ then exit if "${outdir}" does not exist
-    check_exists_directory TRUE "${outdir}"  #TODO Fix this function
+    #  If TRUE, then make "${outdir}" if it does not exist; if FALSE (i.e.,
+    #+ "${outdir}" does not exist), then exit
+    check_exists_directory TRUE "${outdir}"
 
+    #TODO
+    check_argument_unmapped "${unmapped}"
+    
+    #TODO
+    check_argument_secondary "${secondary}"
+    
+    #TODO
+    check_argument_mode "${mode}"
+    
     #  Check on value assigned to "${flagstat}"
     check_argument_flagstat "${flagstat}"
 
+    #TODO
+    check_argument_list_etc "${list_etc}"
+    
     #  Check on value assigned to "${threads}"
     check_argument_threads "${threads}"
 
     #TODO Not sure if I want these assignments in this function...
     #  Make additional variable assignments from the arguments
     base="$(basename "${infile}")"
-    outfile="${base%.bam}.exclude-non-primary.bam"
+    outfile="${base%.bam}.exclude-unmapped.bam"
 
     echo ""
 }
@@ -378,11 +415,11 @@ main() {
     what="""
     main()
     ------
-    Run samtools view to exclude non-primary alignments from bam infile;
-    optionally, run samtools flagstat on primary alignment-filtered bam outfile
+    Run samtools view to exclude unmapped reads from bam infile; optionally,
+    run samtools flagstat on primary alignment-filtered bam outfile
 
     #TODO Checks, etc., and a means to print the contents of variable what
-
+    
     :global threads: number of threads <int >= 1>
     :global infile: bam infile, including path <chr>
     :global outdir: outfile directory, including path <chr>
@@ -395,33 +432,157 @@ main() {
     """
     echo ""
     echo "Running ${0}... "
-    echo "Filtering out non-primary alignments..."
+    echo "Filtering out unmapped reads..."
 
-    samtools view \
-        -@ "${threads}" \
-        -b -F 0x0100 \
-        "${infile}" \
-        -o "${outdir}/${outfile}"
-    check_exit $? "samtools"
+    if [[ "${mode}" -eq 1 ]]; then
+        #  Inclusion ---------------------------
+        #  Including only (--rf/-F) unmapped reads (0x0004, 0x0008)
+        if [[ "${unmapped}" -eq 1 ]]; then
+            samtools view \
+                -@ "${threads}" \
+                --rf 0x0004 \
+                --rf 0x0008 \
+                -F 0x0100 \
+                -b -o "${outdir}/${outfile%.bam}.in-u.bam" \
+                "${infile}"
+        fi
+
+        #  Including only (--rf/-F) secondary alignments (0x0100)
+        if [[ "${secondary}" -eq 1 ]]; then
+            samtools view \
+                -@ "${threads}" \
+                --rf 0x0100 \
+                -F 0x0004 \
+                -F 0x0008 \
+                -b -o "${outdir}/${outfile%.bam}.in-s.bam" \
+                "${infile}"
+        fi
+
+        #  Inclusion (--rf) of 0x0100, 0x0004, and 0x0008
+        if [[ "${unmapped}" -eq 1 && "${secondary}" -eq 1 ]]; then
+            samtools view \
+                -@ "${threads}" \
+                --rf 0x0100 \
+                --rf 0x0004 \
+                --rf 0x0008 \
+                -b -o "${outdir}/${outfile%.bam}.in-s-u.bam" \
+                "${infile}"
+        fi
+
+        #  Exclusion ---------------------------
+        #  Excluding (-F) unmapped reads (0x0004, 0x0008)
+        if [[ "${unmapped}" -eq 1 ]]; then
+            samtools view \
+                -@ "${threads}" \
+                -F 0x0004 \
+                -F 0x0008 \
+                -b -o "${outdir}/${outfile%.bam}.ex-u.bam" \
+                "${infile}"
+        fi
+
+        #  Excluding (-F) secondary alignments (0x0100)
+        if [[ "${secondary}" -eq 1 ]]; then
+            samtools view \
+                -@ "${threads}" \
+                -F 0x0100 \
+                -b -o "${outdir}/${outfile%.bam}.ex-s.bam" \
+                "${infile}"
+        fi
+
+        #  Excluding (-F) 0x0100, 0x0004, and 0x0008
+        if [[ "${unmapped}" -eq 1 && "${secondary}" -eq 1 ]]; then
+            samtools view \
+                -@ "${threads}" \
+                -F 0x0100 \
+                -F 0x0004 \
+                -F 0x0008 \
+                -b -o "${outdir}/${outfile%.bam}.ex-s-u.bam" \
+                "${infile}"
+        fi
+
+    elif [[ "${mode}" -eq 2 ]]; then
+        #  Inclusion ---------------------------
+        #  Including only (--rf/-F) unmapped reads (0x0004, 0x0008)
+        if [[ "${unmapped}" -eq 1 ]]; then
+            samtools view \
+                -@ "${threads}" \
+                --rf 0x0004 \
+                --rf 0x0008 \
+                -F 0x0100 \
+                -b -o "${outdir}/${outfile%.bam}.in-u.bam" \
+                "${infile}"
+        fi
+
+        #  Including only (--rf/-F) secondary alignments (0x0100)
+        if [[ "${secondary}" -eq 1 ]]; then
+            samtools view \
+                -@ "${threads}" \
+                --rf 0x0100 \
+                -F 0x0004 \
+                -F 0x0008 \
+                -b -o "${outdir}/${outfile%.bam}.in-s.bam" \
+                "${infile}"
+        fi
+
+        #  Including only (--rf/-F) 0x0100, 0x0004, and 0x0008
+        if [[ "${unmapped}" -eq 1 && "${secondary}" -eq 1 ]]; then
+            samtools view \
+                -@ "${threads}" \
+                --rf 0x0100 \
+                --rf 0x0004 \
+                --rf 0x0008 \
+                -b -o "${outdir}/${outfile%.bam}.in-s-u.bam" \
+                "${infile}"
+        fi
+
+    elif [[ "${mode}" -eq 3 ]]; then
+        #  Exclusion ---------------------------
+        #  Excluding (-F) unmapped reads (0x0004, 0x0008)
+        if [[ "${unmapped}" -eq 1 ]]; then
+            samtools view \
+                -@ "${threads}" \
+                -F 0x0004 \
+                -F 0x0008 \
+                -b -o "${outdir}/${outfile%.bam}.ex-u.bam" \
+                "${infile}"
+        fi
+
+        #  Excluding (-F) secondary alignments (0x0100)
+        if [[ "${secondary}" -eq 1 ]]; then
+            samtools view \
+                -@ "${threads}" \
+                -F 0x0100 \
+                -b -o "${outdir}/${outfile%.bam}.ex-s.bam" \
+                "${infile}"
+        fi
+
+        #  Excluding (-F) 0x0100, 0x0004, and 0x0008
+        if [[ "${unmapped}" -eq 1 && "${secondary}" -eq 1 ]]; then
+            samtools view \
+                -@ "${threads}" \
+                -F 0x0100 \
+                -F 0x0004 \
+                -F 0x0008 \
+                -b -o "${outdir}/${outfile%.bam}.ex-s-u.bam" \
+                "${infile}"
+        fi
+    fi
 
     if [[ $((flagstat)) -eq 1 ]]; then
-        samtools flagstat \
-            -@ "${threads}" \
-            "${outdir}/${outfile}" \
-                > "${outdir}/${outfile%.bam}.flagstat.txt" &
-        check_exit $? "samtools"
-
-        wait
+        for i in "${outdir}/${outfile%.bam}."*".bam"; do
+            samtools flagstat \
+                -@ "${threads}" \
+                "${i}" \
+                    > "${i%.bam}.flagstat.txt"
+        done
     fi
 
     if [[ $((list_etc)) -eq 1 ]]; then
-        samtools flagstat \
-            -@ "${threads}" \
-            "${outdir}/${outfile}" \
-                > "${outdir}/${outfile%.bam}.flagstat.txt" &
-        check_exit $? "samtools"
-
-        wait
+        for i in "${outdir}/${outfile%.bam}."*".bam"; do
+            list_tally_flags \
+                "${i}" \
+                "${i%.bam}.list-tally-flags.txt"
+        done
     fi
 }
 
@@ -431,32 +592,49 @@ main() {
 #  ------------------------------------
 help="""
 #  ------------------------------------
-#  separate_bam_alignments-non-primary.sh
+#  separate_split_bams.sh
 #  ------------------------------------
-Exclude non-primary alignments from bam infile. Optionally, run samtools
-flagstat on the filtered bam outfile.
+Filter out unmapped reads from a bam infile. Optionally, run samtools flagstat
+on the filtered bam outfile.
 
-
-Name of outfile(s) will be derived from the infile.
+Name(s) of outfile(s) will be derived from the infile.
 
 Dependencies:
-    - samtools >= #TBD
+    - samtools >= version #TBD
 
 Arguments:
     -u  safe_mode  use safe mode: TRUE or FALSE <lgl> [default: FALSE]
     -i  infile     bam infile, including path <chr>
     -o  outdir     outfile directory, including path; if not found, will be
                    mkdir'd <chr>
-    -f  flagstat   run samtools flagstat on bams <lgl> [default: TRUE]
-    -l  list_etc   run list_tally_flags() on bams <lgl> [default: TRUE]
+    -v  unmapped   target 'unmapped' reads <lgl> [default: TRUE]
+    -s  secondary  target 'secondary' alignments <lgl> [default: TRUE]
+    -m  mode       run in '{in,ex}clusion' mode 1, 2, or 3 <int = 1, 2, or 3>
+                   [default: 1]
+
+                       mode 1: bam outfiles *including* and *excluding* the
+                               'unmapped' reads and/or 'secondary' alignments
+                               are produced
+                       mode 2: only bam outfiles *including* the 'unmapped'
+                               reads and/or 'secondary' alignments are produced
+                               produced
+                       mode 3: only bam outfiles *excluding* the 'unmapped'
+                               reads and/or 'secondary' alignments are produced
+                               produced
+
+    -f  flagstat   run samtools flagstat on bam outfiles <lgl> [default: TRUE]
+    -l  list_etc   run list_tally_flags() on bam outfiles <lgl> [default: TRUE]
     -t  threads    number of threads <int >= 1> [default: 1]
 """
 
-while getopts "u:i:o:f:l:t:" opt; do
+while getopts "u:i:o:v:s:m:f:l:t:" opt; do
     case "${opt}" in
         u) safe_mode="${OPTARG}" ;;
         i) infile="${OPTARG}" ;;
         o) outdir="${OPTARG}" ;;
+        v) unmapped="${OPTARG}" ;;
+        s) secondary="${OPTARG}" ;;
+        m) mode="${OPTARG}" ;;
         f) flagstat="${OPTARG}" ;;
         l) list_etc="${OPTARG}" ;;
         t) threads="${OPTARG}" ;;
@@ -467,18 +645,21 @@ done
 [[ -z "${safe_mode}" ]] && safe_mode=FALSE
 [[ -z "${infile}" ]] && print_usage "${help}"
 [[ -z "${outdir}" ]] && print_usage "${help}"
+[[ -z "${unmapped}" ]] && unmapped=TRUE
+[[ -z "${secondary}" ]] && secondary=TRUE
+[[ -z "${mode}" ]] && mode=1
 [[ -z "${flagstat}" ]] && flagstat=TRUE
 [[ -z "${list_etc}" ]] && list_etc=TRUE
 [[ -z "${threads}" ]] && threads=1
 
 
 #  ------------------------------------
-#  Check depencies, and check and make variable assignments 
+#  Check dependencies, and check and make variable assignments 
 #  ------------------------------------
 check_etc
 
 
 #  ------------------------------------
-#  Run samtools to exclude unmapped alignments from bam infile, etc.
+#  Run samtools to...
 #  ------------------------------------
 main
