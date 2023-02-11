@@ -129,5 +129,25 @@ check_arguments_mode() {
 }
 
 
-
+check_argument_mode() {
+    #TODO Description (what), checks, etc.
+    case "$(convert_chr_lower "${1}")" in
+        1) \
+            mode=1
+            printf "%s\n" "\"Run in '{in,ex}clusion' mode\" is set to '1'."
+            ;;
+        2) \
+            mode=2
+            printf "%s\n" "\"Run in '{in,ex}clusion' mode\" is set to '2'."
+            ;;
+        3) \
+            mode=3
+            printf "%s\n" "\"Run in '{in,ex}clusion' mode\" is set to '3'."
+            ;;
+        *) \
+            printf "%s\n\n" "Exiting: \"{in,ex}clusion mode\" argument must be 1, 2, or 3.\n"
+            # exit 1
+            ;;
+    esac
+}
 
