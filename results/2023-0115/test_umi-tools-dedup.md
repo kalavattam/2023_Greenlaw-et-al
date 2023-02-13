@@ -64,6 +64,7 @@ ml SAMtools/1.16.1-GCC-11.2.0
 cd results/2023-0115 \
     || echo "cd'ing failed; check on this"
 ```
+
 </details>
 <br />
 
@@ -2050,7 +2051,9 @@ test_umi-tools-dedup/run_2/5781_Q_IP_UT.unmapped.pos-dedu.list-tally-flags.txt
 And
 > \[W\]ork out the logic for, ultimately, what files need to undergo what to be adequate input for (a) 4tU-/RNA-seq analyses, (b) running Trinity in genome-free mode, and (c) running Trinity in genome-guided mode
 
-So, for the time being, we see that `.primary-secondary.` and `.secondary.` are not appropriately handled in UMI (and positional) deduplication; therefore, do UMI deduplication of `.primary.` only
+So, for the time being, we see that `.primary-secondary.` and `.secondary.` are not appropriately handled in UMI (and positional) deduplication*; therefore, do UMI deduplication of `.primary.` only
+
+\* This, it turns out, is because of the SAM specification itself; see [here](https://github.com/CGATOxford/UMI-tools/issues/574#issuecomment-1427675130)
 </details>
 <br />
 
@@ -2096,7 +2099,7 @@ Thus, when calling `separate_bam.sh`, output the following:
     + `samtools merge` resulting bam with replicate bam(s) that are also
         * ...`.primary-secondary.`
         * ...and subject to *K. lactis* and *20S* alignment exclusion
-- To obtain files for use as input to Trinity genome-free mode, start with the unseparated bam (i.e., the bam used as input to `separate_bam.sh`)
+- To obtain files for use as input to Trinity genome-free mode, ~~start with the unseparated bam (i.e., the bam used as input to `separate_bam.sh`)~~*Can't because it contains multimappers*; so, instead, start with `.proper-etc.`, which contains primary alignments along with non-secondary singletons and unmapped reads
     + Exclude *K. lactis* and *20S* alignments
     + Convert the resulting bam to fastq
     + Use paired-end fastqs, together with paired-end fastqs derived from processed *replicate* bams, as input for Trinity genome-free mode
@@ -2107,7 +2110,7 @@ Thus, when calling `separate_bam.sh`, output the following:
 <a id="next-steps"></a>
 ### Next steps
 - Move forward with option 2: <u><b>Don't bother with UMI deduplication for the Trinity infiles</b></u>
-- Run `separate_bam.sh` to output `.primary.` and `.primary-secondary.` files
+- Run `separate_bam.sh` to output `.primary.`, `.primary-secondary.`, `.proper-etc.` files
     + `.primary.`
         * ___Get these files all 55 samples___
         * Perform UMI and positional deduplication on the `.primary.` files, collecting stats on the numbers of positional duplicates
@@ -2125,12 +2128,15 @@ Thus, when calling `separate_bam.sh`, output the following:
                 + ...`.primary-secondary.`
                 + ...and subject to *K. lactis* and *20S* alignment exclusion
             - Use the processed, merged bams as input for Trinity genome-guided mode
-- Use the "unseparated" bams for Trinity genome-free mode
-    + <mark>___Only need "unseparated" `578{1,2}` bams___</mark>
-    + Exclude *K. lactis* and *20S* alignments
-    + Convert the resulting bam to fastq
-    + Use paired-end fastqs, together with paired-end fastqs derived from processed *replicate* bams, as input for Trinity genome-free mode
+    + `.proper-etc.`
+        * ~~Use the "unseparated" bams for Trinity genome-free mode~~
+        * * ___Don't___ do UMI deduplication of the `.proper-etc.` files
+        * <mark>___Only need "unseparated" `578{1,2}` bams___</mark>
+            - ___Don't___ do UMI deduplication of the `.primary-secondary.` files
+            - Exclude *K. lactis* and *20S* alignments
+            - Convert the resulting bam to fastq
+            - Use paired-end fastqs, together with paired-end fastqs from <u>processed *replicate* bams</u>, as input for Trinity genome-free mode
 
-`#TOMORROW` Generate the `.primary.` and `.primary-secondary.` files, and identify the appropiate "unseparated" bams for use
-- Focus on processing the `.primary.` and `.primary-secondary.` files, eventually using the for the submission of Trinity paramter-optimization jobs as described [here](../2023-0111/tutorial_job-arrays.md#write-out-the-list-ready-run-script-echo-test-using-a-heredoc-1) and [here](../2022-1101/notebook/trinity-parameters.xlsx)
+`#TOMORROW` Generate the `.primary.`, `.primary-secondary.`, and `.proper-etc.` files, and identify the appropiate "unseparated" bams for use
+- Focus on processing the `.primary.`, `.primary-secondary.`, and `.proper-etc.` files, eventually using the for the submission of Trinity paramter-optimization jobs as described [here](../2023-0111/tutorial_job-arrays.md#write-out-the-list-ready-run-script-echo-test-using-a-heredoc-1) and [here](../2022-1101/notebook/trinity-parameters.xlsx)
 - Will need to get together run and submission scripts for Trinity genome-guided calls, but already have the base scripts for Trinity genome-free calls, I think
