@@ -82,8 +82,8 @@
     1. [06 Use `sbatch` to run the '`submission`' and '`run`' scripts](#06-use-sbatch-to-run-the-submission-and-run-scripts-3)
         1. [Code](#code-31)
 1. [V Align kmer- and non-kmer-corrected `fastq`s](#v-align-kmer--and-non-kmer-corrected-fastqs)
-    1. [01 Get situated, make a directories for in-/outfiles, symlink the `fastq`s](#01-get-situated-make-a-directories-for-in-outfiles-symlink-the-fastqs)
-        1. [01a Get situated, make a directories for in-/outfiles](#01a-get-situated-make-a-directories-for-in-outfiles)
+    1. [01 Get situated, make directories for in-/outfiles, symlink the `fastq`s](#01-get-situated-make-directories-for-in-outfiles-symlink-the-fastqs)
+        1. [01a Get situated, make directories for in-/outfiles](#01a-get-situated-make-directories-for-in-outfiles)
             1. [Code](#code-32)
         1. [01b Establish relative paths for symlinking](#01b-establish-relative-paths-for-symlinking)
             1. [Initialize function for finding relative paths between directories](#initialize-function-for-finding-relative-paths-between-directories)
@@ -125,6 +125,78 @@
             1. [Code](#code-48)
     1. [06 Use `sbatch` to run the '`submission`' and '`run`' scripts](#06-use-sbatch-to-run-the-submission-and-run-scripts-4)
         1. [Code](#code-49)
+    1. [07 Rename, organize, and check on the `STAR` outfiles](#07-rename-organize-and-check-on-the-star-outfiles)
+        1. [07a Rename, organize, and check on files in `aligned_umi-extracted_trimmed/`](#07a-rename-organize-and-check-on-files-in-aligned_umi-extracted_trimmed)
+            1. [Code](#code-50)
+            1. [Troubleshooting the problem with `CT2_6125_pIAA_Q_SteadyState_UT`](#troubleshooting-the-problem-with-ct2_6125_piaa_q_steadystate_ut)
+                1. [Code](#code-51)
+                1. [Notes, etc.](#notes-etc)
+        1. [07b Rename, organize, and check on files in `aligned_umi-extracted_trimmed_kmer-corrected/`](#07b-rename-organize-and-check-on-files-in-aligned_umi-extracted_trimmed_kmer-corrected)
+            1. [Code](#code-52)
+1. [VI Subset bams by alignment categories](#vi-subset-bams-by-alignment-categories)
+    1. [01 Get situated, make directories for outfiles](#01-get-situated-make-directories-for-outfiles)
+        1. [Code](#code-53)
+    1. [02 Set up necessary variables, arrays](#02-set-up-necessary-variables-arrays)
+        1. [02a Set up information for `aligned_UT_primary_*`](#02a-set-up-information-for-aligned_ut_primary_)
+            1. [Code](#code-54)
+        1. [02b Set up information for `aligned_UTK_primary-secondary_*`](#02b-set-up-information-for-aligned_utk_primary-secondary_)
+            1. [Code](#code-55)
+        1. [02c Set up information for `aligned_UTK_primary-unmapped_*`](#02c-set-up-information-for-aligned_utk_primary-unmapped_)
+            1. [Code](#code-56)
+    1. [03 Run `separate_bam.sh`, etc.](#03-run-separate_bamsh-etc)
+        1. [Run `separate_bam.sh` for `aligned_UT_primary_*`](#run-separate_bamsh-for-aligned_ut_primary_)
+            1. [Run `separate_bam.sh`](#run-separate_bamsh)
+                1. [Code](#code-57)
+            1. [Run `list_tally_flags()`](#run-list_tally_flags)
+                1. [Code](#code-58)
+                1. [Printed](#printed)
+        1. [Run `separate_bam.sh`, etc. for `aligned_UTK_primary-secondary_*`](#run-separate_bamsh-etc-for-aligned_utk_primary-secondary_)
+            1. [Run `separate_bam.sh`](#run-separate_bamsh-1)
+                1. [Code](#code-59)
+            1. [Run `list_tally_flags()`](#run-list_tally_flags-1)
+                1. [Code](#code-60)
+                1. [Printed](#printed-1)
+        1. [Run `separate_bam.sh` for `aligned_UTK_primary-unmapped_*`](#run-separate_bamsh-for-aligned_utk_primary-unmapped_)
+            1. [Run `separate_bam.sh`](#run-separate_bamsh-2)
+                1. [Code](#code-61)
+            1. [Run `list_tally_flags()`](#run-list_tally_flags-2)
+                1. [Code](#code-62)
+                1. [Printed](#printed-2)
+        1. [Run additional QC commands on all `separate_bam.sh` outfile](#run-additional-qc-commands-on-all-separate_bamsh-outfile)
+            1. [Get all bams \(in- and outfiles\) into a single array](#get-all-bams-in--and-outfiles-into-a-single-array)
+                1. [Code](#code-63)
+            1. [Run `samtools index`](#run-samtools-index)
+                1. [Code](#code-64)
+            1. [Run `samtools idxstats`](#run-samtools-idxstats)
+                1. [Code](#code-65)
+            1. [Run `samtools stats`](#run-samtools-stats)
+                1. [Code](#code-66)
+            1. [Run `picard AlignmentSummaryMetrics`](#run-picard-alignmentsummarymetrics)
+                1. [Code](#code-67)
+            1. [`#NOTE` `#TODO` Come back to run even more QC commands on the bams](#note-todo-come-back-to-run-even-more-qc-commands-on-the-bams)
+1. [VII Perform UMI and positional deduplication of "primary" files](#vii-perform-umi-and-positional-deduplication-of-primary-files)
+    1. [01 Get situated, make directories for outfiles](#01-get-situated-make-directories-for-outfiles-1)
+    1. [02 Set up necessary variables, arrays](#02-set-up-necessary-variables-arrays-1)
+        1. [Code](#code-68)
+    1. [03 Run `umi_tools dedup` for UMI and positional deduplication](#03-run-umi_tools-dedup-for-umi-and-positional-deduplication)
+        1. [Run `umi_tools dedup` for UMI deduplication](#run-umi_tools-dedup-for-umi-deduplication)
+            1. [Code](#code-69)
+        1. [Run `umi_tools dedup` for positional deduplication](#run-umi_tools-dedup-for-positional-deduplication)
+            1. [Code](#code-70)
+1. [VIII Separate out alignments to different species](#viii-separate-out-alignments-to-different-species)
+    1. [01 Get situated, make directories for outfiles](#01-get-situated-make-directories-for-outfiles-2)
+        1. [Code](#code-71)
+    1. [02 Set up necessary variables, arrays](#02-set-up-necessary-variables-arrays-2)
+        1. [Code](#code-72)
+    1. [03 Split bams by species](#03-split-bams-by-species)
+        1. [Code](#code-73)
+1. [IX Merge bams to be use with Trinity](#ix-merge-bams-to-be-use-with-trinity)
+    1. [01 Get situated, make directories for outfiles](#01-get-situated-make-directories-for-outfiles-3)
+        1. [Code](#code-74)
+    1. [02 Set up necessary variables, arrays](#02-set-up-necessary-variables-arrays-3)
+        1. [Code](#code-75)
+    1. [03 Run `samtools merge`](#03-run-samtools-merge)
+        1. [Code](#code-76)
 
 <!-- /MarkdownTOC -->
 </details>
@@ -768,6 +840,9 @@ Trinity_env
 ml UMI-tools/1.0.1-foss-2019b-Python-3.7.4
 
 sbatch "${store_scripts}/${script_submit}"
+# alias crj=".,f ./sh_err_out/err_out/ | tail -220"
+# alias grj="cd ./sh_err_out/err_out/ && .,f | tail -220"
+# alias t220=".,f | tail -220"
 ```
 </details>
 <br />
@@ -1103,6 +1178,9 @@ module purge
 atria_env
 
 sbatch "${store_scripts}/${script_submit}"
+# alias crj=".,f ./sh_err_out/err_out/ | tail -220"
+# alias grj="cd ./sh_err_out/err_out/ && .,f | tail -220"
+# alias t220=".,f | tail -220"
 ```
 </details>
 <br />
@@ -1437,9 +1515,9 @@ fi
 module purge
 
 sbatch "${store_scripts}/${script_submit}"
-alias crj=".,f ./sh_err_out/err_out/ | tail -220"
-alias grj="cd ./sh_err_out/err_out/ && .,f | tail -220"
-alias t220=".,f | tail -220"
+# alias crj=".,f ./sh_err_out/err_out/ | tail -220"
+# alias grj="cd ./sh_err_out/err_out/ && .,f | tail -220"
+# alias t220=".,f | tail -220"
 
 #TODO 1/2 So that tmp_* files are written/read from scratch, get this code 
 #TODO 2/2 running from scratch 
@@ -1725,10 +1803,10 @@ sbatch "${store_scripts}/${script_submit}"
 
 <a id="v-align-kmer--and-non-kmer-corrected-fastqs"></a>
 ## <u>V</u> Align kmer- and non-kmer-corrected `fastq`s
-<a id="01-get-situated-make-a-directories-for-in-outfiles-symlink-the-fastqs"></a>
-### 01 Get situated, make a directories for in-/outfiles, symlink the `fastq`s
-<a id="01a-get-situated-make-a-directories-for-in-outfiles"></a>
-#### 01a Get situated, make a directories for in-/outfiles
+<a id="01-get-situated-make-directories-for-in-outfiles-symlink-the-fastqs"></a>
+### 01 Get situated, make directories for in-/outfiles, symlink the `fastq`s
+<a id="01a-get-situated-make-directories-for-in-outfiles"></a>
+#### 01a Get situated, make directories for in-/outfiles
 <a id="code-32"></a>
 ##### Code
 <details>
@@ -2487,34 +2565,131 @@ module purge
 
 sbatch "${store_scripts}/${script_submit_UTK}"
 sbatch "${store_scripts}/${script_submit_UT}"
-hitparade
-skal
-alias crj=".,f ./sh_err_out/err_out/ | tail -220"
-alias grj="cd ./sh_err_out/err_out/ && .,f | tail -220"
-alias t220=".,f | tail -220"
+# hitparade
+# skal
+# alias crj=".,f ./sh_err_out/err_out/ | tail -220"
+# alias grj="cd ./sh_err_out/err_out/ && .,f | tail -220"
+# alias t220=".,f | tail -220"
 ```
 </details>
 <br />
+
+<a id="07-rename-organize-and-check-on-the-star-outfiles"></a>
+### 07 Rename, organize, and check on the `STAR` outfiles
+<a id="07a-rename-organize-and-check-on-files-in-aligned_umi-extracted_trimmed"></a>
+#### 07a Rename, organize, and check on files in `aligned_umi-extracted_trimmed/`
+<a id="code-50"></a>
+##### Code
+<details>
+<summary><i>Code: Rename, organize, and check on files in aligned_umi-extracted_trimmed/</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+transcriptome && 
+    {
+        cd "results/2023-0115" \
+            || echo "cd'ing failed; check on this..."
+    }
+
+cd "bams_UMI-dedup/aligned_umi-extracted_trimmed/" \
+    || echo "cd'ing failed; check on this..."
+
+rename -n 's/Aligned.sortedByCoord.out//g' *
+rename -n 's/Log/.Log/g; s/SJ/.SJ/g' *
+
+rename 's/Aligned.sortedByCoord.out//g' *
+rename 's/Log/.Log/g; s/SJ/.SJ/g' *
+
+rm -r *_STARtmp/
+
+.,
+#NOTE Saw that one bam had a file size of 0
+```
+</details>
 <br />
 
-`std{err,out}` and not being saved... However, the alignment jobs appear to be running appropriately, and all log files are being saved  
-`#TODO` Troubleshoot what's gone wrong in the submission script regarding the capturing/naming of `std{err,out}` files
-```txt
-❯ head run_STAR.9877915-48.err.txt
-ln: failed to create hard link 'sh_err_out/err_out/run_STAR../bams_UMI-dedup/aligned_umi-extracted_trimmed_kmer-corrected/CT4_6126_pIAA_Q_Nascent_UTK.9877915-48.out.txt' => 'sh_err_out/err_out/run_STAR.9877915-48.out.txt': No such file or directory
-ln: failed to create hard link 'sh_err_out/err_out/run_STAR../bams_UMI-dedup/aligned_umi-extracted_trimmed_kmer-corrected/CT4_6126_pIAA_Q_Nascent_UTK.9877915-48.err.txt' => 'sh_err_out/err_out/run_STAR.9877915-48.err.txt': No such file or directory
+<a id="troubleshooting-the-problem-with-ct2_6125_piaa_q_steadystate_ut"></a>
+##### Troubleshooting the problem with `CT2_6125_pIAA_Q_SteadyState_UT`
+<a id="code-51"></a>
+###### Code
+<details>
+<summary><i>Code: Troubleshooting the problem with CT2_6125_pIAA_Q_SteadyState_UT</i></summary>
 
-❯ head run_STAR.9877915-48.out.txt
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+#  ------------------------------------
+#  Check on the problem bam
+cd ../../sh_err_out/err_out
+.,f | tail -220
+# -rw-rw---- 1 kalavatt 1.8K Feb  8 16:15 run_STAR.CT2_6125_pIAA_Q_SteadyState_UT.9897387-47.out.txt
+# -rw-rw---- 1 kalavatt  501 Feb  8 16:15 run_STAR.CT2_6125_pIAA_Q_SteadyState_UT.9897387-47.err.txt
+
+cat run_STAR.CT2_6125_pIAA_Q_SteadyState_UT.9897387-47.err.txt
+cat run_STAR.CT2_6125_pIAA_Q_SteadyState_UT.9897387-47.out.txt
+
+.,f | tail -880
+., run_atria_trim.*
+# -rw-rw---- 1 kalavatt    0 Feb  5 17:06 run_atria_trim.Sample_CT2_6125_pIAA_Q_SteadyState_S6.9281731-47.err.txt
+# -rw-rw---- 1 kalavatt  279 Feb  5 17:06 run_atria_trim.Sample_CT2_6125_pIAA_Q_SteadyState_S6.9281731-47.out.txt
+# -rw-rw---- 1 kalavatt  12K Feb  5 17:53 run_atria_trim.Sample_CT2_6125_pIAA_Q_SteadyState_S6.9282279-47.err.txt
+# -rw-rw---- 1 kalavatt  357 Feb  5 17:53 run_atria_trim.Sample_CT2_6125_pIAA_Q_SteadyState_S6.9282279-47.out.txt
+# -rw-rw---- 1 kalavatt  12K Feb  6 07:37 run_atria_trim.Sample_CT2_6125_pIAA_Q_SteadyState_S6.9294591-47.err.txt
+# -rw-rw---- 1 kalavatt  365 Feb  6 07:37 run_atria_trim.Sample_CT2_6125_pIAA_Q_SteadyState_S6.9294591-47.out.txt
+
+cat run_atria_trim.Sample_CT2_6125_pIAA_Q_SteadyState_S6.9281731-47.err.txt
+cat run_atria_trim.Sample_CT2_6125_pIAA_Q_SteadyState_S6.9281731-47.out.txt
+cat run_atria_trim.Sample_CT2_6125_pIAA_Q_SteadyState_S6.9282279-47.err.txt
+cat run_atria_trim.Sample_CT2_6125_pIAA_Q_SteadyState_S6.9282279-47.out.txt
+cat run_atria_trim.Sample_CT2_6125_pIAA_Q_SteadyState_S6.9294591-47.err.txt
+cat run_atria_trim.Sample_CT2_6125_pIAA_Q_SteadyState_S6.9294591-47.out.txt
+#NOTE Nothing unusual in the *.{err,out}.txt files
+
+#  Check on the apparently problematic fastq.gz file
+transcriptome && 
+    {
+        cd "results/2023-0115" \
+            || echo "cd'ing failed; check on this..."
+    }
+
+zcat \
+    ./bams_UMI-dedup/to-align_umi-extracted_trimmed/CT2_6125_pIAA_Q_SteadyState_UT_R3.fq.gz \
+        | head
+zgrep -B 1 -A 4 \
+    "^@VH01189:9:AAC57JMM5:1:2611:18894:53950_ATAGTACT" \
+    ./bams_UMI-dedup/to-align_umi-extracted_trimmed/CT2_6125_pIAA_Q_SteadyState_UT_R3.fq.gz
+
+zcat \
+    ./bams_UMI-dedup/to-align_umi-extracted_trimmed/CT2_6125_pIAA_Q_SteadyState_UT_R3.fq.gz \
+        | tail
+zcat \
+    ./bams_UMI-dedup/to-align_umi-extracted_trimmed/CT2_6125_pIAA_Q_SteadyState_UT_R1.fq.gz \
+        | tail
+
+
+#  ------------------------------------
+#  I don't see the problem spotted by STAR; so, try running STAR again for just
+#+ this dataset
+mkdir -p ./bams_UMI-dedup/aligned_umi-extracted_trimmed/bak
+mv \
+    ./bams_UMI-dedup/aligned_umi-extracted_trimmed/CT2_6125_pIAA_Q_SteadyState_UT* \
+    ./bams_UMI-dedup/aligned_umi-extracted_trimmed/bak
+
+echo "${SLURM_CPUS_ON_NODE}"
+
 STAR \
     --runMode alignReads \
-    --runThreadN 8 \
+    --runThreadN "${SLURM_CPUS_ON_NODE}" \
     --outSAMtype BAM SortedByCoordinate \
     --outSAMunmapped Within \
     --outSAMattributes All \
     --genomeDir /home/kalavatt/genomes/combined_SC_KL_20S/STAR \
-    --readFilesIn ./bams_UMI-dedup/to-align_umi-extracted_trimmed_kmer-corrected/CT4_6126_pIAA_Q_Nascent_UTK_R1.fq.gz ./bams_UMI-dedup/to-align_umi-extracted_trimmed_kmer-corrected/CT4_6126_pIAA_Q_Nascent_UTK_R3.fq.gz \
+    --readFilesIn ./bams_UMI-dedup/to-align_umi-extracted_trimmed/CT2_6125_pIAA_Q_SteadyState_UT_R1.fq.gz ./bams_UMI-dedup/to-align_umi-extracted_trimmed/CT2_6125_pIAA_Q_SteadyState_UT_R3.fq.gz \
     --readFilesCommand zcat \
-    --outFileNamePrefix ./bams_UMI-dedup/aligned_umi-extracted_trimmed_kmer-corrected/CT4_6126_pIAA_Q_Nascent_UTK \
+    --outFileNamePrefix ./bams_UMI-dedup/aligned_umi-extracted_trimmed/CT2_6125_pIAA_Q_SteadyState_UT \
     --limitBAMsortRAM 4000000000 \
     --outFilterMultimapNmax 10 \
     --winAnchorMultimapNmax 1000 \
@@ -2525,7 +2700,3333 @@ STAR \
     --alignEndsType EndToEnd \
     --alignIntronMin 4 \
     --alignIntronMax 5000 \
-    --alignMatesGapMax 5000
+    --alignMatesGapMax 5000 \
+        > >(tee -a sh_err_out/err_out/rerun_STAR.CT2_6125_pIAA_Q_SteadyState_UT.2023-0213.stdout.txt) \
+        2> >(tee -a sh_err_out/err_out/rerun_STAR.CT2_6125_pIAA_Q_SteadyState_UT.2023-0213.stderr.txt >&2)
+#NOTE Weird, got the same error again (see 'Notes, etc.' below)
 
-❯ ~/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0115/bams_UMI-dedup/aligned_umi-extracted_trimmed_kmer-corrected
+
+#  ------------------------------------
+#  Try running atria again, then running STAR again
+cat sh_err_out/err_out/run_atria_trim.Sample_CT2_6125_pIAA_Q_SteadyState_S6.9294591-47.err.txt
+cat sh_err_out/err_out/run_atria_trim.Sample_CT2_6125_pIAA_Q_SteadyState_S6.9294591-47.out.txt
+
+cd sh_err_out/err_out
+., *Sample_CT2_6125_pIAA_Q_SteadyState*
+
+cat run_umi-tools_extract.Sample_CT2_6125_pIAA_Q_SteadyState_S6.9280838-47.err.txt
+cat run_umi-tools_extract.Sample_CT2_6125_pIAA_Q_SteadyState_S6.9280838-47.out.txt
+#NOTE Nothing obviously unusual about the *.{err,out}.txt files
+
+#  Run atria ------
+cd ../../fastqs_UMI-dedup/atria_trim
+mkdir bak
+., Sample_CT2_6125_pIAA_Q_SteadyState_S6*
+cat Sample_CT2_6125_pIAA_Q_SteadyState_S6_R1.UMI.atria.log
+mv Sample_CT2_6125_pIAA_Q_SteadyState_S6* bak/
+
+../..
+con-deact
+source activate atria_env
+module purge
+
+/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/software/Atria/app-3.2.1/bin/atria \
+    -t "${SLURM_CPUS_ON_NODE}" \
+    -r ./fastqs_UMI-dedup/umi-tools_extract/Sample_CT2_6125_pIAA_Q_SteadyState_S6_R1.UMI.fq.gz \
+    -R ./fastqs_UMI-dedup/umi-tools_extract/Sample_CT2_6125_pIAA_Q_SteadyState_S6_R3.UMI.fq.gz \
+    -o ./fastqs_UMI-dedup/atria_trim \
+    --no-length-filtration \
+    --stats
+
+# Save the atria stdout to a file in sh_err_out/err_out (do it by hand)
+vi sh_err_out/err_out/rerun_atria.CT2_6125_pIAA_Q_SteadyState_UT.2023-0213.stdout.txt
+
+#  Run STAR -------
+con-deact
+source activate Trinity_env
+module purge
+
+STAR \
+    --runMode alignReads \
+    --runThreadN "${SLURM_CPUS_ON_NODE}" \
+    --outSAMtype BAM SortedByCoordinate \
+    --outSAMunmapped Within \
+    --outSAMattributes All \
+    --genomeDir /home/kalavatt/genomes/combined_SC_KL_20S/STAR \
+    --readFilesIn ./bams_UMI-dedup/to-align_umi-extracted_trimmed/CT2_6125_pIAA_Q_SteadyState_UT_R1.fq.gz ./bams_UMI-dedup/to-align_umi-extracted_trimmed/CT2_6125_pIAA_Q_SteadyState_UT_R3.fq.gz \
+    --readFilesCommand zcat \
+    --outFileNamePrefix ./bams_UMI-dedup/aligned_umi-extracted_trimmed/CT2_6125_pIAA_Q_SteadyState_UT \
+    --limitBAMsortRAM 4000000000 \
+    --outFilterMultimapNmax 10 \
+    --winAnchorMultimapNmax 1000 \
+    --alignSJoverhangMin 8 \
+    --alignSJDBoverhangMin 1 \
+    --outFilterMismatchNmax 999 \
+    --outMultimapperOrder Random \
+    --alignEndsType EndToEnd \
+    --alignIntronMin 4 \
+    --alignIntronMax 5000 \
+    --alignMatesGapMax 5000 \
+        >> >(tee -a sh_err_out/err_out/rerun_STAR.CT2_6125_pIAA_Q_SteadyState_UT.2023-0213.stdout.txt) \
+        2>> >(tee -a sh_err_out/err_out/rerun_STAR.CT2_6125_pIAA_Q_SteadyState_UT.2023-0213.stderr.txt >&2)
+#NOTE It worked! Let's move on...
+
+
+#  Clean things up --------------------
+transcriptome && 
+    {
+        cd "results/2023-0115" \
+            || echo "cd'ing failed; check on this..."
+    }
+
+mv \
+    ./fastqs_UMI-dedup/atria_trim/bak \
+    ./fastqs_UMI-dedup/atria_trim/problem
+mv \
+    ./bams_UMI-dedup/aligned_umi-extracted_trimmed/bak \
+    ./bams_UMI-dedup/aligned_umi-extracted_trimmed/problem
+
+cd ./bams_UMI-dedup/aligned_umi-extracted_trimmed
+rename -n 's/Aligned.sortedByCoord.out//g' CT2_6125_pIAA_Q_SteadyState_UT*
+rename -n 's/Log/.Log/g; s/SJ/.SJ/g' CT2_6125_pIAA_Q_SteadyState_UT*
+rename 's/Aligned.sortedByCoord.out//g' CT2_6125_pIAA_Q_SteadyState_UT*
+rename 's/Log/.Log/g; s/SJ/.SJ/g' CT2_6125_pIAA_Q_SteadyState_UT*
+rm -r CT2_6125_pIAA_Q_SteadyState_UT*_STARtmp/
+.,
+
+cd ../../fastqs_UMI-dedup/atria_trim
+.,f
+#NOTE Everything looks OK
+
+
+#  Move on ----------------------------
+transcriptome && 
+    {
+        cd "results/2023-0115" \
+            || echo "cd'ing failed; check on this..."
+    }
 ```
+</details>
+<br />
+
+<a id="notes-etc"></a>
+###### Notes, etc.
+<details>
+<summary><i>Notes, etc.: Troubleshooting the problem with CT2_6125_pIAA_Q_SteadyState_UT</i></summary>
+
+Digging into things because the alignment job for `CT2_6125_pIAA_Q_SteadyState_UT`  appears to have failed
+```txt
+., *.bam
+-rw-rw---- 1 kalavatt 2.1G Feb  8 15:07 5781_G1_IN_UT.bam
+-rw-rw---- 1 kalavatt 2.2G Feb  8 15:11 5781_G1_IP_UT.bam
+-rw-rw---- 1 kalavatt 1.8G Feb  8 15:11 5781_Q_IN_UT.bam
+-rw-rw---- 1 kalavatt 2.4G Feb  8 15:14 5781_Q_IP_UT.bam
+-rw-rw---- 1 kalavatt 1.8G Feb  8 15:13 5782_G1_IN_UT.bam
+-rw-rw---- 1 kalavatt 2.2G Feb  8 15:14 5782_G1_IP_UT.bam
+-rw-rw---- 1 kalavatt 1.5G Feb  8 15:14 5782_Q_IN_UT.bam
+-rw-rw---- 1 kalavatt 2.2G Feb  8 15:17 5782_Q_IP_UT.bam
+-rw-rw---- 1 kalavatt 2.7G Feb  8 15:40 BM10_DSp48_5781_UT.bam
+-rw-rw---- 1 kalavatt 2.5G Feb  8 15:41 BM11_DSp48_7080_UT.bam
+-rw-rw---- 1 kalavatt 2.5G Feb  8 15:43 BM1_DSm2_5781_UT.bam
+-rw-rw---- 1 kalavatt 2.7G Feb  8 15:43 BM2_DSm2_7080_UT.bam
+-rw-rw---- 1 kalavatt 2.7G Feb  8 15:44 BM3_DSm2_7079_UT.bam
+-rw-rw---- 1 kalavatt 2.4G Feb  8 15:44 BM4_DSp2_5781_UT.bam
+-rw-rw---- 1 kalavatt 3.1G Feb  8 15:47 BM5_DSp2_7080_UT.bam
+-rw-rw---- 1 kalavatt 2.7G Feb  8 15:48 BM6_DSp2_7079_UT.bam
+-rw-rw---- 1 kalavatt 2.7G Feb  8 15:47 BM7_DSp24_5781_UT.bam
+-rw-rw---- 1 kalavatt 2.8G Feb  8 15:48 BM8_DSp24_7080_UT.bam
+-rw-rw---- 1 kalavatt 2.6G Feb  8 15:50 BM9_DSp24_7079_UT.bam
+-rw-rw---- 1 kalavatt 2.4G Feb  8 15:51 Bp10_DSp48_5782_UT.bam
+-rw-rw---- 1 kalavatt 2.7G Feb  8 15:52 Bp11_DSp48_7081_UT.bam
+-rw-rw---- 1 kalavatt 2.9G Feb  8 15:53 Bp12_DSp48_7078_UT.bam
+-rw-rw---- 1 kalavatt 2.1G Feb  8 15:52 Bp1_DSm2_5782_UT.bam
+-rw-rw---- 1 kalavatt 2.5G Feb  8 15:54 Bp2_DSm2_7081_UT.bam
+-rw-rw---- 1 kalavatt 2.1G Feb  8 15:55 Bp3_DSm2_7078_UT.bam
+-rw-rw---- 1 kalavatt 2.8G Feb  8 15:57 Bp4_DSp2_5782_UT.bam
+-rw-rw---- 1 kalavatt 3.0G Feb  8 15:58 Bp5_DSp2_7081_UT.bam
+-rw-rw---- 1 kalavatt 2.6G Feb  8 15:58 Bp6_DSp2_7078_UT.bam
+-rw-rw---- 1 kalavatt 2.7G Feb  8 16:00 Bp7_DSp24_5782_UT.bam
+-rw-rw---- 1 kalavatt 2.8G Feb  8 16:04 Bp8_DSp24_7081_UT.bam
+-rw-rw---- 1 kalavatt 2.2G Feb  8 16:01 Bp9_DSp24_7078_UT.bam
+-rw-rw---- 1 kalavatt 4.1G Feb  8 16:08 CT10_7718_pIAA_Q_Nascent_UT.bam
+-rw-rw---- 1 kalavatt 4.0G Feb  8 16:08 CT10_7718_pIAA_Q_SteadyState_UT.bam
+-rw-rw---- 1 kalavatt 3.9G Feb  8 16:09 CT2_6125_pIAA_Q_Nascent_UT.bam
+-rw-rw---- 1 kalavatt    0 Feb  8 16:06 CT2_6125_pIAA_Q_SteadyState_UT.bam
+-rw-rw---- 1 kalavatt 3.9G Feb  8 16:15 CT4_6126_pIAA_Q_Nascent_UT.bam
+-rw-rw---- 1 kalavatt 4.3G Feb  8 16:15 CT4_6126_pIAA_Q_SteadyState_UT.bam
+-rw-rw---- 1 kalavatt 4.6G Feb  8 16:18 CT6_7714_pIAA_Q_Nascent_UT.bam
+-rw-rw---- 1 kalavatt 3.4G Feb  8 16:21 CT6_7714_pIAA_Q_SteadyState_UT.bam
+-rw-rw---- 1 kalavatt 4.0G Feb  8 16:27 CT8_7716_pIAA_Q_Nascent_UT.bam
+-rw-rw---- 1 kalavatt 3.9G Feb  8 16:23 CT8_7716_pIAA_Q_SteadyState_UT.bam
+-rw-rw---- 1 kalavatt 4.0G Feb  8 16:25 CU11_5782_Q_Nascent_UT.bam
+-rw-rw---- 1 kalavatt 3.8G Feb  8 16:28 CU12_5782_Q_SteadyState_UT.bam
+-rw-rw---- 1 kalavatt 4.1G Feb  8 15:25 CW10_7747_8day_Q_IN_UT.bam
+-rw-rw---- 1 kalavatt 3.7G Feb  8 15:20 CW10_7747_8day_Q_PD_UT.bam
+-rw-rw---- 1 kalavatt 3.6G Feb  8 15:24 CW12_7748_8day_Q_IN_UT.bam
+-rw-rw---- 1 kalavatt 4.0G Feb  8 15:25 CW12_7748_8day_Q_PD_UT.bam
+-rw-rw---- 1 kalavatt 4.0G Feb  8 15:26 CW2_5781_8day_Q_IN_UT.bam
+-rw-rw---- 1 kalavatt 3.8G Feb  8 15:31 CW2_5781_8day_Q_PD_UT.bam
+-rw-rw---- 1 kalavatt 3.8G Feb  8 15:35 CW4_5782_8day_Q_IN_UT.bam
+-rw-rw---- 1 kalavatt 3.9G Feb  8 15:33 CW4_5782_8day_Q_PD_UT.bam
+-rw-rw---- 1 kalavatt 6.4G Feb  8 15:34 CW6_7078_8day_Q_IN_UT.bam
+-rw-rw---- 1 kalavatt 3.9G Feb  8 15:37 CW6_7078_8day_Q_PD_UT.bam
+-rw-rw---- 1 kalavatt 4.1G Feb  8 15:40 CW8_7079_8day_Q_IN_UT.bam
+-rw-rw---- 1 kalavatt 3.8G Feb  8 15:40 CW8_7079_8day_Q_PD_UT.
+
+
+❯ cat run_STAR.CT2_6125_pIAA_Q_SteadyState_UT.9897387-47.err.txt
+gzip: ./bams_UMI-dedup/to-align_umi-extracted_trimmed/CT2_6125_pIAA_Q_SteadyState_UT_R3.fq.gz: unexpected end of file
+
+EXITING because of FATAL ERROR in reads input: quality string length is not equal to sequence length
+@VH01189:9:AAC57JMM5:1:2611:18894:53950_ATAGTACT
+CGCTCTCATCCATCAGTAACAAGGAATCATCAAAGTAGCCCGAAGCGTCG
+;CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC;CCCCCCCCCCC;C
+SOLUTION: fix your fastq file
+
+Feb 08 16:15:44 ...... FATAL ERROR, exiting
+srun: error: gizmok10: task 0: Exited with exit code 1
+
+
+❯ cat run_STAR.CT2_6125_pIAA_Q_SteadyState_UT.9897387-47.out.txt
+STAR --runMode alignReads --runThreadN 8 --outSAMtype BAM SortedByCoordinate --outSAMunmapped Within --outSAMattributes All --genomeDir /home/kalavatt/genomes/combined_SC_KL_20S/STAR --readFilesIn ./bams_UMI-dedup/to-align_umi-extracted_trimmed/CT2_6125_pIAA_Q_SteadyState_UT_R1.fq.gz ./bams_UMI-dedup/to-align_umi-extracted_trimmed/CT2_6125_pIAA_Q_SteadyState_UT_R3.fq.gz --readFilesCommand zcat --outFileNamePrefix ./bams_UMI-dedup/aligned_umi-extracted_trimmed/CT2_6125_pIAA_Q_SteadyState_UT --limitBAMsortRAM 4000000000 --outFilterMultimapNmax 10 --winAnchorMultimapNmax 1000 --alignSJoverhangMin 8 --alignSJDBoverhangMin 1 --outFilterMismatchNmax 999 --outMultimapperOrder Random --alignEndsType EndToEnd --alignIntronMin 4 --alignIntronMax 5000 --alignMatesGapMax 5000
+
+    STAR --runMode alignReads --runThreadN 8 --outSAMtype BAM SortedByCoordinate --outSAMunmapped Within --outSAMattributes All --genomeDir /home/kalavatt/genomes/combined_SC_KL_20S/STAR --readFilesIn ./bams_UMI-dedup/to-align_umi-extracted_trimmed/CT2_6125_pIAA_Q_SteadyState_UT_R1.fq.gz ./bams_UMI-dedup/to-align_umi-extracted_trimmed/CT2_6125_pIAA_Q_SteadyState_UT_R3.fq.gz --readFilesCommand zcat --outFileNamePrefix ./bams_UMI-dedup/aligned_umi-extracted_trimmed/CT2_6125_pIAA_Q_SteadyState_UT --limitBAMsortRAM 4000000000 --outFilterMultimapNmax 10 --winAnchorMultimapNmax 1000 --alignSJoverhangMin 8 --alignSJDBoverhangMin 1 --outFilterMismatchNmax 999 --outMultimapperOrder Random --alignEndsType EndToEnd --alignIntronMin 4 --alignIntronMax 5000 --alignMatesGapMax 5000
+    STAR version: 2.7.10b   compiled: 2022-11-01T09:53:26-04:00 :/home/dobin/data/STAR/STARcode/STAR.master/source
+Feb 08 16:06:48 ..... started STAR run
+Feb 08 16:06:49 ..... loading genome
+Feb 08 16:06:49 ..... started mapping
+
+
+❯ zgrep -B 1 -A 4 \
+>    "^@VH01189:9:AAC57JMM5:1:2611:18894:53950_ATAGTACT" \
+>    ./bams_UMI-dedup/to-align_umi-extracted_trimmed/CT2_6125_pIAA_Q_SteadyState_UT_R3.fq.gz
+
+gzip: ./bams_UMI-dedup/to-align_umi-extracted_trimmed/CT2_6125_pIAA_Q_SteadyState_UT_R3.fq.gz: unexpected end of file
+CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+@VH01189:9:AAC57JMM5:1:2611:18894:53950_ATAGTACT 3:N:0:CGACCTAA+CAGGTTAG
+CGCTCTCATCCATCAGTAACAAGGAATCATCAAAGTAGCCCGAAGCGTCG
++
+;CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC;CCCCCCCCCCC;CC
+
+
+❯ zcat \
+>    ./bams_UMI-dedup/to-align_umi-extracted_trimmed/CT2_6125_pIAA_Q_SteadyState_UT_R3.fq.gz \
+>        | tail
+
+gzip: ./bams_UMI-dedup/to-align_umi-extracted_trimmed/CT2_6125_pIAA_Q_SteadyState_UT_R3.fq.gz: unexpected end of file
++
+CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+@VH01189:9:AAC57JMM5:1:2611:18250:53950_CTCCAGAT 3:N:0:CGACCTAA+CAGGTTAG
+CTTAGGACATCTGCGTTATCGTTTTACAAATGTGCCGCCCCAGCCAAACT
++
+CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+@VH01189:9:AAC57JMM5:1:2611:18894:53950_ATAGTACT 3:N:0:CGACCTAA+CAGGTTAG
+CGCTCTCATCCATCAGTAACAAGGAATCATCAAAGTAGCCCGAAGCGTCG
++
+;CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC;CCCCCCCCCCC;CC
+
+
+❯ zcat \
+>    ./bams_UMI-dedup/to-align_umi-extracted_trimmed/CT2_6125_pIAA_Q_SteadyState_UT_R1.fq.gz \
+>        | tail
+
+gzip: ./bams_UMI-dedup/to-align_umi-extracted_trimmed/CT2_6125_pIAA_Q_SteadyState_UT_R1.fq.gz: unexpected end of file
+@VH01189:9:AAC57JMM5:1:2611:39742:56203_TACTTCGT 1:N:0:CGACCTAA+CAGGTTAG
+GTTTGAGGCAATAACAGGTCTGTGATGCCCTTAGACGTTCTGGGCCGCAC
++
+CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+@VH01189:9:AAC57JMM5:1:2611:40613:56203_CCAGTGAA 1:N:0:CGACCTAA+CAGGTTAG
+TTCCTTGCGAATCGTCGCCAGTAGACTGGCGAAGGTCCGGAAGGACTTGG
++
+CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+@VH01189:9:AAC57JMM5:1:2611:40878:56203_GTCGTAGT 1:N:0:CGACCTAA+CAGGTTAG
+CTGGTCTTCGGGCCTGTACTGGCCCTCAGCACTTAGTCTACCCTGACGGT
+
+
+❯ mkdir -p ./bams_UMI-dedup/aligned_umi-extracted_trimmed/bak
+mkdir: created directory './bams_UMI-dedup/aligned_umi-extracted_trimmed/bak'
+
+
+❯ mv \
+>    ./bams_UMI-dedup/aligned_umi-extracted_trimmed/CT2_6125_pIAA_Q_SteadyState_UT* \
+>    ./bams_UMI-dedup/aligned_umi-extracted_trimmed/bak
+renamed './bams_UMI-dedup/aligned_umi-extracted_trimmed/CT2_6125_pIAA_Q_SteadyState_UT.bam' -> './bams_UMI-dedup/aligned_umi-extracted_trimmed/bak/CT2_6125_pIAA_Q_SteadyState_UT.bam'
+renamed './bams_UMI-dedup/aligned_umi-extracted_trimmed/CT2_6125_pIAA_Q_SteadyState_UT.Log.out' -> './bams_UMI-dedup/aligned_umi-extracted_trimmed/bak/CT2_6125_pIAA_Q_SteadyState_UT.Log.out'
+renamed './bams_UMI-dedup/aligned_umi-extracted_trimmed/CT2_6125_pIAA_Q_SteadyState_UT.Log.progress.out' -> './bams_UMI-dedup/aligned_umi-extracted_trimmed/bak/CT2_6125_pIAA_Q_SteadyState_UT.Log.progress.out'
+
+
+❯ echo "${SLURM_CPUS_ON_NODE}"
+16
+
+
+❯ STAR \
+>    --runMode alignReads \
+>    --runThreadN "${SLURM_CPUS_ON_NODE}" \
+>    --outSAMtype BAM SortedByCoordinate \
+>    --outSAMunmapped Within \
+>    --outSAMattributes All \
+>    --genomeDir /home/kalavatt/genomes/combined_SC_KL_20S/STAR \
+>    --readFilesIn ./bams_UMI-dedup/to-align_umi-extracted_trimmed/CT2_6125_pIAA_Q_SteadyState_UT_R1.fq.gz ./bams_UMI-dedup/to-align_umi-extracted_trimmed/CT2_6125_pIAA_Q_SteadyState_UT_R3.fq.gz \
+>    --readFilesCommand zcat \
+>    --outFileNamePrefix ./bams_UMI-dedup/aligned_umi-extracted_trimmed/CT2_6125_pIAA_Q_SteadyState_UT \
+>    --limitBAMsortRAM 4000000000 \
+>    --outFilterMultimapNmax 10 \
+>    --winAnchorMultimapNmax 1000 \
+>    --alignSJoverhangMin 8 \
+>    --alignSJDBoverhangMin 1 \
+>    --outFilterMismatchNmax 999 \
+>    --outMultimapperOrder Random \
+>    --alignEndsType EndToEnd \
+>    --alignIntronMin 4 \
+>    --alignIntronMax 5000 \
+>    --alignMatesGapMax 5000 \
+>        > >(tee -a sh_err_out/err_out/rerun_STAR.CT2_6125_pIAA_Q_SteadyState_UT.2023-0213.stdout.txt) \
+>        2> >(tee -a sh_err_out/err_out/rerun_STAR.CT2_6125_pIAA_Q_SteadyState_UT.2023-0213.stderr.txt >&2)
+    STAR --runMode alignReads --runThreadN 16 --outSAMtype BAM SortedByCoordinate --outSAMunmapped Within --outSAMattributes All --genomeDir /home/kalavatt/genomes/combined_SC_KL_20S/STAR --readFilesIn ./bams_UMI-dedup/to-align_umi-extracted_trimmed/CT2_6125_pIAA_Q_SteadyState_UT_R1.fq.gz ./bams_UMI-dedup/to-align_umi-extracted_trimmed/CT2_6125_pIAA_Q_SteadyState_UT_R3.fq.gz --readFilesCommand zcat --outFileNamePrefix ./bams_UMI-dedup/aligned_umi-extracted_trimmed/CT2_6125_pIAA_Q_SteadyState_UT --limitBAMsortRAM 4000000000 --outFilterMultimapNmax 10 --winAnchorMultimapNmax 1000 --alignSJoverhangMin 8 --alignSJDBoverhangMin 1 --outFilterMismatchNmax 999 --outMultimapperOrder Random --alignEndsType EndToEnd --alignIntronMin 4 --alignIntronMax 5000 --alignMatesGapMax 5000
+    STAR version: 2.7.10b   compiled: 2022-11-01T09:53:26-04:00 :/home/dobin/data/STAR/STARcode/STAR.master/source
+Feb 13 08:07:01 ..... started STAR run
+Feb 13 08:07:01 ..... loading genome
+Feb 13 08:07:05 ..... started mapping
+
+gzip: ./bams_UMI-dedup/to-align_umi-extracted_trimmed/CT2_6125_pIAA_Q_SteadyState_UT_R3.fq.gz: unexpected end of file
+
+EXITING because of FATAL ERROR in reads input: quality string length is not equal to sequence length
+@VH01189:9:AAC57JMM5:1:2611:18894:53950_ATAGTACT
+CGCTCTCATCCATCAGTAACAAGGAATCATCAAAGTAGCCCGAAGCGTCG
+;CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC;CCCCCCCCCCC;C
+SOLUTION: fix your fastq file
+
+Feb 13 08:09:34 ...... FATAL ERROR, exiting
+
+
+❯ cat sh_err_out/err_out/run_atria_trim.Sample_CT2_6125_pIAA_Q_SteadyState_S6.9294591-47.err.txt
+┌ Info: ATRIA VERSIONS
+│   atria = "v3.2.1"
+└   julia = "v1.8.5"
+┌ Info: ATRIA ARGUMENTS
+└   command = `-t 8 -r ./fastqs_UMI-dedup/umi-tools_extract/Sample_CT2_6125_pIAA_Q_SteadyState_S6_R1.UMI.fq.gz -R ./fastqs_UMI-dedup/umi-tools_extract/Sample_CT2_6125_pIAA_Q_SteadyState_S6_R3.UMI.fq.gz -o ./fastqs_UMI-dedup/atria_trim --no-length-filtration --stats`
+┌ Info: ATRIA OUTPUT FILES
+│   read1 = "./fastqs_UMI-dedup/atria_trim/Sample_CT2_6125_pIAA_Q_SteadyState_S6_R1.UMI.atria.fq.gz"
+└   read2 = "./fastqs_UMI-dedup/atria_trim/Sample_CT2_6125_pIAA_Q_SteadyState_S6_R3.UMI.atria.fq.gz"
+┌ Info: ATRIA TRIMMERS AND FILTERS
+│   adapter_trimming = true
+│   consensus_calling = true
+│   hard_clip_3_end = false
+│   hard_clip_5_end = false
+│   quality_trimming = true
+│   tail_N_trimming = true
+│   max_N_filtering = true
+└   length_filtering = false
+[ Info: Cycle 1: read 379697/379697 pairs; wrote 379697/379697 pairs; (copied 0/0 reads)
+[ Info: Cycle 2: read 379460/759157 pairs; wrote 379460/759157 pairs; (copied 0/0 reads)
+[ Info: Cycle 3: read 379467/1138624 pairs; wrote 379467/1138624 pairs; (copied 0/0 reads)
+[ Info: Cycle 4: read 379467/1518091 pairs; wrote 379467/1518091 pairs; (copied 0/0 reads)
+[ Info: Cycle 5: read 379455/1897546 pairs; wrote 379455/1897546 pairs; (copied 0/0 reads)
+[ Info: Cycle 6: read 379564/2277110 pairs; wrote 379564/2277110 pairs; (copied 0/0 reads)
+[ Info: Cycle 7: read 379597/2656707 pairs; wrote 379597/2656707 pairs; (copied 0/0 reads)
+[ Info: Cycle 8: read 379466/3036173 pairs; wrote 379466/3036173 pairs; (copied 0/0 reads)
+[ Info: Cycle 9: read 379467/3415640 pairs; wrote 379467/3415640 pairs; (copied 0/0 reads)
+[ Info: Cycle 10: read 379465/3795105 pairs; wrote 379465/3795105 pairs; (copied 0/0 reads)
+[ Info: Cycle 11: read 379450/4174555 pairs; wrote 379450/4174555 pairs; (copied 0/0 reads)
+[ Info: Cycle 12: read 379661/4554216 pairs; wrote 379661/4554216 pairs; (copied 0/0 reads)
+[ Info: Cycle 13: read 379501/4933717 pairs; wrote 379501/4933717 pairs; (copied 0/0 reads)
+[ Info: Cycle 14: read 379468/5313185 pairs; wrote 379468/5313185 pairs; (copied 0/0 reads)
+[ Info: Cycle 15: read 379471/5692656 pairs; wrote 379471/5692656 pairs; (copied 0/0 reads)
+[ Info: Cycle 16: read 379450/6072106 pairs; wrote 379450/6072106 pairs; (copied 0/0 reads)
+[ Info: Cycle 17: read 379509/6451615 pairs; wrote 379509/6451615 pairs; (copied 0/0 reads)
+[ Info: Cycle 18: read 379655/6831270 pairs; wrote 379655/6831270 pairs; (copied 0/0 reads)
+[ Info: Cycle 19: read 379464/7210734 pairs; wrote 379464/7210734 pairs; (copied 0/0 reads)
+[ Info: Cycle 20: read 379470/7590204 pairs; wrote 379470/7590204 pairs; (copied 0/0 reads)
+[ Info: Cycle 21: read 379468/7969672 pairs; wrote 379468/7969672 pairs; (copied 0/0 reads)
+[ Info: Cycle 22: read 379458/8349130 pairs; wrote 379458/8349130 pairs; (copied 0/0 reads)
+[ Info: Cycle 23: read 379612/8728742 pairs; wrote 379612/8728742 pairs; (copied 0/0 reads)
+[ Info: Cycle 24: read 379548/9108290 pairs; wrote 379548/9108290 pairs; (copied 0/0 reads)
+[ Info: Cycle 25: read 379465/9487755 pairs; wrote 379465/9487755 pairs; (copied 0/0 reads)
+[ Info: Cycle 26: read 379468/9867223 pairs; wrote 379468/9867223 pairs; (copied 0/0 reads)
+[ Info: Cycle 27: read 379466/10246689 pairs; wrote 379466/10246689 pairs; (copied 0/0 reads)
+[ Info: Cycle 28: read 379456/10626145 pairs; wrote 379456/10626145 pairs; (copied 0/0 reads)
+[ Info: Cycle 29: read 379655/11005800 pairs; wrote 379655/11005800 pairs; (copied 0/0 reads)
+[ Info: Cycle 30: read 379517/11385317 pairs; wrote 379517/11385317 pairs; (copied 0/0 reads)
+[ Info: Cycle 31: read 379470/11764787 pairs; wrote 379470/11764787 pairs; (copied 0/0 reads)
+[ Info: Cycle 32: read 379475/12144262 pairs; wrote 379475/12144262 pairs; (copied 0/0 reads)
+[ Info: Cycle 33: read 379467/12523729 pairs; wrote 379467/12523729 pairs; (copied 0/0 reads)
+[ Info: Cycle 34: read 379458/12903187 pairs; wrote 379458/12903187 pairs; (copied 0/0 reads)
+[ Info: Cycle 35: read 379665/13282852 pairs; wrote 379665/13282852 pairs; (copied 0/0 reads)
+[ Info: Cycle 36: read 379506/13662358 pairs; wrote 379506/13662358 pairs; (copied 0/0 reads)
+[ Info: Cycle 37: read 379474/14041832 pairs; wrote 379474/14041832 pairs; (copied 0/0 reads)
+[ Info: Cycle 38: read 379476/14421308 pairs; wrote 379476/14421308 pairs; (copied 0/0 reads)
+[ Info: Cycle 39: read 379467/14800775 pairs; wrote 379467/14800775 pairs; (copied 0/0 reads)
+[ Info: Cycle 40: read 379460/15180235 pairs; wrote 379460/15180235 pairs; (copied 0/0 reads)
+[ Info: Cycle 41: read 379589/15559824 pairs; wrote 379589/15559824 pairs; (copied 0/0 reads)
+[ Info: Cycle 42: read 379572/15939396 pairs; wrote 379572/15939396 pairs; (copied 0/0 reads)
+[ Info: Cycle 43: read 379467/16318863 pairs; wrote 379467/16318863 pairs; (copied 0/0 reads)
+[ Info: Cycle 44: read 379473/16698336 pairs; wrote 379473/16698336 pairs; (copied 0/0 reads)
+[ Info: Cycle 45: read 379469/17077805 pairs; wrote 379469/17077805 pairs; (copied 0/0 reads)
+[ Info: Cycle 46: read 379453/17457258 pairs; wrote 379453/17457258 pairs; (copied 0/0 reads)
+[ Info: Cycle 47: read 379644/17836902 pairs; wrote 379644/17836902 pairs; (copied 0/0 reads)
+[ Info: Cycle 48: read 379527/18216429 pairs; wrote 379527/18216429 pairs; (copied 0/0 reads)
+[ Info: Cycle 49: read 379473/18595902 pairs; wrote 379473/18595902 pairs; (copied 0/0 reads)
+[ Info: Cycle 50: read 379475/18975377 pairs; wrote 379475/18975377 pairs; (copied 0/0 reads)
+[ Info: Cycle 51: read 379468/19354845 pairs; wrote 379468/19354845 pairs; (copied 0/0 reads)
+[ Info: Cycle 52: read 379456/19734301 pairs; wrote 379456/19734301 pairs; (copied 0/0 reads)
+[ Info: Cycle 53: read 379629/20113930 pairs; wrote 379629/20113930 pairs; (copied 0/0 reads)
+[ Info: Cycle 54: read 379536/20493466 pairs; wrote 379536/20493466 pairs; (copied 0/0 reads)
+[ Info: Cycle 55: read 379467/20872933 pairs; wrote 379467/20872933 pairs; (copied 0/0 reads)
+[ Info: Cycle 56: read 379473/21252406 pairs; wrote 379473/21252406 pairs; (copied 0/0 reads)
+[ Info: Cycle 57: read 379461/21631867 pairs; wrote 379461/21631867 pairs; (copied 0/0 reads)
+[ Info: Cycle 58: read 379447/22011314 pairs; wrote 379447/22011314 pairs; (copied 0/0 reads)
+[ Info: Cycle 59: read 379697/22391011 pairs; wrote 379697/22391011 pairs; (copied 0/0 reads)
+[ Info: Cycle 60: read 379460/22770471 pairs; wrote 379460/22770471 pairs; (copied 0/0 reads)
+[ Info: Cycle 61: read 379466/23149937 pairs; wrote 379466/23149937 pairs; (copied 0/0 reads)
+[ Info: Cycle 62: read 379466/23529403 pairs; wrote 379466/23529403 pairs; (copied 0/0 reads)
+[ Info: Cycle 63: read 379452/23908855 pairs; wrote 379452/23908855 pairs; (copied 0/0 reads)
+[ Info: Cycle 64: read 379639/24288494 pairs; wrote 379639/24288494 pairs; (copied 0/0 reads)
+[ Info: Cycle 65: read 379511/24668005 pairs; wrote 379511/24668005 pairs; (copied 0/0 reads)
+[ Info: Cycle 66: read 379466/25047471 pairs; wrote 379466/25047471 pairs; (copied 0/0 reads)
+[ Info: Cycle 67: read 379467/25426938 pairs; wrote 379467/25426938 pairs; (copied 0/0 reads)
+[ Info: Cycle 68: read 379456/25806394 pairs; wrote 379456/25806394 pairs; (copied 0/0 reads)
+[ Info: Cycle 69: read 379573/26185967 pairs; wrote 379573/26185967 pairs; (copied 0/0 reads)
+[ Info: Cycle 70: read 379574/26565541 pairs; wrote 379574/26565541 pairs; (copied 0/0 reads)
+[ Info: Cycle 71: read 379465/26945006 pairs; wrote 379465/26945006 pairs; (copied 0/0 reads)
+[ Info: Cycle 72: read 379460/27324466 pairs; wrote 379460/27324466 pairs; (copied 0/0 reads)
+[ Info: Cycle 73: read 379457/27703923 pairs; wrote 379457/27703923 pairs; (copied 0/0 reads)
+[ Info: Cycle 74: read 379576/28083499 pairs; wrote 379576/28083499 pairs; (copied 0/0 reads)
+[ Info: Cycle 75: read 379581/28463080 pairs; wrote 379581/28463080 pairs; (copied 0/0 reads)
+[ Info: Cycle 76: read 379466/28842546 pairs; wrote 379466/28842546 pairs; (copied 0/0 reads)
+[ Info: Cycle 77: read 379470/29222016 pairs; wrote 379470/29222016 pairs; (copied 0/0 reads)
+[ Info: Cycle 78: read 379424/29601440 pairs; wrote 379424/29601440 pairs; (copied 0/0 reads)
+[ Info: Cycle 79: read 379554/29980994 pairs; wrote 379554/29980994 pairs; (copied 0/0 reads)
+[ Info: Cycle 80: read 379602/30360596 pairs; wrote 379602/30360596 pairs; (copied 0/0 reads)
+[ Info: Cycle 81: read 379467/30740063 pairs; wrote 379467/30740063 pairs; (copied 0/0 reads)
+[ Info: Cycle 82: read 379471/31119534 pairs; wrote 379471/31119534 pairs; (copied 0/0 reads)
+[ Info: Cycle 83: read 379465/31498999 pairs; wrote 379465/31498999 pairs; (copied 0/0 reads)
+[ Info: Cycle 84: read 379456/31878455 pairs; wrote 379456/31878455 pairs; (copied 0/0 reads)
+[ Info: Cycle 85: read 379705/32258160 pairs; wrote 379705/32258160 pairs; (copied 0/0 reads)
+[ Info: Cycle 86: read 379465/32637625 pairs; wrote 379465/32637625 pairs; (copied 0/0 reads)
+[ Info: Cycle 87: read 379477/33017102 pairs; wrote 379477/33017102 pairs; (copied 0/0 reads)
+[ Info: Cycle 88: read 379447/33396549 pairs; wrote 379447/33396549 pairs; (copied 0/0 reads)
+[ Info: Cycle 89: read 379453/33776002 pairs; wrote 379453/33776002 pairs; (copied 0/0 reads)
+[ Info: Cycle 90: read 379714/34155716 pairs; wrote 379714/34155716 pairs; (copied 0/0 reads)
+[ Info: Cycle 91: read 379463/34535179 pairs; wrote 379463/34535179 pairs; (copied 0/0 reads)
+[ Info: Cycle 92: read 379473/34914652 pairs; wrote 379473/34914652 pairs; (copied 0/0 reads)
+[ Info: Cycle 93: read 379475/35294127 pairs; wrote 379475/35294127 pairs; (copied 0/0 reads)
+[ Info: Cycle 94: read 379462/35673589 pairs; wrote 379462/35673589 pairs; (copied 0/0 reads)
+[ Info: Cycle 95: read 379474/36053063 pairs; wrote 379474/36053063 pairs; (copied 0/0 reads)
+[ Info: Cycle 96: read 379690/36432753 pairs; wrote 379690/36432753 pairs; (copied 0/0 reads)
+[ Info: Cycle 97: read 379465/36812218 pairs; wrote 379465/36812218 pairs; (copied 0/0 reads)
+[ Info: Cycle 98: read 379472/37191690 pairs; wrote 379472/37191690 pairs; (copied 0/0 reads)
+[ Info: Cycle 99: read 379469/37571159 pairs; wrote 379469/37571159 pairs; (copied 0/0 reads)
+[ Info: Cycle 100: read 379454/37950613 pairs; wrote 379454/37950613 pairs; (copied 0/0 reads)
+[ Info: Cycle 101: read 379578/38330191 pairs; wrote 379578/38330191 pairs; (copied 0/0 reads)
+[ Info: Cycle 102: read 379577/38709768 pairs; wrote 379577/38709768 pairs; (copied 0/0 reads)
+[ Info: Cycle 103: read 379471/39089239 pairs; wrote 379471/39089239 pairs; (copied 0/0 reads)
+[ Info: Cycle 104: read 379473/39468712 pairs; wrote 379473/39468712 pairs; (copied 0/0 reads)
+[ Info: Cycle 105: read 379469/39848181 pairs; wrote 379469/39848181 pairs; (copied 0/0 reads)
+[ Info: Cycle 106: read 379451/40227632 pairs; wrote 379451/40227632 pairs; (copied 0/0 reads)
+[ Info: Cycle 107: read 379675/40607307 pairs; wrote 379675/40607307 pairs; (copied 0/0 reads)
+[ Info: Cycle 108: read 379489/40986796 pairs; wrote 379489/40986796 pairs; (copied 0/0 reads)
+[ Info: Cycle 109: read 379471/41366267 pairs; wrote 379471/41366267 pairs; (copied 0/0 reads)
+[ Info: Cycle 110: read 379470/41745737 pairs; wrote 379470/41745737 pairs; (copied 0/0 reads)
+[ Info: Cycle 111: read 379460/42125197 pairs; wrote 379460/42125197 pairs; (copied 0/0 reads)
+[ Info: Cycle 112: read 374644/42499841 pairs; wrote 374644/42499841 pairs; (copied 0/0 reads)
+┌ Info: ATRIA COMPLETE
+│   read1 = "./fastqs_UMI-dedup/atria_trim/Sample_CT2_6125_pIAA_Q_SteadyState_S6_R1.UMI.atria.fq.gz"
+└   read2 = "./fastqs_UMI-dedup/atria_trim/Sample_CT2_6125_pIAA_Q_SteadyState_S6_R3.UMI.atria.fq.gz"
+
+
+❯ cat sh_err_out/err_out/run_atria_trim.Sample_CT2_6125_pIAA_Q_SteadyState_S6.9294591-47.out.txt
+/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/software/Atria/app-3.2.1/bin/atria -t 8 -r ./fastqs_UMI-dedup/umi-tools_extract/Sample_CT2_6125_pIAA_Q_SteadyState_S6_R1.UMI.fq.gz -R ./fastqs_UMI-dedup/umi-tools_extract/Sample_CT2_6125_pIAA_Q_SteadyState_S6_R3.UMI.fq.gz -o ./fastqs_UMI-dedup/atria_trim --no-length-filtration --stats
+
+pigz 2.6
+
+
+❯ ., *Sample_CT2_6125_pIAA_Q_SteadyState*
+-rw-rw---- 1 kalavatt 738 Feb  6 18:26 filter_rCorrector-treated-fastqs.Sample_CT2_6125_pIAA_Q_SteadyState_S6.9431945-47.err.txt
+-rw-rw---- 1 kalavatt 11K Feb  6 18:26 filter_rCorrector-treated-fastqs.Sample_CT2_6125_pIAA_Q_SteadyState_S6.9431945-47.out.txt
+-rw-rw---- 1 kalavatt   0 Feb  5 17:06 run_atria_trim.Sample_CT2_6125_pIAA_Q_SteadyState_S6.9281731-47.err.txt
+-rw-rw---- 1 kalavatt 279 Feb  5 17:06 run_atria_trim.Sample_CT2_6125_pIAA_Q_SteadyState_S6.9281731-47.out.txt
+-rw-rw---- 1 kalavatt 12K Feb  5 17:53 run_atria_trim.Sample_CT2_6125_pIAA_Q_SteadyState_S6.9282279-47.err.txt
+-rw-rw---- 1 kalavatt 357 Feb  5 17:53 run_atria_trim.Sample_CT2_6125_pIAA_Q_SteadyState_S6.9282279-47.out.txt
+-rw-rw---- 1 kalavatt 12K Feb  6 07:37 run_atria_trim.Sample_CT2_6125_pIAA_Q_SteadyState_S6.9294591-47.err.txt
+-rw-rw---- 1 kalavatt 365 Feb  6 07:37 run_atria_trim.Sample_CT2_6125_pIAA_Q_SteadyState_S6.9294591-47.out.txt
+-rw-rw---- 1 kalavatt   0 Feb  5 14:08 run_umi-tools_extract.Sample_CT2_6125_pIAA_Q_SteadyState_S6.9280714-47.err.txt
+-rw-rw---- 1 kalavatt 671 Feb  5 14:08 run_umi-tools_extract.Sample_CT2_6125_pIAA_Q_SteadyState_S6.9280714-47.out.txt
+-rw-rw---- 1 kalavatt   0 Feb  5 16:08 run_umi-tools_extract.Sample_CT2_6125_pIAA_Q_SteadyState_S6.9280838-47.err.txt
+-rw-rw---- 1 kalavatt 49K Feb  5 16:38 run_umi-tools_extract.Sample_CT2_6125_pIAA_Q_SteadyState_S6.9280838-47.out.txt
+
+
+❯ cat run_umi-tools_extract.Sample_CT2_6125_pIAA_Q_SteadyState_S6.9280838-47.err.txt
+
+
+❯ cat run_umi-tools_extract.Sample_CT2_6125_pIAA_Q_SteadyState_S6.9280838-47.out.txt
+umi_tools extract --bc-pattern=NNNNNNNN --stdin=./fastqs_UMI-dedup/symlinks/Sample_CT2_6125_pIAA_Q_SteadyState_S6_R2_001.fastq.gz --read2-in=./fastqs_UMI-dedup/symlinks/Sample_CT2_6125_pIAA_Q_SteadyState_S6_R1_001.fastq.gz --stdout=./fastqs_UMI-dedup/umi-tools_extract/Sample_CT2_6125_pIAA_Q_SteadyState_S6_R1.UMI.fq.gz --read2-stdout
+
+umi_tools extract --bc-pattern=NNNNNNNN --stdin=./fastqs_UMI-dedup/symlinks/Sample_CT2_6125_pIAA_Q_SteadyState_S6_R2_001.fastq.gz --read2-in=./fastqs_UMI-dedup/symlinks/Sample_CT2_6125_pIAA_Q_SteadyState_S6_R3_001.fastq.gz --stdout=./fastqs_UMI-dedup/umi-tools_extract/Sample_CT2_6125_pIAA_Q_SteadyState_S6_R3.UMI.fq.gz --read2-stdout
+# UMI-tools version: 1.0.1
+# output generated by extract --bc-pattern=NNNNNNNN --stdin=./fastqs_UMI-dedup/symlinks/Sample_CT2_6125_pIAA_Q_SteadyState_S6_R2_001.fastq.gz --read2-in=./fastqs_UMI-dedup/symlinks/Sample_CT2_6125_pIAA_Q_SteadyState_S6_R1_001.fastq.gz --stdout=./fastqs_UMI-dedup/umi-tools_extract/Sample_CT2_6125_pIAA_Q_SteadyState_S6_R1.UMI.fq.gz --read2-stdout
+# job started at Sun Feb  5 16:08:03 2023 on gizmok134 -- 34292c86-cfea-44e8-8075-2c79b3abebe8
+# pid: 30915, system: Linux 4.15.0-192-generic #203-Ubuntu SMP Wed Aug 10 17:40:03 UTC 2022 x86_64
+# blacklist                               : None
+# compresslevel                           : 6
+# either_read                             : False
+# either_read_resolve                     : discard
+# error_correct_cell                      : False
+# extract_method                          : string
+# filter_cell_barcode                     : None
+# filter_cell_barcodes                    : False
+# log2stderr                              : False
+# loglevel                                : 1
+# pattern                                 : NNNNNNNN
+# pattern2                                : None
+# prime3                                  : None
+# quality_encoding                        : None
+# quality_filter_mask                     : None
+# quality_filter_threshold                : None
+# random_seed                             : None
+# read2_in                                : ./fastqs_UMI-dedup/symlinks/Sample_CT2_6125_pIAA_Q_SteadyState_S6_R1_001.fastq.gz
+# read2_out                               : False
+# read2_stdout                            : True
+# reads_subset                            : None
+# reconcile                               : False
+# retain_umi                              : None
+# short_help                              : None
+# stderr                                  : <_io.TextIOWrapper name='<stderr>' mode='w' encoding='UTF-8'>
+# stdin                                   : <_io.TextIOWrapper name='./fastqs_UMI-dedup/symlinks/Sample_CT2_6125_pIAA_Q_SteadyState_S6_R2_001.fastq.gz' encoding='ascii'>
+# stdlog                                  : <_io.TextIOWrapper name='<stdout>' mode='w' encoding='UTF-8'>
+# stdout                                  : <_io.TextIOWrapper name='./fastqs_UMI-dedup/umi-tools_extract/Sample_CT2_6125_pIAA_Q_SteadyState_S6_R1.UMI.fq.gz' encoding='ascii'>
+# timeit_file                             : None
+# timeit_header                           : None
+# timeit_name                             : all
+# tmpdir                                  : None
+# whitelist                               : None
+2023-02-05 16:08:03,386 INFO Starting barcode extraction
+2023-02-05 16:08:06,132 INFO Parsed 100000 reads
+2023-02-05 16:08:08,295 INFO Parsed 200000 reads
+2023-02-05 16:08:10,460 INFO Parsed 300000 reads
+2023-02-05 16:08:12,631 INFO Parsed 400000 reads
+2023-02-05 16:08:14,798 INFO Parsed 500000 reads
+2023-02-05 16:08:16,965 INFO Parsed 600000 reads
+2023-02-05 16:08:19,140 INFO Parsed 700000 reads
+2023-02-05 16:08:21,309 INFO Parsed 800000 reads
+2023-02-05 16:08:23,480 INFO Parsed 900000 reads
+2023-02-05 16:08:25,656 INFO Parsed 1000000 reads
+2023-02-05 16:08:27,821 INFO Parsed 1100000 reads
+2023-02-05 16:08:29,986 INFO Parsed 1200000 reads
+2023-02-05 16:08:32,156 INFO Parsed 1300000 reads
+2023-02-05 16:08:34,321 INFO Parsed 1400000 reads
+2023-02-05 16:08:36,481 INFO Parsed 1500000 reads
+2023-02-05 16:08:38,647 INFO Parsed 1600000 reads
+2023-02-05 16:08:40,871 INFO Parsed 1700000 reads
+2023-02-05 16:08:43,031 INFO Parsed 1800000 reads
+2023-02-05 16:08:45,194 INFO Parsed 1900000 reads
+2023-02-05 16:08:47,367 INFO Parsed 2000000 reads
+2023-02-05 16:08:49,532 INFO Parsed 2100000 reads
+2023-02-05 16:08:51,696 INFO Parsed 2200000 reads
+2023-02-05 16:08:53,866 INFO Parsed 2300000 reads
+2023-02-05 16:08:56,030 INFO Parsed 2400000 reads
+2023-02-05 16:08:58,195 INFO Parsed 2500000 reads
+2023-02-05 16:09:00,368 INFO Parsed 2600000 reads
+2023-02-05 16:09:02,529 INFO Parsed 2700000 reads
+2023-02-05 16:09:04,691 INFO Parsed 2800000 reads
+2023-02-05 16:09:06,858 INFO Parsed 2900000 reads
+2023-02-05 16:09:09,030 INFO Parsed 3000000 reads
+2023-02-05 16:09:11,440 INFO Parsed 3100000 reads
+2023-02-05 16:09:13,607 INFO Parsed 3200000 reads
+2023-02-05 16:09:15,787 INFO Parsed 3300000 reads
+2023-02-05 16:09:17,961 INFO Parsed 3400000 reads
+2023-02-05 16:09:20,135 INFO Parsed 3500000 reads
+2023-02-05 16:09:22,312 INFO Parsed 3600000 reads
+2023-02-05 16:09:24,488 INFO Parsed 3700000 reads
+2023-02-05 16:09:26,772 INFO Parsed 3800000 reads
+2023-02-05 16:09:28,964 INFO Parsed 3900000 reads
+2023-02-05 16:09:31,147 INFO Parsed 4000000 reads
+2023-02-05 16:09:33,322 INFO Parsed 4100000 reads
+2023-02-05 16:09:35,510 INFO Parsed 4200000 reads
+2023-02-05 16:09:37,682 INFO Parsed 4300000 reads
+2023-02-05 16:09:39,851 INFO Parsed 4400000 reads
+2023-02-05 16:09:42,209 INFO Parsed 4500000 reads
+2023-02-05 16:09:44,392 INFO Parsed 4600000 reads
+2023-02-05 16:09:46,563 INFO Parsed 4700000 reads
+2023-02-05 16:09:48,741 INFO Parsed 4800000 reads
+2023-02-05 16:09:50,936 INFO Parsed 4900000 reads
+2023-02-05 16:09:53,102 INFO Parsed 5000000 reads
+2023-02-05 16:09:55,276 INFO Parsed 5100000 reads
+2023-02-05 16:09:57,716 INFO Parsed 5200000 reads
+2023-02-05 16:09:59,892 INFO Parsed 5300000 reads
+2023-02-05 16:10:02,071 INFO Parsed 5400000 reads
+2023-02-05 16:10:04,255 INFO Parsed 5500000 reads
+2023-02-05 16:10:06,423 INFO Parsed 5600000 reads
+2023-02-05 16:10:08,586 INFO Parsed 5700000 reads
+2023-02-05 16:10:10,761 INFO Parsed 5800000 reads
+2023-02-05 16:10:13,201 INFO Parsed 5900000 reads
+2023-02-05 16:10:15,421 INFO Parsed 6000000 reads
+2023-02-05 16:10:17,648 INFO Parsed 6100000 reads
+2023-02-05 16:10:19,844 INFO Parsed 6200000 reads
+2023-02-05 16:10:22,009 INFO Parsed 6300000 reads
+2023-02-05 16:10:24,176 INFO Parsed 6400000 reads
+2023-02-05 16:10:26,349 INFO Parsed 6500000 reads
+2023-02-05 16:10:28,615 INFO Parsed 6600000 reads
+2023-02-05 16:10:30,787 INFO Parsed 6700000 reads
+2023-02-05 16:10:32,972 INFO Parsed 6800000 reads
+2023-02-05 16:10:35,149 INFO Parsed 6900000 reads
+2023-02-05 16:10:37,319 INFO Parsed 7000000 reads
+2023-02-05 16:10:39,505 INFO Parsed 7100000 reads
+2023-02-05 16:10:41,670 INFO Parsed 7200000 reads
+2023-02-05 16:10:44,068 INFO Parsed 7300000 reads
+2023-02-05 16:10:46,243 INFO Parsed 7400000 reads
+2023-02-05 16:10:48,422 INFO Parsed 7500000 reads
+2023-02-05 16:10:50,588 INFO Parsed 7600000 reads
+2023-02-05 16:10:52,761 INFO Parsed 7700000 reads
+2023-02-05 16:10:54,937 INFO Parsed 7800000 reads
+2023-02-05 16:10:57,104 INFO Parsed 7900000 reads
+2023-02-05 16:10:59,272 INFO Parsed 8000000 reads
+2023-02-05 16:11:01,448 INFO Parsed 8100000 reads
+2023-02-05 16:11:03,614 INFO Parsed 8200000 reads
+2023-02-05 16:11:05,786 INFO Parsed 8300000 reads
+2023-02-05 16:11:07,964 INFO Parsed 8400000 reads
+2023-02-05 16:11:10,132 INFO Parsed 8500000 reads
+2023-02-05 16:11:12,297 INFO Parsed 8600000 reads
+2023-02-05 16:11:14,477 INFO Parsed 8700000 reads
+2023-02-05 16:11:16,658 INFO Parsed 8800000 reads
+2023-02-05 16:11:18,826 INFO Parsed 8900000 reads
+2023-02-05 16:11:21,003 INFO Parsed 9000000 reads
+2023-02-05 16:11:23,177 INFO Parsed 9100000 reads
+2023-02-05 16:11:25,341 INFO Parsed 9200000 reads
+2023-02-05 16:11:27,513 INFO Parsed 9300000 reads
+2023-02-05 16:11:29,836 INFO Parsed 9400000 reads
+2023-02-05 16:11:32,007 INFO Parsed 9500000 reads
+2023-02-05 16:11:34,180 INFO Parsed 9600000 reads
+2023-02-05 16:11:36,365 INFO Parsed 9700000 reads
+2023-02-05 16:11:38,535 INFO Parsed 9800000 reads
+2023-02-05 16:11:40,705 INFO Parsed 9900000 reads
+2023-02-05 16:11:42,889 INFO Parsed 10000000 reads
+2023-02-05 16:11:45,075 INFO Parsed 10100000 reads
+2023-02-05 16:11:47,253 INFO Parsed 10200000 reads
+2023-02-05 16:11:49,435 INFO Parsed 10300000 reads
+2023-02-05 16:11:51,617 INFO Parsed 10400000 reads
+2023-02-05 16:11:53,787 INFO Parsed 10500000 reads
+2023-02-05 16:11:55,962 INFO Parsed 10600000 reads
+2023-02-05 16:11:58,134 INFO Parsed 10700000 reads
+2023-02-05 16:12:00,298 INFO Parsed 10800000 reads
+2023-02-05 16:12:02,465 INFO Parsed 10900000 reads
+2023-02-05 16:12:04,641 INFO Parsed 11000000 reads
+2023-02-05 16:12:06,806 INFO Parsed 11100000 reads
+2023-02-05 16:12:08,979 INFO Parsed 11200000 reads
+2023-02-05 16:12:11,166 INFO Parsed 11300000 reads
+2023-02-05 16:12:13,327 INFO Parsed 11400000 reads
+2023-02-05 16:12:15,491 INFO Parsed 11500000 reads
+2023-02-05 16:12:17,669 INFO Parsed 11600000 reads
+2023-02-05 16:12:19,843 INFO Parsed 11700000 reads
+2023-02-05 16:12:22,020 INFO Parsed 11800000 reads
+2023-02-05 16:12:24,203 INFO Parsed 11900000 reads
+2023-02-05 16:12:26,412 INFO Parsed 12000000 reads
+2023-02-05 16:12:28,574 INFO Parsed 12100000 reads
+2023-02-05 16:12:30,747 INFO Parsed 12200000 reads
+2023-02-05 16:12:32,922 INFO Parsed 12300000 reads
+2023-02-05 16:12:35,083 INFO Parsed 12400000 reads
+2023-02-05 16:12:37,250 INFO Parsed 12500000 reads
+2023-02-05 16:12:39,430 INFO Parsed 12600000 reads
+2023-02-05 16:12:41,588 INFO Parsed 12700000 reads
+2023-02-05 16:12:43,755 INFO Parsed 12800000 reads
+2023-02-05 16:12:45,929 INFO Parsed 12900000 reads
+2023-02-05 16:12:48,098 INFO Parsed 13000000 reads
+2023-02-05 16:12:50,262 INFO Parsed 13100000 reads
+2023-02-05 16:12:52,438 INFO Parsed 13200000 reads
+2023-02-05 16:12:54,606 INFO Parsed 13300000 reads
+2023-02-05 16:12:56,766 INFO Parsed 13400000 reads
+2023-02-05 16:12:58,931 INFO Parsed 13500000 reads
+2023-02-05 16:13:01,108 INFO Parsed 13600000 reads
+2023-02-05 16:13:03,278 INFO Parsed 13700000 reads
+2023-02-05 16:13:05,449 INFO Parsed 13800000 reads
+2023-02-05 16:13:07,626 INFO Parsed 13900000 reads
+2023-02-05 16:13:09,796 INFO Parsed 14000000 reads
+2023-02-05 16:13:11,961 INFO Parsed 14100000 reads
+2023-02-05 16:13:14,139 INFO Parsed 14200000 reads
+2023-02-05 16:13:16,283 INFO Parsed 14300000 reads
+2023-02-05 16:13:18,403 INFO Parsed 14400000 reads
+2023-02-05 16:13:20,527 INFO Parsed 14500000 reads
+2023-02-05 16:13:22,681 INFO Parsed 14600000 reads
+2023-02-05 16:13:24,842 INFO Parsed 14700000 reads
+2023-02-05 16:13:27,001 INFO Parsed 14800000 reads
+2023-02-05 16:13:29,171 INFO Parsed 14900000 reads
+2023-02-05 16:13:31,326 INFO Parsed 15000000 reads
+2023-02-05 16:13:33,480 INFO Parsed 15100000 reads
+2023-02-05 16:13:35,644 INFO Parsed 15200000 reads
+2023-02-05 16:13:37,813 INFO Parsed 15300000 reads
+2023-02-05 16:13:39,966 INFO Parsed 15400000 reads
+2023-02-05 16:13:42,122 INFO Parsed 15500000 reads
+2023-02-05 16:13:44,281 INFO Parsed 15600000 reads
+2023-02-05 16:13:46,433 INFO Parsed 15700000 reads
+2023-02-05 16:13:48,592 INFO Parsed 15800000 reads
+2023-02-05 16:13:50,753 INFO Parsed 15900000 reads
+2023-02-05 16:13:52,899 INFO Parsed 16000000 reads
+2023-02-05 16:13:55,055 INFO Parsed 16100000 reads
+2023-02-05 16:13:57,217 INFO Parsed 16200000 reads
+2023-02-05 16:13:59,366 INFO Parsed 16300000 reads
+2023-02-05 16:14:01,517 INFO Parsed 16400000 reads
+2023-02-05 16:14:03,684 INFO Parsed 16500000 reads
+2023-02-05 16:14:05,842 INFO Parsed 16600000 reads
+2023-02-05 16:14:07,997 INFO Parsed 16700000 reads
+2023-02-05 16:14:10,159 INFO Parsed 16800000 reads
+2023-02-05 16:14:12,317 INFO Parsed 16900000 reads
+2023-02-05 16:14:14,465 INFO Parsed 17000000 reads
+2023-02-05 16:14:16,616 INFO Parsed 17100000 reads
+2023-02-05 16:14:18,786 INFO Parsed 17200000 reads
+2023-02-05 16:14:20,960 INFO Parsed 17300000 reads
+2023-02-05 16:14:23,141 INFO Parsed 17400000 reads
+2023-02-05 16:14:25,332 INFO Parsed 17500000 reads
+2023-02-05 16:14:27,488 INFO Parsed 17600000 reads
+2023-02-05 16:14:29,639 INFO Parsed 17700000 reads
+2023-02-05 16:14:31,797 INFO Parsed 17800000 reads
+2023-02-05 16:14:33,953 INFO Parsed 17900000 reads
+2023-02-05 16:14:36,108 INFO Parsed 18000000 reads
+2023-02-05 16:14:38,272 INFO Parsed 18100000 reads
+2023-02-05 16:14:40,437 INFO Parsed 18200000 reads
+2023-02-05 16:14:42,595 INFO Parsed 18300000 reads
+2023-02-05 16:14:44,753 INFO Parsed 18400000 reads
+2023-02-05 16:14:46,920 INFO Parsed 18500000 reads
+2023-02-05 16:14:49,071 INFO Parsed 18600000 reads
+2023-02-05 16:14:51,224 INFO Parsed 18700000 reads
+2023-02-05 16:14:53,389 INFO Parsed 18800000 reads
+2023-02-05 16:14:55,544 INFO Parsed 18900000 reads
+2023-02-05 16:14:57,698 INFO Parsed 19000000 reads
+2023-02-05 16:14:59,862 INFO Parsed 19100000 reads
+2023-02-05 16:15:02,020 INFO Parsed 19200000 reads
+2023-02-05 16:15:04,423 INFO Parsed 19300000 reads
+2023-02-05 16:15:06,577 INFO Parsed 19400000 reads
+2023-02-05 16:15:08,735 INFO Parsed 19500000 reads
+2023-02-05 16:15:10,893 INFO Parsed 19600000 reads
+2023-02-05 16:15:13,049 INFO Parsed 19700000 reads
+2023-02-05 16:15:15,211 INFO Parsed 19800000 reads
+2023-02-05 16:15:17,368 INFO Parsed 19900000 reads
+2023-02-05 16:15:19,523 INFO Parsed 20000000 reads
+2023-02-05 16:15:21,684 INFO Parsed 20100000 reads
+2023-02-05 16:15:23,841 INFO Parsed 20200000 reads
+2023-02-05 16:15:25,988 INFO Parsed 20300000 reads
+2023-02-05 16:15:28,149 INFO Parsed 20400000 reads
+2023-02-05 16:15:30,313 INFO Parsed 20500000 reads
+2023-02-05 16:15:32,463 INFO Parsed 20600000 reads
+2023-02-05 16:15:34,759 INFO Parsed 20700000 reads
+2023-02-05 16:15:36,926 INFO Parsed 20800000 reads
+2023-02-05 16:15:39,079 INFO Parsed 20900000 reads
+2023-02-05 16:15:41,236 INFO Parsed 21000000 reads
+2023-02-05 16:15:43,394 INFO Parsed 21100000 reads
+2023-02-05 16:15:45,546 INFO Parsed 21200000 reads
+2023-02-05 16:15:47,698 INFO Parsed 21300000 reads
+2023-02-05 16:15:49,885 INFO Parsed 21400000 reads
+2023-02-05 16:15:52,050 INFO Parsed 21500000 reads
+2023-02-05 16:15:54,213 INFO Parsed 21600000 reads
+2023-02-05 16:15:56,383 INFO Parsed 21700000 reads
+2023-02-05 16:15:58,550 INFO Parsed 21800000 reads
+2023-02-05 16:16:00,713 INFO Parsed 21900000 reads
+2023-02-05 16:16:02,882 INFO Parsed 22000000 reads
+2023-02-05 16:16:05,538 INFO Parsed 22100000 reads
+2023-02-05 16:16:07,704 INFO Parsed 22200000 reads
+2023-02-05 16:16:09,870 INFO Parsed 22300000 reads
+2023-02-05 16:16:12,044 INFO Parsed 22400000 reads
+2023-02-05 16:16:14,210 INFO Parsed 22500000 reads
+2023-02-05 16:16:16,372 INFO Parsed 22600000 reads
+2023-02-05 16:16:18,538 INFO Parsed 22700000 reads
+2023-02-05 16:16:20,701 INFO Parsed 22800000 reads
+2023-02-05 16:16:22,866 INFO Parsed 22900000 reads
+2023-02-05 16:16:25,038 INFO Parsed 23000000 reads
+2023-02-05 16:16:27,208 INFO Parsed 23100000 reads
+2023-02-05 16:16:29,378 INFO Parsed 23200000 reads
+2023-02-05 16:16:31,549 INFO Parsed 23300000 reads
+2023-02-05 16:16:33,712 INFO Parsed 23400000 reads
+2023-02-05 16:16:35,869 INFO Parsed 23500000 reads
+2023-02-05 16:16:38,030 INFO Parsed 23600000 reads
+2023-02-05 16:16:40,197 INFO Parsed 23700000 reads
+2023-02-05 16:16:42,356 INFO Parsed 23800000 reads
+2023-02-05 16:16:44,517 INFO Parsed 23900000 reads
+2023-02-05 16:16:46,694 INFO Parsed 24000000 reads
+2023-02-05 16:16:48,862 INFO Parsed 24100000 reads
+2023-02-05 16:16:51,025 INFO Parsed 24200000 reads
+2023-02-05 16:16:53,198 INFO Parsed 24300000 reads
+2023-02-05 16:16:55,369 INFO Parsed 24400000 reads
+2023-02-05 16:16:57,534 INFO Parsed 24500000 reads
+2023-02-05 16:16:59,707 INFO Parsed 24600000 reads
+2023-02-05 16:17:01,880 INFO Parsed 24700000 reads
+2023-02-05 16:17:04,050 INFO Parsed 24800000 reads
+2023-02-05 16:17:06,224 INFO Parsed 24900000 reads
+2023-02-05 16:17:08,401 INFO Parsed 25000000 reads
+2023-02-05 16:17:10,564 INFO Parsed 25100000 reads
+2023-02-05 16:17:12,730 INFO Parsed 25200000 reads
+2023-02-05 16:17:14,903 INFO Parsed 25300000 reads
+2023-02-05 16:17:17,067 INFO Parsed 25400000 reads
+2023-02-05 16:17:19,227 INFO Parsed 25500000 reads
+2023-02-05 16:17:21,401 INFO Parsed 25600000 reads
+2023-02-05 16:17:23,565 INFO Parsed 25700000 reads
+2023-02-05 16:17:25,723 INFO Parsed 25800000 reads
+2023-02-05 16:17:27,887 INFO Parsed 25900000 reads
+2023-02-05 16:17:30,053 INFO Parsed 26000000 reads
+2023-02-05 16:17:32,219 INFO Parsed 26100000 reads
+2023-02-05 16:17:34,393 INFO Parsed 26200000 reads
+2023-02-05 16:17:36,566 INFO Parsed 26300000 reads
+2023-02-05 16:17:38,735 INFO Parsed 26400000 reads
+2023-02-05 16:17:40,924 INFO Parsed 26500000 reads
+2023-02-05 16:17:43,132 INFO Parsed 26600000 reads
+2023-02-05 16:17:45,306 INFO Parsed 26700000 reads
+2023-02-05 16:17:47,484 INFO Parsed 26800000 reads
+2023-02-05 16:17:49,665 INFO Parsed 26900000 reads
+2023-02-05 16:17:51,839 INFO Parsed 27000000 reads
+2023-02-05 16:17:54,010 INFO Parsed 27100000 reads
+2023-02-05 16:17:56,227 INFO Parsed 27200000 reads
+2023-02-05 16:17:58,553 INFO Parsed 27300000 reads
+2023-02-05 16:18:00,769 INFO Parsed 27400000 reads
+2023-02-05 16:18:02,963 INFO Parsed 27500000 reads
+2023-02-05 16:18:05,133 INFO Parsed 27600000 reads
+2023-02-05 16:18:07,301 INFO Parsed 27700000 reads
+2023-02-05 16:18:09,480 INFO Parsed 27800000 reads
+2023-02-05 16:18:11,654 INFO Parsed 27900000 reads
+2023-02-05 16:18:13,824 INFO Parsed 28000000 reads
+2023-02-05 16:18:16,002 INFO Parsed 28100000 reads
+2023-02-05 16:18:18,178 INFO Parsed 28200000 reads
+2023-02-05 16:18:20,350 INFO Parsed 28300000 reads
+2023-02-05 16:18:22,527 INFO Parsed 28400000 reads
+2023-02-05 16:18:24,701 INFO Parsed 28500000 reads
+2023-02-05 16:18:26,874 INFO Parsed 28600000 reads
+2023-02-05 16:18:29,052 INFO Parsed 28700000 reads
+2023-02-05 16:18:31,226 INFO Parsed 28800000 reads
+2023-02-05 16:18:33,396 INFO Parsed 28900000 reads
+2023-02-05 16:18:35,569 INFO Parsed 29000000 reads
+2023-02-05 16:18:37,747 INFO Parsed 29100000 reads
+2023-02-05 16:18:39,918 INFO Parsed 29200000 reads
+2023-02-05 16:18:42,089 INFO Parsed 29300000 reads
+2023-02-05 16:18:44,423 INFO Parsed 29400000 reads
+2023-02-05 16:18:46,594 INFO Parsed 29500000 reads
+2023-02-05 16:18:48,765 INFO Parsed 29600000 reads
+2023-02-05 16:18:50,936 INFO Parsed 29700000 reads
+2023-02-05 16:18:53,104 INFO Parsed 29800000 reads
+2023-02-05 16:18:55,275 INFO Parsed 29900000 reads
+2023-02-05 16:18:57,450 INFO Parsed 30000000 reads
+2023-02-05 16:18:59,631 INFO Parsed 30100000 reads
+2023-02-05 16:19:01,802 INFO Parsed 30200000 reads
+2023-02-05 16:19:04,023 INFO Parsed 30300000 reads
+2023-02-05 16:19:06,191 INFO Parsed 30400000 reads
+2023-02-05 16:19:08,356 INFO Parsed 30500000 reads
+2023-02-05 16:19:10,518 INFO Parsed 30600000 reads
+2023-02-05 16:19:12,688 INFO Parsed 30700000 reads
+2023-02-05 16:19:14,854 INFO Parsed 30800000 reads
+2023-02-05 16:19:17,020 INFO Parsed 30900000 reads
+2023-02-05 16:19:19,200 INFO Parsed 31000000 reads
+2023-02-05 16:19:21,369 INFO Parsed 31100000 reads
+2023-02-05 16:19:23,541 INFO Parsed 31200000 reads
+2023-02-05 16:19:25,888 INFO Parsed 31300000 reads
+2023-02-05 16:19:28,061 INFO Parsed 31400000 reads
+2023-02-05 16:19:30,232 INFO Parsed 31500000 reads
+2023-02-05 16:19:32,409 INFO Parsed 31600000 reads
+2023-02-05 16:19:34,583 INFO Parsed 31700000 reads
+2023-02-05 16:19:36,751 INFO Parsed 31800000 reads
+2023-02-05 16:19:38,926 INFO Parsed 31900000 reads
+2023-02-05 16:19:41,088 INFO Parsed 32000000 reads
+2023-02-05 16:19:43,252 INFO Parsed 32100000 reads
+2023-02-05 16:19:45,418 INFO Parsed 32200000 reads
+2023-02-05 16:19:47,586 INFO Parsed 32300000 reads
+2023-02-05 16:19:49,748 INFO Parsed 32400000 reads
+2023-02-05 16:19:51,915 INFO Parsed 32500000 reads
+2023-02-05 16:19:54,075 INFO Parsed 32600000 reads
+2023-02-05 16:19:56,233 INFO Parsed 32700000 reads
+2023-02-05 16:19:58,395 INFO Parsed 32800000 reads
+2023-02-05 16:20:00,570 INFO Parsed 32900000 reads
+2023-02-05 16:20:02,748 INFO Parsed 33000000 reads
+2023-02-05 16:20:04,932 INFO Parsed 33100000 reads
+2023-02-05 16:20:07,105 INFO Parsed 33200000 reads
+2023-02-05 16:20:09,272 INFO Parsed 33300000 reads
+2023-02-05 16:20:11,520 INFO Parsed 33400000 reads
+2023-02-05 16:20:13,687 INFO Parsed 33500000 reads
+2023-02-05 16:20:15,846 INFO Parsed 33600000 reads
+2023-02-05 16:20:18,006 INFO Parsed 33700000 reads
+2023-02-05 16:20:20,166 INFO Parsed 33800000 reads
+2023-02-05 16:20:22,435 INFO Parsed 33900000 reads
+2023-02-05 16:20:24,595 INFO Parsed 34000000 reads
+2023-02-05 16:20:26,755 INFO Parsed 34100000 reads
+2023-02-05 16:20:28,916 INFO Parsed 34200000 reads
+2023-02-05 16:20:31,083 INFO Parsed 34300000 reads
+2023-02-05 16:20:33,249 INFO Parsed 34400000 reads
+2023-02-05 16:20:35,429 INFO Parsed 34500000 reads
+2023-02-05 16:20:37,598 INFO Parsed 34600000 reads
+2023-02-05 16:20:39,767 INFO Parsed 34700000 reads
+2023-02-05 16:20:41,940 INFO Parsed 34800000 reads
+2023-02-05 16:20:44,110 INFO Parsed 34900000 reads
+2023-02-05 16:20:46,279 INFO Parsed 35000000 reads
+2023-02-05 16:20:48,453 INFO Parsed 35100000 reads
+2023-02-05 16:20:50,619 INFO Parsed 35200000 reads
+2023-02-05 16:20:52,828 INFO Parsed 35300000 reads
+2023-02-05 16:20:54,999 INFO Parsed 35400000 reads
+2023-02-05 16:20:57,164 INFO Parsed 35500000 reads
+2023-02-05 16:20:59,324 INFO Parsed 35600000 reads
+2023-02-05 16:21:01,491 INFO Parsed 35700000 reads
+2023-02-05 16:21:03,658 INFO Parsed 35800000 reads
+2023-02-05 16:21:05,819 INFO Parsed 35900000 reads
+2023-02-05 16:21:07,979 INFO Parsed 36000000 reads
+2023-02-05 16:21:10,146 INFO Parsed 36100000 reads
+2023-02-05 16:21:12,306 INFO Parsed 36200000 reads
+2023-02-05 16:21:14,465 INFO Parsed 36300000 reads
+2023-02-05 16:21:16,636 INFO Parsed 36400000 reads
+2023-02-05 16:21:18,802 INFO Parsed 36500000 reads
+2023-02-05 16:21:20,953 INFO Parsed 36600000 reads
+2023-02-05 16:21:23,153 INFO Parsed 36700000 reads
+2023-02-05 16:21:25,319 INFO Parsed 36800000 reads
+2023-02-05 16:21:27,482 INFO Parsed 36900000 reads
+2023-02-05 16:21:29,650 INFO Parsed 37000000 reads
+2023-02-05 16:21:31,814 INFO Parsed 37100000 reads
+2023-02-05 16:21:33,975 INFO Parsed 37200000 reads
+2023-02-05 16:21:36,139 INFO Parsed 37300000 reads
+2023-02-05 16:21:38,303 INFO Parsed 37400000 reads
+2023-02-05 16:21:40,465 INFO Parsed 37500000 reads
+2023-02-05 16:21:42,630 INFO Parsed 37600000 reads
+2023-02-05 16:21:44,802 INFO Parsed 37700000 reads
+2023-02-05 16:21:46,964 INFO Parsed 37800000 reads
+2023-02-05 16:21:49,125 INFO Parsed 37900000 reads
+2023-02-05 16:21:51,291 INFO Parsed 38000000 reads
+2023-02-05 16:21:53,449 INFO Parsed 38100000 reads
+2023-02-05 16:21:55,647 INFO Parsed 38200000 reads
+2023-02-05 16:21:57,842 INFO Parsed 38300000 reads
+2023-02-05 16:22:00,023 INFO Parsed 38400000 reads
+2023-02-05 16:22:02,210 INFO Parsed 38500000 reads
+2023-02-05 16:22:04,391 INFO Parsed 38600000 reads
+2023-02-05 16:22:06,556 INFO Parsed 38700000 reads
+2023-02-05 16:22:08,714 INFO Parsed 38800000 reads
+2023-02-05 16:22:10,872 INFO Parsed 38900000 reads
+2023-02-05 16:22:13,032 INFO Parsed 39000000 reads
+2023-02-05 16:22:15,183 INFO Parsed 39100000 reads
+2023-02-05 16:22:17,340 INFO Parsed 39200000 reads
+2023-02-05 16:22:19,505 INFO Parsed 39300000 reads
+2023-02-05 16:22:21,671 INFO Parsed 39400000 reads
+2023-02-05 16:22:23,831 INFO Parsed 39500000 reads
+2023-02-05 16:22:25,993 INFO Parsed 39600000 reads
+2023-02-05 16:22:28,149 INFO Parsed 39700000 reads
+2023-02-05 16:22:30,303 INFO Parsed 39800000 reads
+2023-02-05 16:22:32,460 INFO Parsed 39900000 reads
+2023-02-05 16:22:34,685 INFO Parsed 40000000 reads
+2023-02-05 16:22:36,845 INFO Parsed 40100000 reads
+2023-02-05 16:22:39,007 INFO Parsed 40200000 reads
+2023-02-05 16:22:41,169 INFO Parsed 40300000 reads
+2023-02-05 16:22:43,327 INFO Parsed 40400000 reads
+2023-02-05 16:22:45,471 INFO Parsed 40500000 reads
+2023-02-05 16:22:47,620 INFO Parsed 40600000 reads
+2023-02-05 16:22:49,775 INFO Parsed 40700000 reads
+2023-02-05 16:22:51,928 INFO Parsed 40800000 reads
+2023-02-05 16:22:54,084 INFO Parsed 40900000 reads
+2023-02-05 16:22:56,244 INFO Parsed 41000000 reads
+2023-02-05 16:22:58,396 INFO Parsed 41100000 reads
+2023-02-05 16:23:00,548 INFO Parsed 41200000 reads
+2023-02-05 16:23:02,703 INFO Parsed 41300000 reads
+2023-02-05 16:23:04,853 INFO Parsed 41400000 reads
+2023-02-05 16:23:06,998 INFO Parsed 41500000 reads
+2023-02-05 16:23:09,154 INFO Parsed 41600000 reads
+2023-02-05 16:23:11,306 INFO Parsed 41700000 reads
+2023-02-05 16:23:13,454 INFO Parsed 41800000 reads
+2023-02-05 16:23:15,607 INFO Parsed 41900000 reads
+2023-02-05 16:23:17,755 INFO Parsed 42000000 reads
+2023-02-05 16:23:19,898 INFO Parsed 42100000 reads
+2023-02-05 16:23:22,055 INFO Parsed 42200000 reads
+2023-02-05 16:23:24,213 INFO Parsed 42300000 reads
+2023-02-05 16:23:26,361 INFO Parsed 42400000 reads
+2023-02-05 16:23:28,508 INFO Input Reads: 42499841
+2023-02-05 16:23:28,508 INFO Reads output: 42499841
+# job finished in 925 seconds at Sun Feb  5 16:23:28 2023 -- 920.14  1.27  0.00  0.00 -- 34292c86-cfea-44e8-8075-2c79b3abebe8
+# UMI-tools version: 1.0.1
+# output generated by extract --bc-pattern=NNNNNNNN --stdin=./fastqs_UMI-dedup/symlinks/Sample_CT2_6125_pIAA_Q_SteadyState_S6_R2_001.fastq.gz --read2-in=./fastqs_UMI-dedup/symlinks/Sample_CT2_6125_pIAA_Q_SteadyState_S6_R3_001.fastq.gz --stdout=./fastqs_UMI-dedup/umi-tools_extract/Sample_CT2_6125_pIAA_Q_SteadyState_S6_R3.UMI.fq.gz --read2-stdout
+# job started at Sun Feb  5 16:23:29 2023 on gizmok134 -- 534fa752-3178-497c-8cee-ed061bac978e
+# pid: 31617, system: Linux 4.15.0-192-generic #203-Ubuntu SMP Wed Aug 10 17:40:03 UTC 2022 x86_64
+# blacklist                               : None
+# compresslevel                           : 6
+# either_read                             : False
+# either_read_resolve                     : discard
+# error_correct_cell                      : False
+# extract_method                          : string
+# filter_cell_barcode                     : None
+# filter_cell_barcodes                    : False
+# log2stderr                              : False
+# loglevel                                : 1
+# pattern                                 : NNNNNNNN
+# pattern2                                : None
+# prime3                                  : None
+# quality_encoding                        : None
+# quality_filter_mask                     : None
+# quality_filter_threshold                : None
+# random_seed                             : None
+# read2_in                                : ./fastqs_UMI-dedup/symlinks/Sample_CT2_6125_pIAA_Q_SteadyState_S6_R3_001.fastq.gz
+# read2_out                               : False
+# read2_stdout                            : True
+# reads_subset                            : None
+# reconcile                               : False
+# retain_umi                              : None
+# short_help                              : None
+# stderr                                  : <_io.TextIOWrapper name='<stderr>' mode='w' encoding='UTF-8'>
+# stdin                                   : <_io.TextIOWrapper name='./fastqs_UMI-dedup/symlinks/Sample_CT2_6125_pIAA_Q_SteadyState_S6_R2_001.fastq.gz' encoding='ascii'>
+# stdlog                                  : <_io.TextIOWrapper name='<stdout>' mode='w' encoding='UTF-8'>
+# stdout                                  : <_io.TextIOWrapper name='./fastqs_UMI-dedup/umi-tools_extract/Sample_CT2_6125_pIAA_Q_SteadyState_S6_R3.UMI.fq.gz' encoding='ascii'>
+# timeit_file                             : None
+# timeit_header                           : None
+# timeit_name                             : all
+# tmpdir                                  : None
+# whitelist                               : None
+2023-02-05 16:23:29,955 INFO Starting barcode extraction
+2023-02-05 16:23:32,445 INFO Parsed 100000 reads
+2023-02-05 16:23:34,565 INFO Parsed 200000 reads
+2023-02-05 16:23:36,685 INFO Parsed 300000 reads
+2023-02-05 16:23:38,819 INFO Parsed 400000 reads
+2023-02-05 16:23:40,949 INFO Parsed 500000 reads
+2023-02-05 16:23:43,080 INFO Parsed 600000 reads
+2023-02-05 16:23:45,217 INFO Parsed 700000 reads
+2023-02-05 16:23:47,345 INFO Parsed 800000 reads
+2023-02-05 16:23:49,474 INFO Parsed 900000 reads
+2023-02-05 16:23:51,613 INFO Parsed 1000000 reads
+2023-02-05 16:23:53,741 INFO Parsed 1100000 reads
+2023-02-05 16:23:55,873 INFO Parsed 1200000 reads
+2023-02-05 16:23:58,011 INFO Parsed 1300000 reads
+2023-02-05 16:24:00,148 INFO Parsed 1400000 reads
+2023-02-05 16:24:02,381 INFO Parsed 1500000 reads
+2023-02-05 16:24:04,520 INFO Parsed 1600000 reads
+2023-02-05 16:24:06,656 INFO Parsed 1700000 reads
+2023-02-05 16:24:08,781 INFO Parsed 1800000 reads
+2023-02-05 16:24:10,909 INFO Parsed 1900000 reads
+2023-02-05 16:24:13,057 INFO Parsed 2000000 reads
+2023-02-05 16:24:15,188 INFO Parsed 2100000 reads
+2023-02-05 16:24:17,317 INFO Parsed 2200000 reads
+2023-02-05 16:24:19,458 INFO Parsed 2300000 reads
+2023-02-05 16:24:21,588 INFO Parsed 2400000 reads
+2023-02-05 16:24:23,719 INFO Parsed 2500000 reads
+2023-02-05 16:24:25,861 INFO Parsed 2600000 reads
+2023-02-05 16:24:27,991 INFO Parsed 2700000 reads
+2023-02-05 16:24:30,115 INFO Parsed 2800000 reads
+2023-02-05 16:24:32,251 INFO Parsed 2900000 reads
+2023-02-05 16:24:34,395 INFO Parsed 3000000 reads
+2023-02-05 16:24:36,531 INFO Parsed 3100000 reads
+2023-02-05 16:24:38,671 INFO Parsed 3200000 reads
+2023-02-05 16:24:40,824 INFO Parsed 3300000 reads
+2023-02-05 16:24:43,007 INFO Parsed 3400000 reads
+2023-02-05 16:24:45,142 INFO Parsed 3500000 reads
+2023-02-05 16:24:47,286 INFO Parsed 3600000 reads
+2023-02-05 16:24:49,428 INFO Parsed 3700000 reads
+2023-02-05 16:24:51,572 INFO Parsed 3800000 reads
+2023-02-05 16:24:53,735 INFO Parsed 3900000 reads
+2023-02-05 16:24:55,889 INFO Parsed 4000000 reads
+2023-02-05 16:24:58,208 INFO Parsed 4100000 reads
+2023-02-05 16:25:00,370 INFO Parsed 4200000 reads
+2023-02-05 16:25:02,507 INFO Parsed 4300000 reads
+2023-02-05 16:25:04,646 INFO Parsed 4400000 reads
+2023-02-05 16:25:06,802 INFO Parsed 4500000 reads
+2023-02-05 16:25:08,959 INFO Parsed 4600000 reads
+2023-02-05 16:25:11,100 INFO Parsed 4700000 reads
+2023-02-05 16:25:13,256 INFO Parsed 4800000 reads
+2023-02-05 16:25:15,425 INFO Parsed 4900000 reads
+2023-02-05 16:25:17,560 INFO Parsed 5000000 reads
+2023-02-05 16:25:19,702 INFO Parsed 5100000 reads
+2023-02-05 16:25:21,870 INFO Parsed 5200000 reads
+2023-02-05 16:25:24,010 INFO Parsed 5300000 reads
+2023-02-05 16:25:26,147 INFO Parsed 5400000 reads
+2023-02-05 16:25:28,300 INFO Parsed 5500000 reads
+2023-02-05 16:25:30,436 INFO Parsed 5600000 reads
+2023-02-05 16:25:32,567 INFO Parsed 5700000 reads
+2023-02-05 16:25:34,709 INFO Parsed 5800000 reads
+2023-02-05 16:25:36,843 INFO Parsed 5900000 reads
+2023-02-05 16:25:38,966 INFO Parsed 6000000 reads
+2023-02-05 16:25:41,100 INFO Parsed 6100000 reads
+2023-02-05 16:25:43,254 INFO Parsed 6200000 reads
+2023-02-05 16:25:45,387 INFO Parsed 6300000 reads
+2023-02-05 16:25:47,527 INFO Parsed 6400000 reads
+2023-02-05 16:25:49,676 INFO Parsed 6500000 reads
+2023-02-05 16:25:51,810 INFO Parsed 6600000 reads
+2023-02-05 16:25:53,945 INFO Parsed 6700000 reads
+2023-02-05 16:25:56,098 INFO Parsed 6800000 reads
+2023-02-05 16:25:58,236 INFO Parsed 6900000 reads
+2023-02-05 16:26:00,368 INFO Parsed 7000000 reads
+2023-02-05 16:26:02,524 INFO Parsed 7100000 reads
+2023-02-05 16:26:04,657 INFO Parsed 7200000 reads
+2023-02-05 16:26:06,790 INFO Parsed 7300000 reads
+2023-02-05 16:26:08,937 INFO Parsed 7400000 reads
+2023-02-05 16:26:11,148 INFO Parsed 7500000 reads
+2023-02-05 16:26:13,280 INFO Parsed 7600000 reads
+2023-02-05 16:26:15,421 INFO Parsed 7700000 reads
+2023-02-05 16:26:17,573 INFO Parsed 7800000 reads
+2023-02-05 16:26:19,704 INFO Parsed 7900000 reads
+2023-02-05 16:26:21,840 INFO Parsed 8000000 reads
+2023-02-05 16:26:23,986 INFO Parsed 8100000 reads
+2023-02-05 16:26:26,209 INFO Parsed 8200000 reads
+2023-02-05 16:26:28,347 INFO Parsed 8300000 reads
+2023-02-05 16:26:30,496 INFO Parsed 8400000 reads
+2023-02-05 16:26:32,627 INFO Parsed 8500000 reads
+2023-02-05 16:26:34,754 INFO Parsed 8600000 reads
+2023-02-05 16:26:36,903 INFO Parsed 8700000 reads
+2023-02-05 16:26:39,048 INFO Parsed 8800000 reads
+2023-02-05 16:26:41,415 INFO Parsed 8900000 reads
+2023-02-05 16:26:43,555 INFO Parsed 9000000 reads
+2023-02-05 16:26:45,691 INFO Parsed 9100000 reads
+2023-02-05 16:26:47,809 INFO Parsed 9200000 reads
+2023-02-05 16:26:49,939 INFO Parsed 9300000 reads
+2023-02-05 16:26:52,088 INFO Parsed 9400000 reads
+2023-02-05 16:26:54,219 INFO Parsed 9500000 reads
+2023-02-05 16:26:56,353 INFO Parsed 9600000 reads
+2023-02-05 16:26:58,502 INFO Parsed 9700000 reads
+2023-02-05 16:27:00,636 INFO Parsed 9800000 reads
+2023-02-05 16:27:02,766 INFO Parsed 9900000 reads
+2023-02-05 16:27:04,913 INFO Parsed 10000000 reads
+2023-02-05 16:27:07,050 INFO Parsed 10100000 reads
+2023-02-05 16:27:09,180 INFO Parsed 10200000 reads
+2023-02-05 16:27:11,328 INFO Parsed 10300000 reads
+2023-02-05 16:27:13,470 INFO Parsed 10400000 reads
+2023-02-05 16:27:15,590 INFO Parsed 10500000 reads
+2023-02-05 16:27:17,720 INFO Parsed 10600000 reads
+2023-02-05 16:27:19,841 INFO Parsed 10700000 reads
+2023-02-05 16:27:22,138 INFO Parsed 10800000 reads
+2023-02-05 16:27:24,264 INFO Parsed 10900000 reads
+2023-02-05 16:27:26,403 INFO Parsed 11000000 reads
+2023-02-05 16:27:28,522 INFO Parsed 11100000 reads
+2023-02-05 16:27:30,656 INFO Parsed 11200000 reads
+2023-02-05 16:27:32,811 INFO Parsed 11300000 reads
+2023-02-05 16:27:34,921 INFO Parsed 11400000 reads
+2023-02-05 16:27:37,037 INFO Parsed 11500000 reads
+2023-02-05 16:27:39,171 INFO Parsed 11600000 reads
+2023-02-05 16:27:41,353 INFO Parsed 11700000 reads
+2023-02-05 16:27:43,484 INFO Parsed 11800000 reads
+2023-02-05 16:27:45,629 INFO Parsed 11900000 reads
+2023-02-05 16:27:47,758 INFO Parsed 12000000 reads
+2023-02-05 16:27:49,863 INFO Parsed 12100000 reads
+2023-02-05 16:27:51,985 INFO Parsed 12200000 reads
+2023-02-05 16:27:54,116 INFO Parsed 12300000 reads
+2023-02-05 16:27:56,227 INFO Parsed 12400000 reads
+2023-02-05 16:27:58,352 INFO Parsed 12500000 reads
+2023-02-05 16:28:00,494 INFO Parsed 12600000 reads
+2023-02-05 16:28:02,612 INFO Parsed 12700000 reads
+2023-02-05 16:28:04,732 INFO Parsed 12800000 reads
+2023-02-05 16:28:06,864 INFO Parsed 12900000 reads
+2023-02-05 16:28:09,003 INFO Parsed 13000000 reads
+2023-02-05 16:28:11,121 INFO Parsed 13100000 reads
+2023-02-05 16:28:13,254 INFO Parsed 13200000 reads
+2023-02-05 16:28:15,392 INFO Parsed 13300000 reads
+2023-02-05 16:28:17,554 INFO Parsed 13400000 reads
+2023-02-05 16:28:19,680 INFO Parsed 13500000 reads
+2023-02-05 16:28:21,815 INFO Parsed 13600000 reads
+2023-02-05 16:28:23,933 INFO Parsed 13700000 reads
+2023-02-05 16:28:26,057 INFO Parsed 13800000 reads
+2023-02-05 16:28:28,195 INFO Parsed 13900000 reads
+2023-02-05 16:28:30,320 INFO Parsed 14000000 reads
+2023-02-05 16:28:32,572 INFO Parsed 14100000 reads
+2023-02-05 16:28:34,705 INFO Parsed 14200000 reads
+2023-02-05 16:28:36,807 INFO Parsed 14300000 reads
+2023-02-05 16:28:38,884 INFO Parsed 14400000 reads
+2023-02-05 16:28:40,968 INFO Parsed 14500000 reads
+2023-02-05 16:28:43,085 INFO Parsed 14600000 reads
+2023-02-05 16:28:45,194 INFO Parsed 14700000 reads
+2023-02-05 16:28:47,299 INFO Parsed 14800000 reads
+2023-02-05 16:28:49,621 INFO Parsed 14900000 reads
+2023-02-05 16:28:51,723 INFO Parsed 15000000 reads
+2023-02-05 16:28:53,822 INFO Parsed 15100000 reads
+2023-02-05 16:28:55,936 INFO Parsed 15200000 reads
+2023-02-05 16:28:58,059 INFO Parsed 15300000 reads
+2023-02-05 16:29:00,166 INFO Parsed 15400000 reads
+2023-02-05 16:29:02,285 INFO Parsed 15500000 reads
+2023-02-05 16:29:04,663 INFO Parsed 15600000 reads
+2023-02-05 16:29:06,776 INFO Parsed 15700000 reads
+2023-02-05 16:29:08,899 INFO Parsed 15800000 reads
+2023-02-05 16:29:11,028 INFO Parsed 15900000 reads
+2023-02-05 16:29:13,127 INFO Parsed 16000000 reads
+2023-02-05 16:29:15,234 INFO Parsed 16100000 reads
+2023-02-05 16:29:17,358 INFO Parsed 16200000 reads
+2023-02-05 16:29:19,463 INFO Parsed 16300000 reads
+2023-02-05 16:29:21,569 INFO Parsed 16400000 reads
+2023-02-05 16:29:23,689 INFO Parsed 16500000 reads
+2023-02-05 16:29:25,795 INFO Parsed 16600000 reads
+2023-02-05 16:29:27,898 INFO Parsed 16700000 reads
+2023-02-05 16:29:30,012 INFO Parsed 16800000 reads
+2023-02-05 16:29:32,128 INFO Parsed 16900000 reads
+2023-02-05 16:29:34,299 INFO Parsed 17000000 reads
+2023-02-05 16:29:36,404 INFO Parsed 17100000 reads
+2023-02-05 16:29:38,516 INFO Parsed 17200000 reads
+2023-02-05 16:29:40,608 INFO Parsed 17300000 reads
+2023-02-05 16:29:42,707 INFO Parsed 17400000 reads
+2023-02-05 16:29:44,821 INFO Parsed 17500000 reads
+2023-02-05 16:29:46,923 INFO Parsed 17600000 reads
+2023-02-05 16:29:49,021 INFO Parsed 17700000 reads
+2023-02-05 16:29:51,137 INFO Parsed 17800000 reads
+2023-02-05 16:29:53,244 INFO Parsed 17900000 reads
+2023-02-05 16:29:55,345 INFO Parsed 18000000 reads
+2023-02-05 16:29:57,460 INFO Parsed 18100000 reads
+2023-02-05 16:29:59,582 INFO Parsed 18200000 reads
+2023-02-05 16:30:01,689 INFO Parsed 18300000 reads
+2023-02-05 16:30:03,808 INFO Parsed 18400000 reads
+2023-02-05 16:30:05,937 INFO Parsed 18500000 reads
+2023-02-05 16:30:08,037 INFO Parsed 18600000 reads
+2023-02-05 16:30:10,140 INFO Parsed 18700000 reads
+2023-02-05 16:30:12,260 INFO Parsed 18800000 reads
+2023-02-05 16:30:14,369 INFO Parsed 18900000 reads
+2023-02-05 16:30:16,480 INFO Parsed 19000000 reads
+2023-02-05 16:30:18,614 INFO Parsed 19100000 reads
+2023-02-05 16:30:20,721 INFO Parsed 19200000 reads
+2023-02-05 16:30:22,822 INFO Parsed 19300000 reads
+2023-02-05 16:30:24,930 INFO Parsed 19400000 reads
+2023-02-05 16:30:27,040 INFO Parsed 19500000 reads
+2023-02-05 16:30:29,152 INFO Parsed 19600000 reads
+2023-02-05 16:30:31,472 INFO Parsed 19700000 reads
+2023-02-05 16:30:33,589 INFO Parsed 19800000 reads
+2023-02-05 16:30:35,690 INFO Parsed 19900000 reads
+2023-02-05 16:30:37,791 INFO Parsed 20000000 reads
+2023-02-05 16:30:39,904 INFO Parsed 20100000 reads
+2023-02-05 16:30:42,010 INFO Parsed 20200000 reads
+2023-02-05 16:30:44,113 INFO Parsed 20300000 reads
+2023-02-05 16:30:46,408 INFO Parsed 20400000 reads
+2023-02-05 16:30:48,521 INFO Parsed 20500000 reads
+2023-02-05 16:30:50,619 INFO Parsed 20600000 reads
+2023-02-05 16:30:52,725 INFO Parsed 20700000 reads
+2023-02-05 16:30:54,847 INFO Parsed 20800000 reads
+2023-02-05 16:30:56,952 INFO Parsed 20900000 reads
+2023-02-05 16:30:59,061 INFO Parsed 21000000 reads
+2023-02-05 16:31:01,176 INFO Parsed 21100000 reads
+2023-02-05 16:31:03,270 INFO Parsed 21200000 reads
+2023-02-05 16:31:05,364 INFO Parsed 21300000 reads
+2023-02-05 16:31:07,472 INFO Parsed 21400000 reads
+2023-02-05 16:31:09,582 INFO Parsed 21500000 reads
+2023-02-05 16:31:11,690 INFO Parsed 21600000 reads
+2023-02-05 16:31:13,799 INFO Parsed 21700000 reads
+2023-02-05 16:31:15,925 INFO Parsed 21800000 reads
+2023-02-05 16:31:18,039 INFO Parsed 21900000 reads
+2023-02-05 16:31:20,152 INFO Parsed 22000000 reads
+2023-02-05 16:31:22,273 INFO Parsed 22100000 reads
+2023-02-05 16:31:24,384 INFO Parsed 22200000 reads
+2023-02-05 16:31:26,494 INFO Parsed 22300000 reads
+2023-02-05 16:31:28,615 INFO Parsed 22400000 reads
+2023-02-05 16:31:30,729 INFO Parsed 22500000 reads
+2023-02-05 16:31:32,843 INFO Parsed 22600000 reads
+2023-02-05 16:31:34,962 INFO Parsed 22700000 reads
+2023-02-05 16:31:37,070 INFO Parsed 22800000 reads
+2023-02-05 16:31:39,175 INFO Parsed 22900000 reads
+2023-02-05 16:31:41,287 INFO Parsed 23000000 reads
+2023-02-05 16:31:43,750 INFO Parsed 23100000 reads
+2023-02-05 16:31:45,861 INFO Parsed 23200000 reads
+2023-02-05 16:31:47,969 INFO Parsed 23300000 reads
+2023-02-05 16:31:50,083 INFO Parsed 23400000 reads
+2023-02-05 16:31:52,189 INFO Parsed 23500000 reads
+2023-02-05 16:31:54,294 INFO Parsed 23600000 reads
+2023-02-05 16:31:56,415 INFO Parsed 23700000 reads
+2023-02-05 16:31:58,697 INFO Parsed 23800000 reads
+2023-02-05 16:32:00,806 INFO Parsed 23900000 reads
+2023-02-05 16:32:02,927 INFO Parsed 24000000 reads
+2023-02-05 16:32:05,032 INFO Parsed 24100000 reads
+2023-02-05 16:32:07,136 INFO Parsed 24200000 reads
+2023-02-05 16:32:09,254 INFO Parsed 24300000 reads
+2023-02-05 16:32:11,364 INFO Parsed 24400000 reads
+2023-02-05 16:32:13,470 INFO Parsed 24500000 reads
+2023-02-05 16:32:15,584 INFO Parsed 24600000 reads
+2023-02-05 16:32:17,696 INFO Parsed 24700000 reads
+2023-02-05 16:32:19,804 INFO Parsed 24800000 reads
+2023-02-05 16:32:21,918 INFO Parsed 24900000 reads
+2023-02-05 16:32:24,035 INFO Parsed 25000000 reads
+2023-02-05 16:32:26,145 INFO Parsed 25100000 reads
+2023-02-05 16:32:28,482 INFO Parsed 25200000 reads
+2023-02-05 16:32:30,594 INFO Parsed 25300000 reads
+2023-02-05 16:32:32,697 INFO Parsed 25400000 reads
+2023-02-05 16:32:34,800 INFO Parsed 25500000 reads
+2023-02-05 16:32:36,923 INFO Parsed 25600000 reads
+2023-02-05 16:32:39,093 INFO Parsed 25700000 reads
+2023-02-05 16:32:41,203 INFO Parsed 25800000 reads
+2023-02-05 16:32:43,319 INFO Parsed 25900000 reads
+2023-02-05 16:32:45,421 INFO Parsed 26000000 reads
+2023-02-05 16:32:47,526 INFO Parsed 26100000 reads
+2023-02-05 16:32:49,646 INFO Parsed 26200000 reads
+2023-02-05 16:32:51,760 INFO Parsed 26300000 reads
+2023-02-05 16:32:53,867 INFO Parsed 26400000 reads
+2023-02-05 16:32:55,980 INFO Parsed 26500000 reads
+2023-02-05 16:32:58,092 INFO Parsed 26600000 reads
+2023-02-05 16:33:00,195 INFO Parsed 26700000 reads
+2023-02-05 16:33:02,307 INFO Parsed 26800000 reads
+2023-02-05 16:33:04,428 INFO Parsed 26900000 reads
+2023-02-05 16:33:06,537 INFO Parsed 27000000 reads
+2023-02-05 16:33:08,650 INFO Parsed 27100000 reads
+2023-02-05 16:33:10,878 INFO Parsed 27200000 reads
+2023-02-05 16:33:12,971 INFO Parsed 27300000 reads
+2023-02-05 16:33:15,069 INFO Parsed 27400000 reads
+2023-02-05 16:33:17,192 INFO Parsed 27500000 reads
+2023-02-05 16:33:19,303 INFO Parsed 27600000 reads
+2023-02-05 16:33:21,416 INFO Parsed 27700000 reads
+2023-02-05 16:33:23,553 INFO Parsed 27800000 reads
+2023-02-05 16:33:25,673 INFO Parsed 27900000 reads
+2023-02-05 16:33:27,781 INFO Parsed 28000000 reads
+2023-02-05 16:33:29,906 INFO Parsed 28100000 reads
+2023-02-05 16:33:32,024 INFO Parsed 28200000 reads
+2023-02-05 16:33:34,136 INFO Parsed 28300000 reads
+2023-02-05 16:33:36,253 INFO Parsed 28400000 reads
+2023-02-05 16:33:38,361 INFO Parsed 28500000 reads
+2023-02-05 16:33:40,468 INFO Parsed 28600000 reads
+2023-02-05 16:33:42,583 INFO Parsed 28700000 reads
+2023-02-05 16:33:44,692 INFO Parsed 28800000 reads
+2023-02-05 16:33:46,797 INFO Parsed 28900000 reads
+2023-02-05 16:33:48,904 INFO Parsed 29000000 reads
+2023-02-05 16:33:51,016 INFO Parsed 29100000 reads
+2023-02-05 16:33:53,121 INFO Parsed 29200000 reads
+2023-02-05 16:33:55,232 INFO Parsed 29300000 reads
+2023-02-05 16:33:57,351 INFO Parsed 29400000 reads
+2023-02-05 16:33:59,458 INFO Parsed 29500000 reads
+2023-02-05 16:34:01,568 INFO Parsed 29600000 reads
+2023-02-05 16:34:03,676 INFO Parsed 29700000 reads
+2023-02-05 16:34:05,772 INFO Parsed 29800000 reads
+2023-02-05 16:34:07,871 INFO Parsed 29900000 reads
+2023-02-05 16:34:09,978 INFO Parsed 30000000 reads
+2023-02-05 16:34:12,078 INFO Parsed 30100000 reads
+2023-02-05 16:34:14,181 INFO Parsed 30200000 reads
+2023-02-05 16:34:16,291 INFO Parsed 30300000 reads
+2023-02-05 16:34:18,391 INFO Parsed 30400000 reads
+2023-02-05 16:34:20,488 INFO Parsed 30500000 reads
+2023-02-05 16:34:22,747 INFO Parsed 30600000 reads
+2023-02-05 16:34:24,858 INFO Parsed 30700000 reads
+2023-02-05 16:34:26,960 INFO Parsed 30800000 reads
+2023-02-05 16:34:29,064 INFO Parsed 30900000 reads
+2023-02-05 16:34:31,183 INFO Parsed 31000000 reads
+2023-02-05 16:34:33,287 INFO Parsed 31100000 reads
+2023-02-05 16:34:35,397 INFO Parsed 31200000 reads
+2023-02-05 16:34:38,037 INFO Parsed 31300000 reads
+2023-02-05 16:34:40,144 INFO Parsed 31400000 reads
+2023-02-05 16:34:42,270 INFO Parsed 31500000 reads
+2023-02-05 16:34:44,402 INFO Parsed 31600000 reads
+2023-02-05 16:34:46,507 INFO Parsed 31700000 reads
+2023-02-05 16:34:48,611 INFO Parsed 31800000 reads
+2023-02-05 16:34:50,728 INFO Parsed 31900000 reads
+2023-02-05 16:34:52,935 INFO Parsed 32000000 reads
+2023-02-05 16:34:55,033 INFO Parsed 32100000 reads
+2023-02-05 16:34:57,137 INFO Parsed 32200000 reads
+2023-02-05 16:34:59,237 INFO Parsed 32300000 reads
+2023-02-05 16:35:01,334 INFO Parsed 32400000 reads
+2023-02-05 16:35:03,439 INFO Parsed 32500000 reads
+2023-02-05 16:35:05,540 INFO Parsed 32600000 reads
+2023-02-05 16:35:08,103 INFO Parsed 32700000 reads
+2023-02-05 16:35:10,206 INFO Parsed 32800000 reads
+2023-02-05 16:35:12,321 INFO Parsed 32900000 reads
+2023-02-05 16:35:14,428 INFO Parsed 33000000 reads
+2023-02-05 16:35:16,552 INFO Parsed 33100000 reads
+2023-02-05 16:35:18,667 INFO Parsed 33200000 reads
+2023-02-05 16:35:20,772 INFO Parsed 33300000 reads
+2023-02-05 16:35:22,929 INFO Parsed 33400000 reads
+2023-02-05 16:35:25,041 INFO Parsed 33500000 reads
+2023-02-05 16:35:27,139 INFO Parsed 33600000 reads
+2023-02-05 16:35:29,235 INFO Parsed 33700000 reads
+2023-02-05 16:35:31,332 INFO Parsed 33800000 reads
+2023-02-05 16:35:33,423 INFO Parsed 33900000 reads
+2023-02-05 16:35:35,520 INFO Parsed 34000000 reads
+2023-02-05 16:35:37,627 INFO Parsed 34100000 reads
+2023-02-05 16:35:39,728 INFO Parsed 34200000 reads
+2023-02-05 16:35:41,833 INFO Parsed 34300000 reads
+2023-02-05 16:35:43,936 INFO Parsed 34400000 reads
+2023-02-05 16:35:46,060 INFO Parsed 34500000 reads
+2023-02-05 16:35:48,198 INFO Parsed 34600000 reads
+2023-02-05 16:35:50,307 INFO Parsed 34700000 reads
+2023-02-05 16:35:52,420 INFO Parsed 34800000 reads
+2023-02-05 16:35:54,526 INFO Parsed 34900000 reads
+2023-02-05 16:35:56,632 INFO Parsed 35000000 reads
+2023-02-05 16:35:58,742 INFO Parsed 35100000 reads
+2023-02-05 16:36:00,844 INFO Parsed 35200000 reads
+2023-02-05 16:36:03,150 INFO Parsed 35300000 reads
+2023-02-05 16:36:05,261 INFO Parsed 35400000 reads
+2023-02-05 16:36:07,360 INFO Parsed 35500000 reads
+2023-02-05 16:36:09,454 INFO Parsed 35600000 reads
+2023-02-05 16:36:11,555 INFO Parsed 35700000 reads
+2023-02-05 16:36:13,656 INFO Parsed 35800000 reads
+2023-02-05 16:36:15,753 INFO Parsed 35900000 reads
+2023-02-05 16:36:17,853 INFO Parsed 36000000 reads
+2023-02-05 16:36:20,120 INFO Parsed 36100000 reads
+2023-02-05 16:36:22,238 INFO Parsed 36200000 reads
+2023-02-05 16:36:24,347 INFO Parsed 36300000 reads
+2023-02-05 16:36:26,469 INFO Parsed 36400000 reads
+2023-02-05 16:36:28,612 INFO Parsed 36500000 reads
+2023-02-05 16:36:30,742 INFO Parsed 36600000 reads
+2023-02-05 16:36:32,865 INFO Parsed 36700000 reads
+2023-02-05 16:36:34,968 INFO Parsed 36800000 reads
+2023-02-05 16:36:37,067 INFO Parsed 36900000 reads
+2023-02-05 16:36:39,167 INFO Parsed 37000000 reads
+2023-02-05 16:36:41,264 INFO Parsed 37100000 reads
+2023-02-05 16:36:43,358 INFO Parsed 37200000 reads
+2023-02-05 16:36:45,462 INFO Parsed 37300000 reads
+2023-02-05 16:36:47,564 INFO Parsed 37400000 reads
+2023-02-05 16:36:49,697 INFO Parsed 37500000 reads
+2023-02-05 16:36:51,796 INFO Parsed 37600000 reads
+2023-02-05 16:36:53,898 INFO Parsed 37700000 reads
+2023-02-05 16:36:55,985 INFO Parsed 37800000 reads
+2023-02-05 16:36:58,081 INFO Parsed 37900000 reads
+2023-02-05 16:37:00,254 INFO Parsed 38000000 reads
+2023-02-05 16:37:02,343 INFO Parsed 38100000 reads
+2023-02-05 16:37:04,430 INFO Parsed 38200000 reads
+2023-02-05 16:37:06,525 INFO Parsed 38300000 reads
+2023-02-05 16:37:08,623 INFO Parsed 38400000 reads
+2023-02-05 16:37:10,710 INFO Parsed 38500000 reads
+2023-02-05 16:37:12,802 INFO Parsed 38600000 reads
+2023-02-05 16:37:15,028 INFO Parsed 38700000 reads
+2023-02-05 16:37:17,109 INFO Parsed 38800000 reads
+2023-02-05 16:37:19,197 INFO Parsed 38900000 reads
+2023-02-05 16:37:21,287 INFO Parsed 39000000 reads
+2023-02-05 16:37:23,373 INFO Parsed 39100000 reads
+2023-02-05 16:37:25,469 INFO Parsed 39200000 reads
+2023-02-05 16:37:27,570 INFO Parsed 39300000 reads
+2023-02-05 16:37:29,667 INFO Parsed 39400000 reads
+2023-02-05 16:37:32,128 INFO Parsed 39500000 reads
+2023-02-05 16:37:34,220 INFO Parsed 39600000 reads
+2023-02-05 16:37:36,273 INFO Parsed 39700000 reads
+2023-02-05 16:37:38,329 INFO Parsed 39800000 reads
+2023-02-05 16:37:40,386 INFO Parsed 39900000 reads
+2023-02-05 16:37:42,462 INFO Parsed 40000000 reads
+2023-02-05 16:37:44,517 INFO Parsed 40100000 reads
+2023-02-05 16:37:46,684 INFO Parsed 40200000 reads
+2023-02-05 16:37:48,764 INFO Parsed 40300000 reads
+2023-02-05 16:37:50,859 INFO Parsed 40400000 reads
+2023-02-05 16:37:52,946 INFO Parsed 40500000 reads
+2023-02-05 16:37:55,039 INFO Parsed 40600000 reads
+2023-02-05 16:37:57,131 INFO Parsed 40700000 reads
+2023-02-05 16:37:59,218 INFO Parsed 40800000 reads
+2023-02-05 16:38:01,308 INFO Parsed 40900000 reads
+2023-02-05 16:38:03,402 INFO Parsed 41000000 reads
+2023-02-05 16:38:05,488 INFO Parsed 41100000 reads
+2023-02-05 16:38:07,575 INFO Parsed 41200000 reads
+2023-02-05 16:38:09,666 INFO Parsed 41300000 reads
+2023-02-05 16:38:11,754 INFO Parsed 41400000 reads
+2023-02-05 16:38:13,838 INFO Parsed 41500000 reads
+2023-02-05 16:38:15,939 INFO Parsed 41600000 reads
+2023-02-05 16:38:18,029 INFO Parsed 41700000 reads
+2023-02-05 16:38:20,119 INFO Parsed 41800000 reads
+2023-02-05 16:38:22,215 INFO Parsed 41900000 reads
+2023-02-05 16:38:24,298 INFO Parsed 42000000 reads
+2023-02-05 16:38:26,374 INFO Parsed 42100000 reads
+2023-02-05 16:38:28,463 INFO Parsed 42200000 reads
+2023-02-05 16:38:30,556 INFO Parsed 42300000 reads
+2023-02-05 16:38:32,636 INFO Parsed 42400000 reads
+2023-02-05 16:38:34,715 INFO Input Reads: 42499841
+2023-02-05 16:38:34,715 INFO Reads output: 42499841
+# job finished in 904 seconds at Sun Feb  5 16:38:34 2023 -- 897.88  1.29  0.00  0.00 -- 534fa752-3178-497c-8cee-ed061bac978e
+
+
+❯ cd ../../fastqs_UMI-dedup/atria_trim
+
+
+❯ mkdir bak
+mkdir: created directory 'bak'
+
+
+❯ ., Sample_CT2_6125_pIAA_Q_SteadyState_S6*
+-rw-rw---- 1 kalavatt 965M Feb  5 17:53 Sample_CT2_6125_pIAA_Q_SteadyState_S6_R1.UMI.atria.fq.gz
+-rw-rw---- 1 kalavatt 1.8K Feb  5 17:53 Sample_CT2_6125_pIAA_Q_SteadyState_S6_R1.UMI.atria.log
+-rw-rw---- 1 kalavatt 2.9K Feb  5 17:53 Sample_CT2_6125_pIAA_Q_SteadyState_S6_R1.UMI.atria.log.json
+-rw-rw---- 1 kalavatt 947M Feb  5 17:53 Sample_CT2_6125_pIAA_Q_SteadyState_S6_R3.UMI.atria.fq.gz
+  main ?:103  ❲c❳ Trinity_env  ~/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0115/fastqs_UMI-dedup/atria_trim            08:26:37   kalavatt@gizmoj9
+❯ cat Sample_CT2_6125_pIAA_Q_SteadyState_S6_R1.UMI.atria.log
+┌ Info: ATRIA VERSIONS
+│   atria = v3.2.1
+│   julia = v1.8.5
+└ @ Atria.Trimmer /fh/fast/tsukiyama_t/grp/tsukiyamalab/kalavatt/2022_transcriptome-construction/software/Atria/src/Trimmer/wrapper.jl:606
+┌ Info: ATRIA ARGUMENTS
+│   command = `-t 8 -r ./fastqs_UMI-dedup/umi-tools_extract/Sample_CT2_6125_pIAA_Q_SteadyState_S6_R1.UMI.fq.gz -R ./fastqs_UMI-dedup/umi-tools_extract/Sample_CT2_6125_pIAA_Q_SteadyState_S6_R3.UMI.fq.gz -o ./fastqs_UMI-dedup/atria_trim --no-length-filtration`
+└ @ Atria.Trimmer /fh/fast/tsukiyama_t/grp/tsukiyamalab/kalavatt/2022_transcriptome-construction/software/Atria/src/Trimmer/wrapper.jl:607
+┌ Info: ATRIA OUTPUT FILES
+│   read1 = ./fastqs_UMI-dedup/atria_trim/Sample_CT2_6125_pIAA_Q_SteadyState_S6_R1.UMI.atria.fq.gz
+│   read2 = ./fastqs_UMI-dedup/atria_trim/Sample_CT2_6125_pIAA_Q_SteadyState_S6_R3.UMI.atria.fq.gz
+└ @ Atria.Trimmer /fh/fast/tsukiyama_t/grp/tsukiyamalab/kalavatt/2022_transcriptome-construction/software/Atria/src/Trimmer/wrapper.jl:608
+┌ Info: ATRIA TRIMMERS AND FILTERS
+│   adapter_trimming = true
+│   consensus_calling = true
+│   hard_clip_3_end = false
+│   hard_clip_5_end = false
+│   quality_trimming = true
+│   tail_N_trimming = true
+│   max_N_filtering = true
+│   length_filtering = false
+└ @ Atria.Trimmer /fh/fast/tsukiyama_t/grp/tsukiyamalab/kalavatt/2022_transcriptome-construction/software/Atria/src/Trimmer/wrapper.jl:609
+┌ Info: ATRIA COMPLETE
+│   read1 = ./fastqs_UMI-dedup/atria_trim/Sample_CT2_6125_pIAA_Q_SteadyState_S6_R1.UMI.atria.fq.gz
+│   read2 = ./fastqs_UMI-dedup/atria_trim/Sample_CT2_6125_pIAA_Q_SteadyState_S6_R3.UMI.atria.fq.gz
+└ @ Atria.Trimmer /fh/fast/tsukiyama_t/grp/tsukiyamalab/kalavatt/2022_transcriptome-construction/software/Atria/src/Trimmer/wrapper.jl:718
+
+
+❯ mv Sample_CT2_6125_pIAA_Q_SteadyState_S6* bak/
+renamed 'Sample_CT2_6125_pIAA_Q_SteadyState_S6_R1.UMI.atria.fq.gz' -> 'bak/Sample_CT2_6125_pIAA_Q_SteadyState_S6_R1.UMI.atria.fq.gz'
+renamed 'Sample_CT2_6125_pIAA_Q_SteadyState_S6_R1.UMI.atria.log' -> 'bak/Sample_CT2_6125_pIAA_Q_SteadyState_S6_R1.UMI.atria.log'
+renamed 'Sample_CT2_6125_pIAA_Q_SteadyState_S6_R1.UMI.atria.log.json' -> 'bak/Sample_CT2_6125_pIAA_Q_SteadyState_S6_R1.UMI.atria.log.json'
+renamed 'Sample_CT2_6125_pIAA_Q_SteadyState_S6_R3.UMI.atria.fq.gz' -> 'bak/Sample_CT2_6125_pIAA_Q_SteadyState_S6_R3.UMI.atria.fq.gz'
+
+
+❯ ../..
+cd -- ../..
+
+
+❯ /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/software/Atria/app-3.2.1/bin/atria \
+>     -t "${SLURM_CPUS_ON_NODE}" \
+>     -r ./fastqs_UMI-dedup/umi-tools_extract/Sample_CT2_6125_pIAA_Q_SteadyState_S6_R1.UMI.fq.gz \
+>     -R ./fastqs_UMI-dedup/umi-tools_extract/Sample_CT2_6125_pIAA_Q_SteadyState_S6_R3.UMI.fq.gz \
+>     -o ./fastqs_UMI-dedup/atria_trim \
+>     --no-length-filtration \
+>     --stats
+pigz 2.6
+┌ Info: ATRIA VERSIONS
+│   atria = "v3.2.1"
+└   julia = "v1.8.5"
+┌ Info: ATRIA ARGUMENTS
+└   command = `-t 16 -r ./fastqs_UMI-dedup/umi-tools_extract/Sample_CT2_6125_pIAA_Q_SteadyState_S6_R1.UMI.fq.gz -R ./fastqs_UMI-dedup/umi-tools_extract/Sample_CT2_6125_pIAA_Q_SteadyState_S6_R3.UMI.fq.gz -o ./fastqs_UMI-dedup/atria_trim --no-length-filtration --stats`
+┌ Info: ATRIA OUTPUT FILES
+│   read1 = "./fastqs_UMI-dedup/atria_trim/Sample_CT2_6125_pIAA_Q_SteadyState_S6_R1.UMI.atria.fq.gz"
+└   read2 = "./fastqs_UMI-dedup/atria_trim/Sample_CT2_6125_pIAA_Q_SteadyState_S6_R3.UMI.atria.fq.gz"
+┌ Info: ATRIA TRIMMERS AND FILTERS
+│   adapter_trimming = true
+│   consensus_calling = true
+│   hard_clip_3_end = false
+│   hard_clip_5_end = false
+│   quality_trimming = true
+│   tail_N_trimming = true
+│   max_N_filtering = true
+└   length_filtering = false
+[ Info: Cycle 1: read 379697/379697 pairs; wrote 379697/379697 pairs; (copied 0/0 reads)
+[ Info: Cycle 2: read 379460/759157 pairs; wrote 379460/759157 pairs; (copied 0/0 reads)
+[ Info: Cycle 3: read 379467/1138624 pairs; wrote 379467/1138624 pairs; (copied 0/0 reads)
+[ Info: Cycle 4: read 379467/1518091 pairs; wrote 379467/1518091 pairs; (copied 0/0 reads)
+[ Info: Cycle 5: read 379455/1897546 pairs; wrote 379455/1897546 pairs; (copied 0/0 reads)
+[ Info: Cycle 6: read 379564/2277110 pairs; wrote 379564/2277110 pairs; (copied 0/0 reads)
+[ Info: Cycle 7: read 379597/2656707 pairs; wrote 379597/2656707 pairs; (copied 0/0 reads)
+[ Info: Cycle 8: read 379466/3036173 pairs; wrote 379466/3036173 pairs; (copied 0/0 reads)
+[ Info: Cycle 9: read 379467/3415640 pairs; wrote 379467/3415640 pairs; (copied 0/0 reads)
+[ Info: Cycle 10: read 379465/3795105 pairs; wrote 379465/3795105 pairs; (copied 0/0 reads)
+[ Info: Cycle 11: read 379450/4174555 pairs; wrote 379450/4174555 pairs; (copied 0/0 reads)
+[ Info: Cycle 12: read 379661/4554216 pairs; wrote 379661/4554216 pairs; (copied 0/0 reads)
+[ Info: Cycle 13: read 379501/4933717 pairs; wrote 379501/4933717 pairs; (copied 0/0 reads)
+[ Info: Cycle 14: read 379468/5313185 pairs; wrote 379468/5313185 pairs; (copied 0/0 reads)
+[ Info: Cycle 15: read 379471/5692656 pairs; wrote 379471/5692656 pairs; (copied 0/0 reads)
+[ Info: Cycle 16: read 379450/6072106 pairs; wrote 379450/6072106 pairs; (copied 0/0 reads)
+[ Info: Cycle 17: read 379509/6451615 pairs; wrote 379509/6451615 pairs; (copied 0/0 reads)
+[ Info: Cycle 18: read 379655/6831270 pairs; wrote 379655/6831270 pairs; (copied 0/0 reads)
+[ Info: Cycle 19: read 379464/7210734 pairs; wrote 379464/7210734 pairs; (copied 0/0 reads)
+[ Info: Cycle 20: read 379470/7590204 pairs; wrote 379470/7590204 pairs; (copied 0/0 reads)
+[ Info: Cycle 21: read 379468/7969672 pairs; wrote 379468/7969672 pairs; (copied 0/0 reads)
+[ Info: Cycle 22: read 379458/8349130 pairs; wrote 379458/8349130 pairs; (copied 0/0 reads)
+[ Info: Cycle 23: read 379612/8728742 pairs; wrote 379612/8728742 pairs; (copied 0/0 reads)
+[ Info: Cycle 24: read 379548/9108290 pairs; wrote 379548/9108290 pairs; (copied 0/0 reads)
+[ Info: Cycle 25: read 379465/9487755 pairs; wrote 379465/9487755 pairs; (copied 0/0 reads)
+[ Info: Cycle 26: read 379468/9867223 pairs; wrote 379468/9867223 pairs; (copied 0/0 reads)
+[ Info: Cycle 27: read 379466/10246689 pairs; wrote 379466/10246689 pairs; (copied 0/0 reads)
+[ Info: Cycle 28: read 379456/10626145 pairs; wrote 379456/10626145 pairs; (copied 0/0 reads)
+[ Info: Cycle 29: read 379655/11005800 pairs; wrote 379655/11005800 pairs; (copied 0/0 reads)
+[ Info: Cycle 30: read 379517/11385317 pairs; wrote 379517/11385317 pairs; (copied 0/0 reads)
+[ Info: Cycle 31: read 379470/11764787 pairs; wrote 379470/11764787 pairs; (copied 0/0 reads)
+[ Info: Cycle 32: read 379475/12144262 pairs; wrote 379475/12144262 pairs; (copied 0/0 reads)
+[ Info: Cycle 33: read 379467/12523729 pairs; wrote 379467/12523729 pairs; (copied 0/0 reads)
+[ Info: Cycle 34: read 379458/12903187 pairs; wrote 379458/12903187 pairs; (copied 0/0 reads)
+[ Info: Cycle 35: read 379665/13282852 pairs; wrote 379665/13282852 pairs; (copied 0/0 reads)
+[ Info: Cycle 36: read 379506/13662358 pairs; wrote 379506/13662358 pairs; (copied 0/0 reads)
+[ Info: Cycle 37: read 379474/14041832 pairs; wrote 379474/14041832 pairs; (copied 0/0 reads)
+[ Info: Cycle 38: read 379476/14421308 pairs; wrote 379476/14421308 pairs; (copied 0/0 reads)
+[ Info: Cycle 39: read 379467/14800775 pairs; wrote 379467/14800775 pairs; (copied 0/0 reads)
+[ Info: Cycle 40: read 379460/15180235 pairs; wrote 379460/15180235 pairs; (copied 0/0 reads)
+[ Info: Cycle 41: read 379589/15559824 pairs; wrote 379589/15559824 pairs; (copied 0/0 reads)
+[ Info: Cycle 42: read 379572/15939396 pairs; wrote 379572/15939396 pairs; (copied 0/0 reads)
+[ Info: Cycle 43: read 379467/16318863 pairs; wrote 379467/16318863 pairs; (copied 0/0 reads)
+[ Info: Cycle 44: read 379473/16698336 pairs; wrote 379473/16698336 pairs; (copied 0/0 reads)
+[ Info: Cycle 45: read 379469/17077805 pairs; wrote 379469/17077805 pairs; (copied 0/0 reads)
+[ Info: Cycle 46: read 379453/17457258 pairs; wrote 379453/17457258 pairs; (copied 0/0 reads)
+[ Info: Cycle 47: read 379644/17836902 pairs; wrote 379644/17836902 pairs; (copied 0/0 reads)
+[ Info: Cycle 48: read 379527/18216429 pairs; wrote 379527/18216429 pairs; (copied 0/0 reads)
+[ Info: Cycle 49: read 379473/18595902 pairs; wrote 379473/18595902 pairs; (copied 0/0 reads)
+[ Info: Cycle 50: read 379475/18975377 pairs; wrote 379475/18975377 pairs; (copied 0/0 reads)
+[ Info: Cycle 51: read 379468/19354845 pairs; wrote 379468/19354845 pairs; (copied 0/0 reads)
+[ Info: Cycle 52: read 379456/19734301 pairs; wrote 379456/19734301 pairs; (copied 0/0 reads)
+[ Info: Cycle 53: read 379629/20113930 pairs; wrote 379629/20113930 pairs; (copied 0/0 reads)
+[ Info: Cycle 54: read 379536/20493466 pairs; wrote 379536/20493466 pairs; (copied 0/0 reads)
+[ Info: Cycle 55: read 379467/20872933 pairs; wrote 379467/20872933 pairs; (copied 0/0 reads)
+[ Info: Cycle 56: read 379473/21252406 pairs; wrote 379473/21252406 pairs; (copied 0/0 reads)
+[ Info: Cycle 57: read 379461/21631867 pairs; wrote 379461/21631867 pairs; (copied 0/0 reads)
+[ Info: Cycle 58: read 379447/22011314 pairs; wrote 379447/22011314 pairs; (copied 0/0 reads)
+[ Info: Cycle 59: read 379697/22391011 pairs; wrote 379697/22391011 pairs; (copied 0/0 reads)
+[ Info: Cycle 60: read 379460/22770471 pairs; wrote 379460/22770471 pairs; (copied 0/0 reads)
+[ Info: Cycle 61: read 379466/23149937 pairs; wrote 379466/23149937 pairs; (copied 0/0 reads)
+[ Info: Cycle 62: read 379466/23529403 pairs; wrote 379466/23529403 pairs; (copied 0/0 reads)
+[ Info: Cycle 63: read 379452/23908855 pairs; wrote 379452/23908855 pairs; (copied 0/0 reads)
+[ Info: Cycle 64: read 379639/24288494 pairs; wrote 379639/24288494 pairs; (copied 0/0 reads)
+[ Info: Cycle 65: read 379511/24668005 pairs; wrote 379511/24668005 pairs; (copied 0/0 reads)
+[ Info: Cycle 66: read 379466/25047471 pairs; wrote 379466/25047471 pairs; (copied 0/0 reads)
+[ Info: Cycle 67: read 379467/25426938 pairs; wrote 379467/25426938 pairs; (copied 0/0 reads)
+[ Info: Cycle 68: read 379456/25806394 pairs; wrote 379456/25806394 pairs; (copied 0/0 reads)
+[ Info: Cycle 69: read 379573/26185967 pairs; wrote 379573/26185967 pairs; (copied 0/0 reads)
+[ Info: Cycle 70: read 379574/26565541 pairs; wrote 379574/26565541 pairs; (copied 0/0 reads)
+[ Info: Cycle 71: read 379465/26945006 pairs; wrote 379465/26945006 pairs; (copied 0/0 reads)
+[ Info: Cycle 72: read 379460/27324466 pairs; wrote 379460/27324466 pairs; (copied 0/0 reads)
+[ Info: Cycle 73: read 379457/27703923 pairs; wrote 379457/27703923 pairs; (copied 0/0 reads)
+[ Info: Cycle 74: read 379576/28083499 pairs; wrote 379576/28083499 pairs; (copied 0/0 reads)
+[ Info: Cycle 75: read 379581/28463080 pairs; wrote 379581/28463080 pairs; (copied 0/0 reads)
+[ Info: Cycle 76: read 379466/28842546 pairs; wrote 379466/28842546 pairs; (copied 0/0 reads)
+[ Info: Cycle 77: read 379470/29222016 pairs; wrote 379470/29222016 pairs; (copied 0/0 reads)
+[ Info: Cycle 78: read 379424/29601440 pairs; wrote 379424/29601440 pairs; (copied 0/0 reads)
+[ Info: Cycle 79: read 379554/29980994 pairs; wrote 379554/29980994 pairs; (copied 0/0 reads)
+[ Info: Cycle 80: read 379602/30360596 pairs; wrote 379602/30360596 pairs; (copied 0/0 reads)
+[ Info: Cycle 81: read 379467/30740063 pairs; wrote 379467/30740063 pairs; (copied 0/0 reads)
+[ Info: Cycle 82: read 379471/31119534 pairs; wrote 379471/31119534 pairs; (copied 0/0 reads)
+[ Info: Cycle 83: read 379465/31498999 pairs; wrote 379465/31498999 pairs; (copied 0/0 reads)
+[ Info: Cycle 84: read 379456/31878455 pairs; wrote 379456/31878455 pairs; (copied 0/0 reads)
+[ Info: Cycle 85: read 379705/32258160 pairs; wrote 379705/32258160 pairs; (copied 0/0 reads)
+[ Info: Cycle 86: read 379465/32637625 pairs; wrote 379465/32637625 pairs; (copied 0/0 reads)
+[ Info: Cycle 87: read 379477/33017102 pairs; wrote 379477/33017102 pairs; (copied 0/0 reads)
+[ Info: Cycle 88: read 379447/33396549 pairs; wrote 379447/33396549 pairs; (copied 0/0 reads)
+[ Info: Cycle 89: read 379453/33776002 pairs; wrote 379453/33776002 pairs; (copied 0/0 reads)
+[ Info: Cycle 90: read 379714/34155716 pairs; wrote 379714/34155716 pairs; (copied 0/0 reads)
+[ Info: Cycle 91: read 379463/34535179 pairs; wrote 379463/34535179 pairs; (copied 0/0 reads)
+[ Info: Cycle 92: read 379473/34914652 pairs; wrote 379473/34914652 pairs; (copied 0/0 reads)
+[ Info: Cycle 93: read 379475/35294127 pairs; wrote 379475/35294127 pairs; (copied 0/0 reads)
+[ Info: Cycle 94: read 379462/35673589 pairs; wrote 379462/35673589 pairs; (copied 0/0 reads)
+[ Info: Cycle 95: read 379474/36053063 pairs; wrote 379474/36053063 pairs; (copied 0/0 reads)
+[ Info: Cycle 96: read 379690/36432753 pairs; wrote 379690/36432753 pairs; (copied 0/0 reads)
+[ Info: Cycle 97: read 379465/36812218 pairs; wrote 379465/36812218 pairs; (copied 0/0 reads)
+[ Info: Cycle 98: read 379472/37191690 pairs; wrote 379472/37191690 pairs; (copied 0/0 reads)
+[ Info: Cycle 99: read 379469/37571159 pairs; wrote 379469/37571159 pairs; (copied 0/0 reads)
+[ Info: Cycle 100: read 379454/37950613 pairs; wrote 379454/37950613 pairs; (copied 0/0 reads)
+[ Info: Cycle 101: read 379578/38330191 pairs; wrote 379578/38330191 pairs; (copied 0/0 reads)
+[ Info: Cycle 102: read 379577/38709768 pairs; wrote 379577/38709768 pairs; (copied 0/0 reads)
+[ Info: Cycle 103: read 379471/39089239 pairs; wrote 379471/39089239 pairs; (copied 0/0 reads)
+[ Info: Cycle 104: read 379473/39468712 pairs; wrote 379473/39468712 pairs; (copied 0/0 reads)
+[ Info: Cycle 105: read 379469/39848181 pairs; wrote 379469/39848181 pairs; (copied 0/0 reads)
+[ Info: Cycle 106: read 379451/40227632 pairs; wrote 379451/40227632 pairs; (copied 0/0 reads)
+[ Info: Cycle 107: read 379675/40607307 pairs; wrote 379675/40607307 pairs; (copied 0/0 reads)
+[ Info: Cycle 108: read 379489/40986796 pairs; wrote 379489/40986796 pairs; (copied 0/0 reads)
+[ Info: Cycle 109: read 379471/41366267 pairs; wrote 379471/41366267 pairs; (copied 0/0 reads)
+[ Info: Cycle 110: read 379470/41745737 pairs; wrote 379470/41745737 pairs; (copied 0/0 reads)
+[ Info: Cycle 111: read 379460/42125197 pairs; wrote 379460/42125197 pairs; (copied 0/0 reads)
+[ Info: Cycle 112: read 374644/42499841 pairs; wrote 374644/42499841 pairs; (copied 0/0 reads)
+┌ Info: ATRIA COMPLETE
+│   read1 = "./fastqs_UMI-dedup/atria_trim/Sample_CT2_6125_pIAA_Q_SteadyState_S6_R1.UMI.atria.fq.gz"
+└   read2 = "./fastqs_UMI-dedup/atria_trim/Sample_CT2_6125_pIAA_Q_SteadyState_S6_R3.UMI.atria.fq.gz"
+
+
+❯ STAR \
+>     --runMode alignReads \
+>     --runThreadN "${SLURM_CPUS_ON_NODE}" \
+>     --outSAMtype BAM SortedByCoordinate \
+>     --outSAMunmapped Within \
+>     --outSAMattributes All \
+>     --genomeDir /home/kalavatt/genomes/combined_SC_KL_20S/STAR \
+>     --readFilesIn ./bams_UMI-dedup/to-align_umi-extracted_trimmed/CT2_6125_pIAA_Q_SteadyState_UT_R1.fq.gz ./bams_UMI-dedup/to-align_umi-extracted_trimmed/CT2_6125_pIAA_Q_SteadyState_UT_R3.fq.gz \
+>     --readFilesCommand zcat \
+>     --outFileNamePrefix ./bams_UMI-dedup/aligned_umi-extracted_trimmed/CT2_6125_pIAA_Q_SteadyState_UT \
+>     --limitBAMsortRAM 4000000000 \
+>     --outFilterMultimapNmax 10 \
+>     --winAnchorMultimapNmax 1000 \
+>     --alignSJoverhangMin 8 \
+>     --alignSJDBoverhangMin 1 \
+>     --outFilterMismatchNmax 999 \
+>     --outMultimapperOrder Random \
+>     --alignEndsType EndToEnd \
+>     --alignIntronMin 4 \
+>     --alignIntronMax 5000 \
+>     --alignMatesGapMax 5000 \
+>         >> >(tee -a sh_err_out/err_out/rerun_STAR.CT2_6125_pIAA_Q_SteadyState_UT.2023-0213.stdout.txt) \
+>         2>> >(tee -a sh_err_out/err_out/rerun_STAR.CT2_6125_pIAA_Q_SteadyState_UT.2023-0213.stderr.txt >&2)
+    STAR --runMode alignReads --runThreadN 16 --outSAMtype BAM SortedByCoordinate --outSAMunmapped Within --outSAMattributes All --genomeDir /home/kalavatt/genomes/combined_SC_KL_20S/STAR --readFilesIn ./bams_UMI-dedup/to-align_umi-extracted_trimmed/CT2_6125_pIAA_Q_SteadyState_UT_R1.fq.gz ./bams_UMI-dedup/to-align_umi-extracted_trimmed/CT2_6125_pIAA_Q_SteadyState_UT_R3.fq.gz --readFilesCommand zcat --outFileNamePrefix ./bams_UMI-dedup/aligned_umi-extracted_trimmed/CT2_6125_pIAA_Q_SteadyState_UT --limitBAMsortRAM 4000000000 --outFilterMultimapNmax 10 --winAnchorMultimapNmax 1000 --alignSJoverhangMin 8 --alignSJDBoverhangMin 1 --outFilterMismatchNmax 999 --outMultimapperOrder Random --alignEndsType EndToEnd --alignIntronMin 4 --alignIntronMax 5000 --alignMatesGapMax 5000
+    STAR version: 2.7.10b   compiled: 2022-11-01T09:53:26-04:00 :/home/dobin/data/STAR/STARcode/STAR.master/source
+Feb 13 08:39:36 ..... started STAR run
+Feb 13 08:39:46 ..... loading genome
+Feb 13 08:39:46 ..... started mapping
+Feb 13 08:42:22 ..... finished mapping
+Feb 13 08:42:22 ..... started sorting BAM
+Feb 13 08:43:47 ..... finished successfully
+
+
+❯ mv \
+>     ./fastqs_UMI-dedup/atria_trim/bak \
+>     ./fastqs_UMI-dedup/atria_trim/problem
+renamed './fastqs_UMI-dedup/atria_trim/bak' -> './fastqs_UMI-dedup/atria_trim/problem'
+
+
+❯ mv \
+>     ./bams_UMI-dedup/aligned_umi-extracted_trimmed/bak \
+>     ./bams_UMI-dedup/aligned_umi-extracted_trimmed/problem
+renamed './bams_UMI-dedup/aligned_umi-extracted_trimmed/bak' -> './bams_UMI-dedup/aligned_umi-extracted_trimmed/problem'
+```
+</details>
+<br />
+
+<a id="07b-rename-organize-and-check-on-files-in-aligned_umi-extracted_trimmed_kmer-corrected"></a>
+#### 07b Rename, organize, and check on files in `aligned_umi-extracted_trimmed_kmer-corrected/`
+<a id="code-52"></a>
+##### Code
+<details>
+<summary><i>Code: </i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+transcriptome && 
+    {
+        cd "results/2023-0115" \
+            || echo "cd'ing failed; check on this..."
+    }
+
+cd "bams_UMI-dedup/aligned_umi-extracted_trimmed_kmer-corrected/" \
+    || echo "cd'ing failed; check on this..."
+
+rename -n 's/Aligned.sortedByCoord.out//g' *
+rename -n 's/Log/.Log/g; s/SJ/.SJ/g' *
+
+rename 's/Aligned.sortedByCoord.out//g' *
+rename 's/Log/.Log/g; s/SJ/.SJ/g' *
+
+rm -r *_STARtmp/
+
+.,
+#NOTE Everything seems to check out
+```
+</details>
+<br />
+<br />
+
+<a id="vi-subset-bams-by-alignment-categories"></a>
+## <u>VI</u> Subset bams by alignment categories
+<a id="01-get-situated-make-directories-for-outfiles"></a>
+### 01 Get situated, make directories for outfiles
+<a id="code-53"></a>
+#### Code
+<details>
+<summary><i>Code: Get situated, make directories for outfiles</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+#  Get situated
+grabnode  # 16, etc.
+
+transcriptome && 
+    {
+        cd "results/2023-0115" \
+            || echo "cd'ing failed; check on this..."
+    }
+
+if [[ "${CONDA_DEFAULT_ENV}" != "base" ]]; then 
+    conda deactivate
+fi
+source activate Trinity_env
+module purge
+module load SAMtools/1.16.1-GCC-11.2.0
+
+#  Make directories for outfiles
+mkdir -p "./bams_UMI-dedup/aligned_UT_primary"
+mkdir -p "./bams_UMI-dedup/aligned_UTK_primary-secondary"
+mkdir -p "./bams_UMI-dedup/aligned_UTK_primary-unmapped"
+```
+
+</details>
+<br />
+
+<a id="02-set-up-necessary-variables-arrays"></a>
+### 02 Set up necessary variables, arrays
+<a id="02a-set-up-information-for-aligned_ut_primary_"></a>
+#### 02a Set up information for `aligned_UT_primary_*`
+<a id="code-54"></a>
+##### Code
+<details>
+<summary><i>Code: Set up information for aligned_UT_primary_*</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+unset bams_UT_prim
+typeset -a bams_UT_prim
+while IFS=" " read -r -d $'\0'; do
+    bams_UT_prim+=( "${REPLY}" )
+done < <(\
+    find "./bams_UMI-dedup/aligned_umi-extracted_trimmed" \
+        -maxdepth 1 \
+        -type f \
+        -name *.bam \
+        -print0 \
+            | sort -z \
+)
+echo_test "${bams_UT_prim[@]}"
+echo "${#bams_UT_prim[@]}"
+```
+</details>
+<br />
+
+<a id="02b-set-up-information-for-aligned_utk_primary-secondary_"></a>
+#### 02b Set up information for `aligned_UTK_primary-secondary_*`
+<a id="code-55"></a>
+##### Code
+<details>
+<summary><i>Code: Set up information for aligned_UTK_primary-secondary_dedup-none</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+unset bams_UT_p_s
+typeset -a bams_UT_p_s
+while IFS=" " read -r -d $'\0'; do
+    bams_UT_p_s+=( "${REPLY}" )
+done < <(\
+    find "./bams_UMI-dedup/aligned_umi-extracted_trimmed_kmer-corrected/" \
+        -maxdepth 1 \
+        -type f \
+        -name 578*.bam \
+        -print0 \
+            | sort -z \
+)
+echo_test "${bams_UT_p_s[@]}"
+echo "${#bams_UT_p_s[@]}"
+```
+</details>
+<br />
+
+<a id="02c-set-up-information-for-aligned_utk_primary-unmapped_"></a>
+#### 02c Set up information for `aligned_UTK_primary-unmapped_*`
+<a id="code-56"></a>
+##### Code
+<details>
+<summary><i>Code: Set up information for aligned_UTK_primary-unmapped_*</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+unset bams_UT_p_u
+typeset -a bams_UT_p_u
+while IFS=" " read -r -d $'\0'; do
+    bams_UT_p_u+=( "${REPLY}" )
+done < <(\
+    find "./bams_UMI-dedup/aligned_umi-extracted_trimmed_kmer-corrected/" \
+        -maxdepth 1 \
+        -type f \
+        -name 578*.bam \
+        -print0 \
+            | sort -z \
+)
+echo_test "${bams_UT_p_u[@]}"
+echo "${#bams_UT_p_u[@]}"
+```
+</details>
+<br />
+
+<a id="03-run-separate_bamsh-etc"></a>
+### 03 Run `separate_bam.sh`, etc.
+<a id="run-separate_bamsh-for-aligned_ut_primary_"></a>
+#### Run `separate_bam.sh` for `aligned_UT_primary_*`
+<a id="run-separate_bamsh"></a>
+##### Run `separate_bam.sh`
+<a id="code-57"></a>
+###### Code
+<details>
+<summary><i>Code: Run separate_bam.sh</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+# bash ../../bin/separate_bam.sh
+
+outdir="bams_UMI-dedup/aligned_UT_primary"
+err_out="sh_err_out/err_out"
+for i in "${bams_UT_prim[@]}"; do
+    # i="${bams_UT_prim[0]}"  # echo "${i}"
+    log="run_separate-bam.$(basename "${i}" .bam)"  # echo "${log}"
+
+    bash ../../bin/separate_bam.sh \
+        -u TRUE \
+        -i "${i}" \
+        -o "${outdir}" \
+        -1 TRUE \
+        -2 FALSE \
+        -3 FALSE \
+        -4 FALSE \
+        -5 FALSE \
+        -6 FALSE \
+        -f TRUE \
+        -l FALSE \
+        -t "${SLURM_CPUS_ON_NODE}" \
+            > >(tee -a "${err_out}/${log}.stdout.txt") \
+            2> >(tee -a "${err_out}/${log}.stderr.txt" >&2)
+done
+```
+</details>
+<br />
+
+<a id="run-list_tally_flags"></a>
+##### Run `list_tally_flags()`
+<a id="code-58"></a>
+###### Code
+<details>
+<summary><i>Code: Run list_tally_flags()</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+unset outbams
+typeset -a outbams
+while IFS=" " read -r -d $'\0'; do
+    outbams+=( "${REPLY}" )
+done < <(\
+    find "bams_UMI-dedup/aligned_UT_primary" \
+        -maxdepth 1 \
+        -type f \
+        -name *.bam \
+        -print0 \
+            | sort -z \
+)
+echo_test "${outbams[@]}"
+echo "${#outbams[@]}"
+
+list_tally_flags() {
+    samtools view "${1}" \
+        | cut -d$'\t' -f 2 \
+        | sort \
+        | uniq -c \
+        | sort -nr
+}
+
+
+export SHELL=$(type -p bash)
+export -f list_tally_flags
+
+parallel \
+    -k \
+    -j "${SLURM_CPUS_ON_NODE}" \
+    --dry-run \
+    "list_tally_flags {} > {.}.list-tally-flags.txt" \
+::: "${outbams[@]}"
+
+parallel \
+    -k \
+    -j "${SLURM_CPUS_ON_NODE}" \
+    "list_tally_flags {} > {.}.list-tally-flags.txt" \
+::: "${outbams[@]}"
+
+for i in "bams_UMI-dedup/aligned_UT_primary/"*".list-tally-flags.txt"; do
+    echo "${i}"
+    echo "----------------------------------------"
+    cat "${i}"
+    echo ""
+done
+```
+</details>
+<br />
+
+<a id="printed"></a>
+###### Printed
+<details>
+<summary><i>Printed: Run list_tally_flags()</i></summary>
+
+```txt
+bams_UMI-dedup/aligned_UT_primary/5781_G1_IN_UT.primary.list-tally-flags.txt
+----------------------------------------
+6482529 83
+6482529 163
+5303159 99
+5303159 147
+
+bams_UMI-dedup/aligned_UT_primary/5781_G1_IP_UT.primary.list-tally-flags.txt
+----------------------------------------
+8316942 99
+8316942 147
+7871449 83
+7871449 163
+
+bams_UMI-dedup/aligned_UT_primary/5781_Q_IN_UT.primary.list-tally-flags.txt
+----------------------------------------
+6495456 99
+6495456 147
+6155891 83
+6155891 163
+
+bams_UMI-dedup/aligned_UT_primary/5781_Q_IP_UT.primary.list-tally-flags.txt
+----------------------------------------
+10336305 83
+10336305 163
+10113673 99
+10113673 147
+
+bams_UMI-dedup/aligned_UT_primary/5782_G1_IN_UT.primary.list-tally-flags.txt
+----------------------------------------
+5685839 99
+5685839 147
+5560207 83
+5560207 163
+
+bams_UMI-dedup/aligned_UT_primary/5782_G1_IP_UT.primary.list-tally-flags.txt
+----------------------------------------
+8199512 99
+8199512 147
+8066610 83
+8066610 163
+
+bams_UMI-dedup/aligned_UT_primary/5782_Q_IN_UT.primary.list-tally-flags.txt
+----------------------------------------
+5145323 83
+5145323 163
+4765071 99
+4765071 147
+
+bams_UMI-dedup/aligned_UT_primary/5782_Q_IP_UT.primary.list-tally-flags.txt
+----------------------------------------
+9456540 83
+9456540 163
+9179212 99
+9179212 147
+
+bams_UMI-dedup/aligned_UT_primary/BM10_DSp48_5781_UT.primary.list-tally-flags.txt
+----------------------------------------
+11889751 83
+11889751 163
+10046107 99
+10046107 147
+
+bams_UMI-dedup/aligned_UT_primary/BM11_DSp48_7080_UT.primary.list-tally-flags.txt
+----------------------------------------
+10650479 83
+10650479 163
+10639716 99
+10639716 147
+
+bams_UMI-dedup/aligned_UT_primary/BM1_DSm2_5781_UT.primary.list-tally-flags.txt
+----------------------------------------
+13068001 83
+13068001 163
+7065381 99
+7065381 147
+
+bams_UMI-dedup/aligned_UT_primary/BM2_DSm2_7080_UT.primary.list-tally-flags.txt
+----------------------------------------
+14350807 83
+14350807 163
+7205225 99
+7205225 147
+
+bams_UMI-dedup/aligned_UT_primary/BM3_DSm2_7079_UT.primary.list-tally-flags.txt
+----------------------------------------
+13648446 83
+13648446 163
+7962096 99
+7962096 147
+
+bams_UMI-dedup/aligned_UT_primary/BM4_DSp2_5781_UT.primary.list-tally-flags.txt
+----------------------------------------
+12672494 83
+12672494 163
+6245014 99
+6245014 147
+
+bams_UMI-dedup/aligned_UT_primary/BM5_DSp2_7080_UT.primary.list-tally-flags.txt
+----------------------------------------
+16064075 83
+16064075 163
+7603880 99
+7603880 147
+
+bams_UMI-dedup/aligned_UT_primary/BM6_DSp2_7079_UT.primary.list-tally-flags.txt
+----------------------------------------
+13772484 83
+13772484 163
+7954107 99
+7954107 147
+
+bams_UMI-dedup/aligned_UT_primary/BM7_DSp24_5781_UT.primary.list-tally-flags.txt
+----------------------------------------
+12874454 83
+12874454 163
+7929948 99
+7929948 147
+
+bams_UMI-dedup/aligned_UT_primary/BM8_DSp24_7080_UT.primary.list-tally-flags.txt
+----------------------------------------
+13099675 83
+13099675 163
+9557603 99
+9557603 147
+
+bams_UMI-dedup/aligned_UT_primary/BM9_DSp24_7079_UT.primary.list-tally-flags.txt
+----------------------------------------
+11951046 83
+11951046 163
+8591652 99
+8591652 147
+
+bams_UMI-dedup/aligned_UT_primary/Bp10_DSp48_5782_UT.primary.list-tally-flags.txt
+----------------------------------------
+10599843 83
+10599843 163
+9733895 99
+9733895 147
+
+bams_UMI-dedup/aligned_UT_primary/Bp11_DSp48_7081_UT.primary.list-tally-flags.txt
+----------------------------------------
+11760511 99
+11760511 147
+11111738 83
+11111738 163
+
+bams_UMI-dedup/aligned_UT_primary/Bp12_DSp48_7078_UT.primary.list-tally-flags.txt
+----------------------------------------
+12535615 83
+12535615 163
+12112967 99
+12112967 147
+
+bams_UMI-dedup/aligned_UT_primary/Bp1_DSm2_5782_UT.primary.list-tally-flags.txt
+----------------------------------------
+11005964 83
+11005964 163
+5504954 99
+5504954 147
+
+bams_UMI-dedup/aligned_UT_primary/Bp2_DSm2_7081_UT.primary.list-tally-flags.txt
+----------------------------------------
+13185293 83
+13185293 163
+6590979 99
+6590979 147
+
+bams_UMI-dedup/aligned_UT_primary/Bp3_DSm2_7078_UT.primary.list-tally-flags.txt
+----------------------------------------
+10756792 83
+10756792 163
+6363953 99
+6363953 147
+
+bams_UMI-dedup/aligned_UT_primary/Bp4_DSp2_5782_UT.primary.list-tally-flags.txt
+----------------------------------------
+14275244 83
+14275244 163
+6646268 99
+6646268 147
+
+bams_UMI-dedup/aligned_UT_primary/Bp5_DSp2_7081_UT.primary.list-tally-flags.txt
+----------------------------------------
+16052201 83
+16052201 163
+8256244 99
+8256244 147
+
+bams_UMI-dedup/aligned_UT_primary/Bp6_DSp2_7078_UT.primary.list-tally-flags.txt
+----------------------------------------
+12942998 83
+12942998 163
+7608083 99
+7608083 147
+
+bams_UMI-dedup/aligned_UT_primary/Bp7_DSp24_5782_UT.primary.list-tally-flags.txt
+----------------------------------------
+12928126 83
+12928126 163
+8233336 99
+8233336 147
+
+bams_UMI-dedup/aligned_UT_primary/Bp8_DSp24_7081_UT.primary.list-tally-flags.txt
+----------------------------------------
+12715638 83
+12715638 163
+10150380 99
+10150380 147
+
+bams_UMI-dedup/aligned_UT_primary/Bp9_DSp24_7078_UT.primary.list-tally-flags.txt
+----------------------------------------
+10166286 83
+10166286 163
+6929330 99
+6929330 147
+
+bams_UMI-dedup/aligned_UT_primary/CT10_7718_pIAA_Q_Nascent_UT.primary.list-tally-flags.txt
+----------------------------------------
+21136901 83
+21136901 163
+20958977 99
+20958977 147
+
+bams_UMI-dedup/aligned_UT_primary/CT10_7718_pIAA_Q_SteadyState_UT.primary.list-tally-flags.txt
+----------------------------------------
+33867077 99
+33867077 147
+11692160 83
+11692160 163
+
+bams_UMI-dedup/aligned_UT_primary/CT2_6125_pIAA_Q_Nascent_UT.primary.list-tally-flags.txt
+----------------------------------------
+21012169 83
+21012169 163
+20170410 99
+20170410 147
+
+bams_UMI-dedup/aligned_UT_primary/CT2_6125_pIAA_Q_SteadyState_UT.primary.list-tally-flags.txt
+----------------------------------------
+20998073 99
+20998073 147
+18525186 83
+18525186 163
+
+bams_UMI-dedup/aligned_UT_primary/CT4_6126_pIAA_Q_Nascent_UT.primary.list-tally-flags.txt
+----------------------------------------
+20746900 83
+20746900 163
+18609464 99
+18609464 147
+
+bams_UMI-dedup/aligned_UT_primary/CT4_6126_pIAA_Q_SteadyState_UT.primary.list-tally-flags.txt
+----------------------------------------
+24534037 99
+24534037 147
+16063022 83
+16063022 163
+
+bams_UMI-dedup/aligned_UT_primary/CT6_7714_pIAA_Q_Nascent_UT.primary.list-tally-flags.txt
+----------------------------------------
+24099430 83
+24099430 163
+22800248 99
+22800248 147
+
+bams_UMI-dedup/aligned_UT_primary/CT6_7714_pIAA_Q_SteadyState_UT.primary.list-tally-flags.txt
+----------------------------------------
+25924189 99
+25924189 147
+10532553 83
+10532553 163
+
+bams_UMI-dedup/aligned_UT_primary/CT8_7716_pIAA_Q_Nascent_UT.primary.list-tally-flags.txt
+----------------------------------------
+21475366 99
+21475366 147
+20775254 83
+20775254 163
+
+bams_UMI-dedup/aligned_UT_primary/CT8_7716_pIAA_Q_SteadyState_UT.primary.list-tally-flags.txt
+----------------------------------------
+30893568 99
+30893568 147
+12088337 83
+12088337 163
+
+bams_UMI-dedup/aligned_UT_primary/CU11_5782_Q_Nascent_UT.primary.list-tally-flags.txt
+----------------------------------------
+22547124 99
+22547124 147
+21326251 83
+21326251 163
+
+bams_UMI-dedup/aligned_UT_primary/CU12_5782_Q_SteadyState_UT.primary.list-tally-flags.txt
+----------------------------------------
+30712936 99
+30712936 147
+11944168 83
+11944168 163
+
+bams_UMI-dedup/aligned_UT_primary/CW10_7747_8day_Q_IN_UT.primary.list-tally-flags.txt
+----------------------------------------
+28188490 99
+28188490 147
+12688795 83
+12688795 163
+
+bams_UMI-dedup/aligned_UT_primary/CW10_7747_8day_Q_PD_UT.primary.list-tally-flags.txt
+----------------------------------------
+18670024 83
+18670024 163
+17803064 99
+17803064 147
+
+bams_UMI-dedup/aligned_UT_primary/CW12_7748_8day_Q_IN_UT.primary.list-tally-flags.txt
+----------------------------------------
+27327754 99
+27327754 147
+10399625 83
+10399625 163
+
+bams_UMI-dedup/aligned_UT_primary/CW12_7748_8day_Q_PD_UT.primary.list-tally-flags.txt
+----------------------------------------
+19621016 83
+19621016 163
+18928977 99
+18928977 147
+
+bams_UMI-dedup/aligned_UT_primary/CW2_5781_8day_Q_IN_UT.primary.list-tally-flags.txt
+----------------------------------------
+25891036 99
+25891036 147
+12267219 83
+12267219 163
+
+bams_UMI-dedup/aligned_UT_primary/CW2_5781_8day_Q_PD_UT.primary.list-tally-flags.txt
+----------------------------------------
+18835231 83
+18835231 163
+17685889 99
+17685889 147
+
+bams_UMI-dedup/aligned_UT_primary/CW4_5782_8day_Q_IN_UT.primary.list-tally-flags.txt
+----------------------------------------
+26212753 99
+26212753 147
+11828343 83
+11828343 163
+
+bams_UMI-dedup/aligned_UT_primary/CW4_5782_8day_Q_PD_UT.primary.list-tally-flags.txt
+----------------------------------------
+19188484 83
+19188484 163
+18119512 99
+18119512 147
+
+bams_UMI-dedup/aligned_UT_primary/CW6_7078_8day_Q_IN_UT.primary.list-tally-flags.txt
+----------------------------------------
+25947639 99
+25947639 147
+25464464 83
+25464464 163
+
+bams_UMI-dedup/aligned_UT_primary/CW6_7078_8day_Q_PD_UT.primary.list-tally-flags.txt
+----------------------------------------
+19432622 83
+19432622 163
+18975599 99
+18975599 147
+
+bams_UMI-dedup/aligned_UT_primary/CW8_7079_8day_Q_IN_UT.primary.list-tally-flags.txt
+----------------------------------------
+27623599 99
+27623599 147
+12906718 83
+12906718 163
+
+bams_UMI-dedup/aligned_UT_primary/CW8_7079_8day_Q_PD_UT.primary.list-tally-flags.txt
+----------------------------------------
+18693001 83
+18693001 163
+18229299 99
+18229299 147
+```
+</details>
+<br />
+
+<a id="run-separate_bamsh-etc-for-aligned_utk_primary-secondary_"></a>
+#### Run `separate_bam.sh`, etc. for `aligned_UTK_primary-secondary_*`
+<a id="run-separate_bamsh-1"></a>
+##### Run `separate_bam.sh`
+<a id="code-59"></a>
+###### Code
+<details>
+<summary><i>Code: Run separate_bam.sh</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+# bash ../../bin/separate_bam.sh
+
+outdir="bams_UMI-dedup/aligned_UTK_primary-secondary/"
+err_out="sh_err_out/err_out"
+for i in "${bams_UT_p_s[@]}"; do
+    # i="${bams_UT_p_s[0]}"  # echo "${i}"
+    log="run_separate-bam.primary-secondary.$(basename "${i}" .bam)"  # echo "${log}"
+
+    bash ../../bin/separate_bam.sh \
+        -u TRUE \
+        -i "${i}" \
+        -o "${outdir}" \
+        -1 FALSE \
+        -2 FALSE \
+        -3 TRUE \
+        -4 FALSE \
+        -5 FALSE \
+        -6 FALSE \
+        -f TRUE \
+        -l FALSE \
+        -t "${SLURM_CPUS_ON_NODE}" \
+            > >(tee -a "${err_out}/${log}.stdout.txt") \
+            2> >(tee -a "${err_out}/${log}.stderr.txt" >&2)
+done
+```
+</details>
+<br />
+
+<a id="run-list_tally_flags-1"></a>
+##### Run `list_tally_flags()`
+<a id="code-60"></a>
+###### Code
+<details>
+<summary><i>Code: Run list_tally_flags()</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+unset outbams
+typeset -a outbams
+while IFS=" " read -r -d $'\0'; do
+    outbams+=( "${REPLY}" )
+done < <(\
+    find "bams_UMI-dedup/aligned_UTK_primary-secondary" \
+        -maxdepth 1 \
+        -type f \
+        -name *.bam \
+        -print0 \
+            | sort -z \
+)
+echo_test "${outbams[@]}"
+echo "${#outbams[@]}"
+
+list_tally_flags() {
+    samtools view "${1}" \
+        | cut -d$'\t' -f 2 \
+        | sort \
+        | uniq -c \
+        | sort -nr
+}
+
+
+export SHELL=$(type -p bash)
+export -f list_tally_flags
+
+parallel \
+    -k \
+    -j "${SLURM_CPUS_ON_NODE}" \
+    --dry-run \
+    "list_tally_flags {} > {.}.list-tally-flags.txt" \
+::: "${outbams[@]}"
+
+parallel \
+    -k \
+    -j "${SLURM_CPUS_ON_NODE}" \
+    "list_tally_flags {} > {.}.list-tally-flags.txt" \
+::: "${outbams[@]}"
+
+for i in "bams_UMI-dedup/aligned_UTK_primary-secondary/"*".list-tally-flags.txt"; do
+    echo "${i}"
+    echo "----------------------------------------"
+    cat "${i}"
+    echo ""
+done
+```
+</details>
+<br />
+
+<a id="printed-1"></a>
+###### Printed
+<details>
+<summary><i>Printed: Run list_tally_flags()</i></summary>
+
+```txt
+bams_UMI-dedup/aligned_UTK_primary-secondary//5781_G1_IN_UTK.primary-secondary.list-tally-flags.txt
+----------------------------------------
+6155381 83
+6155381 163
+6083730 419
+6083730 339
+4989735 99
+4989735 147
+1835994 403
+1835994 355
+
+bams_UMI-dedup/aligned_UTK_primary-secondary//5781_G1_IP_UTK.primary-secondary.list-tally-flags.txt
+----------------------------------------
+7840091 99
+7840091 147
+7400370 83
+7400370 163
+2510742 419
+2510742 339
+1607903 403
+1607903 355
+
+bams_UMI-dedup/aligned_UTK_primary-secondary//5781_Q_IN_UTK.primary-secondary.list-tally-flags.txt
+----------------------------------------
+6159928 99
+6159928 147
+5828590 83
+5828590 163
+5467097 419
+5467097 339
+ 671376 403
+ 671376 355
+
+bams_UMI-dedup/aligned_UTK_primary-secondary//5781_Q_IP_UTK.primary-secondary.list-tally-flags.txt
+----------------------------------------
+9846889 83
+9846889 163
+9606231 99
+9606231 147
+2811679 419
+2811679 339
+ 512070 403
+ 512070 355
+
+bams_UMI-dedup/aligned_UTK_primary-secondary//5782_G1_IN_UTK.primary-secondary.list-tally-flags.txt
+----------------------------------------
+5361718 99
+5361718 147
+5248329 83
+5248329 163
+3542438 419
+3542438 339
+1803137 403
+1803137 355
+
+bams_UMI-dedup/aligned_UTK_primary-secondary//5782_G1_IP_UTK.primary-secondary.list-tally-flags.txt
+----------------------------------------
+7739780 99
+7739780 147
+7599481 83
+7599481 163
+2598917 419
+2598917 339
+1496022 403
+1496022 355
+
+bams_UMI-dedup/aligned_UTK_primary-secondary//5782_Q_IN_UTK.primary-secondary.list-tally-flags.txt
+----------------------------------------
+5327576 419
+5327576 339
+4873200 83
+4873200 163
+4406470 99
+4406470 147
+ 284910 403
+ 284910 355
+
+bams_UMI-dedup/aligned_UTK_primary-secondary//5782_Q_IP_UTK.primary-secondary.list-tally-flags.txt
+----------------------------------------
+8965465 83
+8965465 163
+8671045 99
+8671045 147
+2310403 419
+2310403 339
+ 446347 403
+ 446347 355
+```
+</details>
+<br />
+
+<a id="run-separate_bamsh-for-aligned_utk_primary-unmapped_"></a>
+#### Run `separate_bam.sh` for `aligned_UTK_primary-unmapped_*`
+<a id="run-separate_bamsh-2"></a>
+##### Run `separate_bam.sh`
+<a id="code-61"></a>
+###### Code
+<details>
+<summary><i>Code: Run separate_bam.sh for aligned_UTK_primary-unmapped_*</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+# bash ../../bin/separate_bam.sh
+
+outdir="bams_UMI-dedup/aligned_UTK_primary-unmapped/"
+err_out="sh_err_out/err_out"
+for i in "${bams_UT_p_u[@]}"; do
+    # i="${bams_UT_p_u[0]}"  # echo "${i}"
+    log="run_separate-bam.primary-unmapped.$(basename "${i}" .bam)"  # echo "${log}"
+
+    bash ../../bin/separate_bam.sh \
+        -u TRUE \
+        -i "${i}" \
+        -o "${outdir}" \
+        -1 FALSE \
+        -2 FALSE \
+        -3 FALSE \
+        -4 FALSE \
+        -5 TRUE \
+        -6 FALSE \
+        -f TRUE \
+        -l FALSE \
+        -t "${SLURM_CPUS_ON_NODE}" \
+            > >(tee -a "${err_out}/${log}.stdout.txt") \
+            2> >(tee -a "${err_out}/${log}.stderr.txt" >&2)
+done
+```
+</details>
+<br />
+
+<a id="run-list_tally_flags-2"></a>
+##### Run `list_tally_flags()`
+<a id="code-62"></a>
+###### Code
+<details>
+<summary><i>Code: Run list_tally_flags()</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+unset outbams
+typeset -a outbams
+while IFS=" " read -r -d $'\0'; do
+    outbams+=( "${REPLY}" )
+done < <(\
+    find "bams_UMI-dedup/aligned_UTK_primary-unmapped" \
+        -maxdepth 1 \
+        -type f \
+        -name *.bam \
+        -print0 \
+            | sort -z \
+)
+echo_test "${outbams[@]}"
+echo "${#outbams[@]}"
+
+list_tally_flags() {
+    samtools view "${1}" \
+        | cut -d$'\t' -f 2 \
+        | sort \
+        | uniq -c \
+        | sort -nr
+}
+
+
+export SHELL=$(type -p bash)
+export -f list_tally_flags
+
+parallel \
+    -k \
+    -j "${SLURM_CPUS_ON_NODE}" \
+    --dry-run \
+    "list_tally_flags {} > {.}.list-tally-flags.txt" \
+::: "${outbams[@]}"
+
+parallel \
+    -k \
+    -j "${SLURM_CPUS_ON_NODE}" \
+    "list_tally_flags {} > {.}.list-tally-flags.txt" \
+::: "${outbams[@]}"
+
+for i in "bams_UMI-dedup/aligned_UTK_primary-unmapped/"*".list-tally-flags.txt"; do
+    echo "${i}"
+    echo "----------------------------------------"
+    cat "${i}"
+    echo ""
+done
+```
+</details>
+<br />
+
+<a id="printed-2"></a>
+###### Printed
+<details>
+<summary><i>Printed: Run list_tally_flags()</i></summary>
+
+Very surprised at how few `73`, `133`, `153`, `101`, `89`, `69`, `165`, and `137` flags there are
+```txt
+bams_UMI-dedup/aligned_UTK_primary-unmapped/5781_G1_IN_UTK.proper-etc.list-tally-flags.txt
+----------------------------------------
+6155381 83
+6155381 163
+4989735 99
+4989735 147
+1584849 77
+1584849 141
+      2 73
+      2 133
+      1 153
+      1 101
+
+bams_UMI-dedup/aligned_UTK_primary-unmapped/5781_G1_IP_UTK.proper-etc.list-tally-flags.txt
+----------------------------------------
+7840091 99
+7840091 147
+7400370 83
+7400370 163
+1325424 77
+1325424 141
+
+bams_UMI-dedup/aligned_UTK_primary-unmapped/5781_Q_IN_UTK.proper-etc.list-tally-flags.txt
+----------------------------------------
+6159928 99
+6159928 147
+5828590 83
+5828590 163
+ 897085 77
+ 897085 141
+      2 89
+      2 69
+      2 165
+      2 137
+      1 73
+      1 133
+
+bams_UMI-dedup/aligned_UTK_primary-unmapped/5781_Q_IP_UTK.proper-etc.list-tally-flags.txt
+----------------------------------------
+9846889 83
+9846889 163
+9606231 99
+9606231 147
+ 639014 77
+ 639014 141
+      2 89
+      2 165
+
+bams_UMI-dedup/aligned_UTK_primary-unmapped/5782_G1_IN_UTK.proper-etc.list-tally-flags.txt
+----------------------------------------
+5361718 99
+5361718 147
+5248329 83
+5248329 163
+1593849 77
+1593849 141
+      1 73
+      1 133
+
+bams_UMI-dedup/aligned_UTK_primary-unmapped/5782_G1_IP_UTK.proper-etc.list-tally-flags.txt
+----------------------------------------
+7739780 99
+7739780 147
+7599481 83
+7599481 163
+1200614 77
+1200614 141
+      2 89
+      2 165
+
+bams_UMI-dedup/aligned_UTK_primary-unmapped/5782_Q_IN_UTK.proper-etc.list-tally-flags.txt
+----------------------------------------
+4873200 83
+4873200 163
+4406470 99
+4406470 147
+ 382966 77
+ 382966 141
+      1 89
+      1 165
+
+bams_UMI-dedup/aligned_UTK_primary-unmapped/5782_Q_IP_UTK.proper-etc.list-tally-flags.txt
+----------------------------------------
+8965465 83
+8965465 163
+8671045 99
+8671045 147
+ 404329 77
+ 404329 141
+      2 73
+      2 133
+      1 89
+      1 165
+```
+</details>
+<br />
+
+<a id="run-additional-qc-commands-on-all-separate_bamsh-outfile"></a>
+#### Run additional QC commands on all `separate_bam.sh` outfile
+<a id="get-all-bams-in--and-outfiles-into-a-single-array"></a>
+##### Get all bams (in- and outfiles) into a single array
+<a id="code-63"></a>
+###### Code
+<details>
+<summary><i>Code: Get all bams (in- and outfiles) into a single array</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+cd ./bams_UMI-dedup \
+    || echo "cd'ing failed; check on this..."
+
+unset bams
+typeset -a bams
+while IFS=" " read -r -d $'\0'; do
+    bams+=( "${REPLY}" )
+done < <(\
+    find . \
+        -maxdepth 2 \
+        -type f \
+        -name *.bam \
+        -print0 \
+            | sort -z \
+)
+echo_test "${bams[@]}"
+echo "${#bams[@]}"
+```
+</details>
+<br />
+
+<a id="run-samtools-index"></a>
+##### Run `samtools index`
+<a id="code-64"></a>
+###### Code
+<details>
+<summary><i>Code: Run samtools index</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+parallel \
+    -k \
+    -j 4 \
+    --dry-run \
+    "samtools index -@ 4 {}" \
+::: "${bams[@]}"
+
+parallel \
+    -k \
+    -j 4 \
+    "samtools index -@ 4 {}" \
+::: "${bams[@]}"
+```
+</details>
+<br />
+
+<a id="run-samtools-idxstats"></a>
+##### Run `samtools idxstats`
+<a id="code-65"></a>
+###### Code
+<details>
+<summary><i>Code: Run samtools idxstats</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+parallel \
+    -k \
+    -j "${SLURM_CPUS_ON_NODE}" \
+    --dry-run \
+    "samtools idxstats {} > {.}.idxstats.txt" \
+::: "${bams[@]}"
+
+parallel \
+    -k \
+    -j "${SLURM_CPUS_ON_NODE}" \
+    "samtools idxstats  {} > {.}.idxstats.txt" \
+::: "${bams[@]}"
+```
+</details>
+<br />
+
+<a id="run-samtools-stats"></a>
+##### Run `samtools stats`
+<a id="code-66"></a>
+###### Code
+<details>
+<summary><i>Code: Run samtools stats</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+parallel \
+    -k \
+    -j 4 \
+    --dry-run \
+    "samtools stats -@ 4 {1} -r {2} > {1.}.stats.txt" \
+::: "${bams[@]}" \
+::: "${HOME}/genomes/combined_SC_KL_20S/fasta/combined_SC_KL_20S.fasta"
+
+parallel \
+    -k \
+    -j 4 \
+    "samtools stats -@ 4 {1} -r {2} > {1.}.stats.txt" \
+::: "${bams[@]}" \
+::: "${HOME}/genomes/combined_SC_KL_20S/fasta/combined_SC_KL_20S.fasta"
+```
+</details>
+<br />
+
+<a id="run-picard-alignmentsummarymetrics"></a>
+##### Run `picard AlignmentSummaryMetrics`
+<a id="code-67"></a>
+###### Code
+<details>
+<summary><i>Code: picard AlignmentSummaryMetrics</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+ml picard/2.25.1-Java-11
+# To execute picard run: java -jar "${EBROOTPICARD}/picard.jar"
+
+parallel \
+    -k \
+    -j "${SLURM_CPUS_ON_NODE}" \
+    --dry-run \
+    "java -jar {1}/picard.jar CollectAlignmentSummaryMetrics R={2} I={3} O={3.}.CollectAlignmentSummaryMetrics.txt" \
+::: "${EBROOTPICARD}" \
+::: "${HOME}/genomes/combined_SC_KL_20S/fasta/combined_SC_KL_20S.fasta" \
+::: "${bams[@]}"
+
+parallel \
+    -k \
+    -j "${SLURM_CPUS_ON_NODE}" \
+    "java -jar {1}/picard.jar CollectAlignmentSummaryMetrics R={2} I={3} O={3.}.CollectAlignmentSummaryMetrics.txt" \
+::: "${EBROOTPICARD}" \
+::: "${HOME}/genomes/combined_SC_KL_20S/fasta/combined_SC_KL_20S.fasta" \
+::: "${bams[@]}"
+```
+</details>
+<br />
+
+<a id="note-todo-come-back-to-run-even-more-qc-commands-on-the-bams"></a>
+##### `#NOTE` `#TODO` Come back to run even more QC commands on the bams
+<br />
+<br />
+
+<a id="vii-perform-umi-and-positional-deduplication-of-primary-files"></a>
+## <u>VII</u> Perform UMI and positional deduplication of "primary" files
+<a id="01-get-situated-make-directories-for-outfiles-1"></a>
+### 01 Get situated, make directories for outfiles
+<details>
+<summary><i>Code: Get situated, make directories for outfiles</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+#  Get situated
+grabnode  # 16, etc.
+
+transcriptome && 
+    {
+        cd "results/2023-0115" \
+            || echo "cd'ing failed; check on this..."
+    }
+
+if [[ "${CONDA_DEFAULT_ENV}" != "base" ]]; then 
+    conda deactivate
+fi
+source activate Trinity_env
+module purge
+module load UMI-tools/1.0.1-foss-2019b-Python-3.7.4
+
+#  Make directories for outfiles
+mkdir -p "./bams_UMI-dedup/aligned_UT_primary_dedup-UMI"
+mkdir -p "./bams_UMI-dedup/aligned_UT_primary_dedup-pos"
+```
+</details>
+<br />
+
+<a id="02-set-up-necessary-variables-arrays-1"></a>
+### 02 Set up necessary variables, arrays
+<a id="code-68"></a>
+#### Code
+<details>
+<summary><i>Code: Set up necessary variables, arrays</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+unset inbams
+typeset -a inbams
+while IFS=" " read -r -d $'\0'; do
+    inbams+=( "${REPLY}" )
+done < <(\
+    find "./bams_UMI-dedup/aligned_UT_primary/" \
+        -maxdepth 1 \
+        -type f \
+        -name *.bam \
+        -print0 \
+            | sort -z \
+)
+echo_test "${inbams[@]}"
+echo "${#inbams[@]}"
+
+unset outbams_UMI
+unset outbams_pos
+typeset -a outbams_UMI
+typeset -a outbams_pos
+for i in "${inbams[@]}"; do
+    # i="${inbams[0]}"  # echo "${i}"
+    stem="$(basename "${i}" .bam)"  # echo "${stem}"
+    outbams_UMI+=( "./bams_UMI-dedup/aligned_UT_primary_dedup-UMI/${stem}.dedup-UMI.bam" )
+    outbams_pos+=( "./bams_UMI-dedup/aligned_UT_primary_dedup-pos/${stem}.dedup-pos.bam" )
+done
+echo_test "${outbams_UMI[@]}"
+echo_test "${outbams_pos[@]}"
+echo "${#outbams_UMI[@]}"
+echo "${#outbams_pos[@]}"
+```
+</details>
+<br />
+
+<a id="03-run-umi_tools-dedup-for-umi-and-positional-deduplication"></a>
+### 03 Run `umi_tools dedup` for UMI and positional deduplication
+<a id="run-umi_tools-dedup-for-umi-deduplication"></a>
+#### Run `umi_tools dedup` for UMI deduplication
+<a id="code-69"></a>
+##### Code
+<details>
+<summary><i>Code: Run umi_tools dedup for UMI deduplication</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+parallel \
+    -j "${SLURM_CPUS_ON_NODE}" \
+    --dry-run \
+    'umi_tools dedup \
+        --paired \
+        --spliced-is-unique \
+        --unmapped-reads=discard \
+        --stdin={1} \
+        --stdout={2} \
+        --temp-dir={3} \
+        --output-stats={2.}.stats \
+        --log={2.}.stdout.txt \
+        --error={2.}.stderr.txt \
+        --timeit={2.}.time.txt \
+        --timeit-header' \
+::: "${inbams[@]}" \
+:::+ "${outbams_UMI[@]}" \
+::: "/fh/scratch/delete30/tsukiyama_t"
+
+parallel \
+    -j "${SLURM_CPUS_ON_NODE}" \
+    'umi_tools dedup \
+        --paired \
+        --spliced-is-unique \
+        --unmapped-reads=discard \
+        --stdin={1} \
+        --stdout={2} \
+        --temp-dir={3} \
+        --output-stats={2.}.stats \
+        --log={2.}.stdout.txt \
+        --error={2.}.stderr.txt \
+        --timeit={2.}.time.txt \
+        --timeit-header' \
+::: "${inbams[@]}" \
+:::+ "${outbams_UMI[@]}" \
+::: "/fh/scratch/delete30/tsukiyama_t"
+```
+</details>
+<br />
+
+<a id="run-umi_tools-dedup-for-positional-deduplication"></a>
+#### Run `umi_tools dedup` for positional deduplication
+<a id="code-70"></a>
+##### Code
+<details>
+<summary><i>Code: Run umi_tools dedup for positional deduplication</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+parallel \
+    -j "${SLURM_CPUS_ON_NODE}" \
+    --dry-run \
+    'umi_tools dedup \
+        --ignore-umi \
+        --paired \
+        --spliced-is-unique \
+        --unmapped-reads=discard \
+        --stdin={1} \
+        --stdout={2} \
+        --temp-dir={3} \
+        --log={2.}.stdout.txt \
+        --error={2.}.stderr.txt \
+        --timeit={2.}.time.txt \
+        --timeit-header' \
+::: "${inbams[@]}" \
+:::+ "${outbams_pos[@]}" \
+::: "/fh/scratch/delete30/tsukiyama_t"
+
+parallel \
+    -j "${SLURM_CPUS_ON_NODE}" \
+    'umi_tools dedup \
+        --ignore-umi \
+        --paired \
+        --spliced-is-unique \
+        --unmapped-reads=discard \
+        --stdin={1} \
+        --stdout={2} \
+        --temp-dir={3} \
+        --log={2.}.stdout.txt \
+        --error={2.}.stderr.txt \
+        --timeit={2.}.time.txt \
+        --timeit-header' \
+::: "${inbams[@]}" \
+:::+ "${outbams_pos[@]}" \
+::: "/fh/scratch/delete30/tsukiyama_t"
+```
+</details>
+<br />
+
+<a id="viii-separate-out-alignments-to-different-species"></a>
+## <u>VIII</u> Separate out alignments to different species
+<a id="01-get-situated-make-directories-for-outfiles-2"></a>
+### 01 Get situated, make directories for outfiles
+<a id="code-71"></a>
+#### Code
+<details>
+<summary><i>Code: Get situated, make directories for outfiles</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+#  Get situated
+grabnode  # 8, etc.
+
+transcriptome && 
+    {
+        cd "results/2023-0115" \
+            || echo "cd'ing failed; check on this..."
+    }
+
+if [[ "${CONDA_DEFAULT_ENV}" != "base" ]]; then 
+    conda deactivate
+fi
+source activate Trinity_env
+module purge
+module load SAMtools/1.16.1-GCC-11.2.0
+
+#  Make directories for outfiles
+mkdir -p "./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S"
+mkdir -p "./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S"
+```
+</details>
+<br />
+
+<a id="02-set-up-necessary-variables-arrays-2"></a>
+### 02 Set up necessary variables, arrays
+<a id="code-72"></a>
+#### Code
+<details>
+<summary><i>Code: Set up necessary variables, arrays</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+#  primary + secondary (Trinity GG): exclude K. lactis and 20S alignments -----
+unset inbams_ps
+typeset -a inbams_ps
+while IFS=" " read -r -d $'\0'; do
+    inbams_ps+=( "${REPLY}" )
+done < <(\
+    find "./bams_UMI-dedup/aligned_UTK_primary-secondary" \
+        -maxdepth 1 \
+        -type f \
+        -name *.bam \
+        -print0 \
+            | sort -z \
+)
+echo_test "${inbams_ps[@]}"
+echo "${#inbams_ps[@]}"
+
+outdir_ps="./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S"
+
+
+#  primary + unmapped (Trinity GF): exclude K. lactis and 20S alignments ------
+unset inbams_pu
+typeset -a inbams_pu
+while IFS=" " read -r -d $'\0'; do
+    inbams_pu+=( "${REPLY}" )
+done < <(\
+    find "./bams_UMI-dedup/aligned_UTK_primary-unmapped" \
+        -maxdepth 1 \
+        -type f \
+        -name *.bam \
+        -print0 \
+            | sort -z \
+)
+echo_test "${inbams_pu[@]}"
+echo "${#inbams_pu[@]}"
+
+outdir_pu="./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S"
+```
+</details>
+<br />
+
+<a id="03-split-bams-by-species"></a>
+### 03 Split bams by species
+<a id="code-73"></a>
+#### Code
+<details>
+<summary><i>Code: Split bams by species</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+#  primary + secondary (Trinity GG): exclude K. lactis and 20S alignments -----
+parallel \
+    -j "${SLURM_CPUS_ON_NODE}" \
+    --dry-run \
+    "samtools view -h {1} I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI Mito A B C D E F -o {2}/{1/.}.SC.bam" \
+::: "${inbams_ps[@]}" \
+::: "${outdir_ps}"
+
+parallel \
+    -j "${SLURM_CPUS_ON_NODE}" \
+    "samtools view -h {1} I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI Mito A B C D E F -o {2}/{1/.}.SC.bam" \
+::: "${inbams_ps[@]}" \
+::: "${outdir_ps}"
+
+#  primary + unmapped (Trinity GF): exclude K. lactis and 20S alignments ------
+parallel \
+    -j "${SLURM_CPUS_ON_NODE}" \
+    --dry-run \
+    "samtools view -h {1} I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI Mito A B C D E F -o {2}/{1/.}.SC.bam" \
+::: "${inbams_pu[@]}" \
+::: "${outdir_pu}"
+
+parallel \
+    -j "${SLURM_CPUS_ON_NODE}" \
+    "samtools view -h {1} I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI Mito A B C D E F -o {2}/{1/.}.SC.bam" \
+::: "${inbams_pu[@]}" \
+::: "${outdir_pu}"
+```
+</details>
+<br />
+
+<a id="ix-merge-bams-to-be-use-with-trinity"></a>
+## <u>IX</u> Merge bams to be use with Trinity
+<a id="01-get-situated-make-directories-for-outfiles-3"></a>
+### 01 Get situated, make directories for outfiles
+<a id="code-74"></a>
+#### Code
+<details>
+<summary><i>Code: Get situated, make directories for outfiles</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+#  Get situated
+grabnode  # 16, etc.
+
+transcriptome && 
+    {
+        cd "results/2023-0115" \
+            || echo "cd'ing failed; check on this..."
+    }
+
+if [[ "${CONDA_DEFAULT_ENV}" != "base" ]]; then 
+    conda deactivate
+fi
+source activate Trinity_env
+module purge
+module load SAMtools/1.16.1-GCC-11.2.0
+
+#  Make directories for outfiles
+mkdir -p "./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_merged"
+mkdir -p "./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_merged"
+```
+</details>
+<br />
+
+<a id="02-set-up-necessary-variables-arrays-3"></a>
+### 02 Set up necessary variables, arrays
+<a id="code-75"></a>
+#### Code
+<details>
+<summary><i>Code: Set up necessary variables, arrays</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+#  primary + secondary (Trinity GG): exclude K. lactis and 20S alignments -----
+indir_ps="./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S"
+outdir_ps="./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_merged"
+
+unset inbams_ps
+typeset -A inbams_ps
+inbams_ps["${indir_ps}/5781_G1_IN_UTK.primary-secondary.SC.bam"]="${indir_ps}/5782_G1_IN_UTK.primary-secondary.SC.bam___${outdir_ps}/merged_G1_IN_UTK.primary-secondary.SC.bam"
+inbams_ps["${indir_ps}/5781_G1_IP_UTK.primary-secondary.SC.bam"]="${indir_ps}/5782_G1_IP_UTK.primary-secondary.SC.bam___${outdir_ps}/merged_G1_IP_UTK.primary-secondary.SC.bam"
+inbams_ps["${indir_ps}/5781_Q_IN_UTK.primary-secondary.SC.bam"]="${indir_ps}/5782_Q_IN_UTK.primary-secondary.SC.bam___${outdir_ps}/merged_Q_IN_UTK.primary-secondary.SC.bam"
+inbams_ps["${indir_ps}/5781_Q_IP_UTK.primary-secondary.SC.bam"]="${indir_ps}/5782_Q_IP_UTK.primary-secondary.SC.bam___${outdir_ps}/merged_Q_IP_UTK.primary-secondary.SC.bam"
+
+unset i_1_ps
+unset i_2_ps
+unset out_ps
+typeset -a i_1_ps
+typeset -a i_2_ps
+typeset -a out_ps
+for i in "${!inbams_ps[@]}"; do
+    value_1="$(echo "${inbams_ps[$i]}" | awk -F '___' '{ print $1 }')"
+    value_2="$(echo "${inbams_ps[$i]}" | awk -F '___' '{ print $2 }')"
+    echo "    Key (i 1): ${i}"
+    echo "Value 1 (i 2): ${value_1}"
+    echo "Value 2 (out): ${value_2}"
+    echo ""
+    i_1_ps+=( "${i}" )
+    i_2_ps+=( "${value_1}" )
+    out_ps+=( "${value_2}" )
+done
+echo_test "${i_1_ps[@]}"
+echo_test "${i_2_ps[@]}"
+echo_test "${out_ps[@]}"
+
+
+#  primary + unmapped (Trinity GF): exclude K. lactis and 20S alignments ------
+indir_pu="./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S"
+outdir_pu="./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_merged"
+
+unset inbams_pu
+typeset -A inbams_pu
+inbams_pu["${indir_pu}/5781_G1_IN_UTK.proper-etc.SC.bam"]="${indir_pu}/5782_G1_IN_UTK.proper-etc.SC.bam___${outdir_pu}/merged_G1_IN_UTK.proper-etc.SC.bam"
+inbams_pu["${indir_pu}/5781_G1_IP_UTK.proper-etc.SC.bam"]="${indir_pu}/5782_G1_IP_UTK.proper-etc.SC.bam___${outdir_pu}/merged_G1_IP_UTK.proper-etc.SC.bam"
+inbams_pu["${indir_pu}/5781_Q_IN_UTK.proper-etc.SC.bam"]="${indir_pu}/5782_Q_IN_UTK.proper-etc.SC.bam___${outdir_pu}/merged_Q_IN_UTK.proper-etc.SC.bam"
+inbams_pu["${indir_pu}/5781_Q_IP_UTK.proper-etc.SC.bam"]="${indir_pu}/5782_Q_IP_UTK.proper-etc.SC.bam___${outdir_pu}/merged_Q_IP_UTK.proper-etc.SC.bam"
+
+unset i_1_pu
+unset i_2_pu
+unset out_pu
+typeset -a i_1_pu
+typeset -a i_2_pu
+typeset -a out_pu
+for i in "${!inbams_pu[@]}"; do
+    value_1="$(echo "${inbams_pu[$i]}" | awk -F '___' '{ print $1 }')"
+    value_2="$(echo "${inbams_pu[$i]}" | awk -F '___' '{ print $2 }')"
+    echo "    Key (i 1): ${i}"
+    echo "Value 1 (i 2): ${value_1}"
+    echo "Value 2 (out): ${value_2}"
+    echo ""
+    i_1_pu+=( "${i}" )
+    i_2_pu+=( "${value_1}" )
+    out_pu+=( "${value_2}" )
+done
+echo_test "${i_1_pu[@]}"
+echo_test "${i_2_pu[@]}"
+echo_test "${out_pu[@]}"
+```
+</details>
+<br />
+
+<a id="03-run-samtools-merge"></a>
+### 03 Run `samtools merge`
+<a id="code-76"></a>
+#### Code
+<details>
+<summary><i>Code: </i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+#  primary + secondary (Trinity GG): exclude K. lactis and 20S alignments -----
+parallel \
+    -j "${SLURM_CPUS_ON_NODE}" \
+    --dry-run \
+    "samtools merge -@ 4 {1} {2} -o {3}" \
+::: "${i_1_ps[@]}" \
+:::+ "${i_2_ps[@]}" \
+:::+ "${out_ps[@]}"
+
+parallel \
+    -j "${SLURM_CPUS_ON_NODE}" \
+    "samtools merge -@ 4 {1} {2} -o {3}" \
+::: "${i_1_ps[@]}" \
+:::+ "${i_2_ps[@]}" \
+:::+ "${out_ps[@]}"
+
+
+#  primary + unmapped (Trinity GF): exclude K. lactis and 20S alignments ------
+parallel \
+    -j "${SLURM_CPUS_ON_NODE}" \
+    --dry-run \
+    "samtools merge -@ 4 {1} {2} -o {3}" \
+::: "${i_1_pu[@]}" \
+:::+ "${i_2_pu[@]}" \
+:::+ "${out_pu[@]}"
+
+parallel \
+    -j "${SLURM_CPUS_ON_NODE}" \
+    "samtools merge -@ 4 {1} {2} -o {3}" \
+::: "${i_1_pu[@]}" \
+:::+ "${i_2_pu[@]}" \
+:::+ "${out_pu[@]}"
+```
+</details>
+<br />

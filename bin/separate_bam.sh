@@ -594,9 +594,7 @@ help="""
 #  separate_bams.sh
 #  ------------------------------------
 Filter out unmapped reads from a bam infile. Optionally, run samtools flagstat
-on the filtered bam outfile.
-
-Name(s) of outfile(s) will be derived from the infile.
+on the filtered bam outfile. Name(s) of outfile(s) are derived from the infile.
 
 Dependencies:
     - samtools >= version #TBD

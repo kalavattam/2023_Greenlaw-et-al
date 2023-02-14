@@ -206,7 +206,7 @@ check_etc() {
     #  Check on the specified value for "${split}"
     case "$(echo "${split}" | tr '[:upper:]' '[:lower:]')" in
         sc_all | sc_no_mito | sc_vii | sc_xii | sc_vii_xii | sc_mito | \
-        kl_all | virus_20s) \
+        sc_kl_all | kl_all | virus_20s) \
             :
             ;;
         *) \
@@ -218,6 +218,7 @@ check_etc() {
               - SC_XII
               - SC_VII_XII
               - SC_Mito
+              - SC_KL_all
               - KL_all
               - virus_20S
             """
@@ -251,21 +252,23 @@ main() {
     # chr="VII XII"
     # SC_all="exp_alignment_STAR/files_bams/5781_G1_IN_mergedAligned.sortedByCoord.out.split_SC_VII_XII.bam"
 
-    if [[ "$(echo "$(convert_chr_lower "${split}")")" == "sc_all" ]]; then
+    if [[ "$(convert_chr_lower "${split}")" == "sc_all" ]]; then
         chr="I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI Mito"
-    elif [[ "$(echo "$(convert_chr_lower "${split}")")" == "sc_no_mito" ]]; then
+    elif [[ "$(convert_chr_lower "${split}")" == "sc_no_mito" ]]; then
         chr="I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI"
-    elif [[ "$(echo "$(convert_chr_lower "${split}")")" == "sc_vii" ]]; then
+    elif [[ "$(convert_chr_lower "${split}")" == "sc_vii" ]]; then
         chr="VII"
-    elif [[ "$(echo "$(convert_chr_lower "${split}")")" == "sc_xii" ]]; then
+    elif [[ "$(convert_chr_lower "${split}")" == "sc_xii" ]]; then
         chr="XII"
-    elif [[ "$(echo "$(convert_chr_lower "${split}")")" == "sc_vii_xii" ]]; then
+    elif [[ "$(convert_chr_lower "${split}")" == "sc_vii_xii" ]]; then
         chr="VII XII"
-    elif [[ "$(echo "$(convert_chr_lower "${split}")")" == "sc_mito" ]]; then
+    elif [[ "$(convert_chr_lower "${split}")" == "sc_mito" ]]; then
         chr="Mito"
-    elif [[ "$(echo "$(convert_chr_lower "${split}")")" == "kl_all" ]]; then
+    elif [[ "$(convert_chr_lower "${split}")" == "sc_kl_all" ]]; then
+        chr="I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI Mito A B C D E F"
+    elif [[ "$(convert_chr_lower "${split}")" == "kl_all" ]]; then
         chr="A B C D E F"
-    elif [[ "$(echo "$(convert_chr_lower "${split}")")" == "virus_20s" ]]; then
+    elif [[ "$(convert_chr_lower "${split}")" == "virus_20s" ]]; then
         chr="20S"
     else
         chr=""
@@ -337,7 +340,7 @@ Arguments:
     -o  outdir     outfile directory, including path; if not found, will be
                    mkdir'd <chr>
     -s  split      what to split out; options: SC_all, SC_no_Mito, SC_VII,
-                   SC_XII, SC_VII_XII, SC_Mito, KL_all, virus_20S <chr>
+                   SC_XII, SC_VII_XII, SC_Mito, SC_KL_all, KL_all, virus_20S <chr>
                    [default: SC_all]
 
                        SC_all  return all SC chromosomes, including Mito
@@ -346,6 +349,7 @@ Arguments:
                        SC_XII  return only SC chromosome XII
                    SC_VII_XII  return only SC chromosomes VII and XII
                       SC_Mito  return only SC chromosome Mito
+                    SC_KL_all  return all SC and KL chromosomes
                        KL_all  return all KL chromosomes
                     virus_20S  return only 20S narnavirus
 

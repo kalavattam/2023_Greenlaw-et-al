@@ -2111,32 +2111,42 @@ Thus, when calling `separate_bam.sh`, output the following:
 ### Next steps
 - Move forward with option 2: <u><b>Don't bother with UMI deduplication for the Trinity infiles</b></u>
 - Run `separate_bam.sh` to output `.primary.`, `.primary-secondary.`, `.proper-etc.` files
-    + `.primary.`
-        * ___Get these files all 55 samples___
-        * Perform UMI and positional deduplication on the `.primary.` files, collecting stats on the numbers of positional duplicates
-            - Once statistics are collected and properly recorded, delete the position-deduplicated outfiles to save space
-        * Use the UMI-deduplicated bams as input for the following steps (output of one step is used as input for the next)
-            - Exclude *20S* alignments (make bams of only 20S alignments for AG's future work)
-            - Count alignments to features (e.g., `htseq-count` or `featureCounts` with respect to AG's combined `gtf`)
-            - Perform `DESeq2` size-factor normalization
-            - Having obtained size factors, filter out the *K. lactis* information prior to `DESeq2` assignment of q-values
-    + `.primary-secondary.`
-        * ___Don't___ do UMI deduplication of the `.primary-secondary.` files
-            - <mark>___Only need `.primary-secondary.` for the `578{1,2}` bams___</mark>
-            - Exclude *K. lactis* and *20S* alignments
-            - `samtools merge` resulting bam with replicate bam(s) that are also
-                + ...`.primary-secondary.`
-                + ...and subject to *K. lactis* and *20S* alignment exclusion
-            - Use the processed, merged bams as input for Trinity genome-guided mode
-    + `.proper-etc.`
-        * ~~Use the "unseparated" bams for Trinity genome-free mode~~
-        * * ___Don't___ do UMI deduplication of the `.proper-etc.` files
-        * <mark>___Only need "unseparated" `578{1,2}` bams___</mark>
-            - ___Don't___ do UMI deduplication of the `.primary-secondary.` files
-            - Exclude *K. lactis* and *20S* alignments
-            - Convert the resulting bam to fastq
-            - Use paired-end fastqs, together with paired-end fastqs from <u>processed *replicate* bams</u>, as input for Trinity genome-free mode
+    + 4tU-/RNA-seq work
+        * `.primary.`
+            - [x] <mark>___Get these files for all 55 samples___</mark>
+            - [x] <b><i>Use <mark>UT</mark> bam infiles</i></b>
+            - [x] Perform UMI and positional deduplication on the `.primary.` files, collecting stats on the numbers of positional duplicates
+                + [ ] Once statistics are collected and properly recorded, delete the position-deduplicated outfiles to save space *(hang on to them for a bit to do at least some of the below)*
+                    * Number of lines in UMI- and position-deduplicated outfiles
+                    * [ ] `samtools index` of the outfiles
+                    * [ ] `samtools stats` of the outfiles
+                    * [ ] `samtools flagstat` of the outfiles
+                    * [ ] `samtools idxstats` of the outfiles
+                    * [ ] `picard MarkDuplicates` of at least the UMI-deduplicated outfile
+            - Use the UMI-deduplicated bams as input for the following steps (output of one step is used as input for the next)
+                + [ ] ~~Exclude *20S* alignments (make bams of only 20S alignments for AG's future work)~~ `#NOTE` *Actually, we can just leave 20S in there* (will need to take the same considerations for downstream as we would with the *K. lactis* information; of course, don't use *20S* for `DESeq2` analyses)
+                + [ ] Count alignments to features (e.g., `htseq-count` or `featureCounts` with respect to AG's combined `gtf`)
+                + [ ] Perform `DESeq2` size-factor normalization
+                + [ ] Having obtained size factors, filter out the *K. lactis* information prior to `DESeq2` assignment of q-values
+    + Trinity work
+        * genome-guided assembly
+            - `.primary-secondary.`
+                + [x] ___Don't___ do UMI deduplication of the `.primary-secondary.` files
+                + [x] ___<mark>Only need `.primary-secondary.` for the `578{1,2}` bams</mark> from <mark>UTK</mark> bam infiles___
+                    * [x] Exclude *K. lactis* and *20S* alignments
+                    * [ ] `samtools merge` resulting bam with replicate bam(s) that are also
+                        - ...`.primary-secondary.`
+                        - ...and subject to *K. lactis* and *20S* alignment exclusion
+                    * [ ] Use the processed, merged bams as input for Trinity genome-guided mode
+        * genome-free assembly
+            - `.proper-etc.`
+                + [x] ~~Use the "unseparated" bams for Trinity genome-free mode~~
+                + [x] ___Don't___ do UMI deduplication of the `.proper-etc.` files
+                + [x] ___<mark>Only need `.proper-etc.` `578{1,2}` bams</mark> from <mark>UTK</mark> bam infiles___
+                    * [x] Exclude *K. lactis* and *20S* alignments
+                    * [ ] Convert the resulting bam to fastq
+                    * [ ] Use paired-end fastqs, together with paired-end fastqs from <u>processed *replicate* bams</u>, as input for Trinity genome-free mode
 
-`#TOMORROW` Generate the `.primary.`, `.primary-secondary.`, and `.proper-etc.` files, and identify the appropiate "unseparated" bams for use
+`#TOMORROW` Generate the `.primary.`, `.primary-secondary.`, and `.proper-etc.` files~~, and identify the appropiate "unseparated" bams for use~~
 - Focus on processing the `.primary.`, `.primary-secondary.`, and `.proper-etc.` files, eventually using the for the submission of Trinity paramter-optimization jobs as described [here](../2023-0111/tutorial_job-arrays.md#write-out-the-list-ready-run-script-echo-test-using-a-heredoc-1) and [here](../2022-1101/notebook/trinity-parameters.xlsx)
 - Will need to get together run and submission scripts for Trinity genome-guided calls, but already have the base scripts for Trinity genome-free calls, I think
