@@ -17,7 +17,7 @@
         1. [Code](#code-2)
     1. [Create arrays of specific files \(derived from the stems\)](#create-arrays-of-specific-files-derived-from-the-stems)
         1. [Code](#code-3)
-1. [I Append UMIs to `fastq`s `R1` and `R3`](#i-append-umis-to-fastqs-r1-and-r3)
+1. [I Append UMIs to `fastq`s `R1` and `R3` *\(Trinity, general\)*](#i-append-umis-to-fastqs-r1-and-r3-trinity-general)
     1. [01 Get situated, make a directory for the processed `R1` and `R3` `fastq`s](#01-get-situated-make-a-directory-for-the-processed-r1-and-r3-fastqs)
         1. [Code](#code-4)
     1. [02 Set up necessary variables](#02-set-up-necessary-variables)
@@ -33,7 +33,7 @@
         1. [Code](#code-9)
     1. [06 Use `sbatch` to run the '`submission`' and '`run`' scripts](#06-use-sbatch-to-run-the-submission-and-run-scripts)
         1. [Code](#code-10)
-1. [II Perform adapter and quality trimming of the `fastq`s](#ii-perform-adapter-and-quality-trimming-of-the-fastqs)
+1. [II Perform adapter and quality trimming of the `fastq`s *\(Trinity, general\)*](#ii-perform-adapter-and-quality-trimming-of-the-fastqs-trinity-general)
     1. [01 Get situated, make a directory for the adapter/quality-trimmed `R1` and `R3` `fastq`s](#01-get-situated-make-a-directory-for-the-adapterquality-trimmed-r1-and-r3-fastqs)
         1. [Code](#code-11)
     1. [02 Set up necessary variables](#02-set-up-necessary-variables-1)
@@ -49,7 +49,7 @@
         1. [Code](#code-16)
     1. [06 Use `sbatch` to run the '`submission`' and '`run`' scripts](#06-use-sbatch-to-run-the-submission-and-run-scripts-1)
         1. [Code](#code-17)
-1. [III Perform kmer correction with `rcorrector`](#iii-perform-kmer-correction-with-rcorrector)
+1. [III Perform kmer correction with `rcorrector` *\(Trinity\)*](#iii-perform-kmer-correction-with-rcorrector-trinity)
     1. [01 Get situated, make a directory for kmer-corrected `fastq`s](#01-get-situated-make-a-directory-for-kmer-corrected-fastqs)
         1. [Code](#code-18)
     1. [02 Set up necessary variables](#02-set-up-necessary-variables-2)
@@ -65,7 +65,7 @@
         1. [Code](#code-23)
     1. [06 Use `sbatch` to run the '`submission`' and '`run`' scripts](#06-use-sbatch-to-run-the-submission-and-run-scripts-2)
         1. [Code](#code-24)
-1. [IV "Correct" the `rcorrect`ed `fastq`s](#iv-correct-the-rcorrected-fastqs)
+1. [IV "Correct" the `rcorrect`ed `fastq`s *\(Trinity\)*](#iv-correct-the-rcorrected-fastqs-trinity)
     1. [01 Get situated, make a directory for kmer-corrected `fastq`s](#01-get-situated-make-a-directory-for-kmer-corrected-fastqs-1)
         1. [Code](#code-25)
     1. [02 Set up necessary variables](#02-set-up-necessary-variables-3)
@@ -81,7 +81,7 @@
         1. [Code](#code-30)
     1. [06 Use `sbatch` to run the '`submission`' and '`run`' scripts](#06-use-sbatch-to-run-the-submission-and-run-scripts-3)
         1. [Code](#code-31)
-1. [V Align kmer- and non-kmer-corrected `fastq`s](#v-align-kmer--and-non-kmer-corrected-fastqs)
+1. [V Align kmer- and non-kmer-corrected `fastq`s *\(Trinity\)*](#v-align-kmer--and-non-kmer-corrected-fastqs-trinity)
     1. [01 Get situated, make directories for in-/outfiles, symlink the `fastq`s](#01-get-situated-make-directories-for-in-outfiles-symlink-the-fastqs)
         1. [01a Get situated, make directories for in-/outfiles](#01a-get-situated-make-directories-for-in-outfiles)
             1. [Code](#code-32)
@@ -133,7 +133,7 @@
                 1. [Notes, etc.](#notes-etc)
         1. [07b Rename, organize, and check on files in `aligned_umi-extracted_trimmed_kmer-corrected/`](#07b-rename-organize-and-check-on-files-in-aligned_umi-extracted_trimmed_kmer-corrected)
             1. [Code](#code-52)
-1. [VI Subset bams by alignment categories](#vi-subset-bams-by-alignment-categories)
+1. [VI Subset bams by alignment flags *\(Trinity, general\)*](#vi-subset-bams-by-alignment-flags-trinity-general)
     1. [01 Get situated, make directories for outfiles](#01-get-situated-make-directories-for-outfiles)
         1. [Code](#code-53)
     1. [02 Set up necessary variables, arrays](#02-set-up-necessary-variables-arrays)
@@ -174,7 +174,7 @@
             1. [Use `GNU parallel` to run `picard AlignmentSummaryMetrics`](#use-gnu-parallel-to-run-picard-alignmentsummarymetrics)
                 1. [Code](#code-67)
             1. [`#NOTE` `#TODO` Come back to run even more QC commands on the bams](#note-todo-come-back-to-run-even-more-qc-commands-on-the-bams)
-1. [VII Perform UMI and positional deduplication of "primary" files](#vii-perform-umi-and-positional-deduplication-of-primary-files)
+1. [VII Deduplicate "primary" files by UMI, position *\(general\)*](#vii-deduplicate-primary-files-by-umi-position-general)
     1. [01 Get situated, make directories for outfiles](#01-get-situated-make-directories-for-outfiles-1)
     1. [02 Set up necessary variables, arrays](#02-set-up-necessary-variables-arrays-1)
         1. [Code](#code-68)
@@ -183,7 +183,7 @@
             1. [Code](#code-69)
         1. [Use `GNU parallel` to run `umi_tools dedup` for positional deduplication](#use-gnu-parallel-to-run-umi_tools-dedup-for-positional-deduplication)
             1. [Code](#code-70)
-1. [VIII Separate out alignments to different species](#viii-separate-out-alignments-to-different-species)
+1. [VIII Separate out alignments to different species *\(Trinity\)*](#viii-separate-out-alignments-to-different-species-trinity)
     1. [01 Get situated, make directories for outfiles](#01-get-situated-make-directories-for-outfiles-2)
         1. [Code](#code-71)
     1. [02 Set up necessary variables, arrays](#02-set-up-necessary-variables-arrays-2)
@@ -191,18 +191,24 @@
     1. [03 Use `GNU parallel` to split bams by species](#03-use-gnu-parallel-to-split-bams-by-species)
         1. [Code](#code-73)
         1. [Printed](#printed-3)
-1. [IX Merge bams to be used with Trinity](#ix-merge-bams-to-be-used-with-trinity)
+1. [IX Merge bams *\(Trinity\)*](#ix-merge-bams-trinity)
     1. [01 Get situated, make directories for outfiles](#01-get-situated-make-directories-for-outfiles-3)
         1. [Code](#code-74)
     1. [02 Set up necessary variables, arrays](#02-set-up-necessary-variables-arrays-3)
         1. [Code](#code-75)
         1. [Printed](#printed-4)
-    1. [03 Run `samtools merge`](#03-run-samtools-merge)
+    1. [03 Use `GNU parallel` to run `samtools merge`](#03-use-gnu-parallel-to-run-samtools-merge)
         1. [Code](#code-76)
         1. [Printed](#printed-5)
-1. [X Perform bam-to-fastq conversions](#x-perform-bam-to-fastq-conversions)
+1. [X Perform bam-to-fastq conversions *\(Trinity\)*](#x-perform-bam-to-fastq-conversions-trinity)
     1. [01 Get situated, make directories for outfiles](#01-get-situated-make-directories-for-outfiles-4)
         1. [Code](#code-77)
+    1. [02 Set up necessary variables, arrays](#02-set-up-necessary-variables-arrays-4)
+        1. [Code](#code-78)
+        1. [Printed](#printed-6)
+    1. [03 Use `GNU parallel` to run samtools fastq](#03-use-gnu-parallel-to-run-samtools-fastq)
+        1. [Code](#code-79)
+        1. [Printed, notes](#printed-notes)
 
 <!-- /MarkdownTOC -->
 </details>
@@ -499,8 +505,8 @@ echo "${#prefix_UT[@]}"
 <br />
 <br />
 
-<a id="i-append-umis-to-fastqs-r1-and-r3"></a>
-## <u>I</u> Append UMIs to `fastq`s `R1` and `R3`
+<a id="i-append-umis-to-fastqs-r1-and-r3-trinity-general"></a>
+## <u>I</u> Append UMIs to `fastq`s `R1` and `R3` *(Trinity, general)*
 <a id="01-get-situated-make-a-directory-for-the-processed-r1-and-r3-fastqs"></a>
 ### 01 Get situated, make a directory for the processed `R1` and `R3` `fastq`s
 <a id="code-4"></a>
@@ -854,8 +860,8 @@ sbatch "${store_scripts}/${script_submit}"
 <br />
 <br />
 
-<a id="ii-perform-adapter-and-quality-trimming-of-the-fastqs"></a>
-## <u>II</u> Perform adapter and quality trimming of the `fastq`s
+<a id="ii-perform-adapter-and-quality-trimming-of-the-fastqs-trinity-general"></a>
+## <u>II</u> Perform adapter and quality trimming of the `fastq`s *(Trinity, general)*
 <a id="01-get-situated-make-a-directory-for-the-adapterquality-trimmed-r1-and-r3-fastqs"></a>
 ### 01 Get situated, make a directory for the adapter/quality-trimmed `R1` and `R3` `fastq`s
 <a id="code-11"></a>
@@ -1192,8 +1198,8 @@ sbatch "${store_scripts}/${script_submit}"
 <br />
 <br />
 
-<a id="iii-perform-kmer-correction-with-rcorrector"></a>
-## <u>III</u> Perform kmer correction with `rcorrector`
+<a id="iii-perform-kmer-correction-with-rcorrector-trinity"></a>
+## <u>III</u> Perform kmer correction with `rcorrector` *(Trinity)*
 *(for transcriptome-assembly experiments)*
 
 <a id="01-get-situated-make-a-directory-for-kmer-corrected-fastqs"></a>
@@ -1532,8 +1538,8 @@ sbatch "${store_scripts}/${script_submit}"
 <br />
 <br />
 
-<a id="iv-correct-the-rcorrected-fastqs"></a>
-## <u>IV</u> "Correct" the `rcorrect`ed `fastq`s
+<a id="iv-correct-the-rcorrected-fastqs-trinity"></a>
+## <u>IV</u> "Correct" the `rcorrect`ed `fastq`s *(Trinity)*
 <a id="01-get-situated-make-a-directory-for-kmer-corrected-fastqs-1"></a>
 ### 01 Get situated, make a directory for kmer-corrected `fastq`s
 <a id="code-25"></a>
@@ -1807,8 +1813,8 @@ sbatch "${store_scripts}/${script_submit}"
 <br />
 <br />
 
-<a id="v-align-kmer--and-non-kmer-corrected-fastqs"></a>
-## <u>V</u> Align kmer- and non-kmer-corrected `fastq`s
+<a id="v-align-kmer--and-non-kmer-corrected-fastqs-trinity"></a>
+## <u>V</u> Align kmer- and non-kmer-corrected `fastq`s *(Trinity)*
 <a id="01-get-situated-make-directories-for-in-outfiles-symlink-the-fastqs"></a>
 ### 01 Get situated, make directories for in-/outfiles, symlink the `fastq`s
 <a id="01a-get-situated-make-directories-for-in-outfiles"></a>
@@ -4112,7 +4118,8 @@ mkdir: created directory 'bak'
 -rw-rw---- 1 kalavatt 1.8K Feb  5 17:53 Sample_CT2_6125_pIAA_Q_SteadyState_S6_R1.UMI.atria.log
 -rw-rw---- 1 kalavatt 2.9K Feb  5 17:53 Sample_CT2_6125_pIAA_Q_SteadyState_S6_R1.UMI.atria.log.json
 -rw-rw---- 1 kalavatt 947M Feb  5 17:53 Sample_CT2_6125_pIAA_Q_SteadyState_S6_R3.UMI.atria.fq.gz
-  main ?:103  ❲c❳ Trinity_env  ~/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0115/fastqs_UMI-dedup/atria_trim            08:26:37   kalavatt@gizmoj9
+
+
 ❯ cat Sample_CT2_6125_pIAA_Q_SteadyState_S6_R1.UMI.atria.log
 ┌ Info: ATRIA VERSIONS
 │   atria = v3.2.1
@@ -4376,8 +4383,8 @@ rm -r *_STARtmp/
 <br />
 <br />
 
-<a id="vi-subset-bams-by-alignment-categories"></a>
-## <u>VI</u> Subset bams by alignment categories
+<a id="vi-subset-bams-by-alignment-flags-trinity-general"></a>
+## <u>VI</u> Subset bams by alignment flags *(Trinity, general)*
 <a id="01-get-situated-make-directories-for-outfiles"></a>
 ### 01 Get situated, make directories for outfiles
 <a id="code-53"></a>
@@ -5564,8 +5571,8 @@ parallel \
 <br />
 <br />
 
-<a id="vii-perform-umi-and-positional-deduplication-of-primary-files"></a>
-## <u>VII</u> Perform UMI and positional deduplication of "primary" files
+<a id="vii-deduplicate-primary-files-by-umi-position-general"></a>
+## <u>VII</u> Deduplicate "primary" files by UMI, position *(general)*
 <a id="01-get-situated-make-directories-for-outfiles-1"></a>
 ### 01 Get situated, make directories for outfiles
 <details>
@@ -5746,8 +5753,8 @@ parallel \
 </details>
 <br />
 
-<a id="viii-separate-out-alignments-to-different-species"></a>
-## <u>VIII</u> Separate out alignments to different species
+<a id="viii-separate-out-alignments-to-different-species-trinity"></a>
+## <u>VIII</u> Separate out alignments to different species *(Trinity)*
 <a id="01-get-situated-make-directories-for-outfiles-2"></a>
 ### 01 Get situated, make directories for outfiles
 <a id="code-71"></a>
@@ -5838,7 +5845,7 @@ outdir_pu="./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S"
 <a id="code-73"></a>
 #### Code
 <details>
-<summary><i>Code: Use `GNU parallel` to split bams by species</i></summary>
+<summary><i>Code: Use GNU parallel to split bams by species</i></summary>
 
 ```bash
 #!/bin/bash
@@ -5916,8 +5923,8 @@ samtools view -@ 2 -h ./bams_UMI-dedup/aligned_UTK_primary-unmapped/5782_Q_IP_UT
 <br />
 <br />
 
-<a id="ix-merge-bams-to-be-used-with-trinity"></a>
-## <u>IX</u> Merge bams to be used with Trinity
+<a id="ix-merge-bams-trinity"></a>
+## <u>IX</u> Merge bams *(Trinity)*
 <a id="01-get-situated-make-directories-for-outfiles-3"></a>
 ### 01 Get situated, make directories for outfiles
 <a id="code-74"></a>
@@ -6137,12 +6144,12 @@ Value 2 (out): ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_merged/
 </details>
 <br />
 
-<a id="03-run-samtools-merge"></a>
-### 03 Run `samtools merge`
+<a id="03-use-gnu-parallel-to-run-samtools-merge"></a>
+### 03 Use `GNU parallel` to run `samtools merge`
 <a id="code-76"></a>
 #### Code
 <details>
-<summary><i>Code: Run samtools merge</i></summary>
+<summary><i>Code: Use GNU parallel to run samtools merge</i></summary>
 
 ```bash
 #!/bin/bash
@@ -6219,8 +6226,8 @@ samtools merge -@ 4 ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S/57
 <br />
 <br />
 
-<a id="x-perform-bam-to-fastq-conversions"></a>
-## <u>X</u> Perform bam-to-fastq conversions
+<a id="x-perform-bam-to-fastq-conversions-trinity"></a>
+## <u>X</u> Perform bam-to-fastq conversions *(Trinity)*
 <a id="01-get-situated-make-directories-for-outfiles-4"></a>
 ### 01 Get situated, make directories for outfiles
 <a id="code-77"></a>
@@ -6249,8 +6256,555 @@ module purge
 module load SAMtools/1.16.1-GCC-11.2.0
 
 #  Make directories for outfiles
-mkdir -p "./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_merged"
-mkdir -p "./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_merged"
+mkdir -p "./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_bam-to-fastq"
+mkdir -p "./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_merged_bam-to-fastq"
+mkdir -p "./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_bam-to-fastq"
+mkdir -p "./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_merged_bam-to-fastq"
+```
+</details>
+<br />
+
+<a id="02-set-up-necessary-variables-arrays-4"></a>
+### 02 Set up necessary variables, arrays
+<a id="code-78"></a>
+#### Code
+<details>
+<summary><i>Code: Set up necessary variables, arrays</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+#  What is what -----------------------
+# pS aligned_UTK_primary-secondary_sans-KL-20S/
+# pSm aligned_UTK_primary-secondary_sans-KL-20S_merged/
+# pU aligned_UTK_primary-unmapped_sans-KL-20S/
+# pUm aligned_UTK_primary-unmapped_sans-KL-20S_merged/
+#
+# pS_o aligned_UTK_primary-secondary_sans-KL-20S_bam-to-fastq/
+# pSm_o aligned_UTK_primary-secondary_sans-KL-20S_merged_bam-to-fastq/
+# pU_o aligned_UTK_primary-unmapped_sans-KL-20S_bam-to-fastq/
+# pUm_o aligned_UTK_primary-unmapped_sans-KL-20S_merged_bam-to-fastq/
+
+
+#  pS ---------------------------------
+unset pS
+typeset -a pS
+while IFS=" " read -r -d $'\0'; do
+    pS+=( "${REPLY}" )
+done < <(\
+    find "./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S/" \
+        -maxdepth 1 \
+        -type f \
+        -name *.bam \
+        -print0 \
+            | sort -z \
+)
+echo_test "${pS[@]}"
+echo "${#pS[@]}"
+
+unset pS_o
+typeset -a pS_o
+for i in "${pS[@]}"; do
+    stem="$(basename "${i}" .bam)"
+    pS_o+=( "./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_bam-to-fastq/${stem}" )
+done
+echo_test "${pS_o[@]}"
+echo "${#pS_o[@]}"
+
+
+#  pSm --------------------------------
+unset pSm
+typeset -a pSm
+while IFS=" " read -r -d $'\0'; do
+    pSm+=( "${REPLY}" )
+done < <(\
+    find "./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_merged/" \
+        -maxdepth 1 \
+        -type f \
+        -name *.bam \
+        -print0 \
+            | sort -z \
+)
+echo_test "${pSm[@]}"
+echo "${#pSm[@]}"
+
+unset pSm_o
+typeset -a pSm_o
+for i in "${pSm[@]}"; do
+    stem="$(basename "${i}" .bam)"
+    pSm_o+=( "./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_merged_bam-to-fastq/${stem}" )
+done
+echo_test "${pSm_o[@]}"
+echo "${#pSm_o[@]}"
+
+
+#  pU ---------------------------------
+unset pU
+typeset -a pU
+while IFS=" " read -r -d $'\0'; do
+    pU+=( "${REPLY}" )
+done < <(\
+    find "./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S/" \
+        -maxdepth 1 \
+        -type f \
+        -name *.bam \
+        -print0 \
+            | sort -z \
+)
+echo_test "${pU[@]}"
+echo "${#pU[@]}"
+
+unset pU_o
+typeset -a pU_o
+for i in "${pU[@]}"; do
+    stem="$(basename "${i}" .bam)"
+    pU_o+=( "./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_bam-to-fastq/${stem}" )
+done
+echo_test "${pU_o[@]}"
+echo "${#pU_o[@]}"
+
+
+#  pUm --------------------------------
+unset pUm
+typeset -a pUm
+while IFS=" " read -r -d $'\0'; do
+    pUm+=( "${REPLY}" )
+done < <(\
+    find "./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_merged/" \
+        -maxdepth 1 \
+        -type f \
+        -name *.bam \
+        -print0 \
+            | sort -z \
+)
+echo_test "${pUm[@]}"
+echo "${#pUm[@]}"
+
+unset pUm_o
+typeset -a pUm_o
+for i in "${pUm[@]}"; do
+    stem="$(basename "${i}" .bam)"
+    pUm_o+=( "./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_merged_bam-to-fastq/${stem}" )
+done
+echo_test "${pUm_o[@]}"
+echo "${#pUm_o[@]}"
+```
+</details>
+<br />
+
+<a id="printed-6"></a>
+#### Printed
+<details>
+<summary><i>Printed: </i></summary>
+
+```txt
+❯ #  pS ---------------------------------
+❯ while IFS=" " read -r -d $'\0'; do
+>     pS+=( "${REPLY}" )
+> done < <(\
+>     find "./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S/" \
+>         -maxdepth 1 \
+>         -type f \
+>         -name *.bam \
+>         -print0 \
+>             | sort -z \
+> )
+
+❯ echo_test "${pS[@]}"
+./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S/5781_G1_IN_UTK.primary-secondary.SC.bam
+./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S/5781_G1_IP_UTK.primary-secondary.SC.bam
+./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S/5781_Q_IN_UTK.primary-secondary.SC.bam
+./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S/5781_Q_IP_UTK.primary-secondary.SC.bam
+./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S/5782_G1_IN_UTK.primary-secondary.SC.bam
+./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S/5782_G1_IP_UTK.primary-secondary.SC.bam
+./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S/5782_Q_IN_UTK.primary-secondary.SC.bam
+./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S/5782_Q_IP_UTK.primary-secondary.SC.bam
+
+❯ echo "${#pS[@]}"
+8
+
+❯ for i in "${pS[@]}"; do
+>     stem="$(basename "${i}" .bam)"
+>     pS_o+=( "./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_bam-to-fastq/${stem}" )
+> done
+
+❯ echo_test "${pS_o[@]}"
+./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_bam-to-fastq/5781_G1_IN_UTK.primary-secondary.SC
+./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_bam-to-fastq/5781_G1_IP_UTK.primary-secondary.SC
+./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_bam-to-fastq/5781_Q_IN_UTK.primary-secondary.SC
+./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_bam-to-fastq/5781_Q_IP_UTK.primary-secondary.SC
+./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_bam-to-fastq/5782_G1_IN_UTK.primary-secondary.SC
+./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_bam-to-fastq/5782_G1_IP_UTK.primary-secondary.SC
+./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_bam-to-fastq/5782_Q_IN_UTK.primary-secondary.SC
+./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_bam-to-fastq/5782_Q_IP_UTK.primary-secondary.SC
+
+❯ echo "${#pS_o[@]}"
+8
+
+
+❯ #  pSm --------------------------------
+❯ while IFS=" " read -r -d $'\0'; do
+>     pSm+=( "${REPLY}" )
+> done < <(\
+>     find "./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_merged/" \
+>         -maxdepth 1 \
+>         -type f \
+>         -name *.bam \
+>         -print0 \
+>             | sort -z \
+> )
+
+❯ echo_test "${pSm[@]}"
+./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_merged/merged_G1_IN_UTK.primary-secondary.SC.bam
+./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_merged/merged_G1_IP_UTK.primary-secondary.SC.bam
+./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_merged/merged_Q_IN_UTK.primary-secondary.SC.bam
+./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_merged/merged_Q_IP_UTK.primary-secondary.SC.bam
+
+❯ echo "${#pSm[@]}"
+4
+
+❯ for i in "${pSm[@]}"; do
+>     stem="$(basename "${i}" .bam)"
+>     pSm_o+=( "./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_merged_bam-to-fastq/${stem}" )
+> done
+
+❯ echo_test "${pSm_o[@]}"
+./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_merged_bam-to-fastq/merged_G1_IN_UTK.primary-secondary.SC
+./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_merged_bam-to-fastq/merged_G1_IP_UTK.primary-secondary.SC
+./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_merged_bam-to-fastq/merged_Q_IN_UTK.primary-secondary.SC
+./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_merged_bam-to-fastq/merged_Q_IP_UTK.primary-secondary.SC
+
+❯ echo "${#pSm_o[@]}"
+4
+
+
+❯ #  pU ---------------------------------
+❯ while IFS=" " read -r -d $'\0'; do
+>     pU+=( "${REPLY}" )
+> done < <(\
+>     find "./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S/" \
+>         -maxdepth 1 \
+>         -type f \
+>         -name *.bam \
+>         -print0 \
+>             | sort -z \
+> )
+
+❯ echo_test "${pU[@]}"
+./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S/5781_G1_IN_UTK.proper-etc.SC.bam
+./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S/5781_G1_IP_UTK.proper-etc.SC.bam
+./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S/5781_Q_IN_UTK.proper-etc.SC.bam
+./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S/5781_Q_IP_UTK.proper-etc.SC.bam
+./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S/5782_G1_IN_UTK.proper-etc.SC.bam
+./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S/5782_G1_IP_UTK.proper-etc.SC.bam
+./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S/5782_Q_IN_UTK.proper-etc.SC.bam
+./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S/5782_Q_IP_UTK.proper-etc.SC.bam
+
+❯ echo "${#pU[@]}"
+8
+
+❯ for i in "${pU[@]}"; do
+>     stem="$(basename "${i}" .bam)"
+>     pU_o+=( "./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_bam-to-fastq/${stem}" )
+> done
+
+❯ echo_test "${pU_o[@]}"
+./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_bam-to-fastq/5781_G1_IN_UTK.proper-etc.SC
+./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_bam-to-fastq/5781_G1_IP_UTK.proper-etc.SC
+./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_bam-to-fastq/5781_Q_IN_UTK.proper-etc.SC
+./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_bam-to-fastq/5781_Q_IP_UTK.proper-etc.SC
+./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_bam-to-fastq/5782_G1_IN_UTK.proper-etc.SC
+./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_bam-to-fastq/5782_G1_IP_UTK.proper-etc.SC
+./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_bam-to-fastq/5782_Q_IN_UTK.proper-etc.SC
+./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_bam-to-fastq/5782_Q_IP_UTK.proper-etc.SC
+
+❯ echo "${#pU_o[@]}"
+8
+
+
+❯ #  pUm --------------------------------
+❯ while IFS=" " read -r -d $'\0'; do
+>     pUm+=( "${REPLY}" )
+> done < <(\
+>     find "./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_merged/" \
+>         -maxdepth 1 \
+>         -type f \
+>         -name *.bam \
+>         -print0 \
+>             | sort -z \
+> )
+
+❯ echo_test "${pUm[@]}"
+./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_merged/merged_G1_IN_UTK.proper-etc.SC.bam
+./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_merged/merged_G1_IP_UTK.proper-etc.SC.bam
+./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_merged/merged_Q_IN_UTK.proper-etc.SC.bam
+./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_merged/merged_Q_IP_UTK.proper-etc.SC.bam
+
+❯ echo "${#pUm[@]}"
+4
+
+❯ for i in "${pUm[@]}"; do
+>     stem="$(basename "${i}" .bam)"
+>     pUm_o+=( "./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_merged_bam-to-fastq/${stem}" )> done
+
+❯ echo_test "${pUm_o[@]}"
+./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_merged_bam-to-fastq/merged_G1_IN_UTK.proper-etc.SC
+./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_merged_bam-to-fastq/merged_G1_IP_UTK.proper-etc.SC
+./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_merged_bam-to-fastq/merged_Q_IN_UTK.proper-etc.SC
+./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_merged_bam-to-fastq/merged_Q_IP_UTK.proper-etc.SC
+
+❯ echo "${#pUm_o[@]}"
+4
+```
+</details>
+<br />
+
+<a id="03-use-gnu-parallel-to-run-samtools-fastq"></a>
+### 03 Use `GNU parallel` to run samtools fastq
+<a id="code-79"></a>
+#### Code
+<details>
+<summary><i>Code: Use GNU parallel to run samtools fastq</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+#  pS ---------------------------------
+parallel \
+    -j 4 \
+    --dry-run \
+    "samtools fastq -@ 4 -1 {2}.1.fq.gz -2 {2}.2.fq.gz {1}" \
+::: "${pS[@]}" \
+:::+ "${pS_o[@]}"
+
+
+#  pSm --------------------------------
+parallel \
+    -j 4 \
+    --dry-run \
+    "samtools fastq -@ 4 -1 {2}.1.fq.gz -2 {2}.2.fq.gz {1}" \
+::: "${pSm[@]}" \
+:::+ "${pSm_o[@]}"
+
+
+#  pU ---------------------------------
+parallel \
+    -j 4 \
+    --dry-run \
+    "samtools fastq -@ 4 -1 {2}.1.fq.gz -2 {2}.2.fq.gz {1}" \
+::: "${pU[@]}" \
+:::+ "${pU_o[@]}"
+
+
+#  pUm --------------------------------
+parallel \
+    -j 4 \
+    --dry-run \
+    "samtools fastq -@ 4 -1 {2}.1.fq.gz -2 {2}.2.fq.gz {1}" \
+::: "${pUm[@]}" \
+:::+ "${pUm_o[@]}"
+
+
+#  Runs -------------------------------
+parallel \
+    -j 4 \
+    "samtools fastq -@ 4 -1 {2}.1.fq.gz -2 {2}.2.fq.gz {1}" \
+::: "${pS[@]}" \
+:::+ "${pS_o[@]}"
+
+parallel \
+    -j 4 \
+    "samtools fastq -@ 4 -1 {2}.1.fq.gz -2 {2}.2.fq.gz {1}" \
+::: "${pSm[@]}" \
+:::+ "${pSm_o[@]}"
+
+parallel \
+    -j 4 \
+    "samtools fastq -@ 4 -1 {2}.1.fq.gz -2 {2}.2.fq.gz {1}" \
+::: "${pU[@]}" \
+:::+ "${pU_o[@]}"
+
+parallel \
+    -j 4 \
+    "samtools fastq -@ 4 -1 {2}.1.fq.gz -2 {2}.2.fq.gz {1}" \
+::: "${pUm[@]}" \
+:::+ "${pUm_o[@]}"
+```
+
+</details>
+<br />
+
+<a id="printed-notes"></a>
+#### Printed, notes
+<details>
+<summary><i>Printed, notes: Use GNU parallel to run samtools fastq</i></summary>
+
+```txt
+❯ #  pS ---------------------------------
+❯ parallel \
+>     -j 4 \
+>     --dry-run \
+>     "samtools fastq -@ 4 -1 {2}.1.fq.gz -2 {2}.2.fq.gz {1}" \
+> ::: "${pS[@]}" \
+> :::+ "${pS_o[@]}"
+samtools fastq -@ 4 -1 ./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_bam-to-fastq/5781_G1_IN_UTK.primary-secondary.SC.1.fq.gz -2 ./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_bam-to-fastq/5781_G1_IN_UTK.primary-secondary.SC.2.fq.gz ./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S/5781_G1_IN_UTK.primary-secondary.SC.bam
+samtools fastq -@ 4 -1 ./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_bam-to-fastq/5781_G1_IP_UTK.primary-secondary.SC.1.fq.gz -2 ./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_bam-to-fastq/5781_G1_IP_UTK.primary-secondary.SC.2.fq.gz ./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S/5781_G1_IP_UTK.primary-secondary.SC.bam
+samtools fastq -@ 4 -1 ./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_bam-to-fastq/5781_Q_IN_UTK.primary-secondary.SC.1.fq.gz -2 ./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_bam-to-fastq/5781_Q_IN_UTK.primary-secondary.SC.2.fq.gz ./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S/5781_Q_IN_UTK.primary-secondary.SC.bam
+samtools fastq -@ 4 -1 ./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_bam-to-fastq/5781_Q_IP_UTK.primary-secondary.SC.1.fq.gz -2 ./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_bam-to-fastq/5781_Q_IP_UTK.primary-secondary.SC.2.fq.gz ./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S/5781_Q_IP_UTK.primary-secondary.SC.bam
+samtools fastq -@ 4 -1 ./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_bam-to-fastq/5782_G1_IN_UTK.primary-secondary.SC.1.fq.gz -2 ./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_bam-to-fastq/5782_G1_IN_UTK.primary-secondary.SC.2.fq.gz ./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S/5782_G1_IN_UTK.primary-secondary.SC.bam
+samtools fastq -@ 4 -1 ./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_bam-to-fastq/5782_G1_IP_UTK.primary-secondary.SC.1.fq.gz -2 ./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_bam-to-fastq/5782_G1_IP_UTK.primary-secondary.SC.2.fq.gz ./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S/5782_G1_IP_UTK.primary-secondary.SC.bam
+samtools fastq -@ 4 -1 ./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_bam-to-fastq/5782_Q_IN_UTK.primary-secondary.SC.1.fq.gz -2 ./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_bam-to-fastq/5782_Q_IN_UTK.primary-secondary.SC.2.fq.gz ./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S/5782_Q_IN_UTK.primary-secondary.SC.bam
+samtools fastq -@ 4 -1 ./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_bam-to-fastq/5782_Q_IP_UTK.primary-secondary.SC.1.fq.gz -2 ./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_bam-to-fastq/5782_Q_IP_UTK.primary-secondary.SC.2.fq.gz ./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S/5782_Q_IP_UTK.primary-secondary.SC.bam
+
+#  (spot check)
+samtools fastq \
+    -@ 4 \
+    -1 ./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_bam-to-fastq/5781_Q_IN_UTK.primary-secondary.SC.1.fq.gz \
+    -2 ./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_bam-to-fastq/5781_Q_IN_UTK.primary-secondary.SC.2.fq.gz \
+       ./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S/             5781_Q_IN_UTK.primary-secondary.SC.bam
+
+
+❯ #  pSm --------------------------------
+❯ parallel \
+>     -j 4 \
+>     --dry-run \
+>     "samtools fastq -@ 4 -1 {2}.1.fq.gz -2 {2}.2.fq.gz {1}" \
+> ::: "${pSm[@]}" \
+> :::+ "${pSm_o[@]}"
+samtools fastq -@ 4 -1 ./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_merged_bam-to-fastq/merged_G1_IN_UTK.primary-secondary.SC.1.fq.gz -2 ./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_merged_bam-to-fastq/merged_G1_IN_UTK.primary-secondary.SC.2.fq.gz ./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_merged/merged_G1_IN_UTK.primary-secondary.SC.bam
+samtools fastq -@ 4 -1 ./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_merged_bam-to-fastq/merged_G1_IP_UTK.primary-secondary.SC.1.fq.gz -2 ./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_merged_bam-to-fastq/merged_G1_IP_UTK.primary-secondary.SC.2.fq.gz ./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_merged/merged_G1_IP_UTK.primary-secondary.SC.bam
+samtools fastq -@ 4 -1 ./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_merged_bam-to-fastq/merged_Q_IN_UTK.primary-secondary.SC.1.fq.gz -2 ./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_merged_bam-to-fastq/merged_Q_IN_UTK.primary-secondary.SC.2.fq.gz ./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_merged/merged_Q_IN_UTK.primary-secondary.SC.bam
+samtools fastq -@ 4 -1 ./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_merged_bam-to-fastq/merged_Q_IP_UTK.primary-secondary.SC.1.fq.gz -2 ./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_merged_bam-to-fastq/merged_Q_IP_UTK.primary-secondary.SC.2.fq.gz ./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_merged/merged_Q_IP_UTK.primary-secondary.SC.bam
+
+#  (spot check)
+samtools fastq \
+    -@ 4 \
+    -1 ./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_merged_bam-to-fastq/merged_Q_IP_UTK.primary-secondary.SC.1.fq.gz \
+    -2 ./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_merged_bam-to-fastq/merged_Q_IP_UTK.primary-secondary.SC.2.fq.gz \
+       ./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_merged/             merged_Q_IP_UTK.primary-secondary.SC.bam
+
+
+❯ #  pU ---------------------------------
+❯ parallel \
+>     -j 4 \
+>     --dry-run \
+>     "samtools fastq -@ 4 -1 {2}.1.fq.gz -2 {2}.2.fq.gz {1}" \
+> ::: "${pU[@]}" \
+> :::+ "${pU_o[@]}"
+samtools fastq -@ 4 -1 ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_bam-to-fastq/5781_G1_IN_UTK.proper-etc.SC.1.fq.gz -2 ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_bam-to-fastq/5781_G1_IN_UTK.proper-etc.SC.2.fq.gz ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S/5781_G1_IN_UTK.proper-etc.SC.bam
+samtools fastq -@ 4 -1 ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_bam-to-fastq/5781_G1_IP_UTK.proper-etc.SC.1.fq.gz -2 ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_bam-to-fastq/5781_G1_IP_UTK.proper-etc.SC.2.fq.gz ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S/5781_G1_IP_UTK.proper-etc.SC.bam
+samtools fastq -@ 4 -1 ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_bam-to-fastq/5781_Q_IN_UTK.proper-etc.SC.1.fq.gz -2 ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_bam-to-fastq/5781_Q_IN_UTK.proper-etc.SC.2.fq.gz ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S/5781_Q_IN_UTK.proper-etc.SC.bam
+samtools fastq -@ 4 -1 ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_bam-to-fastq/5781_Q_IP_UTK.proper-etc.SC.1.fq.gz -2 ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_bam-to-fastq/5781_Q_IP_UTK.proper-etc.SC.2.fq.gz ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S/5781_Q_IP_UTK.proper-etc.SC.bam
+samtools fastq -@ 4 -1 ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_bam-to-fastq/5782_G1_IN_UTK.proper-etc.SC.1.fq.gz -2 ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_bam-to-fastq/5782_G1_IN_UTK.proper-etc.SC.2.fq.gz ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S/5782_G1_IN_UTK.proper-etc.SC.bam
+samtools fastq -@ 4 -1 ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_bam-to-fastq/5782_G1_IP_UTK.proper-etc.SC.1.fq.gz -2 ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_bam-to-fastq/5782_G1_IP_UTK.proper-etc.SC.2.fq.gz ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S/5782_G1_IP_UTK.proper-etc.SC.bam
+samtools fastq -@ 4 -1 ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_bam-to-fastq/5782_Q_IN_UTK.proper-etc.SC.1.fq.gz -2 ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_bam-to-fastq/5782_Q_IN_UTK.proper-etc.SC.2.fq.gz ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S/5782_Q_IN_UTK.proper-etc.SC.bam
+samtools fastq -@ 4 -1 ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_bam-to-fastq/5782_Q_IP_UTK.proper-etc.SC.1.fq.gz -2 ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_bam-to-fastq/5782_Q_IP_UTK.proper-etc.SC.2.fq.gz ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S/5782_Q_IP_UTK.proper-etc.SC.bam
+
+#  (spot check)
+samtools fastq \
+    -@ 4 \
+    -1 ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_bam-to-fastq/5782_Q_IP_UTK.proper-etc.SC.1.fq.gz \
+    -2 ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_bam-to-fastq/5782_Q_IP_UTK.proper-etc.SC.2.fq.gz \
+       ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S/             5782_Q_IP_UTK.proper-etc.SC.bam
+
+
+❯ #  pUm --------------------------------
+❯ parallel \
+>     -j 4 \
+>     --dry-run \
+>     "samtools fastq -@ 4 -1 {2}.1.fq.gz -2 {2}.2.fq.gz {1}" \
+> ::: "${pUm[@]}" \
+> :::+ "${pUm_o[@]}"
+samtools fastq -@ 4 -1 ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_merged_bam-to-fastq/merged_G1_IN_UTK.proper-etc.SC.1.fq.gz -2 ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_merged_bam-to-fastq/merged_G1_IN_UTK.proper-etc.SC.2.fq.gz ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_merged/merged_G1_IN_UTK.proper-etc.SC.bam
+samtools fastq -@ 4 -1 ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_merged_bam-to-fastq/merged_G1_IP_UTK.proper-etc.SC.1.fq.gz -2 ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_merged_bam-to-fastq/merged_G1_IP_UTK.proper-etc.SC.2.fq.gz ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_merged/merged_G1_IP_UTK.proper-etc.SC.bam
+samtools fastq -@ 4 -1 ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_merged_bam-to-fastq/merged_Q_IN_UTK.proper-etc.SC.1.fq.gz -2 ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_merged_bam-to-fastq/merged_Q_IN_UTK.proper-etc.SC.2.fq.gz ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_merged/merged_Q_IN_UTK.proper-etc.SC.bam
+samtools fastq -@ 4 -1 ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_merged_bam-to-fastq/merged_Q_IP_UTK.proper-etc.SC.1.fq.gz -2 ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_merged_bam-to-fastq/merged_Q_IP_UTK.proper-etc.SC.2.fq.gz ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_merged/merged_Q_IP_UTK.proper-etc.SC.bam
+
+#  (spot check)
+samtools fastq \
+    -@ 4 \
+    -1 ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_merged_bam-to-fastq/merged_G1_IN_UTK.proper-etc.SC.1.fq.gz \
+    -2 ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_merged_bam-to-fastq/merged_G1_IN_UTK.proper-etc.SC.2.fq.gz \
+       ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_merged/             merged_G1_IN_UTK.proper-etc.SC.bam
+
+
+#  Runs -------------------------------
+❯ parallel \
+>      -j 4 \
+>      "samtools fastq -@ 4 -1 {2}.1.fq.gz -2 {2}.2.fq.gz {1}" \
+>  ::: "${pS[@]}" \
+>  :::+ "${pS_o[@]}"
+[M::bam2fq_mainloop] discarded 0 singletons
+[M::bam2fq_mainloop] processed 18094562 reads
+[M::bam2fq_mainloop] discarded 0 singletons
+[M::bam2fq_mainloop] processed 20389872 reads
+[M::bam2fq_mainloop] discarded 0 singletons
+[M::bam2fq_mainloop] processed 20298202 reads
+[M::bam2fq_mainloop] discarded 0 singletons
+[M::bam2fq_mainloop] processed 29905450 reads
+[M::bam2fq_mainloop] discarded 0 singletons
+[M::bam2fq_mainloop] processed 15099464 reads
+[M::bam2fq_mainloop] discarded 0 singletons
+[M::bam2fq_mainloop] processed 19078550 reads
+[M::bam2fq_mainloop] discarded 0 singletons
+[M::bam2fq_mainloop] processed 29569194 reads
+[M::bam2fq_mainloop] discarded 0 singletons
+[M::bam2fq_mainloop] processed 22252398 reads
+
+
+❯ parallel \
+>     -j 4 \
+>     "samtools fastq -@ 4 -1 {2}.1.fq.gz -2 {2}.2.fq.gz {1}" \
+> ::: "${pSm[@]}" \
+> :::+ "${pSm_o[@]}"
+[M::bam2fq_mainloop] discarded 0 singletons
+[M::bam2fq_mainloop] processed 33194026 reads
+[M::bam2fq_mainloop] discarded 0 singletons
+[M::bam2fq_mainloop] processed 39376752 reads
+[M::bam2fq_mainloop] discarded 0 singletons
+[M::bam2fq_mainloop] processed 42642270 reads
+[M::bam2fq_mainloop] discarded 0 singletons
+[M::bam2fq_mainloop] processed 59474644 reads
+
+
+❯ parallel \
+>     -j 4 \
+>     "samtools fastq -@ 4 -1 {2}.1.fq.gz -2 {2}.2.fq.gz {1}" \
+> ::: "${pU[@]}" \
+> :::+ "${pU_o[@]}"
+[M::bam2fq_mainloop] discarded 0 singletons
+[M::bam2fq_mainloop] processed 18094566 reads
+[M::bam2fq_mainloop] discarded 0 singletons
+[M::bam2fq_mainloop] processed 20389873 reads
+[M::bam2fq_mainloop] discarded 0 singletons
+[M::bam2fq_mainloop] processed 20298205 reads
+[M::bam2fq_mainloop] discarded 0 singletons
+[M::bam2fq_mainloop] processed 29905450 reads
+[M::bam2fq_mainloop] discarded 0 singletons
+[M::bam2fq_mainloop] processed 15099465 reads
+[M::bam2fq_mainloop] discarded 0 singletons
+[M::bam2fq_mainloop] processed 19078551 reads
+[M::bam2fq_mainloop] discarded 0 singletons
+[M::bam2fq_mainloop] processed 29569196 reads
+[M::bam2fq_mainloop] discarded 0 singletons
+[M::bam2fq_mainloop] processed 22252399 reads
+
+
+❯ parallel \
+>     -j 4 \
+>     "samtools fastq -@ 4 -1 {2}.1.fq.gz -2 {2}.2.fq.gz {1}" \
+> ::: "${pUm[@]}" \
+> :::+ "${pUm_o[@]}"
+[M::bam2fq_mainloop] discarded 0 singletons
+[M::bam2fq_mainloop] processed 33194031 reads
+[M::bam2fq_mainloop] discarded 0 singletons
+[M::bam2fq_mainloop] processed 42642272 reads
+[M::bam2fq_mainloop] discarded 0 singletons
+[M::bam2fq_mainloop] processed 39376756 reads
+[M::bam2fq_mainloop] discarded 0 singletons
+[M::bam2fq_mainloop] processed 59474646 reads
 ```
 </details>
 <br />
