@@ -2124,7 +2124,7 @@ Thus, when calling `separate_bam.sh`, output the following:
                     * [ ] `samtools idxstats` of the outfiles
                     * [ ] `picard MarkDuplicates` of at least the UMI-deduplicated outfile
             - Use the UMI-deduplicated bams as input for the following steps (output of one step is used as input for the next)
-                + [ ] ~~Exclude *20S* alignments (make bams of only 20S alignments for AG's future work)~~ `#NOTE` *Actually, we can just leave 20S in there* (will need to take the same considerations for downstream as we would with the *K. lactis* information; of course, don't use *20S* for `DESeq2` analyses)
+                + [x] ~~Exclude *20S* alignments (make bams of only 20S alignments for AG's future work)~~ `#NOTE` *Actually, we can just leave 20S in there* (will need to take the same considerations for downstream as we would with the *K. lactis* information; of course, don't use *20S* for `DESeq2` analyses)
                 + [ ] Count alignments to features (e.g., `htseq-count` or `featureCounts` with respect to AG's combined `gtf`)
                 + [ ] Perform `DESeq2` size-factor normalization
                 + [ ] Having obtained size factors, filter out the *K. lactis* information prior to `DESeq2` assignment of q-values
