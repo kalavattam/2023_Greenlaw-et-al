@@ -143,7 +143,7 @@
             1. [Code](#code-55)
         1. [02c Set up information for `aligned_UTK_primary-unmapped_*`](#02c-set-up-information-for-aligned_utk_primary-unmapped_)
             1. [Code](#code-56)
-    1. [03 Run `separate_bam.sh`, etc.](#03-run-separate_bamsh-etc)
+    1. [03 Use a `for` loop to run `separate_bam.sh`, etc.](#03-use-a-for-loop-to-run-separate_bamsh-etc)
         1. [Run `separate_bam.sh` for `aligned_UT_primary_*`](#run-separate_bamsh-for-aligned_ut_primary_)
             1. [Run `separate_bam.sh`](#run-separate_bamsh)
                 1. [Code](#code-57)
@@ -165,38 +165,44 @@
         1. [Run additional QC commands on all `separate_bam.sh` outfile](#run-additional-qc-commands-on-all-separate_bamsh-outfile)
             1. [Get all bams \(in- and outfiles\) into a single array](#get-all-bams-in--and-outfiles-into-a-single-array)
                 1. [Code](#code-63)
-            1. [Run `samtools index`](#run-samtools-index)
+            1. [Use `GNU parallel` to run `samtools index`](#use-gnu-parallel-to-run-samtools-index)
                 1. [Code](#code-64)
-            1. [Run `samtools idxstats`](#run-samtools-idxstats)
+            1. [Use `GNU parallel` to run `samtools idxstats`](#use-gnu-parallel-to-run-samtools-idxstats)
                 1. [Code](#code-65)
-            1. [Run `samtools stats`](#run-samtools-stats)
+            1. [Use `GNU parallel` to run `samtools stats`](#use-gnu-parallel-to-run-samtools-stats)
                 1. [Code](#code-66)
-            1. [Run `picard AlignmentSummaryMetrics`](#run-picard-alignmentsummarymetrics)
+            1. [Use `GNU parallel` to run `picard AlignmentSummaryMetrics`](#use-gnu-parallel-to-run-picard-alignmentsummarymetrics)
                 1. [Code](#code-67)
             1. [`#NOTE` `#TODO` Come back to run even more QC commands on the bams](#note-todo-come-back-to-run-even-more-qc-commands-on-the-bams)
 1. [VII Perform UMI and positional deduplication of "primary" files](#vii-perform-umi-and-positional-deduplication-of-primary-files)
     1. [01 Get situated, make directories for outfiles](#01-get-situated-make-directories-for-outfiles-1)
     1. [02 Set up necessary variables, arrays](#02-set-up-necessary-variables-arrays-1)
         1. [Code](#code-68)
-    1. [03 Run `umi_tools dedup` for UMI and positional deduplication](#03-run-umi_tools-dedup-for-umi-and-positional-deduplication)
-        1. [Run `umi_tools dedup` for UMI deduplication](#run-umi_tools-dedup-for-umi-deduplication)
+    1. [03 Use `GNU parallel` to run `umi_tools dedup` for UMI and positional deduplication](#03-use-gnu-parallel-to-run-umi_tools-dedup-for-umi-and-positional-deduplication)
+        1. [Use `GNU parallel` to run `umi_tools dedup` for UMI deduplication](#use-gnu-parallel-to-run-umi_tools-dedup-for-umi-deduplication)
             1. [Code](#code-69)
-        1. [Run `umi_tools dedup` for positional deduplication](#run-umi_tools-dedup-for-positional-deduplication)
+        1. [Use `GNU parallel` to run `umi_tools dedup` for positional deduplication](#use-gnu-parallel-to-run-umi_tools-dedup-for-positional-deduplication)
             1. [Code](#code-70)
 1. [VIII Separate out alignments to different species](#viii-separate-out-alignments-to-different-species)
     1. [01 Get situated, make directories for outfiles](#01-get-situated-make-directories-for-outfiles-2)
         1. [Code](#code-71)
     1. [02 Set up necessary variables, arrays](#02-set-up-necessary-variables-arrays-2)
         1. [Code](#code-72)
-    1. [03 Split bams by species](#03-split-bams-by-species)
+    1. [03 Use `GNU parallel` to split bams by species](#03-use-gnu-parallel-to-split-bams-by-species)
         1. [Code](#code-73)
-1. [IX Merge bams to be use with Trinity](#ix-merge-bams-to-be-use-with-trinity)
+        1. [Printed](#printed-3)
+1. [IX Merge bams to be used with Trinity](#ix-merge-bams-to-be-used-with-trinity)
     1. [01 Get situated, make directories for outfiles](#01-get-situated-make-directories-for-outfiles-3)
         1. [Code](#code-74)
     1. [02 Set up necessary variables, arrays](#02-set-up-necessary-variables-arrays-3)
         1. [Code](#code-75)
+        1. [Printed](#printed-4)
     1. [03 Run `samtools merge`](#03-run-samtools-merge)
         1. [Code](#code-76)
+        1. [Printed](#printed-5)
+1. [X Perform bam-to-fastq conversions](#x-perform-bam-to-fastq-conversions)
+    1. [01 Get situated, make directories for outfiles](#01-get-situated-make-directories-for-outfiles-4)
+        1. [Code](#code-77)
 
 <!-- /MarkdownTOC -->
 </details>
@@ -4497,8 +4503,8 @@ echo "${#bams_UT_p_u[@]}"
 </details>
 <br />
 
-<a id="03-run-separate_bamsh-etc"></a>
-### 03 Run `separate_bam.sh`, etc.
+<a id="03-use-a-for-loop-to-run-separate_bamsh-etc"></a>
+### 03 Use a `for` loop to run `separate_bam.sh`, etc.
 <a id="run-separate_bamsh-for-aligned_ut_primary_"></a>
 #### Run `separate_bam.sh` for `aligned_UT_primary_*`
 <a id="run-separate_bamsh"></a>
@@ -5436,8 +5442,8 @@ echo "${#bams[@]}"
 </details>
 <br />
 
-<a id="run-samtools-index"></a>
-##### Run `samtools index`
+<a id="use-gnu-parallel-to-run-samtools-index"></a>
+##### Use `GNU parallel` to run `samtools index`
 <a id="code-64"></a>
 ###### Code
 <details>
@@ -5463,8 +5469,8 @@ parallel \
 </details>
 <br />
 
-<a id="run-samtools-idxstats"></a>
-##### Run `samtools idxstats`
+<a id="use-gnu-parallel-to-run-samtools-idxstats"></a>
+##### Use `GNU parallel` to run `samtools idxstats`
 <a id="code-65"></a>
 ###### Code
 <details>
@@ -5490,8 +5496,8 @@ parallel \
 </details>
 <br />
 
-<a id="run-samtools-stats"></a>
-##### Run `samtools stats`
+<a id="use-gnu-parallel-to-run-samtools-stats"></a>
+##### Use `GNU parallel` to run `samtools stats`
 <a id="code-66"></a>
 ###### Code
 <details>
@@ -5519,8 +5525,8 @@ parallel \
 </details>
 <br />
 
-<a id="run-picard-alignmentsummarymetrics"></a>
-##### Run `picard AlignmentSummaryMetrics`
+<a id="use-gnu-parallel-to-run-picard-alignmentsummarymetrics"></a>
+##### Use `GNU parallel` to run `picard AlignmentSummaryMetrics`
 <a id="code-67"></a>
 ###### Code
 <details>
@@ -5636,10 +5642,10 @@ echo "${#outbams_pos[@]}"
 </details>
 <br />
 
-<a id="03-run-umi_tools-dedup-for-umi-and-positional-deduplication"></a>
-### 03 Run `umi_tools dedup` for UMI and positional deduplication
-<a id="run-umi_tools-dedup-for-umi-deduplication"></a>
-#### Run `umi_tools dedup` for UMI deduplication
+<a id="03-use-gnu-parallel-to-run-umi_tools-dedup-for-umi-and-positional-deduplication"></a>
+### 03 Use `GNU parallel` to run `umi_tools dedup` for UMI and positional deduplication
+<a id="use-gnu-parallel-to-run-umi_tools-dedup-for-umi-deduplication"></a>
+#### Use `GNU parallel` to run `umi_tools dedup` for UMI deduplication
 <a id="code-69"></a>
 ##### Code
 <details>
@@ -5689,8 +5695,8 @@ parallel \
 </details>
 <br />
 
-<a id="run-umi_tools-dedup-for-positional-deduplication"></a>
-#### Run `umi_tools dedup` for positional deduplication
+<a id="use-gnu-parallel-to-run-umi_tools-dedup-for-positional-deduplication"></a>
+#### Use `GNU parallel` to run `umi_tools dedup` for positional deduplication
 <a id="code-70"></a>
 ##### Code
 <details>
@@ -5754,7 +5760,7 @@ parallel \
 #DONTRUN #CONTINUE
 
 #  Get situated
-grabnode  # 8, etc.
+grabnode  # 16, etc.
 
 transcriptome && 
     {
@@ -5827,12 +5833,12 @@ outdir_pu="./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S"
 </details>
 <br />
 
-<a id="03-split-bams-by-species"></a>
-### 03 Split bams by species
+<a id="03-use-gnu-parallel-to-split-bams-by-species"></a>
+### 03 Use `GNU parallel` to split bams by species
 <a id="code-73"></a>
 #### Code
 <details>
-<summary><i>Code: Split bams by species</i></summary>
+<summary><i>Code: Use `GNU parallel` to split bams by species</i></summary>
 
 ```bash
 #!/bin/bash
@@ -5842,13 +5848,13 @@ outdir_pu="./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S"
 parallel \
     -j "${SLURM_CPUS_ON_NODE}" \
     --dry-run \
-    "samtools view -h {1} I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI Mito A B C D E F -o {2}/{1/.}.SC.bam" \
+    "samtools view -@ 2 -h {1} I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI Mito -o {2}/{1/.}.SC.bam" \
 ::: "${inbams_ps[@]}" \
 ::: "${outdir_ps}"
 
 parallel \
     -j "${SLURM_CPUS_ON_NODE}" \
-    "samtools view -h {1} I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI Mito A B C D E F -o {2}/{1/.}.SC.bam" \
+    "samtools view -@ 2 -h {1} I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI Mito -o {2}/{1/.}.SC.bam" \
 ::: "${inbams_ps[@]}" \
 ::: "${outdir_ps}"
 
@@ -5856,21 +5862,62 @@ parallel \
 parallel \
     -j "${SLURM_CPUS_ON_NODE}" \
     --dry-run \
-    "samtools view -h {1} I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI Mito A B C D E F -o {2}/{1/.}.SC.bam" \
+    "samtools view -@ 2 -h {1} I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI Mito -o {2}/{1/.}.SC.bam" \
 ::: "${inbams_pu[@]}" \
 ::: "${outdir_pu}"
 
 parallel \
     -j "${SLURM_CPUS_ON_NODE}" \
-    "samtools view -h {1} I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI Mito A B C D E F -o {2}/{1/.}.SC.bam" \
+    "samtools view -@ 2 -h {1} I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI Mito -o {2}/{1/.}.SC.bam" \
 ::: "${inbams_pu[@]}" \
 ::: "${outdir_pu}"
 ```
 </details>
 <br />
 
-<a id="ix-merge-bams-to-be-use-with-trinity"></a>
-## <u>IX</u> Merge bams to be use with Trinity
+<a id="printed-3"></a>
+#### Printed
+<details>
+<summary><i>Printed: </i></summary>
+
+```txt
+❯ parallel \
+>     -j "${SLURM_CPUS_ON_NODE}" \
+>     --dry-run \
+>     "samtools view -@ 2 -h {1} I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI Mito -o {2}/{1/.}.SC.bam" \
+> ::: "${inbams_ps[@]}" \
+> ::: "${outdir_ps}"
+samtools view -@ 2 -h ./bams_UMI-dedup/aligned_UTK_primary-secondary/5781_G1_IN_UTK.primary-secondary.bam I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI Mito -o ./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S/5781_G1_IN_UTK.primary-secondary.SC.bam
+samtools view -@ 2 -h ./bams_UMI-dedup/aligned_UTK_primary-secondary/5781_G1_IP_UTK.primary-secondary.bam I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI Mito -o ./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S/5781_G1_IP_UTK.primary-secondary.SC.bam
+samtools view -@ 2 -h ./bams_UMI-dedup/aligned_UTK_primary-secondary/5781_Q_IN_UTK.primary-secondary.bam I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI Mito -o ./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S/5781_Q_IN_UTK.primary-secondary.SC.bam
+samtools view -@ 2 -h ./bams_UMI-dedup/aligned_UTK_primary-secondary/5781_Q_IP_UTK.primary-secondary.bam I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI Mito -o ./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S/5781_Q_IP_UTK.primary-secondary.SC.bam
+samtools view -@ 2 -h ./bams_UMI-dedup/aligned_UTK_primary-secondary/5782_G1_IN_UTK.primary-secondary.bam I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI Mito -o ./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S/5782_G1_IN_UTK.primary-secondary.SC.bam
+samtools view -@ 2 -h ./bams_UMI-dedup/aligned_UTK_primary-secondary/5782_G1_IP_UTK.primary-secondary.bam I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI Mito -o ./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S/5782_G1_IP_UTK.primary-secondary.SC.bam
+samtools view -@ 2 -h ./bams_UMI-dedup/aligned_UTK_primary-secondary/5782_Q_IN_UTK.primary-secondary.bam I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI Mito -o ./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S/5782_Q_IN_UTK.primary-secondary.SC.bam
+samtools view -@ 2 -h ./bams_UMI-dedup/aligned_UTK_primary-secondary/5782_Q_IP_UTK.primary-secondary.bam I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI Mito -o ./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S/5782_Q_IP_UTK.primary-secondary.SC.bam
+
+
+❯ parallel \
+>     -j "${SLURM_CPUS_ON_NODE}" \
+>     --dry-run \
+>     "samtools view -@ 2 -h {1} I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI Mito -o {2}/{1/.}.SC.bam" \
+> ::: "${inbams_pu[@]}" \
+> ::: "${outdir_pu}"
+samtools view -@ 2 -h ./bams_UMI-dedup/aligned_UTK_primary-unmapped/5781_G1_IN_UTK.proper-etc.bam I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI Mito -o ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S/5781_G1_IN_UTK.proper-etc.SC.bam
+samtools view -@ 2 -h ./bams_UMI-dedup/aligned_UTK_primary-unmapped/5781_G1_IP_UTK.proper-etc.bam I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI Mito -o ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S/5781_G1_IP_UTK.proper-etc.SC.bam
+samtools view -@ 2 -h ./bams_UMI-dedup/aligned_UTK_primary-unmapped/5781_Q_IN_UTK.proper-etc.bam I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI Mito -o ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S/5781_Q_IN_UTK.proper-etc.SC.bam
+samtools view -@ 2 -h ./bams_UMI-dedup/aligned_UTK_primary-unmapped/5781_Q_IP_UTK.proper-etc.bam I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI Mito -o ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S/5781_Q_IP_UTK.proper-etc.SC.bam
+samtools view -@ 2 -h ./bams_UMI-dedup/aligned_UTK_primary-unmapped/5782_G1_IN_UTK.proper-etc.bam I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI Mito -o ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S/5782_G1_IN_UTK.proper-etc.SC.bam
+samtools view -@ 2 -h ./bams_UMI-dedup/aligned_UTK_primary-unmapped/5782_G1_IP_UTK.proper-etc.bam I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI Mito -o ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S/5782_G1_IP_UTK.proper-etc.SC.bam
+samtools view -@ 2 -h ./bams_UMI-dedup/aligned_UTK_primary-unmapped/5782_Q_IN_UTK.proper-etc.bam I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI Mito -o ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S/5782_Q_IN_UTK.proper-etc.SC.bam
+samtools view -@ 2 -h ./bams_UMI-dedup/aligned_UTK_primary-unmapped/5782_Q_IP_UTK.proper-etc.bam I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI Mito -o ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S/5782_Q_IP_UTK.proper-etc.SC.bam
+```
+</details>
+<br />
+<br />
+
+<a id="ix-merge-bams-to-be-used-with-trinity"></a>
+## <u>IX</u> Merge bams to be used with Trinity
 <a id="01-get-situated-make-directories-for-outfiles-3"></a>
 ### 01 Get situated, make directories for outfiles
 <a id="code-74"></a>
@@ -5984,12 +6031,118 @@ echo_test "${out_pu[@]}"
 </details>
 <br />
 
+<a id="printed-4"></a>
+#### Printed
+<details>
+<summary><i>Printed: Set up necessary variables, arrays</i></summary>
+
+```txt
+❯ for i in "${!inbams_ps[@]}"; do
+>     value_1="$(echo "${inbams_ps[$i]}" | awk -F '___' '{ print $1 }')"
+>     value_2="$(echo "${inbams_ps[$i]}" | awk -F '___' '{ print $2 }')"
+>     echo "    Key (i 1): ${i}"
+>     echo "Value 1 (i 2): ${value_1}"
+>     echo "Value 2 (out): ${value_2}"
+>     echo ""
+>     i_1_ps+=( "${i}" )
+>     i_2_ps+=( "${value_1}" )
+>     out_ps+=( "${value_2}" )
+> done
+    Key (i 1): ./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S/5781_G1_IP_UTK.primary-secondary.SC.bam
+Value 1 (i 2): ./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S/5782_G1_IP_UTK.primary-secondary.SC.bam
+Value 2 (out): ./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_merged/merged_G1_IP_UTK.primary-secondary.SC.bam
+
+    Key (i 1): ./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S/5781_Q_IN_UTK.primary-secondary.SC.bam
+Value 1 (i 2): ./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S/5782_Q_IN_UTK.primary-secondary.SC.bam
+Value 2 (out): ./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_merged/merged_Q_IN_UTK.primary-secondary.SC.bam
+
+    Key (i 1): ./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S/5781_G1_IN_UTK.primary-secondary.SC.bam
+Value 1 (i 2): ./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S/5782_G1_IN_UTK.primary-secondary.SC.bam
+Value 2 (out): ./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_merged/merged_G1_IN_UTK.primary-secondary.SC.bam
+
+    Key (i 1): ./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S/5781_Q_IP_UTK.primary-secondary.SC.bam
+Value 1 (i 2): ./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S/5782_Q_IP_UTK.primary-secondary.SC.bam
+Value 2 (out): ./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_merged/merged_Q_IP_UTK.primary-secondary.SC.bam
+
+
+❯ echo_test "${i_1_ps[@]}"
+./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S/5781_G1_IP_UTK.primary-secondary.SC.bam
+./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S/5781_Q_IN_UTK.primary-secondary.SC.bam
+./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S/5781_G1_IN_UTK.primary-secondary.SC.bam
+./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S/5781_Q_IP_UTK.primary-secondary.SC.bam
+
+
+❯ echo_test "${i_2_ps[@]}"
+./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S/5782_G1_IP_UTK.primary-secondary.SC.bam
+./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S/5782_Q_IN_UTK.primary-secondary.SC.bam
+./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S/5782_G1_IN_UTK.primary-secondary.SC.bam
+./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S/5782_Q_IP_UTK.primary-secondary.SC.bam
+
+
+❯ echo_test "${out_ps[@]}"
+./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_merged/merged_G1_IP_UTK.primary-secondary.SC.bam
+./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_merged/merged_Q_IN_UTK.primary-secondary.SC.bam
+./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_merged/merged_G1_IN_UTK.primary-secondary.SC.bam
+./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_merged/merged_Q_IP_UTK.primary-secondary.SC.bam
+
+
+❯ for i in "${!inbams_pu[@]}"; do
+>     value_1="$(echo "${inbams_pu[$i]}" | awk -F '___' '{ print $1 }')"
+>     value_2="$(echo "${inbams_pu[$i]}" | awk -F '___' '{ print $2 }')"
+>     echo "    Key (i 1): ${i}"
+>     echo "Value 1 (i 2): ${value_1}"
+>     echo "Value 2 (out): ${value_2}"
+>     echo ""
+>     i_1_pu+=( "${i}" )
+>     i_2_pu+=( "${value_1}" )
+>     out_pu+=( "${value_2}" )
+> done
+    Key (i 1): ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S/5781_Q_IP_UTK.proper-etc.SC.bam
+Value 1 (i 2): ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S/5782_Q_IP_UTK.proper-etc.SC.bam
+Value 2 (out): ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_merged/merged_Q_IP_UTK.proper-etc.SC.bam
+
+    Key (i 1): ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S/5781_Q_IN_UTK.proper-etc.SC.bam
+Value 1 (i 2): ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S/5782_Q_IN_UTK.proper-etc.SC.bam
+Value 2 (out): ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_merged/merged_Q_IN_UTK.proper-etc.SC.bam
+
+    Key (i 1): ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S/5781_G1_IN_UTK.proper-etc.SC.bam
+Value 1 (i 2): ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S/5782_G1_IN_UTK.proper-etc.SC.bam
+Value 2 (out): ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_merged/merged_G1_IN_UTK.proper-etc.SC.bam
+
+    Key (i 1): ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S/5781_G1_IP_UTK.proper-etc.SC.bam
+Value 1 (i 2): ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S/5782_G1_IP_UTK.proper-etc.SC.bam
+Value 2 (out): ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_merged/merged_G1_IP_UTK.proper-etc.SC.bam
+
+
+❯ echo_test "${i_1_pu[@]}"
+./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S/5781_Q_IP_UTK.proper-etc.SC.bam
+./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S/5781_Q_IN_UTK.proper-etc.SC.bam
+./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S/5781_G1_IN_UTK.proper-etc.SC.bam
+./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S/5781_G1_IP_UTK.proper-etc.SC.bam
+
+
+❯ echo_test "${i_2_pu[@]}"
+./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S/5782_Q_IP_UTK.proper-etc.SC.bam
+./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S/5782_Q_IN_UTK.proper-etc.SC.bam
+./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S/5782_G1_IN_UTK.proper-etc.SC.bam
+./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S/5782_G1_IP_UTK.proper-etc.SC.bam
+
+
+❯ echo_test "${out_pu[@]}"
+./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_merged/merged_Q_IP_UTK.proper-etc.SC.bam
+./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_merged/merged_Q_IN_UTK.proper-etc.SC.bam
+./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_merged/merged_G1_IN_UTK.proper-etc.SC.bam
+./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_merged/merged_G1_IP_UTK.proper-etc.SC.bam
+```
+</details>
+<br />
+
 <a id="03-run-samtools-merge"></a>
 ### 03 Run `samtools merge`
 <a id="code-76"></a>
 #### Code
 <details>
-<summary><i>Code: </i></summary>
+<summary><i>Code: Run samtools merge</i></summary>
 
 ```bash
 #!/bin/bash
@@ -6027,6 +6180,77 @@ parallel \
 ::: "${i_1_pu[@]}" \
 :::+ "${i_2_pu[@]}" \
 :::+ "${out_pu[@]}"
+```
+</details>
+<br />
+
+<a id="printed-5"></a>
+#### Printed
+<details>
+<summary><i>Printed: Run samtools merge</i></summary>
+
+```txt
+❯ parallel \
+>     -j "${SLURM_CPUS_ON_NODE}" \
+>     --dry-run \
+>     "samtools merge -@ 4 {1} {2} -o {3}" \
+> ::: "${i_1_ps[@]}" \
+> :::+ "${i_2_ps[@]}" \
+> :::+ "${out_ps[@]}"
+samtools merge -@ 4 ./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S/5781_G1_IP_UTK.primary-secondary.SC.bam ./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S/5782_G1_IP_UTK.primary-secondary.SC.bam -o ./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_merged/merged_G1_IP_UTK.primary-secondary.SC.bam
+samtools merge -@ 4 ./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S/5781_Q_IN_UTK.primary-secondary.SC.bam ./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S/5782_Q_IN_UTK.primary-secondary.SC.bam -o ./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_merged/merged_Q_IN_UTK.primary-secondary.SC.bam
+samtools merge -@ 4 ./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S/5781_G1_IN_UTK.primary-secondary.SC.bam ./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S/5782_G1_IN_UTK.primary-secondary.SC.bam -o ./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_merged/merged_G1_IN_UTK.primary-secondary.SC.bam
+samtools merge -@ 4 ./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S/5781_Q_IP_UTK.primary-secondary.SC.bam ./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S/5782_Q_IP_UTK.primary-secondary.SC.bam -o ./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_merged/merged_Q_IP_UTK.primary-secondary.SC.bam
+
+
+❯ parallel \
+>     -j "${SLURM_CPUS_ON_NODE}" \
+>     --dry-run \
+>     "samtools merge -@ 4 {1} {2} -o {3}" \
+> ::: "${i_1_pu[@]}" \
+> :::+ "${i_2_pu[@]}" \
+> :::+ "${out_pu[@]}"
+samtools merge -@ 4 ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S/5781_Q_IP_UTK.proper-etc.SC.bam ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S/5782_Q_IP_UTK.proper-etc.SC.bam -o ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_merged/merged_Q_IP_UTK.proper-etc.SC.bam
+samtools merge -@ 4 ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S/5781_Q_IN_UTK.proper-etc.SC.bam ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S/5782_Q_IN_UTK.proper-etc.SC.bam -o ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_merged/merged_Q_IN_UTK.proper-etc.SC.bam
+samtools merge -@ 4 ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S/5781_G1_IN_UTK.proper-etc.SC.bam ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S/5782_G1_IN_UTK.proper-etc.SC.bam -o ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_merged/merged_G1_IN_UTK.proper-etc.SC.bam
+samtools merge -@ 4 ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S/5781_G1_IP_UTK.proper-etc.SC.bam ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S/5782_G1_IP_UTK.proper-etc.SC.bam -o ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_merged/merged_G1_IP_UTK.proper-etc.SC.bam
+```
+</details>
+<br />
+<br />
+
+<a id="x-perform-bam-to-fastq-conversions"></a>
+## <u>X</u> Perform bam-to-fastq conversions
+<a id="01-get-situated-make-directories-for-outfiles-4"></a>
+### 01 Get situated, make directories for outfiles
+<a id="code-77"></a>
+#### Code
+<details>
+<summary><i>Code: Get situated, make directories for outfiles</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+#  Get situated
+grabnode  # 16, etc.
+
+transcriptome && 
+    {
+        cd "results/2023-0115" \
+            || echo "cd'ing failed; check on this..."
+    }
+
+if [[ "${CONDA_DEFAULT_ENV}" != "base" ]]; then 
+    conda deactivate
+fi
+source activate Trinity_env
+module purge
+module load SAMtools/1.16.1-GCC-11.2.0
+
+#  Make directories for outfiles
+mkdir -p "./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_merged"
+mkdir -p "./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_merged"
 ```
 </details>
 <br />
