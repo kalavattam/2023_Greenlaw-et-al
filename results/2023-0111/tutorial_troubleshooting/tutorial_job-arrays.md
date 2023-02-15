@@ -2809,20 +2809,6 @@ sbatch "./${store}/${script_name_run}"
 
 <u>Spot check</u>  
 
-*Original*
-```txt
-❯ skal
-             JOBID PARTITION     NAME     USER ST       TIME  NODES NODELIST(REASON) MIN_CPUS
-8612984_[61-288%10 campus-ne echo_Tri kalavatt PD       0:00      1 (JobArrayTaskLimit) 1
-8612902_[141-288%1 campus-ne echo_Tri kalavatt PD       0:00      1 (JobArrayTaskLimit) 1
-
-❯ cat trinity_mkc-8_mir-0.005_mg-4_gf-0.005.8612902-153.out.txt
-singularity run --bind /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201/files_processed-full/fastq_trim-rcor-cor_split/EndToEnd:/data --bind /fh/scratch/delete30/tsukiyama_t:/loc/scratch /home/kalavatt/singularity-docker-etc/Trinity.sif Trinity --verbose --max_memory 50G --CPU 1 --SS_lib_type FR --seqType fq --left /data/5781_Q_IP_merged.trim-rcor.multi-hit-mode_1_EndToEnd.Aligned.sortedByCoord.out.sc_all.1.fq.gz,/data/5782_Q_IP_merged.trim-rcor.multi-hit-mode_1_EndToEnd.Aligned.sortedByCoord.out.sc_all.1.fq.gz --right /data/5781_Q_IP_merged.trim-rcor.multi-hit-mode_1_EndToEnd.Aligned.sortedByCoord.out.sc_all.2.fq.gz,/data/5782_Q_IP_merged.trim-rcor.multi-hit-mode_1_EndToEnd.Aligned.sortedByCoord.out.sc_all.2.fq.gz --jaccard_clip --output files_Trinity-GF/files_processed-full/Q_IP_merged.trim-rcor.multi-hit-mode_1_EndToEnd/trinity_mkc-8_mir-0.005_mg-4_gf-0.005 --full_cleanup --min_kmer_cov 8 --min_iso_ratio 0.005 --min_glue 4 --glue_factor 0.005 --max_reads_per_graph 2000 --normalize_max_read_cov 200 --group_pairs_distance 700 --min_contig_length 200
-
-❯ cat trinity_mkc-8_mir-0.1_mg-4_gf-0.005.8612984-189.out.txt
-singularity run --bind /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201/files_processed-full/fastq_trim-rcor-cor_split/EndToEnd:/data --bind /fh/scratch/delete30/tsukiyama_t:/loc/scratch /home/kalavatt/singularity-docker-etc/Trinity.sif Trinity --verbose --max_memory 50G --CPU 1 --SS_lib_type FR --seqType fq --left /data/5781_Q_IP_merged.trim-rcor.multi-hit-mode_1_EndToEnd.Aligned.sortedByCoord.out.sc_all.1.fq.gz,/data/5782_Q_IP_merged.trim-rcor.multi-hit-mode_1_EndToEnd.Aligned.sortedByCoord.out.sc_all.1.fq.gz --right /data/5781_Q_IP_merged.trim-rcor.multi-hit-mode_1_EndToEnd.Aligned.sortedByCoord.out.sc_all.2.fq.gz,/data/5782_Q_IP_merged.trim-rcor.multi-hit-mode_1_EndToEnd.Aligned.sortedByCoord.out.sc_all.2.fq.gz --jaccard_clip --output files_Trinity-GF/files_processed-full/Q_IP_merged.trim-rcor.multi-hit-mode_1_EndToEnd/trinity_mkc-8_mir-0.1_mg-4_gf-0.005 --full_cleanup --min_kmer_cov 8 --min_iso_ratio 0.1 --min_glue 4 --glue_factor 0.005 --max_reads_per_graph 2000 --normalize_max_read_cov 200 --group_pairs_distance 700 --min_contig_length 200
-```
-
 *Reformatted*
 ```txt
 ❯ skal
@@ -2877,6 +2863,20 @@ singularity run \
         --normalize_max_read_cov 200 \
         --group_pairs_distance 700 \
         --min_contig_length 200
+```
+
+*Original*
+```txt
+❯ skal
+             JOBID PARTITION     NAME     USER ST       TIME  NODES NODELIST(REASON) MIN_CPUS
+8612984_[61-288%10 campus-ne echo_Tri kalavatt PD       0:00      1 (JobArrayTaskLimit) 1
+8612902_[141-288%1 campus-ne echo_Tri kalavatt PD       0:00      1 (JobArrayTaskLimit) 1
+
+❯ cat trinity_mkc-8_mir-0.005_mg-4_gf-0.005.8612902-153.out.txt
+singularity run --bind /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201/files_processed-full/fastq_trim-rcor-cor_split/EndToEnd:/data --bind /fh/scratch/delete30/tsukiyama_t:/loc/scratch /home/kalavatt/singularity-docker-etc/Trinity.sif Trinity --verbose --max_memory 50G --CPU 1 --SS_lib_type FR --seqType fq --left /data/5781_Q_IP_merged.trim-rcor.multi-hit-mode_1_EndToEnd.Aligned.sortedByCoord.out.sc_all.1.fq.gz,/data/5782_Q_IP_merged.trim-rcor.multi-hit-mode_1_EndToEnd.Aligned.sortedByCoord.out.sc_all.1.fq.gz --right /data/5781_Q_IP_merged.trim-rcor.multi-hit-mode_1_EndToEnd.Aligned.sortedByCoord.out.sc_all.2.fq.gz,/data/5782_Q_IP_merged.trim-rcor.multi-hit-mode_1_EndToEnd.Aligned.sortedByCoord.out.sc_all.2.fq.gz --jaccard_clip --output files_Trinity-GF/files_processed-full/Q_IP_merged.trim-rcor.multi-hit-mode_1_EndToEnd/trinity_mkc-8_mir-0.005_mg-4_gf-0.005 --full_cleanup --min_kmer_cov 8 --min_iso_ratio 0.005 --min_glue 4 --glue_factor 0.005 --max_reads_per_graph 2000 --normalize_max_read_cov 200 --group_pairs_distance 700 --min_contig_length 200
+
+❯ cat trinity_mkc-8_mir-0.1_mg-4_gf-0.005.8612984-189.out.txt
+singularity run --bind /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2022-1201/files_processed-full/fastq_trim-rcor-cor_split/EndToEnd:/data --bind /fh/scratch/delete30/tsukiyama_t:/loc/scratch /home/kalavatt/singularity-docker-etc/Trinity.sif Trinity --verbose --max_memory 50G --CPU 1 --SS_lib_type FR --seqType fq --left /data/5781_Q_IP_merged.trim-rcor.multi-hit-mode_1_EndToEnd.Aligned.sortedByCoord.out.sc_all.1.fq.gz,/data/5782_Q_IP_merged.trim-rcor.multi-hit-mode_1_EndToEnd.Aligned.sortedByCoord.out.sc_all.1.fq.gz --right /data/5781_Q_IP_merged.trim-rcor.multi-hit-mode_1_EndToEnd.Aligned.sortedByCoord.out.sc_all.2.fq.gz,/data/5782_Q_IP_merged.trim-rcor.multi-hit-mode_1_EndToEnd.Aligned.sortedByCoord.out.sc_all.2.fq.gz --jaccard_clip --output files_Trinity-GF/files_processed-full/Q_IP_merged.trim-rcor.multi-hit-mode_1_EndToEnd/trinity_mkc-8_mir-0.1_mg-4_gf-0.005 --full_cleanup --min_kmer_cov 8 --min_iso_ratio 0.1 --min_glue 4 --glue_factor 0.005 --max_reads_per_graph 2000 --normalize_max_read_cov 200 --group_pairs_distance 700 --min_contig_length 200
 ```
 </details>
 <br />
