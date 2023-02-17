@@ -143,71 +143,78 @@
             1. [Code](#code-55)
         1. [02c Set up information for `aligned_UTK_primary-unmapped_*`](#02c-set-up-information-for-aligned_utk_primary-unmapped_)
             1. [Code](#code-56)
+        1. [02d Set up information for `aligned_UTK_primary`](#02d-set-up-information-for-aligned_utk_primary)
+            1. [Code](#code-57)
     1. [03 Use a `for` loop to run `separate_bam.sh`, etc.](#03-use-a-for-loop-to-run-separate_bamsh-etc)
         1. [Run `separate_bam.sh` for `aligned_UT_primary_*`](#run-separate_bamsh-for-aligned_ut_primary_)
             1. [Run `separate_bam.sh`](#run-separate_bamsh)
-                1. [Code](#code-57)
-            1. [Run `list_tally_flags()`](#run-list_tally_flags)
                 1. [Code](#code-58)
+            1. [Run `list_tally_flags()`](#run-list_tally_flags)
+                1. [Code](#code-59)
                 1. [Printed](#printed)
         1. [Run `separate_bam.sh`, etc. for `aligned_UTK_primary-secondary_*`](#run-separate_bamsh-etc-for-aligned_utk_primary-secondary_)
             1. [Run `separate_bam.sh`](#run-separate_bamsh-1)
-                1. [Code](#code-59)
-            1. [Run `list_tally_flags()`](#run-list_tally_flags-1)
                 1. [Code](#code-60)
+            1. [Run `list_tally_flags()`](#run-list_tally_flags-1)
+                1. [Code](#code-61)
                 1. [Printed](#printed-1)
         1. [Run `separate_bam.sh` for `aligned_UTK_primary-unmapped_*`](#run-separate_bamsh-for-aligned_utk_primary-unmapped_)
             1. [Run `separate_bam.sh`](#run-separate_bamsh-2)
-                1. [Code](#code-61)
-            1. [Run `list_tally_flags()`](#run-list_tally_flags-2)
                 1. [Code](#code-62)
-                1. [Printed](#printed-2)
-        1. [Run additional QC commands on all `separate_bam.sh` outfile](#run-additional-qc-commands-on-all-separate_bamsh-outfile)
-            1. [Get all bams \(in- and outfiles\) into a single array](#get-all-bams-in--and-outfiles-into-a-single-array)
+            1. [Run `list_tally_flags()`](#run-list_tally_flags-2)
                 1. [Code](#code-63)
-            1. [Use `GNU parallel` to run `samtools index`](#use-gnu-parallel-to-run-samtools-index)
+                1. [Printed](#printed-2)
+        1. [Run `separate_bam.sh` for `aligned_UTK_primary`](#run-separate_bamsh-for-aligned_utk_primary)
+            1. [Run `separate_bam.sh`](#run-separate_bamsh-3)
                 1. [Code](#code-64)
-            1. [Use `GNU parallel` to run `samtools idxstats`](#use-gnu-parallel-to-run-samtools-idxstats)
+            1. [Run `list_tally_flags()`](#run-list_tally_flags-3)
                 1. [Code](#code-65)
-            1. [Use `GNU parallel` to run `samtools stats`](#use-gnu-parallel-to-run-samtools-stats)
+                1. [Printed](#printed-3)
+            1. [Get all bams \(in- and outfiles\) into a single array](#get-all-bams-in--and-outfiles-into-a-single-array)
                 1. [Code](#code-66)
-            1. [Use `GNU parallel` to run `picard AlignmentSummaryMetrics`](#use-gnu-parallel-to-run-picard-alignmentsummarymetrics)
+            1. [Use `GNU parallel` to run `samtools index`](#use-gnu-parallel-to-run-samtools-index)
                 1. [Code](#code-67)
-            1. [`#NOTE` `#TODO` Come back to run even more QC commands on the bams](#note-todo-come-back-to-run-even-more-qc-commands-on-the-bams)
 1. [VII Deduplicate "primary" files by UMI, position *\(general\)*](#vii-deduplicate-primary-files-by-umi-position-general)
     1. [01 Get situated, make directories for outfiles](#01-get-situated-make-directories-for-outfiles-1)
-    1. [02 Set up necessary variables, arrays](#02-set-up-necessary-variables-arrays-1)
+    1. [02a Set up necessary variables, arrays: `aligned_UT_primary`](#02a-set-up-necessary-variables-arrays-aligned_ut_primary)
         1. [Code](#code-68)
-    1. [03 Use `GNU parallel` to run `umi_tools dedup` for UMI and positional deduplication](#03-use-gnu-parallel-to-run-umi_tools-dedup-for-umi-and-positional-deduplication)
-        1. [Use `GNU parallel` to run `umi_tools dedup` for UMI deduplication](#use-gnu-parallel-to-run-umi_tools-dedup-for-umi-deduplication)
+    1. [03a Use `GNU parallel` to run `umi_tools dedup` for UMI and positional deduplication: `aligned_UT_primary`](#03a-use-gnu-parallel-to-run-umi_tools-dedup-for-umi-and-positional-deduplication-aligned_ut_primary)
+        1. [Use `GNU parallel` to run `umi_tools dedup` for UMI deduplication: `aligned_UT_primary`](#use-gnu-parallel-to-run-umi_tools-dedup-for-umi-deduplication-aligned_ut_primary)
             1. [Code](#code-69)
-        1. [Use `GNU parallel` to run `umi_tools dedup` for positional deduplication](#use-gnu-parallel-to-run-umi_tools-dedup-for-positional-deduplication)
+        1. [Use `GNU parallel` to run `umi_tools dedup` for positional deduplication: `aligned_UT_primary`](#use-gnu-parallel-to-run-umi_tools-dedup-for-positional-deduplication-aligned_ut_primary)
             1. [Code](#code-70)
+    1. [02b Set up necessary variables, arrays: `aligned_UTK_primary`](#02b-set-up-necessary-variables-arrays-aligned_utk_primary)
+        1. [Code](#code-71)
+    1. [03b Use `GNU parallel` to run `umi_tools dedup` for UMI and positional deduplication: `aligned_UTK_primary`](#03b-use-gnu-parallel-to-run-umi_tools-dedup-for-umi-and-positional-deduplication-aligned_utk_primary)
+        1. [Use `GNU parallel` to run `umi_tools dedup` for UMI deduplication: `aligned_UTK_primary`](#use-gnu-parallel-to-run-umi_tools-dedup-for-umi-deduplication-aligned_utk_primary)
+            1. [Code](#code-72)
+        1. [Use `GNU parallel` to run `umi_tools dedup` for positional deduplication: `aligned_UTK_primary`](#use-gnu-parallel-to-run-umi_tools-dedup-for-positional-deduplication-aligned_utk_primary)
+            1. [Code](#code-73)
 1. [VIII Separate out alignments to different species *\(Trinity\)*](#viii-separate-out-alignments-to-different-species-trinity)
     1. [01 Get situated, make directories for outfiles](#01-get-situated-make-directories-for-outfiles-2)
-        1. [Code](#code-71)
-    1. [02 Set up necessary variables, arrays](#02-set-up-necessary-variables-arrays-2)
-        1. [Code](#code-72)
+        1. [Code](#code-74)
+    1. [02 Set up necessary variables, arrays](#02-set-up-necessary-variables-arrays-1)
+        1. [Code](#code-75)
     1. [03 Use `GNU parallel` to split bams by species](#03-use-gnu-parallel-to-split-bams-by-species)
-        1. [Code](#code-73)
-        1. [Printed](#printed-3)
+        1. [Code](#code-76)
+        1. [Printed](#printed-4)
 1. [IX Merge bams *\(Trinity\)*](#ix-merge-bams-trinity)
     1. [01 Get situated, make directories for outfiles](#01-get-situated-make-directories-for-outfiles-3)
-        1. [Code](#code-74)
-    1. [02 Set up necessary variables, arrays](#02-set-up-necessary-variables-arrays-3)
-        1. [Code](#code-75)
-        1. [Printed](#printed-4)
-    1. [03 Use `GNU parallel` to run `samtools merge`](#03-use-gnu-parallel-to-run-samtools-merge)
-        1. [Code](#code-76)
+        1. [Code](#code-77)
+    1. [02 Set up necessary variables, arrays](#02-set-up-necessary-variables-arrays-2)
+        1. [Code](#code-78)
         1. [Printed](#printed-5)
+    1. [03 Use `GNU parallel` to run `samtools merge`](#03-use-gnu-parallel-to-run-samtools-merge)
+        1. [Code](#code-79)
+        1. [Printed](#printed-6)
 1. [X Perform bam-to-fastq conversions *\(Trinity\)*](#x-perform-bam-to-fastq-conversions-trinity)
     1. [01 Get situated, make directories for outfiles](#01-get-situated-make-directories-for-outfiles-4)
-        1. [Code](#code-77)
-    1. [02 Set up necessary variables, arrays](#02-set-up-necessary-variables-arrays-4)
-        1. [Code](#code-78)
-        1. [Printed](#printed-6)
+        1. [Code](#code-80)
+    1. [02 Set up necessary variables, arrays](#02-set-up-necessary-variables-arrays-3)
+        1. [Code](#code-81)
+        1. [Printed](#printed-7)
     1. [03 Use `GNU parallel` to run samtools fastq](#03-use-gnu-parallel-to-run-samtools-fastq)
-        1. [Code](#code-79)
+        1. [Code](#code-82)
         1. [Printed, notes](#printed-notes)
 
 <!-- /MarkdownTOC -->
@@ -4353,7 +4360,7 @@ renamed './bams_UMI-dedup/aligned_umi-extracted_trimmed/bak' -> './bams_UMI-dedu
 <a id="code-52"></a>
 ##### Code
 <details>
-<summary><i>Code: </i></summary>
+<summary><i>Code: Rename, organize, and check on files in aligned_umi-extracted_trimmed_kmer-corrected/</i></summary>
 
 ```bash
 #!/bin/bash
@@ -4414,6 +4421,7 @@ module load SAMtools/1.16.1-GCC-11.2.0
 
 #  Make directories for outfiles
 mkdir -p "./bams_UMI-dedup/aligned_UT_primary"
+mkdir -p "./bams_UMI-dedup/aligned_UTK_primary"
 mkdir -p "./bams_UMI-dedup/aligned_UTK_primary-secondary"
 mkdir -p "./bams_UMI-dedup/aligned_UTK_primary-unmapped"
 ```
@@ -4510,13 +4518,42 @@ echo "${#bams_UT_p_u[@]}"
 </details>
 <br />
 
+<a id="02d-set-up-information-for-aligned_utk_primary"></a>
+#### 02d Set up information for `aligned_UTK_primary`
+<a id="code-57"></a>
+##### Code
+<details>
+<summary><i>Code: Set up information for aligned_UTK_primary</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+unset bams_UTK_prim
+typeset -a bams_UTK_prim
+while IFS=" " read -r -d $'\0'; do
+    bams_UTK_prim+=( "${REPLY}" )
+done < <(\
+    find "./bams_UMI-dedup/aligned_umi-extracted_trimmed_kmer-corrected/" \
+        -maxdepth 1 \
+        -type f \
+        -name *.bam \
+        -print0 \
+            | sort -z \
+)
+echo_test "${bams_UTK_prim[@]}"
+echo "${#bams_UTK_prim[@]}"
+```
+</details>
+<br />
+
 <a id="03-use-a-for-loop-to-run-separate_bamsh-etc"></a>
 ### 03 Use a `for` loop to run `separate_bam.sh`, etc.
 <a id="run-separate_bamsh-for-aligned_ut_primary_"></a>
 #### Run `separate_bam.sh` for `aligned_UT_primary_*`
 <a id="run-separate_bamsh"></a>
 ##### Run `separate_bam.sh`
-<a id="code-57"></a>
+<a id="code-58"></a>
 ###### Code
 <details>
 <summary><i>Code: Run separate_bam.sh</i></summary>
@@ -4555,7 +4592,7 @@ done
 
 <a id="run-list_tally_flags"></a>
 ##### Run `list_tally_flags()`
-<a id="code-58"></a>
+<a id="code-59"></a>
 ###### Code
 <details>
 <summary><i>Code: Run list_tally_flags()</i></summary>
@@ -5012,7 +5049,7 @@ bams_UMI-dedup/aligned_UT_primary/CW8_7079_8day_Q_PD_UT.primary.list-tally-flags
 #### Run `separate_bam.sh`, etc. for `aligned_UTK_primary-secondary_*`
 <a id="run-separate_bamsh-1"></a>
 ##### Run `separate_bam.sh`
-<a id="code-59"></a>
+<a id="code-60"></a>
 ###### Code
 <details>
 <summary><i>Code: Run separate_bam.sh</i></summary>
@@ -5051,7 +5088,7 @@ done
 
 <a id="run-list_tally_flags-1"></a>
 ##### Run `list_tally_flags()`
-<a id="code-60"></a>
+<a id="code-61"></a>
 ###### Code
 <details>
 <summary><i>Code: Run list_tally_flags()</i></summary>
@@ -5211,7 +5248,7 @@ bams_UMI-dedup/aligned_UTK_primary-secondary//5782_Q_IP_UTK.primary-secondary.li
 #### Run `separate_bam.sh` for `aligned_UTK_primary-unmapped_*`
 <a id="run-separate_bamsh-2"></a>
 ##### Run `separate_bam.sh`
-<a id="code-61"></a>
+<a id="code-62"></a>
 ###### Code
 <details>
 <summary><i>Code: Run separate_bam.sh for aligned_UTK_primary-unmapped_*</i></summary>
@@ -5250,7 +5287,7 @@ done
 
 <a id="run-list_tally_flags-2"></a>
 ##### Run `list_tally_flags()`
-<a id="code-62"></a>
+<a id="code-63"></a>
 ###### Code
 <details>
 <summary><i>Code: Run list_tally_flags()</i></summary>
@@ -5415,11 +5452,505 @@ bams_UMI-dedup/aligned_UTK_primary-unmapped/5782_Q_IP_UTK.proper-etc.list-tally-
 </details>
 <br />
 
-<a id="run-additional-qc-commands-on-all-separate_bamsh-outfile"></a>
-#### Run additional QC commands on all `separate_bam.sh` outfile
+<a id="run-separate_bamsh-for-aligned_utk_primary"></a>
+#### Run `separate_bam.sh` for `aligned_UTK_primary`
+<a id="run-separate_bamsh-3"></a>
+##### Run `separate_bam.sh`
+<a id="code-64"></a>
+###### Code
+<details>
+<summary><i>Code: Run separate_bam.sh</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+# bash ../../bin/separate_bam.sh
+
+outdir="bams_UMI-dedup/aligned_UTK_primary"
+err_out="sh_err_out/err_out"
+for i in "${bams_UTK_prim[@]}"; do
+    # i="${bams_UTK_prim[0]}"  # echo "${i}"
+    log="run_separate-bam.$(basename "${i}" .bam)"  # echo "${log}"
+
+    bash ../../bin/separate_bam.sh \
+        -u TRUE \
+        -i "${i}" \
+        -o "${outdir}" \
+        -1 TRUE \
+        -2 FALSE \
+        -3 FALSE \
+        -4 FALSE \
+        -5 FALSE \
+        -6 FALSE \
+        -f TRUE \
+        -l FALSE \
+        -t "${SLURM_CPUS_ON_NODE}" \
+            > >(tee -a "${err_out}/${log}.stdout.txt") \
+            2> >(tee -a "${err_out}/${log}.stderr.txt" >&2)
+done
+```
+</details>
+<br />
+
+<a id="run-list_tally_flags-3"></a>
+##### Run `list_tally_flags()`
+<a id="code-65"></a>
+###### Code
+<details>
+<summary><i>Code: Run list_tally_flags()</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+unset outbams
+typeset -a outbams
+while IFS=" " read -r -d $'\0'; do
+    outbams+=( "${REPLY}" )
+done < <(\
+    find "bams_UMI-dedup/aligned_UTK_primary" \
+        -maxdepth 1 \
+        -type f \
+        -name *.bam \
+        -print0 \
+            | sort -z \
+)
+echo_test "${outbams[@]}"
+echo "${#outbams[@]}"
+
+list_tally_flags() {
+    samtools view "${1}" \
+        | cut -d$'\t' -f 2 \
+        | sort \
+        | uniq -c \
+        | sort -nr
+}
+
+
+export SHELL=$(type -p bash)
+export -f list_tally_flags
+
+parallel \
+    -k \
+    -j "${SLURM_CPUS_ON_NODE}" \
+    --dry-run \
+    "list_tally_flags {} > {.}.list-tally-flags.txt" \
+::: "${outbams[@]}"
+
+parallel \
+    -k \
+    -j "${SLURM_CPUS_ON_NODE}" \
+    "list_tally_flags {} > {.}.list-tally-flags.txt" \
+::: "${outbams[@]}"
+
+for i in "bams_UMI-dedup/aligned_UTK_primary/"*".list-tally-flags.txt"; do
+    echo "${i}"
+    echo "----------------------------------------"
+    cat "${i}"
+    echo ""
+done
+```
+</details>
+<br />
+
+<a id="printed-3"></a>
+###### Printed
+<details>
+<summary><i>Printed: Run list_tally_flags()</i></summary>
+
+```txt
+bams_UMI-dedup/aligned_UTK_primary/5781_G1_IN_UTK.primary.list-tally-flags.txt
+----------------------------------------
+6155381 83
+6155381 163
+4989735 99
+4989735 147
+
+bams_UMI-dedup/aligned_UTK_primary/5781_G1_IP_UTK.primary.list-tally-flags.txt
+----------------------------------------
+7840091 99
+7840091 147
+7400370 83
+7400370 163
+
+bams_UMI-dedup/aligned_UTK_primary/5781_Q_IN_UTK.primary.list-tally-flags.txt
+----------------------------------------
+6159928 99
+6159928 147
+5828590 83
+5828590 163
+
+bams_UMI-dedup/aligned_UTK_primary/5781_Q_IP_UTK.primary.list-tally-flags.txt
+----------------------------------------
+9846889 83
+9846889 163
+9606231 99
+9606231 147
+
+bams_UMI-dedup/aligned_UTK_primary/5782_G1_IN_UTK.primary.list-tally-flags.txt
+----------------------------------------
+5361718 99
+5361718 147
+5248329 83
+5248329 163
+
+bams_UMI-dedup/aligned_UTK_primary/5782_G1_IP_UTK.primary.list-tally-flags.txt
+----------------------------------------
+7739780 99
+7739780 147
+7599481 83
+7599481 163
+
+bams_UMI-dedup/aligned_UTK_primary/5782_Q_IN_UTK.primary.list-tally-flags.txt
+----------------------------------------
+4873200 83
+4873200 163
+4406470 99
+4406470 147
+
+bams_UMI-dedup/aligned_UTK_primary/5782_Q_IP_UTK.primary.list-tally-flags.txt
+----------------------------------------
+8965465 83
+8965465 163
+8671045 99
+8671045 147
+
+bams_UMI-dedup/aligned_UTK_primary/BM10_DSp48_5781_UTK.primary.list-tally-flags.txt
+----------------------------------------
+11507943 83
+11507943 163
+9754417 99
+9754417 147
+
+bams_UMI-dedup/aligned_UTK_primary/BM11_DSp48_7080_UTK.primary.list-tally-flags.txt
+----------------------------------------
+10316243 99
+10316243 147
+10279077 83
+10279077 163
+
+bams_UMI-dedup/aligned_UTK_primary/BM1_DSm2_5781_UTK.primary.list-tally-flags.txt
+----------------------------------------
+12528353 83
+12528353 163
+6610104 99
+6610104 147
+
+bams_UMI-dedup/aligned_UTK_primary/BM2_DSm2_7080_UTK.primary.list-tally-flags.txt
+----------------------------------------
+13812692 83
+13812692 163
+6766506 99
+6766506 147
+
+bams_UMI-dedup/aligned_UTK_primary/BM3_DSm2_7079_UTK.primary.list-tally-flags.txt
+----------------------------------------
+13046181 83
+13046181 163
+7453786 99
+7453786 147
+
+bams_UMI-dedup/aligned_UTK_primary/BM4_DSp2_5781_UTK.primary.list-tally-flags.txt
+----------------------------------------
+12207583 83
+12207583 163
+5844429 99
+5844429 147
+
+bams_UMI-dedup/aligned_UTK_primary/BM5_DSp2_7080_UTK.primary.list-tally-flags.txt
+----------------------------------------
+15494352 83
+15494352 163
+7128296 99
+7128296 147
+
+bams_UMI-dedup/aligned_UTK_primary/BM6_DSp2_7079_UTK.primary.list-tally-flags.txt
+----------------------------------------
+13203719 83
+13203719 163
+7467622 99
+7467622 147
+
+bams_UMI-dedup/aligned_UTK_primary/BM7_DSp24_5781_UTK.primary.list-tally-flags.txt
+----------------------------------------
+12444589 83
+12444589 163
+7608842 99
+7608842 147
+
+bams_UMI-dedup/aligned_UTK_primary/BM8_DSp24_7080_UTK.primary.list-tally-flags.txt
+----------------------------------------
+12627948 83
+12627948 163
+9151888 99
+9151888 147
+
+bams_UMI-dedup/aligned_UTK_primary/BM9_DSp24_7079_UTK.primary.list-tally-flags.txt
+----------------------------------------
+11475576 83
+11475576 163
+8173191 99
+8173191 147
+
+bams_UMI-dedup/aligned_UTK_primary/Bp10_DSp48_5782_UTK.primary.list-tally-flags.txt
+----------------------------------------
+10255593 83
+10255593 163
+9460987 99
+9460987 147
+
+bams_UMI-dedup/aligned_UTK_primary/Bp11_DSp48_7081_UTK.primary.list-tally-flags.txt
+----------------------------------------
+11447800 99
+11447800 147
+10743574 83
+10743574 163
+
+bams_UMI-dedup/aligned_UTK_primary/Bp12_DSp48_7078_UTK.primary.list-tally-flags.txt
+----------------------------------------
+12084656 83
+12084656 163
+11752284 99
+11752284 147
+
+bams_UMI-dedup/aligned_UTK_primary/Bp1_DSm2_5782_UTK.primary.list-tally-flags.txt
+----------------------------------------
+10555966 83
+10555966 163
+5139680 99
+5139680 147
+
+bams_UMI-dedup/aligned_UTK_primary/Bp2_DSm2_7081_UTK.primary.list-tally-flags.txt
+----------------------------------------
+12683705 83
+12683705 163
+6185733 99
+6185733 147
+
+bams_UMI-dedup/aligned_UTK_primary/Bp3_DSm2_7078_UTK.primary.list-tally-flags.txt
+----------------------------------------
+10293732 83
+10293732 163
+5975466 99
+5975466 147
+
+bams_UMI-dedup/aligned_UTK_primary/Bp4_DSp2_5782_UTK.primary.list-tally-flags.txt
+----------------------------------------
+13778838 83
+13778838 163
+6221136 99
+6221136 147
+
+bams_UMI-dedup/aligned_UTK_primary/Bp5_DSp2_7081_UTK.primary.list-tally-flags.txt
+----------------------------------------
+15473797 83
+15473797 163
+7760313 99
+7760313 147
+
+bams_UMI-dedup/aligned_UTK_primary/Bp6_DSp2_7078_UTK.primary.list-tally-flags.txt
+----------------------------------------
+12407079 83
+12407079 163
+7146344 99
+7146344 147
+
+bams_UMI-dedup/aligned_UTK_primary/Bp7_DSp24_5782_UTK.primary.list-tally-flags.txt
+----------------------------------------
+12492238 83
+12492238 163
+7894263 99
+7894263 147
+
+bams_UMI-dedup/aligned_UTK_primary/Bp8_DSp24_7081_UTK.primary.list-tally-flags.txt
+----------------------------------------
+12264942 83
+12264942 163
+9752610 99
+9752610 147
+
+bams_UMI-dedup/aligned_UTK_primary/Bp9_DSp24_7078_UTK.primary.list-tally-flags.txt
+----------------------------------------
+9790152 83
+9790152 163
+6606567 99
+6606567 147
+
+bams_UMI-dedup/aligned_UTK_primary/CT10_7718_pIAA_Q_Nascent_UTK.primary.list-tally-flags.txt
+----------------------------------------
+20102777 83
+20102777 163
+19916541 99
+19916541 147
+
+bams_UMI-dedup/aligned_UTK_primary/CT10_7718_pIAA_Q_SteadyState_UTK.primary.list-tally-flags.txt
+----------------------------------------
+33249881 99
+33249881 147
+11291083 83
+11291083 163
+
+bams_UMI-dedup/aligned_UTK_primary/CT2_6125_pIAA_Q_Nascent_UTK.primary.list-tally-flags.txt
+----------------------------------------
+19981272 83
+19981272 163
+19102654 99
+19102654 147
+
+bams_UMI-dedup/aligned_UTK_primary/CT2_6125_pIAA_Q_SteadyState_UTK.primary.list-tally-flags.txt
+----------------------------------------
+20475438 99
+20475438 147
+17925924 83
+17925924 163
+
+bams_UMI-dedup/aligned_UTK_primary/CT4_6126_pIAA_Q_Nascent_UTK.primary.list-tally-flags.txt
+----------------------------------------
+19709935 83
+19709935 163
+17543729 99
+17543729 147
+
+bams_UMI-dedup/aligned_UTK_primary/CT4_6126_pIAA_Q_SteadyState_UTK.primary.list-tally-flags.txt
+----------------------------------------
+24054088 99
+24054088 147
+15590848 83
+15590848 163
+
+bams_UMI-dedup/aligned_UTK_primary/CT6_7714_pIAA_Q_Nascent_UTK.primary.list-tally-flags.txt
+----------------------------------------
+22949321 83
+22949321 163
+21658382 99
+21658382 147
+
+bams_UMI-dedup/aligned_UTK_primary/CT6_7714_pIAA_Q_SteadyState_UTK.primary.list-tally-flags.txt
+----------------------------------------
+25397718 99
+25397718 147
+10161043 83
+10161043 163
+
+bams_UMI-dedup/aligned_UTK_primary/CT8_7716_pIAA_Q_Nascent_UTK.primary.list-tally-flags.txt
+----------------------------------------
+20359236 99
+20359236 147
+19710242 83
+19710242 163
+
+bams_UMI-dedup/aligned_UTK_primary/CT8_7716_pIAA_Q_SteadyState_UTK.primary.list-tally-flags.txt
+----------------------------------------
+30266543 99
+30266543 147
+11652015 83
+11652015 163
+
+bams_UMI-dedup/aligned_UTK_primary/CU11_5782_Q_Nascent_UTK.primary.list-tally-flags.txt
+----------------------------------------
+21396043 99
+21396043 147
+20224117 83
+20224117 163
+
+bams_UMI-dedup/aligned_UTK_primary/CU12_5782_Q_SteadyState_UTK.primary.list-tally-flags.txt
+----------------------------------------
+30125466 99
+30125466 147
+11530024 83
+11530024 163
+
+bams_UMI-dedup/aligned_UTK_primary/CW10_7747_8day_Q_IN_UTK.primary.list-tally-flags.txt
+----------------------------------------
+27655519 99
+27655519 147
+12279657 83
+12279657 163
+
+bams_UMI-dedup/aligned_UTK_primary/CW10_7747_8day_Q_PD_UTK.primary.list-tally-flags.txt
+----------------------------------------
+17667079 83
+17667079 163
+16804225 99
+16804225 147
+
+bams_UMI-dedup/aligned_UTK_primary/CW12_7748_8day_Q_IN_UTK.primary.list-tally-flags.txt
+----------------------------------------
+26818582 99
+26818582 147
+10043502 83
+10043502 163
+
+bams_UMI-dedup/aligned_UTK_primary/CW12_7748_8day_Q_PD_UTK.primary.list-tally-flags.txt
+----------------------------------------
+18594300 83
+18594300 163
+17897197 99
+17897197 147
+
+bams_UMI-dedup/aligned_UTK_primary/CW2_5781_8day_Q_IN_UTK.primary.list-tally-flags.txt
+----------------------------------------
+25397463 99
+25397463 147
+11863396 83
+11863396 163
+
+bams_UMI-dedup/aligned_UTK_primary/CW2_5781_8day_Q_PD_UTK.primary.list-tally-flags.txt
+----------------------------------------
+17806842 83
+17806842 163
+16673661 99
+16673661 147
+
+bams_UMI-dedup/aligned_UTK_primary/CW4_5782_8day_Q_IN_UTK.primary.list-tally-flags.txt
+----------------------------------------
+25711706 99
+25711706 147
+11435174 83
+11435174 163
+
+bams_UMI-dedup/aligned_UTK_primary/CW4_5782_8day_Q_PD_UTK.primary.list-tally-flags.txt
+----------------------------------------
+18187278 83
+18187278 163
+17126533 99
+17126533 147
+
+bams_UMI-dedup/aligned_UTK_primary/CW6_7078_8day_Q_IN_UTK.primary.list-tally-flags.txt
+----------------------------------------
+25430388 99
+25430388 147
+24807749 83
+24807749 163
+
+bams_UMI-dedup/aligned_UTK_primary/CW6_7078_8day_Q_PD_UTK.primary.list-tally-flags.txt
+----------------------------------------
+18347772 83
+18347772 163
+17894680 99
+17894680 147
+
+bams_UMI-dedup/aligned_UTK_primary/CW8_7079_8day_Q_IN_UTK.primary.list-tally-flags.txt
+----------------------------------------
+27048757 99
+27048757 147
+12422129 83
+12422129 163
+
+bams_UMI-dedup/aligned_UTK_primary/CW8_7079_8day_Q_PD_UTK.primary.list-tally-flags.txt
+----------------------------------------
+17634392 83
+17634392 163
+17172036 99
+17172036 147
+```
+</details>
+<br />
+
 <a id="get-all-bams-in--and-outfiles-into-a-single-array"></a>
 ##### Get all bams (in- and outfiles) into a single array
-<a id="code-63"></a>
+<a id="code-66"></a>
 ###### Code
 <details>
 <summary><i>Code: Get all bams (in- and outfiles) into a single array</i></summary>
@@ -5451,7 +5982,7 @@ echo "${#bams[@]}"
 
 <a id="use-gnu-parallel-to-run-samtools-index"></a>
 ##### Use `GNU parallel` to run `samtools index`
-<a id="code-64"></a>
+<a id="code-67"></a>
 ###### Code
 <details>
 <summary><i>Code: Run samtools index</i></summary>
@@ -5474,100 +6005,6 @@ parallel \
 ::: "${bams[@]}"
 ```
 </details>
-<br />
-
-<a id="use-gnu-parallel-to-run-samtools-idxstats"></a>
-##### Use `GNU parallel` to run `samtools idxstats`
-<a id="code-65"></a>
-###### Code
-<details>
-<summary><i>Code: Run samtools idxstats</i></summary>
-
-```bash
-#!/bin/bash
-#DONTRUN #CONTINUE
-
-parallel \
-    -k \
-    -j "${SLURM_CPUS_ON_NODE}" \
-    --dry-run \
-    "samtools idxstats {} > {.}.idxstats.txt" \
-::: "${bams[@]}"
-
-parallel \
-    -k \
-    -j "${SLURM_CPUS_ON_NODE}" \
-    "samtools idxstats  {} > {.}.idxstats.txt" \
-::: "${bams[@]}"
-```
-</details>
-<br />
-
-<a id="use-gnu-parallel-to-run-samtools-stats"></a>
-##### Use `GNU parallel` to run `samtools stats`
-<a id="code-66"></a>
-###### Code
-<details>
-<summary><i>Code: Run samtools stats</i></summary>
-
-```bash
-#!/bin/bash
-#DONTRUN #CONTINUE
-
-parallel \
-    -k \
-    -j 4 \
-    --dry-run \
-    "samtools stats -@ 4 {1} -r {2} > {1.}.stats.txt" \
-::: "${bams[@]}" \
-::: "${HOME}/genomes/combined_SC_KL_20S/fasta/combined_SC_KL_20S.fasta"
-
-parallel \
-    -k \
-    -j 4 \
-    "samtools stats -@ 4 {1} -r {2} > {1.}.stats.txt" \
-::: "${bams[@]}" \
-::: "${HOME}/genomes/combined_SC_KL_20S/fasta/combined_SC_KL_20S.fasta"
-```
-</details>
-<br />
-
-<a id="use-gnu-parallel-to-run-picard-alignmentsummarymetrics"></a>
-##### Use `GNU parallel` to run `picard AlignmentSummaryMetrics`
-<a id="code-67"></a>
-###### Code
-<details>
-<summary><i>Code: picard AlignmentSummaryMetrics</i></summary>
-
-```bash
-#!/bin/bash
-#DONTRUN #CONTINUE
-
-ml picard/2.25.1-Java-11
-# To execute picard run: java -jar "${EBROOTPICARD}/picard.jar"
-
-parallel \
-    -k \
-    -j "${SLURM_CPUS_ON_NODE}" \
-    --dry-run \
-    "java -jar {1}/picard.jar CollectAlignmentSummaryMetrics R={2} I={3} O={3.}.CollectAlignmentSummaryMetrics.txt" \
-::: "${EBROOTPICARD}" \
-::: "${HOME}/genomes/combined_SC_KL_20S/fasta/combined_SC_KL_20S.fasta" \
-::: "${bams[@]}"
-
-parallel \
-    -k \
-    -j "${SLURM_CPUS_ON_NODE}" \
-    "java -jar {1}/picard.jar CollectAlignmentSummaryMetrics R={2} I={3} O={3.}.CollectAlignmentSummaryMetrics.txt" \
-::: "${EBROOTPICARD}" \
-::: "${HOME}/genomes/combined_SC_KL_20S/fasta/combined_SC_KL_20S.fasta" \
-::: "${bams[@]}"
-```
-</details>
-<br />
-
-<a id="note-todo-come-back-to-run-even-more-qc-commands-on-the-bams"></a>
-##### `#NOTE` `#TODO` Come back to run even more QC commands on the bams
 <br />
 <br />
 
@@ -5601,16 +6038,18 @@ module load UMI-tools/1.0.1-foss-2019b-Python-3.7.4
 #  Make directories for outfiles
 mkdir -p "./bams_UMI-dedup/aligned_UT_primary_dedup-UMI"
 mkdir -p "./bams_UMI-dedup/aligned_UT_primary_dedup-pos"
+mkdir -p "./bams_UMI-dedup/aligned_UTK_primary_dedup-UMI"
+mkdir -p "./bams_UMI-dedup/aligned_UTK_primary_dedup-pos"
 ```
 </details>
 <br />
 
-<a id="02-set-up-necessary-variables-arrays-1"></a>
-### 02 Set up necessary variables, arrays
+<a id="02a-set-up-necessary-variables-arrays-aligned_ut_primary"></a>
+### 02a Set up necessary variables, arrays: `aligned_UT_primary`
 <a id="code-68"></a>
 #### Code
 <details>
-<summary><i>Code: Set up necessary variables, arrays</i></summary>
+<summary><i>Code: Set up necessary variables, arrays: aligned_UT_primary</i></summary>
 
 ```bash
 #!/bin/bash
@@ -5649,14 +6088,14 @@ echo "${#outbams_pos[@]}"
 </details>
 <br />
 
-<a id="03-use-gnu-parallel-to-run-umi_tools-dedup-for-umi-and-positional-deduplication"></a>
-### 03 Use `GNU parallel` to run `umi_tools dedup` for UMI and positional deduplication
-<a id="use-gnu-parallel-to-run-umi_tools-dedup-for-umi-deduplication"></a>
-#### Use `GNU parallel` to run `umi_tools dedup` for UMI deduplication
+<a id="03a-use-gnu-parallel-to-run-umi_tools-dedup-for-umi-and-positional-deduplication-aligned_ut_primary"></a>
+### 03a Use `GNU parallel` to run `umi_tools dedup` for UMI and positional deduplication: `aligned_UT_primary`
+<a id="use-gnu-parallel-to-run-umi_tools-dedup-for-umi-deduplication-aligned_ut_primary"></a>
+#### Use `GNU parallel` to run `umi_tools dedup` for UMI deduplication: `aligned_UT_primary`
 <a id="code-69"></a>
 ##### Code
 <details>
-<summary><i>Code: Run umi_tools dedup for UMI deduplication</i></summary>
+<summary><i>Code: Run umi_tools dedup for UMI deduplication: aligned_UT_primary</i></summary>
 
 ```bash
 #!/bin/bash
@@ -5702,12 +6141,12 @@ parallel \
 </details>
 <br />
 
-<a id="use-gnu-parallel-to-run-umi_tools-dedup-for-positional-deduplication"></a>
-#### Use `GNU parallel` to run `umi_tools dedup` for positional deduplication
+<a id="use-gnu-parallel-to-run-umi_tools-dedup-for-positional-deduplication-aligned_ut_primary"></a>
+#### Use `GNU parallel` to run `umi_tools dedup` for positional deduplication: `aligned_UT_primary`
 <a id="code-70"></a>
 ##### Code
 <details>
-<summary><i>Code: Run umi_tools dedup for positional deduplication</i></summary>
+<summary><i>Code: Run umi_tools dedup for positional deduplication: aligned_UT_primary</i></summary>
 
 ```bash
 #!/bin/bash
@@ -5751,13 +6190,162 @@ parallel \
 ::: "/fh/scratch/delete30/tsukiyama_t"
 ```
 </details>
+<br />
+
+<a id="02b-set-up-necessary-variables-arrays-aligned_utk_primary"></a>
+### 02b Set up necessary variables, arrays: `aligned_UTK_primary`
+<a id="code-71"></a>
+#### Code
+<details>
+<summary><i>Code: Set up necessary variables, arrays: aligned_UTK_primary</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+unset inbams
+typeset -a inbams
+while IFS=" " read -r -d $'\0'; do
+    inbams+=( "${REPLY}" )
+done < <(\
+    find "./bams_UMI-dedup/aligned_UTK_primary/" \
+        -maxdepth 1 \
+        -type f \
+        -name *.bam \
+        -print0 \
+            | sort -z \
+)
+echo_test "${inbams[@]}"
+echo "${#inbams[@]}"
+
+unset outbams_UMI
+unset outbams_pos
+typeset -a outbams_UMI
+typeset -a outbams_pos
+for i in "${inbams[@]}"; do
+    # i="${inbams[0]}"  # echo "${i}"
+    stem="$(basename "${i}" .bam)"  # echo "${stem}"
+    outbams_UMI+=( "./bams_UMI-dedup/aligned_UTK_primary_dedup-UMI/${stem}.dedup-UMI.bam" )
+    outbams_pos+=( "./bams_UMI-dedup/aligned_UTK_primary_dedup-pos/${stem}.dedup-pos.bam" )
+done
+echo_test "${outbams_UMI[@]}"
+echo_test "${outbams_pos[@]}"
+echo "${#outbams_UMI[@]}"
+echo "${#outbams_pos[@]}"
+```
+</details>
+<br />
+
+<a id="03b-use-gnu-parallel-to-run-umi_tools-dedup-for-umi-and-positional-deduplication-aligned_utk_primary"></a>
+### 03b Use `GNU parallel` to run `umi_tools dedup` for UMI and positional deduplication: `aligned_UTK_primary`
+<a id="use-gnu-parallel-to-run-umi_tools-dedup-for-umi-deduplication-aligned_utk_primary"></a>
+#### Use `GNU parallel` to run `umi_tools dedup` for UMI deduplication: `aligned_UTK_primary`
+<a id="code-72"></a>
+##### Code
+<details>
+<summary><i>Code: Run umi_tools dedup for UMI deduplication: aligned_UTK_primary</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+parallel \
+    -j "${SLURM_CPUS_ON_NODE}" \
+    --dry-run \
+    'umi_tools dedup \
+        --paired \
+        --spliced-is-unique \
+        --unmapped-reads=discard \
+        --stdin={1} \
+        --stdout={2} \
+        --temp-dir={3} \
+        --output-stats={2.}.stats \
+        --log={2.}.stdout.txt \
+        --error={2.}.stderr.txt \
+        --timeit={2.}.time.txt \
+        --timeit-header' \
+::: "${inbams[@]}" \
+:::+ "${outbams_UMI[@]}" \
+::: "/fh/scratch/delete30/tsukiyama_t"
+
+parallel \
+    -j "${SLURM_CPUS_ON_NODE}" \
+    'umi_tools dedup \
+        --paired \
+        --spliced-is-unique \
+        --unmapped-reads=discard \
+        --stdin={1} \
+        --stdout={2} \
+        --temp-dir={3} \
+        --output-stats={2.}.stats \
+        --log={2.}.stdout.txt \
+        --error={2.}.stderr.txt \
+        --timeit={2.}.time.txt \
+        --timeit-header' \
+::: "${inbams[@]}" \
+:::+ "${outbams_UMI[@]}" \
+::: "/fh/scratch/delete30/tsukiyama_t"
+```
+</details>
+<br />
+
+<a id="use-gnu-parallel-to-run-umi_tools-dedup-for-positional-deduplication-aligned_utk_primary"></a>
+#### Use `GNU parallel` to run `umi_tools dedup` for positional deduplication: `aligned_UTK_primary`
+<a id="code-73"></a>
+##### Code
+<details>
+<summary><i>Code: Run umi_tools dedup for positional deduplication: aligned_UTK_primary</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+parallel \
+    -j "${SLURM_CPUS_ON_NODE}" \
+    --dry-run \
+    'umi_tools dedup \
+        --ignore-umi \
+        --paired \
+        --spliced-is-unique \
+        --unmapped-reads=discard \
+        --stdin={1} \
+        --stdout={2} \
+        --temp-dir={3} \
+        --log={2.}.stdout.txt \
+        --error={2.}.stderr.txt \
+        --timeit={2.}.time.txt \
+        --timeit-header' \
+::: "${inbams[@]}" \
+:::+ "${outbams_pos[@]}" \
+::: "/fh/scratch/delete30/tsukiyama_t"
+
+parallel \
+    -j "${SLURM_CPUS_ON_NODE}" \
+    'umi_tools dedup \
+        --ignore-umi \
+        --paired \
+        --spliced-is-unique \
+        --unmapped-reads=discard \
+        --stdin={1} \
+        --stdout={2} \
+        --temp-dir={3} \
+        --log={2.}.stdout.txt \
+        --error={2.}.stderr.txt \
+        --timeit={2.}.time.txt \
+        --timeit-header' \
+::: "${inbams[@]}" \
+:::+ "${outbams_pos[@]}" \
+::: "/fh/scratch/delete30/tsukiyama_t"
+```
+</details>
+<br />
 <br />
 
 <a id="viii-separate-out-alignments-to-different-species-trinity"></a>
 ## <u>VIII</u> Separate out alignments to different species *(Trinity)*
 <a id="01-get-situated-make-directories-for-outfiles-2"></a>
 ### 01 Get situated, make directories for outfiles
-<a id="code-71"></a>
+<a id="code-74"></a>
 #### Code
 <details>
 <summary><i>Code: Get situated, make directories for outfiles</i></summary>
@@ -5789,9 +6377,9 @@ mkdir -p "./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S"
 </details>
 <br />
 
-<a id="02-set-up-necessary-variables-arrays-2"></a>
+<a id="02-set-up-necessary-variables-arrays-1"></a>
 ### 02 Set up necessary variables, arrays
-<a id="code-72"></a>
+<a id="code-75"></a>
 #### Code
 <details>
 <summary><i>Code: Set up necessary variables, arrays</i></summary>
@@ -5842,7 +6430,7 @@ outdir_pu="./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S"
 
 <a id="03-use-gnu-parallel-to-split-bams-by-species"></a>
 ### 03 Use `GNU parallel` to split bams by species
-<a id="code-73"></a>
+<a id="code-76"></a>
 #### Code
 <details>
 <summary><i>Code: Use GNU parallel to split bams by species</i></summary>
@@ -5882,7 +6470,7 @@ parallel \
 </details>
 <br />
 
-<a id="printed-3"></a>
+<a id="printed-4"></a>
 #### Printed
 <details>
 <summary><i>Printed: </i></summary>
@@ -5927,7 +6515,7 @@ samtools view -@ 2 -h ./bams_UMI-dedup/aligned_UTK_primary-unmapped/5782_Q_IP_UT
 ## <u>IX</u> Merge bams *(Trinity)*
 <a id="01-get-situated-make-directories-for-outfiles-3"></a>
 ### 01 Get situated, make directories for outfiles
-<a id="code-74"></a>
+<a id="code-77"></a>
 #### Code
 <details>
 <summary><i>Code: Get situated, make directories for outfiles</i></summary>
@@ -5959,9 +6547,9 @@ mkdir -p "./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_merged"
 </details>
 <br />
 
-<a id="02-set-up-necessary-variables-arrays-3"></a>
+<a id="02-set-up-necessary-variables-arrays-2"></a>
 ### 02 Set up necessary variables, arrays
-<a id="code-75"></a>
+<a id="code-78"></a>
 #### Code
 <details>
 <summary><i>Code: Set up necessary variables, arrays</i></summary>
@@ -6038,7 +6626,7 @@ echo_test "${out_pu[@]}"
 </details>
 <br />
 
-<a id="printed-4"></a>
+<a id="printed-5"></a>
 #### Printed
 <details>
 <summary><i>Printed: Set up necessary variables, arrays</i></summary>
@@ -6146,7 +6734,7 @@ Value 2 (out): ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_merged/
 
 <a id="03-use-gnu-parallel-to-run-samtools-merge"></a>
 ### 03 Use `GNU parallel` to run `samtools merge`
-<a id="code-76"></a>
+<a id="code-79"></a>
 #### Code
 <details>
 <summary><i>Code: Use GNU parallel to run samtools merge</i></summary>
@@ -6191,7 +6779,7 @@ parallel \
 </details>
 <br />
 
-<a id="printed-5"></a>
+<a id="printed-6"></a>
 #### Printed
 <details>
 <summary><i>Printed: Run samtools merge</i></summary>
@@ -6230,7 +6818,7 @@ samtools merge -@ 4 ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S/57
 ## <u>X</u> Perform bam-to-fastq conversions *(Trinity)*
 <a id="01-get-situated-make-directories-for-outfiles-4"></a>
 ### 01 Get situated, make directories for outfiles
-<a id="code-77"></a>
+<a id="code-80"></a>
 #### Code
 <details>
 <summary><i>Code: Get situated, make directories for outfiles</i></summary>
@@ -6264,9 +6852,9 @@ mkdir -p "./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_merged_bam-
 </details>
 <br />
 
-<a id="02-set-up-necessary-variables-arrays-4"></a>
+<a id="02-set-up-necessary-variables-arrays-3"></a>
 ### 02 Set up necessary variables, arrays
-<a id="code-78"></a>
+<a id="code-81"></a>
 #### Code
 <details>
 <summary><i>Code: Set up necessary variables, arrays</i></summary>
@@ -6393,7 +6981,7 @@ echo "${#pUm_o[@]}"
 </details>
 <br />
 
-<a id="printed-6"></a>
+<a id="printed-7"></a>
 #### Printed
 <details>
 <summary><i>Printed: </i></summary>
@@ -6562,7 +7150,7 @@ echo "${#pUm_o[@]}"
 
 <a id="03-use-gnu-parallel-to-run-samtools-fastq"></a>
 ### 03 Use `GNU parallel` to run samtools fastq
-<a id="code-79"></a>
+<a id="code-82"></a>
 #### Code
 <details>
 <summary><i>Code: Use GNU parallel to run samtools fastq</i></summary>
