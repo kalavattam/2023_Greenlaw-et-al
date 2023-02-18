@@ -170,51 +170,59 @@
             1. [Run `list_tally_flags()`](#run-list_tally_flags-3)
                 1. [Code](#code-65)
                 1. [Printed](#printed-3)
-            1. [Get all bams \(in- and outfiles\) into a single array](#get-all-bams-in--and-outfiles-into-a-single-array)
-                1. [Code](#code-66)
-            1. [Use `GNU parallel` to run `samtools index`](#use-gnu-parallel-to-run-samtools-index)
-                1. [Code](#code-67)
+    1. [04 Use `GNU parallel` to run `samtools index`](#04-use-gnu-parallel-to-run-samtools-index)
+        1. [Get all bams \(in- and outfiles\) into a single array](#get-all-bams-in--and-outfiles-into-a-single-array)
+            1. [Code](#code-66)
+        1. [Run `samtools index`](#run-samtools-index)
+            1. [Code](#code-67)
 1. [VII Deduplicate "primary" files by UMI, position *\(general\)*](#vii-deduplicate-primary-files-by-umi-position-general)
     1. [01 Get situated, make directories for outfiles](#01-get-situated-make-directories-for-outfiles-1)
-    1. [02a Set up necessary variables, arrays: `aligned_UT_primary`](#02a-set-up-necessary-variables-arrays-aligned_ut_primary)
-        1. [Code](#code-68)
-    1. [03a Use `GNU parallel` to run `umi_tools dedup` for UMI and positional deduplication: `aligned_UT_primary`](#03a-use-gnu-parallel-to-run-umi_tools-dedup-for-umi-and-positional-deduplication-aligned_ut_primary)
-        1. [Use `GNU parallel` to run `umi_tools dedup` for UMI deduplication: `aligned_UT_primary`](#use-gnu-parallel-to-run-umi_tools-dedup-for-umi-deduplication-aligned_ut_primary)
-            1. [Code](#code-69)
-        1. [Use `GNU parallel` to run `umi_tools dedup` for positional deduplication: `aligned_UT_primary`](#use-gnu-parallel-to-run-umi_tools-dedup-for-positional-deduplication-aligned_ut_primary)
-            1. [Code](#code-70)
-    1. [02b Set up necessary variables, arrays: `aligned_UTK_primary`](#02b-set-up-necessary-variables-arrays-aligned_utk_primary)
-        1. [Code](#code-71)
-    1. [03b Use `GNU parallel` to run `umi_tools dedup` for UMI and positional deduplication: `aligned_UTK_primary`](#03b-use-gnu-parallel-to-run-umi_tools-dedup-for-umi-and-positional-deduplication-aligned_utk_primary)
-        1. [Use `GNU parallel` to run `umi_tools dedup` for UMI deduplication: `aligned_UTK_primary`](#use-gnu-parallel-to-run-umi_tools-dedup-for-umi-deduplication-aligned_utk_primary)
-            1. [Code](#code-72)
-        1. [Use `GNU parallel` to run `umi_tools dedup` for positional deduplication: `aligned_UTK_primary`](#use-gnu-parallel-to-run-umi_tools-dedup-for-positional-deduplication-aligned_utk_primary)
-            1. [Code](#code-73)
+    1. [02 Process `aligned_UT_primary` data](#02-process-aligned_ut_primary-data)
+        1. [02a Set up necessary variables, arrays](#02a-set-up-necessary-variables-arrays)
+            1. [Code](#code-68)
+        1. [02b Use `GNU parallel` to run `umi_tools dedup` for UMI and positional deduplication](#02b-use-gnu-parallel-to-run-umi_tools-dedup-for-umi-and-positional-deduplication)
+            1. [Use `GNU parallel` to run `umi_tools dedup` for UMI deduplication](#use-gnu-parallel-to-run-umi_tools-dedup-for-umi-deduplication)
+                1. [Code](#code-69)
+            1. [Use `GNU parallel` to run `umi_tools dedup` for positional deduplication](#use-gnu-parallel-to-run-umi_tools-dedup-for-positional-deduplication)
+                1. [Code](#code-70)
+    1. [03 Process `aligned_UTK_primary` data](#03-process-aligned_utk_primary-data)
+        1. [03a Set up necessary variables, arrays](#03a-set-up-necessary-variables-arrays)
+            1. [Code](#code-71)
+        1. [03b Use `GNU parallel` to run `umi_tools dedup` for UMI and positional deduplication](#03b-use-gnu-parallel-to-run-umi_tools-dedup-for-umi-and-positional-deduplication)
+            1. [Use `GNU parallel` to run `umi_tools dedup` for UMI deduplication](#use-gnu-parallel-to-run-umi_tools-dedup-for-umi-deduplication-1)
+                1. [Code](#code-72)
+            1. [Use `GNU parallel` to run `umi_tools dedup` for positional deduplication](#use-gnu-parallel-to-run-umi_tools-dedup-for-positional-deduplication-1)
+                1. [Code](#code-73)
+    1. [04 Use `GNU parallel` to run `samtools index`](#04-use-gnu-parallel-to-run-samtools-index-1)
+        1. [Get all bams \(in- and outfiles\) into a single array](#get-all-bams-in--and-outfiles-into-a-single-array-1)
+            1. [Code](#code-74)
+        1. [Run `samtools index`](#run-samtools-index-1)
+            1. [Code](#code-75)
 1. [VIII Separate out alignments to different species *\(Trinity\)*](#viii-separate-out-alignments-to-different-species-trinity)
     1. [01 Get situated, make directories for outfiles](#01-get-situated-make-directories-for-outfiles-2)
-        1. [Code](#code-74)
-    1. [02 Set up necessary variables, arrays](#02-set-up-necessary-variables-arrays-1)
-        1. [Code](#code-75)
-    1. [03 Use `GNU parallel` to split bams by species](#03-use-gnu-parallel-to-split-bams-by-species)
         1. [Code](#code-76)
+    1. [02 Set up necessary variables, arrays](#02-set-up-necessary-variables-arrays-1)
+        1. [Code](#code-77)
+    1. [03 Use `GNU parallel` to split bams by species](#03-use-gnu-parallel-to-split-bams-by-species)
+        1. [Code](#code-78)
         1. [Printed](#printed-4)
 1. [IX Merge bams *\(Trinity\)*](#ix-merge-bams-trinity)
     1. [01 Get situated, make directories for outfiles](#01-get-situated-make-directories-for-outfiles-3)
-        1. [Code](#code-77)
+        1. [Code](#code-79)
     1. [02 Set up necessary variables, arrays](#02-set-up-necessary-variables-arrays-2)
-        1. [Code](#code-78)
+        1. [Code](#code-80)
         1. [Printed](#printed-5)
     1. [03 Use `GNU parallel` to run `samtools merge`](#03-use-gnu-parallel-to-run-samtools-merge)
-        1. [Code](#code-79)
+        1. [Code](#code-81)
         1. [Printed](#printed-6)
 1. [X Perform bam-to-fastq conversions *\(Trinity\)*](#x-perform-bam-to-fastq-conversions-trinity)
     1. [01 Get situated, make directories for outfiles](#01-get-situated-make-directories-for-outfiles-4)
-        1. [Code](#code-80)
+        1. [Code](#code-82)
     1. [02 Set up necessary variables, arrays](#02-set-up-necessary-variables-arrays-3)
-        1. [Code](#code-81)
+        1. [Code](#code-83)
         1. [Printed](#printed-7)
     1. [03 Use `GNU parallel` to run samtools fastq](#03-use-gnu-parallel-to-run-samtools-fastq)
-        1. [Code](#code-82)
+        1. [Code](#code-84)
         1. [Printed, notes](#printed-notes)
 
 <!-- /MarkdownTOC -->
@@ -1829,7 +1837,7 @@ sbatch "${store_scripts}/${script_submit}"
 <a id="code-32"></a>
 ##### Code
 <details>
-<summary><i>Code: Get situated, make a directory for symlinked fastqs and bams</i></summary>
+<summary><i>Code: Get situated, make directories for in-/outfiles</i></summary>
 
 ```bash
 #!/bin/bash
@@ -2640,8 +2648,7 @@ rm -r *_STARtmp/
 #!/bin/bash
 #DONTRUN #CONTINUE
 
-#  ------------------------------------
-#  Check on the problem bam
+#  Check on the problem bam (see 'Notes, etc.' below) -------------------------
 cd ../../sh_err_out/err_out
 .,f | tail -220
 # -rw-rw---- 1 kalavatt 1.8K Feb  8 16:15 run_STAR.CT2_6125_pIAA_Q_SteadyState_UT.9897387-47.out.txt
@@ -2689,9 +2696,8 @@ zcat \
         | tail
 
 
-#  ------------------------------------
-#  I don't see the problem spotted by STAR; so, try running STAR again for just
-#+ this dataset
+#  I don't see the problem spotted by STAR ------------------------------------
+#  ...so try running STAR again for just this dataset
 mkdir -p ./bams_UMI-dedup/aligned_umi-extracted_trimmed/bak
 mv \
     ./bams_UMI-dedup/aligned_umi-extracted_trimmed/CT2_6125_pIAA_Q_SteadyState_UT* \
@@ -2725,8 +2731,7 @@ STAR \
 #NOTE Weird, got the same error again (see 'Notes, etc.' below)
 
 
-#  ------------------------------------
-#  Try running atria again, then running STAR again
+#  Try running atria again, then running STAR again ---------------------------
 cat sh_err_out/err_out/run_atria_trim.Sample_CT2_6125_pIAA_Q_SteadyState_S6.9294591-47.err.txt
 cat sh_err_out/err_out/run_atria_trim.Sample_CT2_6125_pIAA_Q_SteadyState_S6.9294591-47.out.txt
 
@@ -2791,7 +2796,7 @@ STAR \
 #NOTE It worked! Let's move on...
 
 
-#  Clean things up --------------------
+#  Clean things up ------------------------------------------------------------
 transcriptome && 
     {
         cd "results/2023-0115" \
@@ -2818,7 +2823,7 @@ cd ../../fastqs_UMI-dedup/atria_trim
 #NOTE Everything looks OK
 
 
-#  Move on ----------------------------
+#  Move on --------------------------------------------------------------------
 transcriptome && 
     {
         cd "results/2023-0115" \
@@ -4465,7 +4470,7 @@ echo "${#bams_UT_prim[@]}"
 <a id="code-55"></a>
 ##### Code
 <details>
-<summary><i>Code: Set up information for aligned_UTK_primary-secondary_dedup-none</i></summary>
+<summary><i>Code: Set up information for aligned_UTK_primary-secondary_*</i></summary>
 
 ```bash
 #!/bin/bash
@@ -5251,7 +5256,7 @@ bams_UMI-dedup/aligned_UTK_primary-secondary//5782_Q_IP_UTK.primary-secondary.li
 <a id="code-62"></a>
 ###### Code
 <details>
-<summary><i>Code: Run separate_bam.sh for aligned_UTK_primary-unmapped_*</i></summary>
+<summary><i>Code: Run separate_bam.sh</i></summary>
 
 ```bash
 #!/bin/bash
@@ -5353,7 +5358,8 @@ done
 <details>
 <summary><i>Printed: Run list_tally_flags()</i></summary>
 
-Very surprised at how few `73`, `133`, `153`, `101`, `89`, `69`, `165`, and `137` flags there are
+`#NOTE` Very surprised at how few `73`, `133`, `153`, `101`, `89`, `69`, `165`, and `137` flags there are...
+
 ```txt
 bams_UMI-dedup/aligned_UTK_primary-unmapped/5781_G1_IN_UTK.proper-etc.list-tally-flags.txt
 ----------------------------------------
@@ -5948,10 +5954,13 @@ bams_UMI-dedup/aligned_UTK_primary/CW8_7079_8day_Q_PD_UTK.primary.list-tally-fla
 </details>
 <br />
 
+<a id="04-use-gnu-parallel-to-run-samtools-index"></a>
+### 04 Use `GNU parallel` to run `samtools index`
+`#HERE`
 <a id="get-all-bams-in--and-outfiles-into-a-single-array"></a>
-##### Get all bams (in- and outfiles) into a single array
+#### Get all bams (in- and outfiles) into a single array
 <a id="code-66"></a>
-###### Code
+##### Code
 <details>
 <summary><i>Code: Get all bams (in- and outfiles) into a single array</i></summary>
 
@@ -5980,10 +5989,10 @@ echo "${#bams[@]}"
 </details>
 <br />
 
-<a id="use-gnu-parallel-to-run-samtools-index"></a>
-##### Use `GNU parallel` to run `samtools index`
+<a id="run-samtools-index"></a>
+#### Run `samtools index`
 <a id="code-67"></a>
-###### Code
+##### Code
 <details>
 <summary><i>Code: Run samtools index</i></summary>
 
@@ -6044,12 +6053,14 @@ mkdir -p "./bams_UMI-dedup/aligned_UTK_primary_dedup-pos"
 </details>
 <br />
 
-<a id="02a-set-up-necessary-variables-arrays-aligned_ut_primary"></a>
-### 02a Set up necessary variables, arrays: `aligned_UT_primary`
+<a id="02-process-aligned_ut_primary-data"></a>
+### 02 Process `aligned_UT_primary` data
+<a id="02a-set-up-necessary-variables-arrays"></a>
+#### 02a Set up necessary variables, arrays
 <a id="code-68"></a>
-#### Code
+##### Code
 <details>
-<summary><i>Code: Set up necessary variables, arrays: aligned_UT_primary</i></summary>
+<summary><i>Code: Set up necessary variables, arrays</i></summary>
 
 ```bash
 #!/bin/bash
@@ -6088,14 +6099,14 @@ echo "${#outbams_pos[@]}"
 </details>
 <br />
 
-<a id="03a-use-gnu-parallel-to-run-umi_tools-dedup-for-umi-and-positional-deduplication-aligned_ut_primary"></a>
-### 03a Use `GNU parallel` to run `umi_tools dedup` for UMI and positional deduplication: `aligned_UT_primary`
-<a id="use-gnu-parallel-to-run-umi_tools-dedup-for-umi-deduplication-aligned_ut_primary"></a>
-#### Use `GNU parallel` to run `umi_tools dedup` for UMI deduplication: `aligned_UT_primary`
+<a id="02b-use-gnu-parallel-to-run-umi_tools-dedup-for-umi-and-positional-deduplication"></a>
+#### 02b Use `GNU parallel` to run `umi_tools dedup` for UMI and positional deduplication
+<a id="use-gnu-parallel-to-run-umi_tools-dedup-for-umi-deduplication"></a>
+##### Use `GNU parallel` to run `umi_tools dedup` for UMI deduplication
 <a id="code-69"></a>
-##### Code
+###### Code
 <details>
-<summary><i>Code: Run umi_tools dedup for UMI deduplication: aligned_UT_primary</i></summary>
+<summary><i>Code: Use GNU parallel to run umi_tools dedup for UMI deduplication</i></summary>
 
 ```bash
 #!/bin/bash
@@ -6141,12 +6152,12 @@ parallel \
 </details>
 <br />
 
-<a id="use-gnu-parallel-to-run-umi_tools-dedup-for-positional-deduplication-aligned_ut_primary"></a>
-#### Use `GNU parallel` to run `umi_tools dedup` for positional deduplication: `aligned_UT_primary`
+<a id="use-gnu-parallel-to-run-umi_tools-dedup-for-positional-deduplication"></a>
+##### Use `GNU parallel` to run `umi_tools dedup` for positional deduplication
 <a id="code-70"></a>
-##### Code
+###### Code
 <details>
-<summary><i>Code: Run umi_tools dedup for positional deduplication: aligned_UT_primary</i></summary>
+<summary><i>Code: Use GNU parallel to run umi_tools dedup for positional deduplication</i></summary>
 
 ```bash
 #!/bin/bash
@@ -6192,12 +6203,14 @@ parallel \
 </details>
 <br />
 
-<a id="02b-set-up-necessary-variables-arrays-aligned_utk_primary"></a>
-### 02b Set up necessary variables, arrays: `aligned_UTK_primary`
+<a id="03-process-aligned_utk_primary-data"></a>
+### 03 Process `aligned_UTK_primary` data
+<a id="03a-set-up-necessary-variables-arrays"></a>
+#### 03a Set up necessary variables, arrays
 <a id="code-71"></a>
-#### Code
+##### Code
 <details>
-<summary><i>Code: Set up necessary variables, arrays: aligned_UTK_primary</i></summary>
+<summary><i>Code: Set up necessary variables, arrays</i></summary>
 
 ```bash
 #!/bin/bash
@@ -6236,14 +6249,14 @@ echo "${#outbams_pos[@]}"
 </details>
 <br />
 
-<a id="03b-use-gnu-parallel-to-run-umi_tools-dedup-for-umi-and-positional-deduplication-aligned_utk_primary"></a>
-### 03b Use `GNU parallel` to run `umi_tools dedup` for UMI and positional deduplication: `aligned_UTK_primary`
-<a id="use-gnu-parallel-to-run-umi_tools-dedup-for-umi-deduplication-aligned_utk_primary"></a>
-#### Use `GNU parallel` to run `umi_tools dedup` for UMI deduplication: `aligned_UTK_primary`
+<a id="03b-use-gnu-parallel-to-run-umi_tools-dedup-for-umi-and-positional-deduplication"></a>
+#### 03b Use `GNU parallel` to run `umi_tools dedup` for UMI and positional deduplication
+<a id="use-gnu-parallel-to-run-umi_tools-dedup-for-umi-deduplication-1"></a>
+##### Use `GNU parallel` to run `umi_tools dedup` for UMI deduplication
 <a id="code-72"></a>
-##### Code
+###### Code
 <details>
-<summary><i>Code: Run umi_tools dedup for UMI deduplication: aligned_UTK_primary</i></summary>
+<summary><i>Code: Use GNU parallel to run umi_tools dedup for UMI deduplication</i></summary>
 
 ```bash
 #!/bin/bash
@@ -6289,12 +6302,12 @@ parallel \
 </details>
 <br />
 
-<a id="use-gnu-parallel-to-run-umi_tools-dedup-for-positional-deduplication-aligned_utk_primary"></a>
-#### Use `GNU parallel` to run `umi_tools dedup` for positional deduplication: `aligned_UTK_primary`
+<a id="use-gnu-parallel-to-run-umi_tools-dedup-for-positional-deduplication-1"></a>
+##### Use `GNU parallel` to run `umi_tools dedup` for positional deduplication
 <a id="code-73"></a>
-##### Code
+###### Code
 <details>
-<summary><i>Code: Run umi_tools dedup for positional deduplication: aligned_UTK_primary</i></summary>
+<summary><i>Code: Use GNU parallel to run umi_tools dedup for positional deduplication</i></summary>
 
 ```bash
 #!/bin/bash
@@ -6336,6 +6349,71 @@ parallel \
 ::: "${inbams[@]}" \
 :::+ "${outbams_pos[@]}" \
 ::: "/fh/scratch/delete30/tsukiyama_t"
+```
+</details>
+<br />
+
+<a id="04-use-gnu-parallel-to-run-samtools-index-1"></a>
+### 04 Use `GNU parallel` to run `samtools index`
+`#HERE` `#DEKHO`
+<a id="get-all-bams-in--and-outfiles-into-a-single-array-1"></a>
+#### Get all bams (in- and outfiles) into a single array
+<a id="code-74"></a>
+##### Code
+<details>
+<summary><i>Code: Get all bams (in- and outfiles) into a single array</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+module purge
+module load SAMtools/1.16.1-GCC-11.2.0
+
+cd ./bams_UMI-dedup \
+    || echo "cd'ing failed; check on this..."
+
+unset bams
+typeset -a bams
+while IFS=" " read -r -d $'\0'; do
+    bams+=( "${REPLY}" )
+done < <(\
+    find . \
+        -maxdepth 2 \
+        -type f \
+        -name *dedup*.bam \
+        -print0 \
+            | sort -z \
+)
+echo_test "${bams[@]}"
+echo "${#bams[@]}"
+```
+</details>
+<br />
+
+<a id="run-samtools-index-1"></a>
+#### Run `samtools index`
+<a id="code-75"></a>
+##### Code
+<details>
+<summary><i>Code: Run samtools index</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+parallel \
+    -k \
+    -j 4 \
+    --dry-run \
+    "samtools index -@ 8 {}" \
+::: "${bams[@]}"
+
+parallel \
+    -k \
+    -j 4 \
+    "samtools index -@ 8 {}" \
+::: "${bams[@]}"
 ```
 </details>
 <br />
@@ -6345,7 +6423,7 @@ parallel \
 ## <u>VIII</u> Separate out alignments to different species *(Trinity)*
 <a id="01-get-situated-make-directories-for-outfiles-2"></a>
 ### 01 Get situated, make directories for outfiles
-<a id="code-74"></a>
+<a id="code-76"></a>
 #### Code
 <details>
 <summary><i>Code: Get situated, make directories for outfiles</i></summary>
@@ -6379,7 +6457,7 @@ mkdir -p "./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S"
 
 <a id="02-set-up-necessary-variables-arrays-1"></a>
 ### 02 Set up necessary variables, arrays
-<a id="code-75"></a>
+<a id="code-77"></a>
 #### Code
 <details>
 <summary><i>Code: Set up necessary variables, arrays</i></summary>
@@ -6430,7 +6508,7 @@ outdir_pu="./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S"
 
 <a id="03-use-gnu-parallel-to-split-bams-by-species"></a>
 ### 03 Use `GNU parallel` to split bams by species
-<a id="code-76"></a>
+<a id="code-78"></a>
 #### Code
 <details>
 <summary><i>Code: Use GNU parallel to split bams by species</i></summary>
@@ -6515,7 +6593,7 @@ samtools view -@ 2 -h ./bams_UMI-dedup/aligned_UTK_primary-unmapped/5782_Q_IP_UT
 ## <u>IX</u> Merge bams *(Trinity)*
 <a id="01-get-situated-make-directories-for-outfiles-3"></a>
 ### 01 Get situated, make directories for outfiles
-<a id="code-77"></a>
+<a id="code-79"></a>
 #### Code
 <details>
 <summary><i>Code: Get situated, make directories for outfiles</i></summary>
@@ -6549,7 +6627,7 @@ mkdir -p "./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_merged"
 
 <a id="02-set-up-necessary-variables-arrays-2"></a>
 ### 02 Set up necessary variables, arrays
-<a id="code-78"></a>
+<a id="code-80"></a>
 #### Code
 <details>
 <summary><i>Code: Set up necessary variables, arrays</i></summary>
@@ -6734,7 +6812,7 @@ Value 2 (out): ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_merged/
 
 <a id="03-use-gnu-parallel-to-run-samtools-merge"></a>
 ### 03 Use `GNU parallel` to run `samtools merge`
-<a id="code-79"></a>
+<a id="code-81"></a>
 #### Code
 <details>
 <summary><i>Code: Use GNU parallel to run samtools merge</i></summary>
@@ -6818,7 +6896,7 @@ samtools merge -@ 4 ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S/57
 ## <u>X</u> Perform bam-to-fastq conversions *(Trinity)*
 <a id="01-get-situated-make-directories-for-outfiles-4"></a>
 ### 01 Get situated, make directories for outfiles
-<a id="code-80"></a>
+<a id="code-82"></a>
 #### Code
 <details>
 <summary><i>Code: Get situated, make directories for outfiles</i></summary>
@@ -6854,7 +6932,7 @@ mkdir -p "./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_merged_bam-
 
 <a id="02-set-up-necessary-variables-arrays-3"></a>
 ### 02 Set up necessary variables, arrays
-<a id="code-81"></a>
+<a id="code-83"></a>
 #### Code
 <details>
 <summary><i>Code: Set up necessary variables, arrays</i></summary>
@@ -7150,7 +7228,7 @@ echo "${#pUm_o[@]}"
 
 <a id="03-use-gnu-parallel-to-run-samtools-fastq"></a>
 ### 03 Use `GNU parallel` to run samtools fastq
-<a id="code-82"></a>
+<a id="code-84"></a>
 #### Code
 <details>
 <summary><i>Code: Use GNU parallel to run samtools fastq</i></summary>

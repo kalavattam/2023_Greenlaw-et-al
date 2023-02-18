@@ -32,10 +32,10 @@
 				1. [Code](#code-7)
 			1. [Copy over files of interest](#copy-over-files-of-interest-1)
 				1. [Code](#code-8)
-1. [I Run echo tests](#i-run-echo-tests)
+1. [I Run echo tests with `Q_N` data](#i-run-echo-tests-with-q_n-data)
 	1. [pre Get situated, make necessary directories](#pre-get-situated-make-necessary-directories)
 		1. [Code](#code-9)
-	1. [i Run an echo test for Trinity GF mode with Q_N data](#i-run-an-echo-test-for-trinity-gf-mode-with-q_n-data)
+	1. [i Run an echo test for Trinity GF mode with `Q_N` data](#i-run-an-echo-test-for-trinity-gf-mode-with-q_n-data)
 		1. [01 Define variables, arrays](#01-define-variables-arrays)
 			1. [Code](#code-10)
 		1. [02 Generate lists of permuted parameters](#02-generate-lists-of-permuted-parameters)
@@ -51,7 +51,7 @@
 			1. [Code](#code-14)
 		1. [05 sbatch/srun the echo test](#05-sbatchsrun-the-echo-test)
 			1. [Code](#code-15)
-	1. [ii Run an echo test for Trinity GG mode with Q_N data](#ii-run-an-echo-test-for-trinity-gg-mode-with-q_n-data)
+	1. [ii Run an echo test for Trinity GG mode with `Q_N` data](#ii-run-an-echo-test-for-trinity-gg-mode-with-q_n-data)
 		1. [01 Define variables, arrays](#01-define-variables-arrays-1)
 			1. [Code](#code-16)
 		1. [02 Generate lists of permuted parameters](#02-generate-lists-of-permuted-parameters-1)
@@ -67,10 +67,10 @@
 			1. [Code](#code-20)
 		1. [05 sbatch/srun the echo test](#05-sbatchsrun-the-echo-test-1)
 			1. [Code](#code-21)
-1. [II Run Trinity](#ii-run-trinity)
+1. [II Run Trinity with `Q_N` data](#ii-run-trinity-with-q_n-data)
 	1. [pre Get situated, make necessary directories](#pre-get-situated-make-necessary-directories-1)
 		1. [Code](#code-22)
-	1. [i Run Trinity GF mode with Q_N data](#i-run-trinity-gf-mode-with-q_n-data)
+	1. [i Run Trinity GF mode with `Q_N` data](#i-run-trinity-gf-mode-with-q_n-data)
 		1. [01 Define variables, arrays](#01-define-variables-arrays-2)
 			1. [Code](#code-23)
 		1. [02 Generate lists of permuted parameters](#02-generate-lists-of-permuted-parameters-2)
@@ -84,7 +84,7 @@
 			1. [Code](#code-27)
 		1. [05 sbatch/srun Trinity](#05-sbatchsrun-trinity)
 			1. [Code](#code-28)
-	1. [ii Run Trinity GG mode with Q_N data](#ii-run-trinity-gg-mode-with-q_n-data)
+	1. [ii Run Trinity GG mode with `Q_N` data](#ii-run-trinity-gg-mode-with-q_n-data)
 		1. [01 Define variables, arrays](#01-define-variables-arrays-3)
 			1. [Code](#code-29)
 		1. [02 Generate lists of permuted parameters](#02-generate-lists-of-permuted-parameters-3)
@@ -98,6 +98,72 @@
 			1. [Code](#code-33)
 		1. [05 sbatch/srun Trinity](#05-sbatchsrun-trinity-1)
 			1. [Code](#code-34)
+1. [III Run echo tests with `G_N` data](#iii-run-echo-tests-with-g_n-data)
+	1. [pre Get situated, make necessary directories](#pre-get-situated-make-necessary-directories-2)
+		1. [Code](#code-35)
+	1. [i Run an echo test for Trinity GF mode with `G_N` data](#i-run-an-echo-test-for-trinity-gf-mode-with-g_n-data)
+		1. [01 Define variables, arrays](#01-define-variables-arrays-4)
+			1. [Code](#code-36)
+		1. [02 Generate lists of permuted parameters](#02-generate-lists-of-permuted-parameters-4)
+			1. [02a Write the "master list"](#02a-write-the-master-list-4)
+				1. [Code](#code-37)
+				1. [Printed](#printed-4)
+			1. [02b Write individual lists](#02b-write-individual-lists-4)
+				1. [Code](#code-38)
+				1. [Printed](#printed-5)
+		1. [03 Use a `HEREDOC` to write the echo-test submission script](#03-use-a-heredoc-to-write-the-echo-test-submission-script-2)
+			1. [Code](#code-39)
+		1. [04 Use a `HEREDOC` to write the echo-test run script](#04-use-a-heredoc-to-write-the-echo-test-run-script-2)
+			1. [Code](#code-40)
+		1. [05 sbatch/srun the echo test](#05-sbatchsrun-the-echo-test-2)
+			1. [Code](#code-41)
+	1. [ii Run an echo test for Trinity GG mode with `G_N` data](#ii-run-an-echo-test-for-trinity-gg-mode-with-g_n-data)
+		1. [01 Define variables, arrays](#01-define-variables-arrays-5)
+			1. [Code](#code-42)
+		1. [02 Generate lists of permuted parameters](#02-generate-lists-of-permuted-parameters-5)
+			1. [02a Write the "master list"](#02a-write-the-master-list-5)
+				1. [Code](#code-43)
+				1. [Printed](#printed-6)
+			1. [02b Write individual lists](#02b-write-individual-lists-5)
+				1. [Code](#code-44)
+				1. [Printed](#printed-7)
+		1. [03 Use a `HEREDOC` to write the echo-test submission script](#03-use-a-heredoc-to-write-the-echo-test-submission-script-3)
+			1. [Code](#code-45)
+		1. [04 Use a `HEREDOC` to write the echo-test run script](#04-use-a-heredoc-to-write-the-echo-test-run-script-3)
+			1. [Code](#code-46)
+		1. [05 sbatch/srun the echo test](#05-sbatchsrun-the-echo-test-3)
+			1. [Code](#code-47)
+1. [IV Run Trinity with `G_N` data](#iv-run-trinity-with-g_n-data)
+	1. [pre Get situated, make necessary directories](#pre-get-situated-make-necessary-directories-3)
+		1. [Code](#code-48)
+	1. [i Run Trinity GF mode with `G_N` data](#i-run-trinity-gf-mode-with-g_n-data)
+		1. [01 Define variables, arrays](#01-define-variables-arrays-6)
+			1. [Code](#code-49)
+		1. [02 Generate lists of permuted parameters](#02-generate-lists-of-permuted-parameters-6)
+			1. [02a Write the "master list"](#02a-write-the-master-list-6)
+				1. [Code](#code-50)
+			1. [02b Write individual lists](#02b-write-individual-lists-6)
+				1. [Code](#code-51)
+		1. [03 Use a `HEREDOC` to write the submission script](#03-use-a-heredoc-to-write-the-submission-script-2)
+			1. [Code](#code-52)
+		1. [04 Use a `HEREDOC` to write the run script](#04-use-a-heredoc-to-write-the-run-script-2)
+			1. [Code](#code-53)
+		1. [05 sbatch/srun Trinity](#05-sbatchsrun-trinity-2)
+			1. [Code](#code-54)
+	1. [ii Run Trinity GG mode with `G_N` data](#ii-run-trinity-gg-mode-with-g_n-data)
+		1. [01 Define variables, arrays](#01-define-variables-arrays-7)
+			1. [Code](#code-55)
+		1. [02 Generate lists of permuted parameters](#02-generate-lists-of-permuted-parameters-7)
+			1. [02a Write the "master list"](#02a-write-the-master-list-7)
+				1. [Code](#code-56)
+			1. [02b Write individual lists](#02b-write-individual-lists-7)
+				1. [Code](#code-57)
+		1. [03 Use a `HEREDOC` to write the submission script](#03-use-a-heredoc-to-write-the-submission-script-3)
+			1. [Code](#code-58)
+		1. [04 Use a `HEREDOC` to write the run script](#04-use-a-heredoc-to-write-the-run-script-3)
+			1. [Code](#code-59)
+		1. [05 sbatch/srun Trinity](#05-sbatchsrun-trinity-3)
+			1. [Code](#code-60)
 
 <!-- /MarkdownTOC -->
 </details>
@@ -1026,8 +1092,8 @@ cp \
 <br />
 <br />
 
-<a id="i-run-echo-tests"></a>
-## <u>I</u> Run echo tests
+<a id="i-run-echo-tests-with-q_n-data"></a>
+## <u>I</u> Run echo tests with `Q_N` data
 <a id="pre-get-situated-make-necessary-directories"></a>
 ### <u>pre</u> Get situated, make necessary directories
 <a id="code-9"></a>
@@ -1052,12 +1118,14 @@ Trinity_env
 
 mkdir -p sh_err_out/err_out/Trinity-{GG,GF}/{Q_N,G_N}
 mkdir -p outfiles_Trinity-{GG,GF}/{Q_N,G_N}/lists
+# ., sh_err_out/err_out/Trinity-{GG,GF}/{Q_N,G_N}
+# ., outfiles_Trinity-{GG,GF}/{Q_N,G_N}/lists
 ```
 </details>
 <br />
 
 <a id="i-run-an-echo-test-for-trinity-gf-mode-with-q_n-data"></a>
-### <u>i</u> Run an echo test for Trinity GF mode with Q_N data
+### <u>i</u> Run an echo test for Trinity GF mode with `Q_N` data
 <a id="01-define-variables-arrays"></a>
 #### 01 Define variables, arrays
 <a id="code-10"></a>
@@ -1204,6 +1272,8 @@ parallel --header : --colsep " " -k -j 1 echo \
 #   less "${store}/${list}"
 #  wc -l "${store}/${list}" | cut -d " " -f 1
 ```
+</details>
+<br />
 
 <a id="printed"></a>
 ###### Printed
@@ -1597,7 +1667,7 @@ sbatch "${sh_err_out}/${script_name_run}"
 <br />
 
 <a id="ii-run-an-echo-test-for-trinity-gg-mode-with-q_n-data"></a>
-### <u>ii</u> Run an echo test for Trinity GG mode with Q_N data
+### <u>ii</u> Run an echo test for Trinity GG mode with `Q_N` data
 <a id="01-define-variables-arrays-1"></a>
 #### 01 Define variables, arrays
 <a id="code-16"></a>
@@ -1730,6 +1800,8 @@ parallel --header : --colsep " " -k -j 1 echo \
 #   less "${store}/${list}"
 #  wc -l "${store}/${list}" | cut -d " " -f 1
 ```
+</details>
+<br />
 
 <a id="printed-2"></a>
 ###### Printed
@@ -2109,8 +2181,8 @@ cd -
 <br />
 <br />
 
-<a id="ii-run-trinity"></a>
-## <u>II</u> Run Trinity
+<a id="ii-run-trinity-with-q_n-data"></a>
+## <u>II</u> Run Trinity with `Q_N` data
 <a id="pre-get-situated-make-necessary-directories-1"></a>
 ### <u>pre</u> Get situated, make necessary directories
 <a id="code-22"></a>
@@ -2138,7 +2210,7 @@ ml Singularity
 <br />
 
 <a id="i-run-trinity-gf-mode-with-q_n-data"></a>
-### <u>i</u> Run Trinity GF mode with Q_N data
+### <u>i</u> Run Trinity GF mode with `Q_N` data
 <a id="01-define-variables-arrays-2"></a>
 #### 01 Define variables, arrays
 <a id="code-23"></a>
@@ -2286,6 +2358,8 @@ parallel --header : --colsep " " -k -j 1 echo \
 #   less "${store}/${list}"
 #  wc -l "${store}/${list}" | cut -d " " -f 1
 ```
+</details>
+<br />
 
 <a id="02b-write-individual-lists-2"></a>
 ##### 02b Write individual lists
@@ -2637,7 +2711,7 @@ cd -
 <br />
 
 <a id="ii-run-trinity-gg-mode-with-q_n-data"></a>
-### <u>ii</u> Run Trinity GG mode with Q_N data
+### <u>ii</u> Run Trinity GG mode with `Q_N` data
 <a id="01-define-variables-arrays-3"></a>
 #### 01 Define variables, arrays
 <a id="code-29"></a>
@@ -2771,6 +2845,8 @@ parallel --header : --colsep " " -k -j 1 echo \
 #   less "${store}/${list}"
 #  wc -l "${store}/${list}" | cut -d " " -f 1
 ```
+</details>
+<br />
 
 <a id="02b-write-individual-lists-3"></a>
 ##### 02b Write individual lists
@@ -3098,6 +3174,2107 @@ script
 <a id="05-sbatchsrun-trinity-1"></a>
 #### 05 sbatch/srun Trinity
 <a id="code-34"></a>
+##### Code
+<details>
+<summary><i>Code: sbatch/srun Trinity</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+sbatch "${sh_err_out}/${script_name_run}"
+skal
+cd "${err_out}" && .,f | tail -200
+.,
+.,f | tail -200
+cd -
+```
+</details>
+<br />
+<br />
+
+<a id="iii-run-echo-tests-with-g_n-data"></a>
+## <u>III</u> Run echo tests with `G_N` data
+<a id="pre-get-situated-make-necessary-directories-2"></a>
+### <u>pre</u> Get situated, make necessary directories
+<a id="code-35"></a>
+#### Code
+<details>
+<summary><i>Code: Get situated, make necessary directories</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+transcriptome && 
+    {
+        cd "results/2023-0111" \
+            || echo "cd'ing failed; check on this..."
+    }
+
+if [[ "${CONDA_DEFAULT_ENV}" != "base" ]]; then 
+    conda deactivate
+fi
+Trinity_env
+
+mkdir -p sh_err_out/err_out/Trinity-{GG,GF}/{Q_N,G_N}
+mkdir -p outfiles_Trinity-{GG,GF}/{Q_N,G_N}/lists
+# ., sh_err_out/err_out/Trinity-{GG,GF}/{Q_N,G_N}
+# ., outfiles_Trinity-{GG,GF}/{Q_N,G_N}/lists
+```
+</details>
+<br />
+
+<a id="i-run-an-echo-test-for-trinity-gf-mode-with-g_n-data"></a>
+### <u>i</u> Run an echo test for Trinity GF mode with `G_N` data
+<a id="01-define-variables-arrays-4"></a>
+#### 01 Define variables, arrays
+<a id="code-36"></a>
+##### Code
+<details>
+<summary><i>Code: Define variables, arrays</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+#  Experiment details -------------------------------------
+cell_exp="G_N"  # echo "${cell_exp}"
+mode="Trinity-GF"  # echo "${mode}"
+
+
+#  Indirectory (outdirectory and infiles are below) -------
+d_files="${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0111/infiles_${mode}"  # ls -1 "${d_files}"  #ABSPATH
+
+
+#  SLURM parameters ---------------------------------------
+threads=6  # echo "${threads}"
+max_id_job=$(( 6 * 4 * 3 * 4 ))  # echo "${max_id_job}"
+max_id_task=4 # echo "${max_id_task}"
+
+
+#  Directories to bind ------------------------------------
+catalog="${d_files}"  # echo "${catalog}"  #REDUNDANT #ABSPATH
+scratch="/fh/scratch/delete30/tsukiyama_t"  # echo "${scratch}"  #ABSPATH
+
+
+#  Trinity GF arguments, parameters, and infiles ----------
+j_mem="50G"  # echo "${j_mem}"
+j_cor="${threads}"  # echo "${j_cor}" #REDUNDANT
+
+fq_1="1.fq.gz"  # echo "${fq_1}"
+fq_2="2.fq.gz"  # echo "${fq_2}"
+left_1="${d_files}/5781_${cell_exp}.${fq_1}"  # ., "${left_1}"  #INFILE  #ABSPATH
+left_2="${d_files}/5782_${cell_exp}.${fq_1}"  # ., "${left_2}"  #INFILE  #ABSPATH
+right_1="${d_files}/5781_${cell_exp}.${fq_2}"  # ., "${right_1}"  #INFILE  #ABSPATH
+right_2="${d_files}/5782_${cell_exp}.${fq_2}"  # ., "${right_2}"  #INFILE  #ABSPATH
+
+unset min_kmer_cov
+unset min_iso_ratio
+unset min_glue
+unset glue_factor
+typeset -a min_kmer_cov=(1 2 4 8 16 32)  # echo_test "${min_kmer_cov[@]}"
+typeset -a min_iso_ratio=(0.005 0.01 0.05 0.1)  # echo_test "${min_iso_ratio[@]}"
+typeset -a min_glue=(1 2 4)  # echo_test "${min_glue[@]}"
+typeset -a glue_factor=(0.005 0.01 0.05 0.1)  # echo_test "${glue_factor[@]}"
+
+
+#  Outdirectory -------------------------------------------
+d_base="$(dirname "${d_files}")"  # echo "${d_base}"  #ABSPATH
+d_mid="outfiles_${mode}/${cell_exp}"  # echo "${d_mid}"
+pre="echo-test_trinity"  # echo "${pre}"
+out="${d_base}/${d_mid}/${pre}"  # echo "${out}"  #ABSPATH
+
+
+#  Parameter lists and their storage ----------------------
+store="${d_base}/${d_mid}/lists"  # ., "${store}"  #ABSPATH
+list="lists.txt"  # echo "${list}"
+
+
+#  Scripts ------------------------------------------------
+script_name_sub="echo_${mode}_${cell_exp}.sh"  # echo "${script_name_sub}"
+script_name_run="run_${mode}_${cell_exp}.sh"  # echo "${script_name_run}"
+
+
+#  Storage for scripts, STDERR, and STDOUT ----------------
+sh_err_out="${d_base}/sh_err_out"  # echo "${sh_err_out}"  #ABSPATH
+err_out="${sh_err_out}/err_out/${mode}/${cell_exp}"  # echo "${err_out}"  #ABSPATH
+```
+</details>
+<br />
+
+<a id="02-generate-lists-of-permuted-parameters-4"></a>
+#### 02 Generate lists of permuted parameters
+<a id="02a-write-the-master-list-4"></a>
+##### 02a Write the "master list"
+<a id="code-37"></a>
+###### Code
+<details>
+<summary><i>Code: Write the "master list"</i></summary>
+
+*Header*
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+if [[ -f "${store}/${list}" ]]; then
+    rm "${store}/${list}"
+fi
+
+#  Header
+echo "catalog \
+scratch \
+j_mem \
+j_cor \
+left_1 \
+left_2 \
+right_1 \
+right_2 \
+out \
+min_kmer_cov \
+min_iso_ratio \
+min_glue \
+glue_factor" \
+    > "${store}/${list}"
+# cat -n "${store}/${list}"
+#     vi "${store}/${list}"  # :q
+#  wc -l "${store}/${list}" | cut -d " " -f 1
+
+#  Body
+parallel --header : --colsep " " -k -j 1 echo \
+    '{catalog} \
+    {scratch} \
+    {j_mem} \
+    {j_cor} \
+    {left_1} \
+    {left_2} \
+    {right_1} \
+    {right_2} \
+    {out}_mkc-{min_kmer_cov}_mir-{min_iso_ratio}_mg-{min_glue}_gf-{glue_factor} \
+    {min_kmer_cov} \
+    {min_iso_ratio} \
+    {min_glue} \
+    {glue_factor}' \
+::: catalog "${catalog}" \
+::: scratch "${scratch}" \
+::: j_mem "${j_mem}"  \
+::: j_cor "${j_cor}" \
+::: left_1 "${left_1[@]}" \
+:::+ left_2 "${left_2[@]}" \
+:::+ right_1 "${right_1[@]}" \
+:::+ right_2 "${right_2[@]}" \
+::: out "${out}" \
+::: min_kmer_cov "${min_kmer_cov[@]}" \
+::: min_iso_ratio "${min_iso_ratio[@]}" \
+::: min_glue "${min_glue[@]}" \
+::: glue_factor "${glue_factor[@]}" \
+    >> "${store}/${list}"
+# cat -n "${store}/${list}"
+#   less "${store}/${list}"
+#  wc -l "${store}/${list}" | cut -d " " -f 1
+```
+</details>
+<br />
+
+<a id="printed-4"></a>
+###### Printed
+<details>
+<summary><i>Printed: Write the "master list"</i></summary>
+
+*Spot check: 80*
+```txt
+/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0111/infiles_Trinity-GF
+/fh/scratch/delete30/tsukiyama_t
+50G
+6
+/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0111/infiles_Trinity-GF/5781_G_N.1.fq.gz
+/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0111/infiles_Trinity-GF/5782_G_N.1.fq.gz
+/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0111/infiles_Trinity-GF/5781_G_N.2.fq.gz
+/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0111/infiles_Trinity-GF/5782_G_N.2.fq.gz
+/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0111/outfiles_Trinity-GF/G_N/echo-test_trinity_mkc-2_mir-0.05_mg-2_gf-0.05
+2
+0.05
+2
+0.05
+```
+
+*Spot check: 190*
+```txt
+/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0111/infiles_Trinity-GF
+/fh/scratch/delete30/tsukiyama_t
+50G
+6
+/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0111/infiles_Trinity-GF/5781_G_N.1.fq.gz
+/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0111/infiles_Trinity-GF/5782_G_N.1.fq.gz
+/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0111/infiles_Trinity-GF/5781_G_N.2.fq.gz
+/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0111/infiles_Trinity-GF/5782_G_N.2.fq.gz
+/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0111/outfiles_Trinity-GF/G_N/echo-test_trinity_mkc-8_mir-0.1_mg-4_gf-0.005
+8
+0.1
+4
+0.005
+```
+</details>
+<br />
+
+<a id="02b-write-individual-lists-4"></a>
+##### 02b Write individual lists
+<a id="code-38"></a>
+###### Code
+<details>
+<summary><i>Code: Write individual lists</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+if [[ -f "${store}/${list/.txt/.24.txt}" ]]; then
+    rm "${store}/"*.{?,??,???}.txt
+fi
+#  ., "${store}"
+#  vi "${store}/${list}"  # :q
+# cat "${store}/${list}"  # :q
+
+typeset -i i=0
+sed 1d "${store}/${list}" | while read -r line; do
+    #  Increment with each line
+    i=$(( i + 1 ))
+
+    #  File for job submission
+    individual="${list%.txt}.${i}.txt"  # echo "${individual}"
+
+    #  If present, remove infile with header and single-line body
+    [[ ! -e "${store}/${individual}" ]] || rm "${store}/${individual}"
+    # echo "${store}/${individual}"
+
+    #  Generate infile with header and single-line body
+    # echo "$(head -n 1 ${list})" >> "${individual}"
+    head -n 1 "${store}/${list}" >> "${store}/${individual}"  # cat "${store}/${individual}"
+    echo "${line}" >> "${store}/${individual}"  # cat "${store}/${individual}"
+
+    # echo "Created file: ${store}/${individual}"
+done
+#     ., "${store}"
+# cat -n "${store}/${list/.txt/.24.txt}"
+#     vi "${store}/${list/.txt/.24.txt}"  # :q
+```
+</details>
+<br />
+
+<a id="printed-5"></a>
+###### Printed
+<details>
+<summary><i>Printed: Write individual lists</i></summary>
+
+*Reformatted*
+```txt
+❯ cat -n "${store}/${list/.txt/.24.txt}"
+catalog scratch j_mem j_cor left_1 left_2 right_1 right_2 out min_kmer_cov min_iso_ratio min_glue glue_factor
+/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0111/infiles_Trinity-GF
+/fh/scratch/delete30/tsukiyama_t
+50G
+6
+/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0111/infiles_Trinity-GF/5781_G_N.1.fq.gz
+/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0111/infiles_Trinity-GF/5782_G_N.1.fq.gz
+/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0111/infiles_Trinity-GF/5781_G_N.2.fq.gz
+/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0111/infiles_Trinity-GF/5782_G_N.2.fq.gz
+/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0111/outfiles_Trinity-GF/G_N/echo-test_trinity_mkc-1_mir-0.01_mg-4_gf-0.1
+1
+0.01
+4
+0.1
+```
+*Original*
+```txt
+❯ cat -n "${store}/${list/.txt/.24.txt}"
+     1  catalog scratch j_mem j_cor left_1 left_2 right_1 right_2 out min_kmer_cov min_iso_ratio min_glue glue_factor
+     2  /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0111/infiles_Trinity-GF /fh/scratch/delete30/tsukiyama_t 50G 6 /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0111/infiles_Trinity-GF/5781_G_N.1.fq.gz /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0111/infiles_Trinity-GF/5782_G_N.1.fq.gz /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0111/infiles_Trinity-GF/5781_G_N.2.fq.gz /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0111/infiles_Trinity-GF/5782_G_N.2.fq.gz /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0111/outfiles_Trinity-GF/G_N/echo-test_trinity_mkc-1_mir-0.01_mg-4_gf-0.1 1 0.01 4 0.1
+```
+</details>
+<br />
+
+<a id="03-use-a-heredoc-to-write-the-echo-test-submission-script-2"></a>
+#### 03 Use a `HEREDOC` to write the echo-test submission script
+<a id="code-39"></a>
+##### Code
+<details>
+<summary><i>Code: Use a HEREDOC to write the echo-test submission script</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+if [[ -f "${sh_err_out}/${script_name_sub}" ]]; then
+    rm "${sh_err_out}/${script_name_sub}"
+fi
+cat << script > "${sh_err_out}/${script_name_sub}"
+#!/bin/bash
+
+#  ${script_name_sub}
+#  KA
+#  $(date '+%Y-%m%d')
+
+
+#  ------------------------------------
+print_message_exit() {
+    # Print a message and exit
+    #
+    # :param 1: message to be printed <chr>
+    echo "\${1}"
+    exit 1
+}
+
+
+check_file_exists() {
+    # Check that a file exists; exit if it does not
+    # 
+    # :param 1: file, including path <chr>
+    [[ -f "\${1}" ]] ||
+        {
+            echo -e "Exiting: File \${1} does not exist.\n"
+            exit 1
+        }
+}
+
+
+calculate_run_time() {
+    # Calculate run time for chunk of code
+    #
+    # :param 1: start time in <'date +%s' format>
+    # :param 2: end time in <'date +%s' format>
+    # :param 3: message to be displayed when printing the run time <chr>
+    run_time="\$(echo "\${2}" - "\${1}" | bc -l)"
+    
+    echo ""
+    echo "\${3}"
+    printf 'Run time: %dh:%dm:%ds\n' \\
+        \$(( run_time/3600 )) \\
+        \$(( run_time%3600/60 )) \\
+        \$(( run_time%60 ))
+    echo ""
+}
+
+
+#  ------------------------------------
+help="""
+\${0}:
+This script takes in a single file that requires a list of arguments
+-a  {arguments}  space-delimited list of arguments for the below settings and
+                 parameters; list is header-ed with the names of variables for
+                 the arguments (in brackets below)
+
+    #  -------------------------------------
+    {catalog}        directory containing .fastq.gz files, including path; to
+                     be mounted to the Trinity container at '/data' <chr>
+    {scratch}        scratch directory, including path, to be mounted to the
+                     Trinity container <chr>
+    {j_mem}          max memory to used by Trinity when limiting can be enabled
+                     (e.g., with jellyfish, sorting, etc.); must be in the form
+                     of a nonnegative integer followed by a single uppercase
+                     letter signifying the unit of storage, e.g., '50G' <chr>
+    {j_cor}          number of threads for Trinity to use <int >= 1>
+    {left_1}         first of two .fastq.gz files for 'left' reads <chr>
+    {left_2}         second of two .fastq.gz files for 'left' reads <chr>
+    {right_1}        first of two .fastq.gz files for 'right' reads <chr>
+    {right_2}        second of two .fastq.gz files for 'right' reads <chr>
+    {out}            path for Trinity outfiles; prefix for filenames derived
+                     from the following four arguments <chr>
+    {min_kmer_cov}   minimum count for k-mers to be assembled by Inchworm;
+                     e.g., using a setting of 2 means that singleton k-mers
+                     will not be included in initial Inchworm contigs
+                     <int >= 1>
+    {min_iso_ratio}  minimum fraction of average k-mer coverage between two
+                     Inchworm contigs; required for gluing <float>
+    {min_glue}       minimum number of reads needed to glue two Inchworm
+                     contigs together <int >= 1>
+    {glue_factor}    fraction of maximum (Inchworm pair coverage) for read
+                     glue support <float>
+    #  -------------------------------------
+"""
+
+while getopts "a:" opt; do
+    case "\${opt}" in
+        a) arguments="\${OPTARG}" ;;
+        *) print_message_exit "\${help}" ;;
+    esac
+done
+
+[[ -z "\${arguments}" ]] && print_message_exit "\${help}"
+
+
+#  ------------------------------------
+check_file_exists "\${arguments}"
+
+
+#  Echo -------------------------------
+time_start="\$(date +%s)"
+
+parallel \\
+    --header : \\
+    --colsep " " \\
+    -k \\
+    -j 1 \\
+    --dry-run \\
+        'singularity run \\
+            --bind {catalog}:/data \\
+            --bind {scratch}:/loc/scratch \\
+            ~/singularity-docker-etc/Trinity.sif \\
+                Trinity \\
+                    --verbose \\
+                    --max_memory {j_mem} \\
+                    --CPU {j_cor} \\
+                    --SS_lib_type FR \\
+                    --seqType fq \\
+                    --left {left_1},{left_2} \\
+                    --right {right_1},{right_2} \\
+                    --jaccard_clip \\
+                    --output {out} \\
+                    --full_cleanup \\
+                    --min_kmer_cov {min_kmer_cov} \\
+                    --min_iso_ratio {min_iso_ratio} \\
+                    --min_glue {min_glue} \\
+                    --glue_factor {glue_factor} \\
+                    --max_reads_per_graph 2000 \\
+                    --normalize_max_read_cov 200 \\
+                    --group_pairs_distance 700 \\
+                    --min_contig_length 200' \\
+:::: "\${arguments}"
+
+time_end="\$(date +%s)"
+calculate_run_time "\${time_start}" "\${time_end}" "Trinity run time"
+script
+chmod +x "${sh_err_out}/${script_name_sub}"
+# cat -n "${sh_err_out}/${script_name_sub}"
+#     vi "${sh_err_out}/${script_name_sub}"  # :q
+#     ., "${sh_err_out}/${script_name_sub}"
+```
+</details>
+<br />
+
+<a id="04-use-a-heredoc-to-write-the-echo-test-run-script-2"></a>
+#### 04 Use a `HEREDOC` to write the echo-test run script
+<a id="code-40"></a>
+##### Code
+<details>
+<summary><i>Code: Use a HEREDOC to write the echo-test run script</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+if [[ -f "${sh_err_out}/${script_name_run}" ]]; then
+    rm "${sh_err_out}/${script_name_run}"
+fi
+cat << script > "${sh_err_out}/${script_name_run}"
+#!/bin/bash
+
+#SBATCH --job-name=${script_name_sub}
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=${threads}
+#SBATCH --error=${err_out}/${script_name_sub%.sh}.%A-%a.err.txt
+#SBATCH --output=${err_out}/${script_name_sub%.sh}.%A-%a.out.txt
+#SBATCH --array=1-${max_id_job}%${max_id_task}
+
+
+#  ${script_name_run}
+#  KA
+#  $(date '+%Y-%m%d')
+
+
+mkc="mkc-\$(
+    cat "${store}/${list%.txt}.\${SLURM_ARRAY_TASK_ID}.txt" \\
+        | awk -v OFS='\t' 'FNR == 2 { print \$10 }'
+)"
+mir="mir-\$(
+    cat "${store}/${list%.txt}.\${SLURM_ARRAY_TASK_ID}.txt" \\
+        | awk -v OFS='\t' 'FNR == 2 { print \$11 }'
+)"
+mg="mg-\$(
+    cat "${store}/${list%.txt}.\${SLURM_ARRAY_TASK_ID}.txt" \\
+        | awk -v OFS='\t' 'FNR == 2 { print \$12 }'
+)"
+gf="gf-\$(
+    cat "${store}/${list%.txt}.\${SLURM_ARRAY_TASK_ID}.txt" \\
+        | awk -v OFS='\t' 'FNR == 2 { print \$13 }'
+)"
+name="${pre}_\${mkc}_\${mir}_\${mg}_\${gf}"
+
+ln -f \\
+    ${err_out}/${script_name_sub%.sh}.\${SLURM_ARRAY_JOB_ID}-\${SLURM_ARRAY_TASK_ID}.out.txt \\
+    ${err_out}/\${name}.\${SLURM_ARRAY_JOB_ID}-\${SLURM_ARRAY_TASK_ID}.out.txt
+
+ln -f \\
+    ${err_out}/${script_name_sub%.sh}.\${SLURM_ARRAY_JOB_ID}-\${SLURM_ARRAY_TASK_ID}.err.txt \\
+    ${err_out}/\${name}.\${SLURM_ARRAY_JOB_ID}-\${SLURM_ARRAY_TASK_ID}.err.txt
+
+srun \\
+    "${sh_err_out}/${script_name_sub}" \\
+        -a "${store}/${list%.txt}.\${SLURM_ARRAY_TASK_ID}.txt"
+
+rm \\
+    ${err_out}/${script_name_sub%.sh}.\${SLURM_ARRAY_JOB_ID}-\${SLURM_ARRAY_TASK_ID}.out.txt
+
+rm \\
+    ${err_out}/${script_name_sub%.sh}.\${SLURM_ARRAY_JOB_ID}-\${SLURM_ARRAY_TASK_ID}.err.txt
+script
+#  vi "${sh_err_out}/${script_name_run}"  # :q
+# cat "${sh_err_out}/${script_name_run}"
+
+
+#  Scraps ---------------------------------------------------------------------
+# SLURM_ARRAY_TASK_ID=24
+# mkc="mkc-$(
+#     cat "${store}/${list%.txt}.${SLURM_ARRAY_TASK_ID}.txt" \
+#         | awk -v OFS='\t' 'FNR == 2 { print $10 }'
+# )"
+# mir="mir-$(
+#     cat "${store}/${list%.txt}.${SLURM_ARRAY_TASK_ID}.txt" \
+#         | awk -v OFS='\t' 'FNR == 2 { print $11 }'
+# )"
+# mg="mg-$(
+#     cat "${store}/${list%.txt}.${SLURM_ARRAY_TASK_ID}.txt" \
+#         | awk -v OFS='\t' 'FNR == 2 { print $12 }'
+# )"
+# gf="gf-$(
+#     cat "${store}/${list%.txt}.${SLURM_ARRAY_TASK_ID}.txt" \
+#         | awk -v OFS='\t' 'FNR == 2 { print $13 }'
+# )"
+# name="${pre}_${mkc}_${mir}_${mg}_${gf}"
+# echo "${name}"
+```
+</details>
+<br />
+<br />
+
+<a id="05-sbatchsrun-the-echo-test-2"></a>
+#### 05 sbatch/srun the echo test
+<a id="code-41"></a>
+##### Code
+<details>
+<summary><i>Code: sbatch/srun the echo test</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+sbatch "${sh_err_out}/${script_name_run}"
+# skal
+# cd "${err_out}" && .,f | tail -200
+# .,f | tail -200
+# cd -
+```
+</details>
+<br />
+<br />
+
+<a id="ii-run-an-echo-test-for-trinity-gg-mode-with-g_n-data"></a>
+### <u>ii</u> Run an echo test for Trinity GG mode with `G_N` data
+<a id="01-define-variables-arrays-5"></a>
+#### 01 Define variables, arrays
+<a id="code-42"></a>
+##### Code
+<details>
+<summary><i>Code: Define variables, arrays</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+#  Experiment details -------------------------------------
+cell_exp="G_N"  # echo "${cell_exp}"
+mode="Trinity-GG"  # echo "${mode}"
+
+
+#  Indirectory (outdirectory and infiles are below) -------
+d_files="${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0111/infiles_${mode}"  # ls -1 "${d_files}"  #ABSPATH
+
+
+#  SLURM parameters ---------------------------------------
+threads=6  # echo "${threads}"
+max_id_job=$(( 6 * 4 * 3 * 4 ))  # echo "${max_id_job}"
+max_id_task=4 # echo "${max_id_task}"
+
+
+#  Directories to bind ------------------------------------
+catalog="${d_files}"  # echo "${catalog}"  #REDUNDANT #ABSPATH
+scratch="/fh/scratch/delete30/tsukiyama_t"  # echo "${scratch}"  #ABSPATH
+
+
+#  Trinity GG arguments, parameters, and infiles ----------
+j_mem="50G"  # echo "${j_mem}"
+j_cor="${threads}"  # echo "${j_cor}" #REDUNDANT
+
+bam="${d_files}/${cell_exp}.bam"  # echo "${bam}"  #INFILE  #ABSPATH
+
+unset min_kmer_cov
+unset min_iso_ratio
+unset min_glue
+unset glue_factor
+typeset -a min_kmer_cov=(1 2 4 8 16 32)  # echo_test "${min_kmer_cov[@]}"
+typeset -a min_iso_ratio=(0.005 0.01 0.05 0.1)  # echo_test "${min_iso_ratio[@]}"
+typeset -a min_glue=(1 2 4)  # echo_test "${min_glue[@]}"
+typeset -a glue_factor=(0.005 0.01 0.05 0.1)  # echo_test "${glue_factor[@]}"
+
+
+#  Outdirectory -------------------------------------------
+d_base="$(dirname "${d_files}")"  # echo "${d_base}"  #ABSPATH
+d_mid="outfiles_${mode}/${cell_exp}"  # echo "${d_mid}"
+pre="echo-test_trinity"  # echo "${pre}"
+out="${d_base}/${d_mid}/${pre}"  # echo "${out}"  #ABSPATH
+
+
+#  Parameter lists and their storage ----------------------
+store="${d_base}/${d_mid}/lists"  # echo "${store}"  #ABSPATH
+list="lists.txt"  # echo "${list}"
+
+
+#  Scripts ------------------------------------------------
+script_name_sub="echo_${mode}_${cell_exp}.sh"  # echo "${script_name_sub}"
+script_name_run="run_${mode}_${cell_exp}.sh"  # echo "${script_name_run}"
+
+
+#  Storage for scripts, STDERR, and STDOUT ----------------
+sh_err_out="${d_base}/sh_err_out"  # echo "${sh_err_out}"  #ABSPATH
+err_out="${sh_err_out}/err_out/${mode}/${cell_exp}"  # echo "${err_out}"  #ABSPATH
+```
+</details>
+<br />
+
+<a id="02-generate-lists-of-permuted-parameters-5"></a>
+#### 02 Generate lists of permuted parameters
+<a id="02a-write-the-master-list-5"></a>
+##### 02a Write the "master list"
+<a id="code-43"></a>
+###### Code
+<details>
+<summary><i>Code: Write the "master list"</i></summary>
+
+*Header*
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+if [[ -f "${store}/${list}" ]]; then
+    rm "${store}/${list}"
+fi
+
+#  Header
+echo "catalog \
+scratch \
+j_mem \
+j_cor \
+bam \
+out \
+min_kmer_cov \
+min_iso_ratio \
+min_glue \
+glue_factor" \
+    > "${store}/${list}"
+# cat -n "${store}/${list}"
+#     vi "${store}/${list}"  # :q
+#  wc -l "${store}/${list}" | cut -d " " -f 1
+
+#  Body
+parallel --header : --colsep " " -k -j 1 echo \
+    '{catalog} \
+    {scratch} \
+    {j_mem} \
+    {j_cor} \
+    {bam} \
+    {out}_mkc-{min_kmer_cov}_mir-{min_iso_ratio}_mg-{min_glue}_gf-{glue_factor} \
+    {min_kmer_cov} \
+    {min_iso_ratio} \
+    {min_glue} \
+    {glue_factor}' \
+::: catalog "${catalog}" \
+::: scratch "${scratch}" \
+::: j_mem "${j_mem}"  \
+::: j_cor "${j_cor}" \
+::: bam "${bam}" \
+::: out "${out}" \
+::: min_kmer_cov "${min_kmer_cov[@]}" \
+::: min_iso_ratio "${min_iso_ratio[@]}" \
+::: min_glue "${min_glue[@]}" \
+::: glue_factor "${glue_factor[@]}" \
+    >> "${store}/${list}"
+# cat -n "${store}/${list}"
+#   less "${store}/${list}"
+#  wc -l "${store}/${list}" | cut -d " " -f 1
+```
+</details>
+<br />
+
+<a id="printed-6"></a>
+###### Printed
+<details>
+<summary><i>Printed: Write the "master list"</i></summary>
+
+*Spot check: line 111*
+```txt
+/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0111/infiles_Trinity-GG
+/fh/scratch/delete30/tsukiyama_t
+50G
+6
+/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0111/infiles_Trinity-GG/G_N.bam
+/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0111/outfiles_Trinity-GG/G_N/echo-test_trinity_mkc-4_mir-0.01_mg-1_gf-0.01
+4
+0.01
+1
+0.01
+```
+
+*Spot check: line 207*
+```txt
+/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0111/infiles_Trinity-GG
+/fh/scratch/delete30/tsukiyama_t
+50G
+6
+/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0111/infiles_Trinity-GG/G_N.bam
+/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0111/outfiles_Trinity-GG/G_N/echo-test_trinity_mkc-16_mir-0.01_mg-1_gf-0.01
+16
+0.01
+1
+0.01
+```
+</details>
+<br />
+
+<a id="02b-write-individual-lists-5"></a>
+##### 02b Write individual lists
+<a id="code-44"></a>
+###### Code
+<details>
+<summary><i>Code: Write individual lists</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+if [[ -f "${store}/${list/.txt/.24.txt}" ]]; then
+    rm "${store}/"*.{?,??,???}.txt
+fi
+#  ., "${store}"
+#  vi "${store}/${list}"  # :q
+# cat "${store}/${list}"  # :q
+
+typeset -i i=0
+sed 1d "${store}/${list}" | while read -r line; do
+    #  Increment with each line
+    i=$(( i + 1 ))
+
+    #  File for job submission
+    individual="${list%.txt}.${i}.txt"  # echo "${individual}"
+
+    #  If present, remove infile with header and single-line body
+    [[ ! -e "${store}/${individual}" ]] || rm "${store}/${individual}"
+    # echo "${store}/${individual}"
+
+    #  Generate infile with header and single-line body
+    # echo "$(head -n 1 ${list})" >> "${individual}"
+    head -n 1 "${store}/${list}" >> "${store}/${individual}"  # cat "${store}/${individual}"
+    echo "${line}" >> "${store}/${individual}"  # cat "${store}/${individual}"
+
+    # echo "Created file: ${store}/${individual}"
+done
+#     ., "${store}"
+# cat -n "${store}/${list/.txt/.24.txt}"
+#     vi "${store}/${list/.txt/.24.txt}"  # :q
+```
+</details>
+<br />
+
+<a id="printed-7"></a>
+###### Printed
+<details>
+<summary><i>Printed: Write individual lists</i></summary>
+
+*Reformatted*
+```txt
+❯ cat -n "${store}/${list/.txt/.24.txt}"
+catalog scratch j_mem j_cor bam out min_kmer_cov min_iso_ratio min_glue glue_factor
+/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0111/infiles_Trinity-GG
+/fh/scratch/delete30/tsukiyama_t
+50G
+6
+/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0111/infiles_Trinity-GG/G_N.bam
+/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0111/outfiles_Trinity-GG/G_N/echo-test_trinity_mkc-1_mir-0.01_mg-4_gf-0.1
+1
+0.01
+4
+0.1
+```
+*Original*
+```txt
+❯ cat -n "${store}/${list/.txt/.24.txt}"
+     1  catalog scratch j_mem j_cor bam out min_kmer_cov min_iso_ratio min_glue glue_factor
+     2  /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0111/infiles_Trinity-GG /fh/scratch/delete30/tsukiyama_t 50G 6 /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0111/infiles_Trinity-GG/G_N.bam /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0111/outfiles_Trinity-GG/G_N/echo-test_trinity_mkc-1_mir-0.01_mg-4_gf-0.1 1 0.01 4 0.1
+```
+</details>
+<br />
+
+<a id="03-use-a-heredoc-to-write-the-echo-test-submission-script-3"></a>
+#### 03 Use a `HEREDOC` to write the echo-test submission script
+<a id="code-45"></a>
+##### Code
+<details>
+<summary><i>Code: Use a HEREDOC to write the echo-test submission script</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+if [[ -f "${sh_err_out}/${script_name_sub}" ]]; then
+    rm "${sh_err_out}/${script_name_sub}"
+fi
+cat << script > "${sh_err_out}/${script_name_sub}"
+#!/bin/bash
+
+#  ${script_name_sub}
+#  KA
+#  $(date '+%Y-%m%d')
+
+
+#  ------------------------------------
+print_message_exit() {
+    # Print a message and exit
+    #
+    # :param 1: message to be printed <chr>
+    echo "\${1}"
+    exit 1
+}
+
+
+check_file_exists() {
+    # Check that a file exists; exit if it does not
+    # 
+    # :param 1: file, including path <chr>
+    [[ -f "\${1}" ]] ||
+        {
+            echo -e "Exiting: File \${1} does not exist.\n"
+            exit 1
+        }
+}
+
+
+calculate_run_time() {
+    # Calculate run time for chunk of code
+    #
+    # :param 1: start time in <'date +%s' format>
+    # :param 2: end time in <'date +%s' format>
+    # :param 3: message to be displayed when printing the run time <chr>
+    run_time="\$(echo "\${2}" - "\${1}" | bc -l)"
+    
+    echo ""
+    echo "\${3}"
+    printf 'Run time: %dh:%dm:%ds\n' \\
+        \$(( run_time/3600 )) \\
+        \$(( run_time%3600/60 )) \\
+        \$(( run_time%60 ))
+    echo ""
+}
+
+
+#  ------------------------------------
+help="""
+\${0}:
+This script takes in a single file that requires a list of arguments
+-a  {arguments}  space-delimited list of arguments for the below settings and
+                 parameters; list is header-ed with the names of variables for
+                 the arguments (in brackets below)
+
+    #  -------------------------------------
+    {catalog}        directory containing .fastq.gz files, including path; to
+                     be mounted to the Trinity container at '/data' <chr>
+    {scratch}        scratch directory, including path, to be mounted to the
+                     Trinity container <chr>
+    {j_mem}          max memory to used by Trinity when limiting can be enabled
+                     (e.g., with jellyfish, sorting, etc.); must be in the form
+                     of a nonnegative integer followed by a single uppercase
+                     letter signifying the unit of storage, e.g., '50G' <chr>
+    {j_cor}          number of threads for Trinity to use <int >= 1>
+    {bam}            coordinate-sorted bam file <chr>
+    {out}            path for Trinity outfiles; prefix for filenames derived
+                     from the following four arguments <chr>
+    {min_kmer_cov}   minimum count for k-mers to be assembled by Inchworm;
+                     e.g., using a setting of 2 means that singleton k-mers
+                     will not be included in initial Inchworm contigs
+                     <int >= 1>
+    {min_iso_ratio}  minimum fraction of average k-mer coverage between two
+                     Inchworm contigs; required for gluing <float>
+    {min_glue}       minimum number of reads needed to glue two Inchworm
+                     contigs together <int >= 1>
+    {glue_factor}    fraction of maximum (Inchworm pair coverage) for read
+                     glue support <float>
+    #  -------------------------------------
+"""
+
+while getopts "a:" opt; do
+    case "\${opt}" in
+        a) arguments="\${OPTARG}" ;;
+        *) print_message_exit "\${help}" ;;
+    esac
+done
+
+[[ -z "\${arguments}" ]] && print_message_exit "\${help}"
+
+
+#  ------------------------------------
+check_file_exists "\${arguments}"
+
+
+#  Echo -------------------------------
+time_start="\$(date +%s)"
+
+parallel \\
+    --header : \\
+    --colsep " " \\
+    -k \\
+    -j 1 \\
+    --dry-run \\
+        'singularity run \\
+            --bind {catalog}:/data \\
+            --bind {scratch}:/loc/scratch \\
+            ~/singularity-docker-etc/Trinity.sif \\
+                Trinity \\
+                    --verbose \\
+                    --max_memory {j_mem} \\
+                    --CPU {j_cor} \\
+                    --SS_lib_type FR \\
+                    --genome_guided_bam {bam} \\
+                    --genome_guided_max_intron 1002 \\
+                    --jaccard_clip \\
+                    --output {out} \\
+                    --full_cleanup \\
+                    --min_kmer_cov {min_kmer_cov} \\
+                    --min_iso_ratio {min_iso_ratio} \\
+                    --min_glue {min_glue} \\
+                    --glue_factor {glue_factor} \\
+                    --max_reads_per_graph 2000 \\
+                    --normalize_max_read_cov 200 \\
+                    --group_pairs_distance 700 \\
+                    --min_contig_length 200' \\
+:::: "\${arguments}"
+
+time_end="\$(date +%s)"
+calculate_run_time "\${time_start}" "\${time_end}" "Trinity run time"
+script
+chmod +x "${sh_err_out}/${script_name_sub}"
+# cat -n "${sh_err_out}/${script_name_sub}"
+#     vi "${sh_err_out}/${script_name_sub}"  # :q
+#     ., "${sh_err_out}/${script_name_sub}"
+```
+</details>
+<br />
+
+<a id="04-use-a-heredoc-to-write-the-echo-test-run-script-3"></a>
+#### 04 Use a `HEREDOC` to write the echo-test run script
+<a id="code-46"></a>
+##### Code
+<details>
+<summary><i>Code: Use a HEREDOC to write the echo-test run script</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+if [[ -f "${sh_err_out}/${script_name_run}" ]]; then
+    rm "${sh_err_out}/${script_name_run}"
+fi
+cat << script > "${sh_err_out}/${script_name_run}"
+#!/bin/bash
+
+#SBATCH --job-name=${script_name_sub}
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=${threads}
+#SBATCH --error=${err_out}/${script_name_sub%.sh}.%A-%a.err.txt
+#SBATCH --output=${err_out}/${script_name_sub%.sh}.%A-%a.out.txt
+#SBATCH --array=1-${max_id_job}%${max_id_task}
+
+
+#  ${script_name_run}
+#  KA
+#  $(date '+%Y-%m%d')
+
+
+mkc="mkc-\$(
+    cat "${store}/${list%.txt}.\${SLURM_ARRAY_TASK_ID}.txt" \\
+        | awk -v OFS='\t' 'FNR == 2 { print \$7 }'
+)"
+mir="mir-\$(
+    cat "${store}/${list%.txt}.\${SLURM_ARRAY_TASK_ID}.txt" \\
+        | awk -v OFS='\t' 'FNR == 2 { print \$8 }'
+)"
+mg="mg-\$(
+    cat "${store}/${list%.txt}.\${SLURM_ARRAY_TASK_ID}.txt" \\
+        | awk -v OFS='\t' 'FNR == 2 { print \$9 }'
+)"
+gf="gf-\$(
+    cat "${store}/${list%.txt}.\${SLURM_ARRAY_TASK_ID}.txt" \\
+        | awk -v OFS='\t' 'FNR == 2 { print \$10 }'
+)"
+name="${pre}_\${mkc}_\${mir}_\${mg}_\${gf}"
+
+ln -f \\
+    ${err_out}/${script_name_sub%.sh}.\${SLURM_ARRAY_JOB_ID}-\${SLURM_ARRAY_TASK_ID}.out.txt \\
+    ${err_out}/\${name}.\${SLURM_ARRAY_JOB_ID}-\${SLURM_ARRAY_TASK_ID}.out.txt
+
+ln -f \\
+    ${err_out}/${script_name_sub%.sh}.\${SLURM_ARRAY_JOB_ID}-\${SLURM_ARRAY_TASK_ID}.err.txt \\
+    ${err_out}/\${name}.\${SLURM_ARRAY_JOB_ID}-\${SLURM_ARRAY_TASK_ID}.err.txt
+
+srun \\
+    "${sh_err_out}/${script_name_sub}" \\
+        -a "${store}/${list%.txt}.\${SLURM_ARRAY_TASK_ID}.txt"
+
+rm \\
+    ${err_out}/${script_name_sub%.sh}.\${SLURM_ARRAY_JOB_ID}-\${SLURM_ARRAY_TASK_ID}.out.txt
+
+rm \\
+    ${err_out}/${script_name_sub%.sh}.\${SLURM_ARRAY_JOB_ID}-\${SLURM_ARRAY_TASK_ID}.err.txt
+script
+#  vi "${sh_err_out}/${script_name_run}"  # :q
+# cat "${sh_err_out}/${script_name_run}"
+
+
+#  Scraps ---------------------------------------------------------------------
+# SLURM_ARRAY_TASK_ID=24
+# mkc="mkc-$(
+#     cat "${store}/${list%.txt}.${SLURM_ARRAY_TASK_ID}.txt" \
+#         | awk -v OFS='\t' 'FNR == 2 { print $7 }'
+# )"
+# mir="mir-$(
+#     cat "${store}/${list%.txt}.${SLURM_ARRAY_TASK_ID}.txt" \
+#         | awk -v OFS='\t' 'FNR == 2 { print $8 }'
+# )"
+# mg="mg-$(
+#     cat "${store}/${list%.txt}.${SLURM_ARRAY_TASK_ID}.txt" \
+#         | awk -v OFS='\t' 'FNR == 2 { print $9 }'
+# )"
+# gf="gf-$(
+#     cat "${store}/${list%.txt}.${SLURM_ARRAY_TASK_ID}.txt" \
+#         | awk -v OFS='\t' 'FNR == 2 { print $10 }'
+# )"
+# name="${pre}_${mkc}_${mir}_${mg}_${gf}"
+# echo "${name}"
+```
+</details>
+<br />
+<br />
+
+<a id="05-sbatchsrun-the-echo-test-3"></a>
+#### 05 sbatch/srun the echo test
+<a id="code-47"></a>
+##### Code
+<details>
+<summary><i>Code: sbatch/srun the echo test</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+sbatch "${sh_err_out}/${script_name_run}"
+skal
+cd "${err_out}" && .,f | tail -200
+.,f | tail -200
+cd -
+```
+</details>
+<br />
+<br />
+
+<a id="iv-run-trinity-with-g_n-data"></a>
+## <u>IV</u> Run Trinity with `G_N` data
+<a id="pre-get-situated-make-necessary-directories-3"></a>
+### <u>pre</u> Get situated, make necessary directories
+<a id="code-48"></a>
+#### Code
+<details>
+<summary><i>Code: Get situated, make necessary directories</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+transcriptome && 
+    {
+        cd "results/2023-0111" \
+            || echo "cd'ing failed; check on this..."
+    }
+
+if [[ "${CONDA_DEFAULT_ENV}" != "base" ]]; then 
+    conda deactivate
+fi
+Trinity_env
+ml Singularity
+```
+</details>
+<br />
+
+<a id="i-run-trinity-gf-mode-with-g_n-data"></a>
+### <u>i</u> Run Trinity GF mode with `G_N` data
+<a id="01-define-variables-arrays-6"></a>
+#### 01 Define variables, arrays
+<a id="code-49"></a>
+##### Code
+<details>
+<summary><i>Code: Define variables, arrays</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+#  Experiment details -------------------------------------
+cell_exp="G_N"  # echo "${cell_exp}"
+mode="Trinity-GF"  # echo "${mode}"
+
+
+#  Indirectory (outdirectory and infiles are below) -------
+d_files="${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0111/infiles_${mode}"  # ls -1 "${d_files}"  #ABSPATH
+
+
+#  SLURM parameters ---------------------------------------
+threads=6  # echo "${threads}"
+max_id_job=$(( 6 * 4 * 3 * 4 ))  # echo "${max_id_job}"
+max_id_task=12 # echo "${max_id_task}"
+
+
+#  Directories to bind ------------------------------------
+catalog="${d_files}"  # echo "${catalog}"  #REDUNDANT #ABSPATH
+scratch="/fh/scratch/delete30/tsukiyama_t"  # echo "${scratch}"  #ABSPATH
+
+
+#  Trinity GF arguments, parameters, and infiles ----------
+j_mem="50G"  # echo "${j_mem}"
+j_cor="${threads}"  # echo "${j_cor}" #REDUNDANT
+
+fq_1="1.fq.gz"  # echo "${fq_1}"
+fq_2="2.fq.gz"  # echo "${fq_2}"
+left_1="${d_files}/5781_${cell_exp}.${fq_1}"  # echo "${left_1}"  #INFILE  #ABSPATH
+left_2="${d_files}/5782_${cell_exp}.${fq_1}"  # echo "${left_2}"  #INFILE  #ABSPATH
+right_1="${d_files}/5781_${cell_exp}.${fq_2}"  # echo "${right_1}"  #INFILE  #ABSPATH
+right_2="${d_files}/5782_${cell_exp}.${fq_2}"  # echo "${right_2}"  #INFILE  #ABSPATH
+
+unset min_kmer_cov
+unset min_iso_ratio
+unset min_glue
+unset glue_factor
+typeset -a min_kmer_cov=(1 2 4 8 16 32)  # echo_test "${min_kmer_cov[@]}"
+typeset -a min_iso_ratio=(0.005 0.01 0.05 0.1)  # echo_test "${min_iso_ratio[@]}"
+typeset -a min_glue=(1 2 4)  # echo_test "${min_glue[@]}"
+typeset -a glue_factor=(0.005 0.01 0.05 0.1)  # echo_test "${glue_factor[@]}"
+
+
+#  Outdirectory -------------------------------------------
+d_base="$(dirname "${d_files}")"  # echo "${d_base}"  #ABSPATH
+d_mid="outfiles_${mode}/${cell_exp}"  # echo "${d_mid}"
+pre="trinity-gf"  # echo "${pre}"
+out="${d_base}/${d_mid}/${pre}"  # echo "${out}"  #ABSPATH
+#NOTE #REMEMBER Additional text will be appended to "${out}"
+
+
+#  Parameter lists and their storage ----------------------
+store="${d_base}/${d_mid}/lists"  # ., "${store}"  #ABSPATH
+list="lists.txt"  # echo "${list}"
+
+
+#  Scripts ------------------------------------------------
+script_name_sub="submit_${mode}_${cell_exp}.sh"  # echo "${script_name_sub}"
+script_name_run="run_${mode}_${cell_exp}.sh"  # echo "${script_name_run}"
+
+
+#  Storage for scripts, STDERR, and STDOUT ----------------
+sh_err_out="${d_base}/sh_err_out"  # echo "${sh_err_out}"  #ABSPATH
+err_out="${sh_err_out}/err_out/${mode}/${cell_exp}"  # echo "${err_out}"  #ABSPATH
+```
+</details>
+<br />
+
+<a id="02-generate-lists-of-permuted-parameters-6"></a>
+#### 02 Generate lists of permuted parameters
+<a id="02a-write-the-master-list-6"></a>
+##### 02a Write the "master list"
+<a id="code-50"></a>
+###### Code
+<details>
+<summary><i>Code: Write the "master list"</i></summary>
+
+*Header*
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+if [[ -f "${store}/${list}" ]]; then
+    rm "${store}/${list}"
+fi
+
+#  Header
+echo "catalog \
+scratch \
+j_mem \
+j_cor \
+left_1 \
+left_2 \
+right_1 \
+right_2 \
+out \
+min_kmer_cov \
+min_iso_ratio \
+min_glue \
+glue_factor" \
+    > "${store}/${list}"
+# cat -n "${store}/${list}"
+#     vi "${store}/${list}"  # :q
+#  wc -l "${store}/${list}" | cut -d " " -f 1
+
+#  Body
+parallel --header : --colsep " " -k -j 1 echo \
+    '{catalog} \
+    {scratch} \
+    {j_mem} \
+    {j_cor} \
+    {left_1} \
+    {left_2} \
+    {right_1} \
+    {right_2} \
+    {out}_mkc-{min_kmer_cov}_mir-{min_iso_ratio}_mg-{min_glue}_gf-{glue_factor} \
+    {min_kmer_cov} \
+    {min_iso_ratio} \
+    {min_glue} \
+    {glue_factor}' \
+::: catalog "${catalog}" \
+::: scratch "${scratch}" \
+::: j_mem "${j_mem}"  \
+::: j_cor "${j_cor}" \
+::: left_1 "${left_1[@]}" \
+:::+ left_2 "${left_2[@]}" \
+:::+ right_1 "${right_1[@]}" \
+:::+ right_2 "${right_2[@]}" \
+::: out "${out}" \
+::: min_kmer_cov "${min_kmer_cov[@]}" \
+::: min_iso_ratio "${min_iso_ratio[@]}" \
+::: min_glue "${min_glue[@]}" \
+::: glue_factor "${glue_factor[@]}" \
+    >> "${store}/${list}"
+# cat -n "${store}/${list}"
+#   less "${store}/${list}"
+#  wc -l "${store}/${list}" | cut -d " " -f 1
+```
+</details>
+<br />
+
+<a id="02b-write-individual-lists-6"></a>
+##### 02b Write individual lists
+<a id="code-51"></a>
+###### Code
+<details>
+<summary><i>Code: Write individual lists</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+if [[ -f "${store}/${list/.txt/.24.txt}" ]]; then
+    rm "${store}/"*.{?,??,???}.txt
+fi
+#  ., "${store}"
+#  vi "${store}/${list}"  # :q
+# cat "${store}/${list}"  # :q
+
+typeset -i i=0
+sed 1d "${store}/${list}" | while read -r line; do
+    #  Increment with each line
+    i=$(( i + 1 ))
+
+    #  File for job submission
+    individual="${list%.txt}.${i}.txt"  # echo "${individual}"
+
+    #  If present, remove infile with header and single-line body
+    [[ ! -e "${store}/${individual}" ]] || rm "${store}/${individual}"
+    # echo "${store}/${individual}"
+
+    #  Generate infile with header and single-line body
+    # echo "$(head -n 1 ${list})" >> "${individual}"
+    head -n 1 "${store}/${list}" >> "${store}/${individual}"  # cat "${store}/${individual}"
+    echo "${line}" >> "${store}/${individual}"  # cat "${store}/${individual}"
+
+    # echo "Created file: ${store}/${individual}"
+done
+#     .,  "${store}"
+# cat -n "${store}/${list/.txt/.24.txt}"
+#     vi "${store}/${list/.txt/.24.txt}"  # :q
+```
+</details>
+<br />
+
+<a id="03-use-a-heredoc-to-write-the-submission-script-2"></a>
+#### 03 Use a `HEREDOC` to write the submission script
+<a id="code-52"></a>
+##### Code
+<details>
+<summary><i>Code: Use a HEREDOC to write the submission script</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+if [[ -f "${sh_err_out}/${script_name_sub}" ]]; then
+    rm "${sh_err_out}/${script_name_sub}"
+fi
+cat << script > "${sh_err_out}/${script_name_sub}"
+#!/bin/bash
+
+#  ${script_name_sub}
+#  KA
+#  $(date '+%Y-%m%d')
+
+
+#  ------------------------------------
+print_message_exit() {
+    # Print a message and exit
+    #
+    # :param 1: message to be printed <chr>
+    echo "\${1}"
+    exit 1
+}
+
+
+check_file_exists() {
+    # Check that a file exists; exit if it does not
+    # 
+    # :param 1: file, including path <chr>
+    [[ -f "\${1}" ]] ||
+        {
+            echo -e "Exiting: File \${1} does not exist.\n"
+            exit 1
+        }
+}
+
+
+calculate_run_time() {
+    # Calculate run time for chunk of code
+    #
+    # :param 1: start time in <'date +%s' format>
+    # :param 2: end time in <'date +%s' format>
+    # :param 3: message to be displayed when printing the run time <chr>
+    run_time="\$(echo "\${2}" - "\${1}" | bc -l)"
+    
+    echo ""
+    echo "\${3}"
+    printf 'Run time: %dh:%dm:%ds\n' \\
+        \$(( run_time/3600 )) \\
+        \$(( run_time%3600/60 )) \\
+        \$(( run_time%60 ))
+    echo ""
+}
+
+
+#  ------------------------------------
+help="""
+\${0}:
+This script takes in a single file that requires a list of arguments
+-a  {arguments}  space-delimited list of arguments for the below settings and
+                 parameters; list is header-ed with the names of variables for
+                 the arguments (in brackets below)
+
+    #  -------------------------------------
+    {catalog}        directory containing .fastq.gz files, including path; to
+                     be mounted to the Trinity container at '/data' <chr>
+    {scratch}        scratch directory, including path, to be mounted to the
+                     Trinity container <chr>
+    {j_mem}          max memory to used by Trinity when limiting can be enabled
+                     (e.g., with jellyfish, sorting, etc.); must be in the form
+                     of a nonnegative integer followed by a single uppercase
+                     letter signifying the unit of storage, e.g., '50G' <chr>
+    {j_cor}          number of threads for Trinity to use <int >= 1>
+    {left_1}         first of two .fastq.gz files for 'left' reads <chr>
+    {left_2}         second of two .fastq.gz files for 'left' reads <chr>
+    {right_1}        first of two .fastq.gz files for 'right' reads <chr>
+    {right_2}        second of two .fastq.gz files for 'right' reads <chr>
+    {out}            path for Trinity outfiles; prefix for filenames derived
+                     from the following four arguments <chr>
+    {min_kmer_cov}   minimum count for k-mers to be assembled by Inchworm;
+                     e.g., using a setting of 2 means that singleton k-mers
+                     will not be included in initial Inchworm contigs
+                     <int >= 1>
+    {min_iso_ratio}  minimum fraction of average k-mer coverage between two
+                     Inchworm contigs; required for gluing <float>
+    {min_glue}       minimum number of reads needed to glue two Inchworm
+                     contigs together <int >= 1>
+    {glue_factor}    fraction of maximum (Inchworm pair coverage) for read
+                     glue support <float>
+    #  -------------------------------------
+"""
+
+while getopts "a:" opt; do
+    case "\${opt}" in
+        a) arguments="\${OPTARG}" ;;
+        *) print_message_exit "\${help}" ;;
+    esac
+done
+
+[[ -z "\${arguments}" ]] && print_message_exit "\${help}"
+
+
+#  ------------------------------------
+check_file_exists "\${arguments}"
+
+
+#  Echo -------------------------------
+time_start="\$(date +%s)"
+
+parallel \\
+    --header : \\
+    --colsep " " \\
+    -k \\
+    -j 1 \\
+    --dry-run \\
+        'singularity run \\
+            --bind {catalog}:/data \\
+            --bind {scratch}:/loc/scratch \\
+            ~/singularity-docker-etc/Trinity.sif \\
+                Trinity \\
+                    --verbose \\
+                    --max_memory {j_mem} \\
+                    --CPU {j_cor} \\
+                    --SS_lib_type FR \\
+                    --seqType fq \\
+                    --left {left_1},{left_2} \\
+                    --right {right_1},{right_2} \\
+                    --jaccard_clip \\
+                    --output {out} \\
+                    --full_cleanup \\
+                    --min_kmer_cov {min_kmer_cov} \\
+                    --min_iso_ratio {min_iso_ratio} \\
+                    --min_glue {min_glue} \\
+                    --glue_factor {glue_factor} \\
+                    --max_reads_per_graph 2000 \\
+                    --normalize_max_read_cov 200 \\
+                    --group_pairs_distance 700 \\
+                    --min_contig_length 200' \\
+:::: "\${arguments}"
+
+parallel \\
+    --header : \\
+    --colsep " " \\
+    -k \\
+    -j \${SLURM_CPUS_ON_NODE} \\
+        'singularity run \\
+            --bind {catalog}:/data \\
+            --bind {scratch}:/loc/scratch \\
+            ~/singularity-docker-etc/Trinity.sif \\
+                Trinity \\
+                    --verbose \\
+                    --max_memory {j_mem} \\
+                    --CPU {j_cor} \\
+                    --SS_lib_type FR \\
+                    --seqType fq \\
+                    --left {left_1},{left_2} \\
+                    --right {right_1},{right_2} \\
+                    --jaccard_clip \\
+                    --output {out} \\
+                    --full_cleanup \\
+                    --min_kmer_cov {min_kmer_cov} \\
+                    --min_iso_ratio {min_iso_ratio} \\
+                    --min_glue {min_glue} \\
+                    --glue_factor {glue_factor} \\
+                    --max_reads_per_graph 2000 \\
+                    --normalize_max_read_cov 200 \\
+                    --group_pairs_distance 700 \\
+                    --min_contig_length 200' \\
+:::: "\${arguments}"
+
+time_end="\$(date +%s)"
+calculate_run_time "\${time_start}" "\${time_end}" "Trinity run time"
+script
+chmod +x "${sh_err_out}/${script_name_sub}"
+# cat -n "${sh_err_out}/${script_name_sub}"
+#     vi "${sh_err_out}/${script_name_sub}"  # :q
+#     ., "${sh_err_out}/${script_name_sub}"
+```
+</details>
+<br />
+
+<a id="04-use-a-heredoc-to-write-the-run-script-2"></a>
+#### 04 Use a `HEREDOC` to write the run script
+<a id="code-53"></a>
+##### Code
+<details>
+<summary><i>Code: Use a HEREDOC to write the run script</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+if [[ -f "${sh_err_out}/${script_name_run}" ]]; then
+    rm "${sh_err_out}/${script_name_run}"
+fi
+cat << script > "${sh_err_out}/${script_name_run}"
+#!/bin/bash
+
+#SBATCH --job-name=${script_name_sub}
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=${threads}
+#SBATCH --error=${err_out}/${script_name_sub%.sh}.%A-%a.err.txt
+#SBATCH --output=${err_out}/${script_name_sub%.sh}.%A-%a.out.txt
+#SBATCH --array=1-${max_id_job}%${max_id_task}
+
+
+#  ${script_name_run}
+#  KA
+#  $(date '+%Y-%m%d')
+
+
+mkc="mkc-\$(
+    cat "${store}/${list%.txt}.\${SLURM_ARRAY_TASK_ID}.txt" \\
+        | awk -v OFS='\t' 'FNR == 2 { print \$10 }'
+)"
+mir="mir-\$(
+    cat "${store}/${list%.txt}.\${SLURM_ARRAY_TASK_ID}.txt" \\
+        | awk -v OFS='\t' 'FNR == 2 { print \$11 }'
+)"
+mg="mg-\$(
+    cat "${store}/${list%.txt}.\${SLURM_ARRAY_TASK_ID}.txt" \\
+        | awk -v OFS='\t' 'FNR == 2 { print \$12 }'
+)"
+gf="gf-\$(
+    cat "${store}/${list%.txt}.\${SLURM_ARRAY_TASK_ID}.txt" \\
+        | awk -v OFS='\t' 'FNR == 2 { print \$13 }'
+)"
+name="${pre}_\${mkc}_\${mir}_\${mg}_\${gf}"
+
+ln -f \\
+    ${err_out}/${script_name_sub%.sh}.\${SLURM_ARRAY_JOB_ID}-\${SLURM_ARRAY_TASK_ID}.out.txt \\
+    ${err_out}/\${name}.\${SLURM_ARRAY_JOB_ID}-\${SLURM_ARRAY_TASK_ID}.out.txt
+
+ln -f \\
+    ${err_out}/${script_name_sub%.sh}.\${SLURM_ARRAY_JOB_ID}-\${SLURM_ARRAY_TASK_ID}.err.txt \\
+    ${err_out}/\${name}.\${SLURM_ARRAY_JOB_ID}-\${SLURM_ARRAY_TASK_ID}.err.txt
+
+srun \\
+    "${sh_err_out}/${script_name_sub}" \\
+        -a "${store}/${list%.txt}.\${SLURM_ARRAY_TASK_ID}.txt"
+
+rm \\
+    ${err_out}/${script_name_sub%.sh}.\${SLURM_ARRAY_JOB_ID}-\${SLURM_ARRAY_TASK_ID}.out.txt
+
+rm \\
+    ${err_out}/${script_name_sub%.sh}.\${SLURM_ARRAY_JOB_ID}-\${SLURM_ARRAY_TASK_ID}.err.txt
+script
+#  vi "${sh_err_out}/${script_name_run}"  # :q
+# cat "${sh_err_out}/${script_name_run}"
+#  ., "${sh_err_out}/${script_name_run}"
+
+
+#  Scraps ---------------------------------------------------------------------
+# SLURM_ARRAY_TASK_ID=24
+# mkc="mkc-$(
+#     cat "${store}/${list%.txt}.${SLURM_ARRAY_TASK_ID}.txt" \
+#         | awk -v OFS='\t' 'FNR == 2 { print $10 }'
+# )"
+# mir="mir-$(
+#     cat "${store}/${list%.txt}.${SLURM_ARRAY_TASK_ID}.txt" \
+#         | awk -v OFS='\t' 'FNR == 2 { print $11 }'
+# )"
+# mg="mg-$(
+#     cat "${store}/${list%.txt}.${SLURM_ARRAY_TASK_ID}.txt" \
+#         | awk -v OFS='\t' 'FNR == 2 { print $12 }'
+# )"
+# gf="gf-$(
+#     cat "${store}/${list%.txt}.${SLURM_ARRAY_TASK_ID}.txt" \
+#         | awk -v OFS='\t' 'FNR == 2 { print $13 }'
+# )"
+# name="${pre}_${mkc}_${mir}_${mg}_${gf}"
+# echo "${name}"
+```
+</details>
+<br />
+<br />
+
+<a id="05-sbatchsrun-trinity-2"></a>
+#### 05 sbatch/srun Trinity
+<a id="code-54"></a>
+##### Code
+<details>
+<summary><i>Code: sbatch/srun Trinity</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+sbatch "${sh_err_out}/${script_name_run}"
+skal
+cd "${err_out}" && .,f | tail -200
+.,f | tail -200
+cd -
+```
+</details>
+<br />
+<br />
+
+<a id="ii-run-trinity-gg-mode-with-g_n-data"></a>
+### <u>ii</u> Run Trinity GG mode with `G_N` data
+<a id="01-define-variables-arrays-7"></a>
+#### 01 Define variables, arrays
+<a id="code-55"></a>
+##### Code
+<details>
+<summary><i>Code: Define variables, arrays</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+#  Experiment details -------------------------------------
+cell_exp="G_N"  # echo "${cell_exp}"
+mode="Trinity-GG"  # echo "${mode}"
+
+
+#  Indirectory (outdirectory and infiles are below) -------
+d_files="${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0111/infiles_${mode}"  # ls -1 "${d_files}"  #ABSPATH
+
+
+#  SLURM parameters ---------------------------------------
+threads=6  # echo "${threads}"
+max_id_job=$(( 6 * 4 * 3 * 4 ))  # echo "${max_id_job}"
+max_id_task=12 # echo "${max_id_task}"
+
+
+#  Directories to bind ------------------------------------
+catalog="${d_files}"  # echo "${catalog}"  #REDUNDANT #ABSPATH
+scratch="/fh/scratch/delete30/tsukiyama_t"  # echo "${scratch}"  #ABSPATH
+
+
+#  Trinity GG arguments, parameters, and infiles ----------
+j_mem="50G"  # echo "${j_mem}"
+j_cor="${threads}"  # echo "${j_cor}" #REDUNDANT
+
+bam="${d_files}/${cell_exp}.bam"  # echo "${bam}"  #INFILE  #ABSPATH
+
+unset min_kmer_cov
+unset min_iso_ratio
+unset min_glue
+unset glue_factor
+typeset -a min_kmer_cov=(1 2 4 8 16 32)  # echo_test "${min_kmer_cov[@]}"
+typeset -a min_iso_ratio=(0.005 0.01 0.05 0.1)  # echo_test "${min_iso_ratio[@]}"
+typeset -a min_glue=(1 2 4)  # echo_test "${min_glue[@]}"
+typeset -a glue_factor=(0.005 0.01 0.05 0.1)  # echo_test "${glue_factor[@]}"
+
+
+#  Outdirectory -------------------------------------------
+d_base="$(dirname "${d_files}")"  # echo "${d_base}"  #ABSPATH
+d_mid="outfiles_${mode}/${cell_exp}"  # echo "${d_mid}"
+pre="trinity-gg"  # echo "${pre}"
+out="${d_base}/${d_mid}/${pre}"  # echo "${out}"  #ABSPATH
+#NOTE #REMEMBER Additional text will be appended to "${out}"
+
+
+#  Parameter lists and their storage ----------------------
+store="${d_base}/${d_mid}/lists"  # ., "${store}"  #ABSPATH
+list="lists.txt"  # echo "${list}"
+
+
+#  Scripts ------------------------------------------------
+script_name_sub="submit_${mode}_${cell_exp}.sh"  # echo "${script_name_sub}"
+script_name_run="run_${mode}_${cell_exp}.sh"  # echo "${script_name_run}"
+
+
+#  Storage for scripts, STDERR, and STDOUT ----------------
+sh_err_out="${d_base}/sh_err_out"  # echo "${sh_err_out}"  #ABSPATH
+err_out="${sh_err_out}/err_out/${mode}/${cell_exp}"  # echo "${err_out}"  #ABSPATH
+```
+</details>
+<br />
+
+<a id="02-generate-lists-of-permuted-parameters-7"></a>
+#### 02 Generate lists of permuted parameters
+<a id="02a-write-the-master-list-7"></a>
+##### 02a Write the "master list"
+<a id="code-56"></a>
+###### Code
+<details>
+<summary><i>Code: Write the "master list"</i></summary>
+
+*Header*
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+if [[ -f "${store}/${list}" ]]; then
+    rm "${store}/${list}"
+fi
+
+#  Header
+echo "catalog \
+scratch \
+j_mem \
+j_cor \
+bam \
+out \
+min_kmer_cov \
+min_iso_ratio \
+min_glue \
+glue_factor" \
+    > "${store}/${list}"
+# cat -n "${store}/${list}"
+#     vi "${store}/${list}"  # :q
+#  wc -l "${store}/${list}" | cut -d " " -f 1
+
+#  Body
+parallel --header : --colsep " " -k -j 1 echo \
+    '{catalog} \
+    {scratch} \
+    {j_mem} \
+    {j_cor} \
+    {bam} \
+    {out}_mkc-{min_kmer_cov}_mir-{min_iso_ratio}_mg-{min_glue}_gf-{glue_factor} \
+    {min_kmer_cov} \
+    {min_iso_ratio} \
+    {min_glue} \
+    {glue_factor}' \
+::: catalog "${catalog}" \
+::: scratch "${scratch}" \
+::: j_mem "${j_mem}"  \
+::: j_cor "${j_cor}" \
+::: bam "${bam}" \
+::: out "${out}" \
+::: min_kmer_cov "${min_kmer_cov[@]}" \
+::: min_iso_ratio "${min_iso_ratio[@]}" \
+::: min_glue "${min_glue[@]}" \
+::: glue_factor "${glue_factor[@]}" \
+    >> "${store}/${list}"
+# cat -n "${store}/${list}"
+#   less "${store}/${list}"
+#  wc -l "${store}/${list}" | cut -d " " -f 1
+```
+</details>
+<br />
+
+<a id="02b-write-individual-lists-7"></a>
+##### 02b Write individual lists
+<a id="code-57"></a>
+###### Code
+<details>
+<summary><i>Code: Write individual lists</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+if [[ -f "${store}/${list/.txt/.24.txt}" ]]; then
+    rm "${store}/"*.{?,??,???}.txt
+fi
+#  ., "${store}"
+#  vi "${store}/${list}"  # :q
+# cat "${store}/${list}"  # :q
+
+typeset -i i=0
+sed 1d "${store}/${list}" | while read -r line; do
+    #  Increment with each line
+    i=$(( i + 1 ))
+
+    #  File for job submission
+    individual="${list%.txt}.${i}.txt"  # echo "${individual}"
+
+    #  If present, remove infile with header and single-line body
+    [[ ! -e "${store}/${individual}" ]] || rm "${store}/${individual}"
+    # echo "${store}/${individual}"
+
+    #  Generate infile with header and single-line body
+    # echo "$(head -n 1 ${list})" >> "${individual}"
+    head -n 1 "${store}/${list}" >> "${store}/${individual}"  # cat "${store}/${individual}"
+    echo "${line}" >> "${store}/${individual}"  # cat "${store}/${individual}"
+
+    # echo "Created file: ${store}/${individual}"
+done
+#     .,  "${store}"
+# cat -n "${store}/${list/.txt/.24.txt}"
+#     vi "${store}/${list/.txt/.24.txt}"  # :q
+```
+</details>
+<br />
+
+<a id="03-use-a-heredoc-to-write-the-submission-script-3"></a>
+#### 03 Use a `HEREDOC` to write the submission script
+<a id="code-58"></a>
+##### Code
+<details>
+<summary><i>Code: Use a HEREDOC to write the submission script</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+if [[ -f "${sh_err_out}/${script_name_sub}" ]]; then
+    rm "${sh_err_out}/${script_name_sub}"
+fi
+cat << script > "${sh_err_out}/${script_name_sub}"
+#!/bin/bash
+
+#  ${script_name_sub}
+#  KA
+#  $(date '+%Y-%m%d')
+
+
+#  ------------------------------------
+print_message_exit() {
+    # Print a message and exit
+    #
+    # :param 1: message to be printed <chr>
+    echo "\${1}"
+    exit 1
+}
+
+
+check_file_exists() {
+    # Check that a file exists; exit if it does not
+    # 
+    # :param 1: file, including path <chr>
+    [[ -f "\${1}" ]] ||
+        {
+            echo -e "Exiting: File \${1} does not exist.\n"
+            exit 1
+        }
+}
+
+
+calculate_run_time() {
+    # Calculate run time for chunk of code
+    #
+    # :param 1: start time in <'date +%s' format>
+    # :param 2: end time in <'date +%s' format>
+    # :param 3: message to be displayed when printing the run time <chr>
+    run_time="\$(echo "\${2}" - "\${1}" | bc -l)"
+    
+    echo ""
+    echo "\${3}"
+    printf 'Run time: %dh:%dm:%ds\n' \\
+        \$(( run_time/3600 )) \\
+        \$(( run_time%3600/60 )) \\
+        \$(( run_time%60 ))
+    echo ""
+}
+
+
+#  ------------------------------------
+help="""
+\${0}:
+This script takes in a single file that requires a list of arguments
+-a  {arguments}  space-delimited list of arguments for the below settings and
+                 parameters; list is header-ed with the names of variables for
+                 the arguments (in brackets below)
+
+    #  -------------------------------------
+    {catalog}        directory containing .fastq.gz files, including path; to
+                     be mounted to the Trinity container at '/data' <chr>
+    {scratch}        scratch directory, including path, to be mounted to the
+                     Trinity container <chr>
+    {j_mem}          max memory to used by Trinity when limiting can be enabled
+                     (e.g., with jellyfish, sorting, etc.); must be in the form
+                     of a nonnegative integer followed by a single uppercase
+                     letter signifying the unit of storage, e.g., '50G' <chr>
+    {j_cor}          number of threads for Trinity to use <int >= 1>
+    {bam}            coordinate-sorted bam file <chr>
+    {out}            path for Trinity outfiles; prefix for filenames derived
+                     from the following four arguments <chr>
+    {min_kmer_cov}   minimum count for k-mers to be assembled by Inchworm;
+                     e.g., using a setting of 2 means that singleton k-mers
+                     will not be included in initial Inchworm contigs
+                     <int >= 1>
+    {min_iso_ratio}  minimum fraction of average k-mer coverage between two
+                     Inchworm contigs; required for gluing <float>
+    {min_glue}       minimum number of reads needed to glue two Inchworm
+                     contigs together <int >= 1>
+    {glue_factor}    fraction of maximum (Inchworm pair coverage) for read
+                     glue support <float>
+    #  -------------------------------------
+"""
+
+while getopts "a:" opt; do
+    case "\${opt}" in
+        a) arguments="\${OPTARG}" ;;
+        *) print_message_exit "\${help}" ;;
+    esac
+done
+
+[[ -z "\${arguments}" ]] && print_message_exit "\${help}"
+
+
+#  ------------------------------------
+check_file_exists "\${arguments}"
+
+
+#  Echo -------------------------------
+time_start="\$(date +%s)"
+
+parallel \\
+    --header : \\
+    --colsep " " \\
+    -k \\
+    -j 1 \\
+    --dry-run \\
+        'singularity run \\
+            --bind {catalog}:/data \\
+            --bind {scratch}:/loc/scratch \\
+            ~/singularity-docker-etc/Trinity.sif \\
+                Trinity \\
+                    --verbose \\
+                    --max_memory {j_mem} \\
+                    --CPU {j_cor} \\
+                    --SS_lib_type FR \\
+                    --genome_guided_bam {bam} \\
+                    --genome_guided_max_intron 1002 \\
+                    --jaccard_clip \\
+                    --output {out} \\
+                    --full_cleanup \\
+                    --min_kmer_cov {min_kmer_cov} \\
+                    --min_iso_ratio {min_iso_ratio} \\
+                    --min_glue {min_glue} \\
+                    --glue_factor {glue_factor} \\
+                    --max_reads_per_graph 2000 \\
+                    --normalize_max_read_cov 200 \\
+                    --group_pairs_distance 700 \\
+                    --min_contig_length 200' \\
+:::: "\${arguments}"
+
+parallel \\
+    --header : \\
+    --colsep " " \\
+    -k \\
+    -j \${SLURM_CPUS_ON_NODE} \\
+        'singularity run \\
+            --bind {catalog}:/data \\
+            --bind {scratch}:/loc/scratch \\
+            ~/singularity-docker-etc/Trinity.sif \\
+                Trinity \\
+                    --verbose \\
+                    --max_memory {j_mem} \\
+                    --CPU {j_cor} \\
+                    --SS_lib_type FR \\
+                    --genome_guided_bam {bam} \\
+                    --genome_guided_max_intron 1002 \\
+                    --jaccard_clip \\
+                    --output {out} \\
+                    --full_cleanup \\
+                    --min_kmer_cov {min_kmer_cov} \\
+                    --min_iso_ratio {min_iso_ratio} \\
+                    --min_glue {min_glue} \\
+                    --glue_factor {glue_factor} \\
+                    --max_reads_per_graph 2000 \\
+                    --normalize_max_read_cov 200 \\
+                    --group_pairs_distance 700 \\
+                    --min_contig_length 200' \\
+:::: "\${arguments}"
+
+time_end="\$(date +%s)"
+calculate_run_time "\${time_start}" "\${time_end}" "Trinity run time"
+script
+chmod +x "${sh_err_out}/${script_name_sub}"
+# cat -n "${sh_err_out}/${script_name_sub}"
+#     vi "${sh_err_out}/${script_name_sub}"  # :q
+#     ., "${sh_err_out}/${script_name_sub}"
+```
+</details>
+<br />
+
+<a id="04-use-a-heredoc-to-write-the-run-script-3"></a>
+#### 04 Use a `HEREDOC` to write the run script
+<a id="code-59"></a>
+##### Code
+<details>
+<summary><i>Code: Use a HEREDOC to write the run script</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+if [[ -f "${sh_err_out}/${script_name_run}" ]]; then
+    rm "${sh_err_out}/${script_name_run}"
+fi
+cat << script > "${sh_err_out}/${script_name_run}"
+#!/bin/bash
+
+#SBATCH --job-name=${script_name_sub}
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=${threads}
+#SBATCH --error=${err_out}/${script_name_sub%.sh}.%A-%a.err.txt
+#SBATCH --output=${err_out}/${script_name_sub%.sh}.%A-%a.out.txt
+#SBATCH --array=1-${max_id_job}%${max_id_task}
+
+
+#  ${script_name_run}
+#  KA
+#  $(date '+%Y-%m%d')
+
+
+mkc="mkc-\$(
+    cat "${store}/${list%.txt}.\${SLURM_ARRAY_TASK_ID}.txt" \\
+        | awk -v OFS='\t' 'FNR == 2 { print \$7 }'
+)"
+mir="mir-\$(
+    cat "${store}/${list%.txt}.\${SLURM_ARRAY_TASK_ID}.txt" \\
+        | awk -v OFS='\t' 'FNR == 2 { print \$8 }'
+)"
+mg="mg-\$(
+    cat "${store}/${list%.txt}.\${SLURM_ARRAY_TASK_ID}.txt" \\
+        | awk -v OFS='\t' 'FNR == 2 { print \$9 }'
+)"
+gf="gf-\$(
+    cat "${store}/${list%.txt}.\${SLURM_ARRAY_TASK_ID}.txt" \\
+        | awk -v OFS='\t' 'FNR == 2 { print \$10 }'
+)"
+name="${pre}_\${mkc}_\${mir}_\${mg}_\${gf}"
+
+ln -f \\
+    ${err_out}/${script_name_sub%.sh}.\${SLURM_ARRAY_JOB_ID}-\${SLURM_ARRAY_TASK_ID}.out.txt \\
+    ${err_out}/\${name}.\${SLURM_ARRAY_JOB_ID}-\${SLURM_ARRAY_TASK_ID}.out.txt
+
+ln -f \\
+    ${err_out}/${script_name_sub%.sh}.\${SLURM_ARRAY_JOB_ID}-\${SLURM_ARRAY_TASK_ID}.err.txt \\
+    ${err_out}/\${name}.\${SLURM_ARRAY_JOB_ID}-\${SLURM_ARRAY_TASK_ID}.err.txt
+
+srun \\
+    "${sh_err_out}/${script_name_sub}" \\
+        -a "${store}/${list%.txt}.\${SLURM_ARRAY_TASK_ID}.txt"
+
+rm \\
+    ${err_out}/${script_name_sub%.sh}.\${SLURM_ARRAY_JOB_ID}-\${SLURM_ARRAY_TASK_ID}.out.txt
+
+rm \\
+    ${err_out}/${script_name_sub%.sh}.\${SLURM_ARRAY_JOB_ID}-\${SLURM_ARRAY_TASK_ID}.err.txt
+script
+#  vi "${sh_err_out}/${script_name_run}"  # :q
+# cat "${sh_err_out}/${script_name_run}"
+#  ., "${sh_err_out}/${script_name_run}"
+
+
+#  Scraps ---------------------------------------------------------------------
+# SLURM_ARRAY_TASK_ID=24
+# mkc="mkc-$(
+#     cat "${store}/${list%.txt}.${SLURM_ARRAY_TASK_ID}.txt" \
+#         | awk -v OFS='\t' 'FNR == 2 { print $7 }'
+# )"
+# mir="mir-$(
+#     cat "${store}/${list%.txt}.${SLURM_ARRAY_TASK_ID}.txt" \
+#         | awk -v OFS='\t' 'FNR == 2 { print $8 }'
+# )"
+# mg="mg-$(
+#     cat "${store}/${list%.txt}.${SLURM_ARRAY_TASK_ID}.txt" \
+#         | awk -v OFS='\t' 'FNR == 2 { print $9 }'
+# )"
+# gf="gf-$(
+#     cat "${store}/${list%.txt}.${SLURM_ARRAY_TASK_ID}.txt" \
+#         | awk -v OFS='\t' 'FNR == 2 { print $10 }'
+# )"
+# name="${pre}_${mkc}_${mir}_${mg}_${gf}"
+# echo "${name}"
+```
+</details>
+<br />
+<br />
+
+<a id="05-sbatchsrun-trinity-3"></a>
+#### 05 sbatch/srun Trinity
+<a id="code-60"></a>
 ##### Code
 <details>
 <summary><i>Code: sbatch/srun Trinity</i></summary>
