@@ -84,6 +84,16 @@ mv cleaning/ etc_cleaning/
 mv initial/ etc_initial/
 
 .,
+
+#  QC will be organized in a different way, so...
+rmdir FastQC_UMI-dedup/
+
+mkdir etc_QC/
+
+git mv work_draft_QC-etc.md work_run-QC.md etc_QC/
+
+#  Move this notebook into etc_cleaning/
+git mv work_clean-up.md etc_cleaning/
 ```
 </details>
 <br />
