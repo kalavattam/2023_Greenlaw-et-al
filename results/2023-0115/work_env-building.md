@@ -178,6 +178,8 @@ mamba install \
 # Execution halted
 
 mamba install -c bioconda bbmap=39.01  # Dependency for downsample-fastqs.sh
+
+mamba install -c bioconda subread  # For normalization work (but may want to make a new environment)
 ```
 </details>
 

@@ -10,8 +10,16 @@
 #!/bin/bash
 #DONTRUN #CONTINUE
 
-mamba create -n detonate_env -c bioconda detonate
-mamba activate detonate_env
+conda create -n detonate_env -c bioconda detonate
+# UnsatisfiableError: The following specifications were found to be incompatible with your system:
+#
+#   - feature:/linux-64::__glibc==2.27=0
+#   - detonate -> libgcc-ng[version='>=4.9'] -> __glibc[version='>=2.17']
+#
+# Your installed version is: 2.27
+
+
+conda activate detonate_env
 which bowtie  # Not found
 which bowtie2  # Not found
 which rsem  # Not found
@@ -24,7 +32,7 @@ which rsem  # Not found
 
 ### Printed
 <details>
-<summary><i>Printed: Install DETONATE, check on and install dependencies</i></summary>
+<summary><i>Printed (local installation): Install DETONATE, check on and install dependencies</i></summary>
 
 ```txt
 
