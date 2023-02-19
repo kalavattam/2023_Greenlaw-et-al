@@ -233,7 +233,7 @@ transcriptome &&
 
 mkdir outfiles_featureCounts/test_fC-s
 
-#  Check for forward strandedness (1)
+#  Check for forward-strandedness (1)
 threads="${SLURM_CPUS_ON_NODE}"
 strand=1
 gff="${HOME}/genomes/combined_SC_KL_20S/gff3/combined_SC_KL.gff3"
@@ -397,7 +397,7 @@ transcriptome &&
             || echo "cd'ing failed; check on this..."
     }
 
-#  Check for forward strandedness (1)
+#  Check for forward-strandedness (1)
 threads="${SLURM_CPUS_ON_NODE}"
 strand=1
 gff="${HOME}/genomes/combined_SC_KL_20S/gff3/combined_SC_KL.gff3.saf"
@@ -417,7 +417,7 @@ featureCounts \
         2> >(tee -a "${outfile}.stderr.txt" >&2)
 
 
-#  Check for reverse strandedness (2)
+#  Check for reverse-strandedness (2)
 threads="${SLURM_CPUS_ON_NODE}"
 strand=2
 gff="${HOME}/genomes/combined_SC_KL_20S/gff3/combined_SC_KL.gff3.saf"
@@ -600,7 +600,7 @@ featureCounts \
 #!/bin/bash
 #DONTRUN #CONTINUE
 
-#  Check for forward strandedness (1)
+#  Check for forward-strandedness (1)
 threads="${SLURM_CPUS_ON_NODE}"
 strand=1
 gff="${HOME}/genomes/combined_SC_KL_20S/gff3/combined_SC_KL.gff3"
@@ -621,7 +621,7 @@ featureCounts \
         2> >(tee -a "${outfile}.stderr.txt" >&2)
 
 
-#  Check for reverse strandedness (2)
+#  Check for reverse-strandedness (2)
 threads="${SLURM_CPUS_ON_NODE}"
 strand=2
 gff="${HOME}/genomes/combined_SC_KL_20S/gff3/combined_SC_KL.gff3"
@@ -830,17 +830,34 @@ transcriptome &&
             || echo "cd'ing failed; check on this..."
     }
 
-mkdir outfiles_featureCounts/test_fC-s
-
-#  Forward stranded (FR) data: -s 1
+#  Forward-stranded (FR) data: -s 1
 threads="${SLURM_CPUS_ON_NODE}"
 strand=1
 gff="${HOME}/genomes/combined_SC_KL_20S/gff3/combined_SC_KL.gff3"
 indir="bams/aligned_UT_primary_dedup-UMI"
-outfile="outfiles_featureCounts/$(basename "${infile}" .bam).fC-${strand}"
+outfile="outfiles_featureCounts/aligned_UT_primary_dedup-UMI.featureCounts"
 
-., "${indir}/"*".bam"
+# ., "${indir}/"*".bam"
+featureCounts \
+    --verbose \
+    -T "${threads}" \
+    -p \
+    -s "${strand}" \
+    -a "${gff}" \
+    -F "GTF" \
+    -g "ID" \
+    -o "${outfile}" \
+    "${indir}/"*".bam" \
+        > >(tee -a "${outfile}.stdout.txt") \
+        2> >(tee -a "${outfile}.stderr.txt" >&2)
 
+threads="${SLURM_CPUS_ON_NODE}"
+strand=1
+gff="${HOME}/genomes/combined_SC_KL_20S/gff3/combined_SC_KL.gff3"
+indir="bams/aligned_UT_primary"
+outfile="outfiles_featureCounts/aligned_UT_primary.featureCounts"
+
+# ., "${indir}/"*".bam"
 featureCounts \
     --verbose \
     -T "${threads}" \
