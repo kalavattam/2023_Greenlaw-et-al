@@ -1,4 +1,4 @@
-
+ 
 `work_count_features.md`
 <br />
 <br />
@@ -10,33 +10,41 @@
 1. [Set up environment for normalization, etc. analyses](#set-up-environment-for-normalization-etc-analyses)
     1. [Get situated, make directory for `featureCounts` work, etc.](#get-situated-make-directory-for-featurecounts-work-etc)
         1. [Code](#code)
-    1. [Install `featureCounts` in `Trinity_env`](#install-featurecounts-in-trinity_env)
+    1. [Install featureCounts in Trinity_env](#install-featurecounts-in-trinity_env)
         1. [Code](#code-1)
         1. [Printed](#printed)
     1. [Create a new environment for normalization work, install programs, etc.](#create-a-new-environment-for-normalization-work-install-programs-etc)
-        1. [Create a new environment, install featureCounts, tidyverse, DESeq2, EnhancedVolcano, etc.](#create-a-new-environment-install-featurecounts-tidyverse-deseq2-enhancedvolcano-etc)
-            1. [Code](#code-2)
-            1. [Printed](#printed-1)
-1. [Name TBD](#name-tbd)
-    1. [Symlink to datasets](#symlink-to-datasets)
+        1. [Code](#code-2)
+        1. [Printed](#printed-1)
+1. [Symlink to datasets](#symlink-to-datasets)
+    1. [Symlink to datasets without renaming them](#symlink-to-datasets-without-renaming-them)
         1. [Code](#code-3)
+    1. [Use symlinks to give the datasets intuitive names](#use-symlinks-to-give-the-datasets-intuitive-names)
+        1. [Get situated, make necessary directories](#get-situated-make-necessary-directories)
+            1. [Code](#code-4)
+        1. [Determine the relative paths](#determine-the-relative-paths)
+            1. [Code](#code-5)
+        1. [Set up associative arrays \(to be used in the symlinking\)](#set-up-associative-arrays-to-be-used-in-the-symlinking)
+            1. [Code](#code-6)
+        1. [Perform the symlinking](#perform-the-symlinking)
+            1. [Code](#code-7)
 1. [Run featureCounts](#run-featurecounts)
-    1. [Test to determine option for featureCounts -s; results in an error](#test-to-determine-option-for-featurecounts--s-results-in-an-error)
-        1. [Code](#code-4)
+    1. [Test to determine option for featureCounts -s \(results in an error\)](#test-to-determine-option-for-featurecounts--s-results-in-an-error)
+        1. [Code](#code-8)
         1. [Printed](#printed-2)
     1. [Convert the gff3 to "SAF" format](#convert-the-gff3-to-saf-format)
-        1. [Code](#code-5)
+        1. [Code](#code-9)
         1. [Printed](#printed-3)
     1. [Test to determine option for featureCounts -s using the .saf file](#test-to-determine-option-for-featurecounts--s-using-the-saf-file)
-        1. [Code](#code-6)
+        1. [Code](#code-10)
         1. [Printed](#printed-4)
-    1. [Test to determine option for featureCounts -s with -g "ID" \(#CORRECT\)](#test-to-determine-option-for-featurecounts--s-with--g-id-correct)
-        1. [Code](#code-7)
+    1. [Test to determine option for featureCounts -s with -g "ID" \(`#CORRECT`\)](#test-to-determine-option-for-featurecounts--s-with--g-id-correct)
+        1. [Code](#code-11)
         1. [Printed](#printed-5)
     1. [Clean up](#clean-up)
-        1. [Code](#code-8)
-1. [Run featureCounts on all bams](#run-featurecounts-on-all-bams)
-    1. [Code](#code-9)
+        1. [Code](#code-12)
+1. [Run featureCounts on bams in bams/ with combined_SC_KL.gff3](#run-featurecounts-on-bams-in-bams-with-combined_sc_klgff3)
+    1. [Code](#code-13)
 
 <!-- /MarkdownTOC -->
 </details>
@@ -80,7 +88,7 @@ transcriptome &&
 <br />
 
 <a id="install-featurecounts-in-trinity_env"></a>
-### Install `featureCounts` in `Trinity_env`
+### Install featureCounts in Trinity_env
 <a id="code-1"></a>
 #### Code
 <details>
@@ -181,354 +189,540 @@ Executing transaction: done
 
 <a id="create-a-new-environment-for-normalization-work-install-programs-etc"></a>
 ### Create a new environment for normalization work, install programs, etc.
-<a id="create-a-new-environment-install-featurecounts-tidyverse-deseq2-enhancedvolcano-etc"></a>
-#### Create a new environment, install featureCounts, tidyverse, DESeq2, EnhancedVolcano, etc.
 <a id="code-2"></a>
-##### Code
+#### Code
 <details>
-<summary><i>Code: Create a new environment, install featureCounts, tidyverse, DESeq2, EnhancedVolcano, etc.</i></summary>
+<summary><i>Code: Create a new environment for normalization work, install programs, etc.</i></summary>
 
 ```bash
 #!/bin/bash
 #DONTRUN #CONTINUE
 
-conda create \
+conda config --add channels defaults
+conda config --add channels bioconda
+conda config --add channels conda-forge
+
+mamba create \
     -n expression_env \
     -c conda-forge \
-        r-base=4.0.5 \
+        r-base \
         r-tidyverse \
         mamba
 
+source activate expression_env
+
+mamba install -c bioconda bioconductor-deseq2
+
 mamba install -c bioconda subread
 
-mamba install -c conda-forge r-futile.logger=1.4.3=r42hc72bb7e_1004
+mamba install \
+    -c bioconda \
+        bioconductor-enhancedvolcano bioconductor-pcatools
 
-mamba search -c bioconda bioconductor-genomeinfodbdata
-
-mamba install -c bioconda bioconductor-deseq2=1.38.0=r42hc247a5b_0
-
-source activate expression_env
 ```
 </details>
 <br />
 
 <a id="printed-1"></a>
-##### Printed
+#### Printed
 <details>
-<summary><i>Printed: Create a new environment, install featureCounts, tidyverse, DESeq2, EnhancedVolcano, etc.</i></summary>
+<summary><i>Printed: Create a new environment for normalization work, install programs, etc.</i></summary>
 
 ```txt
-❯ conda create \
+❯ mamba create \
 >     -n expression_env \
 >     -c conda-forge \
+>         r-base \
 >         r-tidyverse \
 >         mamba
-Collecting package metadata (current_repodata.json): done
-Solving environment: done
+
+                  __    __    __    __
+                 /  \  /  \  /  \  /  \
+                /    \/    \/    \/    \
+███████████████/  /██/  /██/  /██/  /████████████████████████
+              /  / \   / \   / \   / \  \____
+             /  /   \_/   \_/   \_/   \    o \__,
+            / _/                       \_____/  `
+            |/
+        ███╗   ███╗ █████╗ ███╗   ███╗██████╗  █████╗
+        ████╗ ████║██╔══██╗████╗ ████║██╔══██╗██╔══██╗
+        ██╔████╔██║███████║██╔████╔██║██████╔╝███████║
+        ██║╚██╔╝██║██╔══██║██║╚██╔╝██║██╔══██╗██╔══██║
+        ██║ ╚═╝ ██║██║  ██║██║ ╚═╝ ██║██████╔╝██║  ██║
+        ╚═╝     ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝╚═════╝ ╚═╝  ╚═╝
+
+        mamba (1.3.1) supported by @QuantStack
+
+        GitHub:  https://github.com/mamba-org/mamba
+        Twitter: https://twitter.com/QuantStack
+
+█████████████████████████████████████████████████████████████
 
 
-==> WARNING: A newer version of conda exists. <==
-  current version: 22.11.1
-  latest version: 23.1.0
+Looking for: ['r-base', 'r-tidyverse', 'mamba']
 
-Please update conda by running
+bioconda/linux-64                                           Using cache
+bioconda/noarch                                             Using cache
+pkgs/main/linux-64                                            No change
+pkgs/main/noarch                                              No change
+pkgs/r/linux-64                                               No change
+pkgs/r/noarch                                                 No change
+conda-forge/noarch                                  11.3MB @   2.7MB/s  4.9s
+conda-forge/linux-64                                29.8MB @   4.9MB/s  8.0s
+Transaction
 
-    $ conda update -n base -c defaults conda
+  Prefix: /home/kalavatt/miniconda3/envs/expression_env
 
-Or to minimize the number of packages updated during conda update use
+  Updating specs:
 
-     conda install conda=23.1.0
-
-
-
-## Package Plan ##
-
-  environment location: /home/kalavatt/miniconda3/envs/expression_env
-
-  added / updated specs:
-    - mamba
-    - r-tidyverse
+   - r-base
+   - r-tidyverse
+   - mamba
 
 
-The following packages will be downloaded:
+  Package                           Version  Build                Channel                    Size
+───────────────────────────────────────────────────────────────────────────────────────────────────
+  Install:
+───────────────────────────────────────────────────────────────────────────────────────────────────
 
-    package                    |            build
-    ---------------------------|-----------------
-    cryptography-39.0.1        |  py311h9b4c7bb_0         1.4 MB  conda-forge
-    curl-7.88.0                |       hdc1c0ab_0          86 KB  conda-forge
-    jpeg-9e                    |       h0b41bf4_3         235 KB  conda-forge
-    libcurl-7.88.0             |       hdc1c0ab_0         350 KB  conda-forge
-    libmamba-1.3.1             |       hcea66bb_1         1.4 MB  conda-forge
-    libmambapy-1.3.1           |  py311h1f88262_1         261 KB  conda-forge
-    mamba-1.3.1                |  py311h3072747_1          63 KB  conda-forge
-    openssl-3.0.8              |       h0b41bf4_0         2.5 MB  conda-forge
-    pip-23.0.1                 |     pyhd8ed1ab_0         1.3 MB  conda-forge
-    r-data.table-1.14.8        |    r42h133d619_0         1.8 MB  conda-forge
-    r-fs-1.6.1                 |    r42h38f115c_0         482 KB  conda-forge
-    r-ggplot2-3.4.1            |    r42hc72bb7e_0         3.9 MB  conda-forge
-    r-readr-2.1.4              |    r42h38f115c_0         793 KB  conda-forge
-    r-readxl-1.4.2             |    r42h81ef4d7_0         739 KB  conda-forge
-    setuptools-67.3.2          |     pyhd8ed1ab_0         565 KB  conda-forge
-    ------------------------------------------------------------
-                                           Total:        15.8 MB
+  + _libgcc_mutex                       0.1  conda_forge          conda-forge/linux-64     Cached
+  + _openmp_mutex                       4.5  2_gnu                conda-forge/linux-64     Cached
+  + _r-mutex                          1.0.1  anacondar_1          conda-forge/noarch       Cached
+  + binutils_impl_linux-64             2.40  hf600244_0           conda-forge/linux-64     Cached
+  + brotlipy                          0.7.0  py311hd4cff14_1005   conda-forge/linux-64     Cached
+  + bwidget                          1.9.14  ha770c72_1           conda-forge/linux-64     Cached
+  + bzip2                             1.0.8  h7f98852_4           conda-forge/linux-64     Cached
+  + c-ares                           1.18.1  h7f98852_0           conda-forge/linux-64     Cached
+  + ca-certificates               2022.12.7  ha878542_0           conda-forge/linux-64     Cached
+  + cairo                            1.16.0  ha61ee94_1014        conda-forge/linux-64     Cached
+  + certifi                       2022.12.7  pyhd8ed1ab_0         conda-forge/noarch       Cached
+  + cffi                             1.15.1  py311h409f033_3      conda-forge/linux-64     Cached
+  + charset-normalizer                2.1.1  pyhd8ed1ab_0         conda-forge/noarch       Cached
+  + colorama                          0.4.6  pyhd8ed1ab_0         conda-forge/noarch       Cached
+  + conda                           22.11.1  py311h38be061_1      conda-forge/linux-64     Cached
+  + conda-package-handling            2.0.2  pyh38be061_0         conda-forge/noarch       Cached
+  + conda-package-streaming           0.7.0  pyhd8ed1ab_1         conda-forge/noarch       Cached
+  + cryptography                     39.0.1  py311h9b4c7bb_0      conda-forge/linux-64     Cached
+  + curl                             7.88.0  hdc1c0ab_0           conda-forge/linux-64     Cached
+  + expat                             2.5.0  h27087fc_0           conda-forge/linux-64     Cached
+  + fmt                               9.1.0  h924138e_0           conda-forge/linux-64     Cached
+  + font-ttf-dejavu-sans-mono          2.37  hab24e00_0           conda-forge/noarch       Cached
+  + font-ttf-inconsolata              3.000  h77eed37_0           conda-forge/noarch       Cached
+  + font-ttf-source-code-pro          2.038  h77eed37_0           conda-forge/noarch       Cached
+  + font-ttf-ubuntu                    0.83  hab24e00_0           conda-forge/noarch       Cached
+  + fontconfig                       2.14.2  h14ed4e7_0           conda-forge/linux-64     Cached
+  + fonts-conda-ecosystem                 1  0                    conda-forge/noarch       Cached
+  + fonts-conda-forge                     1  0                    conda-forge/noarch       Cached
+  + freetype                         2.12.1  hca18f0e_1           conda-forge/linux-64     Cached
+  + fribidi                          1.0.10  h36c2ea0_0           conda-forge/linux-64     Cached
+  + gcc_impl_linux-64                12.2.0  hcc96c02_19          conda-forge/linux-64     Cached
+  + gettext                          0.21.1  h27087fc_0           conda-forge/linux-64     Cached
+  + gfortran_impl_linux-64           12.2.0  h55be85b_19          conda-forge/linux-64     Cached
+  + graphite2                        1.3.13  h58526e2_1001        conda-forge/linux-64     Cached
+  + gsl                                 2.7  he838d99_0           conda-forge/linux-64     Cached
+  + gxx_impl_linux-64                12.2.0  hcc96c02_19          conda-forge/linux-64     Cached
+  + harfbuzz                          6.0.0  h8e241bc_0           conda-forge/linux-64     Cached
+  + icu                                70.1  h27087fc_0           conda-forge/linux-64     Cached
+  + idna                                3.4  pyhd8ed1ab_0         conda-forge/noarch       Cached
+  + jpeg                                 9e  h0b41bf4_3           conda-forge/linux-64     Cached
+  + kernel-headers_linux-64          2.6.32  he073ed8_15          conda-forge/noarch       Cached
+  + keyutils                          1.6.1  h166bdaf_0           conda-forge/linux-64     Cached
+  + krb5                             1.20.1  h81ceb04_0           conda-forge/linux-64     Cached
+  + ld_impl_linux-64                   2.40  h41732ed_0           conda-forge/linux-64     Cached
+  + lerc                              4.0.0  h27087fc_0           conda-forge/linux-64     Cached
+  + libarchive                        3.6.2  h3d51595_0           conda-forge/linux-64     Cached
+  + libblas                           3.9.0  16_linux64_openblas  conda-forge/linux-64     Cached
+  + libcblas                          3.9.0  16_linux64_openblas  conda-forge/linux-64     Cached
+  + libcurl                          7.88.0  hdc1c0ab_0           conda-forge/linux-64     Cached
+  + libdeflate                         1.17  h0b41bf4_0           conda-forge/linux-64     Cached
+  + libedit                    3.1.20191231  he28a2e2_2           conda-forge/linux-64     Cached
+  + libev                              4.33  h516909a_1           conda-forge/linux-64     Cached
+  + libffi                            3.4.2  h7f98852_5           conda-forge/linux-64     Cached
+  + libgcc-devel_linux-64            12.2.0  h3b97bd3_19          conda-forge/linux-64     Cached
+  + libgcc-ng                        12.2.0  h65d4601_19          conda-forge/linux-64     Cached
+  + libgfortran-ng                   12.2.0  h69a702a_19          conda-forge/linux-64     Cached
+  + libgfortran5                     12.2.0  h337968e_19          conda-forge/linux-64     Cached
+  + libglib                          2.74.1  h606061b_1           conda-forge/linux-64     Cached
+  + libgomp                          12.2.0  h65d4601_19          conda-forge/linux-64     Cached
+  + libiconv                           1.17  h166bdaf_0           conda-forge/linux-64     Cached
+  + liblapack                         3.9.0  16_linux64_openblas  conda-forge/linux-64     Cached
+  + libmamba                          1.3.1  hcea66bb_1           conda-forge/linux-64     Cached
+  + libmambapy                        1.3.1  py311h1f88262_1      conda-forge/linux-64     Cached
+  + libnghttp2                       1.51.0  hff17c54_0           conda-forge/linux-64     Cached
+  + libnsl                            2.0.0  h7f98852_0           conda-forge/linux-64     Cached
+  + libopenblas                      0.3.21  pthreads_h78a6416_3  conda-forge/linux-64     Cached
+  + libpng                           1.6.39  h753d276_0           conda-forge/linux-64     Cached
+  + libsanitizer                     12.2.0  h46fd767_19          conda-forge/linux-64     Cached
+  + libsolv                          0.7.23  h3eb15da_0           conda-forge/linux-64     Cached
+  + libsqlite                        3.40.0  h753d276_0           conda-forge/linux-64     Cached
+  + libssh2                          1.10.0  hf14f497_3           conda-forge/linux-64     Cached
+  + libstdcxx-devel_linux-64         12.2.0  h3b97bd3_19          conda-forge/linux-64     Cached
+  + libstdcxx-ng                     12.2.0  h46fd767_19          conda-forge/linux-64     Cached
+  + libtiff                           4.5.0  h6adf6a1_2           conda-forge/linux-64     Cached
+  + libuuid                          2.32.1  h7f98852_1000        conda-forge/linux-64     Cached
+  + libwebp-base                      1.2.4  h166bdaf_0           conda-forge/linux-64     Cached
+  + libxcb                             1.13  h7f98852_1004        conda-forge/linux-64     Cached
+  + libxml2                          2.10.3  h7463322_0           conda-forge/linux-64     Cached
+  + libzlib                          1.2.13  h166bdaf_4           conda-forge/linux-64     Cached
+  + lz4-c                             1.9.4  hcb278e6_0           conda-forge/linux-64     Cached
+  + lzo                                2.10  h516909a_1000        conda-forge/linux-64     Cached
+  + make                                4.3  hd18ef5c_1           conda-forge/linux-64     Cached
+  + mamba                             1.3.1  py311h3072747_1      conda-forge/linux-64     Cached
+  + ncurses                             6.3  h27087fc_1           conda-forge/linux-64     Cached
+  + openssl                           3.0.8  h0b41bf4_0           conda-forge/linux-64     Cached
+  + pandoc                           2.19.2  h32600fe_1           conda-forge/linux-64     Cached
+  + pango                           1.50.12  hd33c08f_1           conda-forge/linux-64     Cached
+  + pcre2                             10.40  hc3806b6_0           conda-forge/linux-64     Cached
+  + pip                              23.0.1  pyhd8ed1ab_0         conda-forge/noarch       Cached
+  + pixman                           0.40.0  h36c2ea0_0           conda-forge/linux-64     Cached
+  + pluggy                            1.0.0  pyhd8ed1ab_5         conda-forge/noarch       Cached
+  + pthread-stubs                       0.4  h36c2ea0_1001        conda-forge/linux-64     Cached
+  + pybind11-abi                          4  hd8ed1ab_3           conda-forge/noarch       Cached
+  + pycosat                           0.6.4  py311hd4cff14_1      conda-forge/linux-64     Cached
+  + pycparser                          2.21  pyhd8ed1ab_0         conda-forge/noarch       Cached
+  + pyopenssl                        23.0.0  pyhd8ed1ab_0         conda-forge/noarch       Cached
+  + pysocks                           1.7.1  pyha2e5f31_6         conda-forge/noarch       Cached
+  + python                           3.11.0  he550d4f_1_cpython   conda-forge/linux-64     Cached
+  + python_abi                         3.11  3_cp311              conda-forge/linux-64     Cached
+  + r-askpass                           1.1  r42h06615bd_3        conda-forge/linux-64     Cached
+  + r-assertthat                      0.2.1  r42hc72bb7e_3        conda-forge/noarch       Cached
+  + r-backports                       1.4.1  r42h06615bd_1        conda-forge/linux-64     Cached
+  + r-base                            4.2.2  ha7d60f8_3           conda-forge/linux-64     Cached
+  + r-base64enc                       0.1_3  r42h06615bd_1005     conda-forge/linux-64     Cached
+  + r-bit                             4.0.5  r42h06615bd_0        conda-forge/linux-64     Cached
+  + r-bit64                           4.0.5  r42h06615bd_1        conda-forge/linux-64     Cached
+  + r-blob                            1.2.3  r42hc72bb7e_1        conda-forge/noarch       Cached
+  + r-broom                           1.0.3  r42hc72bb7e_0        conda-forge/noarch       Cached
+  + r-bslib                           0.4.2  r42hc72bb7e_0        conda-forge/noarch       Cached
+  + r-cachem                          1.0.6  r42h06615bd_1        conda-forge/linux-64     Cached
+  + r-callr                           3.7.3  r42hc72bb7e_0        conda-forge/noarch       Cached
+  + r-cellranger                      1.1.0  r42hc72bb7e_1005     conda-forge/noarch       Cached
+  + r-cli                             3.6.0  r42h38f115c_0        conda-forge/linux-64     Cached
+  + r-clipr                           0.8.0  r42hc72bb7e_1        conda-forge/noarch       Cached
+  + r-colorspace                      2.1_0  r42h133d619_0        conda-forge/linux-64     Cached
+  + r-cpp11                           0.4.3  r42hc72bb7e_0        conda-forge/noarch       Cached
+  + r-crayon                          1.5.2  r42hc72bb7e_1        conda-forge/noarch       Cached
+  + r-curl                            4.3.3  r42h06615bd_1        conda-forge/linux-64     Cached
+  + r-data.table                     1.14.8  r42h133d619_0        conda-forge/linux-64     Cached
+  + r-dbi                             1.1.3  r42hc72bb7e_1        conda-forge/noarch       Cached
+  + r-dbplyr                          2.3.0  r42hc72bb7e_0        conda-forge/noarch       Cached
+  + r-digest                         0.6.31  r42h38f115c_0        conda-forge/linux-64     Cached
+  + r-dplyr                           1.1.0  r42h38f115c_0        conda-forge/linux-64     Cached
+  + r-dtplyr                          1.2.2  r42hc72bb7e_2        conda-forge/noarch       Cached
+  + r-ellipsis                        0.3.2  r42h06615bd_1        conda-forge/linux-64     Cached
+  + r-evaluate                         0.20  r42hc72bb7e_0        conda-forge/noarch       Cached
+  + r-fansi                           1.0.4  r42h133d619_0        conda-forge/linux-64     Cached
+  + r-farver                          2.1.1  r42h7525677_1        conda-forge/linux-64     Cached
+  + r-fastmap                         1.1.0  r42h7525677_1        conda-forge/linux-64     Cached
+  + r-forcats                         1.0.0  r42hc72bb7e_0        conda-forge/noarch       Cached
+  + r-fs                              1.6.1  r42h38f115c_0        conda-forge/linux-64     Cached
+  + r-gargle                          1.3.0  r42h785f33e_0        conda-forge/noarch       Cached
+  + r-generics                        0.1.3  r42hc72bb7e_1        conda-forge/noarch       Cached
+  + r-ggplot2                         3.4.1  r42hc72bb7e_0        conda-forge/noarch       Cached
+  + r-glue                            1.6.2  r42h06615bd_1        conda-forge/linux-64     Cached
+  + r-googledrive                     2.0.0  r42hc72bb7e_1        conda-forge/noarch       Cached
+  + r-googlesheets4                   1.0.1  r42h785f33e_1        conda-forge/noarch       Cached
+  + r-gtable                          0.3.1  r42hc72bb7e_1        conda-forge/noarch       Cached
+  + r-haven                           2.5.1  r42h7525677_0        conda-forge/linux-64     Cached
+  + r-highr                            0.10  r42hc72bb7e_0        conda-forge/noarch       Cached
+  + r-hms                             1.1.2  r42hc72bb7e_1        conda-forge/noarch       Cached
+  + r-htmltools                       0.5.4  r42h38f115c_0        conda-forge/linux-64     Cached
+  + r-httr                            1.4.4  r42hc72bb7e_1        conda-forge/noarch       Cached
+  + r-ids                             1.0.1  r42hc72bb7e_2        conda-forge/noarch       Cached
+  + r-isoband                         0.2.7  r42h38f115c_1        conda-forge/linux-64     Cached
+  + r-jquerylib                       0.1.4  r42hc72bb7e_1        conda-forge/noarch       Cached
+  + r-jsonlite                        1.8.4  r42h133d619_0        conda-forge/linux-64     Cached
+  + r-knitr                            1.42  r42hc72bb7e_1        conda-forge/noarch       Cached
+  + r-labeling                        0.4.2  r42hc72bb7e_2        conda-forge/noarch       Cached
+  + r-lattice                       0.20_45  r42h06615bd_1        conda-forge/linux-64     Cached
+  + r-lifecycle                       1.0.3  r42hc72bb7e_1        conda-forge/noarch       Cached
+  + r-lubridate                       1.9.1  r42h133d619_0        conda-forge/linux-64     Cached
+  + r-magrittr                        2.0.3  r42h06615bd_1        conda-forge/linux-64     Cached
+  + r-mass                         7.3_58.2  r42h133d619_0        conda-forge/linux-64     Cached
+  + r-matrix                          1.5_3  r42h5f7b363_0        conda-forge/linux-64     Cached
+  + r-memoise                         2.0.1  r42hc72bb7e_1        conda-forge/noarch       Cached
+  + r-mgcv                           1.8_41  r42h5f7b363_0        conda-forge/linux-64     Cached
+  + r-mime                             0.12  r42h06615bd_1        conda-forge/linux-64     Cached
+  + r-modelr                         0.1.10  r42hc72bb7e_0        conda-forge/noarch       Cached
+  + r-munsell                         0.5.0  r42hc72bb7e_1005     conda-forge/noarch       Cached
+  + r-nlme                          3.1_162  r42hac0b197_0        conda-forge/linux-64     Cached
+  + r-openssl                         2.0.5  r42habfbb5e_0        conda-forge/linux-64     Cached
+  + r-pillar                          1.8.1  r42hc72bb7e_1        conda-forge/noarch       Cached
+  + r-pkgconfig                       2.0.3  r42hc72bb7e_2        conda-forge/noarch       Cached
+  + r-prettyunits                     1.1.1  r42hc72bb7e_2        conda-forge/noarch       Cached
+  + r-processx                        3.8.0  r42h06615bd_0        conda-forge/linux-64     Cached
+  + r-progress                        1.2.2  r42hc72bb7e_3        conda-forge/noarch       Cached
+  + r-ps                              1.7.2  r42h06615bd_0        conda-forge/linux-64     Cached
+  + r-purrr                           1.0.1  r42h133d619_0        conda-forge/linux-64     Cached
+  + r-r6                              2.5.1  r42hc72bb7e_1        conda-forge/noarch       Cached
+  + r-rappdirs                        0.3.3  r42h06615bd_1        conda-forge/linux-64     Cached
+  + r-rcolorbrewer                    1.1_3  r42h785f33e_1        conda-forge/noarch       Cached
+  + r-rcpp                           1.0.10  r42h38f115c_0        conda-forge/linux-64     Cached
+  + r-readr                           2.1.4  r42h38f115c_0        conda-forge/linux-64     Cached
+  + r-readxl                          1.4.2  r42h81ef4d7_0        conda-forge/linux-64     Cached
+  + r-rematch                         1.0.1  r42hc72bb7e_1005     conda-forge/noarch       Cached
+  + r-rematch2                        2.1.2  r42hc72bb7e_2        conda-forge/noarch       Cached
+  + r-reprex                          2.0.2  r42hc72bb7e_1        conda-forge/noarch       Cached
+  + r-rlang                           1.0.6  r42h7525677_1        conda-forge/linux-64     Cached
+  + r-rmarkdown                        2.20  r42hc72bb7e_0        conda-forge/noarch       Cached
+  + r-rstudioapi                       0.14  r42hc72bb7e_1        conda-forge/noarch       Cached
+  + r-rvest                           1.0.3  r42hc72bb7e_1        conda-forge/noarch       Cached
+  + r-sass                            0.4.5  r42h38f115c_0        conda-forge/linux-64     Cached
+  + r-scales                          1.2.1  r42hc72bb7e_1        conda-forge/noarch       Cached
+  + r-selectr                         0.4_2  r42hc72bb7e_2        conda-forge/noarch       Cached
+  + r-stringi                        1.7.12  r42h1ae9187_0        conda-forge/linux-64     Cached
+  + r-stringr                         1.5.0  r42h785f33e_0        conda-forge/noarch       Cached
+  + r-sys                             3.4.1  r42h06615bd_0        conda-forge/linux-64     Cached
+  + r-tibble                          3.1.8  r42h06615bd_1        conda-forge/linux-64     Cached
+  + r-tidyr                           1.3.0  r42h38f115c_0        conda-forge/linux-64     Cached
+  + r-tidyselect                      1.2.0  r42hc72bb7e_0        conda-forge/linux-64     Cached
+  + r-tidyverse                       1.3.2  r42hc72bb7e_1        conda-forge/noarch       Cached
+  + r-timechange                      0.2.0  r42h38f115c_0        conda-forge/linux-64     Cached
+  + r-tinytex                          0.44  r42hc72bb7e_0        conda-forge/noarch       Cached
+  + r-tzdb                            0.3.0  r42h7525677_1        conda-forge/linux-64     Cached
+  + r-utf8                            1.2.3  r42h133d619_0        conda-forge/linux-64     Cached
+  + r-uuid                            1.1_0  r42h06615bd_1        conda-forge/linux-64     Cached
+  + r-vctrs                           0.5.2  r42h38f115c_0        conda-forge/linux-64     Cached
+  + r-viridislite                     0.4.1  r42hc72bb7e_1        conda-forge/noarch       Cached
+  + r-vroom                           1.6.1  r42h38f115c_0        conda-forge/linux-64     Cached
+  + r-withr                           2.5.0  r42hc72bb7e_1        conda-forge/noarch       Cached
+  + r-xfun                             0.37  r42h38f115c_0        conda-forge/linux-64     Cached
+  + r-xml2                            1.3.3  r42h044e5c7_2        conda-forge/linux-64     Cached
+  + r-yaml                            2.3.7  r42h133d619_0        conda-forge/linux-64     Cached
+  + readline                          8.1.2  h0f457ee_0           conda-forge/linux-64     Cached
+  + reproc                           14.2.4  h0b41bf4_0           conda-forge/linux-64     Cached
+  + reproc-cpp                       14.2.4  hcb278e6_0           conda-forge/linux-64     Cached
+  + requests                         2.28.2  pyhd8ed1ab_0         conda-forge/noarch       Cached
+  + ruamel.yaml                     0.17.21  py311hd4cff14_2      conda-forge/linux-64     Cached
+  + ruamel.yaml.clib                  0.2.7  py311h2582759_1      conda-forge/linux-64     Cached
+  + sed                                 4.8  he412f7d_0           conda-forge/linux-64     Cached
+  + setuptools                       67.3.2  pyhd8ed1ab_0         conda-forge/noarch       Cached
+  + sysroot_linux-64                   2.12  he073ed8_15          conda-forge/noarch       Cached
+  + tk                               8.6.12  h27826a3_0           conda-forge/linux-64     Cached
+  + tktable                            2.10  hb7b940f_3           conda-forge/linux-64     Cached
+  + toolz                            0.12.0  pyhd8ed1ab_0         conda-forge/noarch       Cached
+  + tqdm                             4.64.1  pyhd8ed1ab_0         conda-forge/noarch       Cached
+  + tzdata                            2022g  h191b570_0           conda-forge/noarch       Cached
+  + urllib3                         1.26.14  pyhd8ed1ab_0         conda-forge/noarch       Cached
+  + wheel                            0.38.4  pyhd8ed1ab_0         conda-forge/noarch       Cached
+  + xorg-kbproto                      1.0.7  h7f98852_1002        conda-forge/linux-64     Cached
+  + xorg-libice                      1.0.10  h7f98852_0           conda-forge/linux-64     Cached
+  + xorg-libsm                        1.2.3  hd9c2040_1000        conda-forge/linux-64     Cached
+  + xorg-libx11                       1.7.2  h7f98852_0           conda-forge/linux-64     Cached
+  + xorg-libxau                       1.0.9  h7f98852_0           conda-forge/linux-64     Cached
+  + xorg-libxdmcp                     1.1.3  h7f98852_0           conda-forge/linux-64     Cached
+  + xorg-libxext                      1.3.4  h7f98852_1           conda-forge/linux-64     Cached
+  + xorg-libxrender                  0.9.10  h7f98852_1003        conda-forge/linux-64     Cached
+  + xorg-libxt                        1.2.1  h7f98852_2           conda-forge/linux-64     Cached
+  + xorg-renderproto                 0.11.1  h7f98852_1002        conda-forge/linux-64     Cached
+  + xorg-xextproto                    7.3.0  h7f98852_1002        conda-forge/linux-64     Cached
+  + xorg-xproto                      7.0.31  h7f98852_1007        conda-forge/linux-64     Cached
+  + xz                                5.2.6  h166bdaf_0           conda-forge/linux-64     Cached
+  + yaml-cpp                          0.7.0  h27087fc_2           conda-forge/linux-64     Cached
+  + zlib                             1.2.13  h166bdaf_4           conda-forge/linux-64     Cached
+  + zstandard                        0.19.0  py311hbe0fcd7_1      conda-forge/linux-64     Cached
+  + zstd                              1.5.2  h3eb15da_6           conda-forge/linux-64     Cached
 
-The following NEW packages will be INSTALLED:
+  Summary:
 
-  _libgcc_mutex      conda-forge/linux-64::_libgcc_mutex-0.1-conda_forge
-  _openmp_mutex      conda-forge/linux-64::_openmp_mutex-4.5-2_gnu
-  _r-mutex           conda-forge/noarch::_r-mutex-1.0.1-anacondar_1
-  binutils_impl_lin~ conda-forge/linux-64::binutils_impl_linux-64-2.40-hf600244_0
-  brotlipy           conda-forge/linux-64::brotlipy-0.7.0-py311hd4cff14_1005
-  bwidget            conda-forge/linux-64::bwidget-1.9.14-ha770c72_1
-  bzip2              conda-forge/linux-64::bzip2-1.0.8-h7f98852_4
-  c-ares             conda-forge/linux-64::c-ares-1.18.1-h7f98852_0
-  ca-certificates    conda-forge/linux-64::ca-certificates-2022.12.7-ha878542_0
-  cairo              conda-forge/linux-64::cairo-1.16.0-ha61ee94_1014
-  certifi            conda-forge/noarch::certifi-2022.12.7-pyhd8ed1ab_0
-  cffi               conda-forge/linux-64::cffi-1.15.1-py311h409f033_3
-  charset-normalizer conda-forge/noarch::charset-normalizer-2.1.1-pyhd8ed1ab_0
-  colorama           conda-forge/noarch::colorama-0.4.6-pyhd8ed1ab_0
-  conda              conda-forge/linux-64::conda-22.11.1-py311h38be061_1
-  conda-package-han~ conda-forge/noarch::conda-package-handling-2.0.2-pyh38be061_0
-  conda-package-str~ conda-forge/noarch::conda-package-streaming-0.7.0-pyhd8ed1ab_1
-  cryptography       conda-forge/linux-64::cryptography-39.0.1-py311h9b4c7bb_0
-  curl               conda-forge/linux-64::curl-7.88.0-hdc1c0ab_0
-  expat              conda-forge/linux-64::expat-2.5.0-h27087fc_0
-  fmt                conda-forge/linux-64::fmt-9.1.0-h924138e_0
-  font-ttf-dejavu-s~ conda-forge/noarch::font-ttf-dejavu-sans-mono-2.37-hab24e00_0
-  font-ttf-inconsol~ conda-forge/noarch::font-ttf-inconsolata-3.000-h77eed37_0
-  font-ttf-source-c~ conda-forge/noarch::font-ttf-source-code-pro-2.038-h77eed37_0
-  font-ttf-ubuntu    conda-forge/noarch::font-ttf-ubuntu-0.83-hab24e00_0
-  fontconfig         conda-forge/linux-64::fontconfig-2.14.2-h14ed4e7_0
-  fonts-conda-ecosy~ conda-forge/noarch::fonts-conda-ecosystem-1-0
-  fonts-conda-forge  conda-forge/noarch::fonts-conda-forge-1-0
-  freetype           conda-forge/linux-64::freetype-2.12.1-hca18f0e_1
-  fribidi            conda-forge/linux-64::fribidi-1.0.10-h36c2ea0_0
-  gcc_impl_linux-64  conda-forge/linux-64::gcc_impl_linux-64-12.2.0-hcc96c02_19
-  gettext            conda-forge/linux-64::gettext-0.21.1-h27087fc_0
-  gfortran_impl_lin~ conda-forge/linux-64::gfortran_impl_linux-64-12.2.0-h55be85b_19
-  graphite2          conda-forge/linux-64::graphite2-1.3.13-h58526e2_1001
-  gsl                conda-forge/linux-64::gsl-2.7-he838d99_0
-  gxx_impl_linux-64  conda-forge/linux-64::gxx_impl_linux-64-12.2.0-hcc96c02_19
-  harfbuzz           conda-forge/linux-64::harfbuzz-6.0.0-h8e241bc_0
-  icu                conda-forge/linux-64::icu-70.1-h27087fc_0
-  idna               conda-forge/noarch::idna-3.4-pyhd8ed1ab_0
-  jpeg               conda-forge/linux-64::jpeg-9e-h0b41bf4_3
-  kernel-headers_li~ conda-forge/noarch::kernel-headers_linux-64-2.6.32-he073ed8_15
-  keyutils           conda-forge/linux-64::keyutils-1.6.1-h166bdaf_0
-  krb5               conda-forge/linux-64::krb5-1.20.1-h81ceb04_0
-  ld_impl_linux-64   conda-forge/linux-64::ld_impl_linux-64-2.40-h41732ed_0
-  lerc               conda-forge/linux-64::lerc-4.0.0-h27087fc_0
-  libarchive         conda-forge/linux-64::libarchive-3.6.2-h3d51595_0
-  libblas            conda-forge/linux-64::libblas-3.9.0-16_linux64_openblas
-  libcblas           conda-forge/linux-64::libcblas-3.9.0-16_linux64_openblas
-  libcurl            conda-forge/linux-64::libcurl-7.88.0-hdc1c0ab_0
-  libdeflate         conda-forge/linux-64::libdeflate-1.17-h0b41bf4_0
-  libedit            conda-forge/linux-64::libedit-3.1.20191231-he28a2e2_2
-  libev              conda-forge/linux-64::libev-4.33-h516909a_1
-  libffi             conda-forge/linux-64::libffi-3.4.2-h7f98852_5
-  libgcc-devel_linu~ conda-forge/linux-64::libgcc-devel_linux-64-12.2.0-h3b97bd3_19
-  libgcc-ng          conda-forge/linux-64::libgcc-ng-12.2.0-h65d4601_19
-  libgfortran-ng     conda-forge/linux-64::libgfortran-ng-12.2.0-h69a702a_19
-  libgfortran5       conda-forge/linux-64::libgfortran5-12.2.0-h337968e_19
-  libglib            conda-forge/linux-64::libglib-2.74.1-h606061b_1
-  libgomp            conda-forge/linux-64::libgomp-12.2.0-h65d4601_19
-  libiconv           conda-forge/linux-64::libiconv-1.17-h166bdaf_0
-  liblapack          conda-forge/linux-64::liblapack-3.9.0-16_linux64_openblas
-  libmamba           conda-forge/linux-64::libmamba-1.3.1-hcea66bb_1
-  libmambapy         conda-forge/linux-64::libmambapy-1.3.1-py311h1f88262_1
-  libnghttp2         conda-forge/linux-64::libnghttp2-1.51.0-hff17c54_0
-  libnsl             conda-forge/linux-64::libnsl-2.0.0-h7f98852_0
-  libopenblas        conda-forge/linux-64::libopenblas-0.3.21-pthreads_h78a6416_3
-  libpng             conda-forge/linux-64::libpng-1.6.39-h753d276_0
-  libsanitizer       conda-forge/linux-64::libsanitizer-12.2.0-h46fd767_19
-  libsolv            conda-forge/linux-64::libsolv-0.7.23-h3eb15da_0
-  libsqlite          conda-forge/linux-64::libsqlite-3.40.0-h753d276_0
-  libssh2            conda-forge/linux-64::libssh2-1.10.0-hf14f497_3
-  libstdcxx-devel_l~ conda-forge/linux-64::libstdcxx-devel_linux-64-12.2.0-h3b97bd3_19
-  libstdcxx-ng       conda-forge/linux-64::libstdcxx-ng-12.2.0-h46fd767_19
-  libtiff            conda-forge/linux-64::libtiff-4.5.0-h6adf6a1_2
-  libuuid            conda-forge/linux-64::libuuid-2.32.1-h7f98852_1000
-  libwebp-base       conda-forge/linux-64::libwebp-base-1.2.4-h166bdaf_0
-  libxcb             conda-forge/linux-64::libxcb-1.13-h7f98852_1004
-  libxml2            conda-forge/linux-64::libxml2-2.10.3-h7463322_0
-  libzlib            conda-forge/linux-64::libzlib-1.2.13-h166bdaf_4
-  lz4-c              conda-forge/linux-64::lz4-c-1.9.4-hcb278e6_0
-  lzo                conda-forge/linux-64::lzo-2.10-h516909a_1000
-  make               conda-forge/linux-64::make-4.3-hd18ef5c_1
-  mamba              conda-forge/linux-64::mamba-1.3.1-py311h3072747_1
-  ncurses            conda-forge/linux-64::ncurses-6.3-h27087fc_1
-  openssl            conda-forge/linux-64::openssl-3.0.8-h0b41bf4_0
-  pandoc             conda-forge/linux-64::pandoc-2.19.2-h32600fe_1
-  pango              conda-forge/linux-64::pango-1.50.12-hd33c08f_1
-  pcre2              conda-forge/linux-64::pcre2-10.40-hc3806b6_0
-  pip                conda-forge/noarch::pip-23.0.1-pyhd8ed1ab_0
-  pixman             conda-forge/linux-64::pixman-0.40.0-h36c2ea0_0
-  pluggy             conda-forge/noarch::pluggy-1.0.0-pyhd8ed1ab_5
-  pthread-stubs      conda-forge/linux-64::pthread-stubs-0.4-h36c2ea0_1001
-  pybind11-abi       conda-forge/noarch::pybind11-abi-4-hd8ed1ab_3
-  pycosat            conda-forge/linux-64::pycosat-0.6.4-py311hd4cff14_1
-  pycparser          conda-forge/noarch::pycparser-2.21-pyhd8ed1ab_0
-  pyopenssl          conda-forge/noarch::pyopenssl-23.0.0-pyhd8ed1ab_0
-  pysocks            conda-forge/noarch::pysocks-1.7.1-pyha2e5f31_6
-  python             conda-forge/linux-64::python-3.11.0-he550d4f_1_cpython
-  python_abi         conda-forge/linux-64::python_abi-3.11-3_cp311
-  r-askpass          conda-forge/linux-64::r-askpass-1.1-r42h06615bd_3
-  r-assertthat       conda-forge/noarch::r-assertthat-0.2.1-r42hc72bb7e_3
-  r-backports        conda-forge/linux-64::r-backports-1.4.1-r42h06615bd_1
-  r-base             conda-forge/linux-64::r-base-4.2.2-ha7d60f8_3
-  r-base64enc        conda-forge/linux-64::r-base64enc-0.1_3-r42h06615bd_1005
-  r-bit              conda-forge/linux-64::r-bit-4.0.5-r42h06615bd_0
-  r-bit64            conda-forge/linux-64::r-bit64-4.0.5-r42h06615bd_1
-  r-blob             conda-forge/noarch::r-blob-1.2.3-r42hc72bb7e_1
-  r-broom            conda-forge/noarch::r-broom-1.0.3-r42hc72bb7e_0
-  r-bslib            conda-forge/noarch::r-bslib-0.4.2-r42hc72bb7e_0
-  r-cachem           conda-forge/linux-64::r-cachem-1.0.6-r42h06615bd_1
-  r-callr            conda-forge/noarch::r-callr-3.7.3-r42hc72bb7e_0
-  r-cellranger       conda-forge/noarch::r-cellranger-1.1.0-r42hc72bb7e_1005
-  r-cli              conda-forge/linux-64::r-cli-3.6.0-r42h38f115c_0
-  r-clipr            conda-forge/noarch::r-clipr-0.8.0-r42hc72bb7e_1
-  r-colorspace       conda-forge/linux-64::r-colorspace-2.1_0-r42h133d619_0
-  r-cpp11            conda-forge/noarch::r-cpp11-0.4.3-r42hc72bb7e_0
-  r-crayon           conda-forge/noarch::r-crayon-1.5.2-r42hc72bb7e_1
-  r-curl             conda-forge/linux-64::r-curl-4.3.3-r42h06615bd_1
-  r-data.table       conda-forge/linux-64::r-data.table-1.14.8-r42h133d619_0
-  r-dbi              conda-forge/noarch::r-dbi-1.1.3-r42hc72bb7e_1
-  r-dbplyr           conda-forge/noarch::r-dbplyr-2.3.0-r42hc72bb7e_0
-  r-digest           conda-forge/linux-64::r-digest-0.6.31-r42h38f115c_0
-  r-dplyr            conda-forge/linux-64::r-dplyr-1.1.0-r42h38f115c_0
-  r-dtplyr           conda-forge/noarch::r-dtplyr-1.2.2-r42hc72bb7e_2
-  r-ellipsis         conda-forge/linux-64::r-ellipsis-0.3.2-r42h06615bd_1
-  r-evaluate         conda-forge/noarch::r-evaluate-0.20-r42hc72bb7e_0
-  r-fansi            conda-forge/linux-64::r-fansi-1.0.4-r42h133d619_0
-  r-farver           conda-forge/linux-64::r-farver-2.1.1-r42h7525677_1
-  r-fastmap          conda-forge/linux-64::r-fastmap-1.1.0-r42h7525677_1
-  r-forcats          conda-forge/noarch::r-forcats-1.0.0-r42hc72bb7e_0
-  r-fs               conda-forge/linux-64::r-fs-1.6.1-r42h38f115c_0
-  r-gargle           conda-forge/noarch::r-gargle-1.3.0-r42h785f33e_0
-  r-generics         conda-forge/noarch::r-generics-0.1.3-r42hc72bb7e_1
-  r-ggplot2          conda-forge/noarch::r-ggplot2-3.4.1-r42hc72bb7e_0
-  r-glue             conda-forge/linux-64::r-glue-1.6.2-r42h06615bd_1
-  r-googledrive      conda-forge/noarch::r-googledrive-2.0.0-r42hc72bb7e_1
-  r-googlesheets4    conda-forge/noarch::r-googlesheets4-1.0.1-r42h785f33e_1
-  r-gtable           conda-forge/noarch::r-gtable-0.3.1-r42hc72bb7e_1
-  r-haven            conda-forge/linux-64::r-haven-2.5.1-r42h7525677_0
-  r-highr            conda-forge/noarch::r-highr-0.10-r42hc72bb7e_0
-  r-hms              conda-forge/noarch::r-hms-1.1.2-r42hc72bb7e_1
-  r-htmltools        conda-forge/linux-64::r-htmltools-0.5.4-r42h38f115c_0
-  r-httr             conda-forge/noarch::r-httr-1.4.4-r42hc72bb7e_1
-  r-ids              conda-forge/noarch::r-ids-1.0.1-r42hc72bb7e_2
-  r-isoband          conda-forge/linux-64::r-isoband-0.2.7-r42h38f115c_1
-  r-jquerylib        conda-forge/noarch::r-jquerylib-0.1.4-r42hc72bb7e_1
-  r-jsonlite         conda-forge/linux-64::r-jsonlite-1.8.4-r42h133d619_0
-  r-knitr            conda-forge/noarch::r-knitr-1.42-r42hc72bb7e_1
-  r-labeling         conda-forge/noarch::r-labeling-0.4.2-r42hc72bb7e_2
-  r-lattice          conda-forge/linux-64::r-lattice-0.20_45-r42h06615bd_1
-  r-lifecycle        conda-forge/noarch::r-lifecycle-1.0.3-r42hc72bb7e_1
-  r-lubridate        conda-forge/linux-64::r-lubridate-1.9.1-r42h133d619_0
-  r-magrittr         conda-forge/linux-64::r-magrittr-2.0.3-r42h06615bd_1
-  r-mass             conda-forge/linux-64::r-mass-7.3_58.2-r42h133d619_0
-  r-matrix           conda-forge/linux-64::r-matrix-1.5_3-r42h5f7b363_0
-  r-memoise          conda-forge/noarch::r-memoise-2.0.1-r42hc72bb7e_1
-  r-mgcv             conda-forge/linux-64::r-mgcv-1.8_41-r42h5f7b363_0
-  r-mime             conda-forge/linux-64::r-mime-0.12-r42h06615bd_1
-  r-modelr           conda-forge/noarch::r-modelr-0.1.10-r42hc72bb7e_0
-  r-munsell          conda-forge/noarch::r-munsell-0.5.0-r42hc72bb7e_1005
-  r-nlme             conda-forge/linux-64::r-nlme-3.1_162-r42hac0b197_0
-  r-openssl          conda-forge/linux-64::r-openssl-2.0.5-r42habfbb5e_0
-  r-pillar           conda-forge/noarch::r-pillar-1.8.1-r42hc72bb7e_1
-  r-pkgconfig        conda-forge/noarch::r-pkgconfig-2.0.3-r42hc72bb7e_2
-  r-prettyunits      conda-forge/noarch::r-prettyunits-1.1.1-r42hc72bb7e_2
-  r-processx         conda-forge/linux-64::r-processx-3.8.0-r42h06615bd_0
-  r-progress         conda-forge/noarch::r-progress-1.2.2-r42hc72bb7e_3
-  r-ps               conda-forge/linux-64::r-ps-1.7.2-r42h06615bd_0
-  r-purrr            conda-forge/linux-64::r-purrr-1.0.1-r42h133d619_0
-  r-r6               conda-forge/noarch::r-r6-2.5.1-r42hc72bb7e_1
-  r-rappdirs         conda-forge/linux-64::r-rappdirs-0.3.3-r42h06615bd_1
-  r-rcolorbrewer     conda-forge/noarch::r-rcolorbrewer-1.1_3-r42h785f33e_1
-  r-rcpp             conda-forge/linux-64::r-rcpp-1.0.10-r42h38f115c_0
-  r-readr            conda-forge/linux-64::r-readr-2.1.4-r42h38f115c_0
-  r-readxl           conda-forge/linux-64::r-readxl-1.4.2-r42h81ef4d7_0
-  r-rematch          conda-forge/noarch::r-rematch-1.0.1-r42hc72bb7e_1005
-  r-rematch2         conda-forge/noarch::r-rematch2-2.1.2-r42hc72bb7e_2
-  r-reprex           conda-forge/noarch::r-reprex-2.0.2-r42hc72bb7e_1
-  r-rlang            conda-forge/linux-64::r-rlang-1.0.6-r42h7525677_1
-  r-rmarkdown        conda-forge/noarch::r-rmarkdown-2.20-r42hc72bb7e_0
-  r-rstudioapi       conda-forge/noarch::r-rstudioapi-0.14-r42hc72bb7e_1
-  r-rvest            conda-forge/noarch::r-rvest-1.0.3-r42hc72bb7e_1
-  r-sass             conda-forge/linux-64::r-sass-0.4.5-r42h38f115c_0
-  r-scales           conda-forge/noarch::r-scales-1.2.1-r42hc72bb7e_1
-  r-selectr          conda-forge/noarch::r-selectr-0.4_2-r42hc72bb7e_2
-  r-stringi          conda-forge/linux-64::r-stringi-1.7.12-r42h1ae9187_0
-  r-stringr          conda-forge/noarch::r-stringr-1.5.0-r42h785f33e_0
-  r-sys              conda-forge/linux-64::r-sys-3.4.1-r42h06615bd_0
-  r-tibble           conda-forge/linux-64::r-tibble-3.1.8-r42h06615bd_1
-  r-tidyr            conda-forge/linux-64::r-tidyr-1.3.0-r42h38f115c_0
-  r-tidyselect       conda-forge/linux-64::r-tidyselect-1.2.0-r42hc72bb7e_0
-  r-tidyverse        conda-forge/noarch::r-tidyverse-1.3.2-r42hc72bb7e_1
-  r-timechange       conda-forge/linux-64::r-timechange-0.2.0-r42h38f115c_0
-  r-tinytex          conda-forge/noarch::r-tinytex-0.44-r42hc72bb7e_0
-  r-tzdb             conda-forge/linux-64::r-tzdb-0.3.0-r42h7525677_1
-  r-utf8             conda-forge/linux-64::r-utf8-1.2.3-r42h133d619_0
-  r-uuid             conda-forge/linux-64::r-uuid-1.1_0-r42h06615bd_1
-  r-vctrs            conda-forge/linux-64::r-vctrs-0.5.2-r42h38f115c_0
-  r-viridislite      conda-forge/noarch::r-viridislite-0.4.1-r42hc72bb7e_1
-  r-vroom            conda-forge/linux-64::r-vroom-1.6.1-r42h38f115c_0
-  r-withr            conda-forge/noarch::r-withr-2.5.0-r42hc72bb7e_1
-  r-xfun             conda-forge/linux-64::r-xfun-0.37-r42h38f115c_0
-  r-xml2             conda-forge/linux-64::r-xml2-1.3.3-r42h044e5c7_2
-  r-yaml             conda-forge/linux-64::r-yaml-2.3.7-r42h133d619_0
-  readline           conda-forge/linux-64::readline-8.1.2-h0f457ee_0
-  reproc             conda-forge/linux-64::reproc-14.2.4-h0b41bf4_0
-  reproc-cpp         conda-forge/linux-64::reproc-cpp-14.2.4-hcb278e6_0
-  requests           conda-forge/noarch::requests-2.28.2-pyhd8ed1ab_0
-  ruamel.yaml        conda-forge/linux-64::ruamel.yaml-0.17.21-py311hd4cff14_2
-  ruamel.yaml.clib   conda-forge/linux-64::ruamel.yaml.clib-0.2.7-py311h2582759_1
-  sed                conda-forge/linux-64::sed-4.8-he412f7d_0
-  setuptools         conda-forge/noarch::setuptools-67.3.2-pyhd8ed1ab_0
-  sysroot_linux-64   conda-forge/noarch::sysroot_linux-64-2.12-he073ed8_15
-  tk                 conda-forge/linux-64::tk-8.6.12-h27826a3_0
-  tktable            conda-forge/linux-64::tktable-2.10-hb7b940f_3
-  toolz              conda-forge/noarch::toolz-0.12.0-pyhd8ed1ab_0
-  tqdm               conda-forge/noarch::tqdm-4.64.1-pyhd8ed1ab_0
-  tzdata             conda-forge/noarch::tzdata-2022g-h191b570_0
-  urllib3            conda-forge/noarch::urllib3-1.26.14-pyhd8ed1ab_0
-  wheel              conda-forge/noarch::wheel-0.38.4-pyhd8ed1ab_0
-  xorg-kbproto       conda-forge/linux-64::xorg-kbproto-1.0.7-h7f98852_1002
-  xorg-libice        conda-forge/linux-64::xorg-libice-1.0.10-h7f98852_0
-  xorg-libsm         conda-forge/linux-64::xorg-libsm-1.2.3-hd9c2040_1000
-  xorg-libx11        conda-forge/linux-64::xorg-libx11-1.7.2-h7f98852_0
-  xorg-libxau        conda-forge/linux-64::xorg-libxau-1.0.9-h7f98852_0
-  xorg-libxdmcp      conda-forge/linux-64::xorg-libxdmcp-1.1.3-h7f98852_0
-  xorg-libxext       conda-forge/linux-64::xorg-libxext-1.3.4-h7f98852_1
-  xorg-libxrender    conda-forge/linux-64::xorg-libxrender-0.9.10-h7f98852_1003
-  xorg-libxt         conda-forge/linux-64::xorg-libxt-1.2.1-h7f98852_2
-  xorg-renderproto   conda-forge/linux-64::xorg-renderproto-0.11.1-h7f98852_1002
-  xorg-xextproto     conda-forge/linux-64::xorg-xextproto-7.3.0-h7f98852_1002
-  xorg-xproto        conda-forge/linux-64::xorg-xproto-7.0.31-h7f98852_1007
-  xz                 conda-forge/linux-64::xz-5.2.6-h166bdaf_0
-  yaml-cpp           conda-forge/linux-64::yaml-cpp-0.7.0-h27087fc_2
-  zlib               conda-forge/linux-64::zlib-1.2.13-h166bdaf_4
-  zstandard          conda-forge/linux-64::zstandard-0.19.0-py311hbe0fcd7_1
-  zstd               conda-forge/linux-64::zstd-1.5.2-h3eb15da_6
+  Install: 237 packages
+
+  Total download: 0 B
+
+───────────────────────────────────────────────────────────────────────────────────────────────────
 
 
-Proceed ([y]/n)? y
-
+Confirm changes: [Y/n] Y
 
 Downloading and Extracting Packages
 
 Preparing transaction: done
 Verifying transaction: done
 Executing transaction: done
-#
-# To activate this environment, use
-#
-#     $ conda activate expression_env
-#
-# To deactivate an active environment, use
-#
-#     $ conda deactivate
+
+To activate this environment, use
+
+     $ mamba activate expression_env
+
+To deactivate an active environment, use
+
+     $ mamba 
+
+
+❯ mamba install -c bioconda bioconductor-deseq2
+
+                  __    __    __    __
+                 /  \  /  \  /  \  /  \
+                /    \/    \/    \/    \
+███████████████/  /██/  /██/  /██/  /████████████████████████
+              /  / \   / \   / \   / \  \____
+             /  /   \_/   \_/   \_/   \    o \__,
+            / _/                       \_____/  `
+            |/
+        ███╗   ███╗ █████╗ ███╗   ███╗██████╗  █████╗
+        ████╗ ████║██╔══██╗████╗ ████║██╔══██╗██╔══██╗
+        ██╔████╔██║███████║██╔████╔██║██████╔╝███████║
+        ██║╚██╔╝██║██╔══██║██║╚██╔╝██║██╔══██╗██╔══██║
+        ██║ ╚═╝ ██║██║  ██║██║ ╚═╝ ██║██████╔╝██║  ██║
+        ╚═╝     ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝╚═════╝ ╚═╝  ╚═╝
+
+        mamba (1.3.1) supported by @QuantStack
+
+        GitHub:  https://github.com/mamba-org/mamba
+        Twitter: https://twitter.com/QuantStack
+
+█████████████████████████████████████████████████████████████
+
+
+Looking for: ['bioconductor-deseq2']
+
+bioconda/noarch                                      4.2MB @   4.6MB/s  1.1s
+bioconda/linux-64                                    4.5MB @   4.0MB/s  1.3s
+pkgs/main/linux-64                                   5.2MB @   2.7MB/s  2.4s
+pkgs/r/noarch                                        1.3MB @ 602.5kB/s  1.6s
+pkgs/main/noarch                                   819.1kB @ 313.2kB/s  1.5s
+pkgs/r/linux-64                                      1.4MB @ 524.7kB/s  0.9s
+conda-forge/noarch                                  11.3MB @   3.6MB/s  3.5s
+conda-forge/linux-64                                29.8MB @   4.2MB/s  8.1s
+
+Pinned packages:
+  - python 3.11.*
+
+
+Transaction
+
+  Prefix: /home/kalavatt/miniconda3/envs/expression_env
+
+  Updating specs:
+
+   - bioconductor-deseq2
+   - ca-certificates
+   - certifi
+   - openssl
+
+
+  Package                                 Version  Build             Channel                   Size
+─────────────────────────────────────────────────────────────────────────────────────────────────────
+  Install:
+─────────────────────────────────────────────────────────────────────────────────────────────────────
+
+  + argcomplete                             2.0.0  pyhd8ed1ab_0      conda-forge/noarch        35kB
+  + bioconductor-annotate                  1.76.0  r42hdfd78af_0     bioconda/noarch            2MB
+  + bioconductor-annotationdbi             1.60.0  r42hdfd78af_0     bioconda/noarch            5MB
+  + bioconductor-biobase                   2.58.0  r42hc0cfd56_0     bioconda/linux-64          2MB
+  + bioconductor-biocgenerics              0.44.0  r42hdfd78af_0     bioconda/noarch          665kB
+  + bioconductor-biocparallel              1.32.5  r42hc247a5b_0     bioconda/linux-64          2MB
+  + bioconductor-biostrings                2.66.0  r42hc0cfd56_0     bioconda/linux-64         14MB
+  + bioconductor-data-packages           20230202  hdfd78af_0        bioconda/noarch          144kB
+  + bioconductor-delayedarray              0.24.0  r42hc0cfd56_0     bioconda/linux-64          2MB
+  + bioconductor-deseq2                    1.38.0  r42hc247a5b_0     bioconda/linux-64          3MB
+  + bioconductor-genefilter                1.80.0  r42h38f54d8_0     bioconda/linux-64          1MB
+  + bioconductor-geneplotter               1.76.0  r42hdfd78af_0     bioconda/noarch            2MB
+  + bioconductor-genomeinfodb              1.34.8  r42hdfd78af_0     bioconda/noarch            4MB
+  + bioconductor-genomeinfodbdata           1.2.9  r42hdfd78af_0     bioconda/noarch            8kB
+  + bioconductor-genomicranges             1.50.0  r42hc0cfd56_0     bioconda/linux-64          2MB
+  + bioconductor-iranges                   2.32.0  r42hc0cfd56_0     bioconda/linux-64          3MB
+  + bioconductor-keggrest                  1.38.0  r42hdfd78af_0     bioconda/noarch          199kB
+  + bioconductor-matrixgenerics            1.10.0  r42hdfd78af_0     bioconda/noarch          353kB
+  + bioconductor-s4vectors                 0.36.0  r42hc0cfd56_0     bioconda/linux-64          2MB
+  + bioconductor-summarizedexperiment      1.28.0  r42hdfd78af_0     bioconda/noarch            3MB
+  + bioconductor-xvector                   0.38.0  r42hc0cfd56_0     bioconda/linux-64        738kB
+  + bioconductor-zlibbioc                  1.44.0  r42hc0cfd56_0     bioconda/linux-64         74kB
+  + importlib-metadata                     4.13.0  pyha770c72_0      conda-forge/noarch        26kB
+  + importlib_metadata                     4.13.0  hd8ed1ab_0        conda-forge/noarch         9kB
+  + jq                                        1.5  0                 bioconda/linux-64          1MB
+  + libgcc                                  7.2.0  h69d50b8_2        conda-forge/linux-64     312kB
+  + pyyaml                                    6.0  py311hd4cff14_5   conda-forge/linux-64     207kB
+  + r-bh                                 1.81.0_1  r42hc72bb7e_0     conda-forge/noarch        11MB
+  + r-bitops                                1.0_7  r42h06615bd_1     conda-forge/linux-64      46kB
+  + r-codetools                            0.2_19  r42hc72bb7e_0     conda-forge/noarch       108kB
+  + r-formatr                                1.14  r42hc72bb7e_0     conda-forge/noarch       165kB
+  + r-futile.logger                         1.4.3  r42hc72bb7e_1004  conda-forge/noarch       111kB
+  + r-futile.options                        1.0.1  r42hc72bb7e_1003  conda-forge/noarch        29kB
+  + r-lambda.r                              1.2.4  r42hc72bb7e_2     conda-forge/noarch       124kB
+  + r-locfit                              1.5_9.7  r42h133d619_0     conda-forge/linux-64     551kB
+  + r-matrixstats                          0.63.0  r42h06615bd_0     conda-forge/linux-64     445kB
+  + r-plogr                                 0.2.0  r42hc72bb7e_1004  conda-forge/noarch        21kB
+  + r-png                                   0.1_8  r42h10cf519_0     conda-forge/linux-64      58kB
+  + r-rcpparmadillo                    0.11.4.4.0  r42h358215d_0     conda-forge/linux-64     873kB
+  + r-rcurl                             1.98_1.10  r42h133d619_0     conda-forge/linux-64     817kB
+  + r-rsqlite                              2.2.20  r42h38f115c_0     conda-forge/linux-64       1MB
+  + r-snow                                  0.4_4  r42hc72bb7e_1     conda-forge/noarch       117kB
+  + r-survival                              3.5_3  r42h133d619_0     conda-forge/linux-64       6MB
+  + r-xml                               3.99_0.13  r42hed7f998_0     conda-forge/linux-64       2MB
+  + r-xtable                                1.8_4  r42hc72bb7e_4     conda-forge/noarch       717kB
+  + toml                                   0.10.2  pyhd8ed1ab_0      conda-forge/noarch        18kB
+  + xmltodict                              0.13.0  pyhd8ed1ab_0      conda-forge/noarch        14kB
+  + yaml                                    0.2.5  h7f98852_2        conda-forge/linux-64      89kB
+  + yq                                      3.1.0  pyhd8ed1ab_0      conda-forge/noarch        22kB
+  + zipp                                   3.14.0  pyhd8ed1ab_0      conda-forge/noarch        17kB
+
+  Summary:
+
+  Install: 50 packages
+
+  Total download: 76MB
+
+─────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+Confirm changes: [Y/n] Y
+bioconductor-s4vectors                               2.3MB @  30.2MB/s  0.1s
+bioconductor-biocgenerics                          664.5kB @   6.3MB/s  0.1s
+yaml                                                89.1kB @ 643.1kB/s  0.0s
+bioconductor-zlibbioc                               74.5kB @ 499.8kB/s  0.2s
+r-snow                                             117.0kB @ 576.0kB/s  0.1s
+pyyaml                                             207.0kB @ 983.0kB/s  0.1s
+xmltodict                                           13.6kB @  60.5kB/s  0.0s
+r-locfit                                           551.0kB @   2.2MB/s  0.2s
+r-plogr                                             21.2kB @  78.1kB/s  0.1s
+r-lambda.r                                         123.9kB @ 452.7kB/s  0.1s
+argcomplete                                         35.2kB @ 116.3kB/s  0.0s
+bioconductor-iranges                                 2.5MB @   8.2MB/s  0.3s
+r-futile.logger                                    111.1kB @ 360.6kB/s  0.1s
+bioconductor-matrixgenerics                        352.7kB @ 960.6kB/s  0.1s
+bioconductor-biobase                                 2.5MB @   6.2MB/s  0.6s
+bioconductor-keggrest                              199.5kB @ 386.5kB/s  0.3s
+bioconductor-xvector                               737.8kB @   1.3MB/s  0.2s
+bioconductor-genomicranges                           2.3MB @   4.0MB/s  0.3s
+bioconductor-genomeinfodb                            4.3MB @   7.1MB/s  0.3s
+zipp                                                17.3kB @  20.3kB/s  0.2s
+bioconductor-deseq2                                  2.9MB @   3.4MB/s  0.6s
+r-rcpparmadillo                                    873.0kB @ 907.6kB/s  0.4s
+importlib_metadata                                   9.1kB @   9.5kB/s  0.1s
+bioconductor-biocparallel                            1.7MB @   1.3MB/s  0.4s
+bioconductor-delayedarray                            2.5MB @   1.9MB/s  0.4s
+r-rsqlite                                            1.2MB @ 880.6kB/s  0.5s
+r-survival                                           5.9MB @   4.0MB/s  1.2s
+r-bh                                                11.4MB @   7.0MB/s  1.2s
+bioconductor-genefilter                              1.2MB @ 690.8kB/s  0.4s
+r-matrixstats                                      444.8kB @ 241.5kB/s  0.4s
+r-codetools                                        108.1kB @  58.6kB/s  0.4s
+toml                                                18.4kB @  10.0kB/s  0.4s
+bioconductor-geneplotter                             1.5MB @ 830.8kB/s  0.7s
+importlib-metadata                                  25.5kB @  12.1kB/s  0.3s
+jq                                                   1.2MB @ 555.9kB/s  0.4s
+yq                                                  22.4kB @  10.6kB/s  0.4s
+bioconductor-data-packages                         144.5kB @  68.2kB/s  0.5s
+r-png                                               58.3kB @  24.5kB/s  0.3s
+bioconductor-genomeinfodbdata                        7.9kB @   3.3kB/s  0.3s
+bioconductor-summarizedexperiment                    2.8MB @   1.1MB/s  0.3s
+r-futile.options                                    28.8kB @  10.8kB/s  0.4s
+r-xml                                                1.7MB @ 613.4kB/s  0.6s
+bioconductor-annotate                                1.8MB @ 608.3kB/s  0.6s
+libgcc                                             311.7kB @ 102.6kB/s  0.4s
+bioconductor-annotationdbi                           5.2MB @   1.6MB/s  1.1s
+r-bitops                                            45.7kB @  13.9kB/s  0.3s
+r-rcurl                                            817.2kB @ 248.4kB/s  0.5s
+r-xtable                                           717.4kB @ 217.8kB/s  0.3s
+bioconductor-biostrings                             14.2MB @   4.3MB/s  1.4s
+r-formatr                                          165.2kB @  46.7kB/s  0.2s
+
+Downloading and Extracting Packages
+
+Preparing transaction: done
+Verifying transaction: done
+Executing transaction: done
 
 
 ❯ mamba install -c bioconda subread
@@ -558,12 +752,14 @@ Executing transaction: done
 
 Looking for: ['subread']
 
-pkgs/main/noarch                                   819.1kB @   3.4MB/s  0.3s
-pkgs/r/noarch                                        1.3MB @   2.6MB/s  0.3s
-pkgs/r/linux-64                                      1.4MB @   2.5MB/s  0.6s
-bioconda/noarch                                      4.2MB @   4.4MB/s  1.1s
-bioconda/linux-64                                    4.5MB @   4.1MB/s  1.2s
-pkgs/main/linux-64                                   5.2MB @   3.0MB/s  1.9s
+bioconda/linux-64                                           Using cache
+bioconda/noarch                                             Using cache
+conda-forge/linux-64                                        Using cache
+conda-forge/noarch                                          Using cache
+pkgs/r/linux-64                                               No change
+pkgs/main/linux-64                                            No change
+pkgs/main/noarch                                              No change
+pkgs/r/noarch                                                 No change
 
 Pinned packages:
   - python 3.11.*
@@ -581,32 +777,24 @@ Transaction
    - openssl
 
 
-  Package               Version  Build       Channel                 Size
-───────────────────────────────────────────────────────────────────────────
+  Package    Version  Build       Channel               Size
+──────────────────────────────────────────────────────────────
   Install:
-───────────────────────────────────────────────────────────────────────────
+──────────────────────────────────────────────────────────────
 
-  + subread               2.0.3  h7132678_1  bioconda/linux-64       25MB
-
-  Upgrade:
-───────────────────────────────────────────────────────────────────────────
-
-  - ca-certificates   2022.12.7  ha878542_0  conda-forge
-  + ca-certificates  2023.01.10  h06a4308_0  pkgs/main/linux-64     123kB
+  + subread    2.0.3  h7132678_1  bioconda/linux-64     25MB
 
   Summary:
 
   Install: 1 packages
-  Upgrade: 1 packages
 
   Total download: 25MB
 
-───────────────────────────────────────────────────────────────────────────
+──────────────────────────────────────────────────────────────
 
 
 Confirm changes: [Y/n] Y
-ca-certificates                                    122.8kB @   1.7MB/s  0.1s
-subread                                             24.7MB @  47.2MB/s  0.6s
+subread                                             24.7MB @  40.9MB/s  0.7s
 
 Downloading and Extracting Packages
 
@@ -615,7 +803,9 @@ Verifying transaction: done
 Executing transaction: done
 
 
-❯ mamba install -c conda-forge r-futile.logger=1.4.3=r42hc72bb7e_1004
+❯ mamba install \
+>     -c bioconda \
+>         bioconductor-enhancedvolcano bioconductor-pcatools
 
                   __    __    __    __
                  /  \  /  \  /  \  /  \
@@ -640,8 +830,10 @@ Executing transaction: done
 █████████████████████████████████████████████████████████████
 
 
-Looking for: ['r-futile.logger==1.4.3=r42hc72bb7e_1004']
+Looking for: ['bioconductor-enhancedvolcano', 'bioconductor-pcatools']
 
+bioconda/linux-64                                           Using cache
+bioconda/noarch                                             Using cache
 conda-forge/linux-64                                        Using cache
 conda-forge/noarch                                          Using cache
 pkgs/main/linux-64                                            No change
@@ -659,36 +851,59 @@ Transaction
 
   Updating specs:
 
-   - r-futile.logger==1.4.3=r42hc72bb7e_1004
+   - bioconductor-enhancedvolcano
+   - bioconductor-pcatools
    - ca-certificates
    - certifi
    - openssl
 
 
-  Package             Version  Build             Channel                 Size
-───────────────────────────────────────────────────────────────────────────────
+  Package                            Version  Build          Channel                   Size
+─────────────────────────────────────────────────────────────────────────────────────────────
   Install:
-───────────────────────────────────────────────────────────────────────────────
+─────────────────────────────────────────────────────────────────────────────────────────────
 
-  + r-formatr            1.14  r42hc72bb7e_0     conda-forge/noarch     165kB
-  + r-futile.logger     1.4.3  r42hc72bb7e_1004  conda-forge/noarch     111kB
-  + r-futile.options    1.0.1  r42hc72bb7e_1003  conda-forge/noarch      29kB
-  + r-lambda.r          1.2.4  r42hc72bb7e_2     conda-forge/noarch     124kB
+  + bioconductor-beachmat             2.14.0  r42hc247a5b_0  bioconda/linux-64          1MB
+  + bioconductor-biocsingular         1.14.0  r42hc247a5b_0  bioconda/linux-64        993kB
+  + bioconductor-delayedmatrixstats   1.20.0  r42hdfd78af_0  bioconda/noarch          740kB
+  + bioconductor-enhancedvolcano      1.16.0  r42hdfd78af_0  bioconda/noarch            5MB
+  + bioconductor-pcatools             2.10.0  r42hc247a5b_0  bioconda/linux-64          5MB
+  + bioconductor-scaledmatrix          1.6.0  r42hdfd78af_0  bioconda/noarch          653kB
+  + bioconductor-sparsematrixstats    1.10.0  r42hc247a5b_0  bioconda/linux-64          1MB
+  + r-cowplot                          1.1.1  r42hc72bb7e_1  conda-forge/noarch         1MB
+  + r-dqrng                            0.3.0  r42h7525677_1  conda-forge/linux-64     173kB
+  + r-ggrepel                          0.9.3  r42h38f115c_0  conda-forge/linux-64     268kB
+  + r-irlba                          2.3.5.1  r42h5f7b363_0  conda-forge/linux-64     317kB
+  + r-plyr                             1.8.8  r42h7525677_0  conda-forge/linux-64     855kB
+  + r-reshape2                         1.4.4  r42h7525677_2  conda-forge/linux-64     135kB
+  + r-rsvd                             1.0.5  r42hc72bb7e_1  conda-forge/noarch         4MB
+  + r-sitmo                            2.0.2  r42h7525677_1  conda-forge/linux-64     165kB
 
   Summary:
 
-  Install: 4 packages
+  Install: 15 packages
 
-  Total download: 429kB
+  Total download: 22MB
 
-───────────────────────────────────────────────────────────────────────────────
+─────────────────────────────────────────────────────────────────────────────────────────────
 
 
 Confirm changes: [Y/n] Y
-r-formatr                                          165.2kB @ 966.7kB/s  0.2s
-r-futile.options                                    28.8kB @ 151.7kB/s  0.2s
-r-futile.logger                                    111.1kB @ 579.0kB/s  0.2s
-r-lambda.r                                         123.9kB @ 573.5kB/s  0.2s
+bioconductor-delayedmatrixstats                    739.6kB @  10.1MB/s  0.1s
+bioconductor-scaledmatrix                          652.9kB @   6.2MB/s  0.1s
+bioconductor-beachmat                                1.3MB @  11.5MB/s  0.1s
+r-irlba                                            316.6kB @   2.2MB/s  0.0s
+bioconductor-biocsingular                          992.9kB @   6.6MB/s  0.1s
+bioconductor-sparsematrixstats                       1.2MB @   5.3MB/s  0.2s
+r-plyr                                             855.3kB @   3.7MB/s  0.1s
+r-cowplot                                            1.4MB @   6.0MB/s  0.2s
+r-reshape2                                         135.2kB @ 543.4kB/s  0.1s
+r-ggrepel                                          268.0kB @ 993.0kB/s  0.3s
+r-rsvd                                               3.6MB @  11.2MB/s  0.1s
+r-dqrng                                            173.1kB @ 495.0kB/s  0.1s
+r-sitmo                                            165.0kB @ 427.7kB/s  0.1s
+bioconductor-enhancedvolcano                         5.1MB @   7.8MB/s  0.4s
+bioconductor-pcatools                                5.0MB @   5.4MB/s  0.7s
 
 Downloading and Extracting Packages
 
@@ -702,14 +917,14 @@ Executing transaction: done
 <br />
 <br />
 
-<a id="name-tbd"></a>
-## Name TBD
 <a id="symlink-to-datasets"></a>
-### Symlink to datasets
+## Symlink to datasets
+<a id="symlink-to-datasets-without-renaming-them"></a>
+### Symlink to datasets without renaming them
 <a id="code-3"></a>
 #### Code
 <details>
-<summary><i>Code: Symlink to datasets</i></summary>
+<summary><i>Code: Symlink to datasets without renaming them</i></summary>
 
 ```bash
 #!/bin/bash
@@ -727,22 +942,592 @@ find_relative_path() {
 }
 
 
-path_1=$(
+path_UMI_UT="$(
     find_relative_path \
         . \
         "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-UMI"
-)
-echo "${path_1}"
+)"
+echo "${path_UMI_UT}"
 
-path_2=$(
+path_pos_UT="$(
+    find_relative_path \
+        . \
+        "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-pos"
+)"
+echo "${path_pos_UT}"
+
+path_no_UT="$(
     find_relative_path \
         . \
         "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0115/bams_UMI-dedup/aligned_UT_primary"
-)
-echo "${path_2}"
+)"
+echo "${path_no_UT}"
 
-ln -s "${path_1}" "aligned_UT_primary_dedup-UMI"
-ln -s "${path_2}" "aligned_UT_primary"
+path_UMI_UTK="$(
+    find_relative_path \
+        . \
+        "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-UMI"
+)"
+echo "${path_UMI_UTK}"
+
+path_pos_UTK="$(
+    find_relative_path \
+        . \
+        "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-pos"
+)"
+echo "${path_pos_UTK}"
+
+path_no_UTK="$(
+    find_relative_path \
+        . \
+        "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0115/bams_UMI-dedup/aligned_UTK_primary"
+)"
+echo "${path_no_UTK}"
+
+ln -s "${path_UMI_UT}" "aligned_UT_primary_dedup-UMI"
+ln -s "${path_pos_UT}" "aligned_UT_primary_dedup-pos"
+ln -s "${path_no_UT}" "aligned_UT_primary"
+ln -s "${path_UMI_UTK}" "aligned_UTK_primary_dedup-UMI"
+ln -s "${path_pos_UTK}" "aligned_UTK_primary_dedup-pos"
+ln -s "${path_no_UTK}" "aligned_UTK_primary"
+```
+</details>
+<br />
+
+<a id="use-symlinks-to-give-the-datasets-intuitive-names"></a>
+### Use symlinks to give the datasets intuitive names
+<a id="get-situated-make-necessary-directories"></a>
+#### Get situated, make necessary directories
+<a id="code-4"></a>
+##### Code
+<details>
+<summary><i>Code: Get situated, make necessary directories</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+#  Get to and make appropriate directories ------------------------------------
+transcriptome && 
+    {
+        cd "results/2023-0215/" \
+            || echo "cd'ing failed; check on this..."
+    }
+
+mkdir -p bams_renamed/{UTK_prim_no,UTK_prim_pos,UTK_prim_UMI,UT_prim_no,UT_prim_pos,UT_prim_UMI}
+```
+</details>
+<br />
+
+<a id="determine-the-relative-paths"></a>
+#### Determine the relative paths
+<a id="code-5"></a>
+##### Code
+<details>
+<summary><i>Code: Determine the relative paths</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+find_relative_path() {
+    realpath --relative-to="${1}" "${2}"
+}
+
+
+#  UTK
+cd bams_renamed/UTK_prim_no/
+UTK_prim_no="$(
+    find_relative_path \
+        . \
+        "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/bams/aligned_UTK_primary"
+)"
+echo "${UTK_prim_no}"
+# ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary
+
+cd ../UTK_prim_pos/
+UTK_prim_pos="$(
+    find_relative_path \
+        . \
+        "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/bams/aligned_UTK_primary_dedup-pos"
+)"
+echo "${UTK_prim_pos}"
+# ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-pos
+
+cd ../UTK_prim_UMI/
+UTK_prim_UMI="$(
+    find_relative_path \
+        . \
+        "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/bams/aligned_UTK_primary_dedup-UMI"
+)"
+echo "${UTK_prim_UMI}"
+# ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-UMI
+
+#  UT
+cd ../UT_prim_no/
+UT_prim_no="$(
+    find_relative_path \
+        . \
+        "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/bams/aligned_UT_primary"
+)"
+echo "${UT_prim_no}"
+# ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary
+
+cd ../UT_prim_pos/
+UT_prim_pos="$(
+    find_relative_path \
+        . \
+        "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/bams/aligned_UT_primary_dedup-pos"
+)"
+echo "${UT_prim_pos}"
+# ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-pos
+
+cd ../UT_prim_UMI/
+UT_prim_UMI="$(
+    find_relative_path \
+        . \
+        "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/bams/aligned_UT_primary_dedup-UMI"
+)"
+echo "${UT_prim_UMI}"
+# ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-UMI
+```
+</details>
+<br />
+
+<a id="set-up-associative-arrays-to-be-used-in-the-symlinking"></a>
+#### Set up associative arrays (to be used in the symlinking)
+<a id="code-6"></a>
+##### Code
+<details>
+<summary><i>Code: Set up associative arrays (to be used in the symlinking)</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+#  UTK
+unset array_UTK_prim_no
+typeset -A array_UTK_prim_no
+array_UTK_prim_no["${UTK_prim_no}/5781_G1_IN_UTK.primary.bam"]="WT_G1_day1_SS_rep1.UTK_prim.bam"
+array_UTK_prim_no["${UTK_prim_no}/5781_G1_IP_UTK.primary.bam"]="WT_G1_day1_N_rep1.UTK_prim.bam"
+array_UTK_prim_no["${UTK_prim_no}/5781_Q_IN_UTK.primary.bam"]="WT_Q_day7_SS_rep1.UTK_prim.bam"
+array_UTK_prim_no["${UTK_prim_no}/5781_Q_IP_UTK.primary.bam"]="WT_Q_day7_N_rep1.UTK_prim.bam"
+array_UTK_prim_no["${UTK_prim_no}/5782_G1_IN_UTK.primary.bam"]="WT_G1_day1_SS_rep2.UTK_prim.bam"
+array_UTK_prim_no["${UTK_prim_no}/5782_G1_IP_UTK.primary.bam"]="WT_G1_day1_N_rep2.UTK_prim.bam"
+array_UTK_prim_no["${UTK_prim_no}/5782_Q_IN_UTK.primary.bam"]="WT_Q_day7_SS_rep2.UTK_prim.bam"
+array_UTK_prim_no["${UTK_prim_no}/5782_Q_IP_UTK.primary.bam"]="WT_Q_day7_N_rep2.UTK_prim.bam"
+array_UTK_prim_no["${UTK_prim_no}/BM10_DSp48_5781_UTK.primary.bam"]="WT_DSp48_day4_SS_rep1.UTK_prim.bam"
+array_UTK_prim_no["${UTK_prim_no}/BM11_DSp48_7080_UTK.primary.bam"]="t4-n_DSp48_day4_SS_rep1.UTK_prim.bam"
+array_UTK_prim_no["${UTK_prim_no}/BM1_DSm2_5781_UTK.primary.bam"]="WT_DSm2_day2_SS_rep1.UTK_prim.bam"
+array_UTK_prim_no["${UTK_prim_no}/BM2_DSm2_7080_UTK.primary.bam"]="t4-n_DSm2_day2_SS_rep1.UTK_prim.bam"
+array_UTK_prim_no["${UTK_prim_no}/BM3_DSm2_7079_UTK.primary.bam"]="r6-n_DSm2_day2_SS_rep1.UTK_prim.bam"
+array_UTK_prim_no["${UTK_prim_no}/BM4_DSp2_5781_UTK.primary.bam"]="WT_DSp2_day2_SS_rep1.UTK_prim.bam"
+array_UTK_prim_no["${UTK_prim_no}/BM5_DSp2_7080_UTK.primary.bam"]="t4-n_DSp2_day2_SS_rep1.UTK_prim.bam"
+array_UTK_prim_no["${UTK_prim_no}/BM6_DSp2_7079_UTK.primary.bam"]="r6-n_DSp2_day2_SS_rep1.UTK_prim.bam"
+array_UTK_prim_no["${UTK_prim_no}/BM7_DSp24_5781_UTK.primary.bam"]="WT_DSp24_day3_SS_rep1.UTK_prim.bam"
+array_UTK_prim_no["${UTK_prim_no}/BM8_DSp24_7080_UTK.primary.bam"]="t4-n_DSp24_day3_SS_rep1.UTK_prim.bam"
+array_UTK_prim_no["${UTK_prim_no}/BM9_DSp24_7079_UTK.primary.bam"]="r6-n_DSp24_day3_SS_rep1.UTK_prim.bam"
+array_UTK_prim_no["${UTK_prim_no}/Bp10_DSp48_5782_UTK.primary.bam"]="WT_DSp48_day4_SS_rep2.UTK_prim.bam"
+array_UTK_prim_no["${UTK_prim_no}/Bp11_DSp48_7081_UTK.primary.bam"]="t4-n_DSp48_day4_SS_rep2.UTK_prim.bam"
+array_UTK_prim_no["${UTK_prim_no}/Bp12_DSp48_7078_UTK.primary.bam"]="r6-n_DSp48_day4_SS_rep2.UTK_prim.bam"
+array_UTK_prim_no["${UTK_prim_no}/Bp1_DSm2_5782_UTK.primary.bam"]="WT_DSm2_day2_SS_rep2.UTK_prim.bam"
+array_UTK_prim_no["${UTK_prim_no}/Bp2_DSm2_7081_UTK.primary.bam"]="t4-n_DSm2_day2_SS_rep2.UTK_prim.bam"
+array_UTK_prim_no["${UTK_prim_no}/Bp3_DSm2_7078_UTK.primary.bam"]="r6-n_DSm2_day2_SS_rep2.UTK_prim.bam"
+array_UTK_prim_no["${UTK_prim_no}/Bp4_DSp2_5782_UTK.primary.bam"]="WT_DSp2_day2_SS_rep2.UTK_prim.bam"
+array_UTK_prim_no["${UTK_prim_no}/Bp5_DSp2_7081_UTK.primary.bam"]="t4-n_DSp2_day2_SS_rep2.UTK_prim.bam"
+array_UTK_prim_no["${UTK_prim_no}/Bp6_DSp2_7078_UTK.primary.bam"]="r6-n_DSp2_day2_SS_rep2.UTK_prim.bam"
+array_UTK_prim_no["${UTK_prim_no}/Bp7_DSp24_5782_UTK.primary.bam"]="WT_DSp24_day3_SS_rep2.UTK_prim.bam"
+array_UTK_prim_no["${UTK_prim_no}/Bp8_DSp24_7081_UTK.primary.bam"]="t4-n_DSp24_day3_SS_rep2.UTK_prim.bam"
+array_UTK_prim_no["${UTK_prim_no}/Bp9_DSp24_7078_UTK.primary.bam"]="r6-n_DSp24_day3_SS_rep2.UTK_prim.bam"
+array_UTK_prim_no["${UTK_prim_no}/CT10_7718_pIAA_Q_Nascent_UTK.primary.bam"]="n3-d_Q_day7_N_rep2.UTK_prim.bam"
+array_UTK_prim_no["${UTK_prim_no}/CT10_7718_pIAA_Q_SteadyState_UTK.primary.bam"]="n3-d_Q_day7_SS_rep2.UTK_prim.bam"
+array_UTK_prim_no["${UTK_prim_no}/CT2_6125_pIAA_Q_Nascent_UTK.primary.bam"]="o-d_Q_day7_N_rep1.UTK_prim.bam"
+array_UTK_prim_no["${UTK_prim_no}/CT2_6125_pIAA_Q_SteadyState_UTK.primary.bam"]="o-d_Q_day7_SS_rep1.UTK_prim.bam"
+array_UTK_prim_no["${UTK_prim_no}/CT4_6126_pIAA_Q_Nascent_UTK.primary.bam"]="o-d_Q_day7_N_rep2.UTK_prim.bam"
+array_UTK_prim_no["${UTK_prim_no}/CT4_6126_pIAA_Q_SteadyState_UTK.primary.bam"]="o-d_Q_day7_SS_rep2.UTK_prim.bam"
+array_UTK_prim_no["${UTK_prim_no}/CT6_7714_pIAA_Q_Nascent_UTK.primary.bam"]="n3-d_Q_day7_N_rep1.UTK_prim.bam"
+array_UTK_prim_no["${UTK_prim_no}/CT6_7714_pIAA_Q_SteadyState_UTK.primary.bam"]="n3-d_Q_day7_SS_rep1.UTK_prim.bam"
+array_UTK_prim_no["${UTK_prim_no}/CT8_7716_pIAA_Q_Nascent_UTK.primary.bam"]="n3-d_Q_day7_N_rep3.UTK_prim.bam"
+array_UTK_prim_no["${UTK_prim_no}/CT8_7716_pIAA_Q_SteadyState_UTK.primary.bam"]="n3-d_Q_day7_SS_rep3.UTK_prim.bam"
+array_UTK_prim_no["${UTK_prim_no}/CU11_5782_Q_Nascent_UTK.primary.bam"]="WT_Q_day7_N_rep2_CU.UTK_prim.bam"
+array_UTK_prim_no["${UTK_prim_no}/CU12_5782_Q_SteadyState_UTK.primary.bam"]="WT_Q_day7_SS_rep2_CU.UTK_prim.bam"
+array_UTK_prim_no["${UTK_prim_no}/CW10_7747_8day_Q_IN_UTK.primary.bam"]="r1-n_Q_day8_SS_rep1.UTK_prim.bam"
+array_UTK_prim_no["${UTK_prim_no}/CW10_7747_8day_Q_PD_UTK.primary.bam"]="r1-n_Q_day8_N_rep1.UTK_prim.bam"
+array_UTK_prim_no["${UTK_prim_no}/CW12_7748_8day_Q_IN_UTK.primary.bam"]="r1-n_Q_day8_SS_rep2.UTK_prim.bam"
+array_UTK_prim_no["${UTK_prim_no}/CW12_7748_8day_Q_PD_UTK.primary.bam"]="r1-n_Q_day8_N_rep2.UTK_prim.bam"
+array_UTK_prim_no["${UTK_prim_no}/CW2_5781_8day_Q_IN_UTK.primary.bam"]="WT_Q_day8_SS_rep1.UTK_prim.bam"
+array_UTK_prim_no["${UTK_prim_no}/CW2_5781_8day_Q_PD_UTK.primary.bam"]="WT_Q_day8_N_rep1.UTK_prim.bam"
+array_UTK_prim_no["${UTK_prim_no}/CW4_5782_8day_Q_IN_UTK.primary.bam"]="WT_Q_day8_SS_rep2.UTK_prim.bam"
+array_UTK_prim_no["${UTK_prim_no}/CW4_5782_8day_Q_PD_UTK.primary.bam"]="WT_Q_day8_N_rep2.UTK_prim.bam"
+array_UTK_prim_no["${UTK_prim_no}/CW6_7078_8day_Q_IN_UTK.primary.bam"]="r6-n_Q_day8_SS_rep1.UTK_prim.bam"
+array_UTK_prim_no["${UTK_prim_no}/CW6_7078_8day_Q_PD_UTK.primary.bam"]="r6-n_Q_day8_N_rep1.UTK_prim.bam"
+array_UTK_prim_no["${UTK_prim_no}/CW8_7079_8day_Q_IN_UTK.primary.bam"]="r6-n_Q_day8_SS_rep2.UTK_prim.bam"
+array_UTK_prim_no["${UTK_prim_no}/CW8_7079_8day_Q_PD_UTK.primary.bam"]="r6-n_Q_day8_N_rep2.UTK_prim.bam"
+
+unset array_UTK_prim_pos
+typeset -A array_UTK_prim_pos
+array_UTK_prim_pos["${UTK_prim_pos}/5781_G1_IN_UTK.primary.dedup-pos.bam"]="WT_G1_day1_SS_rep1.UTK_prim_pos.bam"
+array_UTK_prim_pos["${UTK_prim_pos}/5781_G1_IP_UTK.primary.dedup-pos.bam"]="WT_G1_day1_N_rep1.UTK_prim_pos.bam"
+array_UTK_prim_pos["${UTK_prim_pos}/5781_Q_IN_UTK.primary.dedup-pos.bam"]="WT_Q_day7_SS_rep1.UTK_prim_pos.bam"
+array_UTK_prim_pos["${UTK_prim_pos}/5781_Q_IP_UTK.primary.dedup-pos.bam"]="WT_Q_day7_N_rep1.UTK_prim_pos.bam"
+array_UTK_prim_pos["${UTK_prim_pos}/5782_G1_IN_UTK.primary.dedup-pos.bam"]="WT_G1_day1_SS_rep2.UTK_prim_pos.bam"
+array_UTK_prim_pos["${UTK_prim_pos}/5782_G1_IP_UTK.primary.dedup-pos.bam"]="WT_G1_day1_N_rep2.UTK_prim_pos.bam"
+array_UTK_prim_pos["${UTK_prim_pos}/5782_Q_IN_UTK.primary.dedup-pos.bam"]="WT_Q_day7_SS_rep2.UTK_prim_pos.bam"
+array_UTK_prim_pos["${UTK_prim_pos}/5782_Q_IP_UTK.primary.dedup-pos.bam"]="WT_Q_day7_N_rep2.UTK_prim_pos.bam"
+array_UTK_prim_pos["${UTK_prim_pos}/BM10_DSp48_5781_UTK.primary.dedup-pos.bam"]="WT_DSp48_day4_SS_rep1.UTK_prim_pos.bam"
+array_UTK_prim_pos["${UTK_prim_pos}/BM11_DSp48_7080_UTK.primary.dedup-pos.bam"]="t4-n_DSp48_day4_SS_rep1.UTK_prim_pos.bam"
+array_UTK_prim_pos["${UTK_prim_pos}/BM1_DSm2_5781_UTK.primary.dedup-pos.bam"]="WT_DSm2_day2_SS_rep1.UTK_prim_pos.bam"
+array_UTK_prim_pos["${UTK_prim_pos}/BM2_DSm2_7080_UTK.primary.dedup-pos.bam"]="t4-n_DSm2_day2_SS_rep1.UTK_prim_pos.bam"
+array_UTK_prim_pos["${UTK_prim_pos}/BM3_DSm2_7079_UTK.primary.dedup-pos.bam"]="r6-n_DSm2_day2_SS_rep1.UTK_prim_pos.bam"
+array_UTK_prim_pos["${UTK_prim_pos}/BM4_DSp2_5781_UTK.primary.dedup-pos.bam"]="WT_DSp2_day2_SS_rep1.UTK_prim_pos.bam"
+array_UTK_prim_pos["${UTK_prim_pos}/BM5_DSp2_7080_UTK.primary.dedup-pos.bam"]="t4-n_DSp2_day2_SS_rep1.UTK_prim_pos.bam"
+array_UTK_prim_pos["${UTK_prim_pos}/BM6_DSp2_7079_UTK.primary.dedup-pos.bam"]="r6-n_DSp2_day2_SS_rep1.UTK_prim_pos.bam"
+array_UTK_prim_pos["${UTK_prim_pos}/BM7_DSp24_5781_UTK.primary.dedup-pos.bam"]="WT_DSp24_day3_SS_rep1.UTK_prim_pos.bam"
+array_UTK_prim_pos["${UTK_prim_pos}/BM8_DSp24_7080_UTK.primary.dedup-pos.bam"]="t4-n_DSp24_day3_SS_rep1.UTK_prim_pos.bam"
+array_UTK_prim_pos["${UTK_prim_pos}/BM9_DSp24_7079_UTK.primary.dedup-pos.bam"]="r6-n_DSp24_day3_SS_rep1.UTK_prim_pos.bam"
+array_UTK_prim_pos["${UTK_prim_pos}/Bp10_DSp48_5782_UTK.primary.dedup-pos.bam"]="WT_DSp48_day4_SS_rep2.UTK_prim_pos.bam"
+array_UTK_prim_pos["${UTK_prim_pos}/Bp11_DSp48_7081_UTK.primary.dedup-pos.bam"]="t4-n_DSp48_day4_SS_rep2.UTK_prim_pos.bam"
+array_UTK_prim_pos["${UTK_prim_pos}/Bp12_DSp48_7078_UTK.primary.dedup-pos.bam"]="r6-n_DSp48_day4_SS_rep2.UTK_prim_pos.bam"
+array_UTK_prim_pos["${UTK_prim_pos}/Bp1_DSm2_5782_UTK.primary.dedup-pos.bam"]="WT_DSm2_day2_SS_rep2.UTK_prim_pos.bam"
+array_UTK_prim_pos["${UTK_prim_pos}/Bp2_DSm2_7081_UTK.primary.dedup-pos.bam"]="t4-n_DSm2_day2_SS_rep2.UTK_prim_pos.bam"
+array_UTK_prim_pos["${UTK_prim_pos}/Bp3_DSm2_7078_UTK.primary.dedup-pos.bam"]="r6-n_DSm2_day2_SS_rep2.UTK_prim_pos.bam"
+array_UTK_prim_pos["${UTK_prim_pos}/Bp4_DSp2_5782_UTK.primary.dedup-pos.bam"]="WT_DSp2_day2_SS_rep2.UTK_prim_pos.bam"
+array_UTK_prim_pos["${UTK_prim_pos}/Bp5_DSp2_7081_UTK.primary.dedup-pos.bam"]="t4-n_DSp2_day2_SS_rep2.UTK_prim_pos.bam"
+array_UTK_prim_pos["${UTK_prim_pos}/Bp6_DSp2_7078_UTK.primary.dedup-pos.bam"]="r6-n_DSp2_day2_SS_rep2.UTK_prim_pos.bam"
+array_UTK_prim_pos["${UTK_prim_pos}/Bp7_DSp24_5782_UTK.primary.dedup-pos.bam"]="WT_DSp24_day3_SS_rep2.UTK_prim_pos.bam"
+array_UTK_prim_pos["${UTK_prim_pos}/Bp8_DSp24_7081_UTK.primary.dedup-pos.bam"]="t4-n_DSp24_day3_SS_rep2.UTK_prim_pos.bam"
+array_UTK_prim_pos["${UTK_prim_pos}/Bp9_DSp24_7078_UTK.primary.dedup-pos.bam"]="r6-n_DSp24_day3_SS_rep2.UTK_prim_pos.bam"
+array_UTK_prim_pos["${UTK_prim_pos}/CT10_7718_pIAA_Q_Nascent_UTK.primary.dedup-pos.bam"]="n3-d_Q_day7_N_rep2.UTK_prim_pos.bam"
+array_UTK_prim_pos["${UTK_prim_pos}/CT10_7718_pIAA_Q_SteadyState_UTK.primary.dedup-pos.bam"]="n3-d_Q_day7_SS_rep2.UTK_prim_pos.bam"
+array_UTK_prim_pos["${UTK_prim_pos}/CT2_6125_pIAA_Q_Nascent_UTK.primary.dedup-pos.bam"]="o-d_Q_day7_N_rep1.UTK_prim_pos.bam"
+array_UTK_prim_pos["${UTK_prim_pos}/CT2_6125_pIAA_Q_SteadyState_UTK.primary.dedup-pos.bam"]="o-d_Q_day7_SS_rep1.UTK_prim.bam"
+array_UTK_prim_pos["${UTK_prim_pos}/CT4_6126_pIAA_Q_Nascent_UTK.primary.dedup-pos.bam"]="o-d_Q_day7_N_rep2.UTK_prim_pos.bam"
+array_UTK_prim_pos["${UTK_prim_pos}/CT4_6126_pIAA_Q_SteadyState_UTK.primary.dedup-pos.bam"]="o-d_Q_day7_SS_rep2.UTK_prim_pos.bam"
+array_UTK_prim_pos["${UTK_prim_pos}/CT6_7714_pIAA_Q_Nascent_UTK.primary.dedup-pos.bam"]="n3-d_Q_day7_N_rep1.UTK_prim_pos.bam"
+array_UTK_prim_pos["${UTK_prim_pos}/CT6_7714_pIAA_Q_SteadyState_UTK.primary.dedup-pos.bam"]="n3-d_Q_day7_SS_rep1.UTK_prim_pos.bam"
+array_UTK_prim_pos["${UTK_prim_pos}/CT8_7716_pIAA_Q_Nascent_UTK.primary.dedup-pos.bam"]="n3-d_Q_day7_N_rep3.UTK_prim_pos.bam"
+array_UTK_prim_pos["${UTK_prim_pos}/CT8_7716_pIAA_Q_SteadyState_UTK.primary.dedup-pos.bam"]="n3-d_Q_day7_SS_rep3.UTK_prim_pos.bam"
+array_UTK_prim_pos["${UTK_prim_pos}/CU11_5782_Q_Nascent_UTK.primary.dedup-pos.bam"]="WT_Q_day7_N_rep2_CU.UTK_prim_pos.bam"
+array_UTK_prim_pos["${UTK_prim_pos}/CU12_5782_Q_SteadyState_UTK.primary.dedup-pos.bam"]="WT_Q_day7_SS_rep2_CU.UTK_prim_pos.bam"
+array_UTK_prim_pos["${UTK_prim_pos}/CW10_7747_8day_Q_IN_UTK.primary.dedup-pos.bam"]="r1-n_Q_day8_SS_rep1.UTK_prim_pos.bam"
+array_UTK_prim_pos["${UTK_prim_pos}/CW10_7747_8day_Q_PD_UTK.primary.dedup-pos.bam"]="r1-n_Q_day8_N_rep1.UTK_prim_pos.bam"
+array_UTK_prim_pos["${UTK_prim_pos}/CW12_7748_8day_Q_IN_UTK.primary.dedup-pos.bam"]="r1-n_Q_day8_SS_rep2.UTK_prim_pos.bam"
+array_UTK_prim_pos["${UTK_prim_pos}/CW12_7748_8day_Q_PD_UTK.primary.dedup-pos.bam"]="r1-n_Q_day8_N_rep2.UTK_prim_pos.bam"
+array_UTK_prim_pos["${UTK_prim_pos}/CW2_5781_8day_Q_IN_UTK.primary.dedup-pos.bam"]="WT_Q_day8_SS_rep1.UTK_prim_pos.bam"
+array_UTK_prim_pos["${UTK_prim_pos}/CW2_5781_8day_Q_PD_UTK.primary.dedup-pos.bam"]="WT_Q_day8_N_rep1.UTK_prim_pos.bam"
+array_UTK_prim_pos["${UTK_prim_pos}/CW4_5782_8day_Q_IN_UTK.primary.dedup-pos.bam"]="WT_Q_day8_SS_rep2.UTK_prim_pos.bam"
+array_UTK_prim_pos["${UTK_prim_pos}/CW4_5782_8day_Q_PD_UTK.primary.dedup-pos.bam"]="WT_Q_day8_N_rep2.UTK_prim_pos.bam"
+array_UTK_prim_pos["${UTK_prim_pos}/CW6_7078_8day_Q_IN_UTK.primary.dedup-pos.bam"]="r6-n_Q_day8_SS_rep1.UTK_prim_pos.bam"
+array_UTK_prim_pos["${UTK_prim_pos}/CW6_7078_8day_Q_PD_UTK.primary.dedup-pos.bam"]="r6-n_Q_day8_N_rep1.UTK_prim_pos.bam"
+array_UTK_prim_pos["${UTK_prim_pos}/CW8_7079_8day_Q_IN_UTK.primary.dedup-pos.bam"]="r6-n_Q_day8_SS_rep2.UTK_prim_pos.bam"
+array_UTK_prim_pos["${UTK_prim_pos}/CW8_7079_8day_Q_PD_UTK.primary.dedup-pos.bam"]="r6-n_Q_day8_N_rep2.UTK_prim_pos.bam"
+
+unset array_UTK_prim_UMI
+typeset -A array_UTK_prim_UMI
+array_UTK_prim_UMI["${UTK_prim_UMI}/5781_G1_IN_UTK.primary.dedup-UMI.bam"]="WT_G1_day1_SS_rep1.UTK_prim_UMI.bam"
+array_UTK_prim_UMI["${UTK_prim_UMI}/5781_G1_IP_UTK.primary.dedup-UMI.bam"]="WT_G1_day1_N_rep1.UTK_prim_UMI.bam"
+array_UTK_prim_UMI["${UTK_prim_UMI}/5781_Q_IN_UTK.primary.dedup-UMI.bam"]="WT_Q_day7_SS_rep1.UTK_prim_UMI.bam"
+array_UTK_prim_UMI["${UTK_prim_UMI}/5781_Q_IP_UTK.primary.dedup-UMI.bam"]="WT_Q_day7_N_rep1.UTK_prim_UMI.bam"
+array_UTK_prim_UMI["${UTK_prim_UMI}/5782_G1_IN_UTK.primary.dedup-UMI.bam"]="WT_G1_day1_SS_rep2.UTK_prim_UMI.bam"
+array_UTK_prim_UMI["${UTK_prim_UMI}/5782_G1_IP_UTK.primary.dedup-UMI.bam"]="WT_G1_day1_N_rep2.UTK_prim_UMI.bam"
+array_UTK_prim_UMI["${UTK_prim_UMI}/5782_Q_IN_UTK.primary.dedup-UMI.bam"]="WT_Q_day7_SS_rep2.UTK_prim_UMI.bam"
+array_UTK_prim_UMI["${UTK_prim_UMI}/5782_Q_IP_UTK.primary.dedup-UMI.bam"]="WT_Q_day7_N_rep2.UTK_prim_UMI.bam"
+array_UTK_prim_UMI["${UTK_prim_UMI}/BM10_DSp48_5781_UTK.primary.dedup-UMI.bam"]="WT_DSp48_day4_SS_rep1.UTK_prim_UMI.bam"
+array_UTK_prim_UMI["${UTK_prim_UMI}/BM11_DSp48_7080_UTK.primary.dedup-UMI.bam"]="t4-n_DSp48_day4_SS_rep1.UTK_prim_UMI.bam"
+array_UTK_prim_UMI["${UTK_prim_UMI}/BM1_DSm2_5781_UTK.primary.dedup-UMI.bam"]="WT_DSm2_day2_SS_rep1.UTK_prim_UMI.bam"
+array_UTK_prim_UMI["${UTK_prim_UMI}/BM2_DSm2_7080_UTK.primary.dedup-UMI.bam"]="t4-n_DSm2_day2_SS_rep1.UTK_prim_UMI.bam"
+array_UTK_prim_UMI["${UTK_prim_UMI}/BM3_DSm2_7079_UTK.primary.dedup-UMI.bam"]="r6-n_DSm2_day2_SS_rep1.UTK_prim_UMI.bam"
+array_UTK_prim_UMI["${UTK_prim_UMI}/BM4_DSp2_5781_UTK.primary.dedup-UMI.bam"]="WT_DSp2_day2_SS_rep1.UTK_prim_UMI.bam"
+array_UTK_prim_UMI["${UTK_prim_UMI}/BM5_DSp2_7080_UTK.primary.dedup-UMI.bam"]="t4-n_DSp2_day2_SS_rep1.UTK_prim_UMI.bam"
+array_UTK_prim_UMI["${UTK_prim_UMI}/BM6_DSp2_7079_UTK.primary.dedup-UMI.bam"]="r6-n_DSp2_day2_SS_rep1.UTK_prim_UMI.bam"
+array_UTK_prim_UMI["${UTK_prim_UMI}/BM7_DSp24_5781_UTK.primary.dedup-UMI.bam"]="WT_DSp24_day3_SS_rep1.UTK_prim_UMI.bam"
+array_UTK_prim_UMI["${UTK_prim_UMI}/BM8_DSp24_7080_UTK.primary.dedup-UMI.bam"]="t4-n_DSp24_day3_SS_rep1.UTK_prim_UMI.bam"
+array_UTK_prim_UMI["${UTK_prim_UMI}/BM9_DSp24_7079_UTK.primary.dedup-UMI.bam"]="r6-n_DSp24_day3_SS_rep1.UTK_prim_UMI.bam"
+array_UTK_prim_UMI["${UTK_prim_UMI}/Bp10_DSp48_5782_UTK.primary.dedup-UMI.bam"]="WT_DSp48_day4_SS_rep2.UTK_prim_UMI.bam"
+array_UTK_prim_UMI["${UTK_prim_UMI}/Bp11_DSp48_7081_UTK.primary.dedup-UMI.bam"]="t4-n_DSp48_day4_SS_rep2.UTK_prim_UMI.bam"
+array_UTK_prim_UMI["${UTK_prim_UMI}/Bp12_DSp48_7078_UTK.primary.dedup-UMI.bam"]="r6-n_DSp48_day4_SS_rep2.UTK_prim_UMI.bam"
+array_UTK_prim_UMI["${UTK_prim_UMI}/Bp1_DSm2_5782_UTK.primary.dedup-UMI.bam"]="WT_DSm2_day2_SS_rep2.UTK_prim_UMI.bam"
+array_UTK_prim_UMI["${UTK_prim_UMI}/Bp2_DSm2_7081_UTK.primary.dedup-UMI.bam"]="t4-n_DSm2_day2_SS_rep2.UTK_prim_UMI.bam"
+array_UTK_prim_UMI["${UTK_prim_UMI}/Bp3_DSm2_7078_UTK.primary.dedup-UMI.bam"]="r6-n_DSm2_day2_SS_rep2.UTK_prim_UMI.bam"
+array_UTK_prim_UMI["${UTK_prim_UMI}/Bp4_DSp2_5782_UTK.primary.dedup-UMI.bam"]="WT_DSp2_day2_SS_rep2.UTK_prim_UMI.bam"
+array_UTK_prim_UMI["${UTK_prim_UMI}/Bp5_DSp2_7081_UTK.primary.dedup-UMI.bam"]="t4-n_DSp2_day2_SS_rep2.UTK_prim_UMI.bam"
+array_UTK_prim_UMI["${UTK_prim_UMI}/Bp6_DSp2_7078_UTK.primary.dedup-UMI.bam"]="r6-n_DSp2_day2_SS_rep2.UTK_prim_UMI.bam"
+array_UTK_prim_UMI["${UTK_prim_UMI}/Bp7_DSp24_5782_UTK.primary.dedup-UMI.bam"]="WT_DSp24_day3_SS_rep2.UTK_prim_UMI.bam"
+array_UTK_prim_UMI["${UTK_prim_UMI}/Bp8_DSp24_7081_UTK.primary.dedup-UMI.bam"]="t4-n_DSp24_day3_SS_rep2.UTK_prim_UMI.bam"
+array_UTK_prim_UMI["${UTK_prim_UMI}/Bp9_DSp24_7078_UTK.primary.dedup-UMI.bam"]="r6-n_DSp24_day3_SS_rep2.UTK_prim_UMI.bam"
+array_UTK_prim_UMI["${UTK_prim_UMI}/CT10_7718_pIAA_Q_Nascent_UTK.primary.dedup-UMI.bam"]="n3-d_Q_day7_N_rep2.UTK_prim_UMI.bam"
+array_UTK_prim_UMI["${UTK_prim_UMI}/CT10_7718_pIAA_Q_SteadyState_UTK.primary.dedup-UMI.bam"]="n3-d_Q_day7_SS_rep2.UTK_prim_UMI.bam"
+array_UTK_prim_UMI["${UTK_prim_UMI}/CT2_6125_pIAA_Q_Nascent_UTK.primary.dedup-UMI.bam"]="o-d_Q_day7_N_rep1.UTK_prim_UMI.bam"
+array_UTK_prim_UMI["${UTK_prim_UMI}/CT2_6125_pIAA_Q_SteadyState_UTK.primary.dedup-UMI.bam"]="o-d_Q_day7_SS_rep1.UTK_prim.bam"
+array_UTK_prim_UMI["${UTK_prim_UMI}/CT4_6126_pIAA_Q_Nascent_UTK.primary.dedup-UMI.bam"]="o-d_Q_day7_N_rep2.UTK_prim_UMI.bam"
+array_UTK_prim_UMI["${UTK_prim_UMI}/CT4_6126_pIAA_Q_SteadyState_UTK.primary.dedup-UMI.bam"]="o-d_Q_day7_SS_rep2.UTK_prim_UMI.bam"
+array_UTK_prim_UMI["${UTK_prim_UMI}/CT6_7714_pIAA_Q_Nascent_UTK.primary.dedup-UMI.bam"]="n3-d_Q_day7_N_rep1.UTK_prim_UMI.bam"
+array_UTK_prim_UMI["${UTK_prim_UMI}/CT6_7714_pIAA_Q_SteadyState_UTK.primary.dedup-UMI.bam"]="n3-d_Q_day7_SS_rep1.UTK_prim_UMI.bam"
+array_UTK_prim_UMI["${UTK_prim_UMI}/CT8_7716_pIAA_Q_Nascent_UTK.primary.dedup-UMI.bam"]="n3-d_Q_day7_N_rep3.UTK_prim_UMI.bam"
+array_UTK_prim_UMI["${UTK_prim_UMI}/CT8_7716_pIAA_Q_SteadyState_UTK.primary.dedup-UMI.bam"]="n3-d_Q_day7_SS_rep3.UTK_prim_UMI.bam"
+array_UTK_prim_UMI["${UTK_prim_UMI}/CU11_5782_Q_Nascent_UTK.primary.dedup-UMI.bam"]="WT_Q_day7_N_rep2_CU.UTK_prim_UMI.bam"
+array_UTK_prim_UMI["${UTK_prim_UMI}/CU12_5782_Q_SteadyState_UTK.primary.dedup-UMI.bam"]="WT_Q_day7_SS_rep2_CU.UTK_prim_UMI.bam"
+array_UTK_prim_UMI["${UTK_prim_UMI}/CW10_7747_8day_Q_IN_UTK.primary.dedup-UMI.bam"]="r1-n_Q_day8_SS_rep1.UTK_prim_UMI.bam"
+array_UTK_prim_UMI["${UTK_prim_UMI}/CW10_7747_8day_Q_PD_UTK.primary.dedup-UMI.bam"]="r1-n_Q_day8_N_rep1.UTK_prim_UMI.bam"
+array_UTK_prim_UMI["${UTK_prim_UMI}/CW12_7748_8day_Q_IN_UTK.primary.dedup-UMI.bam"]="r1-n_Q_day8_SS_rep2.UTK_prim_UMI.bam"
+array_UTK_prim_UMI["${UTK_prim_UMI}/CW12_7748_8day_Q_PD_UTK.primary.dedup-UMI.bam"]="r1-n_Q_day8_N_rep2.UTK_prim_UMI.bam"
+array_UTK_prim_UMI["${UTK_prim_UMI}/CW2_5781_8day_Q_IN_UTK.primary.dedup-UMI.bam"]="WT_Q_day8_SS_rep1.UTK_prim_UMI.bam"
+array_UTK_prim_UMI["${UTK_prim_UMI}/CW2_5781_8day_Q_PD_UTK.primary.dedup-UMI.bam"]="WT_Q_day8_N_rep1.UTK_prim_UMI.bam"
+array_UTK_prim_UMI["${UTK_prim_UMI}/CW4_5782_8day_Q_IN_UTK.primary.dedup-UMI.bam"]="WT_Q_day8_SS_rep2.UTK_prim_UMI.bam"
+array_UTK_prim_UMI["${UTK_prim_UMI}/CW4_5782_8day_Q_PD_UTK.primary.dedup-UMI.bam"]="WT_Q_day8_N_rep2.UTK_prim_UMI.bam"
+array_UTK_prim_UMI["${UTK_prim_UMI}/CW6_7078_8day_Q_IN_UTK.primary.dedup-UMI.bam"]="r6-n_Q_day8_SS_rep1.UTK_prim_UMI.bam"
+array_UTK_prim_UMI["${UTK_prim_UMI}/CW6_7078_8day_Q_PD_UTK.primary.dedup-UMI.bam"]="r6-n_Q_day8_N_rep1.UTK_prim_UMI.bam"
+array_UTK_prim_UMI["${UTK_prim_UMI}/CW8_7079_8day_Q_IN_UTK.primary.dedup-UMI.bam"]="r6-n_Q_day8_SS_rep2.UTK_prim_UMI.bam"
+array_UTK_prim_UMI["${UTK_prim_UMI}/CW8_7079_8day_Q_PD_UTK.primary.dedup-UMI.bam"]="r6-n_Q_day8_N_rep2.UTK_prim_UMI.bam"
+
+#  UT
+unset array_UT_prim_no
+typeset -A array_UT_prim_no
+array_UT_prim_no["${UT_prim_no}/5781_G1_IN_UT.primary.bam"]="WT_G1_day1_SS_rep1.UT_prim.bam"
+array_UT_prim_no["${UT_prim_no}/5781_G1_IP_UT.primary.bam"]="WT_G1_day1_N_rep1.UT_prim.bam"
+array_UT_prim_no["${UT_prim_no}/5781_Q_IN_UT.primary.bam"]="WT_Q_day7_SS_rep1.UT_prim.bam"
+array_UT_prim_no["${UT_prim_no}/5781_Q_IP_UT.primary.bam"]="WT_Q_day7_N_rep1.UT_prim.bam"
+array_UT_prim_no["${UT_prim_no}/5782_G1_IN_UT.primary.bam"]="WT_G1_day1_SS_rep2.UT_prim.bam"
+array_UT_prim_no["${UT_prim_no}/5782_G1_IP_UT.primary.bam"]="WT_G1_day1_N_rep2.UT_prim.bam"
+array_UT_prim_no["${UT_prim_no}/5782_Q_IN_UT.primary.bam"]="WT_Q_day7_SS_rep2.UT_prim.bam"
+array_UT_prim_no["${UT_prim_no}/5782_Q_IP_UT.primary.bam"]="WT_Q_day7_N_rep2.UT_prim.bam"
+array_UT_prim_no["${UT_prim_no}/BM10_DSp48_5781_UT.primary.bam"]="WT_DSp48_day4_SS_rep1.UT_prim.bam"
+array_UT_prim_no["${UT_prim_no}/BM11_DSp48_7080_UT.primary.bam"]="t4-n_DSp48_day4_SS_rep1.UT_prim.bam"
+array_UT_prim_no["${UT_prim_no}/BM1_DSm2_5781_UT.primary.bam"]="WT_DSm2_day2_SS_rep1.UT_prim.bam"
+array_UT_prim_no["${UT_prim_no}/BM2_DSm2_7080_UT.primary.bam"]="t4-n_DSm2_day2_SS_rep1.UT_prim.bam"
+array_UT_prim_no["${UT_prim_no}/BM3_DSm2_7079_UT.primary.bam"]="r6-n_DSm2_day2_SS_rep1.UT_prim.bam"
+array_UT_prim_no["${UT_prim_no}/BM4_DSp2_5781_UT.primary.bam"]="WT_DSp2_day2_SS_rep1.UT_prim.bam"
+array_UT_prim_no["${UT_prim_no}/BM5_DSp2_7080_UT.primary.bam"]="t4-n_DSp2_day2_SS_rep1.UT_prim.bam"
+array_UT_prim_no["${UT_prim_no}/BM6_DSp2_7079_UT.primary.bam"]="r6-n_DSp2_day2_SS_rep1.UT_prim.bam"
+array_UT_prim_no["${UT_prim_no}/BM7_DSp24_5781_UT.primary.bam"]="WT_DSp24_day3_SS_rep1.UT_prim.bam"
+array_UT_prim_no["${UT_prim_no}/BM8_DSp24_7080_UT.primary.bam"]="t4-n_DSp24_day3_SS_rep1.UT_prim.bam"
+array_UT_prim_no["${UT_prim_no}/BM9_DSp24_7079_UT.primary.bam"]="r6-n_DSp24_day3_SS_rep1.UT_prim.bam"
+array_UT_prim_no["${UT_prim_no}/Bp10_DSp48_5782_UT.primary.bam"]="WT_DSp48_day4_SS_rep2.UT_prim.bam"
+array_UT_prim_no["${UT_prim_no}/Bp11_DSp48_7081_UT.primary.bam"]="t4-n_DSp48_day4_SS_rep2.UT_prim.bam"
+array_UT_prim_no["${UT_prim_no}/Bp12_DSp48_7078_UT.primary.bam"]="r6-n_DSp48_day4_SS_rep2.UT_prim.bam"
+array_UT_prim_no["${UT_prim_no}/Bp1_DSm2_5782_UT.primary.bam"]="WT_DSm2_day2_SS_rep2.UT_prim.bam"
+array_UT_prim_no["${UT_prim_no}/Bp2_DSm2_7081_UT.primary.bam"]="t4-n_DSm2_day2_SS_rep2.UT_prim.bam"
+array_UT_prim_no["${UT_prim_no}/Bp3_DSm2_7078_UT.primary.bam"]="r6-n_DSm2_day2_SS_rep2.UT_prim.bam"
+array_UT_prim_no["${UT_prim_no}/Bp4_DSp2_5782_UT.primary.bam"]="WT_DSp2_day2_SS_rep2.UT_prim.bam"
+array_UT_prim_no["${UT_prim_no}/Bp5_DSp2_7081_UT.primary.bam"]="t4-n_DSp2_day2_SS_rep2.UT_prim.bam"
+array_UT_prim_no["${UT_prim_no}/Bp6_DSp2_7078_UT.primary.bam"]="r6-n_DSp2_day2_SS_rep2.UT_prim.bam"
+array_UT_prim_no["${UT_prim_no}/Bp7_DSp24_5782_UT.primary.bam"]="WT_DSp24_day3_SS_rep2.UT_prim.bam"
+array_UT_prim_no["${UT_prim_no}/Bp8_DSp24_7081_UT.primary.bam"]="t4-n_DSp24_day3_SS_rep2.UT_prim.bam"
+array_UT_prim_no["${UT_prim_no}/Bp9_DSp24_7078_UT.primary.bam"]="r6-n_DSp24_day3_SS_rep2.UT_prim.bam"
+array_UT_prim_no["${UT_prim_no}/CT10_7718_pIAA_Q_Nascent_UT.primary.bam"]="n3-d_Q_day7_N_rep2.UT_prim.bam"
+array_UT_prim_no["${UT_prim_no}/CT10_7718_pIAA_Q_SteadyState_UT.primary.bam"]="n3-d_Q_day7_SS_rep2.UT_prim.bam"
+array_UT_prim_no["${UT_prim_no}/CT2_6125_pIAA_Q_Nascent_UT.primary.bam"]="o-d_Q_day7_N_rep1.UT_prim.bam"
+array_UT_prim_no["${UT_prim_no}/CT2_6125_pIAA_Q_SteadyState_UT.primary.bam"]="o-d_Q_day7_SS_rep1.UTK_prim.bam"
+array_UT_prim_no["${UT_prim_no}/CT4_6126_pIAA_Q_Nascent_UT.primary.bam"]="o-d_Q_day7_N_rep2.UT_prim.bam"
+array_UT_prim_no["${UT_prim_no}/CT4_6126_pIAA_Q_SteadyState_UT.primary.bam"]="o-d_Q_day7_SS_rep2.UT_prim.bam"
+array_UT_prim_no["${UT_prim_no}/CT6_7714_pIAA_Q_Nascent_UT.primary.bam"]="n3-d_Q_day7_N_rep1.UT_prim.bam"
+array_UT_prim_no["${UT_prim_no}/CT6_7714_pIAA_Q_SteadyState_UT.primary.bam"]="n3-d_Q_day7_SS_rep1.UT_prim.bam"
+array_UT_prim_no["${UT_prim_no}/CT8_7716_pIAA_Q_Nascent_UT.primary.bam"]="n3-d_Q_day7_N_rep3.UT_prim.bam"
+array_UT_prim_no["${UT_prim_no}/CT8_7716_pIAA_Q_SteadyState_UT.primary.bam"]="n3-d_Q_day7_SS_rep3.UT_prim.bam"
+array_UT_prim_no["${UT_prim_no}/CU11_5782_Q_Nascent_UT.primary.bam"]="WT_Q_day7_N_rep2_CU.UT_prim.bam"
+array_UT_prim_no["${UT_prim_no}/CU12_5782_Q_SteadyState_UT.primary.bam"]="WT_Q_day7_SS_rep2_CU.UT_prim.bam"
+array_UT_prim_no["${UT_prim_no}/CW10_7747_8day_Q_IN_UT.primary.bam"]="r1-n_Q_day8_SS_rep1.UT_prim.bam"
+array_UT_prim_no["${UT_prim_no}/CW10_7747_8day_Q_PD_UT.primary.bam"]="r1-n_Q_day8_N_rep1.UT_prim.bam"
+array_UT_prim_no["${UT_prim_no}/CW12_7748_8day_Q_IN_UT.primary.bam"]="r1-n_Q_day8_SS_rep2.UT_prim.bam"
+array_UT_prim_no["${UT_prim_no}/CW12_7748_8day_Q_PD_UT.primary.bam"]="r1-n_Q_day8_N_rep2.UT_prim.bam"
+array_UT_prim_no["${UT_prim_no}/CW2_5781_8day_Q_IN_UT.primary.bam"]="WT_Q_day8_SS_rep1.UT_prim.bam"
+array_UT_prim_no["${UT_prim_no}/CW2_5781_8day_Q_PD_UT.primary.bam"]="WT_Q_day8_N_rep1.UT_prim.bam"
+array_UT_prim_no["${UT_prim_no}/CW4_5782_8day_Q_IN_UT.primary.bam"]="WT_Q_day8_SS_rep2.UT_prim.bam"
+array_UT_prim_no["${UT_prim_no}/CW4_5782_8day_Q_PD_UT.primary.bam"]="WT_Q_day8_N_rep2.UT_prim.bam"
+array_UT_prim_no["${UT_prim_no}/CW6_7078_8day_Q_IN_UT.primary.bam"]="r6-n_Q_day8_SS_rep1.UT_prim.bam"
+array_UT_prim_no["${UT_prim_no}/CW6_7078_8day_Q_PD_UT.primary.bam"]="r6-n_Q_day8_N_rep1.UT_prim.bam"
+array_UT_prim_no["${UT_prim_no}/CW8_7079_8day_Q_IN_UT.primary.bam"]="r6-n_Q_day8_SS_rep2.UT_prim.bam"
+array_UT_prim_no["${UT_prim_no}/CW8_7079_8day_Q_PD_UT.primary.bam"]="r6-n_Q_day8_N_rep2.UT_prim.bam"
+
+unset array_UT_prim_pos
+typeset -A array_UT_prim_pos
+array_UT_prim_pos["${UT_prim_pos}/5781_G1_IN_UT.primary.dedup-pos.bam"]="WT_G1_day1_SS_rep1.UT_prim_pos.bam"
+array_UT_prim_pos["${UT_prim_pos}/5781_G1_IP_UT.primary.dedup-pos.bam"]="WT_G1_day1_N_rep1.UT_prim_pos.bam"
+array_UT_prim_pos["${UT_prim_pos}/5781_Q_IN_UT.primary.dedup-pos.bam"]="WT_Q_day7_SS_rep1.UT_prim_pos.bam"
+array_UT_prim_pos["${UT_prim_pos}/5781_Q_IP_UT.primary.dedup-pos.bam"]="WT_Q_day7_N_rep1.UT_prim_pos.bam"
+array_UT_prim_pos["${UT_prim_pos}/5782_G1_IN_UT.primary.dedup-pos.bam"]="WT_G1_day1_SS_rep2.UT_prim_pos.bam"
+array_UT_prim_pos["${UT_prim_pos}/5782_G1_IP_UT.primary.dedup-pos.bam"]="WT_G1_day1_N_rep2.UT_prim_pos.bam"
+array_UT_prim_pos["${UT_prim_pos}/5782_Q_IN_UT.primary.dedup-pos.bam"]="WT_Q_day7_SS_rep2.UT_prim_pos.bam"
+array_UT_prim_pos["${UT_prim_pos}/5782_Q_IP_UT.primary.dedup-pos.bam"]="WT_Q_day7_N_rep2.UT_prim_pos.bam"
+array_UT_prim_pos["${UT_prim_pos}/BM10_DSp48_5781_UT.primary.dedup-pos.bam"]="WT_DSp48_day4_SS_rep1.UT_prim_pos.bam"
+array_UT_prim_pos["${UT_prim_pos}/BM11_DSp48_7080_UT.primary.dedup-pos.bam"]="t4-n_DSp48_day4_SS_rep1.UT_prim_pos.bam"
+array_UT_prim_pos["${UT_prim_pos}/BM1_DSm2_5781_UT.primary.dedup-pos.bam"]="WT_DSm2_day2_SS_rep1.UT_prim_pos.bam"
+array_UT_prim_pos["${UT_prim_pos}/BM2_DSm2_7080_UT.primary.dedup-pos.bam"]="t4-n_DSm2_day2_SS_rep1.UT_prim_pos.bam"
+array_UT_prim_pos["${UT_prim_pos}/BM3_DSm2_7079_UT.primary.dedup-pos.bam"]="r6-n_DSm2_day2_SS_rep1.UT_prim_pos.bam"
+array_UT_prim_pos["${UT_prim_pos}/BM4_DSp2_5781_UT.primary.dedup-pos.bam"]="WT_DSp2_day2_SS_rep1.UT_prim_pos.bam"
+array_UT_prim_pos["${UT_prim_pos}/BM5_DSp2_7080_UT.primary.dedup-pos.bam"]="t4-n_DSp2_day2_SS_rep1.UT_prim_pos.bam"
+array_UT_prim_pos["${UT_prim_pos}/BM6_DSp2_7079_UT.primary.dedup-pos.bam"]="r6-n_DSp2_day2_SS_rep1.UT_prim_pos.bam"
+array_UT_prim_pos["${UT_prim_pos}/BM7_DSp24_5781_UT.primary.dedup-pos.bam"]="WT_DSp24_day3_SS_rep1.UT_prim_pos.bam"
+array_UT_prim_pos["${UT_prim_pos}/BM8_DSp24_7080_UT.primary.dedup-pos.bam"]="t4-n_DSp24_day3_SS_rep1.UT_prim_pos.bam"
+array_UT_prim_pos["${UT_prim_pos}/BM9_DSp24_7079_UT.primary.dedup-pos.bam"]="r6-n_DSp24_day3_SS_rep1.UT_prim_pos.bam"
+array_UT_prim_pos["${UT_prim_pos}/Bp10_DSp48_5782_UT.primary.dedup-pos.bam"]="WT_DSp48_day4_SS_rep2.UT_prim_pos.bam"
+array_UT_prim_pos["${UT_prim_pos}/Bp11_DSp48_7081_UT.primary.dedup-pos.bam"]="t4-n_DSp48_day4_SS_rep2.UT_prim_pos.bam"
+array_UT_prim_pos["${UT_prim_pos}/Bp12_DSp48_7078_UT.primary.dedup-pos.bam"]="r6-n_DSp48_day4_SS_rep2.UT_prim_pos.bam"
+array_UT_prim_pos["${UT_prim_pos}/Bp1_DSm2_5782_UT.primary.dedup-pos.bam"]="WT_DSm2_day2_SS_rep2.UT_prim_pos.bam"
+array_UT_prim_pos["${UT_prim_pos}/Bp2_DSm2_7081_UT.primary.dedup-pos.bam"]="t4-n_DSm2_day2_SS_rep2.UT_prim_pos.bam"
+array_UT_prim_pos["${UT_prim_pos}/Bp3_DSm2_7078_UT.primary.dedup-pos.bam"]="r6-n_DSm2_day2_SS_rep2.UT_prim_pos.bam"
+array_UT_prim_pos["${UT_prim_pos}/Bp4_DSp2_5782_UT.primary.dedup-pos.bam"]="WT_DSp2_day2_SS_rep2.UT_prim_pos.bam"
+array_UT_prim_pos["${UT_prim_pos}/Bp5_DSp2_7081_UT.primary.dedup-pos.bam"]="t4-n_DSp2_day2_SS_rep2.UT_prim_pos.bam"
+array_UT_prim_pos["${UT_prim_pos}/Bp6_DSp2_7078_UT.primary.dedup-pos.bam"]="r6-n_DSp2_day2_SS_rep2.UT_prim_pos.bam"
+array_UT_prim_pos["${UT_prim_pos}/Bp7_DSp24_5782_UT.primary.dedup-pos.bam"]="WT_DSp24_day3_SS_rep2.UT_prim_pos.bam"
+array_UT_prim_pos["${UT_prim_pos}/Bp8_DSp24_7081_UT.primary.dedup-pos.bam"]="t4-n_DSp24_day3_SS_rep2.UT_prim_pos.bam"
+array_UT_prim_pos["${UT_prim_pos}/Bp9_DSp24_7078_UT.primary.dedup-pos.bam"]="r6-n_DSp24_day3_SS_rep2.UT_prim_pos.bam"
+array_UT_prim_pos["${UT_prim_pos}/CT10_7718_pIAA_Q_Nascent_UT.primary.dedup-pos.bam"]="n3-d_Q_day7_N_rep2.UT_prim_pos.bam"
+array_UT_prim_pos["${UT_prim_pos}/CT10_7718_pIAA_Q_SteadyState_UT.primary.dedup-pos.bam"]="n3-d_Q_day7_SS_rep2.UT_prim_pos.bam"
+array_UT_prim_pos["${UT_prim_pos}/CT2_6125_pIAA_Q_Nascent_UT.primary.dedup-pos.bam"]="o-d_Q_day7_N_rep1.UT_prim_pos.bam"
+array_UT_prim_pos["${UT_prim_pos}/CT2_6125_pIAA_Q_SteadyState_UT.primary.dedup-pos.bam"]="o-d_Q_day7_SS_rep1.UTK_prim.bam"
+array_UT_prim_pos["${UT_prim_pos}/CT4_6126_pIAA_Q_Nascent_UT.primary.dedup-pos.bam"]="o-d_Q_day7_N_rep2.UT_prim_pos.bam"
+array_UT_prim_pos["${UT_prim_pos}/CT4_6126_pIAA_Q_SteadyState_UT.primary.dedup-pos.bam"]="o-d_Q_day7_SS_rep2.UT_prim_pos.bam"
+array_UT_prim_pos["${UT_prim_pos}/CT6_7714_pIAA_Q_Nascent_UT.primary.dedup-pos.bam"]="n3-d_Q_day7_N_rep1.UT_prim_pos.bam"
+array_UT_prim_pos["${UT_prim_pos}/CT6_7714_pIAA_Q_SteadyState_UT.primary.dedup-pos.bam"]="n3-d_Q_day7_SS_rep1.UT_prim_pos.bam"
+array_UT_prim_pos["${UT_prim_pos}/CT8_7716_pIAA_Q_Nascent_UT.primary.dedup-pos.bam"]="n3-d_Q_day7_N_rep3.UT_prim_pos.bam"
+array_UT_prim_pos["${UT_prim_pos}/CT8_7716_pIAA_Q_SteadyState_UT.primary.dedup-pos.bam"]="n3-d_Q_day7_SS_rep3.UT_prim_pos.bam"
+array_UT_prim_pos["${UT_prim_pos}/CU11_5782_Q_Nascent_UT.primary.dedup-pos.bam"]="WT_Q_day7_N_rep2_CU.UT_prim_pos.bam"
+array_UT_prim_pos["${UT_prim_pos}/CU12_5782_Q_SteadyState_UT.primary.dedup-pos.bam"]="WT_Q_day7_SS_rep2_CU.UT_prim_pos.bam"
+array_UT_prim_pos["${UT_prim_pos}/CW10_7747_8day_Q_IN_UT.primary.dedup-pos.bam"]="r1-n_Q_day8_SS_rep1.UT_prim_pos.bam"
+array_UT_prim_pos["${UT_prim_pos}/CW10_7747_8day_Q_PD_UT.primary.dedup-pos.bam"]="r1-n_Q_day8_N_rep1.UT_prim_pos.bam"
+array_UT_prim_pos["${UT_prim_pos}/CW12_7748_8day_Q_IN_UT.primary.dedup-pos.bam"]="r1-n_Q_day8_SS_rep2.UT_prim_pos.bam"
+array_UT_prim_pos["${UT_prim_pos}/CW12_7748_8day_Q_PD_UT.primary.dedup-pos.bam"]="r1-n_Q_day8_N_rep2.UT_prim_pos.bam"
+array_UT_prim_pos["${UT_prim_pos}/CW2_5781_8day_Q_IN_UT.primary.dedup-pos.bam"]="WT_Q_day8_SS_rep1.UT_prim_pos.bam"
+array_UT_prim_pos["${UT_prim_pos}/CW2_5781_8day_Q_PD_UT.primary.dedup-pos.bam"]="WT_Q_day8_N_rep1.UT_prim_pos.bam"
+array_UT_prim_pos["${UT_prim_pos}/CW4_5782_8day_Q_IN_UT.primary.dedup-pos.bam"]="WT_Q_day8_SS_rep2.UT_prim_pos.bam"
+array_UT_prim_pos["${UT_prim_pos}/CW4_5782_8day_Q_PD_UT.primary.dedup-pos.bam"]="WT_Q_day8_N_rep2.UT_prim_pos.bam"
+array_UT_prim_pos["${UT_prim_pos}/CW6_7078_8day_Q_IN_UT.primary.dedup-pos.bam"]="r6-n_Q_day8_SS_rep1.UT_prim_pos.bam"
+array_UT_prim_pos["${UT_prim_pos}/CW6_7078_8day_Q_PD_UT.primary.dedup-pos.bam"]="r6-n_Q_day8_N_rep1.UT_prim_pos.bam"
+array_UT_prim_pos["${UT_prim_pos}/CW8_7079_8day_Q_IN_UT.primary.dedup-pos.bam"]="r6-n_Q_day8_SS_rep2.UT_prim_pos.bam"
+array_UT_prim_pos["${UT_prim_pos}/CW8_7079_8day_Q_PD_UT.primary.dedup-pos.bam"]="r6-n_Q_day8_N_rep2.UT_prim_pos.bam"
+
+unset array_UT_prim_UMI
+typeset -A array_UT_prim_UMI
+array_UT_prim_UMI["${UT_prim_UMI}/5781_G1_IN_UT.primary.dedup-UMI.bam"]="WT_G1_day1_SS_rep1.UT_prim_UMI.bam"
+array_UT_prim_UMI["${UT_prim_UMI}/5781_G1_IP_UT.primary.dedup-UMI.bam"]="WT_G1_day1_N_rep1.UT_prim_UMI.bam"
+array_UT_prim_UMI["${UT_prim_UMI}/5781_Q_IN_UT.primary.dedup-UMI.bam"]="WT_Q_day7_SS_rep1.UT_prim_UMI.bam"
+array_UT_prim_UMI["${UT_prim_UMI}/5781_Q_IP_UT.primary.dedup-UMI.bam"]="WT_Q_day7_N_rep1.UT_prim_UMI.bam"
+array_UT_prim_UMI["${UT_prim_UMI}/5782_G1_IN_UT.primary.dedup-UMI.bam"]="WT_G1_day1_SS_rep2.UT_prim_UMI.bam"
+array_UT_prim_UMI["${UT_prim_UMI}/5782_G1_IP_UT.primary.dedup-UMI.bam"]="WT_G1_day1_N_rep2.UT_prim_UMI.bam"
+array_UT_prim_UMI["${UT_prim_UMI}/5782_Q_IN_UT.primary.dedup-UMI.bam"]="WT_Q_day7_SS_rep2.UT_prim_UMI.bam"
+array_UT_prim_UMI["${UT_prim_UMI}/5782_Q_IP_UT.primary.dedup-UMI.bam"]="WT_Q_day7_N_rep2.UT_prim_UMI.bam"
+array_UT_prim_UMI["${UT_prim_UMI}/BM10_DSp48_5781_UT.primary.dedup-UMI.bam"]="WT_DSp48_day4_SS_rep1.UT_prim_UMI.bam"
+array_UT_prim_UMI["${UT_prim_UMI}/BM11_DSp48_7080_UT.primary.dedup-UMI.bam"]="t4-n_DSp48_day4_SS_rep1.UT_prim_UMI.bam"
+array_UT_prim_UMI["${UT_prim_UMI}/BM1_DSm2_5781_UT.primary.dedup-UMI.bam"]="WT_DSm2_day2_SS_rep1.UT_prim_UMI.bam"
+array_UT_prim_UMI["${UT_prim_UMI}/BM2_DSm2_7080_UT.primary.dedup-UMI.bam"]="t4-n_DSm2_day2_SS_rep1.UT_prim_UMI.bam"
+array_UT_prim_UMI["${UT_prim_UMI}/BM3_DSm2_7079_UT.primary.dedup-UMI.bam"]="r6-n_DSm2_day2_SS_rep1.UT_prim_UMI.bam"
+array_UT_prim_UMI["${UT_prim_UMI}/BM4_DSp2_5781_UT.primary.dedup-UMI.bam"]="WT_DSp2_day2_SS_rep1.UT_prim_UMI.bam"
+array_UT_prim_UMI["${UT_prim_UMI}/BM5_DSp2_7080_UT.primary.dedup-UMI.bam"]="t4-n_DSp2_day2_SS_rep1.UT_prim_UMI.bam"
+array_UT_prim_UMI["${UT_prim_UMI}/BM6_DSp2_7079_UT.primary.dedup-UMI.bam"]="r6-n_DSp2_day2_SS_rep1.UT_prim_UMI.bam"
+array_UT_prim_UMI["${UT_prim_UMI}/BM7_DSp24_5781_UT.primary.dedup-UMI.bam"]="WT_DSp24_day3_SS_rep1.UT_prim_UMI.bam"
+array_UT_prim_UMI["${UT_prim_UMI}/BM8_DSp24_7080_UT.primary.dedup-UMI.bam"]="t4-n_DSp24_day3_SS_rep1.UT_prim_UMI.bam"
+array_UT_prim_UMI["${UT_prim_UMI}/BM9_DSp24_7079_UT.primary.dedup-UMI.bam"]="r6-n_DSp24_day3_SS_rep1.UT_prim_UMI.bam"
+array_UT_prim_UMI["${UT_prim_UMI}/Bp10_DSp48_5782_UT.primary.dedup-UMI.bam"]="WT_DSp48_day4_SS_rep2.UT_prim_UMI.bam"
+array_UT_prim_UMI["${UT_prim_UMI}/Bp11_DSp48_7081_UT.primary.dedup-UMI.bam"]="t4-n_DSp48_day4_SS_rep2.UT_prim_UMI.bam"
+array_UT_prim_UMI["${UT_prim_UMI}/Bp12_DSp48_7078_UT.primary.dedup-UMI.bam"]="r6-n_DSp48_day4_SS_rep2.UT_prim_UMI.bam"
+array_UT_prim_UMI["${UT_prim_UMI}/Bp1_DSm2_5782_UT.primary.dedup-UMI.bam"]="WT_DSm2_day2_SS_rep2.UT_prim_UMI.bam"
+array_UT_prim_UMI["${UT_prim_UMI}/Bp2_DSm2_7081_UT.primary.dedup-UMI.bam"]="t4-n_DSm2_day2_SS_rep2.UT_prim_UMI.bam"
+array_UT_prim_UMI["${UT_prim_UMI}/Bp3_DSm2_7078_UT.primary.dedup-UMI.bam"]="r6-n_DSm2_day2_SS_rep2.UT_prim_UMI.bam"
+array_UT_prim_UMI["${UT_prim_UMI}/Bp4_DSp2_5782_UT.primary.dedup-UMI.bam"]="WT_DSp2_day2_SS_rep2.UT_prim_UMI.bam"
+array_UT_prim_UMI["${UT_prim_UMI}/Bp5_DSp2_7081_UT.primary.dedup-UMI.bam"]="t4-n_DSp2_day2_SS_rep2.UT_prim_UMI.bam"
+array_UT_prim_UMI["${UT_prim_UMI}/Bp6_DSp2_7078_UT.primary.dedup-UMI.bam"]="r6-n_DSp2_day2_SS_rep2.UT_prim_UMI.bam"
+array_UT_prim_UMI["${UT_prim_UMI}/Bp7_DSp24_5782_UT.primary.dedup-UMI.bam"]="WT_DSp24_day3_SS_rep2.UT_prim_UMI.bam"
+array_UT_prim_UMI["${UT_prim_UMI}/Bp8_DSp24_7081_UT.primary.dedup-UMI.bam"]="t4-n_DSp24_day3_SS_rep2.UT_prim_UMI.bam"
+array_UT_prim_UMI["${UT_prim_UMI}/Bp9_DSp24_7078_UT.primary.dedup-UMI.bam"]="r6-n_DSp24_day3_SS_rep2.UT_prim_UMI.bam"
+array_UT_prim_UMI["${UT_prim_UMI}/CT10_7718_pIAA_Q_Nascent_UT.primary.dedup-UMI.bam"]="n3-d_Q_day7_N_rep2.UT_prim_UMI.bam"
+array_UT_prim_UMI["${UT_prim_UMI}/CT10_7718_pIAA_Q_SteadyState_UT.primary.dedup-UMI.bam"]="n3-d_Q_day7_SS_rep2.UT_prim_UMI.bam"
+array_UT_prim_UMI["${UT_prim_UMI}/CT2_6125_pIAA_Q_Nascent_UT.primary.dedup-UMI.bam"]="o-d_Q_day7_N_rep1.UT_prim_UMI.bam"
+array_UT_prim_UMI["${UT_prim_UMI}/CT2_6125_pIAA_Q_SteadyState_UT.primary.dedup-UMI.bam"]="o-d_Q_day7_SS_rep1.UTK_prim.bam"
+array_UT_prim_UMI["${UT_prim_UMI}/CT4_6126_pIAA_Q_Nascent_UT.primary.dedup-UMI.bam"]="o-d_Q_day7_N_rep2.UT_prim_UMI.bam"
+array_UT_prim_UMI["${UT_prim_UMI}/CT4_6126_pIAA_Q_SteadyState_UT.primary.dedup-UMI.bam"]="o-d_Q_day7_SS_rep2.UT_prim_UMI.bam"
+array_UT_prim_UMI["${UT_prim_UMI}/CT6_7714_pIAA_Q_Nascent_UT.primary.dedup-UMI.bam"]="n3-d_Q_day7_N_rep1.UT_prim_UMI.bam"
+array_UT_prim_UMI["${UT_prim_UMI}/CT6_7714_pIAA_Q_SteadyState_UT.primary.dedup-UMI.bam"]="n3-d_Q_day7_SS_rep1.UT_prim_UMI.bam"
+array_UT_prim_UMI["${UT_prim_UMI}/CT8_7716_pIAA_Q_Nascent_UT.primary.dedup-UMI.bam"]="n3-d_Q_day7_N_rep3.UT_prim_UMI.bam"
+array_UT_prim_UMI["${UT_prim_UMI}/CT8_7716_pIAA_Q_SteadyState_UT.primary.dedup-UMI.bam"]="n3-d_Q_day7_SS_rep3.UT_prim_UMI.bam"
+array_UT_prim_UMI["${UT_prim_UMI}/CU11_5782_Q_Nascent_UT.primary.dedup-UMI.bam"]="WT_Q_day7_N_rep2_CU.UT_prim_UMI.bam"
+array_UT_prim_UMI["${UT_prim_UMI}/CU12_5782_Q_SteadyState_UT.primary.dedup-UMI.bam"]="WT_Q_day7_SS_rep2_CU.UT_prim_UMI.bam"
+array_UT_prim_UMI["${UT_prim_UMI}/CW10_7747_8day_Q_IN_UT.primary.dedup-UMI.bam"]="r1-n_Q_day8_SS_rep1.UT_prim_UMI.bam"
+array_UT_prim_UMI["${UT_prim_UMI}/CW10_7747_8day_Q_PD_UT.primary.dedup-UMI.bam"]="r1-n_Q_day8_N_rep1.UT_prim_UMI.bam"
+array_UT_prim_UMI["${UT_prim_UMI}/CW12_7748_8day_Q_IN_UT.primary.dedup-UMI.bam"]="r1-n_Q_day8_SS_rep2.UT_prim_UMI.bam"
+array_UT_prim_UMI["${UT_prim_UMI}/CW12_7748_8day_Q_PD_UT.primary.dedup-UMI.bam"]="r1-n_Q_day8_N_rep2.UT_prim_UMI.bam"
+array_UT_prim_UMI["${UT_prim_UMI}/CW2_5781_8day_Q_IN_UT.primary.dedup-UMI.bam"]="WT_Q_day8_SS_rep1.UT_prim_UMI.bam"
+array_UT_prim_UMI["${UT_prim_UMI}/CW2_5781_8day_Q_PD_UT.primary.dedup-UMI.bam"]="WT_Q_day8_N_rep1.UT_prim_UMI.bam"
+array_UT_prim_UMI["${UT_prim_UMI}/CW4_5782_8day_Q_IN_UT.primary.dedup-UMI.bam"]="WT_Q_day8_SS_rep2.UT_prim_UMI.bam"
+array_UT_prim_UMI["${UT_prim_UMI}/CW4_5782_8day_Q_PD_UT.primary.dedup-UMI.bam"]="WT_Q_day8_N_rep2.UT_prim_UMI.bam"
+array_UT_prim_UMI["${UT_prim_UMI}/CW6_7078_8day_Q_IN_UT.primary.dedup-UMI.bam"]="r6-n_Q_day8_SS_rep1.UT_prim_UMI.bam"
+array_UT_prim_UMI["${UT_prim_UMI}/CW6_7078_8day_Q_PD_UT.primary.dedup-UMI.bam"]="r6-n_Q_day8_N_rep1.UT_prim_UMI.bam"
+array_UT_prim_UMI["${UT_prim_UMI}/CW8_7079_8day_Q_IN_UT.primary.dedup-UMI.bam"]="r6-n_Q_day8_SS_rep2.UT_prim_UMI.bam"
+array_UT_prim_UMI["${UT_prim_UMI}/CW8_7079_8day_Q_PD_UT.primary.dedup-UMI.bam"]="r6-n_Q_day8_N_rep2.UT_prim_UMI.bam"
+```
+</details>
+<br />
+
+<a id="perform-the-symlinking"></a>
+#### Perform the symlinking
+<a id="code-7"></a>
+##### Code
+<details>
+<summary><i>Code: Perform the symlinking</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+transcriptome && 
+    {
+        cd "results/2023-0215/bams_renamed/" \
+            || echo "cd'ing failed; check on this..."
+    }
+
+cd UTK_prim_no/
+for i in "${!array_UTK_prim_no[@]}"; do
+    echo "  Key: ${i}"
+    echo "Value: ${array_UTK_prim_no["${i}"]}"
+    echo ""
+
+    ln -s "${i}" "${array_UTK_prim_no["${i}"]}"
+done
+
+cd ../UTK_prim_pos/
+for i in "${!array_UTK_prim_pos[@]}"; do
+    echo "  Key: ${i}"
+    echo "Value: ${array_UTK_prim_pos["${i}"]}"
+    echo ""
+
+    ln -s "${i}" "${array_UTK_prim_pos["${i}"]}"
+done
+
+cd ../UTK_prim_UMI/
+for i in "${!array_UTK_prim_UMI[@]}"; do
+    echo "  Key: ${i}"
+    echo "Value: ${array_UTK_prim_UMI["${i}"]}"
+    echo ""
+
+    ln -s "${i}" "${array_UTK_prim_UMI["${i}"]}"
+done
+
+cd ../UT_prim_no/
+for i in "${!array_UT_prim_no[@]}"; do
+    echo "  Key: ${i}"
+    echo "Value: ${array_UT_prim_no["${i}"]}"
+    echo ""
+
+    ln -s "${i}" "${array_UT_prim_no["${i}"]}"
+done
+
+cd ../UT_prim_pos/
+for i in "${!array_UT_prim_pos[@]}"; do
+    echo "  Key: ${i}"
+    echo "Value: ${array_UT_prim_pos["${i}"]}"
+    echo ""
+
+    ln -s "${i}" "${array_UT_prim_pos["${i}"]}"
+done
+
+cd ../UT_prim_UMI/
+for i in "${!array_UT_prim_UMI[@]}"; do
+    echo "  Key: ${i}"
+    echo "Value: ${array_UT_prim_UMI["${i}"]}"
+    echo ""
+
+    ln -s "${i}" "${array_UT_prim_UMI["${i}"]}"
+done
 ```
 </details>
 <br />
@@ -751,11 +1536,11 @@ ln -s "${path_2}" "aligned_UT_primary"
 <a id="run-featurecounts"></a>
 ## Run featureCounts
 <a id="test-to-determine-option-for-featurecounts--s-results-in-an-error"></a>
-### Test to determine option for featureCounts -s; results in an error
-<a id="code-4"></a>
+### Test to determine option for featureCounts -s (results in an error)
+<a id="code-8"></a>
 #### Code
 <details>
-<summary><i>Code: Test to determine option for featureCounts -s; results in an error</i></summary>
+<summary><i>Code: Test to determine option for featureCounts -s (results in an error)</i></summary>
 
 ```bash
 #!/bin/bash
@@ -795,7 +1580,7 @@ featureCounts \
 <a id="printed-2"></a>
 #### Printed
 <details>
-<summary><i>Printed: Test to determine option for featureCounts -s; results in an error</i></summary>
+<summary><i>Printed: Test to determine option for featureCounts -s (results in an error)</i></summary>
 
 ```txt
 ❯ featureCounts \
@@ -853,7 +1638,7 @@ An example of attributes included in your GTF annotation is 'ID=YML133C_mRNA-E2;
 ### Convert the gff3 to "SAF" format
 *Building on advice [here](https://www.biostars.org/p/432735/#9482784)*
 
-<a id="code-5"></a>
+<a id="code-9"></a>
 #### Code
 <details>
 <summary><i>Code: Convert the gff3 to "SAF" format</i></summary>
@@ -918,7 +1703,7 @@ transcript:YFR057W_mRNA    VI    269061    269516    +
 
 <a id="test-to-determine-option-for-featurecounts--s-using-the-saf-file"></a>
 ### Test to determine option for featureCounts -s using the .saf file
-<a id="code-6"></a>
+<a id="code-10"></a>
 #### Code
 <details>
 <summary><i>Code: Test to determine option for featureCounts -s using the .saf file</i></summary>
@@ -1124,13 +1909,14 @@ featureCounts \
 <br />
 
 <a id="test-to-determine-option-for-featurecounts--s-with--g-id-correct"></a>
-### Test to determine option for featureCounts -s with -g "ID" (#CORRECT)
-`featureCounts -s 1` with `-g "ID"` is the way to go
+### Test to determine option for featureCounts -s with -g "ID" (`#CORRECT`)
+- `featureCounts -s 1` with `-g "ID"` is the way to go
+- Go back to using the gff3 rather than the saf
 
-<a id="code-7"></a>
+<a id="code-11"></a>
 #### Code
 <details>
-<summary><i>Code: Test to determine option for featureCounts -s with -g "ID"</i></summary>
+<summary><i>Code: Test to determine option for featureCounts -s with -g "ID" (#CORRECT)</i></summary>
 
 ```bash
 #!/bin/bash
@@ -1183,7 +1969,7 @@ featureCounts \
 <a id="printed-5"></a>
 #### Printed
 <details>
-<summary><i>Printed: Test to determine option for featureCounts -s with -g "ID"</i></summary>
+<summary><i>Printed: Test to determine option for featureCounts -s with -g "ID" (#CORRECT)</i></summary>
 
 ```txt
 ❯ featureCounts \
@@ -1329,7 +2115,7 @@ featureCounts \
 
 <a id="clean-up"></a>
 ### Clean up
-<a id="code-8"></a>
+<a id="code-12"></a>
 #### Code
 <details>
 <summary><i>Code: Clean up</i></summary>
@@ -1348,13 +2134,17 @@ cd - \
 ```
 </details>
 <br />
+<br />
 
-<a id="run-featurecounts-on-all-bams"></a>
-## Run featureCounts on all bams
-<a id="code-9"></a>
+<a id="run-featurecounts-on-bams-in-bams-with-combined_sc_klgff3"></a>
+## Run featureCounts on bams in bams/ with combined_SC_KL.gff3
+- bams/aligned_UT_primary_dedup-UMI
+- bams/aligned_UT_primary
+
+<a id="code-13"></a>
 ### Code
 <details>
-<summary><i>Code: </i></summary>
+<summary><i>Code: Run featureCounts on bams in bams/ with combined_SC_KL.gff3</i></summary>
 
 ```bash
 #!/bin/bash
