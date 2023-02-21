@@ -17,7 +17,6 @@
 <!-- /MarkdownTOC -->
 </details>
 <br />
-<br />
 
 <a id="emails-quick-guide-to-know-what-4tu-seq-filenames-represent-what"></a>
 ## Emails: Quick guide to know what 4tU-seq filenames represent what
@@ -156,7 +155,8 @@ Subject: Re: Quick guide to know what 4tU-seq filenames represent what
 Super helpful&mdash;thank you! No need to rename any of the files, and everything you typed up makes sense. I’ll use the details to make easy-to-read legends for the plots I am generating.
  
 -Kris
-
+<br />
+<br />
 
 <a id="build-variable-matrix"></a>
 ## Build variable matrix
@@ -166,8 +166,8 @@ Super helpful&mdash;thank you! No need to rename any of the files, and everythin
 5782: wild-type rep2
 7078: rrp6∆ rep1
 7079: rrp6∆ rep2
-7080: trf4∆
-7081: trf4∆
+7080: trf4∆ rep1
+7081: trf4∆ rep2
 6125: Ostir depletion rep1
 6126: Ostir depletion rep2
 7714: double tag Nrd1/Nab3 depletion rep1
@@ -175,4 +175,6 @@ Super helpful&mdash;thank you! No need to rename any of the files, and everythin
 7718: single tag depletion of Nab3 rep2
 7747: rtr1∆ rep1
 7748: rtr1∆ rep2
- 
+
+*Work continued [here](./notebook/variables.xlsx)*
+<br />

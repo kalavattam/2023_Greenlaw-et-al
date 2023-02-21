@@ -1,7 +1,29 @@
 
 `#study_DETONATE.md`
+<br />
+<br />
 
+<details>
+<summary><b><font size="+2"><i>Table of contents</i></font></b></summary>
+<!-- MarkdownTOC -->
+
+1. [Install DETONATE, check on and install dependencies](#install-detonate-check-on-and-install-dependencies)
+    1. [Code](#code)
+    1. [Printed](#printed)
+1. [Breaking down the DETONATE vignette](#breaking-down-the-detonate-vignette)
+    1. [I Run RSEM-EVAL on each assembly](#i-run-rsem-eval-on-each-assembly)
+        1. [Breakdown the command-line call](#breakdown-the-command-line-call)
+    1. [II Run RSEM-EVAL on each assembly](#ii-run-rsem-eval-on-each-assembly)
+1. [etc.](#etc)
+1. [Miscellaneous](#miscellaneous)
+
+<!-- /MarkdownTOC -->
+</details>
+<br />
+
+<a id="install-detonate-check-on-and-install-dependencies"></a>
 ## Install DETONATE, check on and install dependencies
+<a id="code"></a>
 ### Code
 <details>
 <summary><i>Code: Install DETONATE, check on and install dependencies</i></summary>
@@ -30,6 +52,7 @@ which rsem  # Not found
 </details>
 <br />
 
+<a id="printed"></a>
 ### Printed
 <details>
 <summary><i>Printed (local installation): Install DETONATE, check on and install dependencies</i></summary>
@@ -174,8 +197,11 @@ rSend-data-drivers                                 rsem-extract-reference-transc
 <br />
 <br />
 
+<a id="breaking-down-the-detonate-vignette"></a>
 ## Breaking down the DETONATE vignette
+<a id="i-run-rsem-eval-on-each-assembly"></a>
 ### <u>I</u> Run RSEM-EVAL on each assembly
+<a id="breakdown-the-command-line-call"></a>
 #### Breakdown the command-line call
 <details>
 <summary><i>Notes: Breakdown the command-line call</i></summary>
@@ -202,9 +228,11 @@ rSend-data-drivers                                 rsem-extract-reference-transc
 </details>
 <br />
 
+<a id="ii-run-rsem-eval-on-each-assembly"></a>
 ### <u>II</u> Run RSEM-EVAL on each assembly
 
 
+<a id="etc"></a>
 ## etc.
 ```bash
 #!/bin/bash
@@ -699,6 +727,7 @@ EXAMPLES
     'assembly1_rsem_eval.score.isoforms.results'.
 ```
 
+<a id="miscellaneous"></a>
 ## Miscellaneous
 - [The Concepts of Mean Fragment Length and Effective Length in RNA Sequencing](https://www.youtube.com/watch?v=BNVMVpToGsM&t)  `#WATCHED`
 - [Calculating Gene Length for RNA Sequencing Experiment](https://www.youtube.com/watch?v=wbspK7ezV0A)  `#UNWATCHED`
