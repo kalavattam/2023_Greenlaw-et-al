@@ -32,7 +32,7 @@
 1. [Install up-to-date rnaQUAST in its own environment \(2023-0220\)](#install-up-to-date-rnaquast-in-its-own-environment-2023-0220)
     1. [Code](#code-6)
     1. [Printed](#printed-3)
-1. [Do three new trial runs \(2023-0220\)](#do-three-new-trial-runs-2023-0220)
+1. [Do ~~three~~n new trial runs \(2023-0220-0221\)](#do-~~three~~n-new-trial-runs-2023-0220-0221)
     1. [Prepare for and perform run 1](#prepare-for-and-perform-run-1)
         1. [Code](#code-7)
         1. [Printed](#printed-4)
@@ -48,6 +48,9 @@
     1. [Prepare for and perform run 5](#prepare-for-and-perform-run-5)
         1. [Code](#code-11)
         1. [Printed](#printed-8)
+    1. [Prepare for and perform run 6](#prepare-for-and-perform-run-6)
+        1. [Code](#code-12)
+        1. [Printed](#printed-9)
 
 <!-- /MarkdownTOC -->
 </details>
@@ -1627,13 +1630,14 @@ To deactivate an active environment, use
 <br />
 <br />
 
-<a id="do-three-new-trial-runs-2023-0220"></a>
-## Do three new trial runs (2023-0220)
+<a id="do-~~three~~n-new-trial-runs-2023-0220-0221"></a>
+## Do ~~three~~<i>n</> new trial runs (2023-0220-0221)
 1. *with symlinked file, without `--busco_lineage` and `--gene_mark`: `trinity-gg_mkc-16_mir-0.005_mg-1_gf-0.005.Trinity-GG.fasta`*
 2. *with symlinked file, with `--busco_lineage` and `--gene_mark`: `trinity-gg_mkc-16_mir-0.005_mg-1_gf-0.005.Trinity-GG.fasta`*
 3. *without reads, without `--busco_lineage` and `--gene_mark`: `trinity-gg_mkc-16_mir-0.005_mg-1_gf-0.005.Trinity-GG.fasta`*
 4. *without reads, with `--busco_lineage` and `--gene_mark`: `trinity-gg_mkc-16_mir-0.005_mg-1_gf-0.005.Trinity-GG.fasta`*
 5. *without reads, without `--busco_lineage` and `--gene_mark`: the 285 Trinity GG Q_N datasets*
+6. *with reads <b>but in the form of a bam file</b>, and without `--busco_lineage` and `--gene_mark` (can troubleshoot why they're not working&mdash;or at least why BUSCO is not working&mdash;later): `trinity-gg_mkc-16_mir-0.005_mg-1_gf-0.005.Trinity-GG.fasta`*
 
 <a id="prepare-for-and-perform-run-1"></a>
 ### Prepare for and perform run 1
@@ -1758,7 +1762,7 @@ fastqs/merged_Q_IP_UTK_R1.fq.gz
 fastqs/merged_Q_IP_UTK_R3.fq.gz
 
 
-(#TOBECOMPLETED)
+#  Job was hanging, so killed it on 2023-0221, ~7:15 a.m.
 ```
 </details>
 <br />
@@ -1893,8 +1897,10 @@ outfiles_rnaQUAST-test_Trinity-GG_Q-N_2022-0220_run-2
 BUSCO/saccharomycetes_odb10
 
 
-(#TOBECOMPLETED)
+#  Job was hanging, so killed it on 2023-0221, ~7:15 a.m.
 ```
+</details>
+<br />
 
 <a id="prepare-for-and-perform-run-3"></a>
 ### Prepare for and perform run 3
@@ -2944,6 +2950,228 @@ rnaQUAST.py \
 
 ```txt
 (just check the logs)
+```
+</details>
+<br />
+
+<a id="prepare-for-and-perform-run-6"></a>
+### Prepare for and perform run 6
+<a id="code-12"></a>
+#### Code
+<details>
+<summary><i>Code: Prepare for and perform run 6</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+tmux new -s run_6  # then detach
+tmux a -t run_6
+
+grabnode  # 16, defaults
+source activate rnaquast_curr_env
+
+transcriptome &&
+    {
+        cd "results/2023-0218/" \
+            || echo "cd'ing failed; check on this..."
+    }
+
+
+#  Symlink bams in new bams/ directory --------------------
+#+ ...for use with rnaquast -sam option
+if [[ ! -d bams/ ]]; then
+    mkdir bams/
+fi
+
+cd "bams/" \
+    || echo "cd'ing failed; check on this..."
+
+find_relative_path() {
+    realpath --relative-to="${1}" "${2}"
+}
+
+
+UTK_prim_no="$(
+    find_relative_path \
+        . \
+        "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/bams_renamed/UTK_prim_no"
+)"
+echo "${UTK_prim_no}"
+
+ln -s "${UTK_prim_no}/WT_Q_day7_N_rep1.UTK_prim.bam" "WT_Q_day7_N_rep1.UTK_prim.bam"
+ln -s "${UTK_prim_no}/WT_Q_day7_N_rep2.UTK_prim.bam" "WT_Q_day7_N_rep2.UTK_prim.bam"
+
+
+#  Index and merge the two replicates ---------------------
+ml SAMtools/1.16.1-GCC-11.2.0
+
+if [[ ! -f "WT_Q_day7_N_rep1.UTK_prim.bam.bai" ]]; then
+    samtools index -@ "${SLURM_CPUS_ON_NODE}" "WT_Q_day7_N_rep1.UTK_prim.bam"
+fi
+
+if [[ ! -f "WT_Q_day7_N_rep2.UTK_prim.bam.bai" ]]; then
+    samtools index -@ "${SLURM_CPUS_ON_NODE}" "WT_Q_day7_N_rep2.UTK_prim.bam"
+fi
+
+if [[ ! -f "WT_Q_day7_N_merged.UTK_prim.bam" ]]; then
+    samtools merge \
+        -@ "${SLURM_CPUS_ON_NODE}" \
+        -o "WT_Q_day7_N_merged.UTK_prim.bam" \
+        "WT_Q_day7_N_rep1.UTK_prim.bam" \
+        "WT_Q_day7_N_rep2.UTK_prim.bam"
+fi
+
+#  Index merged bam, then convert it to a sam file --------
+if [[ ! -f "WT_Q_day7_N_merged.UTK_prim.bam.bai" ]]; then
+    samtools index -@ "${SLURM_CPUS_ON_NODE}" "WT_Q_day7_N_merged.UTK_prim.bam"
+fi
+
+if [[ ! -f "WT_Q_day7_N_merged.UTK_prim.sam" ]]; then
+    samtools view \
+        -@ "${SLURM_CPUS_ON_NODE}" -h \
+        -o "WT_Q_day7_N_merged.UTK_prim.sam" \
+        "WT_Q_day7_N_merged.UTK_prim.bam"
+fi
+
+
+#  Set up variables and outdirectory ----------------------
+n_GG="gg_mkc-16_mir-0.005_mg-1_gf-0.005"
+f_GG="./Trinity_GG.Q_N/trinity-gg_mkc-16_mir-0.005_mg-1_gf-0.005.Trinity-GG.fasta"
+p_ref="${HOME}/genomes/sacCer3/Ensembl/108/DNA"
+f_ref="Saccharomyces_cerevisiae.R64-1-1.dna.toplevel.chr-rename.fasta"
+p_gtf="${HOME}/genomes/sacCer3/Ensembl/108/gtf"
+f_gtf="Saccharomyces_cerevisiae.R64-1-1.108.gtf"
+p_gmap="${HOME}/genomes/sacCer3/Ensembl/108/DNA"
+d_gmap="Saccharomyces_cerevisiae.R64-1-1.dna.toplevel.chr-rename.fasta.gmap"
+p_f_sam="bams/WT_Q_day7_N_merged.UTK_prim.sam"
+
+d_out="outfiles_rnaQUAST-test_Trinity-GG_Q-N_2022-0220_run-6"
+if [[ ! -d "${d_out}" ]]; then
+    mkdir "${d_out}"
+fi
+
+echo "${SLURM_CPUS_ON_NODE}"
+echo "${n_GG}"
+echo "${f_GG}"
+echo "${p_ref}/${f_ref}"
+echo "${p_gtf}/${f_gtf}"
+echo "${p_gmap}/${d_gmap}"
+echo "${p_f_sam}"
+., "${p_f_sam}"
+echo "${d_out}"
+
+rnaQUAST.py \
+    -t "${SLURM_CPUS_ON_NODE}" \
+    --labels "${n_GG}" \
+    --transcripts "${f_GG}" \
+    --reference "${p_ref}/${f_ref}" \
+    --gtf "${p_gtf}/${f_gtf}" \
+    --gmap_index "${p_gmap}/${d_gmap}" \
+    --strand_specific \
+    -sam "${p_f_sam}" \
+    --output_dir "${d_out}" \
+    --disable_infer_genes \
+    --disable_infer_transcripts
+```
+</details>
+<br />
+
+<a id="printed-9"></a>
+#### Printed
+<details>
+<summary><i>Printed: Prepare for and perform run 6</i></summary>
+
+```txt
+❯ echo "${SLURM_CPUS_ON_NODE}"
+16
+
+
+❯ echo "${n_GG}"
+gg_mkc-16_mir-0.005_mg-1_gf-0.005
+
+
+❯ echo "${f_GG}"
+./Trinity_GG.Q_N/trinity-gg_mkc-16_mir-0.005_mg-1_gf-0.005.Trinity-GG.fasta
+
+
+❯ echo "${p_ref}/${f_ref}"
+/home/kalavatt/genomes/sacCer3/Ensembl/108/DNA/Saccharomyces_cerevisiae.R64-1-1.dna.toplevel.chr-rename.fasta
+
+
+❯ echo "${p_gtf}/${f_gtf}"
+/home/kalavatt/genomes/sacCer3/Ensembl/108/gtf/Saccharomyces_cerevisiae.R64-1-1.108.gtf
+
+
+❯ echo "${p_gmap}/${d_gmap}"
+/home/kalavatt/genomes/sacCer3/Ensembl/108/DNA/Saccharomyces_cerevisiae.R64-1-1.dna.toplevel.chr-rename.fasta.gmap
+
+
+❯ echo "${p_f_sam}"
+bams/WT_Q_day7_N_merged.UTK_prim.sam
+
+
+❯ ., "${p_f_sam}"
+-rw-rw---- 1 kalavatt 18G Feb 21 09:07 bams/WT_Q_day7_N_merged.UTK_prim.sam
+
+
+❯ echo "${d_out}"
+outfiles_rnaQUAST-test_Trinity-GG_Q-N_2022-0220_run-6
+
+
+❯ rnaQUAST.py \
+    -t "${SLURM_CPUS_ON_NODE}" \
+    --labels "${n_GG}" \
+    --transcripts "${f_GG}" \
+    --reference "${p_ref}/${f_ref}" \
+    --gtf "${p_gtf}/${f_gtf}" \
+    --gmap_index "${p_gmap}/${d_gmap}" \
+    --strand_specific \
+    -sam "${p_f_sam}" \
+    --output_dir "${d_out}" \
+    --disable_infer_genes \
+    --disable_infer_transcripts
+/home/kalavatt/miniconda3/envs/rnaquast_curr_env/share/rnaquast-2.2.1-0/rnaQUAST.py -t 16 --labels gg_mkc-16_mir-0.005_mg-1_gf-0.005 --transcripts ./Trinity_GG.Q_N/trinity-gg_mkc-16_mir-0.005_mg-1_gf-0.005.Trinity-GG.fasta --reference /home/kalavatt/genomes/sacCer3/Ensembl/108/DNA/Saccharomyces_cerevisiae.R64-1-1.dna.toplevel.chr-rename.fasta --gtf /home/kalavatt/genomes/sacCer3/Ensembl/108/gtf/Saccharomyces_cerevisiae.R64-1-1.108.gtf --gmap_index /home/kalavatt/genomes/sacCer3/Ensembl/108/DNA/Saccharomyces_cerevisiae.R64-1-1.dna.toplevel.chr-rename.fasta.gmap --strand_specific -sam bams/WT_Q_day7_N_merged.UTK_prim.sam --output_dir outfiles_rnaQUAST-test_Trinity-GG_Q-N_2022-0220_run-6 --disable_infer_genes --disable_infer_transcripts
+
+rnaQUAST: 2.2.1
+
+System information:
+  OS: Linux-4.15.0-192-generic-x86_64-with-debian-buster-sid (linux_64)
+  Python version: 3.7.12
+  CPUs number: 24
+
+External tools:
+  matplotlib: 3.5.3
+  joblib: 1.2.0
+  gffutils: 0.11.1
+  blastn: 2.13.0+
+  makeblastdb: 2.13.0+
+  gmap: 2017-11-15
+
+Started: 2023-02-21 09:13:10
+
+Logging to /fh/fast/tsukiyama_t/grp/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0218/outfiles_rnaQUAST-test_Trinity-GG_Q-N_2022-0220_run-6/logs/rnaQUAST.log
+
+2023-02-21 09:13:10
+Getting reference...
+Done.
+Using strand specific transcripts...
+
+2023-02-21 09:13:11
+Creating sqlite3 db by gffutils...
+2023-02-21 09:13:14,608 - INFO - Committing changes: 41000 features
+2023-02-21 09:13:14,692 - INFO - Populating features table and first-order relations: 41878 features
+2023-02-21 09:13:14,700 - INFO - Creating relations(parent) index
+2023-02-21 09:13:14,729 - INFO - Creating relations(child) index
+2023-02-21 09:13:14,756 - INFO - Creating features(featuretype) index
+2023-02-21 09:13:14,768 - INFO - Creating features (seqid, start, end) index
+2023-02-21 09:13:14,786 - INFO - Creating features (seqid, start, end, strand) index
+2023-02-21 09:13:14,806 - INFO - Running ANALYZE features
+  saved to /fh/fast/tsukiyama_t/grp/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0218/outfiles_rnaQUAST-test_Trinity-GG_Q-N_2022-0220_run-6/Saccharomyces_cerevisiae.R64-1-1.108.db.
+
+2023-02-21 09:13:14
+Loading sqlite3 db by gffutils from /fh/fast/tsukiyama_t/grp/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0218/outfiles_rnaQUAST-test_Trinity-GG_Q-N_2022-0220_run-6/Saccharomyces_cerevisiae.R64-1-1.108.db to memory...
+Done.
 ```
 </details>
 <br />

@@ -56,6 +56,7 @@
     1. [Run featureCounts on bams in bams_renamed/ with combined_SC_KL_20S.gff3](#run-featurecounts-on-bams-in-bams_renamed-with-combined_sc_kl_20sgff3)
         1. [Code](#code-16)
         1. [Printed](#printed-8)
+1. [Miscellaneous](#miscellaneous)
 
 <!-- /MarkdownTOC -->
 </details>
@@ -3672,3 +3673,8 @@ echo "Done"
 ```
 </details>
 <br />
+<br />
+
+<a id="miscellaneous"></a>
+## Miscellaneous
+Open link to come back to later: [featureCounts - paired-end data](https://support.bioconductor.org/p/67534/); details on counting "read pairs (fragments) rather than reads because counting fragments will give you more accurate counts" (from first main comment)
