@@ -51,11 +51,19 @@
         1. [Code](#code-14)
 1. [Run featureCounts on bams in bams_renamed/](#run-featurecounts-on-bams-in-bams_renamed)
     1. [Run featureCounts on bams in bams_renamed/ with combined_SC_KL.gff3](#run-featurecounts-on-bams-in-bams_renamed-with-combined_sc_klgff3)
-        1. [Code](#code-15)
-        1. [Printed](#printed-7)
-    1. [Run featureCounts on bams in bams_renamed/ with combined_SC_KL_20S.gff3](#run-featurecounts-on-bams-in-bams_renamed-with-combined_sc_kl_20sgff3)
-        1. [Code](#code-16)
-        1. [Printed](#printed-8)
+        1. [Get situated](#get-situated)
+            1. [Code](#code-15)
+        1. [Set up arrays](#set-up-arrays)
+            1. [Code](#code-16)
+        1. [Run featureCounts with combined_SC_KL.gff3](#run-featurecounts-with-combined_sc_klgff3)
+            1. [Code](#code-17)
+        1. [Run featureCounts with combined_SC_KL_20S.gff3](#run-featurecounts-with-combined_sc_kl_20sgff3)
+            1. [Code](#code-18)
+1. [Generate MultiQC plots](#generate-multiqc-plots)
+    1. [Get situated](#get-situated-1)
+        1. [Code](#code-19)
+    1. [Run MultiQC](#run-multiqc)
+        1. [Code](#code-20)
 1. [Miscellaneous](#miscellaneous)
 
 <!-- /MarkdownTOC -->
@@ -3307,17 +3315,18 @@ mv outfiles_featureCounts/aligned_UT_primary* test_fC-s/
 ## Run featureCounts on bams in bams_renamed/
 <a id="run-featurecounts-on-bams-in-bams_renamed-with-combined_sc_klgff3"></a>
 ### Run featureCounts on bams in bams_renamed/ with combined_SC_KL.gff3
+<a id="get-situated"></a>
+#### Get situated
 <a id="code-15"></a>
-#### Code
+##### Code
 <details>
-<summary><i>Code: Run featureCounts on bams in bams_renamed/ with combined_SC_KL.gff3</i></summary>
+<summary><i>Code: Get situated</i></summary>
 
 ```bash
 #!/bin/bash
 #DONTRUN #CONTINUE
 
 
-#  Get situated ---------------------------------------------------------------
 tmux new -s fC  # detach
 tmux a -t fC
 
@@ -3331,9 +3340,18 @@ transcriptome &&
     }
 
 mkdir -p outfiles_featureCounts/{combined_SC_KL,combined_SC_KL_20S}/{UTK_prim_no,UTK_prim_pos,UTK_prim_UMI,UT_prim_no,UT_prim_pos,UT_prim_UMI}
+```
+</details>
+<br />
 
+<a id="set-up-arrays"></a>
+#### Set up arrays
+<a id="code-16"></a>
+##### Code
+<details>
+<summary><i>Code: Set up arrays</i></summary>
 
-#  Set up arrays --------------------------------------------------------------
+```bash
 unset UTK_prim_no
 typeset -a UTK_prim_no
 while IFS=" " read -r -d $'\0'; do
@@ -3417,9 +3435,18 @@ done < <(\
 )
 echo_test "${UT_prim_UMI[@]}"
 echo "${#UT_prim_UMI[@]}"
+```
+</details>
+<br />
 
+<a id="run-featurecounts-with-combined_sc_klgff3"></a>
+#### Run featureCounts with combined_SC_KL.gff3
+<a id="code-17"></a>
+##### Code
+<details>
+<summary><i>Code: Run featureCounts with combined_SC_KL.gff3</i></summary>
 
-#  Run featureCounts with combined_SC_KL.gff3 ---------------------------------
+```bash
 #  Set up unchanging variables
 threads="${SLURM_CPUS_ON_NODE}"
 strand=1
@@ -3521,11 +3548,18 @@ featureCounts \
     ${UT_prim_UMI[*]} \
         > >(tee -a "${outfile}.stdout.txt") \
         2> >(tee -a "${outfile}.stderr.txt" >&2)
+```
+</details>
+<br />
 
-echo "Done"
+<a id="run-featurecounts-with-combined_sc_kl_20sgff3"></a>
+#### Run featureCounts with combined_SC_KL_20S.gff3
+<a id="code-18"></a>
+##### Code
+<details>
+<summary><i>Code: Run featureCounts with combined_SC_KL_20S.gff3</i></summary>
 
-
-#  Run featureCounts with combined_SC_KL_20S.gff3 -----------------------------
+```bash
 #  Set up unchanging variables
 threads="${SLURM_CPUS_ON_NODE}"
 strand=1
@@ -3627,52 +3661,75 @@ featureCounts \
     ${UT_prim_UMI[*]} \
         > >(tee -a "${outfile}.stdout.txt") \
         2> >(tee -a "${outfile}.stderr.txt" >&2)
-
-echo "Done"
-
 ```
 </details>
 <br />
-
-<a id="printed-7"></a>
-#### Printed
-<details>
-<summary><i>Printed: Run featureCounts on bams in bams_renamed/ with combined_SC_KL.gff3</i></summary>
-
-```txt
-
-
-```
-</details>
 <br />
 
-<a id="run-featurecounts-on-bams-in-bams_renamed-with-combined_sc_kl_20sgff3"></a>
-### Run featureCounts on bams in bams_renamed/ with combined_SC_KL_20S.gff3
-<a id="code-16"></a>
+<a id="generate-multiqc-plots"></a>
+## Generate MultiQC plots
+<a id="get-situated-1"></a>
+### Get situated
+<a id="code-19"></a>
 #### Code
 <details>
-<summary><i>Code: Run featureCounts on bams in bams_renamed/ with combined_SC_KL_20S.gff3</i></summary>
+<summary><i>Code: Get situated</i></summary>
 
 ```bash
 #!/bin/bash
 #DONTRUN #CONTINUE
 
+source activate Trinity_env
 
+transcriptome && 
+    {
+        cd "results/2023-0215" \
+            || echo "cd'ing failed; check on this..."
+    }
+
+mkdir -p MultiQC/{combined_SC_KL,combined_SC_KL_20S}
 ```
 </details>
 <br />
 
-<a id="printed-8"></a>
-#### Printed
+<a id="run-multiqc"></a>
+### Run MultiQC
+<a id="code-20"></a>
+#### Code
 <details>
-<summary><i>Printed: Run featureCounts on bams in bams_renamed/ with combined_SC_KL_20S.gff3</i></summary>
+<summary><i>Code: Run MultiQC</i></summary>
 
-```txt
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
 
+for i in $(find outfiles_featureCounts/combined_SC_KL -type d); do
+    echo "#  Working with ${i}"
+    echo "multiqc \\"
+    echo "    --interactive \\"
+    echo "    -o MultiQC/combined_SC_KL/$(basename "${i}") \\"
+    echo "    ${i}"
+    echo ""
+    multiqc \
+        --interactive \
+        -o "MultiQC/combined_SC_KL/$(basename "${i}")" \
+        "${i}"
+done
 
+for i in $(find outfiles_featureCounts/combined_SC_KL_20S -type d); do
+    echo "#  Working with ${i}"
+    echo "multiqc \\"
+    echo "    --interactive \\"
+    echo "    -o MultiQC/combined_SC_KL_20S/$(basename "${i}") \\"
+    echo "    ${i}"
+    echo ""
+    multiqc \
+        --interactive \
+        -o "MultiQC/combined_SC_KL_20S/$(basename "${i}")" \
+        "${i}"
+done
 ```
 </details>
-<br />
 <br />
 
 <a id="miscellaneous"></a>
