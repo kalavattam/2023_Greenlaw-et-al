@@ -28,20 +28,19 @@
             1. [Code](#code-6)
         1. [Perform the symlinking](#perform-the-symlinking)
             1. [Code](#code-7)
-            1. [Printed](#printed-2)
 1. [Test featureCounts \(initial test\)](#test-featurecounts-initial-test)
     1. [Test to determine option for featureCounts -s \(results in an error\)](#test-to-determine-option-for-featurecounts--s-results-in-an-error)
         1. [Code](#code-8)
-        1. [Printed](#printed-3)
+        1. [Printed](#printed-2)
     1. [Convert the gff3 to "SAF" format](#convert-the-gff3-to-saf-format)
         1. [Code](#code-9)
-        1. [Printed](#printed-4)
+        1. [Printed](#printed-3)
     1. [Test to determine option for featureCounts -s using the .saf file](#test-to-determine-option-for-featurecounts--s-using-the-saf-file)
         1. [Code](#code-10)
-        1. [Printed](#printed-5)
+        1. [Printed](#printed-4)
     1. [Test to determine option for featureCounts -s with -g "ID" \(`#CORRECT`\)](#test-to-determine-option-for-featurecounts--s-with--g-id-correct)
         1. [Code](#code-11)
-        1. [Printed](#printed-6)
+        1. [Printed](#printed-5)
     1. [Clean up](#clean-up)
         1. [Code](#code-12)
 1. [Test featureCounts on bams in bams/ with combined_SC_KL.gff3](#test-featurecounts-on-bams-in-bams-with-combined_sc_klgff3)
@@ -57,13 +56,11 @@
             1. [Code](#code-16)
         1. [Run featureCounts with combined_SC_KL.gff3](#run-featurecounts-with-combined_sc_klgff3)
             1. [Code](#code-17)
-        1. [Run featureCounts with combined_SC_KL_20S.gff3](#run-featurecounts-with-combined_sc_kl_20sgff3)
-            1. [Code](#code-18)
 1. [Generate MultiQC plots](#generate-multiqc-plots)
     1. [Get situated](#get-situated-1)
-        1. [Code](#code-19)
+        1. [Code](#code-18)
     1. [Run MultiQC](#run-multiqc)
-        1. [Code](#code-20)
+        1. [Code](#code-19)
 1. [Miscellaneous](#miscellaneous)
 
 <!-- /MarkdownTOC -->
@@ -84,12 +81,6 @@
 #DONTRUN #CONTINUE
 
 grabnode  # 16, etc.
-
-transcriptome && 
-    {
-        cd "results" \
-            || echo "cd'ing failed; check on this..."
-    }
 
 if [[ "${CONDA_DEFAULT_ENV}" != "base" ]]; then 
     conda deactivate
@@ -218,6 +209,10 @@ Executing transaction: done
 #!/bin/bash
 #DONTRUN #CONTINUE
 
+if [[ "${CONDA_DEFAULT_ENV}" != "base" ]]; then 
+    conda deactivate
+fi
+
 conda config --add channels defaults
 conda config --add channels bioconda
 conda config --add channels conda-forge
@@ -238,7 +233,6 @@ mamba install -c bioconda subread
 mamba install \
     -c bioconda \
         bioconductor-enhancedvolcano bioconductor-pcatools
-
 ```
 </details>
 <br />
@@ -1227,7 +1221,7 @@ array_UTK_prim_pos["${UTK_prim_pos}/Bp9_DSp24_7078_UTK.primary.dedup-pos.bam"]="
 array_UTK_prim_pos["${UTK_prim_pos}/CT10_7718_pIAA_Q_Nascent_UTK.primary.dedup-pos.bam"]="n3-d_Q_day7_N_rep2.UTK_prim_pos.bam"
 array_UTK_prim_pos["${UTK_prim_pos}/CT10_7718_pIAA_Q_SteadyState_UTK.primary.dedup-pos.bam"]="n3-d_Q_day7_SS_rep2.UTK_prim_pos.bam"
 array_UTK_prim_pos["${UTK_prim_pos}/CT2_6125_pIAA_Q_Nascent_UTK.primary.dedup-pos.bam"]="o-d_Q_day7_N_rep1.UTK_prim_pos.bam"
-array_UTK_prim_pos["${UTK_prim_pos}/CT2_6125_pIAA_Q_SteadyState_UTK.primary.dedup-pos.bam"]="o-d_Q_day7_SS_rep1.UTK_prim.bam"
+array_UTK_prim_pos["${UTK_prim_pos}/CT2_6125_pIAA_Q_SteadyState_UTK.primary.dedup-pos.bam"]="o-d_Q_day7_SS_rep1.UTK_prim_pos.bam"
 array_UTK_prim_pos["${UTK_prim_pos}/CT4_6126_pIAA_Q_Nascent_UTK.primary.dedup-pos.bam"]="o-d_Q_day7_N_rep2.UTK_prim_pos.bam"
 array_UTK_prim_pos["${UTK_prim_pos}/CT4_6126_pIAA_Q_SteadyState_UTK.primary.dedup-pos.bam"]="o-d_Q_day7_SS_rep2.UTK_prim_pos.bam"
 array_UTK_prim_pos["${UTK_prim_pos}/CT6_7714_pIAA_Q_Nascent_UTK.primary.dedup-pos.bam"]="n3-d_Q_day7_N_rep1.UTK_prim_pos.bam"
@@ -1285,7 +1279,7 @@ array_UTK_prim_UMI["${UTK_prim_UMI}/Bp9_DSp24_7078_UTK.primary.dedup-UMI.bam"]="
 array_UTK_prim_UMI["${UTK_prim_UMI}/CT10_7718_pIAA_Q_Nascent_UTK.primary.dedup-UMI.bam"]="n3-d_Q_day7_N_rep2.UTK_prim_UMI.bam"
 array_UTK_prim_UMI["${UTK_prim_UMI}/CT10_7718_pIAA_Q_SteadyState_UTK.primary.dedup-UMI.bam"]="n3-d_Q_day7_SS_rep2.UTK_prim_UMI.bam"
 array_UTK_prim_UMI["${UTK_prim_UMI}/CT2_6125_pIAA_Q_Nascent_UTK.primary.dedup-UMI.bam"]="o-d_Q_day7_N_rep1.UTK_prim_UMI.bam"
-array_UTK_prim_UMI["${UTK_prim_UMI}/CT2_6125_pIAA_Q_SteadyState_UTK.primary.dedup-UMI.bam"]="o-d_Q_day7_SS_rep1.UTK_prim.bam"
+array_UTK_prim_UMI["${UTK_prim_UMI}/CT2_6125_pIAA_Q_SteadyState_UTK.primary.dedup-UMI.bam"]="o-d_Q_day7_SS_rep1.UTK_prim_UMI.bam"
 array_UTK_prim_UMI["${UTK_prim_UMI}/CT4_6126_pIAA_Q_Nascent_UTK.primary.dedup-UMI.bam"]="o-d_Q_day7_N_rep2.UTK_prim_UMI.bam"
 array_UTK_prim_UMI["${UTK_prim_UMI}/CT4_6126_pIAA_Q_SteadyState_UTK.primary.dedup-UMI.bam"]="o-d_Q_day7_SS_rep2.UTK_prim_UMI.bam"
 array_UTK_prim_UMI["${UTK_prim_UMI}/CT6_7714_pIAA_Q_Nascent_UTK.primary.dedup-UMI.bam"]="n3-d_Q_day7_N_rep1.UTK_prim_UMI.bam"
@@ -1344,7 +1338,7 @@ array_UT_prim_no["${UT_prim_no}/Bp9_DSp24_7078_UT.primary.bam"]="r6-n_DSp24_day3
 array_UT_prim_no["${UT_prim_no}/CT10_7718_pIAA_Q_Nascent_UT.primary.bam"]="n3-d_Q_day7_N_rep2.UT_prim.bam"
 array_UT_prim_no["${UT_prim_no}/CT10_7718_pIAA_Q_SteadyState_UT.primary.bam"]="n3-d_Q_day7_SS_rep2.UT_prim.bam"
 array_UT_prim_no["${UT_prim_no}/CT2_6125_pIAA_Q_Nascent_UT.primary.bam"]="o-d_Q_day7_N_rep1.UT_prim.bam"
-array_UT_prim_no["${UT_prim_no}/CT2_6125_pIAA_Q_SteadyState_UT.primary.bam"]="o-d_Q_day7_SS_rep1.UTK_prim.bam"
+array_UT_prim_no["${UT_prim_no}/CT2_6125_pIAA_Q_SteadyState_UT.primary.bam"]="o-d_Q_day7_SS_rep1.UT_prim.bam"
 array_UT_prim_no["${UT_prim_no}/CT4_6126_pIAA_Q_Nascent_UT.primary.bam"]="o-d_Q_day7_N_rep2.UT_prim.bam"
 array_UT_prim_no["${UT_prim_no}/CT4_6126_pIAA_Q_SteadyState_UT.primary.bam"]="o-d_Q_day7_SS_rep2.UT_prim.bam"
 array_UT_prim_no["${UT_prim_no}/CT6_7714_pIAA_Q_Nascent_UT.primary.bam"]="n3-d_Q_day7_N_rep1.UT_prim.bam"
@@ -1402,7 +1396,7 @@ array_UT_prim_pos["${UT_prim_pos}/Bp9_DSp24_7078_UT.primary.dedup-pos.bam"]="r6-
 array_UT_prim_pos["${UT_prim_pos}/CT10_7718_pIAA_Q_Nascent_UT.primary.dedup-pos.bam"]="n3-d_Q_day7_N_rep2.UT_prim_pos.bam"
 array_UT_prim_pos["${UT_prim_pos}/CT10_7718_pIAA_Q_SteadyState_UT.primary.dedup-pos.bam"]="n3-d_Q_day7_SS_rep2.UT_prim_pos.bam"
 array_UT_prim_pos["${UT_prim_pos}/CT2_6125_pIAA_Q_Nascent_UT.primary.dedup-pos.bam"]="o-d_Q_day7_N_rep1.UT_prim_pos.bam"
-array_UT_prim_pos["${UT_prim_pos}/CT2_6125_pIAA_Q_SteadyState_UT.primary.dedup-pos.bam"]="o-d_Q_day7_SS_rep1.UTK_prim.bam"
+array_UT_prim_pos["${UT_prim_pos}/CT2_6125_pIAA_Q_SteadyState_UT.primary.dedup-pos.bam"]="o-d_Q_day7_SS_rep1.UT_prim_pos.bam"
 array_UT_prim_pos["${UT_prim_pos}/CT4_6126_pIAA_Q_Nascent_UT.primary.dedup-pos.bam"]="o-d_Q_day7_N_rep2.UT_prim_pos.bam"
 array_UT_prim_pos["${UT_prim_pos}/CT4_6126_pIAA_Q_SteadyState_UT.primary.dedup-pos.bam"]="o-d_Q_day7_SS_rep2.UT_prim_pos.bam"
 array_UT_prim_pos["${UT_prim_pos}/CT6_7714_pIAA_Q_Nascent_UT.primary.dedup-pos.bam"]="n3-d_Q_day7_N_rep1.UT_prim_pos.bam"
@@ -1460,7 +1454,7 @@ array_UT_prim_UMI["${UT_prim_UMI}/Bp9_DSp24_7078_UT.primary.dedup-UMI.bam"]="r6-
 array_UT_prim_UMI["${UT_prim_UMI}/CT10_7718_pIAA_Q_Nascent_UT.primary.dedup-UMI.bam"]="n3-d_Q_day7_N_rep2.UT_prim_UMI.bam"
 array_UT_prim_UMI["${UT_prim_UMI}/CT10_7718_pIAA_Q_SteadyState_UT.primary.dedup-UMI.bam"]="n3-d_Q_day7_SS_rep2.UT_prim_UMI.bam"
 array_UT_prim_UMI["${UT_prim_UMI}/CT2_6125_pIAA_Q_Nascent_UT.primary.dedup-UMI.bam"]="o-d_Q_day7_N_rep1.UT_prim_UMI.bam"
-array_UT_prim_UMI["${UT_prim_UMI}/CT2_6125_pIAA_Q_SteadyState_UT.primary.dedup-UMI.bam"]="o-d_Q_day7_SS_rep1.UTK_prim.bam"
+array_UT_prim_UMI["${UT_prim_UMI}/CT2_6125_pIAA_Q_SteadyState_UT.primary.dedup-UMI.bam"]="o-d_Q_day7_SS_rep1.UT_prim_UMI.bam"
 array_UT_prim_UMI["${UT_prim_UMI}/CT4_6126_pIAA_Q_Nascent_UT.primary.dedup-UMI.bam"]="o-d_Q_day7_N_rep2.UT_prim_UMI.bam"
 array_UT_prim_UMI["${UT_prim_UMI}/CT4_6126_pIAA_Q_SteadyState_UT.primary.dedup-UMI.bam"]="o-d_Q_day7_SS_rep2.UT_prim_UMI.bam"
 array_UT_prim_UMI["${UT_prim_UMI}/CT6_7714_pIAA_Q_Nascent_UT.primary.dedup-UMI.bam"]="n3-d_Q_day7_N_rep1.UT_prim_UMI.bam"
@@ -1558,1071 +1552,6 @@ done
 ```
 </details>
 <br />
-
-<a id="printed-2"></a>
-##### Printed
-<details>
-<summary><i>Printed: </i></summary>
-
-```txt
-❯ cd UTK_prim_no/
-/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/bams_renamed/UTK_prim_no
-
-
-❯ for i in "${!array_UTK_prim_no[@]}"; do
->     echo "  Key: ${i}"
->     echo "Value: ${array_UTK_prim_no["${i}"]}"
->     echo ""
-> 
->     ln -s "${i}" "${array_UTK_prim_no["${i}"]}"
-> done
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary/CU11_5782_Q_Nascent_UTK.primary.bam
-Value: WT_Q_day7_N_rep2_CU.UTK_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary/CT8_7716_pIAA_Q_SteadyState_UTK.primary.bam
-Value: n3-d_Q_day7_SS_rep3.UTK_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary/CW4_5782_8day_Q_IN_UTK.primary.bam
-Value: WT_Q_day8_SS_rep2.UTK_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary/CT10_7718_pIAA_Q_SteadyState_UTK.primary.bam
-Value: n3-d_Q_day7_SS_rep2.UTK_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary/5782_Q_IN_UTK.primary.bam
-Value: WT_Q_day7_SS_rep2.UTK_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary/5781_G1_IP_UTK.primary.bam
-Value: WT_G1_day1_N_rep1.UTK_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary/BM6_DSp2_7079_UTK.primary.bam
-Value: r6-n_DSp2_day2_SS_rep2.UTK_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary/Bp6_DSp2_7078_UTK.primary.bam
-Value: r6-n_DSp2_day2_SS_rep1.UTK_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary/CT8_7716_pIAA_Q_Nascent_UTK.primary.bam
-Value: n3-d_Q_day7_N_rep3.UTK_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary/Bp4_DSp2_5782_UTK.primary.bam
-Value: WT_DSp2_day2_SS_rep2.UTK_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary/Bp3_DSm2_7078_UTK.primary.bam
-Value: r6-n_DSm2_day2_SS_rep1.UTK_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary/BM3_DSm2_7079_UTK.primary.bam
-Value: r6-n_DSm2_day2_SS_rep2.UTK_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary/Bp2_DSm2_7081_UTK.primary.bam
-Value: t4-n_DSm2_day2_SS_rep2.UTK_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary/Bp9_DSp24_7078_UTK.primary.bam
-Value: r6-n_DSp24_day3_SS_rep1.UTK_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary/BM2_DSm2_7080_UTK.primary.bam
-Value: t4-n_DSm2_day2_SS_rep1.UTK_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary/Bp7_DSp24_5782_UTK.primary.bam
-Value: WT_DSp24_day3_SS_rep2.UTK_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary/CU12_5782_Q_SteadyState_UTK.primary.bam
-Value: WT_Q_day7_SS_rep2_CU.UTK_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary/BM4_DSp2_5781_UTK.primary.bam
-Value: WT_DSp2_day2_SS_rep1.UTK_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary/BM10_DSp48_5781_UTK.primary.bam
-Value: WT_DSp48_day4_SS_rep1.UTK_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary/CW2_5781_8day_Q_PD_UTK.primary.bam
-Value: WT_Q_day8_N_rep1.UTK_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary/CW10_7747_8day_Q_IN_UTK.primary.bam
-Value: r1-n_Q_day8_SS_rep1.UTK_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary/CT6_7714_pIAA_Q_Nascent_UTK.primary.bam
-Value: n3-d_Q_day7_N_rep1.UTK_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary/CT6_7714_pIAA_Q_SteadyState_UTK.primary.bam
-Value: n3-d_Q_day7_SS_rep1.UTK_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary/CW12_7748_8day_Q_IN_UTK.primary.bam
-Value: r1-n_Q_day8_SS_rep2.UTK_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary/BM8_DSp24_7080_UTK.primary.bam
-Value: t4-n_DSp24_day3_SS_rep1.UTK_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary/CW8_7079_8day_Q_PD_UTK.primary.bam
-Value: r6-n_Q_day8_N_rep2.UTK_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary/BM9_DSp24_7079_UTK.primary.bam
-Value: r6-n_DSp24_day3_SS_rep2.UTK_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary/CT4_6126_pIAA_Q_SteadyState_UTK.primary.bam
-Value: o-d_Q_day7_SS_rep2.UTK_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary/CW12_7748_8day_Q_PD_UTK.primary.bam
-Value: r1-n_Q_day8_N_rep2.UTK_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary/CW6_7078_8day_Q_IN_UTK.primary.bam
-Value: r6-n_Q_day8_SS_rep1.UTK_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary/CW6_7078_8day_Q_PD_UTK.primary.bam
-Value: r6-n_Q_day8_N_rep1.UTK_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary/5782_G1_IP_UTK.primary.bam
-Value: WT_G1_day1_N_rep2.UTK_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary/CT2_6125_pIAA_Q_SteadyState_UTK.primary.bam
-Value: o-d_Q_day7_SS_rep1.UTK_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary/BM7_DSp24_5781_UTK.primary.bam
-Value: WT_DSp24_day3_SS_rep1.UTK_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary/CW10_7747_8day_Q_PD_UTK.primary.bam
-Value: r1-n_Q_day8_N_rep1.UTK_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary/5781_Q_IN_UTK.primary.bam
-Value: WT_Q_day7_SS_rep1.UTK_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary/Bp1_DSm2_5782_UTK.primary.bam
-Value: WT_DSm2_day2_SS_rep2.UTK_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary/Bp5_DSp2_7081_UTK.primary.bam
-Value: t4-n_DSp2_day2_SS_rep2.UTK_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary/BM11_DSp48_7080_UTK.primary.bam
-Value: t4-n_DSp48_day4_SS_rep1.UTK_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary/CT10_7718_pIAA_Q_Nascent_UTK.primary.bam
-Value: n3-d_Q_day7_N_rep2.UTK_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary/5782_G1_IN_UTK.primary.bam
-Value: WT_G1_day1_SS_rep2.UTK_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary/BM5_DSp2_7080_UTK.primary.bam
-Value: t4-n_DSp2_day2_SS_rep1.UTK_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary/Bp8_DSp24_7081_UTK.primary.bam
-Value: t4-n_DSp24_day3_SS_rep2.UTK_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary/BM1_DSm2_5781_UTK.primary.bam
-Value: WT_DSm2_day2_SS_rep1.UTK_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary/CW4_5782_8day_Q_PD_UTK.primary.bam
-Value: WT_Q_day8_N_rep2.UTK_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary/Bp10_DSp48_5782_UTK.primary.bam
-Value: WT_DSp48_day4_SS_rep2.UTK_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary/5781_Q_IP_UTK.primary.bam
-Value: WT_Q_day7_N_rep1.UTK_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary/5781_G1_IN_UTK.primary.bam
-Value: WT_G1_day1_SS_rep1.UTK_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary/CW2_5781_8day_Q_IN_UTK.primary.bam
-Value: WT_Q_day8_SS_rep1.UTK_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary/CT2_6125_pIAA_Q_Nascent_UTK.primary.bam
-Value: o-d_Q_day7_N_rep1.UTK_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary/CT4_6126_pIAA_Q_Nascent_UTK.primary.bam
-Value: o-d_Q_day7_N_rep2.UTK_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary/5782_Q_IP_UTK.primary.bam
-Value: WT_Q_day7_N_rep2.UTK_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary/Bp12_DSp48_7078_UTK.primary.bam
-Value: r6-n_DSp48_day4_SS_rep1.UTK_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary/CW8_7079_8day_Q_IN_UTK.primary.bam
-Value: r6-n_Q_day8_SS_rep2.UTK_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary/Bp11_DSp48_7081_UTK.primary.bam
-Value: t4-n_DSp48_day4_SS_rep2.UTK_prim.bam
-
-
-❯ cd ../UTK_prim_pos/
-
-
-❯ for i in "${!array_UTK_prim_pos[@]}"; do
->     echo "  Key: ${i}"
->     echo "Value: ${array_UTK_prim_pos["${i}"]}"
->     echo ""
-> 
->     ln -s "${i}" "${array_UTK_prim_pos["${i}"]}"
-> done
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-pos/BM9_DSp24_7079_UTK.primary.dedup-pos.bam
-Value: r6-n_DSp24_day3_SS_rep2.UTK_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-pos/Bp11_DSp48_7081_UTK.primary.dedup-pos.bam
-Value: t4-n_DSp48_day4_SS_rep2.UTK_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-pos/BM6_DSp2_7079_UTK.primary.dedup-pos.bam
-Value: r6-n_DSp2_day2_SS_rep2.UTK_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-pos/CW2_5781_8day_Q_IN_UTK.primary.dedup-pos.bam
-Value: WT_Q_day8_SS_rep1.UTK_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-pos/5781_G1_IN_UTK.primary.dedup-pos.bam
-Value: WT_G1_day1_SS_rep1.UTK_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-pos/BM2_DSm2_7080_UTK.primary.dedup-pos.bam
-Value: t4-n_DSm2_day2_SS_rep1.UTK_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-pos/Bp3_DSm2_7078_UTK.primary.dedup-pos.bam
-Value: r6-n_DSm2_day2_SS_rep1.UTK_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-pos/CT10_7718_pIAA_Q_Nascent_UTK.primary.dedup-pos.bam
-Value: n3-d_Q_day7_N_rep2.UTK_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-pos/CW4_5782_8day_Q_PD_UTK.primary.dedup-pos.bam
-Value: WT_Q_day8_N_rep2.UTK_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-pos/5782_G1_IN_UTK.primary.dedup-pos.bam
-Value: WT_G1_day1_SS_rep2.UTK_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-pos/CW8_7079_8day_Q_PD_UTK.primary.dedup-pos.bam
-Value: r6-n_Q_day8_N_rep2.UTK_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-pos/CT2_6125_pIAA_Q_Nascent_UTK.primary.dedup-pos.bam
-Value: o-d_Q_day7_N_rep1.UTK_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-pos/Bp6_DSp2_7078_UTK.primary.dedup-pos.bam
-Value: r6-n_DSp2_day2_SS_rep1.UTK_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-pos/BM7_DSp24_5781_UTK.primary.dedup-pos.bam
-Value: WT_DSp24_day3_SS_rep1.UTK_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-pos/BM10_DSp48_5781_UTK.primary.dedup-pos.bam
-Value: WT_DSp48_day4_SS_rep1.UTK_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-pos/CT8_7716_pIAA_Q_Nascent_UTK.primary.dedup-pos.bam
-Value: n3-d_Q_day7_N_rep3.UTK_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-pos/CT6_7714_pIAA_Q_Nascent_UTK.primary.dedup-pos.bam
-Value: n3-d_Q_day7_N_rep1.UTK_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-pos/Bp5_DSp2_7081_UTK.primary.dedup-pos.bam
-Value: t4-n_DSp2_day2_SS_rep2.UTK_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-pos/CW10_7747_8day_Q_PD_UTK.primary.dedup-pos.bam
-Value: r1-n_Q_day8_N_rep1.UTK_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-pos/CW4_5782_8day_Q_IN_UTK.primary.dedup-pos.bam
-Value: WT_Q_day8_SS_rep2.UTK_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-pos/CW12_7748_8day_Q_IN_UTK.primary.dedup-pos.bam
-Value: r1-n_Q_day8_SS_rep2.UTK_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-pos/CW12_7748_8day_Q_PD_UTK.primary.dedup-pos.bam
-Value: r1-n_Q_day8_N_rep2.UTK_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-pos/5782_Q_IN_UTK.primary.dedup-pos.bam
-Value: WT_Q_day7_SS_rep2.UTK_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-pos/BM8_DSp24_7080_UTK.primary.dedup-pos.bam
-Value: t4-n_DSp24_day3_SS_rep1.UTK_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-pos/5781_Q_IN_UTK.primary.dedup-pos.bam
-Value: WT_Q_day7_SS_rep1.UTK_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-pos/CW2_5781_8day_Q_PD_UTK.primary.dedup-pos.bam
-Value: WT_Q_day8_N_rep1.UTK_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-pos/5781_G1_IP_UTK.primary.dedup-pos.bam
-Value: WT_G1_day1_N_rep1.UTK_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-pos/Bp8_DSp24_7081_UTK.primary.dedup-pos.bam
-Value: t4-n_DSp24_day3_SS_rep2.UTK_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-pos/5781_Q_IP_UTK.primary.dedup-pos.bam
-Value: WT_Q_day7_N_rep1.UTK_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-pos/CW10_7747_8day_Q_IN_UTK.primary.dedup-pos.bam
-Value: r1-n_Q_day8_SS_rep1.UTK_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-pos/Bp2_DSm2_7081_UTK.primary.dedup-pos.bam
-Value: t4-n_DSm2_day2_SS_rep2.UTK_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-pos/CT8_7716_pIAA_Q_SteadyState_UTK.primary.dedup-pos.bam
-Value: n3-d_Q_day7_SS_rep3.UTK_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-pos/CT6_7714_pIAA_Q_SteadyState_UTK.primary.dedup-pos.bam
-Value: n3-d_Q_day7_SS_rep1.UTK_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-pos/BM3_DSm2_7079_UTK.primary.dedup-pos.bam
-Value: r6-n_DSm2_day2_SS_rep2.UTK_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-pos/5782_G1_IP_UTK.primary.dedup-pos.bam
-Value: WT_G1_day1_N_rep2.UTK_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-pos/CT4_6126_pIAA_Q_SteadyState_UTK.primary.dedup-pos.bam
-Value: o-d_Q_day7_SS_rep2.UTK_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-pos/Bp12_DSp48_7078_UTK.primary.dedup-pos.bam
-Value: r6-n_DSp48_day4_SS_rep1.UTK_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-pos/5782_Q_IP_UTK.primary.dedup-pos.bam
-Value: WT_Q_day7_N_rep2.UTK_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-pos/Bp1_DSm2_5782_UTK.primary.dedup-pos.bam
-Value: WT_DSm2_day2_SS_rep2.UTK_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-pos/BM4_DSp2_5781_UTK.primary.dedup-pos.bam
-Value: WT_DSp2_day2_SS_rep1.UTK_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-pos/CU12_5782_Q_SteadyState_UTK.primary.dedup-pos.bam
-Value: WT_Q_day7_SS_rep2_CU.UTK_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-pos/Bp9_DSp24_7078_UTK.primary.dedup-pos.bam
-Value: r6-n_DSp24_day3_SS_rep1.UTK_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-pos/CU11_5782_Q_Nascent_UTK.primary.dedup-pos.bam
-Value: WT_Q_day7_N_rep2_CU.UTK_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-pos/BM1_DSm2_5781_UTK.primary.dedup-pos.bam
-Value: WT_DSm2_day2_SS_rep1.UTK_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-pos/Bp10_DSp48_5782_UTK.primary.dedup-pos.bam
-Value: WT_DSp48_day4_SS_rep2.UTK_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-pos/CT2_6125_pIAA_Q_SteadyState_UTK.primary.dedup-pos.bam
-Value: o-d_Q_day7_SS_rep1.UTK_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-pos/BM11_DSp48_7080_UTK.primary.dedup-pos.bam
-Value: t4-n_DSp48_day4_SS_rep1.UTK_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-pos/CW6_7078_8day_Q_IN_UTK.primary.dedup-pos.bam
-Value: r6-n_Q_day8_SS_rep1.UTK_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-pos/CW8_7079_8day_Q_IN_UTK.primary.dedup-pos.bam
-Value: r6-n_Q_day8_SS_rep2.UTK_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-pos/BM5_DSp2_7080_UTK.primary.dedup-pos.bam
-Value: t4-n_DSp2_day2_SS_rep1.UTK_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-pos/CT4_6126_pIAA_Q_Nascent_UTK.primary.dedup-pos.bam
-Value: o-d_Q_day7_N_rep2.UTK_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-pos/CW6_7078_8day_Q_PD_UTK.primary.dedup-pos.bam
-Value: r6-n_Q_day8_N_rep1.UTK_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-pos/Bp4_DSp2_5782_UTK.primary.dedup-pos.bam
-Value: WT_DSp2_day2_SS_rep2.UTK_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-pos/CT10_7718_pIAA_Q_SteadyState_UTK.primary.dedup-pos.bam
-Value: n3-d_Q_day7_SS_rep2.UTK_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-pos/Bp7_DSp24_5782_UTK.primary.dedup-pos.bam
-Value: WT_DSp24_day3_SS_rep2.UTK_prim_pos.bam
-
-
-❯ cd ../UTK_prim_UMI/
-
-
-❯ for i in "${!array_UTK_prim_UMI[@]}"; do
->     echo "  Key: ${i}"
->     echo "Value: ${array_UTK_prim_UMI["${i}"]}"
->     echo ""
-> 
->     ln -s "${i}" "${array_UTK_prim_UMI["${i}"]}"
-> done
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-UMI/Bp6_DSp2_7078_UTK.primary.dedup-UMI.bam
-Value: r6-n_DSp2_day2_SS_rep1.UTK_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-UMI/Bp12_DSp48_7078_UTK.primary.dedup-UMI.bam
-Value: r6-n_DSp48_day4_SS_rep1.UTK_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-UMI/CW10_7747_8day_Q_IN_UTK.primary.dedup-UMI.bam
-Value: r1-n_Q_day8_SS_rep1.UTK_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-UMI/Bp2_DSm2_7081_UTK.primary.dedup-UMI.bam
-Value: t4-n_DSm2_day2_SS_rep2.UTK_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-UMI/CT8_7716_pIAA_Q_Nascent_UTK.primary.dedup-UMI.bam
-Value: n3-d_Q_day7_N_rep3.UTK_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-UMI/CW8_7079_8day_Q_IN_UTK.primary.dedup-UMI.bam
-Value: r6-n_Q_day8_SS_rep2.UTK_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-UMI/CW12_7748_8day_Q_PD_UTK.primary.dedup-UMI.bam
-Value: r1-n_Q_day8_N_rep2.UTK_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-UMI/5781_G1_IN_UTK.primary.dedup-UMI.bam
-Value: WT_G1_day1_SS_rep1.UTK_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-UMI/CT4_6126_pIAA_Q_SteadyState_UTK.primary.dedup-UMI.bam
-Value: o-d_Q_day7_SS_rep2.UTK_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-UMI/BM6_DSp2_7079_UTK.primary.dedup-UMI.bam
-Value: r6-n_DSp2_day2_SS_rep2.UTK_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-UMI/CT4_6126_pIAA_Q_Nascent_UTK.primary.dedup-UMI.bam
-Value: o-d_Q_day7_N_rep2.UTK_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-UMI/BM5_DSp2_7080_UTK.primary.dedup-UMI.bam
-Value: t4-n_DSp2_day2_SS_rep1.UTK_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-UMI/CU12_5782_Q_SteadyState_UTK.primary.dedup-UMI.bam
-Value: WT_Q_day7_SS_rep2_CU.UTK_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-UMI/CW8_7079_8day_Q_PD_UTK.primary.dedup-UMI.bam
-Value: r6-n_Q_day8_N_rep2.UTK_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-UMI/CW6_7078_8day_Q_PD_UTK.primary.dedup-UMI.bam
-Value: r6-n_Q_day8_N_rep1.UTK_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-UMI/Bp1_DSm2_5782_UTK.primary.dedup-UMI.bam
-Value: WT_DSm2_day2_SS_rep2.UTK_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-UMI/CT6_7714_pIAA_Q_Nascent_UTK.primary.dedup-UMI.bam
-Value: n3-d_Q_day7_N_rep1.UTK_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-UMI/BM10_DSp48_5781_UTK.primary.dedup-UMI.bam
-Value: WT_DSp48_day4_SS_rep1.UTK_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-UMI/CT2_6125_pIAA_Q_Nascent_UTK.primary.dedup-UMI.bam
-Value: o-d_Q_day7_N_rep1.UTK_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-UMI/BM8_DSp24_7080_UTK.primary.dedup-UMI.bam
-Value: t4-n_DSp24_day3_SS_rep1.UTK_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-UMI/CT10_7718_pIAA_Q_SteadyState_UTK.primary.dedup-UMI.bam
-Value: n3-d_Q_day7_SS_rep2.UTK_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-UMI/5782_Q_IN_UTK.primary.dedup-UMI.bam
-Value: WT_Q_day7_SS_rep2.UTK_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-UMI/CW4_5782_8day_Q_PD_UTK.primary.dedup-UMI.bam
-Value: WT_Q_day8_N_rep2.UTK_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-UMI/Bp4_DSp2_5782_UTK.primary.dedup-UMI.bam
-Value: WT_DSp2_day2_SS_rep2.UTK_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-UMI/CW10_7747_8day_Q_PD_UTK.primary.dedup-UMI.bam
-Value: r1-n_Q_day8_N_rep1.UTK_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-UMI/BM3_DSm2_7079_UTK.primary.dedup-UMI.bam
-Value: r6-n_DSm2_day2_SS_rep2.UTK_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-UMI/5782_Q_IP_UTK.primary.dedup-UMI.bam
-Value: WT_Q_day7_N_rep2.UTK_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-UMI/5782_G1_IN_UTK.primary.dedup-UMI.bam
-Value: WT_G1_day1_SS_rep2.UTK_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-UMI/5781_Q_IN_UTK.primary.dedup-UMI.bam
-Value: WT_Q_day7_SS_rep1.UTK_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-UMI/CW4_5782_8day_Q_IN_UTK.primary.dedup-UMI.bam
-Value: WT_Q_day8_SS_rep2.UTK_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-UMI/CT8_7716_pIAA_Q_SteadyState_UTK.primary.dedup-UMI.bam
-Value: n3-d_Q_day7_SS_rep3.UTK_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-UMI/BM11_DSp48_7080_UTK.primary.dedup-UMI.bam
-Value: t4-n_DSp48_day4_SS_rep1.UTK_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-UMI/Bp9_DSp24_7078_UTK.primary.dedup-UMI.bam
-Value: r6-n_DSp24_day3_SS_rep1.UTK_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-UMI/Bp5_DSp2_7081_UTK.primary.dedup-UMI.bam
-Value: t4-n_DSp2_day2_SS_rep2.UTK_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-UMI/BM7_DSp24_5781_UTK.primary.dedup-UMI.bam
-Value: WT_DSp24_day3_SS_rep1.UTK_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-UMI/CW6_7078_8day_Q_IN_UTK.primary.dedup-UMI.bam
-Value: r6-n_Q_day8_SS_rep1.UTK_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-UMI/Bp10_DSp48_5782_UTK.primary.dedup-UMI.bam
-Value: WT_DSp48_day4_SS_rep2.UTK_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-UMI/5782_G1_IP_UTK.primary.dedup-UMI.bam
-Value: WT_G1_day1_N_rep2.UTK_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-UMI/5781_Q_IP_UTK.primary.dedup-UMI.bam
-Value: WT_Q_day7_N_rep1.UTK_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-UMI/CW2_5781_8day_Q_PD_UTK.primary.dedup-UMI.bam
-Value: WT_Q_day8_N_rep1.UTK_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-UMI/CT10_7718_pIAA_Q_Nascent_UTK.primary.dedup-UMI.bam
-Value: n3-d_Q_day7_N_rep2.UTK_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-UMI/Bp3_DSm2_7078_UTK.primary.dedup-UMI.bam
-Value: r6-n_DSm2_day2_SS_rep1.UTK_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-UMI/BM1_DSm2_5781_UTK.primary.dedup-UMI.bam
-Value: WT_DSm2_day2_SS_rep1.UTK_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-UMI/BM4_DSp2_5781_UTK.primary.dedup-UMI.bam
-Value: WT_DSp2_day2_SS_rep1.UTK_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-UMI/CT2_6125_pIAA_Q_SteadyState_UTK.primary.dedup-UMI.bam
-Value: o-d_Q_day7_SS_rep1.UTK_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-UMI/Bp11_DSp48_7081_UTK.primary.dedup-UMI.bam
-Value: t4-n_DSp48_day4_SS_rep2.UTK_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-UMI/Bp7_DSp24_5782_UTK.primary.dedup-UMI.bam
-Value: WT_DSp24_day3_SS_rep2.UTK_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-UMI/CW2_5781_8day_Q_IN_UTK.primary.dedup-UMI.bam
-Value: WT_Q_day8_SS_rep1.UTK_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-UMI/CU11_5782_Q_Nascent_UTK.primary.dedup-UMI.bam
-Value: WT_Q_day7_N_rep2_CU.UTK_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-UMI/CT6_7714_pIAA_Q_SteadyState_UTK.primary.dedup-UMI.bam
-Value: n3-d_Q_day7_SS_rep1.UTK_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-UMI/CW12_7748_8day_Q_IN_UTK.primary.dedup-UMI.bam
-Value: r1-n_Q_day8_SS_rep2.UTK_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-UMI/BM2_DSm2_7080_UTK.primary.dedup-UMI.bam
-Value: t4-n_DSm2_day2_SS_rep1.UTK_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-UMI/BM9_DSp24_7079_UTK.primary.dedup-UMI.bam
-Value: r6-n_DSp24_day3_SS_rep2.UTK_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-UMI/Bp8_DSp24_7081_UTK.primary.dedup-UMI.bam
-Value: t4-n_DSp24_day3_SS_rep2.UTK_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-UMI/5781_G1_IP_UTK.primary.dedup-UMI.bam
-Value: WT_G1_day1_N_rep1.UTK_prim_UMI.bam
-
-
-❯ cd ../UT_prim_no/
-
-
-❯ for i in "${!array_UT_prim_no[@]}"; do
->     echo "  Key: ${i}"
->     echo "Value: ${array_UT_prim_no["${i}"]}"
->     echo ""
-> 
->     ln -s "${i}" "${array_UT_prim_no["${i}"]}"
-> done
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary/CW12_7748_8day_Q_PD_UT.primary.bam
-Value: r1-n_Q_day8_N_rep2.UT_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary/CW4_5782_8day_Q_IN_UT.primary.bam
-Value: WT_Q_day8_SS_rep2.UT_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary/CU11_5782_Q_Nascent_UT.primary.bam
-Value: WT_Q_day7_N_rep2_CU.UT_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary/CT4_6126_pIAA_Q_Nascent_UT.primary.bam
-Value: o-d_Q_day7_N_rep2.UT_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary/CW10_7747_8day_Q_IN_UT.primary.bam
-Value: r1-n_Q_day8_SS_rep1.UT_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary/CT2_6125_pIAA_Q_SteadyState_UT.primary.bam
-Value: o-d_Q_day7_SS_rep1.UTK_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary/BM3_DSm2_7079_UT.primary.bam
-Value: r6-n_DSm2_day2_SS_rep2.UT_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary/5781_G1_IP_UT.primary.bam
-Value: WT_G1_day1_N_rep1.UT_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary/CT6_7714_pIAA_Q_SteadyState_UT.primary.bam
-Value: n3-d_Q_day7_SS_rep1.UT_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary/CT8_7716_pIAA_Q_Nascent_UT.primary.bam
-Value: n3-d_Q_day7_N_rep3.UT_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary/CW8_7079_8day_Q_IN_UT.primary.bam
-Value: r6-n_Q_day8_SS_rep2.UT_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary/Bp6_DSp2_7078_UT.primary.bam
-Value: r6-n_DSp2_day2_SS_rep1.UT_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary/BM6_DSp2_7079_UT.primary.bam
-Value: r6-n_DSp2_day2_SS_rep2.UT_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary/CW12_7748_8day_Q_IN_UT.primary.bam
-Value: r1-n_Q_day8_SS_rep2.UT_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary/CT2_6125_pIAA_Q_Nascent_UT.primary.bam
-Value: o-d_Q_day7_N_rep1.UT_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary/CT10_7718_pIAA_Q_Nascent_UT.primary.bam
-Value: n3-d_Q_day7_N_rep2.UT_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary/Bp8_DSp24_7081_UT.primary.bam
-Value: t4-n_DSp24_day3_SS_rep2.UT_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary/BM10_DSp48_5781_UT.primary.bam
-Value: WT_DSp48_day4_SS_rep1.UT_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary/5782_Q_IP_UT.primary.bam
-Value: WT_Q_day7_N_rep2.UT_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary/Bp7_DSp24_5782_UT.primary.bam
-Value: WT_DSp24_day3_SS_rep2.UT_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary/BM2_DSm2_7080_UT.primary.bam
-Value: t4-n_DSm2_day2_SS_rep1.UT_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary/BM4_DSp2_5781_UT.primary.bam
-Value: WT_DSp2_day2_SS_rep1.UT_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary/BM8_DSp24_7080_UT.primary.bam
-Value: t4-n_DSp24_day3_SS_rep1.UT_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary/5782_Q_IN_UT.primary.bam
-Value: WT_Q_day7_SS_rep2.UT_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary/5782_G1_IP_UT.primary.bam
-Value: WT_G1_day1_N_rep2.UT_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary/CT6_7714_pIAA_Q_Nascent_UT.primary.bam
-Value: n3-d_Q_day7_N_rep1.UT_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary/5781_Q_IP_UT.primary.bam
-Value: WT_Q_day7_N_rep1.UT_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary/CT4_6126_pIAA_Q_SteadyState_UT.primary.bam
-Value: o-d_Q_day7_SS_rep2.UT_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary/BM7_DSp24_5781_UT.primary.bam
-Value: WT_DSp24_day3_SS_rep1.UT_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary/5781_G1_IN_UT.primary.bam
-Value: WT_G1_day1_SS_rep1.UT_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary/Bp2_DSm2_7081_UT.primary.bam
-Value: t4-n_DSm2_day2_SS_rep2.UT_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary/CW6_7078_8day_Q_PD_UT.primary.bam
-Value: r6-n_Q_day8_N_rep1.UT_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary/CW2_5781_8day_Q_PD_UT.primary.bam
-Value: WT_Q_day8_N_rep1.UT_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary/CW6_7078_8day_Q_IN_UT.primary.bam
-Value: r6-n_Q_day8_SS_rep1.UT_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary/BM11_DSp48_7080_UT.primary.bam
-Value: t4-n_DSp48_day4_SS_rep1.UT_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary/Bp12_DSp48_7078_UT.primary.bam
-Value: r6-n_DSp48_day4_SS_rep1.UT_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary/Bp5_DSp2_7081_UT.primary.bam
-Value: t4-n_DSp2_day2_SS_rep2.UT_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary/Bp1_DSm2_5782_UT.primary.bam
-Value: WT_DSm2_day2_SS_rep2.UT_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary/5782_G1_IN_UT.primary.bam
-Value: WT_G1_day1_SS_rep2.UT_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary/BM9_DSp24_7079_UT.primary.bam
-Value: r6-n_DSp24_day3_SS_rep2.UT_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary/Bp11_DSp48_7081_UT.primary.bam
-Value: t4-n_DSp48_day4_SS_rep2.UT_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary/CU12_5782_Q_SteadyState_UT.primary.bam
-Value: WT_Q_day7_SS_rep2_CU.UT_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary/Bp4_DSp2_5782_UT.primary.bam
-Value: WT_DSp2_day2_SS_rep2.UT_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary/BM1_DSm2_5781_UT.primary.bam
-Value: WT_DSm2_day2_SS_rep1.UT_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary/BM5_DSp2_7080_UT.primary.bam
-Value: t4-n_DSp2_day2_SS_rep1.UT_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary/CW10_7747_8day_Q_PD_UT.primary.bam
-Value: r1-n_Q_day8_N_rep1.UT_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary/Bp3_DSm2_7078_UT.primary.bam
-Value: r6-n_DSm2_day2_SS_rep1.UT_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary/5781_Q_IN_UT.primary.bam
-Value: WT_Q_day7_SS_rep1.UT_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary/CW2_5781_8day_Q_IN_UT.primary.bam
-Value: WT_Q_day8_SS_rep1.UT_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary/Bp10_DSp48_5782_UT.primary.bam
-Value: WT_DSp48_day4_SS_rep2.UT_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary/CT8_7716_pIAA_Q_SteadyState_UT.primary.bam
-Value: n3-d_Q_day7_SS_rep3.UT_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary/CW8_7079_8day_Q_PD_UT.primary.bam
-Value: r6-n_Q_day8_N_rep2.UT_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary/CT10_7718_pIAA_Q_SteadyState_UT.primary.bam
-Value: n3-d_Q_day7_SS_rep2.UT_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary/Bp9_DSp24_7078_UT.primary.bam
-Value: r6-n_DSp24_day3_SS_rep1.UT_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary/CW4_5782_8day_Q_PD_UT.primary.bam
-Value: WT_Q_day8_N_rep2.UT_prim.bam
-
-
-❯ cd ../UT_prim_pos/
-
-
-❯ for i in "${!array_UT_prim_pos[@]}"; do
->     echo "  Key: ${i}"
->     echo "Value: ${array_UT_prim_pos["${i}"]}"
->     echo ""
-> 
->     ln -s "${i}" "${array_UT_prim_pos["${i}"]}"
-> done
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-pos/CU11_5782_Q_Nascent_UT.primary.dedup-pos.bam
-Value: WT_Q_day7_N_rep2_CU.UT_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-pos/CW4_5782_8day_Q_PD_UT.primary.dedup-pos.bam
-Value: WT_Q_day8_N_rep2.UT_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-pos/CT6_7714_pIAA_Q_SteadyState_UT.primary.dedup-pos.bam
-Value: n3-d_Q_day7_SS_rep1.UT_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-pos/5781_G1_IP_UT.primary.dedup-pos.bam
-Value: WT_G1_day1_N_rep1.UT_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-pos/CT4_6126_pIAA_Q_SteadyState_UT.primary.dedup-pos.bam
-Value: o-d_Q_day7_SS_rep2.UT_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-pos/Bp9_DSp24_7078_UT.primary.dedup-pos.bam
-Value: r6-n_DSp24_day3_SS_rep1.UT_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-pos/BM1_DSm2_5781_UT.primary.dedup-pos.bam
-Value: WT_DSm2_day2_SS_rep1.UT_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-pos/CW2_5781_8day_Q_PD_UT.primary.dedup-pos.bam
-Value: WT_Q_day8_N_rep1.UT_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-pos/Bp8_DSp24_7081_UT.primary.dedup-pos.bam
-Value: t4-n_DSp24_day3_SS_rep2.UT_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-pos/CW6_7078_8day_Q_IN_UT.primary.dedup-pos.bam
-Value: r6-n_Q_day8_SS_rep1.UT_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-pos/CT10_7718_pIAA_Q_SteadyState_UT.primary.dedup-pos.bam
-Value: n3-d_Q_day7_SS_rep2.UT_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-pos/CT2_6125_pIAA_Q_Nascent_UT.primary.dedup-pos.bam
-Value: o-d_Q_day7_N_rep1.UT_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-pos/5781_G1_IN_UT.primary.dedup-pos.bam
-Value: WT_G1_day1_SS_rep1.UT_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-pos/5782_G1_IP_UT.primary.dedup-pos.bam
-Value: WT_G1_day1_N_rep2.UT_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-pos/Bp2_DSm2_7081_UT.primary.dedup-pos.bam
-Value: t4-n_DSm2_day2_SS_rep2.UT_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-pos/BM9_DSp24_7079_UT.primary.dedup-pos.bam
-Value: r6-n_DSp24_day3_SS_rep2.UT_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-pos/CW10_7747_8day_Q_IN_UT.primary.dedup-pos.bam
-Value: r1-n_Q_day8_SS_rep1.UT_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-pos/Bp3_DSm2_7078_UT.primary.dedup-pos.bam
-Value: r6-n_DSm2_day2_SS_rep1.UT_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-pos/BM8_DSp24_7080_UT.primary.dedup-pos.bam
-Value: t4-n_DSp24_day3_SS_rep1.UT_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-pos/5782_Q_IN_UT.primary.dedup-pos.bam
-Value: WT_Q_day7_SS_rep2.UT_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-pos/CW8_7079_8day_Q_IN_UT.primary.dedup-pos.bam
-Value: r6-n_Q_day8_SS_rep2.UT_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-pos/Bp12_DSp48_7078_UT.primary.dedup-pos.bam
-Value: r6-n_DSp48_day4_SS_rep1.UT_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-pos/5782_G1_IN_UT.primary.dedup-pos.bam
-Value: WT_G1_day1_SS_rep2.UT_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-pos/CW2_5781_8day_Q_IN_UT.primary.dedup-pos.bam
-Value: WT_Q_day8_SS_rep1.UT_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-pos/BM4_DSp2_5781_UT.primary.dedup-pos.bam
-Value: WT_DSp2_day2_SS_rep1.UT_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-pos/Bp10_DSp48_5782_UT.primary.dedup-pos.bam
-Value: WT_DSp48_day4_SS_rep2.UT_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-pos/Bp7_DSp24_5782_UT.primary.dedup-pos.bam
-Value: WT_DSp24_day3_SS_rep2.UT_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-pos/CT8_7716_pIAA_Q_Nascent_UT.primary.dedup-pos.bam
-Value: n3-d_Q_day7_N_rep3.UT_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-pos/5781_Q_IP_UT.primary.dedup-pos.bam
-Value: WT_Q_day7_N_rep1.UT_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-pos/CW8_7079_8day_Q_PD_UT.primary.dedup-pos.bam
-Value: r6-n_Q_day8_N_rep2.UT_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-pos/Bp4_DSp2_5782_UT.primary.dedup-pos.bam
-Value: WT_DSp2_day2_SS_rep2.UT_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-pos/CW4_5782_8day_Q_IN_UT.primary.dedup-pos.bam
-Value: WT_Q_day8_SS_rep2.UT_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-pos/CT6_7714_pIAA_Q_Nascent_UT.primary.dedup-pos.bam
-Value: n3-d_Q_day7_N_rep1.UT_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-pos/BM2_DSm2_7080_UT.primary.dedup-pos.bam
-Value: t4-n_DSm2_day2_SS_rep1.UT_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-pos/CW10_7747_8day_Q_PD_UT.primary.dedup-pos.bam
-Value: r1-n_Q_day8_N_rep1.UT_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-pos/5781_Q_IN_UT.primary.dedup-pos.bam
-Value: WT_Q_day7_SS_rep1.UT_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-pos/CT4_6126_pIAA_Q_Nascent_UT.primary.dedup-pos.bam
-Value: o-d_Q_day7_N_rep2.UT_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-pos/Bp11_DSp48_7081_UT.primary.dedup-pos.bam
-Value: t4-n_DSp48_day4_SS_rep2.UT_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-pos/CW6_7078_8day_Q_PD_UT.primary.dedup-pos.bam
-Value: r6-n_Q_day8_N_rep1.UT_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-pos/CT8_7716_pIAA_Q_SteadyState_UT.primary.dedup-pos.bam
-Value: n3-d_Q_day7_SS_rep3.UT_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-pos/Bp6_DSp2_7078_UT.primary.dedup-pos.bam
-Value: r6-n_DSp2_day2_SS_rep1.UT_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-pos/BM5_DSp2_7080_UT.primary.dedup-pos.bam
-Value: t4-n_DSp2_day2_SS_rep1.UT_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-pos/BM10_DSp48_5781_UT.primary.dedup-pos.bam
-Value: WT_DSp48_day4_SS_rep1.UT_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-pos/CW12_7748_8day_Q_IN_UT.primary.dedup-pos.bam
-Value: r1-n_Q_day8_SS_rep2.UT_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-pos/Bp1_DSm2_5782_UT.primary.dedup-pos.bam
-Value: WT_DSm2_day2_SS_rep2.UT_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-pos/5782_Q_IP_UT.primary.dedup-pos.bam
-Value: WT_Q_day7_N_rep2.UT_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-pos/BM11_DSp48_7080_UT.primary.dedup-pos.bam
-Value: t4-n_DSp48_day4_SS_rep1.UT_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-pos/BM7_DSp24_5781_UT.primary.dedup-pos.bam
-Value: WT_DSp24_day3_SS_rep1.UT_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-pos/BM3_DSm2_7079_UT.primary.dedup-pos.bam
-Value: r6-n_DSm2_day2_SS_rep2.UT_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-pos/CT10_7718_pIAA_Q_Nascent_UT.primary.dedup-pos.bam
-Value: n3-d_Q_day7_N_rep2.UT_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-pos/CU12_5782_Q_SteadyState_UT.primary.dedup-pos.bam
-Value: WT_Q_day7_SS_rep2_CU.UT_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-pos/BM6_DSp2_7079_UT.primary.dedup-pos.bam
-Value: r6-n_DSp2_day2_SS_rep2.UT_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-pos/CW12_7748_8day_Q_PD_UT.primary.dedup-pos.bam
-Value: r1-n_Q_day8_N_rep2.UT_prim_pos.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-pos/CT2_6125_pIAA_Q_SteadyState_UT.primary.dedup-pos.bam
-Value: o-d_Q_day7_SS_rep1.UTK_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-pos/Bp5_DSp2_7081_UT.primary.dedup-pos.bam
-Value: t4-n_DSp2_day2_SS_rep2.UT_prim_pos.bam
-
-
-❯ cd ../UT_prim_UMI/
-
-
-❯ for i in "${!array_UT_prim_UMI[@]}"; do
->     echo "  Key: ${i}"
->     echo "Value: ${array_UT_prim_UMI["${i}"]}"
->     echo ""
-> 
->     ln -s "${i}" "${array_UT_prim_UMI["${i}"]}"
-> done
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-UMI/BM5_DSp2_7080_UT.primary.dedup-UMI.bam
-Value: t4-n_DSp2_day2_SS_rep1.UT_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-UMI/5782_Q_IP_UT.primary.dedup-UMI.bam
-Value: WT_Q_day7_N_rep2.UT_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-UMI/Bp2_DSm2_7081_UT.primary.dedup-UMI.bam
-Value: t4-n_DSm2_day2_SS_rep2.UT_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-UMI/Bp5_DSp2_7081_UT.primary.dedup-UMI.bam
-Value: t4-n_DSp2_day2_SS_rep2.UT_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-UMI/BM2_DSm2_7080_UT.primary.dedup-UMI.bam
-Value: t4-n_DSm2_day2_SS_rep1.UT_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-UMI/5781_Q_IP_UT.primary.dedup-UMI.bam
-Value: WT_Q_day7_N_rep1.UT_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-UMI/CW2_5781_8day_Q_PD_UT.primary.dedup-UMI.bam
-Value: WT_Q_day8_N_rep1.UT_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-UMI/5782_G1_IP_UT.primary.dedup-UMI.bam
-Value: WT_G1_day1_N_rep2.UT_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-UMI/CT10_7718_pIAA_Q_SteadyState_UT.primary.dedup-UMI.bam
-Value: n3-d_Q_day7_SS_rep2.UT_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-UMI/CW10_7747_8day_Q_IN_UT.primary.dedup-UMI.bam
-Value: r1-n_Q_day8_SS_rep1.UT_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-UMI/5782_G1_IN_UT.primary.dedup-UMI.bam
-Value: WT_G1_day1_SS_rep2.UT_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-UMI/CW4_5782_8day_Q_IN_UT.primary.dedup-UMI.bam
-Value: WT_Q_day8_SS_rep2.UT_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-UMI/BM7_DSp24_5781_UT.primary.dedup-UMI.bam
-Value: WT_DSp24_day3_SS_rep1.UT_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-UMI/CU11_5782_Q_Nascent_UT.primary.dedup-UMI.bam
-Value: WT_Q_day7_N_rep2_CU.UT_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-UMI/Bp3_DSm2_7078_UT.primary.dedup-UMI.bam
-Value: r6-n_DSm2_day2_SS_rep1.UT_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-UMI/CW8_7079_8day_Q_PD_UT.primary.dedup-UMI.bam
-Value: r6-n_Q_day8_N_rep2.UT_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-UMI/CT8_7716_pIAA_Q_SteadyState_UT.primary.dedup-UMI.bam
-Value: n3-d_Q_day7_SS_rep3.UT_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-UMI/BM9_DSp24_7079_UT.primary.dedup-UMI.bam
-Value: r6-n_DSp24_day3_SS_rep2.UT_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-UMI/CW8_7079_8day_Q_IN_UT.primary.dedup-UMI.bam
-Value: r6-n_Q_day8_SS_rep2.UT_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-UMI/CT2_6125_pIAA_Q_SteadyState_UT.primary.dedup-UMI.bam
-Value: o-d_Q_day7_SS_rep1.UTK_prim.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-UMI/Bp4_DSp2_5782_UT.primary.dedup-UMI.bam
-Value: WT_DSp2_day2_SS_rep2.UT_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-UMI/CT8_7716_pIAA_Q_Nascent_UT.primary.dedup-UMI.bam
-Value: n3-d_Q_day7_N_rep3.UT_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-UMI/CW6_7078_8day_Q_IN_UT.primary.dedup-UMI.bam
-Value: r6-n_Q_day8_SS_rep1.UT_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-UMI/5782_Q_IN_UT.primary.dedup-UMI.bam
-Value: WT_Q_day7_SS_rep2.UT_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-UMI/CW10_7747_8day_Q_PD_UT.primary.dedup-UMI.bam
-Value: r1-n_Q_day8_N_rep1.UT_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-UMI/CW12_7748_8day_Q_PD_UT.primary.dedup-UMI.bam
-Value: r1-n_Q_day8_N_rep2.UT_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-UMI/BM4_DSp2_5781_UT.primary.dedup-UMI.bam
-Value: WT_DSp2_day2_SS_rep1.UT_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-UMI/Bp8_DSp24_7081_UT.primary.dedup-UMI.bam
-Value: t4-n_DSp24_day3_SS_rep2.UT_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-UMI/5781_G1_IN_UT.primary.dedup-UMI.bam
-Value: WT_G1_day1_SS_rep1.UT_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-UMI/CT2_6125_pIAA_Q_Nascent_UT.primary.dedup-UMI.bam
-Value: o-d_Q_day7_N_rep1.UT_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-UMI/CW12_7748_8day_Q_IN_UT.primary.dedup-UMI.bam
-Value: r1-n_Q_day8_SS_rep2.UT_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-UMI/CU12_5782_Q_SteadyState_UT.primary.dedup-UMI.bam
-Value: WT_Q_day7_SS_rep2_CU.UT_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-UMI/CW2_5781_8day_Q_IN_UT.primary.dedup-UMI.bam
-Value: WT_Q_day8_SS_rep1.UT_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-UMI/BM1_DSm2_5781_UT.primary.dedup-UMI.bam
-Value: WT_DSm2_day2_SS_rep1.UT_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-UMI/Bp6_DSp2_7078_UT.primary.dedup-UMI.bam
-Value: r6-n_DSp2_day2_SS_rep1.UT_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-UMI/Bp1_DSm2_5782_UT.primary.dedup-UMI.bam
-Value: WT_DSm2_day2_SS_rep2.UT_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-UMI/CT4_6126_pIAA_Q_Nascent_UT.primary.dedup-UMI.bam
-Value: o-d_Q_day7_N_rep2.UT_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-UMI/CT6_7714_pIAA_Q_SteadyState_UT.primary.dedup-UMI.bam
-Value: n3-d_Q_day7_SS_rep1.UT_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-UMI/CW6_7078_8day_Q_PD_UT.primary.dedup-UMI.bam
-Value: r6-n_Q_day8_N_rep1.UT_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-UMI/BM8_DSp24_7080_UT.primary.dedup-UMI.bam
-Value: t4-n_DSp24_day3_SS_rep1.UT_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-UMI/Bp9_DSp24_7078_UT.primary.dedup-UMI.bam
-Value: r6-n_DSp24_day3_SS_rep1.UT_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-UMI/CT4_6126_pIAA_Q_SteadyState_UT.primary.dedup-UMI.bam
-Value: o-d_Q_day7_SS_rep2.UT_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-UMI/5781_Q_IN_UT.primary.dedup-UMI.bam
-Value: WT_Q_day7_SS_rep1.UT_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-UMI/Bp12_DSp48_7078_UT.primary.dedup-UMI.bam
-Value: r6-n_DSp48_day4_SS_rep1.UT_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-UMI/BM6_DSp2_7079_UT.primary.dedup-UMI.bam
-Value: r6-n_DSp2_day2_SS_rep2.UT_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-UMI/CT6_7714_pIAA_Q_Nascent_UT.primary.dedup-UMI.bam
-Value: n3-d_Q_day7_N_rep1.UT_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-UMI/CT10_7718_pIAA_Q_Nascent_UT.primary.dedup-UMI.bam
-Value: n3-d_Q_day7_N_rep2.UT_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-UMI/BM3_DSm2_7079_UT.primary.dedup-UMI.bam
-Value: r6-n_DSm2_day2_SS_rep2.UT_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-UMI/Bp10_DSp48_5782_UT.primary.dedup-UMI.bam
-Value: WT_DSp48_day4_SS_rep2.UT_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-UMI/BM10_DSp48_5781_UT.primary.dedup-UMI.bam
-Value: WT_DSp48_day4_SS_rep1.UT_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-UMI/Bp11_DSp48_7081_UT.primary.dedup-UMI.bam
-Value: t4-n_DSp48_day4_SS_rep2.UT_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-UMI/Bp7_DSp24_5782_UT.primary.dedup-UMI.bam
-Value: WT_DSp24_day3_SS_rep2.UT_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-UMI/BM11_DSp48_7080_UT.primary.dedup-UMI.bam
-Value: t4-n_DSp48_day4_SS_rep1.UT_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-UMI/CW4_5782_8day_Q_PD_UT.primary.dedup-UMI.bam
-Value: WT_Q_day8_N_rep2.UT_prim_UMI.bam
-
-  Key: ../../../2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-UMI/5781_G1_IP_UT.primary.dedup-UMI.bam
-Value: WT_G1_day1_N_rep1.UT_prim_UMI.bam
-```
-</details>
-<br />
 <br />
 
 <a id="test-featurecounts-initial-test"></a>
@@ -2669,7 +1598,7 @@ featureCounts \
 </details>
 <br />
 
-<a id="printed-3"></a>
+<a id="printed-2"></a>
 #### Printed
 <details>
 <summary><i>Printed: Test to determine option for featureCounts -s (results in an error)</i></summary>
@@ -2760,7 +1689,7 @@ tail "${gff3}.saf"
 </details>
 <br />
 
-<a id="printed-4"></a>
+<a id="printed-3"></a>
 #### Printed
 <details>
 <summary><i>Printed: Convert the gff3 to "SAF" format</i></summary>
@@ -2855,7 +1784,7 @@ featureCounts \
 </details>
 <br />
 
-<a id="printed-5"></a>
+<a id="printed-4"></a>
 #### Printed
 <details>
 <summary><i>Printed: Test to determine option for featureCounts -s using the .saf file</i></summary>
@@ -3058,7 +1987,7 @@ featureCounts \
 </details>
 <br />
 
-<a id="printed-6"></a>
+<a id="printed-5"></a>
 #### Printed
 <details>
 <summary><i>Printed: Test to determine option for featureCounts -s with -g "ID" (#CORRECT)</i></summary>
@@ -3326,7 +2255,6 @@ mv outfiles_featureCounts/aligned_UT_primary* test_fC-s/
 #!/bin/bash
 #DONTRUN #CONTINUE
 
-
 tmux new -s fC  # detach
 tmux a -t fC
 
@@ -3339,7 +2267,7 @@ transcriptome &&
             || echo "cd'ing failed; check on this..."
     }
 
-mkdir -p outfiles_featureCounts/{combined_SC_KL,combined_SC_KL_20S}/{UTK_prim_no,UTK_prim_pos,UTK_prim_UMI,UT_prim_no,UT_prim_pos,UT_prim_UMI}
+mkdir -p outfiles_featureCounts/combined_SC_KL/{UTK_prim_no,UTK_prim_pos,UTK_prim_UMI,UT_prim_no,UT_prim_pos,UT_prim_UMI}
 ```
 </details>
 <br />
@@ -3548,119 +2476,8 @@ featureCounts \
     ${UT_prim_UMI[*]} \
         > >(tee -a "${outfile}.stdout.txt") \
         2> >(tee -a "${outfile}.stderr.txt" >&2)
-```
-</details>
-<br />
 
-<a id="run-featurecounts-with-combined_sc_kl_20sgff3"></a>
-#### Run featureCounts with combined_SC_KL_20S.gff3
-<a id="code-18"></a>
-##### Code
-<details>
-<summary><i>Code: Run featureCounts with combined_SC_KL_20S.gff3</i></summary>
-
-```bash
-#  Set up unchanging variables
-threads="${SLURM_CPUS_ON_NODE}"
-strand=1
-gff="${HOME}/genomes/combined_SC_KL_20S/gff3/combined_SC_KL_20S.gff3"
-indir="bams/aligned_UT_primary_dedup-UMI"
-
-#  UTK_prim_no
-outfile="outfiles_featureCounts/combined_SC_KL_20S/UTK_prim_no/UTK_prim_no.featureCounts"
-featureCounts \
-    --verbose \
-    -T "${threads}" \
-    -p \
-    --countReadPairs \
-    -s "${strand}" \
-    -a "${gff}" \
-    -F "GTF" \
-    -g "ID" \
-    -o "${outfile}" \
-    ${UTK_prim_no[*]} \
-        > >(tee -a "${outfile}.stdout.txt") \
-        2> >(tee -a "${outfile}.stderr.txt" >&2)
-
-#  UTK_prim_pos
-outfile="outfiles_featureCounts/combined_SC_KL_20S/UTK_prim_pos/UTK_prim_pos.featureCounts"
-featureCounts \
-    --verbose \
-    -T "${threads}" \
-    -p \
-    --countReadPairs \
-    -s "${strand}" \
-    -a "${gff}" \
-    -F "GTF" \
-    -g "ID" \
-    -o "${outfile}" \
-    ${UTK_prim_pos[*]} \
-        > >(tee -a "${outfile}.stdout.txt") \
-        2> >(tee -a "${outfile}.stderr.txt" >&2)
-
-#  UTK_prim_UMI
-outfile="outfiles_featureCounts/combined_SC_KL_20S/UTK_prim_UMI/UTK_prim_UMI.featureCounts"
-featureCounts \
-    --verbose \
-    -T "${threads}" \
-    -p \
-    --countReadPairs \
-    -s "${strand}" \
-    -a "${gff}" \
-    -F "GTF" \
-    -g "ID" \
-    -o "${outfile}" \
-    ${UTK_prim_UMI[*]} \
-        > >(tee -a "${outfile}.stdout.txt") \
-        2> >(tee -a "${outfile}.stderr.txt" >&2)
-
-#  UT_prim_no
-outfile="outfiles_featureCounts/combined_SC_KL_20S/UT_prim_no/UT_prim_no.featureCounts"
-featureCounts \
-    --verbose \
-    -T "${threads}" \
-    -p \
-    --countReadPairs \
-    -s "${strand}" \
-    -a "${gff}" \
-    -F "GTF" \
-    -g "ID" \
-    -o "${outfile}" \
-    ${UT_prim_no[*]} \
-        > >(tee -a "${outfile}.stdout.txt") \
-        2> >(tee -a "${outfile}.stderr.txt" >&2)
-
-#  UT_prim_pos
-outfile="outfiles_featureCounts/combined_SC_KL_20S/UT_prim_pos/UT_prim_pos.featureCounts"
-featureCounts \
-    --verbose \
-    -T "${threads}" \
-    -p \
-    --countReadPairs \
-    -s "${strand}" \
-    -a "${gff}" \
-    -F "GTF" \
-    -g "ID" \
-    -o "${outfile}" \
-    ${UT_prim_pos[*]} \
-        > >(tee -a "${outfile}.stdout.txt") \
-        2> >(tee -a "${outfile}.stderr.txt" >&2)
-
-#  UT_prim_UMI
-outfile="outfiles_featureCounts/combined_SC_KL_20S/UT_prim_UMI/UT_prim_UMI.featureCounts"
-featureCounts \
-    --verbose \
-    -T "${threads}" \
-    -p \
-    --countReadPairs \
-    -s "${strand}" \
-    -a "${gff}" \
-    -F "GTF" \
-    -g "ID" \
-    -o "${outfile}" \
-    ${UT_prim_UMI[*]} \
-        > >(tee -a "${outfile}.stdout.txt") \
-        2> >(tee -a "${outfile}.stderr.txt" >&2)
+echo "Done."
 ```
 </details>
 <br />
@@ -3670,7 +2487,7 @@ featureCounts \
 ## Generate MultiQC plots
 <a id="get-situated-1"></a>
 ### Get situated
-<a id="code-19"></a>
+<a id="code-18"></a>
 #### Code
 <details>
 <summary><i>Code: Get situated</i></summary>
@@ -3694,7 +2511,7 @@ mkdir -p MultiQC/{combined_SC_KL,combined_SC_KL_20S}
 
 <a id="run-multiqc"></a>
 ### Run MultiQC
-<a id="code-20"></a>
+<a id="code-19"></a>
 #### Code
 <details>
 <summary><i>Code: Run MultiQC</i></summary>
