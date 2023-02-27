@@ -20,17 +20,17 @@ rm(p_local, p_wd)
 #### Load necessary libraries
 
 ```{r, results='hide', message=FALSE}
-library(DESeq2)
+# library(DESeq2)
 library(GenomicRanges)
 library(IRanges)
-library(plyr)
 library(tidyverse)
 ```
 
 
-### Load in featureCounts table as tibble
+### Load in and process featureCounts table
 
 ```{r, results='hide', message=FALSE}
+#  Load in featureCounts table ------------------------------------------------
 p_fc <- "outfiles_featureCounts/combined_SC_KL/UT_prim_UMI"
 f_fc <- "UT_prim_UMI.featureCounts"
 t_fc <- read.table(
@@ -40,39 +40,97 @@ t_fc <- read.table(
     tibble::as_tibble()
 
 rm(p_fc, f_fc)
-```
 
 
-### Clean up tibble column names
-
-```{r, include=TRUE, results='hide', message=FALSE}
+#  Clean up tibble column names -----------------------------------------------
 colnames(t_fc) <- colnames(t_fc) %>%
-    gsub("rowname", "feature", .) %>%
+    gsub("rowname", "feature_init", .) %>%
     gsub("Chr", "chr", .) %>%
     gsub("Start", "start", .) %>%
     gsub("End", "end", .) %>%
     gsub("Strand", "strand", .) %>%
     gsub("Length", "length", .) %>%
-    gsub("bams_renamed.UT_prim_UMI.", "", .) %>%
+    gsub("bams_renamed\\.UT_prim_UMI\\.", "", .) %>%
     gsub(".UT_prim_UMI.bam", "", .) %>%
     gsub("\\.d", "-d", .) %>%
     gsub("\\.n", "-n", .)
-```
 
 
-### Order tibble by chromosome names and feature start positions
-
-```{r, results='hide', message=FALSE}
-t_fc$chr <- t_fc$chr %>% as.factor()
-
-chr_order <- c(
+#  Order tibble by chromosome names and feature start positions ---------------
+chr_SC <- c(
     "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII",
-    "XIII", "XIV", "XV", "XVI", "Mito", "A", "B", "C", "D", "E", "F"
+    "XIII", "XIV", "XV", "XVI", "Mito"
 )
+chr_KL <- c("A", "B", "C", "D", "E", "F")
+chr_order <- c(chr_SC, chr_KL)
+t_fc$chr <- t_fc$chr %>% as.factor()
 t_fc$chr <- ordered(t_fc$chr, levels = chr_order)
 
-t_fc <- t_fc %>%
-    dplyr::arrange(chr, start)
+t_fc <- t_fc %>% dplyr::arrange(chr, start)
+
+
+#  Categorize chromosomes by genome of origin ---------------------------------
+t_fc$genome <- ifelse(
+    t_fc$chr %in% chr_SC,
+    "S_cerevisiae",
+    ifelse(
+        t_fc$chr %in% chr_KL,
+        "K_lactis",
+        NA
+    )
+) %>%
+    as.factor()
+
+t_fc <- t_fc %>% dplyr::relocate("genome", .before = "chr")
+
+#  Check on variable "genome"
+levels(t_fc$genome)
+t_fc %>%
+    dplyr::group_by(genome) %>%
+    dplyr::summarize(tally = length(genome))
+# K_lactis = 5659, S_cerevisiae = 7507
+
+rm(chr_KL, chr_SC, chr_order)
+
+
+#  Split and better organize variable 'feature_init' --------------------------
+split_isolate_convert <- function(in_vector, field, column_name) {
+    df <- in_vector %>%
+        stringr::str_split(., c("_")) %>%
+        sapply(., "[", field) %>%
+        as.data.frame() %>%
+        tibble::as_tibble()
+    
+    colnames(df) <- column_name
+    
+    return(df)
+}
+
+
+el_1 <- split_isolate_convert(
+    in_vector = t_fc$feature_init,
+    field = 1,
+    column_name = "feature"
+)
+el_2 <- split_isolate_convert(
+    in_vector = t_fc$feature_init,
+    field = 2,
+    column_name = "type"
+)
+el_2$type <- addNA(el_2$type)  # Convert to factor and include 'NA' as a level
+
+#  Check on the split information
+levels(el_2$type)  # 233 levels
+el_2 %>%
+    dplyr::group_by(type) %>%
+    dplyr::summarize(tally = length(type))  # mRNA-E1 = 6600, NA = 5547, etc.
+
+#  Append split information to tibble 't_fc'
+t_fc <- dplyr::bind_cols(t_fc, el_1, el_2) %>%
+    dplyr::relocate(c("feature", "type"), .after = "feature_init")
+t_fc
+
+rm(el_1, el_2)
 ```
 
 
@@ -92,27 +150,52 @@ pos_info <- GenomicRanges::GRanges(
 
 ## Run DGE analyses
 ### Establish variables for dds
-dds is `DESeqDataSet` object
+- dds is `DESeqDataSet` object
+- variables for dds are
+    + "strain"
+    + "state"
+    + "time"
+    + "RNA-seq"
+    + "replicate"
 
 ```{r}
+#  Columns 7 through to the last column are samples; get them into a vector
 samples <- colnames(t_fc)[7:length(colnames(t_fc))]
-stringr::str_split(samples, "_")
+
+#  Convert vector to list by splitting each element at underscores
+samples <- stringr::str_split(samples, "_")
+
+#  Clean up the WT "CU" samples (elements 47 and 50) so that each element has
+#+ the same number of entries
+samples[[47]][5] <- paste(samples[[47]][5], samples[[47]][6], sep = "-")
+samples[[50]][5] <- paste(samples[[50]][5], samples[[50]][6], sep = "-")
+samples[[47]] <- samples[[47]][-6]
+samples[[50]] <- samples[[50]][-6]
+
+#  Convert the list to a df, transpose it, convert it to a tibble, then name
+#+ the columns
+samples <- samples %>%
+    as.data.frame(
+        .,
+        col.names = c(seq(1, 55)),
+        row.names = c("strain", "state", "time", "RNA-seq", "replicate")
+    ) %>%
+    t() %>%
+    tibble::as_tibble()
+samples
 ```
-
-This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
-
-Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
 
 ```{r}
-plot(cars)
-```
-
-Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Cmd+Option+I*.
-```{r}
 
 ```
 
-When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Cmd+Shift+K* to preview the HTML file). 
 
-The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
+
+
+
+
+
+
+
+
 
