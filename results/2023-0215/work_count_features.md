@@ -27,7 +27,7 @@
             1. [Code](#code-6)
         1. [Run featureCounts with combined_SC_KL.gff3](#run-featurecounts-with-combined_sc_klgff3)
             1. [Code](#code-7)
-    1. [Run featureCounts on bams in bams_renamed/ with combined_SC_KL.gff3](#run-featurecounts-on-bams-in-bams_renamed-with-combined_sc_klgff3-1)
+    1. [Run featureCounts on bams in bams_renamed/ with combined_AG.gtf](#run-featurecounts-on-bams-in-bams_renamed-with-combined_aggtf)
         1. [Get situated](#get-situated-1)
             1. [Code](#code-8)
         1. [Set up arrays](#set-up-arrays-1)
@@ -910,8 +910,8 @@ echo "Done."
 </details>
 <br />
 
-<a id="run-featurecounts-on-bams-in-bams_renamed-with-combined_sc_klgff3-1"></a>
-### Run featureCounts on bams in bams_renamed/ with combined_SC_KL.gff3
+<a id="run-featurecounts-on-bams-in-bams_renamed-with-combined_aggtf"></a>
+### Run featureCounts on bams in bams_renamed/ with combined_AG.gtf
 <a id="get-situated-1"></a>
 #### Get situated
 <a id="code-8"></a>
@@ -1050,6 +1050,10 @@ threads="${SLURM_CPUS_ON_NODE}"
 strand=1
 gtf="${HOME}/genomes/combined_AG/gtf/combined_AG.gtf"
 
+echo "${threads}"
+echo "${strand}"
+echo "${gtf}"
+
 #  UTK_prim_no
 outfile="outfiles_featureCounts/combined_AG/mRNA/UTK_prim_no/UTK_prim_no.featureCounts"
 featureCounts \
@@ -1140,6 +1144,7 @@ featureCounts \
     -s "${strand}" \
     -a "${gtf}" \
     -F "GTF" \
+    -t "mRNA" \
     -o "${outfile}" \
     ${UT_prim_UMI[*]} \
         >> >(tee -a "${outfile}.stdout.txt") \

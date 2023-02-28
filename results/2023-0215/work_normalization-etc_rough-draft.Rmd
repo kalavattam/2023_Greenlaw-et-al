@@ -4,31 +4,31 @@ author: "KA"
 email: "kalavatt@fredhutch.org"
 output: html_notebook
 ---
+<br />
 
 ## Prepare data for DGE analyses
 ### Get situated
 #### Set working directory
 ```{r, results='hide', message=FALSE}
-p_local <- "/Users/kalavattam/Dropbox/FHCC"
+# p_local <- "/Users/kalavattam/Dropbox/FHCC"  # KrisMac
+p_local <- "/Users/kalavatt/projects-etc"  # WorkMac
 p_wd <- "2022_transcriptome-construction/results/2023-0215"
 setwd(paste(p_local, p_wd, sep = "/"))
 
 rm(p_local, p_wd)
 ```
-
+<br />
 
 #### Load necessary libraries
-
 ```{r, results='hide', message=FALSE}
-# library(DESeq2)
+library(DESeq2)
 library(GenomicRanges)
 library(IRanges)
 library(tidyverse)
 ```
-
+<br />
 
 ### Load in and process featureCounts table
-
 ```{r, results='hide', message=FALSE}
 #  Load in featureCounts table ------------------------------------------------
 p_fc <- "outfiles_featureCounts/combined_SC_KL/UT_prim_UMI"
@@ -53,7 +53,9 @@ colnames(t_fc) <- colnames(t_fc) %>%
     gsub("bams_renamed\\.UT_prim_UMI\\.", "", .) %>%
     gsub(".UT_prim_UMI.bam", "", .) %>%
     gsub("\\.d", "-d", .) %>%
-    gsub("\\.n", "-n", .)
+    gsub("\\.n", "-n", .) %>%
+    gsub("aux\\.", "aux-", .) %>%
+    gsub("tc\\.", "tc-", .)
 
 
 #  Order tibble by chromosome names and feature start positions ---------------
@@ -81,6 +83,7 @@ t_fc$genome <- ifelse(
 ) %>%
     as.factor()
 
+#  Move the new column 'genome' to a better location in the tibble
 t_fc <- t_fc %>% dplyr::relocate("genome", .before = "chr")
 
 #  Check on variable "genome"
@@ -104,9 +107,10 @@ split_isolate_convert <- function(in_vector, field, column_name) {
     colnames(df) <- column_name
     
     return(df)
+    #FUNCTION
 }
 
-
+#  Split 'feature_init' into two distinct elements (separated by an underscore)
 el_1 <- split_isolate_convert(
     in_vector = t_fc$feature_init,
     field = 1,
@@ -117,25 +121,52 @@ el_2 <- split_isolate_convert(
     field = 2,
     column_name = "type"
 )
-el_2$type <- addNA(el_2$type)  # Convert to factor and include 'NA' as a level
-
-#  Check on the split information
-levels(el_2$type)  # 233 levels
-el_2 %>%
-    dplyr::group_by(type) %>%
-    dplyr::summarize(tally = length(type))  # mRNA-E1 = 6600, NA = 5547, etc.
 
 #  Append split information to tibble 't_fc'
 t_fc <- dplyr::bind_cols(t_fc, el_1, el_2) %>%
     dplyr::relocate(c("feature", "type"), .after = "feature_init")
-t_fc
 
 rm(el_1, el_2)
+
+#  Limit the splitting/reorganization to S. cerevisiae features only (it's
+#+ not appropriate for the K. lactis 'feature_init' information given the
+#+ organism's naming/classification scheme)
+t_fc$feature <- ifelse(
+    t_fc$genome == "K_lactis", t_fc$feature_init, t_fc$feature
+)
+t_fc$type <- ifelse(
+    t_fc$genome == "K_lactis", NA, t_fc$type
+)
+
+#  Create levels for S. cerevisiae 'type' NAs and K. lactis 'type' NAs, then
+#+ factorize variable 'type'
+t_fc$type <-  ifelse(
+    (t_fc$genome == "S_cerevisiae" & is.na(t_fc$type)),
+    "NA_SC",
+    ifelse(
+        (t_fc$genome == "K_lactis" & is.na(t_fc$type)),
+        "NA_KL",
+        t_fc$type
+    )
+) %>%
+    as.factor()
+
+#  Do a quick check of the tibble
+t_fc
+
+#  Check on the split information
+levels(t_fc$type)  # 19 levels
+t_fc %>%
+    dplyr::group_by(type) %>%
+    dplyr::summarize(tally = length(type))
+#  Quick check:
+#+ mRNA-E1 = 6600, mRNA-E2 = 283, NA_KL = 5547, NA_SC = 103, tRNA-E1 = 299,
+#+ tRNA-E2 = 60, etc.
 ```
+<br />
 
-
-### Record tibble's positional information in GRanges object
-(`pos_info` object will be used in the DESeq2 and subsequent steps)
+### Record tibble's positional information in `GRanges` object
+*(`pos_info` object to be used in the DESeq2 processing, post-processing, etc.)*
 
 ```{r, results='hide', message=FALSE}
 pos_info <- GenomicRanges::GRanges(
@@ -143,56 +174,374 @@ pos_info <- GenomicRanges::GRanges(
     ranges = IRanges::IRanges(t_fc$start, t_fc$end),
     strand = t_fc$strand,
     length = t_fc$length,
-    feature = t_fc$feature
+    feature = t_fc$feature,
+    type = t_fc$type,
+    genome = t_fc$genome
 )
+pos_info
 ```
+<br />
+<br />
 
-
-## Run DGE analyses
-### Establish variables for dds
-- dds is `DESeqDataSet` object
-- variables for dds are
-    + "strain"
-    + "state"
-    + "time"
-    + "RNA-seq"
-    + "replicate"
+## Perform normalization and run DGE analyses
+### Do prep work with everything
+#### Establish table of variables for dds, i.e., a "master" model matrix
+- `dds` is `DESeqDataSet` object
+- variables for `dds` are
+    + `strain`
+    + `state`
+    + `time`
+    + `kit` *(`tcn` for Tecan, `ovn` for Ovation)*
+    + `transcription` *(`N` for nascent, `SS` for steady state)*
+    + `auxin`
+    + `timecourse`
+    + `replicate`
 
 ```{r}
 #  Columns 7 through to the last column are samples; get them into a vector
-samples <- colnames(t_fc)[7:length(colnames(t_fc))]
+samples <- colnames(t_fc)[10:length(colnames(t_fc))]
 
 #  Convert vector to list by splitting each element at underscores
 samples <- stringr::str_split(samples, "_")
 
-#  Clean up the WT "CU" samples (elements 47 and 50) so that each element has
-#+ the same number of entries
-samples[[47]][5] <- paste(samples[[47]][5], samples[[47]][6], sep = "-")
-samples[[50]][5] <- paste(samples[[50]][5], samples[[50]][6], sep = "-")
-samples[[47]] <- samples[[47]][-6]
-samples[[50]] <- samples[[50]][-6]
-
-#  Convert the list to a df, transpose it, convert it to a tibble, then name
-#+ the columns
+#  Convert the list to a df, transpose it, then convert it to a tibble
 samples <- samples %>%
     as.data.frame(
         .,
         col.names = c(seq(1, 55)),
-        row.names = c("strain", "state", "time", "RNA-seq", "replicate")
+        row.names = c(
+            "strain", "state", "time", "kit", "transcription", "auxin",
+            "timecourse", "replicate"
+        )
     ) %>%
     t() %>%
     tibble::as_tibble()
+
+#  Add a "keys" variable for quickly accessing combinations of variable values
+keys <- vector(mode = "character")
+for(i in seq(1, nrow(samples))) {
+    # i <- 1
+    keys[i] <- paste(
+        samples[i, 1], samples[i, 2], samples[i, 3], samples[i, 4],
+        samples[i, 5], samples[i, 6], samples[i, 7], samples[i, 8],
+        sep = "_"
+    )
+}
+keys <- keys %>% as.data.frame()
+colnames(keys) <- "keys"
+
+samples <- dplyr::bind_cols(samples, keys) %>%
+    dplyr::relocate("keys", .before = "strain")
+
+rm(i)
+
+#  Convert all columns to data type 'factor' (helps with running
+#+ DESeq2::DESeqDataSetFromMatrix())
+samples[sapply(samples, is.character)] <- lapply(
+    samples[sapply(samples, is.character)], as.factor
+)
+
+#  How does it look?
 samples
 ```
+<br />
+
+### Do prep work with `WT_{G1,Q}_day7_ovn_N_aux-F_tc-F_rep{1,2}`
+*(i.e., the wild-type G1 and Q Ovation 4tU-seq datasets)*
+<br />
+
+#### Make counts matrix: `WT_{G1,Q}_day7_ovn_N_aux-F_tc-F_rep{1,2}`
+```{r}
+datasets <- c(
+    "WT_G1_day1_ovn_N_aux-F_tc-F_rep1",
+    "WT_G1_day1_ovn_N_aux-F_tc-F_rep2",
+    # "WT_G1_day1_ovn_SS_aux-F_tc-F_rep1",
+    # "WT_G1_day1_ovn_SS_aux-F_tc-F_rep2",
+    "WT_Q_day7_ovn_N_aux-F_tc-F_rep1",
+    "WT_Q_day7_ovn_N_aux-F_tc-F_rep2",
+    # "WT_Q_day7_ovn_SS_aux-F_tc-F_rep1",
+    # "WT_Q_day7_ovn_SS_aux-F_tc-F_rep2"
+)
+counts_data <- t_fc[, colnames(t_fc) %in% datasets] %>%
+    as.data.frame()
+
+#  How do things look?
+counts_data
+```
+<br />
+
+#### Make model matrix: `WT_{G1,Q}_day7_ovn_N_aux-F_tc-F_rep{1,2}`
 
 ```{r}
+#  Use the "keys" column to isolate WT G1 and Q Ovation 4tU-seq datasets
+datasets <- c(
+    # "WT_G1_day1_ovn_N_aux-F_tc-F_rep1",
+    # "WT_G1_day1_ovn_N_aux-F_tc-F_rep2",
+    # "WT_G1_day1_ovn_SS_aux-F_tc-F_rep1",
+    # "WT_G1_day1_ovn_SS_aux-F_tc-F_rep2",
+    "WT_Q_day7_ovn_N_aux-F_tc-F_rep1",
+    "WT_Q_day7_ovn_N_aux-F_tc-F_rep2",
+    "WT_Q_day7_ovn_SS_aux-F_tc-F_rep1",
+    "WT_Q_day7_ovn_SS_aux-F_tc-F_rep2"
+)
+col_data <- samples[samples$keys %in% datasets, ] %>%
+    as.data.frame() %>%
+    tibble::column_to_rownames(., var = "keys")
 
+#  How do things look?
+col_data
 ```
+<br />
+
+#### Make `DESeqDataSet`: `WT_{G1,Q}_day7_ovn_N_aux-F_tc-F_rep{1,2}`
+- `counts_data` for the `featureCount` tallies
+- `col_data` for modeling
+- `pos_info` for subsetting, etc.
+
+```{r}
+dds <- DESeq2::DESeqDataSetFromMatrix(
+    countData = counts_data,
+    colData = col_data,
+    # design = ~ state + transcription + state:transcription,  
+    #TODO Try out/mess around with complicated models later
+    design = ~ transcription,
+    rowRanges = pos_info
+)
+
+#  How do things look?
+# dds %>% BiocGenerics::counts() %>% head()
+# dds@rowRanges
+# dds@design
+# dds@assays
+```
+<br />
+
+#### Prefilter `dds`: `WT_{G1,Q}_day7_ovn_N_aux-F_tc-F_rep{1,2}`
+*(Probably don't need to do this; we can consider it for later)*
+```{r}
+# threshold <- 0
+# dds_filt <- dds[rowSums(BiocGenerics::counts(dds)) >= threshold, ]
+
+#  Breakdown
+#    0 13166
+#   10 11893
+#   50 11049
+#  100 10645
+#  500 8601
+# 1000 6738
+
+# rm(threshold, dds_filt)
+```
+<br />
+
+### Perform normalization: `WT_{G1,Q}_day7_ovn_N_aux-F_tc-F_rep{1,2}`
+#### Estimate size factors
+```{r}
+dds <- BiocGenerics::estimateSizeFactors(dds)
+dds@colData
+#  N rep1 2.826111
+#  N rep2 2.737671
+# SS rep1 0.419261
+# SS rep2 0.323642
+```
+<br />
+
+#### Do rlog normalization: `WT_{G1,Q}_day7_ovn_N_aux-F_tc-F_rep{1,2}`
+On the `blind` option: "`logical`, whether to blind the transformation to the
+experimental design. `blind = TRUE` should be used for comparing samples in a
+manner unbiased by prior information on samples, for example to perform sample
+QA (quality assurance). `blind = FALSE` should be used for transforming data
+for downstream analysis, where the full use of the design information should be
+made. `blind = FALSE` will skip re-estimation of the dispersion trend if this
+has already been calculated. If many of genes have large differences in counts
+due to the experimental design, it is important to set `blind = FALSE` for
+downstream analysis."
+
+*(We may want to exclude the K. lactis data prior to doing this&mdash;not*
+*sure...)*
+```{r}
+rlog_F <- DESeq2::rlog(dds, blind = FALSE) %>%
+    SummarizedExperiment::assay() %>%
+    tibble::as_tibble() %>%
+    dplyr::bind_cols(., tibble::as_tibble(dds@rowRanges))
+
+rlog_T <- DESeq2::rlog(dds, blind = TRUE) %>%
+    SummarizedExperiment::assay() %>%
+    tibble::as_tibble() %>%
+    dplyr::bind_cols(., tibble::as_tibble(dds@rowRanges))
+
+#  How does rlog_T look?
+rlog_T
+```
+<br />
+
+### Run `DESeq2`: `WT_{G1,Q}_day7_ovn_N_aux-F_tc-F_rep{1,2}`
+#### Call `DESeq2` using default parameters
+```{r}
+dds <- DESeq2::DESeq(dds)
+```
+<br />
+
+#### Call `DESeq2::results()`
+```{r}
+independent_filtering <- TRUE
+threshold_p <- 0.05
+threshold_lfc <- 0
+
+DGE_unshrunken_DF <- DESeq2::results(
+    dds,
+    name = DESeq2::resultsNames(dds)[2],
+    independentFiltering = independent_filtering,
+    alpha = threshold_p,
+    lfcThreshold = threshold_lfc,
+    format = "DataFrame"
+)
+
+DGE_unshrunken_GR <- DESeq2::results(
+    dds,
+    name = DESeq2::resultsNames(dds)[2],
+    independentFiltering = independent_filtering,
+    alpha = threshold_p,
+    lfcThreshold = threshold_lfc,
+    format = "GRanges"
+)
+DGE_unshrunken_GR$feature <- MatrixGenerics::rowRanges(dds)$feature
+DGE_unshrunken_GR$type <- MatrixGenerics::rowRanges(dds)$type
+DGE_unshrunken_GR$genome <- MatrixGenerics::rowRanges(dds)$genome
+
+t_DGE <- DGE_unshrunken_GR %>% dplyr::as_tibble()
+
+rm(independent_filtering, threshold_p, threshold_lfc)
+```
+<br />
+
+#### Make a volcano plot
+```{r}
+plot_volcano <- function(
+    table, label, selection, label_size, p_cutoff, FC_cutoff,
+    xlim, ylim, color, title, ...
+) {
+    # :param table: dataframe of test statistics
+    # :param label: character vector of all variable names in param table
+    # :param selection: character vector of selected variable names in param
+    #                   table
+    # :param label_size: size of label font [float]
+    # :param p_cutoff: cut-off for statistical significance; a horizontal line
+    #                  will be drawn at -log10(pCutoff); p is actually padj
+    # :param FC_cutoff: cut-off for absolute log2 fold-change; vertical lines
+    #                   will be drawn at the negative and positive values of
+    #                   log2FCcutoff
+    # :param xlim: limits of the x-axis
+    # :param ylim: limits of the y-axis
+    # :param color: color of DEGs, e.g., '#52BE9B'
+    # :param title: plot title
+    volcano <- EnhancedVolcano::EnhancedVolcano(
+        toptable = table,
+        lab = label,
+        selectLab = selection,
+        x = "log2FoldChange",
+        y = "padj",
+        xlab = "log2(FC)",
+        ylab = "-log10(padj)",
+        pCutoff = p_cutoff,
+        pCutoffCol = "padj",
+        FCcutoff = FC_cutoff,
+        xlim = xlim,
+        ylim = ylim,
+        cutoffLineType = "dashed",
+        cutoffLineWidth = 0.2,
+        pointSize = 1,
+        shape = 16,
+        colAlpha = 0.25,
+        col = c('#D3D3D3', '#D3D3D3', '#D3D3D3', color),
+        title = NULL,
+        subtitle = NULL,
+        caption = NULL,
+        borderColour = "#000000",
+        borderWidth = 0.2,
+        gridlines.major = TRUE,
+        gridlines.minor = TRUE,
+        axisLabSize = 10,
+        labSize = label_size,
+        boxedLabels = TRUE,
+        parseLabels = TRUE,
+        drawConnectors = TRUE,
+        widthConnectors = 0.2,
+        colConnectors = 'black',
+        max.overlaps = Inf
+    ) +
+        theme_slick_no_legend +
+        ggtitle(title)
+    return(volcano)
+    #FUNCTION
+}
 
 
+save_volcano <- function(plot, file, width, height) {
+    ggplot2::ggsave(
+        filename = file,
+        plot,
+        device = "pdf",
+        h = width,
+        w = height,
+        units = "in"
+    )
+    #FUNCTION
+}
 
 
+#  Set up custom ggplot2 plot themes
+theme_slick <- theme_classic() +
+    theme(
+        panel.grid.major = ggplot2::element_line(size = 0.4),
+        panel.grid.minor = ggplot2::element_line(size = 0.2),
+        axis.line = ggplot2::element_line(size = 0.2),
+        axis.ticks = ggplot2::element_line(size = 0.4),
+        axis.text = ggplot2::element_text(color = "black"),
+        axis.title.x = ggplot2::element_text(),
+        axis.title.y = ggplot2::element_text(),
+        plot.title = ggplot2::element_text(),
+        text = element_text(family = "")
+    )
 
+theme_slick_no_legend <- theme_slick + theme(legend.position = "none")
+
+
+#  Make the plot
+all <- t_DGE$feature
+selection_down <- t_DGE %>%
+    dplyr::filter(genome != "K_lactis") %>%
+    dplyr::filter(log2FoldChange < 0) %>%
+    dplyr::arrange(padj) %>%
+    dplyr::slice(1:20)
+selection_up <- t_DGE %>%
+    dplyr::filter(genome != "K_lactis") %>%
+    dplyr::filter(log2FoldChange > 0) %>%
+    dplyr::arrange(padj) %>%
+    dplyr::slice(1:20)
+selection <- c(selection_down[["feature"]], selection_up[["feature"]]) %>%
+        as.character()
+
+p <- plot_volcano(
+    table = t_DGE,
+    label = all,
+    selection = selection,
+    label_size = 2.5,
+    p_cutoff = 0.05,
+    FC_cutoff = 1,
+    xlim = c(-9, 9),
+    ylim = c(0, 90),
+    color = "#DC267F",
+    title = "Test"
+)
+p
+# save_volcano(
+#     file = "test.pdf",
+#     plot = p,
+#     width = 2,
+#     height = 3
+# )
+```
 
 
 
