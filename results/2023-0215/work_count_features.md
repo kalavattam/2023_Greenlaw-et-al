@@ -27,18 +27,25 @@
             1. [Code](#code-6)
         1. [Run featureCounts with combined_SC_KL.gff3](#run-featurecounts-with-combined_sc_klgff3)
             1. [Code](#code-7)
-    1. [Run featureCounts on bams in bams_renamed/ with combined_AG.gtf](#run-featurecounts-on-bams-in-bams_renamed-with-combined_aggtf)
+    1. [Run featureCounts on bams in bams_renamed/ with combined_SC_KL.antisense.gff3](#run-featurecounts-on-bams-in-bams_renamed-with-combined_sc_klantisensegff3)
         1. [Get situated](#get-situated-1)
             1. [Code](#code-8)
         1. [Set up arrays](#set-up-arrays-1)
             1. [Code](#code-9)
-        1. [Run featureCounts with combined_AG.gff3](#run-featurecounts-with-combined_aggff3)
+        1. [Run featureCounts with combined_SC_KL.antisense.gff3](#run-featurecounts-with-combined_sc_klantisensegff3)
             1. [Code](#code-10)
+    1. [Run featureCounts on bams in bams_renamed/ with combined_AG.gtf](#run-featurecounts-on-bams-in-bams_renamed-with-combined_aggtf)
+        1. [Get situated](#get-situated-2)
+            1. [Code](#code-11)
+        1. [Set up arrays](#set-up-arrays-2)
+            1. [Code](#code-12)
+        1. [Run featureCounts with combined_AG.gff3](#run-featurecounts-with-combined_aggff3)
+            1. [Code](#code-13)
 1. [Generate MultiQC plots](#generate-multiqc-plots)
-    1. [Get situated](#get-situated-2)
-        1. [Code](#code-11)
+    1. [Get situated](#get-situated-3)
+        1. [Code](#code-14)
     1. [Run MultiQC](#run-multiqc)
-        1. [Code](#code-12)
+        1. [Code](#code-15)
 1. [Miscellaneous](#miscellaneous)
 
 <!-- /MarkdownTOC -->
@@ -910,8 +917,8 @@ echo "Done."
 </details>
 <br />
 
-<a id="run-featurecounts-on-bams-in-bams_renamed-with-combined_aggtf"></a>
-### Run featureCounts on bams in bams_renamed/ with combined_AG.gtf
+<a id="run-featurecounts-on-bams-in-bams_renamed-with-combined_sc_klantisensegff3"></a>
+### Run featureCounts on bams in bams_renamed/ with combined_SC_KL.antisense.gff3
 <a id="get-situated-1"></a>
 #### Get situated
 <a id="code-8"></a>
@@ -923,8 +930,8 @@ echo "Done."
 #!/bin/bash
 #DONTRUN #CONTINUE
 
-tmux new -s fC_comb  # detach
-tmux a -t fC_comb
+tmux new -s fC  # detach
+tmux a -t fC
 
 grabnode  # 16, defaults
 source activate expression_env
@@ -935,7 +942,7 @@ transcriptome &&
             || echo "cd'ing failed; check on this..."
     }
 
-mkdir -p outfiles_featureCounts/combined_AG/mRNA/{UTK_prim_no,UTK_prim_pos,UTK_prim_UMI,UT_prim_no,UT_prim_pos,UT_prim_UMI}
+mkdir -p outfiles_featureCounts/combined_SC_KL_antisense/{UTK_prim_no,UTK_prim_pos,UTK_prim_UMI,UT_prim_no,UT_prim_pos,UT_prim_UMI}
 ```
 </details>
 <br />
@@ -1037,9 +1044,251 @@ echo "${#UT_prim_UMI[@]}"
 </details>
 <br />
 
+<a id="run-featurecounts-with-combined_sc_klantisensegff3"></a>
+#### Run featureCounts with combined_SC_KL.antisense.gff3
+<a id="code-10"></a>
+##### Code
+<details>
+<summary><i>Code: Run featureCounts with combined_SC_KL.antisense.gff3</i></summary>
+
+```bash
+#  Set up unchanging variables
+threads="${SLURM_CPUS_ON_NODE}"
+strand=1
+gff="combined_SC_KL.antisense.gff3"
+indir="bams/aligned_UT_primary_dedup-UMI"
+
+#  UTK_prim_no
+outfile="outfiles_featureCounts/combined_SC_KL_antisense/UTK_prim_no/UTK_prim_no.featureCounts"
+featureCounts \
+    --verbose \
+    -T "${threads}" \
+    -p \
+    --countReadPairs \
+    -s "${strand}" \
+    -a "${gff}" \
+    -F "GTF" \
+    -g "ID" \
+    -o "${outfile}" \
+    ${UTK_prim_no[*]} \
+        > >(tee -a "${outfile}.stdout.txt") \
+        2> >(tee -a "${outfile}.stderr.txt" >&2)
+
+#  UTK_prim_pos
+outfile="outfiles_featureCounts/combined_SC_KL_antisense/UTK_prim_pos/UTK_prim_pos.featureCounts"
+featureCounts \
+    --verbose \
+    -T "${threads}" \
+    -p \
+    --countReadPairs \
+    -s "${strand}" \
+    -a "${gff}" \
+    -F "GTF" \
+    -g "ID" \
+    -o "${outfile}" \
+    ${UTK_prim_pos[*]} \
+        > >(tee -a "${outfile}.stdout.txt") \
+        2> >(tee -a "${outfile}.stderr.txt" >&2)
+
+#  UTK_prim_UMI
+outfile="outfiles_featureCounts/combined_SC_KL_antisense/UTK_prim_UMI/UTK_prim_UMI.featureCounts"
+featureCounts \
+    --verbose \
+    -T "${threads}" \
+    -p \
+    --countReadPairs \
+    -s "${strand}" \
+    -a "${gff}" \
+    -F "GTF" \
+    -g "ID" \
+    -o "${outfile}" \
+    ${UTK_prim_UMI[*]} \
+        > >(tee -a "${outfile}.stdout.txt") \
+        2> >(tee -a "${outfile}.stderr.txt" >&2)
+
+#  UT_prim_no
+outfile="outfiles_featureCounts/combined_SC_KL_antisense/UT_prim_no/UT_prim_no.featureCounts"
+featureCounts \
+    --verbose \
+    -T "${threads}" \
+    -p \
+    --countReadPairs \
+    -s "${strand}" \
+    -a "${gff}" \
+    -F "GTF" \
+    -g "ID" \
+    -o "${outfile}" \
+    ${UT_prim_no[*]} \
+        > >(tee -a "${outfile}.stdout.txt") \
+        2> >(tee -a "${outfile}.stderr.txt" >&2)
+
+#  UT_prim_pos
+outfile="outfiles_featureCounts/combined_SC_KL_antisense/UT_prim_pos/UT_prim_pos.featureCounts"
+featureCounts \
+    --verbose \
+    -T "${threads}" \
+    -p \
+    --countReadPairs \
+    -s "${strand}" \
+    -a "${gff}" \
+    -F "GTF" \
+    -g "ID" \
+    -o "${outfile}" \
+    ${UT_prim_pos[*]} \
+        > >(tee -a "${outfile}.stdout.txt") \
+        2> >(tee -a "${outfile}.stderr.txt" >&2)
+
+#  UT_prim_UMI
+outfile="outfiles_featureCounts/combined_SC_KL_antisense/UT_prim_UMI/UT_prim_UMI.featureCounts"
+featureCounts \
+    --verbose \
+    -T "${threads}" \
+    -p \
+    --countReadPairs \
+    -s "${strand}" \
+    -a "${gff}" \
+    -F "GTF" \
+    -g "ID" \
+    -o "${outfile}" \
+    ${UT_prim_UMI[*]} \
+        > >(tee -a "${outfile}.stdout.txt") \
+        2> >(tee -a "${outfile}.stderr.txt" >&2)
+
+echo "Done."
+```
+</details>
+<br />
+
+<a id="run-featurecounts-on-bams-in-bams_renamed-with-combined_aggtf"></a>
+### Run featureCounts on bams in bams_renamed/ with combined_AG.gtf
+<a id="get-situated-2"></a>
+#### Get situated
+<a id="code-11"></a>
+##### Code
+<details>
+<summary><i>Code: Get situated</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+tmux new -s fC_comb  # detach
+tmux a -t fC_comb
+
+grabnode  # 16, defaults
+source activate expression_env
+
+transcriptome && 
+    {
+        cd "results/2023-0215" \
+            || echo "cd'ing failed; check on this..."
+    }
+
+mkdir -p outfiles_featureCounts/combined_AG/mRNA/{UTK_prim_no,UTK_prim_pos,UTK_prim_UMI,UT_prim_no,UT_prim_pos,UT_prim_UMI}
+```
+</details>
+<br />
+
+<a id="set-up-arrays-2"></a>
+#### Set up arrays
+<a id="code-12"></a>
+##### Code
+<details>
+<summary><i>Code: Set up arrays</i></summary>
+
+```bash
+unset UTK_prim_no
+typeset -a UTK_prim_no
+while IFS=" " read -r -d $'\0'; do
+    UTK_prim_no+=( "${REPLY}" )
+done < <(\
+    find "bams_renamed/UTK_prim_no" \
+        -type l \
+        -name "*.bam" \
+        -print0 \
+            | sort -z \
+)
+
+unset UTK_prim_pos
+typeset -a UTK_prim_pos
+while IFS=" " read -r -d $'\0'; do
+    UTK_prim_pos+=( "${REPLY}" )
+done < <(\
+    find "bams_renamed/UTK_prim_pos" \
+        -type l \
+        -name "*.bam" \
+        -print0 \
+            | sort -z \
+)
+
+unset UTK_prim_UMI
+typeset -a UTK_prim_UMI
+while IFS=" " read -r -d $'\0'; do
+    UTK_prim_UMI+=( "${REPLY}" )
+done < <(\
+    find "bams_renamed/UTK_prim_UMI" \
+        -type l \
+        -name "*.bam" \
+        -print0 \
+            | sort -z \
+)
+
+unset UT_prim_no
+typeset -a UT_prim_no
+while IFS=" " read -r -d $'\0'; do
+    UT_prim_no+=( "${REPLY}" )
+done < <(\
+    find "bams_renamed/UT_prim_no" \
+        -type l \
+        -name "*.bam" \
+        -print0 \
+            | sort -z \
+)
+
+unset UT_prim_pos
+typeset -a UT_prim_pos
+while IFS=" " read -r -d $'\0'; do
+    UT_prim_pos+=( "${REPLY}" )
+done < <(\
+    find "bams_renamed/UT_prim_pos" \
+        -type l \
+        -name "*.bam" \
+        -print0 \
+            | sort -z \
+)
+
+unset UT_prim_UMI
+typeset -a UT_prim_UMI
+while IFS=" " read -r -d $'\0'; do
+    UT_prim_UMI+=( "${REPLY}" )
+done < <(\
+    find "bams_renamed/UT_prim_UMI" \
+        -type l \
+        -name "*.bam" \
+        -print0 \
+            | sort -z \
+)
+
+echo_test "${UTK_prim_no[@]}"
+echo_test "${UTK_prim_pos[@]}"
+echo_test "${UTK_prim_UMI[@]}"
+echo_test "${UT_prim_no[@]}"
+echo_test "${UT_prim_pos[@]}"
+echo_test "${UT_prim_UMI[@]}"
+
+echo "${#UTK_prim_no[@]}"
+echo "${#UTK_prim_pos[@]}"
+echo "${#UTK_prim_UMI[@]}"
+echo "${#UT_prim_no[@]}"
+echo "${#UT_prim_pos[@]}"
+echo "${#UT_prim_UMI[@]}"
+```
+</details>
+<br />
+
 <a id="run-featurecounts-with-combined_aggff3"></a>
 #### Run featureCounts with combined_AG.gff3
-<a id="code-10"></a>
+<a id="code-13"></a>
 ##### Code
 <details>
 <summary><i>Code: Run featureCounts with combined_AG.gff3</i></summary>
@@ -1158,9 +1407,9 @@ echo "Done."
 
 <a id="generate-multiqc-plots"></a>
 ## Generate MultiQC plots
-<a id="get-situated-2"></a>
+<a id="get-situated-3"></a>
 ### Get situated
-<a id="code-11"></a>
+<a id="code-14"></a>
 #### Code
 <details>
 <summary><i>Code: Get situated</i></summary>
@@ -1184,7 +1433,7 @@ mkdir -p MultiQC/{combined_SC_KL,combined_SC_KL_20S}
 
 <a id="run-multiqc"></a>
 ### Run MultiQC
-<a id="code-12"></a>
+<a id="code-15"></a>
 #### Code
 <details>
 <summary><i>Code: Run MultiQC</i></summary>

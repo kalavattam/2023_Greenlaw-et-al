@@ -10,8 +10,8 @@ output: html_notebook
 ### Get situated
 #### Set working directory
 ```{r, results='hide', message=FALSE}
-# p_local <- "/Users/kalavattam/Dropbox/FHCC"  # KrisMac
-p_local <- "/Users/kalavatt/projects-etc"  # WorkMac
+p_local <- "/Users/kalavattam/Dropbox/FHCC"  # KrisMac
+# p_local <- "/Users/kalavatt/projects-etc"  # WorkMac
 p_wd <- "2022_transcriptome-construction/results/2023-0215"
 setwd(paste(p_local, p_wd, sep = "/"))
 
@@ -22,6 +22,7 @@ rm(p_local, p_wd)
 #### Load necessary libraries
 ```{r, results='hide', message=FALSE}
 library(DESeq2)
+library(EnhancedVolcano)
 library(GenomicRanges)
 library(IRanges)
 library(tidyverse)
@@ -258,7 +259,7 @@ datasets <- c(
     # "WT_G1_day1_ovn_SS_aux-F_tc-F_rep1",
     # "WT_G1_day1_ovn_SS_aux-F_tc-F_rep2",
     "WT_Q_day7_ovn_N_aux-F_tc-F_rep1",
-    "WT_Q_day7_ovn_N_aux-F_tc-F_rep2",
+    "WT_Q_day7_ovn_N_aux-F_tc-F_rep2"
     # "WT_Q_day7_ovn_SS_aux-F_tc-F_rep1",
     # "WT_Q_day7_ovn_SS_aux-F_tc-F_rep2"
 )
@@ -274,16 +275,6 @@ counts_data
 
 ```{r}
 #  Use the "keys" column to isolate WT G1 and Q Ovation 4tU-seq datasets
-datasets <- c(
-    # "WT_G1_day1_ovn_N_aux-F_tc-F_rep1",
-    # "WT_G1_day1_ovn_N_aux-F_tc-F_rep2",
-    # "WT_G1_day1_ovn_SS_aux-F_tc-F_rep1",
-    # "WT_G1_day1_ovn_SS_aux-F_tc-F_rep2",
-    "WT_Q_day7_ovn_N_aux-F_tc-F_rep1",
-    "WT_Q_day7_ovn_N_aux-F_tc-F_rep2",
-    "WT_Q_day7_ovn_SS_aux-F_tc-F_rep1",
-    "WT_Q_day7_ovn_SS_aux-F_tc-F_rep2"
-)
 col_data <- samples[samples$keys %in% datasets, ] %>%
     as.data.frame() %>%
     tibble::column_to_rownames(., var = "keys")
@@ -302,17 +293,21 @@ col_data
 dds <- DESeq2::DESeqDataSetFromMatrix(
     countData = counts_data,
     colData = col_data,
-    # design = ~ state + transcription + state:transcription,  
-    #TODO Try out/mess around with complicated models later
-    design = ~ transcription,
+    design = ~ state,
     rowRanges = pos_info
 )
+
+#  Make a back-up of the DESeqDataSet object
+bak.dds <- dds
 
 #  How do things look?
 # dds %>% BiocGenerics::counts() %>% head()
 # dds@rowRanges
 # dds@design
 # dds@assays
+
+#TODO 1/2 Mess around with complicated models for Q vs G1 w/r/t N vs SS later
+#TODO 2/2 e.g., `design = ~ state + transcription + state:transcription`
 ```
 <br />
 
@@ -321,7 +316,7 @@ dds <- DESeq2::DESeqDataSetFromMatrix(
 ```{r}
 # threshold <- 0
 # dds_filt <- dds[rowSums(BiocGenerics::counts(dds)) >= threshold, ]
-
+#
 #  Breakdown
 #    0 13166
 #   10 11893
@@ -329,20 +324,28 @@ dds <- DESeq2::DESeqDataSetFromMatrix(
 #  100 10645
 #  500 8601
 # 1000 6738
-
+#
 # rm(threshold, dds_filt)
 ```
 <br />
+<br />
 
+## Run analyses with *S. cerevisae* features only
 ### Perform normalization: `WT_{G1,Q}_day7_ovn_N_aux-F_tc-F_rep{1,2}`
-#### Estimate size factors
+Here, we subset out the *K. lactis* features and are thus using only
+*S. cerevisiae* features in the size-factor estimation. No control genes are
+used.
+
 ```{r}
-dds <- BiocGenerics::estimateSizeFactors(dds)
+dds <- BiocGenerics::estimateSizeFactors(
+    dds[dds@rowRanges$genome != "K_lactis", ]
+)
 dds@colData
-#  N rep1 2.826111
-#  N rep2 2.737671
-# SS rep1 0.419261
-# SS rep2 0.323642
+#  Not using controlGenes; calculate size factors with S. cerevisiae features
+# G1 rep1 1.144887
+# G1 rep2 1.166906
+#  Q rep1 0.784023
+#  Q rep2 0.970161
 ```
 <br />
 
@@ -357,18 +360,28 @@ has already been calculated. If many of genes have large differences in counts
 due to the experimental design, it is important to set `blind = FALSE` for
 downstream analysis."
 
-*(We may want to exclude the K. lactis data prior to doing this&mdash;not*
-*sure...)*
 ```{r}
-rlog_F <- DESeq2::rlog(dds, blind = FALSE) %>%
+rlog_F <- DESeq2::rlog(
+    dds,
+    blind = FALSE
+) %>%
     SummarizedExperiment::assay() %>%
     tibble::as_tibble() %>%
-    dplyr::bind_cols(., tibble::as_tibble(dds@rowRanges))
+    dplyr::bind_cols(
+        .,
+        tibble::as_tibble(dds@rowRanges)
+    )
 
-rlog_T <- DESeq2::rlog(dds, blind = TRUE) %>%
+rlog_T <- DESeq2::rlog(
+    dds,
+    blind = TRUE
+) %>%
     SummarizedExperiment::assay() %>%
     tibble::as_tibble() %>%
-    dplyr::bind_cols(., tibble::as_tibble(dds@rowRanges))
+    dplyr::bind_cols(
+        .,
+        tibble::as_tibble(dds@rowRanges)
+    )
 
 #  How does rlog_T look?
 rlog_T
@@ -379,15 +392,25 @@ rlog_T
 #### Call `DESeq2` using default parameters
 ```{r}
 dds <- DESeq2::DESeq(dds)
+# using pre-existing size factors
+# estimating dispersions
+# gene-wise dispersion estimates
+# mean-dispersion relationship
+# final dispersion estimates
+# fitting model and testing
 ```
 <br />
 
 #### Call `DESeq2::results()`
+We need to kinds of output from `DESeq2::results()`: A `DESeq2` `DataFrame`
+object and a `GRanges` object; we need our data in two different data formats
+for use with different functions in downstream analyses.
 ```{r}
 independent_filtering <- TRUE
 threshold_p <- 0.05
 threshold_lfc <- 0
 
+#  Output a DESeq2 DataFrame object
 DGE_unshrunken_DF <- DESeq2::results(
     dds,
     name = DESeq2::resultsNames(dds)[2],
@@ -397,6 +420,8 @@ DGE_unshrunken_DF <- DESeq2::results(
     format = "DataFrame"
 )
 
+#  Output a GRanges object, which we can easily add to and convert to other
+#+ formats (such as a tibble)
 DGE_unshrunken_GR <- DESeq2::results(
     dds,
     name = DESeq2::resultsNames(dds)[2],
@@ -414,6 +439,20 @@ t_DGE <- DGE_unshrunken_GR %>% dplyr::as_tibble()
 rm(independent_filtering, threshold_p, threshold_lfc)
 ```
 <br />
+
+#### Make an MA plot
+```{r}
+#REMEMBER 1/2 No `controlGenes` used; calculation of size factors with only S.
+#REMEMBER 2/2 cerevisiae features
+BiocGenerics::plotMA(DGE_unshrunken_DF)
+#  Plot of only S. cerevisiae points (K. lactis points already gone)
+#+ - top: up in Q
+#+ - bottom: up in G1
+
+#  The data are centered nicely on 0, suggesting the normalization we used is
+#+ appropriate
+```
+
 
 #### Make a volcano plot
 ```{r}
@@ -510,18 +549,17 @@ theme_slick_no_legend <- theme_slick + theme(legend.position = "none")
 #  Make the plot
 all <- t_DGE$feature
 selection_down <- t_DGE %>%
-    dplyr::filter(genome != "K_lactis") %>%
     dplyr::filter(log2FoldChange < 0) %>%
     dplyr::arrange(padj) %>%
-    dplyr::slice(1:20)
+    dplyr::slice(1:5)
 selection_up <- t_DGE %>%
-    dplyr::filter(genome != "K_lactis") %>%
     dplyr::filter(log2FoldChange > 0) %>%
     dplyr::arrange(padj) %>%
-    dplyr::slice(1:20)
+    dplyr::slice(1:5)
 selection <- c(selection_down[["feature"]], selection_up[["feature"]]) %>%
         as.character()
 
+title <- "Size factors est. w/all SC; points: SC; left: up G1; right: up Q"
 p <- plot_volcano(
     table = t_DGE,
     label = all,
@@ -529,10 +567,10 @@ p <- plot_volcano(
     label_size = 2.5,
     p_cutoff = 0.05,
     FC_cutoff = 1,
-    xlim = c(-9, 9),
-    ylim = c(0, 90),
-    color = "#DC267F",
-    title = "Test"
+    xlim = c(-14, 14),
+    ylim = c(0, 310),
+    color = "#52BE9B",
+    title = title
 )
 p
 # save_volcano(
@@ -543,8 +581,255 @@ p
 # )
 ```
 
+## Run analyses with *K. lactis* as `controlGenes`
+### Perform normalization: `WT_{G1,Q}_day7_ovn_N_aux-F_tc-F_rep{1,2}`
+Here, we're using a logical vector (vector composed of elements with values of
+either `TRUE` or `FALSE`) obtained from parsing the `rowRanges` data frame
+within the `dds` object. Specifically, we're saying, "Return `TRUE` if the
+`rowRanges` variable `genome` has a value of `K_lactis`; otherwise, return
+`FALSE`." `BiocGenerics::estimateSizeFactors()` is using the values associated
+with those `TRUE`s to isolate the counts for *K. lactis*-specific features  
+and then use those values to calculate the size factors.
+
+```{r}
+#  Load the backup DESeqDataSet
+dds <- bak.dds
+
+#  Recalculate size factors using K. lactis features as `controlGenes`
+dds <- BiocGenerics::estimateSizeFactors(
+    dds,
+    controlGenes = (dds@rowRanges$genome == "K_lactis")
+)
+dds@colData
+#  Using all of the K. lactis features as controlGenes
+# G1 rep1 0.174943
+# G1 rep2 0.339968
+#  Q rep1 4.922491
+#  Q rep2 3.450797
+
+#NOTE Note the much smaller (G1) and much larger (Q) coefficients
+```
+<br />
+
+#### Do rlog normalization: `WT_{G1,Q}_day7_ovn_N_aux-F_tc-F_rep{1,2}`
+Here, we exclude the *K. lactis* data prior to doing the `rlog` normalizations.
+
+```{r}
+#  Perform rlog normalization after subsetting out the K. lactis genes
+rlog_F <- DESeq2::rlog(
+    dds[dds@rowRanges$genome != "K_lactis", ],
+    blind = FALSE
+) %>%
+    SummarizedExperiment::assay() %>%
+    tibble::as_tibble() %>%
+    dplyr::bind_cols(
+        .,
+        tibble::as_tibble(dds@rowRanges)[dds@rowRanges$genome != "K_lactis", ]
+    )
+
+rlog_T <- DESeq2::rlog(
+    dds[dds@rowRanges$genome != "K_lactis", ],
+    blind = TRUE
+) %>%
+    SummarizedExperiment::assay() %>%
+    tibble::as_tibble() %>%
+    dplyr::bind_cols(
+        .,
+        tibble::as_tibble(dds@rowRanges)[dds@rowRanges$genome != "K_lactis", ]
+    )
+
+#  How does rlog_T look?
+rlog_T
+#  (Results are the same as above)
+```
+<br />
+
+### Run `DESeq2`: `WT_{G1,Q}_day7_ovn_N_aux-F_tc-F_rep{1,2}`
+#### Call `DESeq2` using default parameters
+Since we've already calculated the size factors, I think we can exclude
+*K. lactis* features from our work from here on out.
+```{r}
+dds <- DESeq2::DESeq(dds[dds@rowRanges$genome != "K_lactis", ])
+# using pre-existing size factors
+# estimating dispersions
+# gene-wise dispersion estimates
+# mean-dispersion relationship
+# final dispersion estimates
+# fitting model and testing
+```
+<br />
+
+#### Call `DESeq2::results()`
+```{r}
+independent_filtering <- TRUE
+threshold_p <- 0.05
+threshold_lfc <- 0
+
+#  Output a DESeq2 DataFrame object
+DGE_unshrunken_DF <- DESeq2::results(
+    dds,
+    name = DESeq2::resultsNames(dds)[2],
+    independentFiltering = independent_filtering,
+    alpha = threshold_p,
+    lfcThreshold = threshold_lfc,
+    format = "DataFrame"
+)
+
+#  Output a GRanges object, which we can easily add to and convert to other
+#+ formats (such as a tibble)
+DGE_unshrunken_GR <- DESeq2::results(
+    dds,
+    name = DESeq2::resultsNames(dds)[2],
+    independentFiltering = independent_filtering,
+    alpha = threshold_p,
+    lfcThreshold = threshold_lfc,
+    format = "GRanges"
+)
+DGE_unshrunken_GR$feature <- MatrixGenerics::rowRanges(dds)$feature
+DGE_unshrunken_GR$type <- MatrixGenerics::rowRanges(dds)$type
+DGE_unshrunken_GR$genome <- MatrixGenerics::rowRanges(dds)$genome
+
+t_DGE <- DGE_unshrunken_GR %>% dplyr::as_tibble()
+
+rm(independent_filtering, threshold_p, threshold_lfc)
+```
+<br />
+
+#### Make an MA plot
+Notice that the data are no longer centered on `log fold change = 0` when we
+use all *K. lactis* features as `controlGenes`. The data seem to be centered on
+approximately `log fold change = 5`.
+```{r}
+BiocGenerics::plotMA(DGE_unshrunken_DF)
+#  Plot of only S. cerevisiae points
+#+ - top: up in Q
+#+ - bottom: up in G1
+```
 
 
+#### Make a volcano plot
+```{r}
+plot_volcano <- function(
+    table, label, selection, label_size, p_cutoff, FC_cutoff,
+    xlim, ylim, color, title, ...
+) {
+    # :param table: dataframe of test statistics
+    # :param label: character vector of all variable names in param table
+    # :param selection: character vector of selected variable names in param
+    #                   table
+    # :param label_size: size of label font [float]
+    # :param p_cutoff: cut-off for statistical significance; a horizontal line
+    #                  will be drawn at -log10(pCutoff); p is actually padj
+    # :param FC_cutoff: cut-off for absolute log2 fold-change; vertical lines
+    #                   will be drawn at the negative and positive values of
+    #                   log2FCcutoff
+    # :param xlim: limits of the x-axis
+    # :param ylim: limits of the y-axis
+    # :param color: color of DEGs, e.g., '#52BE9B'
+    # :param title: plot title
+    volcano <- EnhancedVolcano::EnhancedVolcano(
+        toptable = table,
+        lab = label,
+        selectLab = selection,
+        x = "log2FoldChange",
+        y = "padj",
+        xlab = "log2(FC)",
+        ylab = "-log10(padj)",
+        pCutoff = p_cutoff,
+        pCutoffCol = "padj",
+        FCcutoff = FC_cutoff,
+        xlim = xlim,
+        ylim = ylim,
+        cutoffLineType = "dashed",
+        cutoffLineWidth = 0.2,
+        pointSize = 1,
+        shape = 16,
+        colAlpha = 0.25,
+        col = c('#D3D3D3', '#D3D3D3', '#D3D3D3', color),
+        title = NULL,
+        subtitle = NULL,
+        caption = NULL,
+        borderColour = "#000000",
+        borderWidth = 0.2,
+        gridlines.major = TRUE,
+        gridlines.minor = TRUE,
+        axisLabSize = 10,
+        labSize = label_size,
+        boxedLabels = TRUE,
+        parseLabels = TRUE,
+        drawConnectors = TRUE,
+        widthConnectors = 0.2,
+        colConnectors = 'black',
+        max.overlaps = Inf
+    ) +
+        theme_slick_no_legend +
+        ggtitle(title)
+    return(volcano)
+    #FUNCTION
+}
 
 
+save_volcano <- function(plot, file, width, height) {
+    ggplot2::ggsave(
+        filename = file,
+        plot,
+        device = "pdf",
+        h = width,
+        w = height,
+        units = "in"
+    )
+    #FUNCTION
+}
 
+
+#  Set up custom ggplot2 plot themes
+theme_slick <- theme_classic() +
+    theme(
+        panel.grid.major = ggplot2::element_line(size = 0.4),
+        panel.grid.minor = ggplot2::element_line(size = 0.2),
+        axis.line = ggplot2::element_line(size = 0.2),
+        axis.ticks = ggplot2::element_line(size = 0.4),
+        axis.text = ggplot2::element_text(color = "black"),
+        axis.title.x = ggplot2::element_text(),
+        axis.title.y = ggplot2::element_text(),
+        plot.title = ggplot2::element_text(),
+        text = element_text(family = "")
+    )
+
+theme_slick_no_legend <- theme_slick + theme(legend.position = "none")
+
+
+#  Make the plot
+all <- t_DGE$feature
+selection_down <- t_DGE %>%
+    dplyr::filter(log2FoldChange < 0) %>%
+    dplyr::arrange(padj) %>%
+    dplyr::slice(1:5)
+selection_up <- t_DGE %>%
+    dplyr::filter(log2FoldChange > 0) %>%
+    dplyr::arrange(padj) %>%
+    dplyr::slice(1:5)
+selection <- c(selection_down[["feature"]], selection_up[["feature"]]) %>%
+        as.character()
+
+title <- "Size factors est. w/KL. Points: SC; left: up G1; right: up Q."
+p <- plot_volcano(
+    table = t_DGE,
+    label = all,
+    selection = selection,
+    label_size = 2.5,
+    p_cutoff = 0.05,
+    FC_cutoff = 1,
+    xlim = c(-14, 14),
+    ylim = c(0, 310),
+    color = "#DC267F",
+    title = title
+)
+p
+# save_volcano(
+#     file = "test.pdf",
+#     plot = p,
+#     width = 2,
+#     height = 3
+# )
+```

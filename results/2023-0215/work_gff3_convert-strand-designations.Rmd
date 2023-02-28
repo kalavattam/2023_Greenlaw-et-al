@@ -1,0 +1,80 @@
+---
+title: "work_gff3_convert-strand-designations.Rmd"
+author: "KA"
+email: "kalavatt@fredhutch.org"
+output: html_notebook
+---
+
+## Get situated
+### Set working directory
+```{r, results='hide', message=FALSE}
+p_local <- "/Users/kalavattam/Dropbox/FHCC"  # KrisMac
+# p_local <- "/Users/kalavatt/projects-etc"  # WorkMac
+p_wd <- "2022_transcriptome-construction/results/2023-0215"
+setwd(paste(p_local, p_wd, sep = "/"))
+
+rm(p_local, p_wd)
+```
+<br />
+
+### Load necessary libraries
+```{r, results='hide', message=FALSE}
+library(rtracklayer)
+library(tidyverse)
+```
+<br />
+<br />
+
+## Reverse strand + and - strand designations in "combined_SC_KL.gff3"
+```{r}
+#  "combined_SC_KL.gff3" was manually copied into the work directory from
+#+ "${HOME}/genomes/combined_SC_KL_20S/gff3"
+gff3_in <- rtracklayer::import.gff3("combined_SC_KL.gff3")
+gff3_in@strand@values %>% head(n = 20)
+
+#  Create an intermediate naming state to faciliate easy conversion of "+" to
+#+ "-" and vice versa
+intermediate <- ifelse(
+    gff3_in@strand@values == "+",
+    "change_to_minus",
+    ifelse(
+        gff3_in@strand@values == "-",
+        "change_to_plus",
+        "*"
+    )
+) %>%
+    as.data.frame()
+colnames(intermediate) <- "intermediate"
+
+#  Create a factor vector of converted strand designations
+final <- ifelse(
+    intermediate$intermediate == "change_to_minus",
+    "-",
+    ifelse(
+        intermediate$intermediate == "change_to_plus",
+        "+",
+        "*"
+    )
+) %>%
+    as.factor()
+
+#  Order the factor levels to match the order in the gff3 file
+level_order <- c("+", "-", "*")
+final <- ordered(final, levels = level_order)
+
+#  Create a variable for the gff3 with converted strand designations to be
+#+ written out
+gff3_out <- gff3_in
+gff3_out@strand@values <- final
+gff3_out@strand@values %>% head(n = 20)
+
+rm(intermediate, final, level_order)
+```
+<br />
+<br />
+
+## Write out gff3 with converted strand designations to work directory
+```{r}
+rtracklayer::export.gff3(gff3_out, "combined_SC_KL.antisense.gff3")
+```
+<br />
