@@ -581,7 +581,7 @@ ggplot(tbl, aes(x = log10baseMean, y = log2FoldChange, colour = threshold)) +
 
 #### Draw an MA plot that colors features that passed independent filtering
 ```{r}
-tbl <- t_DGE_KL
+tbl <- t_DGE_SC
 tbl <- tbl[with(tbl, order(log2FoldChange)), ]
 tbl$threshold <- as.factor(tbl$padj <= 0.05)
 tbl$log10baseMean <- ifelse(
@@ -614,7 +614,7 @@ ggplot(tbl, aes(x = log10baseMean, y = log2FoldChange, colour = threshold)) +
 tbl$stably_expressed <- ifelse(
     !is.na(tbl$threshold), tbl$feature, NA_character_
 )
-stably_expressed_KL <- tbl$stably_expressed[!is.na(tbl$stably_expressed)]
+stably_expressed_SC <- tbl$stably_expressed[!is.na(tbl$stably_expressed)]
 
 rm(tbl)
 ```
