@@ -932,6 +932,8 @@ mamba install \
         bioconductor-enhancedvolcano bioconductor-pcatools
 
 mamba install -c conda-forge r-markdown  # Needed by RStudio on WorkMac...
+
+mamba install -c conda-forge r-roxygen2  #TODO Copy in installation text...
 ```
 </details>
 <br />
