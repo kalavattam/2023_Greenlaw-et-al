@@ -1,5 +1,5 @@
 ---
-title: "work_normalization-etc_rough-draft_NNS_vary-on-transcription"
+title: "work_normalization-etc_rough-draft_OsTIR-NNS_vary-on-strain"
 author: "KA"
 email: "kalavatt@fredhutch.org"
 output: html_notebook
@@ -8,7 +8,7 @@ output: html_notebook
 
 ## Prepare data for various DGE analyses
 ### Get situated
-#### Set working directory
+#### Set working directory (`wd`)
 ```{r Set working directory, results='hide', message=FALSE}
 # p_local <- "/Users/kalavattam/Dropbox/FHCC"  # KrisMac
 p_local <- "/Users/kalavatt/projects-etc"  # WorkMac
@@ -36,12 +36,12 @@ library(readxl)  # Needed for reading in Excel file of filenames, variables
 <br />
 
 #### Use normal numbers instead of default scientific numbers in plots
-The `scipen` option determines how likely R is to switch to scientific notation;
-the higher the value, the less likely it is to switch. We're setting the option
-prior to making plots; if plots still have scientific notation, then we need to
-set the option to a higher number.
+The `scipen` option determines how likely R is to switch to scientific
+notation; the higher the value, the less likely it is to switch. We're setting
+the option prior to making plots; if plots still have scientific notation, then
+we need to set the option to a higher number.
 
-```{r}
+```{r Set scipen, results='hide', message=FALSE}
 options(scipen=999)
 ```
 <br />
@@ -49,10 +49,19 @@ options(scipen=999)
 #### Initialize necessary functions
 ```{r Initialize necessary functions, results='hide', message=FALSE}
 split_isolate_convert <- function(in_vector, field, column_name) {
-    # :param in_vector: ...
-    # :param field: ...
-    # :param column_name: ...
-    # :return out_df: ...
+    # Take in a character vector of S288C R64-1-1 feature names and split
+    # elements at the underscores that separate feature names from
+    # classifications, e.g., "YER043_mRNA-E1" is split at the underscore. User
+    # has the option to return either the first (feature name) or second
+    # (classification) value in a tibble data type. User must also input a
+    # name for the column in the tibble.
+    #
+    # :param in_vector: character vector of S288C R64-1-1 feature names [vec]
+    # :param field: first or second string separated by underscore
+    #               [int = 1 | int = 2]
+    # :param column_name: name of column in tibble [chr]
+    # :return out_df: tibble of first or second strings separated by underscore
+    #                 [tbl]
     out_df <- in_vector %>%
         stringr::str_split(., c("_")) %>%
         sapply(., "[", field) %>%
@@ -64,7 +73,6 @@ split_isolate_convert <- function(in_vector, field, column_name) {
     return(out_df)
 }
 #TODO Note where this function is being used
-#TODO Add description of what function does
 #TODO Add parameter and return descriptions
 
 
@@ -72,21 +80,25 @@ plot_volcano <- function(
     table, label, selection, label_size, p_cutoff, FC_cutoff,
     xlim, ylim, color, title, subtitle, ...
 ) {
-    # :param table: dataframe of test statistics
-    # :param label: character vector of all variable names in param table
+    #TODO Write a description of this function
+    #
+    # :param table: dataframe of test statistics [df]
+    # :param label: character vector of all variable names in param table [vec]
     # :param selection: character vector of selected variable names in param
-    #                   table
+    #                   table [vec]
     # :param label_size: size of label font [float]
     # :param p_cutoff: cut-off for statistical significance; a horizontal line
     #                  will be drawn at -log10(pCutoff); p is actually padj
+    #                  [float]
     # :param FC_cutoff: cut-off for absolute log2 fold-change; vertical lines
     #                   will be drawn at the negative and positive values of
     #                   log2FCcutoff
-    # :param xlim: limits of the x-axis
-    # :param ylim: limits of the y-axis
-    # :param color: color of DEGs, e.g., '#52BE9B'
-    # :param title: plot title
-    # :param subtitle: plot subtitle
+    #                  [float]
+    # :param xlim: limits of the x-axis [float]
+    # :param ylim: limits of the y-axis [float]
+    # :param color: color of DEGs, e.g., '#52BE9B' [hex]
+    # :param title: plot title [chr]
+    # :param subtitle: plot subtitle [chr]
     # :return volcano: ...
     volcano <- EnhancedVolcano::EnhancedVolcano(
         toptable = table,
@@ -128,11 +140,12 @@ plot_volcano <- function(
     return(volcano)
 }
 #TODO Note where this function is being used
-#TODO Add description of what function does
 #TODO Add return description
 
 
 save_volcano <- function(plot, file, width, height) {
+    #TODO Write a description of this function
+    #
     # :param plot: ...
     # :param file: ...
     # :param width: ...
@@ -148,7 +161,6 @@ save_volcano <- function(plot, file, width, height) {
     )
 }
 #TODO Note where this function is being used
-#TODO Add description of what function does
 #TODO Add return description
 
 
@@ -180,10 +192,10 @@ theme_slick_no_legend <- theme_slick + theme(legend.position = "none")
 
 ### Load in Excel spreadsheet of samples names and variables
 The spreadsheet includes Alison's original sample names; we can use this
-infomation to associate the new sample names, which are made up of `DESeq2` GLM
-variables, with the old names, which reflect Alison's wet-lab, library-prep,
-etc. work
-```{r load spreadsheet, results='hide', message=FALSE}
+information to associate the new sample names, which are made up of `DESeq2`
+GLM variables, with the old names, which reflect Alison's wet-lab,
+library-prep, etc. work
+```{r Load spreadsheet, results='hide', message=FALSE}
 p_xl <- "notebook"  #INPATH
 f_xl <- "variables.xlsx"  #INFILE
 #NOTE 1/4 Alison: you can adjust 'p_xc' (path for Excel file) and "f_xl" (the
@@ -322,10 +334,10 @@ t_fc$type <-  ifelse(
 #+ featureCounts")
 t_fc
 
-#  Check on the split information: This code tallies the numbers features per
-#+ classification, where classifications are things like "mRNA-E1", "tRNA-E1",
-#+ "NA_SC" (NAs associated with S. cerevisiae), "NA_KL" (NAs associated with K.
-#+ lactis), etc.
+#  Check on the split information: This code tallies the numbers of features
+#+ per classification, where classifications are things like "mRNA-E1",
+#+ "tRNA-E1", "NA_SC" (NAs associated with S. cerevisiae), "NA_KL" (NAs associ-
+#+ ated with K. lactis), etc.
 levels(t_fc$type)  # 19 levels
 t_fc %>%
     dplyr::group_by(type) %>%
@@ -369,8 +381,8 @@ pos_info
     + `replicate`
 
 ```{r Make a master model matrix, results='hide', message=FALSE}
-#  Columns ten through to the last column are composed of sample feature
-#+ counts; get these column names into a vector
+#  Columns 10 through to the last column are composed of sample feature counts;
+#+ get these column names into a vector
 samples <- colnames(t_fc)[10:length(colnames(t_fc))]
 
 #  Convert the vector of column names to a list by splitting each element at
@@ -378,9 +390,13 @@ samples <- colnames(t_fc)[10:length(colnames(t_fc))]
 #+ with one string for 'strain', one for 'state', etc.; these 
 samples <- stringr::str_split(samples, "_")
 
-#  Convert the list to a df, transpose it, then convert it to a tibble
-#+ (R fun fact: 'tibble' data types can't be built directly from list data
-#+ types)
+#  Convert the list to a dataframe, transpose it, then convert it to a tibble
+#+ [R fun fact: 'tibble' data types can't be built directly from 'list' data
+#+ types; in fact, it can difficult to build 'dataframe' types from 'list'
+#+ types as well; the reason we have no issues doing this is because we have
+#+ ensured ahead of time that each list element has the same number of
+#+ subelements (8); the difficulty arises when lists elements have varying
+#+ numbers of subelements; ]
 samples <- samples %>%
     as.data.frame(
         .,
@@ -436,20 +452,15 @@ rm(t_xl, keys)
 ```
 <br />
 
-### Do prep work with `WT_{G1,Q}_day7_ovn_N_aux-F_tc-F_rep{1,2}`
-That is, do prep work with the wild-type G1 and Q Ovation nascent
-(immunoprecipitated) 4tU-seq datasets, replicates 1 and 2.
-<br />
-
+### Do prep work for running `DESeq2`
 #### Make the counts matrix
 ```{r Make the counts matrix, results='hide', message=FALSE}
 datasets <- c(
     "n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1",
     "n3-d_Q_day7_tcn_N_aux-T_tc-F_rep2",
     "n3-d_Q_day7_tcn_N_aux-T_tc-F_rep3",
-    "n3-d_Q_day7_tcn_SS_aux-T_tc-F_rep1",
-    "n3-d_Q_day7_tcn_SS_aux-T_tc-F_rep2",
-    "n3-d_Q_day7_tcn_SS_aux-T_tc-F_rep3"
+    "o-d_Q_day7_tcn_N_aux-T_tc-F_rep1",
+    "o-d_Q_day7_tcn_N_aux-T_tc-F_rep2"
 )
 counts_data <- t_fc[, colnames(t_fc) %in% datasets] %>%
     as.data.frame()  #IMPORTANT Output a dataframe, not a tibble
@@ -462,9 +473,9 @@ counts_data
 #### Make the model matrix
 ```{r make model matrix, results='hide', message=FALSE}
 #  Use the "keys" column to isolate datasets of interest
-#REMEMBER Variable `datasets` is initialized in the preceding chunk 
+#REMEMBER Variable datasets is initialized in the preceding code chunk 
 col_data <- samples[samples$keys %in% datasets, ] %>%
-    as.data.frame() %>%    #IMPORTANT Output a dataframe, not a tibble
+    as.data.frame() %>%  #IMPORTANT Output a dataframe, not a tibble
     tibble::column_to_rownames(., var = "keys")  #IMPORTANT Have row names
 
 #  How do things look?
@@ -477,11 +488,11 @@ col_data
 - Use `col_data` for setting up the GLM
 - Use `pos_info` for adding feature metadata, subsequent subsetting, etc.
 
-```{r make dds, results='hide', message=FALSE}
+```{r make dds, message=FALSE}
 dds <- DESeq2::DESeqDataSetFromMatrix(
     countData = counts_data,
     colData = col_data,
-    design = ~ transcription,
+    design = ~ strain,  # Vary on strain: n3-d vs o-d
     rowRanges = pos_info
 )
 
@@ -489,29 +500,42 @@ dds <- DESeq2::DESeqDataSetFromMatrix(
 bak.dds <- dds
 
 #  How do things look?
-# dds %>% BiocGenerics::counts() %>% head()
-# dds@rowRanges
-# dds@design
-# dds@assays
+dds %>% BiocGenerics::counts() %>% head()
+dds@rowRanges
+dds@design
+dds@assays
 ```
 <br />
 
 #### Prefilter `dds`
-We probably don't need to do this, but then again we may want to; `#TODO` Let's
-make a decision later.
+We probably don't need to do this, but then again we may want to. Some people
+think it's important; my thinking has been that, if it makes much of
+difference (e.g., from doing dimension reduction, hierarchical clustering,
+etc.), then there may be deeper problems with the data (noise, batch effects,
+etc.). If I remember correctly, if you work through sections of the `DESeq2`
+vignette and other vignettes and walkthroughs (e.g., Soneson et al.,
+*F1000*), they perform some row-wise prefiltering.
+
+`#TODO` Let's keep this in mind and try it if we come to think lowly expressed
+genes are skewing results.
 
 ```{r prefilter dds, results='hide', message=FALSE}
-# threshold <- 0
+# threshold <- 1000
 # dds_filt <- dds[rowSums(BiocGenerics::counts(dds)) >= threshold, ]
-#
+# 
 #  Breakdown
 #    0 13166
-#   10 11893
-#   50 11049
-#  100 10645
-#  500 8601
-# 1000 6738
-#
+#    1 12822
+#    2 12719
+#    5 12540
+#   10 12358
+#   20 12144
+#   50 11764
+#  100 11403
+#  200 10927
+#  500 10015
+# 1000 8822
+# 
 # rm(threshold, dds_filt)
 ```
 <br />
@@ -528,12 +552,11 @@ dds_SC <- BiocGenerics::estimateSizeFactors(
     dds[dds@rowRanges$genome != "K_lactis", ]
 )
 dds_SC@colData
-# Q N rep1 1.914013
-# Q N rep2 1.489813
-# Q N rep3 2.061973
-# Q SS rep1 0.695266
-# Q SS rep2 0.497825
-# Q SS rep3 0.505492
+# n3-d Q N rep1 1.444025
+# n3-d Q N rep2 1.119446
+# n3-d Q N rep3 1.547506
+# o-d Q N rep1 0.772653
+# o-d Q N rep2 0.526895
 ```
 <br />
 
@@ -544,9 +567,11 @@ dds_SC <- DESeq2::DESeq(dds_SC)
 
 #  Check model information
 DESeq2::resultsNames(dds_SC)[2]
-#  [1] "transcription_SS_vs_N"
-#+ Thus, the model varies on transcription, SS is the numerator, N is the
-#+ denominator
+#  [1] "strain_o.d_vs_n3.d"  #HERE
+#+ Thus, the model varies on strain, OsTIR-depletion is the numerator,
+#+ Nab3-depletion is the denominator
+#+     - Numerator: "top" in MA plots, "right" in volcano plots
+#+     - Denominator: "bottom" in MA plots, "left" in volcano plots
 ```
 <br />
 
@@ -605,9 +630,9 @@ title <- paste0(
 )
 subtitle <- paste(
     "points: S. cerevisiae features",
-    "| top: up in SS",
-    "| bottom: up in N"
-)  # [1] "transcription_SS_vs_N"
+    "| top: up in OsTIR depletion",
+    "| bottom: up in Nab3 depletion"
+)  # [1] "strain_o.d_vs_n3.d"
 ggplot(tbl, aes(x = log10baseMean, y = log2FoldChange, colour = threshold)) +
     geom_point(alpha = 0.25, size = 0.5) +
     # geom_hline(aes(yintercept = 0), colour = "#000000", linewidth = 0.25) +
@@ -621,6 +646,11 @@ ggplot(tbl, aes(x = log10baseMean, y = log2FoldChange, colour = threshold)) +
     theme_slick
 #TODO 1/2 Explain and make a decision regarding use of 'size' or 'linewidth'
 #TODO 2/2 parameters
+
+#NOTE 1/4 Note that the data are not centered on log2(fold change) = 0;
+#NOTE 2/4 instead, they seem to slope upward with a gentle gradient; this
+#NOTE 3/4 suggests that centering the data with all S. cerevisiae features is
+#NOTE 4/4 not an effective normalization
 
 #  Create a vector of features that both passed independent filtering (and thus
 #+ have an inherently high mean expression) and are not statistically
@@ -659,10 +689,10 @@ title <- paste0(
 )
 subtitle <- paste(
     "points: S. cerevisiae features",
-    "| left: up in N",
-    "| right: up in SS",
-    "| labels: top 5 N and top 5 SS features"
-)  # [1] "transcription_SS_vs_N"
+    "| left: up in Nab3 depletion",
+    "| right: up in OsTIR depletion",
+    "|\nlabels: top 5 OsTIR dep. and top 5 Nab3 dep. features"
+)  # [1] "strain_o.d_vs_n3.d"
 p_SC <- plot_volcano(
     table = t_DGE_SC,
     label = all,
@@ -685,6 +715,8 @@ p_SC
 # )
 
 rm(all, selection, selection_up, selection_down, title, subtitle)
+#TODO 1/2 Why are there 12 labels in the plot, two of which are not top
+#TODO anything? There should only be 10. #FIXME
 ```
 <br />
 <br />
@@ -700,12 +732,11 @@ dds_KL <- BiocGenerics::estimateSizeFactors(
     dds[dds@rowRanges$genome != "S_cerevisiae", ]
 )
 dds_KL@colData
-# Q N rep1 6.264768
-# Q N rep2 7.190513
-# Q N rep3 6.525544
-# Q SS rep1 0.161401
-# Q SS rep2 0.165265
-# Q SS rep3 0.140550
+# n3-d Q N rep1 0.907373
+# n3-d Q N rep2 1.034913
+# n3-d Q N rep3 0.944618
+# o-d Q N rep1 1.001126
+# o-d Q N rep2 1.130992
 ```
 <br />
 
@@ -716,9 +747,11 @@ dds_KL <- DESeq2::DESeq(dds_KL)
 
 #  Check model information
 DESeq2::resultsNames(dds_KL)[2]
-#  [1] "transcription_SS_vs_N"
-#+ Thus, the model varies on transcription, SS is the numerator, N is the
-#+ denominator
+#  [1] "strain_o.d_vs_n3.d"  #HERE
+#+ Thus, the model varies on strain, OsTIR-depletion is the numerator,
+#+ Nab3-depletion is the denominator
+#+     - Numerator: "top" in MA plots, "right" in volcano plots
+#+     - Denominator: "bottom" in MA plots, "left" in volcano plots
 ```
 <br />
 
@@ -770,16 +803,16 @@ tbl$threshold <- as.factor(tbl$padj <= 0.05)
 tbl$log10baseMean <- ifelse(
     is.infinite(log10(tbl$baseMean)), NA, log10(tbl$baseMean)
 )
-
+#HERE
 title <- paste0(
     "MA plot | K. lactis features |\n",
     "size factors estimated with all K. lactis features"
 )
 subtitle <- paste(
     "points: K. lactis features",
-    "| top: up in SS",
-    "| bottom: up in N"
-)  # [1] "transcription_SS_vs_N"
+    "| top: up in OsTIR depletion",
+    "| bottom: up in Nab3 depletion"
+)  # [1] "strain_o.d_vs_n3.d"
 ggplot(tbl, aes(x = log10baseMean, y = log2FoldChange, colour = threshold)) +
     geom_point(alpha = 0.25, size = 0.5) +
     # geom_hline(aes(yintercept = 0), colour = "#000000", linewidth = 0.25) +
@@ -794,10 +827,9 @@ ggplot(tbl, aes(x = log10baseMean, y = log2FoldChange, colour = threshold)) +
 #TODO 1/2 Explain and make a decision regarding use of 'size' or 'linewidth'
 #TODO 2/2 parameters
 
-#  Create a vector of features that both passed independent filtering (and thus
-#+ have an inherently high mean expression) and are not statistically
-#+ significant; this vector signifies features that are "stably expressed"
-#+ between conditions
+#  Create a vector of features that both passed independent filtering and are
+#+ not statistically significant; we can say that this vector signifies
+#+ features that are "stably expressed" between conditions
 tbl$stably_expressed <- ifelse(
     !is.na(tbl$threshold) & tbl$padj > 0.05,
     TRUE,
@@ -813,27 +845,30 @@ rm(tbl, title, subtitle)
 #### Make a volcano plot
 ```{r II. Make a volcano plot, message=FALSE}
 all <- t_DGE_KL$feature
-selection_down <- t_DGE_KL %>%
-    dplyr::filter(log2FoldChange < 0) %>%
-    dplyr::arrange(padj) %>%
-    dplyr::slice(1:5)
-selection_up <- t_DGE_KL %>%
-    dplyr::filter(log2FoldChange > 0) %>%
-    dplyr::arrange(padj) %>%
-    dplyr::slice(1:5)
-selection <- c(selection_down[["feature"]], selection_up[["feature"]]) %>%
-        as.character()
+# selection_down <- t_DGE_KL %>%
+#     dplyr::filter(log2FoldChange < 0) %>%
+#     dplyr::arrange(padj) %>%
+#     dplyr::slice(1:5)
+# selection_up <- t_DGE_KL %>%
+#     dplyr::filter(log2FoldChange > 0) %>%
+#     dplyr::arrange(padj) %>%
+#     dplyr::slice(1:5)
+# selection <- c(selection_down[["feature"]], selection_up[["feature"]]) %>%
+#         as.character()  #NOTE Nothing significant, so no labeling needed
+
+#  Initialize an empty 'selection' vector b/c the function requires some labels
+selection <- c(rep("", 10))
 
 title <- paste0(
     "volcano plot | K. lactis features |\n",
     "size factors estimated with all K. lactis features"
 )
 subtitle <- paste(
-    "points: S. cerevisiae features",
-    "| left: up in N",
-    "| right: up in SS",
-    "| labels: top 5 N and top 5 SS features"
-)  # [1] "transcription_SS_vs_N"
+    "points: K. lactis features",
+    "| left: up in Nab3 depletion",
+    "| right: up in OsTIR depletion",
+    "|\nlabels: top 5 OsTIR dep. and top 5 Nab3 dep. features"
+)  # [1] "strain_o.d_vs_n3.d"
 p_KL <- plot_volcano(
     table = t_DGE_KL,
     label = all,
@@ -855,7 +890,8 @@ p_KL
 #     height = 3
 # )
 
-rm(all, selection, selection_up, selection_down, title, subtitle)
+# rm(all, selection, selection_up, selection_down, title, subtitle)
+rm(all, selection, title, subtitle)
 ```
 <br />
 <br />
@@ -879,22 +915,19 @@ dds_SC.ctrl_KL <- BiocGenerics::estimateSizeFactors(
 )
 dds_SC.ctrl_KL@colData
 #  Using all of the K. lactis features as `controlGenes`
-# Q N rep1 6.264768
-# Q N rep2 7.190513
-# Q N rep3 6.525544
-# Q SS rep1 0.161401
-# Q SS rep2 0.165265
-# Q SS rep3 0.140550
-
-#NOTE 1/2 Note the much smaller (SS) and much larger (N) coefficients needed to
-#NOTE 2/2 scale the libraries
+# n3-d Q N rep1 0.907373
+# n3-d Q N rep2 1.034913
+# n3-d Q N rep3 0.944618
+# o-d Q N rep1 1.001126
+# o-d Q N rep2 1.130992
 ```
 <br />
 
 ### Run `DESeq2`
 #### Call `DESeq2` using default parameters
 Since we've already calculated the size factors, I think we can exclude
-*K. lactis* features from our work from here on out.
+*K. lactis* features from our work from here on out. We have to do some index
+subsetting to accomplish this (see below).
 ```{r III. Call DESeq2 using default parameters, results='hide', message=FALSE}
 dds_SC.ctrl_KL <- DESeq2::DESeq(
     dds_SC.ctrl_KL[dds_SC.ctrl_KL@rowRanges$genome != "K_lactis", ]
@@ -902,9 +935,11 @@ dds_SC.ctrl_KL <- DESeq2::DESeq(
 
 #  Check model information
 DESeq2::resultsNames(dds_SC.ctrl_KL)[2]
-#  [1] "transcription_SS_vs_N"
-#+ Thus, the model varies on transcription, SS is the numerator, N is the
-#+ denominator
+#  [1] "strain_o.d_vs_n3.d"  #HERE
+#+ Thus, the model varies on strain, OsTIR-depletion is the numerator,
+#+ Nab3-depletion is the denominator
+#+     - Numerator: "top" in MA plots, "right" in volcano plots
+#+     - Denominator: "bottom" in MA plots, "left" in volcano plots
 ```
 <br />
 
@@ -964,9 +999,9 @@ title <- paste0(
 )
 subtitle <- paste(
     "points: S. cerevisiae features",
-    "| top: up in SS",
-    "| bottom: up in N"
-)  # [1] "transcription_SS_vs_N"
+    "| top: up in OsTIR depletion",
+    "| bottom: up in Nab3 depletion"
+)  # [1] "strain_o.d_vs_n3.d"
 ggplot(tbl, aes(x = log10baseMean, y = log2FoldChange, colour = threshold)) +
     geom_point(alpha = 0.25, size = 0.5) +
     # geom_hline(aes(yintercept = 0), colour = "#000000", linewidth = 0.25) +
@@ -980,6 +1015,9 @@ ggplot(tbl, aes(x = log10baseMean, y = log2FoldChange, colour = threshold)) +
     theme_slick
 #TODO 1/2 Explain and make a decision regarding use of 'size' or 'linewidth'
 #TODO 2/2 parameters
+
+#NOTE 1/2 The use of K. lactis features for size-factor estimation centers the
+#NOTE 2/2 data very nicely!
 
 #  Create a vector of features that both passed independent filtering (and thus
 #+ have an inherently high mean expression) and are not statistically
@@ -1017,11 +1055,11 @@ title <- paste0(
 )
 subtitle <- paste(
     "points: S. cerevisiae features",
-    "| left: up in N",
-    "| right: up in SS",
-    "| labels: top 5 N and top 5 SS features"
-)  # [1] "transcription_SS_vs_N"
-p_SC.ctrl_KL <- plot_volcano(
+    "| left: up in Nab3 depletion",
+    "| right: up in OsTIR depletion",
+    "|\nlabels: top 5 OsTIR dep. and top 5 Nab3 dep. features"
+)  # [1] "strain_o.d_vs_n3.d"
+p_SC.ctrl_KL.1 <- plot_volcano(
     table = t_DGE_SC.ctrl_KL,
     label = all,
     selection = selection,
@@ -1034,7 +1072,22 @@ p_SC.ctrl_KL <- plot_volcano(
     title = title,
     subtitle = subtitle
 )
-p_SC.ctrl_KL
+p_SC.ctrl_KL.1
+
+p_SC.ctrl_KL.2 <- plot_volcano(
+    table = t_DGE_SC.ctrl_KL,
+    label = all,
+    selection = selection,
+    label_size = 2.5,
+    p_cutoff = 0.05,
+    FC_cutoff = 1,
+    xlim = c(-11, 11),
+    ylim = c(0, 60),
+    color = "#A020F0",
+    title = title,
+    subtitle = subtitle
+)
+p_SC.ctrl_KL.2
 # save_volcano(
 #     file = "test.pdf",
 #     plot = p,
@@ -1044,5 +1097,3 @@ p_SC.ctrl_KL
 
 rm(all, selection, selection_up, selection_down, title, subtitle)
 ```
-<br />
-<br />
