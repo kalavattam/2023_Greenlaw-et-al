@@ -9,9 +9,9 @@ output: html_notebook
 ## Prepare data for various DGE analyses
 ### Get situated
 #### Set working directory (`wd`)
-```{r Set working directory, results='hide', message=FALSE}
-# p_local <- "/Users/kalavattam/Dropbox/FHCC"  # KrisMac
-p_local <- "/Users/kalavatt/projects-etc"  # WorkMac
+```{r Set working directory, echo=FALSE, results='hide', message=FALSE}
+p_local <- "/Users/kalavattam/Dropbox/FHCC"  # KrisMac
+# p_local <- "/Users/kalavatt/projects-etc"  # WorkMac
 p_wd <- "2022_transcriptome-construction/results/2023-0215"
 #NOTE 1/3 Alison: you can adjust 'p_local' or 'p_wd' (path to working directory 
 #NOTE 2/3 on your personal or work computer ); I have two paths here with one
@@ -25,7 +25,7 @@ rm(p_local, p_wd)
 <br />
 
 #### Load necessary libraries
-```{r Load necessary libraries, results='hide', message=FALSE, warning=FALSE}
+```{r Load necessary libraries, echo=FALSE, results='hide', message=FALSE, warning=FALSE}
 library(DESeq2)
 library(EnhancedVolcano)
 library(GenomicRanges)
@@ -41,13 +41,13 @@ notation; the higher the value, the less likely it is to switch. We're setting
 the option prior to making plots; if plots still have scientific notation, then
 we need to set the option to a higher number.
 
-```{r Set scipen, results='hide', message=FALSE}
+```{r Set scipen, echo=FALSE, results='hide', message=FALSE}
 options(scipen=999)
 ```
 <br />
 
 #### Initialize necessary functions
-```{r Initialize necessary functions, results='hide', message=FALSE}
+```{r Initialize necessary functions, echo=FALSE, results='hide', message=FALSE}
 split_isolate_convert <- function(in_vector, field, column_name) {
     # Take in a character vector of S288C R64-1-1 feature names and split
     # elements at the underscores that separate feature names from
@@ -195,7 +195,8 @@ The spreadsheet includes Alison's original sample names; we can use this
 information to associate the new sample names, which are made up of `DESeq2`
 GLM variables, with the old names, which reflect Alison's wet-lab,
 library-prep, etc. work
-```{r Load spreadsheet, results='hide', message=FALSE}
+
+```{r Load spreadsheet, echo=FALSE, results='hide', message=FALSE}
 p_xl <- "notebook"  #INPATH
 f_xl <- "variables.xlsx"  #INFILE
 #NOTE 1/4 Alison: you can adjust 'p_xc' (path for Excel file) and "f_xl" (the
@@ -211,7 +212,7 @@ rm(p_xl, f_xl)
 <br />
 
 ### Load in and process `featureCounts` table
-```{r Process featureCounts table, results='hide', message=FALSE}
+```{r Process featureCounts table, echo=FALSE, results='hide', message=FALSE}
 #  Load in featureCounts table ------------------------------------------------
 p_fc <- "outfiles_featureCounts/combined_SC_KL/UT_prim_UMI"  #INPATH
 f_fc <- "UT_prim_UMI.featureCounts"  #INFILE
@@ -351,7 +352,7 @@ t_fc %>%
 ### Record tibble `t_fc`'s positional information in a `GRanges` object
 `pos_info` will be used in `DESeq2` processing, post-processing, etc.
 
-```{r Record positional information, results='hide', message=FALSE}
+```{r Record positional information, echo=FALSE, results='hide', message=FALSE}
 pos_info <- GenomicRanges::GRanges(
     seqnames = t_fc$chr,
     ranges = IRanges::IRanges(t_fc$start, t_fc$end),
@@ -380,7 +381,7 @@ pos_info
     + `timecourse`
     + `replicate`
 
-```{r Make a master model matrix, results='hide', message=FALSE}
+```{r Make a master model matrix, echo=FALSE, results='hide', message=FALSE}
 #  Columns 10 through to the last column are composed of sample feature counts;
 #+ get these column names into a vector
 samples <- colnames(t_fc)[10:length(colnames(t_fc))]
@@ -454,7 +455,7 @@ rm(t_xl, keys)
 
 ### Do prep work for running `DESeq2`
 #### Make the counts matrix
-```{r Make the counts matrix, results='hide', message=FALSE}
+```{r Make the counts matrix, echo=FALSE, results='hide', message=FALSE}
 datasets <- c(
     "n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1",
     "n3-d_Q_day7_tcn_N_aux-T_tc-F_rep2",
@@ -471,7 +472,7 @@ counts_data
 <br />
 
 #### Make the model matrix
-```{r make model matrix, results='hide', message=FALSE}
+```{r make model matrix, echo=FALSE, results='hide', message=FALSE}
 #  Use the "keys" column to isolate datasets of interest
 #REMEMBER Variable datasets is initialized in the preceding code chunk 
 col_data <- samples[samples$keys %in% datasets, ] %>%
@@ -519,7 +520,7 @@ vignette and other vignettes and walkthroughs (e.g., Soneson et al.,
 `#TODO` Let's keep this in mind and try it if we come to think lowly expressed
 genes are skewing results.
 
-```{r prefilter dds, results='hide', message=FALSE}
+```{r prefilter dds, echo=TRUE, results='hide', message=FALSE}
 # threshold <- 1000
 # dds_filt <- dds[rowSums(BiocGenerics::counts(dds)) >= threshold, ]
 # 
@@ -562,7 +563,7 @@ dds_SC@colData
 
 ### Run `DESeq2`
 #### Call `DESeq2` using default parameters
-```{r I. Call DESeq2 using default parameters, results='hide', message=FALSE}
+```{r I. Call DESeq2 using default parameters, echo=TRUE, results='hide', message=FALSE}
 dds_SC <- DESeq2::DESeq(dds_SC)
 
 #  Check model information
@@ -576,7 +577,7 @@ DESeq2::resultsNames(dds_SC)[2]
 <br />
 
 #### Call `DESeq2::results()`
-```{r I. Call DESeq2::results(), message=FALSE}
+```{r I. Call DESeq2::results(), echo=FALSE, message=FALSE}
 #  Set up necessary parameters for generation of DESeq2 results table
 independent_filtering <- TRUE
 threshold_p <- 0.05
@@ -615,7 +616,7 @@ rm(independent_filtering, threshold_p, threshold_lfc)
 <br />
 
 #### Make an MA plot that colors features by independent filtering
-```{r I. Make an MA plot: B, message=FALSE}
+```{r I. Make an MA plot: B, echo=FALSE, message=FALSE}
 #  Set up temporary variable 'tbl', which will be passed to ggplot
 tbl <- t_DGE_SC
 tbl <- tbl[with(tbl, order(log2FoldChange)), ]
@@ -668,7 +669,7 @@ rm(tbl, title, subtitle)
 <br />
 
 #### Make a volcano plot
-```{r I. Make a volcano plot, message=FALSE}
+```{r I. Make a volcano plot, echo=FALSE, message=FALSE}
 #  Identify and isolate the top 5 upregulated features and the top 5 down-
 #+ regulated features
 all <- t_DGE_SC$feature
@@ -727,7 +728,7 @@ Here, we subset out&mdash;i.e., remove&mdash;the *S. cerevisiae* features and
 are thus only analyzing *K. lactis* features, using all *K. lactis* features
 in the size-factor estimation.
 
-```{r II. Perform size-factor estimation, results='hide', message=FALSE}
+```{r II. Perform size-factor estimation, echo=TRUE, results='hide', message=FALSE}
 dds_KL <- BiocGenerics::estimateSizeFactors(
     dds[dds@rowRanges$genome != "S_cerevisiae", ]
 )
@@ -742,7 +743,7 @@ dds_KL@colData
 
 ### Run `DESeq2`
 #### Call `DESeq2` using default parameters
-```{r II. Call DESeq2 using default parameters, results='hide', message=FALSE}
+```{r II. Call DESeq2 using default parameters, echo=TRUE, results='hide', message=FALSE}
 dds_KL <- DESeq2::DESeq(dds_KL)
 
 #  Check model information
@@ -756,7 +757,7 @@ DESeq2::resultsNames(dds_KL)[2]
 <br />
 
 #### Call `DESeq2::results()`
-```{r II. Call DESeq2::results(), message=FALSE}
+```{r II. Call DESeq2::results(), echo=FALSE, message=FALSE}
 #  Set up necessary parameters for generation of DESeq2 results table
 independent_filtering <- TRUE
 threshold_p <- 0.05
@@ -795,7 +796,7 @@ rm(independent_filtering, threshold_p, threshold_lfc)
 <br />
 
 #### Make an MA plot that colors features by independent filtering
-```{r II. Make an MA plot: B, message=FALSE}
+```{r II. Make an MA plot: B, echo=FALSE, message=FALSE}
 #  Set up temporary variable 'tbl', which will be passed to ggplot
 tbl <- t_DGE_KL
 tbl <- tbl[with(tbl, order(log2FoldChange)), ]
@@ -843,7 +844,7 @@ rm(tbl, title, subtitle)
 <br />
 
 #### Make a volcano plot
-```{r II. Make a volcano plot, message=FALSE}
+```{r II. Make a volcano plot, echo=FALSE, message=FALSE}
 all <- t_DGE_KL$feature
 # selection_down <- t_DGE_KL %>%
 #     dplyr::filter(log2FoldChange < 0) %>%
@@ -907,7 +908,7 @@ object. In essence, we're saying, "Return `TRUE` if the `rowRanges` variable
 `TRUE`s to isolate the counts for *K. lactis*-specific features, in turn
 using those values to calculate size factors.
 
-```{r III. Perform size-factor estimation, results='hide', message=FALSE}
+```{r III. Perform size-factor estimation, echo=TRUE, results='hide', message=FALSE}
 #  Recalculate size factors using K. lactis features as `controlGenes`
 dds_SC.ctrl_KL <- BiocGenerics::estimateSizeFactors(
     dds,
@@ -928,7 +929,7 @@ dds_SC.ctrl_KL@colData
 Since we've already calculated the size factors, I think we can exclude
 *K. lactis* features from our work from here on out. We have to do some index
 subsetting to accomplish this (see below).
-```{r III. Call DESeq2 using default parameters, results='hide', message=FALSE}
+```{r III. Call DESeq2 using default parameters, echo=TRUE, results='hide', message=FALSE}
 dds_SC.ctrl_KL <- DESeq2::DESeq(
     dds_SC.ctrl_KL[dds_SC.ctrl_KL@rowRanges$genome != "K_lactis", ]
 )
@@ -944,7 +945,7 @@ DESeq2::resultsNames(dds_SC.ctrl_KL)[2]
 <br />
 
 #### Call `DESeq2::results()`
-```{r III. Call DESeq2::results(), message=FALSE}
+```{r III. Call DESeq2::results(), echo=FALSE, message=FALSE}
 #  Set up necessary parameters for generation of DESeq2 results table
 independent_filtering <- TRUE
 threshold_p <- 0.05
@@ -984,7 +985,7 @@ rm(independent_filtering, threshold_p, threshold_lfc)
 <br />
 
 #### Make an MA plot that colors features by independent filtering
-```{r III. Make an MA plot: B, message=FALSE}
+```{r III. Make an MA plot: B, echo=FALSE, message=FALSE}
 #  Set up temporary variable 'tbl', which will be passed to ggplot
 tbl <- t_DGE_SC.ctrl_KL
 tbl <- tbl[with(tbl, order(log2FoldChange)), ]
@@ -1036,7 +1037,7 @@ rm(tbl, title, subtitle)
 ```
 
 #### Make a volcano plot
-```{r III. Make a volcano plot, message=FALSE}
+```{r III. Make a volcano plot, echo=FALSE, message=FALSE}
 all <- t_DGE_SC.ctrl_KL$feature
 selection_down <- t_DGE_SC.ctrl_KL %>%
     dplyr::filter(log2FoldChange < 0) %>%

@@ -9,9 +9,9 @@ output: html_notebook
 ## Prepare data for various DGE analyses
 ### Get situated
 #### Set working directory
-```{r Set working directory, results='hide', message=FALSE}
-# p_local <- "/Users/kalavattam/Dropbox/FHCC"  # KrisMac
-p_local <- "/Users/kalavatt/projects-etc"  # WorkMac
+```{r Set working directory, results='hide', echo=FALSE,  message=FALSE}
+p_local <- "/Users/kalavattam/Dropbox/FHCC"  # KrisMac
+# p_local <- "/Users/kalavatt/projects-etc"  # WorkMac
 p_wd <- "2022_transcriptome-construction/results/2023-0215"
 #NOTE 1/3 Alison: you can adjust 'p_local' or 'p_wd' (path to working directory 
 #NOTE 2/3 on your personal or work computer ); I have two paths here with one
@@ -25,7 +25,7 @@ rm(p_local, p_wd)
 <br />
 
 #### Load necessary libraries
-```{r Load necessary libraries, results='hide', message=FALSE, warning=FALSE}
+```{r Load necessary libraries, results='hide', echo=FALSE,  message=FALSE, warning=FALSE}
 library(DESeq2)
 library(EnhancedVolcano)
 library(GenomicRanges)
@@ -47,7 +47,7 @@ options(scipen=999)
 <br />
 
 #### Initialize necessary functions
-```{r Initialize necessary functions, results='hide', message=FALSE}
+```{r Initialize necessary functions, results='hide', echo=FALSE,  message=FALSE}
 split_isolate_convert <- function(in_vector, field, column_name) {
     # :param in_vector: ...
     # :param field: ...
@@ -183,7 +183,7 @@ The spreadsheet includes Alison's original sample names; we can use this
 infomation to associate the new sample names, which are made up of `DESeq2` GLM
 variables, with the old names, which reflect Alison's wet-lab, library-prep,
 etc. work
-```{r load spreadsheet, results='hide', message=FALSE}
+```{r load spreadsheet, results='hide', echo=FALSE,  message=FALSE}
 p_xl <- "notebook"  #INPATH
 f_xl <- "variables.xlsx"  #INFILE
 #NOTE 1/4 Alison: you can adjust 'p_xc' (path for Excel file) and "f_xl" (the
@@ -199,7 +199,7 @@ rm(p_xl, f_xl)
 <br />
 
 ### Load in and process `featureCounts` table
-```{r Process featureCounts table, results='hide', message=FALSE}
+```{r Process featureCounts table, results='hide', echo=FALSE,  message=FALSE}
 #  Load in featureCounts table ------------------------------------------------
 p_fc <- "outfiles_featureCounts/combined_SC_KL/UT_prim_UMI"  #INPATH
 f_fc <- "UT_prim_UMI.featureCounts"  #INFILE
@@ -339,7 +339,7 @@ t_fc %>%
 ### Record tibble `t_fc`'s positional information in a `GRanges` object
 `pos_info` will be used in `DESeq2` processing, post-processing, etc.
 
-```{r Record positional information, results='hide', message=FALSE}
+```{r Record positional information, results='hide', echo=FALSE,  message=FALSE}
 pos_info <- GenomicRanges::GRanges(
     seqnames = t_fc$chr,
     ranges = IRanges::IRanges(t_fc$start, t_fc$end),
@@ -368,7 +368,7 @@ pos_info
     + `timecourse`
     + `replicate`
 
-```{r Make a master model matrix, results='hide', message=FALSE}
+```{r Make a master model matrix, results='hide', echo=FALSE,  message=FALSE}
 #  Columns ten through to the last column are composed of sample feature
 #+ counts; get these column names into a vector
 samples <- colnames(t_fc)[10:length(colnames(t_fc))]
@@ -442,7 +442,7 @@ That is, do prep work with the wild-type G1 and Q Ovation nascent
 <br />
 
 #### Make the counts matrix
-```{r Make the counts matrix, results='hide', message=FALSE}
+```{r Make the counts matrix, results='hide', echo=FALSE,  message=FALSE}
 datasets <- c(
     "WT_G1_day1_ovn_N_aux-F_tc-F_rep1",
     "WT_G1_day1_ovn_N_aux-F_tc-F_rep2",
@@ -458,7 +458,7 @@ counts_data
 <br />
 
 #### Make the model matrix
-```{r make model matrix, results='hide', message=FALSE}
+```{r make model matrix, results='hide', echo=FALSE,  message=FALSE}
 #  Use the "keys" column to isolate WT G1 and Q Ovation 4tU-seq datasets
 #REMEMBER Variable `datasets` is initialized in the preceding chunk 
 col_data <- samples[samples$keys %in% datasets, ] %>%
@@ -475,7 +475,7 @@ col_data
 - Use `col_data` for setting up the GLM
 - Use `pos_info` for adding feature metadata, subsequent subsetting, etc.
 
-```{r make dds, results='hide', message=FALSE}
+```{r make dds, results='hide', echo=FALSE,  message=FALSE}
 dds <- DESeq2::DESeqDataSetFromMatrix(
     countData = counts_data,
     colData = col_data,
@@ -502,7 +502,7 @@ bak.dds <- dds
 We probably don't need to do this, but then again we may want to; `#TODO` Let's
 make a decision later.
 
-```{r prefilter dds, results='hide', message=FALSE}
+```{r prefilter dds, results='hide', echo=FALSE,  message=FALSE}
 # threshold <- 0
 # dds_filt <- dds[rowSums(BiocGenerics::counts(dds)) >= threshold, ]
 #
@@ -548,7 +548,7 @@ has already been calculated. If many of genes have large differences in counts
 due to the experimental design, it is important to set `blind = FALSE` for
 downstream analysis."
 
-```{r I. Do rlog normalization, results='hide', message=FALSE}
+```{r I. Do rlog normalization, results='hide', echo=FALSE,  message=FALSE}
 # rlog_F_SC <- DESeq2::rlog(
 #     dds_SC,
 #     blind = FALSE
@@ -578,7 +578,7 @@ downstream analysis."
 
 ### Run `DESeq2`
 #### Call `DESeq2` using default parameters
-```{r I. Call DESeq2 using default parameters, results='hide', message=FALSE}
+```{r I. Call DESeq2 using default parameters, results='hide', echo=TRUE, message=FALSE}
 dds_SC <- DESeq2::DESeq(dds_SC)
 
 #  Check model information
@@ -780,7 +780,7 @@ Here, we subset out&mdash;i.e., remove&mdash;the *S. cerevisiae* features and
 are thus only analyzing *K. lactis* features, using all *K. lactis* features
 in the size-factor estimation.
 
-```{r II. Perform size-factor estimation, results='hide', message=FALSE}
+```{r II. Perform size-factor estimation, results='hide', echo=TRUE, message=FALSE}
 dds_KL <- BiocGenerics::estimateSizeFactors(
     dds[dds@rowRanges$genome != "S_cerevisiae", ]
 )
@@ -793,7 +793,7 @@ dds_KL@colData
 <br />
 
 #### Do rlog normalization
-```{r II. Do rlog normalization, results='hide', message=FALSE}
+```{r II. Do rlog normalization, results='hide', echo=FALSE,  message=FALSE}
 # rlog_F_KL <- DESeq2::rlog(
 #     dds_KL,
 #     blind = FALSE
@@ -823,7 +823,7 @@ dds_KL@colData
 
 ### Run `DESeq2`
 #### Call `DESeq2` using default parameters
-```{r II. Call DESeq2 using default parameters, results='hide', message=FALSE}
+```{r II. Call DESeq2 using default parameters, results='hide', echo=TRUE, message=FALSE}
 dds_KL <- DESeq2::DESeq(dds_KL)
 
 #  Check model information
@@ -1024,7 +1024,7 @@ object. In essence, we're saying, "Return `TRUE` if the `rowRanges` variable
 `TRUE`s to isolate the counts for *K. lactis*-specific features, in turn
 using those values to calculate size factors.
 
-```{r III. Perform size-factor estimation, results='hide', message=FALSE}
+```{r III. Perform size-factor estimation, results='hide', echo=TRUE, message=FALSE}
 #  Recalculate size factors using K. lactis features as `controlGenes`
 dds_SC.ctrl_KL <- BiocGenerics::estimateSizeFactors(
     dds,
@@ -1045,7 +1045,7 @@ dds_SC.ctrl_KL@colData
 #### Do rlog normalization
 Here, we exclude the *K. lactis* data prior to doing the `rlog` normalizations.
 
-```{r III. Do rlog normalization, results='hide', message=FALSE}
+```{r III. Do rlog normalization, results='hide', echo=FALSE,  message=FALSE}
 # rlog_F_SC.ctrl_KL <- DESeq2::rlog(
 #     dds_SC.ctrl_KL[dds_SC.ctrl_KL@rowRanges$genome != "K_lactis", ],
 #     blind = FALSE
@@ -1081,7 +1081,7 @@ Here, we exclude the *K. lactis* data prior to doing the `rlog` normalizations.
 #### Call `DESeq2` using default parameters
 Since we've already calculated the size factors, I think we can exclude
 *K. lactis* features from our work from here on out.
-```{r III. Call DESeq2 using default parameters, results='hide', message=FALSE}
+```{r III. Call DESeq2 using default parameters, results='hide', echo=TRUE, message=FALSE}
 dds_SC.ctrl_KL <- DESeq2::DESeq(
     dds_SC.ctrl_KL[dds_SC.ctrl_KL@rowRanges$genome != "K_lactis", ]
 )
@@ -1258,7 +1258,7 @@ To calculate the size factors using stable *K.lactis* features as
 `controlGenes`, we use the stably expressed features determined in an above
 code chunk and saved in variable `stably_expressed_KL`.
 
-```{r IV. Perform size-factor estimation, results='hide', message=FALSE}
+```{r IV. Perform size-factor estimation, results='hide', echo=TRUE, message=FALSE}
 #  Recalculate size factors using "stably expressed" K. lactis features as
 #+ `controlGenes`
 dds_SC.ctrl_KL_stab <- BiocGenerics::estimateSizeFactors(
@@ -1279,7 +1279,7 @@ dds_SC.ctrl_KL_stab@colData
 #### Do rlog normalization
 Here, we exclude the *K. lactis* data prior to doing the `rlog` normalizations.
 
-```{r IV. Do rlog normalization, results='hide', message=FALSE}
+```{r IV. Do rlog normalization, results='hide', echo=FALSE,  message=FALSE}
 # rlog_F_SC.ctrl_KL_stab <- DESeq2::rlog(
 #     dds_SC.ctrl_KL_stab[
 #         dds_SC.ctrl_KL_stab@rowRanges$genome != "K_lactis", 
@@ -1319,7 +1319,7 @@ Here, we exclude the *K. lactis* data prior to doing the `rlog` normalizations.
 #### Call `DESeq2` using default parameters
 Since we've already calculated the size factors, we exclude *K. lactis*
 features from our work from here on out.
-```{r IV. Call DESeq2 using default parameters, results='hide', message=FALSE}
+```{r IV. Call DESeq2 using default parameters, results='hide', echo=TRUE, message=FALSE}
 dds_SC.ctrl_KL_stab <- DESeq2::DESeq(
     dds_SC.ctrl_KL_stab[dds_SC.ctrl_KL_stab@rowRanges$genome != "K_lactis", ]
 )
@@ -1505,7 +1505,7 @@ dds_all@colData
 <br />
 
 #### Do rlog normalization
-```{r V. Do rlog normalization, results='hide', message=FALSE}
+```{r V. Do rlog normalization, results='hide', echo=FALSE,  message=FALSE}
 # rlog_F_all <- DESeq2::rlog(
 #     dds_all,
 #     blind = FALSE
@@ -1535,7 +1535,7 @@ dds_all@colData
 
 ### Run `DESeq2`
 #### Call `DESeq2` using default parameters
-```{r V. Call DESeq2 using default parameters, results='hide', message=FALSE}
+```{r V. Call DESeq2 using default parameters, results='hide', echo=TRUE, message=FALSE}
 dds_all <- DESeq2::DESeq(dds_all)
 
 #  Check model information
