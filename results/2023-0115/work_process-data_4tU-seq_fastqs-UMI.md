@@ -788,7 +788,6 @@ chmod +x "./${store_scripts}/${script_run}"
 <details>
 <summary><i>Code: Use a HEREDOC to write 'submit' script</i></summary>
 
-`#COMEBACKTOTHIS`
 ```bash
 #!/bin/bash
 #DONTRUN #CONTINUE
