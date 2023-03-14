@@ -4429,7 +4429,6 @@ mkdir -p "./bams_UMI-dedup/aligned_UTK_primary"
 mkdir -p "./bams_UMI-dedup/aligned_UTK_primary-secondary"
 mkdir -p "./bams_UMI-dedup/aligned_UTK_primary-unmapped"
 ```
-
 </details>
 <br />
 

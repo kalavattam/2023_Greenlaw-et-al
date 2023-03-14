@@ -136,6 +136,19 @@
 1. [VI Subset bams by alignment flags *\(Trinity, general\)*](#vi-subset-bams-by-alignment-flags-trinity-general)
 	1. [01 Get situated, make directories for outfiles](#01-get-situated-make-directories-for-outfiles)
 		1. [Code](#code-53)
+		1. [Code](#code-54)
+	1. [02 Set up necessary variables, arrays](#02-set-up-necessary-variables-arrays)
+		1. [02a Set up information for `aligned_UT_primary`](#02a-set-up-information-for-aligned_ut_primary)
+			1. [Code](#code-55)
+		1. [02b Set up information for `aligned_UTK_primary`](#02b-set-up-information-for-aligned_utk_primary)
+			1. [Code](#code-56)
+	1. [03 Use a `for` loop to run `separate_bam.sh`, etc.](#03-use-a-for-loop-to-run-separate_bamsh-etc)
+		1. [Run `separate_bam.sh` for `aligned_UT_primary_*`](#run-separate_bamsh-for-aligned_ut_primary_)
+			1. [Run `separate_bam.sh`](#run-separate_bamsh)
+				1. [Code](#code-57)
+			1. [Run `list_tally_flags()`](#run-list_tally_flags)
+				1. [Code](#code-58)
+				1. [Printed](#printed)
 
 <!-- /MarkdownTOC -->
 </details>
@@ -2583,14 +2596,14 @@ echo_test "${new[@]}"
 echo "${#new[@]}"
 
 for i in "${new[@]}"; do
-	rename -n 's/Aligned.sortedByCoord.out//g' "${i}"*
-	rename -n 's/Log/.Log/g; s/SJ/.SJ/g' "${i}"*
+    rename -n 's/Aligned.sortedByCoord.out//g' "${i}"*
+    rename -n 's/Log/.Log/g; s/SJ/.SJ/g' "${i}"*
 
-	rename 's/Aligned.sortedByCoord.out//g' "${i}"*
-	rename 's/Log/.Log/g; s/SJ/.SJ/g' "${i}"*
+    rename 's/Aligned.sortedByCoord.out//g' "${i}"*
+    rename 's/Log/.Log/g; s/SJ/.SJ/g' "${i}"*
 
-	ls -1 "${i}"*_STARtmp/
-	rm -r "${i}"*_STARtmp/
+    ls -1 "${i}"*_STARtmp/
+    rm -r "${i}"*_STARtmp/
 done
 
 rename -n 's:\.\.:\.:g' *.{tab,out}
@@ -2647,14 +2660,14 @@ echo_test "${new[@]}"
 echo "${#new[@]}"
 
 for i in "${new[@]}"; do
-	rename -n 's/Aligned.sortedByCoord.out//g' "${i}"*
-	rename -n 's/Log/.Log/g; s/SJ/.SJ/g' "${i}"*
+    rename -n 's/Aligned.sortedByCoord.out//g' "${i}"*
+    rename -n 's/Log/.Log/g; s/SJ/.SJ/g' "${i}"*
 
-	rename 's/Aligned.sortedByCoord.out//g' "${i}"*
-	rename 's/Log/.Log/g; s/SJ/.SJ/g' "${i}"*
+    rename 's/Aligned.sortedByCoord.out//g' "${i}"*
+    rename 's/Log/.Log/g; s/SJ/.SJ/g' "${i}"*
 
-	ls -1 "${i}"*_STARtmp/
-	rm -r "${i}"*_STARtmp/
+    ls -1 "${i}"*_STARtmp/
+    rm -r "${i}"*_STARtmp/
 done
 
 rename -n 's:\.\.:\.:g' *.{tab,out}
@@ -2678,3 +2691,192 @@ rename 's/BM12_7079_DSp48/BM12_DSp48_7079/g' *
 ### 01 Get situated, make directories for outfiles
 <a id="code-53"></a>
 #### Code
+<a id="code-54"></a>
+#### Code
+<details>
+<summary><i>Code: Get situated, make directories for outfiles</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+#  Get situated
+grabnode  # 16, etc.
+
+transcriptome && 
+    {
+        cd "results/2023-0115" \
+            || echo "cd'ing failed; check on this..."
+    }
+
+if [[ "${CONDA_DEFAULT_ENV}" != "base" ]]; then 
+    conda deactivate
+fi
+source activate Trinity_env
+module purge
+module load SAMtools/1.16.1-GCC-11.2.0
+
+#  Make directories for outfiles
+mkdir -p "./bams_UMI-dedup/aligned_UT_primary"
+mkdir -p "./bams_UMI-dedup/aligned_UTK_primary"
+mkdir -p "./bams_UMI-dedup/aligned_UTK_primary-secondary"
+mkdir -p "./bams_UMI-dedup/aligned_UTK_primary-unmapped"
+```
+</details>
+<br />
+
+<a id="02-set-up-necessary-variables-arrays"></a>
+### 02 Set up necessary variables, arrays
+<a id="02a-set-up-information-for-aligned_ut_primary"></a>
+#### 02a Set up information for `aligned_UT_primary`
+<a id="code-55"></a>
+##### Code
+<details>
+<summary><i>Code: Set up information for aligned_UT_primary</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+unset bams_UT_prim
+typeset -a bams_UT_prim=(
+    ./bams_UMI-dedup/aligned_umi-extracted_trimmed/BM10_DSp48_5781_new_UT.bam
+    ./bams_UMI-dedup/aligned_umi-extracted_trimmed/BM12_DSp48_7079_UT.bam
+    ./bams_UMI-dedup/aligned_umi-extracted_trimmed/CW6_7078_day8_Q_SS_UT.bam
+    ./bams_UMI-dedup/aligned_umi-extracted_trimmed/DA1_5781_SS_G1_UT.bam
+    ./bams_UMI-dedup/aligned_umi-extracted_trimmed/DA3_7078_SS_G1_UT.bam
+    ./bams_UMI-dedup/aligned_umi-extracted_trimmed/DA4_7079_SS_G1_UT.bam
+    ./bams_UMI-dedup/aligned_umi-extracted_trimmed/DA2_5782_SS_G1_UT.bam
+)
+echo_test "${bams_UT_prim[@]}"
+echo "${#bams_UT_prim[@]}"
+```
+</details>
+<br />
+
+<a id="02b-set-up-information-for-aligned_utk_primary"></a>
+#### 02b Set up information for `aligned_UTK_primary`
+<a id="code-56"></a>
+##### Code
+<details>
+<summary><i>Code: Set up information for aligned_UTK_primary</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+unset bams_UTK_prim
+typeset -a bams_UTK_prim=(
+    ./bams_UMI-dedup/aligned_umi-extracted_trimmed/BM10_DSp48_5781_new_UT.bam
+    ./bams_UMI-dedup/aligned_umi-extracted_trimmed/BM12_DSp48_7079_UT.bam
+    ./bams_UMI-dedup/aligned_umi-extracted_trimmed/CW6_7078_day8_Q_SS_UT.bam
+    ./bams_UMI-dedup/aligned_umi-extracted_trimmed/DA1_5781_SS_G1_UT.bam
+    ./bams_UMI-dedup/aligned_umi-extracted_trimmed/DA3_7078_SS_G1_UT.bam
+    ./bams_UMI-dedup/aligned_umi-extracted_trimmed/DA4_7079_SS_G1_UT.bam
+    ./bams_UMI-dedup/aligned_umi-extracted_trimmed/DA2_5782_SS_G1_UT.bam
+)
+echo_test "${bams_UTK_prim[@]}"
+echo "${#bams_UTK_prim[@]}"
+```
+</details>
+<br />
+
+<a id="03-use-a-for-loop-to-run-separate_bamsh-etc"></a>
+### 03 Use a `for` loop to run `separate_bam.sh`, etc.
+<a id="run-separate_bamsh-for-aligned_ut_primary_"></a>
+#### Run `separate_bam.sh` for `aligned_UT_primary_*`
+<a id="run-separate_bamsh"></a>
+##### Run `separate_bam.sh`
+<a id="code-57"></a>
+###### Code
+<details>
+<summary><i>Code: Run separate_bam.sh</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+# bash ../../bin/separate_bam.sh
+
+outdir="bams_UMI-dedup/aligned_UT_primary"
+err_out="sh_err_out/err_out"
+for i in "${bams_UT_prim[@]}"; do
+    # i="${bams_UT_prim[0]}"  # echo "${i}"
+    log="run_separate-bam.$(basename "${i}" .bam)"  # echo "${log}"
+
+    bash ../../bin/separate_bam.sh \
+        -u TRUE \
+        -i "${i}" \
+        -o "${outdir}" \
+        -1 TRUE \
+        -2 FALSE \
+        -3 FALSE \
+        -4 FALSE \
+        -5 FALSE \
+        -6 FALSE \
+        -f TRUE \
+        -l FALSE \
+        -t "${SLURM_CPUS_ON_NODE}" \
+            > >(tee -a "${err_out}/${log}.stdout.txt") \
+            2> >(tee -a "${err_out}/${log}.stderr.txt" >&2)
+done
+```
+</details>
+<br />
+
+<a id="run-list_tally_flags"></a>
+##### Run `list_tally_flags()`
+<a id="code-58"></a>
+###### Code
+<details>
+<summary><i>Code: Run list_tally_flags()</i></summary>
+
+```bash
+#!/bin/bash
+#DONTRUN #CONTINUE
+
+list_tally_flags() {
+    samtools view "${1}" \
+        | cut -d$'\t' -f 2 \
+        | sort \
+        | uniq -c \
+        | sort -nr
+}
+
+
+export SHELL=$(type -p bash)
+export -f list_tally_flags
+
+parallel \
+    -k \
+    -j "${SLURM_CPUS_ON_NODE}" \
+    --dry-run \
+    "list_tally_flags {} > {.}.list-tally-flags.txt" \
+::: "${bams_UT_prim[@]}"
+
+parallel \
+    -k \
+    -j "${SLURM_CPUS_ON_NODE}" \
+    "list_tally_flags {} > {.}.list-tally-flags.txt" \
+::: "${bams_UT_prim[@]}"
+
+for i in "bams_UMI-dedup/aligned_UT_primary/"*".list-tally-flags.txt"; do
+    echo "${i}"
+    echo "----------------------------------------"
+    cat "${i}"
+    echo ""
+done
+```
+</details>
+<br />
+
+<a id="printed"></a>
+###### Printed
+<details>
+<summary><i>Printed: Run list_tally_flags()</i></summary>
+
+```txt
+
+```
+</details>
+<br />
