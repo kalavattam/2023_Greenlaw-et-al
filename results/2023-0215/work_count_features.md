@@ -304,6 +304,15 @@ array_UTK_prim_no["${UTK_prim_no}/CW6_7078_8day_Q_PD_UTK.primary.bam"]="r6-n_Q_d
 array_UTK_prim_no["${UTK_prim_no}/CW8_7079_8day_Q_IN_UTK.primary.bam"]="r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep2.UTK_prim.bam"
 array_UTK_prim_no["${UTK_prim_no}/CW8_7079_8day_Q_PD_UTK.primary.bam"]="r6-n_Q_day8_tcn_N_aux-F_tc-F_rep2.UTK_prim.bam"
 
+array_UTK_prim_no["${UTK_prim_no}/BM10_DSp48_5781_new_UTK.primary.bam"]=""
+array_UTK_prim_no["${UTK_prim_no}/BM12_DSp48_7079_UTK.primary.bam"]=""
+array_UTK_prim_no["${UTK_prim_no}/CW6_7078_day8_Q_SS_UTK.primary.bam"]=""
+array_UTK_prim_no["${UTK_prim_no}/DA1_5781_SS_G1_UTK.primary.bam"]=""
+array_UTK_prim_no["${UTK_prim_no}/DA2_5782_SS_G1_UTK.primary.bam"]=""
+array_UTK_prim_no["${UTK_prim_no}/DA3_7078_SS_G1_UTK.primary.bam"]=""
+array_UTK_prim_no["${UTK_prim_no}/DA4_7079_SS_G1_UTK.primary.bam"]=""
+
+
 unset array_UTK_prim_pos
 typeset -A array_UTK_prim_pos
 array_UTK_prim_pos["${UTK_prim_pos}/5781_G1_IN_UTK.primary.dedup-pos.bam"]="WT_G1_day1_ovn_SS_aux-F_tc-F_rep1.UTK_prim_pos.bam"
@@ -362,6 +371,15 @@ array_UTK_prim_pos["${UTK_prim_pos}/CW6_7078_8day_Q_PD_UTK.primary.dedup-pos.bam
 array_UTK_prim_pos["${UTK_prim_pos}/CW8_7079_8day_Q_IN_UTK.primary.dedup-pos.bam"]="r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep2.UTK_prim_pos.bam"
 array_UTK_prim_pos["${UTK_prim_pos}/CW8_7079_8day_Q_PD_UTK.primary.dedup-pos.bam"]="r6-n_Q_day8_tcn_N_aux-F_tc-F_rep2.UTK_prim_pos.bam"
 
+array_UTK_prim_pos["${UTK_prim_pos}/BM10_DSp48_5781_new_UTK.primary.dedup-pos.bam"]=""
+array_UTK_prim_pos["${UTK_prim_pos}/BM12_DSp48_7079_UTK.primary.dedup-pos.bam"]=""
+array_UTK_prim_pos["${UTK_prim_pos}/CW6_7078_day8_Q_SS_UTK.primary.dedup-pos.bam"]=""
+array_UTK_prim_pos["${UTK_prim_pos}/DA1_5781_SS_G1_UTK.primary.dedup-pos.bam"]=""
+array_UTK_prim_pos["${UTK_prim_pos}/DA2_5782_SS_G1_UTK.primary.dedup-pos.bam"]=""
+array_UTK_prim_pos["${UTK_prim_pos}/DA3_7078_SS_G1_UTK.primary.dedup-pos.bam"]=""
+array_UTK_prim_pos["${UTK_prim_pos}/DA4_7079_SS_G1_UTK.primary.dedup-pos.bam"]=""
+
+
 unset array_UTK_prim_UMI
 typeset -A array_UTK_prim_UMI
 array_UTK_prim_UMI["${UTK_prim_UMI}/5781_G1_IN_UTK.primary.dedup-UMI.bam"]="WT_G1_day1_ovn_SS_aux-F_tc-F_rep1.UTK_prim_UMI.bam"
@@ -419,6 +437,15 @@ array_UTK_prim_UMI["${UTK_prim_UMI}/CW6_7078_8day_Q_IN_UTK.primary.dedup-UMI.bam
 array_UTK_prim_UMI["${UTK_prim_UMI}/CW6_7078_8day_Q_PD_UTK.primary.dedup-UMI.bam"]="r6-n_Q_day8_tcn_N_aux-F_tc-F_rep1.UTK_prim_UMI.bam"
 array_UTK_prim_UMI["${UTK_prim_UMI}/CW8_7079_8day_Q_IN_UTK.primary.dedup-UMI.bam"]="r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep2.UTK_prim_UMI.bam"
 array_UTK_prim_UMI["${UTK_prim_UMI}/CW8_7079_8day_Q_PD_UTK.primary.dedup-UMI.bam"]="r6-n_Q_day8_tcn_N_aux-F_tc-F_rep2.UTK_prim_UMI.bam"
+
+array_UTK_prim_UMI["${UTK_prim_UMI}/BM10_DSp48_5781_new_UTK.primary.dedup-UMI.bam"]=""
+array_UTK_prim_UMI["${UTK_prim_UMI}/BM12_DSp48_7079_UTK.primary.dedup-UMI.bam"]=""
+array_UTK_prim_UMI["${UTK_prim_UMI}/CW6_7078_day8_Q_SS_UTK.primary.dedup-UMI.bam"]=""
+array_UTK_prim_UMI["${UTK_prim_UMI}/DA1_5781_SS_G1_UTK.primary.dedup-UMI.bam"]=""
+array_UTK_prim_UMI["${UTK_prim_UMI}/DA2_5782_SS_G1_UTK.primary.dedup-UMI.bam"]=""
+array_UTK_prim_UMI["${UTK_prim_UMI}/DA3_7078_SS_G1_UTK.primary.dedup-UMI.bam"]=""
+array_UTK_prim_UMI["${UTK_prim_UMI}/DA4_7079_SS_G1_UTK.primary.dedup-UMI.bam"]=""
+
 
 #  UT
 unset array_UT_prim_no
@@ -479,6 +506,15 @@ array_UT_prim_no["${UT_prim_no}/CW6_7078_8day_Q_PD_UT.primary.bam"]="r6-n_Q_day8
 array_UT_prim_no["${UT_prim_no}/CW8_7079_8day_Q_IN_UT.primary.bam"]="r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep2.UT_prim.bam"
 array_UT_prim_no["${UT_prim_no}/CW8_7079_8day_Q_PD_UT.primary.bam"]="r6-n_Q_day8_tcn_N_aux-F_tc-F_rep2.UT_prim.bam"
 
+array_UT_prim_no["${UT_prim_no}/BM10_DSp48_5781_new_UT.primary.bam"]=""
+array_UT_prim_no["${UT_prim_no}/BM12_DSp48_7079_UT.primary.bam"]=""
+array_UT_prim_no["${UT_prim_no}/CW6_7078_day8_Q_SS_UT.primary.bam"]=""
+array_UT_prim_no["${UT_prim_no}/DA1_5781_SS_G1_UT.primary.bam"]=""
+array_UT_prim_no["${UT_prim_no}/DA2_5782_SS_G1_UT.primary.bam"]=""
+array_UT_prim_no["${UT_prim_no}/DA3_7078_SS_G1_UT.primary.bam"]=""
+array_UT_prim_no["${UT_prim_no}/DA4_7079_SS_G1_UT.primary.bam"]=""
+
+
 unset array_UT_prim_pos
 typeset -A array_UT_prim_pos
 array_UT_prim_pos["${UT_prim_pos}/5781_G1_IN_UT.primary.dedup-pos.bam"]="WT_G1_day1_ovn_SS_aux-F_tc-F_rep1.UT_prim_pos.bam"
@@ -537,6 +573,15 @@ array_UT_prim_pos["${UT_prim_pos}/CW6_7078_8day_Q_PD_UT.primary.dedup-pos.bam"]=
 array_UT_prim_pos["${UT_prim_pos}/CW8_7079_8day_Q_IN_UT.primary.dedup-pos.bam"]="r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep2.UT_prim_pos.bam"
 array_UT_prim_pos["${UT_prim_pos}/CW8_7079_8day_Q_PD_UT.primary.dedup-pos.bam"]="r6-n_Q_day8_tcn_N_aux-F_tc-F_rep2.UT_prim_pos.bam"
 
+array_UT_prim_pos["${UT_prim_pos}/BM10_DSp48_5781_new_UT.primary.dedup-pos.bam"]=""
+array_UT_prim_pos["${UT_prim_pos}/BM12_DSp48_7079_UT.primary.dedup-pos.bam"]=""
+array_UT_prim_pos["${UT_prim_pos}/CW6_7078_day8_Q_SS_UT.primary.dedup-pos.bam"]=""
+array_UT_prim_pos["${UT_prim_pos}/DA1_5781_SS_G1_UT.primary.dedup-pos.bam"]=""
+array_UT_prim_pos["${UT_prim_pos}/DA2_5782_SS_G1_UT.primary.dedup-pos.bam"]=""
+array_UT_prim_pos["${UT_prim_pos}/DA3_7078_SS_G1_UT.primary.dedup-pos.bam"]=""
+array_UT_prim_pos["${UT_prim_pos}/DA4_7079_SS_G1_UT.primary.dedup-pos.bam"]=""
+
+
 unset array_UT_prim_UMI
 typeset -A array_UT_prim_UMI
 array_UT_prim_UMI["${UT_prim_UMI}/5781_G1_IN_UT.primary.dedup-UMI.bam"]="WT_G1_day1_ovn_SS_aux-F_tc-F_rep1.UT_prim_UMI.bam"
@@ -594,6 +639,14 @@ array_UT_prim_UMI["${UT_prim_UMI}/CW6_7078_8day_Q_IN_UT.primary.dedup-UMI.bam"]=
 array_UT_prim_UMI["${UT_prim_UMI}/CW6_7078_8day_Q_PD_UT.primary.dedup-UMI.bam"]="r6-n_Q_day8_tcn_N_aux-F_tc-F_rep1.UT_prim_UMI.bam"
 array_UT_prim_UMI["${UT_prim_UMI}/CW8_7079_8day_Q_IN_UT.primary.dedup-UMI.bam"]="r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep2.UT_prim_UMI.bam"
 array_UT_prim_UMI["${UT_prim_UMI}/CW8_7079_8day_Q_PD_UT.primary.dedup-UMI.bam"]="r6-n_Q_day8_tcn_N_aux-F_tc-F_rep2.UT_prim_UMI.bam"
+
+array_UT_prim_UMI["${UT_prim_UMI}/BM10_DSp48_5781_new_UT.primary.dedup-UMI.bam"]=""
+array_UT_prim_UMI["${UT_prim_UMI}/BM12_DSp48_7079_UT.primary.dedup-UMI.bam"]=""
+array_UT_prim_UMI["${UT_prim_UMI}/CW6_7078_day8_Q_SS_UT.primary.dedup-UMI.bam"]=""
+array_UT_prim_UMI["${UT_prim_UMI}/DA1_5781_SS_G1_UT.primary.dedup-UMI.bam"]=""
+array_UT_prim_UMI["${UT_prim_UMI}/DA2_5782_SS_G1_UT.primary.dedup-UMI.bam"]=""
+array_UT_prim_UMI["${UT_prim_UMI}/DA3_7078_SS_G1_UT.primary.dedup-UMI.bam"]=""
+array_UT_prim_UMI["${UT_prim_UMI}/DA4_7079_SS_G1_UT.primary.dedup-UMI.bam"]=""
 ```
 </details>
 <br />

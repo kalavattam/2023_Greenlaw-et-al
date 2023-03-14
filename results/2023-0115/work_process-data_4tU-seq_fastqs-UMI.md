@@ -5954,7 +5954,6 @@ bams_UMI-dedup/aligned_UTK_primary/CW8_7079_8day_Q_PD_UTK.primary.list-tally-fla
 
 <a id="04-use-gnu-parallel-to-run-samtools-index"></a>
 ### 04 Use `GNU parallel` to run `samtools index`
-`#HERE`
 <a id="get-all-bams-in--and-outfiles-into-a-single-array"></a>
 #### Get all bams (in- and outfiles) into a single array
 <a id="code-66"></a>
@@ -6353,7 +6352,6 @@ parallel \
 
 <a id="04-use-gnu-parallel-to-run-samtools-index-1"></a>
 ### 04 Use `GNU parallel` to run `samtools index`
-`#HERE` `#DEKHO`
 <a id="get-all-bams-in--and-outfiles-into-a-single-array-1"></a>
 #### Get all bams (in- and outfiles) into a single array
 <a id="code-74"></a>
@@ -6549,7 +6547,7 @@ parallel \
 <a id="printed-4"></a>
 #### Printed
 <details>
-<summary><i>Printed: </i></summary>
+<summary><i>Printed: Use GNU parallel to split bams by species</i></summary>
 
 ```txt
 ❯ parallel \
@@ -7060,7 +7058,7 @@ echo "${#pUm_o[@]}"
 <a id="printed-7"></a>
 #### Printed
 <details>
-<summary><i>Printed: </i></summary>
+<summary><i>Printed: Set up necessary variables, arrays</i></summary>
 
 ```txt
 ❯ #  pS ---------------------------------
