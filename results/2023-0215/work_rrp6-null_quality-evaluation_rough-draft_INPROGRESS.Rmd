@@ -27,6 +27,7 @@ rm(p_local, p_wd)
 #### Load necessary libraries
 ```{r Load necessary libraries, results='hide', message=FALSE, warning=FALSE}
 library(DESeq2)
+library(edgeR)
 library(EnhancedVolcano)
 library(GenomicRanges)
 library(IRanges)
@@ -399,9 +400,9 @@ keys <- vector(mode = "character")
 for(i in seq(1, nrow(samples))) {
     # i <- 1
     keys[i] <- paste(
-        samples[i, 1], samples[i, 2], samples[i, 3], samples[i, 4],
-        samples[i, 5], samples[i, 6], samples[i, 7], samples[i, 8],
-        samples[i, 9],
+        samples[i, 1], samples[i, 2], samples[i, 3],
+        samples[i, 4], samples[i, 5], samples[i, 6],
+        samples[i, 7], samples[i, 8], samples[i, 9],
         sep = "_"
     )
 }
@@ -434,75 +435,132 @@ rm(t_xl, keys)
 ```
 <br />
 
-```{bash}
-#  rrp6∆ SS timecourse
-r6-n_DSm2_day2_tcn_SS_aux-F_tc-T_rep1_tech1 Bp3_DSm2_7078
-r6-n_DSm2_day2_tcn_SS_aux-F_tc-T_rep2_tech1 BM3_DSm2_7079
-r6-n_DSp2_day2_tcn_SS_aux-F_tc-T_rep1_tech1 Bp6_DSp2_7078
-r6-n_DSp2_day2_tcn_SS_aux-F_tc-T_rep2_tech1 BM6_DSp2_7079
-r6-n_DSp24_day3_tcn_SS_aux-F_tc-T_rep1_tech1 Bp9_DSp24_7078
-r6-n_DSp24_day3_tcn_SS_aux-F_tc-T_rep2_tech1 BM9_DSp24_7079
-r6-n_DSp48_day4_tcn_SS_aux-F_tc-T_rep1_tech1 Bp12_DSp48_7078
-r6-n_DSp48_day4_tcn_SS_aux-F_tc-T_rep2_tech1 BM12_DSp48_7079
-WT_DSm2_day2_tcn_SS_aux-F_tc-T_rep1_tech1 BM1_DSm2_5781
-WT_DSm2_day2_tcn_SS_aux-F_tc-T_rep2_tech1 Bp1_DSm2_5782
-WT_DSp2_day2_tcn_SS_aux-F_tc-T_rep1_tech1 BM4_DSp2_5781
-WT_DSp2_day2_tcn_SS_aux-F_tc-T_rep2_tech1 Bp4_DSp2_5782
-WT_DSp24_day3_tcn_SS_aux-F_tc-T_rep1_tech1 BM7_DSp24_5781
-WT_DSp24_day3_tcn_SS_aux-F_tc-T_rep2_tech1 Bp7_DSp24_5782
-WT_DSp48_day4_tcn_SS_aux-F_tc-T_rep1_tech1 BM10_DSp48_5781
-WT_DSp48_day4_tcn_SS_aux-F_tc-T_rep1_tech2 BM10_DSp48_5781_new
-WT_DSp48_day4_tcn_SS_aux-F_tc-T_rep2_tech1 Bp10_DSp48_5782
+#### Identify specific samples to evaluate
+```{bash Identify specific samples, results='hide', message=FALSE}
+#!/bin/bash
+#DONTRUN
+
+#  rrp6∆ SS timecourse ------------------------------------
+r6_WT_SS_tc=(
+    r6-n_DSm2_day2_tcn_SS_aux-F_tc-T_rep1_tech1
+    r6-n_DSm2_day2_tcn_SS_aux-F_tc-T_rep2_tech1
+    r6-n_DSp2_day2_tcn_SS_aux-F_tc-T_rep1_tech1
+    r6-n_DSp2_day2_tcn_SS_aux-F_tc-T_rep2_tech1
+    r6-n_DSp24_day3_tcn_SS_aux-F_tc-T_rep1_tech1
+    r6-n_DSp24_day3_tcn_SS_aux-F_tc-T_rep2_tech1
+    r6-n_DSp48_day4_tcn_SS_aux-F_tc-T_rep1_tech1
+    r6-n_DSp48_day4_tcn_SS_aux-F_tc-T_rep2_tech1
+    WT_DSm2_day2_tcn_SS_aux-F_tc-T_rep1_tech1
+    WT_DSm2_day2_tcn_SS_aux-F_tc-T_rep2_tech1
+    WT_DSp2_day2_tcn_SS_aux-F_tc-T_rep1_tech1
+    WT_DSp2_day2_tcn_SS_aux-F_tc-T_rep2_tech1
+    WT_DSp24_day3_tcn_SS_aux-F_tc-T_rep1_tech1
+    WT_DSp24_day3_tcn_SS_aux-F_tc-T_rep2_tech1
+    WT_DSp48_day4_tcn_SS_aux-F_tc-T_rep1_tech1
+    WT_DSp48_day4_tcn_SS_aux-F_tc-T_rep1_tech2
+    WT_DSp48_day4_tcn_SS_aux-F_tc-T_rep2_tech1
+)
+# r6-n_DSm2_day2_tcn_SS_aux-F_tc-T_rep1_tech1 Bp3_DSm2_7078
+# r6-n_DSm2_day2_tcn_SS_aux-F_tc-T_rep2_tech1 BM3_DSm2_7079
+# r6-n_DSp2_day2_tcn_SS_aux-F_tc-T_rep1_tech1 Bp6_DSp2_7078
+# r6-n_DSp2_day2_tcn_SS_aux-F_tc-T_rep2_tech1 BM6_DSp2_7079
+# r6-n_DSp24_day3_tcn_SS_aux-F_tc-T_rep1_tech1 Bp9_DSp24_7078
+# r6-n_DSp24_day3_tcn_SS_aux-F_tc-T_rep2_tech1 BM9_DSp24_7079
+# r6-n_DSp48_day4_tcn_SS_aux-F_tc-T_rep1_tech1 Bp12_DSp48_7078
+# r6-n_DSp48_day4_tcn_SS_aux-F_tc-T_rep2_tech1 BM12_DSp48_7079
+# WT_DSm2_day2_tcn_SS_aux-F_tc-T_rep1_tech1 BM1_DSm2_5781
+# WT_DSm2_day2_tcn_SS_aux-F_tc-T_rep2_tech1 Bp1_DSm2_5782
+# WT_DSp2_day2_tcn_SS_aux-F_tc-T_rep1_tech1 BM4_DSp2_5781
+# WT_DSp2_day2_tcn_SS_aux-F_tc-T_rep2_tech1 Bp4_DSp2_5782
+# WT_DSp24_day3_tcn_SS_aux-F_tc-T_rep1_tech1 BM7_DSp24_5781
+# WT_DSp24_day3_tcn_SS_aux-F_tc-T_rep2_tech1 Bp7_DSp24_5782
+# WT_DSp48_day4_tcn_SS_aux-F_tc-T_rep1_tech1 BM10_DSp48_5781
+# WT_DSp48_day4_tcn_SS_aux-F_tc-T_rep1_tech2 BM10_DSp48_5781_new
+# WT_DSp48_day4_tcn_SS_aux-F_tc-T_rep2_tech1 Bp10_DSp48_5782
 
 
-#  rrp6∆ G1 N vs WT G1 N
-r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1 DA3_7078_SS_G1
-r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1 DA4_7079_SS_G1
-WT_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1 DA1_5781_SS_G1
-WT_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1 DA2_5782_SS_G1
+#  rrp6∆ G1 N vs WT G1 N ----------------------------------
+r6_WT_G1_N=(
+    r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1
+    r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1
+    WT_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1
+    WT_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1
+)
+# r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1 DA3_7078_SS_G1
+# r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1 DA4_7079_SS_G1
+# WT_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1 DA1_5781_SS_G1
+# WT_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1 DA2_5782_SS_G1
 
 
-#  rrp6∆ Q N vs WT Q N vs rtr1∆ N
-r6-n_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1 CW6_7078_8day_Q_PD
-r6-n_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1 CW8_7079_8day_Q_PD
-WT_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1 CW2_5781_8day_Q_PD
-WT_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1 CW4_5782_8day_Q_PD
-r1-n_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1 CW10_7747_8day_Q_PD
-r1-n_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1 CW12_7748_8day_Q_PD
+#  rrp6∆ Q N vs rtr1∆ N vs WT Q N -------------------------
+r6_r1_WT_Q_N=(
+    r6-n_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1
+    r6-n_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1
+    r1-n_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1
+    r1-n_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1
+    WT_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1
+    WT_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1
+)
+# r6-n_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1 CW6_7078_8day_Q_PD
+# r6-n_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1 CW8_7079_8day_Q_PD
+# r1-n_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1 CW10_7747_8day_Q_PD
+# r1-n_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1 CW12_7748_8day_Q_PD
+# WT_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1 CW2_5781_8day_Q_PD
+# WT_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1 CW4_5782_8day_Q_PD
 
 
-#  rrp6∆ Q SS vs WT Q SS vs rtr1∆ Q SS
-r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1 CW6_7078_8day_Q_IN
-r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech2 CW6_7078_day8_Q_SS
-r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1 CW8_7079_8day_Q_IN
-WT_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1 CW2_5781_8day_Q_IN
-WT_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1 CW4_5782_8day_Q_IN
-r1-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1 CW10_7747_8day_Q_IN
-r1-n_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1 CW12_7748_8day_Q_IN
+#  rrp6∆ Q SS vs WT Q SS vs rtr1∆ Q SS --------------------
+r6_r1_WT_Q_SS=(
+    r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1
+    r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech2
+    r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1
+    r1-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1
+    r1-n_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1
+    WT_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1
+    WT_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1
+)
+# r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1 CW6_7078_8day_Q_IN
+# r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech2 CW6_7078_day8_Q_SS
+# r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1 CW8_7079_8day_Q_IN
+# r1-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1 CW10_7747_8day_Q_IN
+# r1-n_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1 CW12_7748_8day_Q_IN
+# WT_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1 CW2_5781_8day_Q_IN
+# WT_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1 CW4_5782_8day_Q_IN
 
 
-#  Tests of the Tecan kit
-WT_Q_day7_tcn_N_aux-F_tc-F_rep2_tech1 CU11_5782_Q_Nascent
-WT_Q_day7_tcn_SS_aux-F_tc-F_rep2_tech1 CU12_5782_Q_SteadyState
+#  Tests of the Tecan kit ---------------------------------
+test_Tecan_WT=(
+    WT_Q_day7_tcn_N_aux-F_tc-F_rep2_tech1
+    WT_Q_day7_tcn_SS_aux-F_tc-F_rep2_tech1
+)
+# WT_Q_day7_tcn_N_aux-F_tc-F_rep2_tech1 CU11_5782_Q_Nascent
+# WT_Q_day7_tcn_SS_aux-F_tc-F_rep2_tech1 CU12_5782_Q_SteadyState
 ```
 
 
-### Do prep work with `...`
-That is, do prep work with the wild-type G1 and Q Ovation nascent
-(immunoprecipitated) 4tU-seq datasets, replicates 1 and 2.
-<br />
-
+### Do prep work with "`rrp6∆ SS timecourse`"
 #### Make the counts matrix
 ```{r Make the counts matrix, results='hide', message=FALSE}
 samples$keys
 
 datasets <- c(
-    "n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1",
-    "n3-d_Q_day7_tcn_N_aux-T_tc-F_rep2",
-    "n3-d_Q_day7_tcn_N_aux-T_tc-F_rep3",
-    "n3-d_Q_day7_tcn_SS_aux-T_tc-F_rep1",
-    "n3-d_Q_day7_tcn_SS_aux-T_tc-F_rep2",
-    "n3-d_Q_day7_tcn_SS_aux-T_tc-F_rep3"
+    "r6-n_DSm2_day2_tcn_SS_aux-F_tc-T_rep1_tech1",
+    "r6-n_DSm2_day2_tcn_SS_aux-F_tc-T_rep2_tech1",
+    "r6-n_DSp2_day2_tcn_SS_aux-F_tc-T_rep1_tech1",
+    "r6-n_DSp2_day2_tcn_SS_aux-F_tc-T_rep2_tech1",
+    "r6-n_DSp24_day3_tcn_SS_aux-F_tc-T_rep1_tech1",
+    "r6-n_DSp24_day3_tcn_SS_aux-F_tc-T_rep2_tech1",
+    "r6-n_DSp48_day4_tcn_SS_aux-F_tc-T_rep1_tech1",
+    "r6-n_DSp48_day4_tcn_SS_aux-F_tc-T_rep2_tech1",
+    "WT_DSm2_day2_tcn_SS_aux-F_tc-T_rep1_tech1",
+    "WT_DSm2_day2_tcn_SS_aux-F_tc-T_rep2_tech1",
+    "WT_DSp2_day2_tcn_SS_aux-F_tc-T_rep1_tech1",
+    "WT_DSp2_day2_tcn_SS_aux-F_tc-T_rep2_tech1",
+    "WT_DSp24_day3_tcn_SS_aux-F_tc-T_rep1_tech1",
+    "WT_DSp24_day3_tcn_SS_aux-F_tc-T_rep2_tech1",
+    "WT_DSp48_day4_tcn_SS_aux-F_tc-T_rep1_tech1",
+    "WT_DSp48_day4_tcn_SS_aux-F_tc-T_rep1_tech2",
+    "WT_DSp48_day4_tcn_SS_aux-F_tc-T_rep2_tech1"
 )
 counts_data <- t_fc[, colnames(t_fc) %in% datasets] %>%
     as.data.frame()  #IMPORTANT Output a dataframe, not a tibble

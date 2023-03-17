@@ -27,11 +27,13 @@ rm(p_local, p_wd)
 #### Load necessary libraries
 ```{r Load necessary libraries, echo=FALSE, results='hide', message=FALSE, warning=FALSE}
 library(DESeq2)
+library(edgeR)
 library(EnhancedVolcano)
 library(GenomicRanges)
 library(IRanges)
-library(tidyverse)
+library(PCAtools)
 library(readxl)  # Needed for reading in Excel file of filenames, variables
+library(tidyverse)
 ```
 <br />
 
@@ -359,6 +361,7 @@ pos_info <- GenomicRanges::GRanges(
     strand = t_fc$strand,
     length = t_fc$length,
     feature = t_fc$feature,
+    feature_init = t_fc$feature_init,
     type = t_fc$type,
     genome = t_fc$genome
 )
@@ -380,6 +383,7 @@ pos_info
     + `auxin`
     + `timecourse`
     + `replicate`
+    + `technical`
 
 ```{r Make a master model matrix, echo=FALSE, results='hide', message=FALSE}
 #  Columns 10 through to the last column are composed of sample feature counts;
@@ -403,12 +407,12 @@ samples <- samples %>%
         .,
         #  Using numeric column names here because the columns will soon be
         #+ transposed to rows, and I don't want the rows to have proper names
-        col.names = c(seq(1, 55)),
+        col.names = c(seq(1, 62)),
         #  Using proper row names here because the rows will soon be transposed
         #+ to columns, and I *do* want the columns to have proper names 
         row.names = c(
             "strain", "state", "time", "kit", "transcription", "auxin",
-            "timecourse", "replicate"
+            "timecourse", "replicate", "technical"
         )
     ) %>%
     t() %>%
@@ -419,8 +423,9 @@ keys <- vector(mode = "character")
 for(i in seq(1, nrow(samples))) {
     # i <- 1
     keys[i] <- paste(
-        samples[i, 1], samples[i, 2], samples[i, 3], samples[i, 4],
-        samples[i, 5], samples[i, 6], samples[i, 7], samples[i, 8],
+        samples[i, 1], samples[i, 2], samples[i, 3],
+        samples[i, 4], samples[i, 5], samples[i, 6],
+        samples[i, 7], samples[i, 8], samples[i, 9],
         sep = "_"
     )
 }
@@ -458,11 +463,11 @@ rm(t_xl, keys)
 ### Make the counts matrix
 ```{r Make the counts matrix, echo=FALSE, results='hide', message=FALSE}
 datasets <- c(
-    "n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1",
-    "n3-d_Q_day7_tcn_N_aux-T_tc-F_rep2",
-    "n3-d_Q_day7_tcn_N_aux-T_tc-F_rep3",
-    "o-d_Q_day7_tcn_N_aux-T_tc-F_rep1",
-    "o-d_Q_day7_tcn_N_aux-T_tc-F_rep2"
+    "n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1",
+    "n3-d_Q_day7_tcn_N_aux-T_tc-F_rep2_tech1",
+    "n3-d_Q_day7_tcn_N_aux-T_tc-F_rep3_tech1",
+    "o-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1",
+    "o-d_Q_day7_tcn_N_aux-T_tc-F_rep2_tech1"
 )
 counts_data <- t_fc[, colnames(t_fc) %in% datasets] %>%
     as.data.frame()  #IMPORTANT Output a dataframe, not a tibble
@@ -508,10 +513,10 @@ dds <- DESeq2::DESeqDataSetFromMatrix(
 bak.dds <- dds
 
 #  How do things look?
-dds %>% BiocGenerics::counts() %>% head()
-dds@rowRanges
-dds@design
-dds@assays
+# dds %>% BiocGenerics::counts() %>% head()
+# dds@rowRanges
+# dds@design
+# dds@assays
 ```
 <br />
 
@@ -549,13 +554,160 @@ genes are skewing results.
 <br />
 <br />
 
-## I. Run analyses with *S. cerevisae* features only
+## I. Run PCA, etc.
+### Generate normalized counts
+#### Create rlog-normalized counts (unblinded)
+```{r I. Create rlog-normalized counts, message=FALSE}
+norm_r <- DESeq2::rlog(
+    dds[dds@rowRanges$genome == "S_cerevisiae", ], blind = FALSE
+) %>%
+    SummarizedExperiment::assay() %>%
+    as.data.frame()
+norm_r$feature_init <- dds@rowRanges$feature_init[
+    dds@rowRanges$genome == "S_cerevisiae"
+]
+
+#  Associate normalized values with feature metadata
+norm_r <- dplyr::full_join(
+    norm_r,
+    t_fc[t_fc$genome == "S_cerevisiae", 1:9],
+    by = "feature_init"
+) %>%
+    dplyr::as_tibble()
+```
+
+#### Create GeTMM-normalized counts
+```{r I. Create GeTMM-normalized counts, message=FALSE}
+#  Isolate raw counts for samples of interest
+raw <- dds %>%
+    SummarizedExperiment::assay() %>%
+    as.data.frame()
+raw$feature_init <- dds@rowRanges$feature_init
+
+#  Associate non-normalized values with feature metadata
+raw <- dplyr::full_join(
+    raw,
+    t_fc[, c(seq(1,9))],
+    by = "feature_init"
+) %>%
+    dplyr::as_tibble()
+
+#  Calculate counts per kb of gene length (i.e., correct counts for gene
+#+ length); gene length is initially in bp and converted to kb
+rpk <- ((raw[, 1:5] * 10^3) / raw$length)
+rpk[, 6:14] <- raw[, 6:14]
+
+#  Calculate normalization factors using the raw spike-in (K. lactis) counts
+norm_KL <- edgeR::calcNormFactors(
+    raw[(rpk$genome == "K_lactis"), ][, 1:5]
+)
+
+#  Create factor for categories (groups)
+model_variables <- stringr::str_split(colnames(rpk[, 1:5]), "_") %>%
+    as.data.frame(
+        row.names = c(
+            "sample", "stage", "day", "kit", "tx", "aux", "tc", "rep", "tech"
+        ),
+        col.names = paste0("s", c(1:5))
+    ) %>%
+    t() %>%
+    tibble::as_tibble()
+
+group <- factor(
+    # Second level is numerator, first level is denominator
+    model_variables$sample,
+    levels = c("o-d", "n3-d")
+)
+
+rm(model_variables)
+
+#  Create edgeR DGEList object composed of S. cerevisiae counts per kb gene
+#+ length
+dgel <- edgeR::DGEList(
+    counts = rpk[rpk$genome == "S_cerevisiae", ][, 1:5],
+    group = group
+)
+
+#  In the DGEList object, include the normalization factors calculated from
+#+ spike-in information
+dgel$samples$norm.factors <- norm_KL
+
+#  Check that the normalization factors for each library are appropriately
+#+ assigned
+dgel$samples
+
+#  Scale the values to counts-per-million
+norm_g <- edgeR::cpm(dgel) %>% tibble::as_tibble()
+norm_g[, 6:14] <- rpk[rpk$genome == "S_cerevisiae", 6:14]
+norm_g
+
+#  Clean up unneeded variables
+rm(raw, rpk, norm_KL, group)
+#TODO Delete dgel? Or use it for DE analyses with edgeR?
+```
+
+### Run PCA
+#### GeTMM-normalized counts
+```{r}
+draw_scree_plot <- function(pca, horn, elbow) {
+    #TODO Descriptions for function and parameters
+    # :param pca: "pca" list object obtained by running PCAtools::pca()
+    # :horn: ...
+    # :elbow: ...
+
+    scree <- PCAtools::screeplot(
+        pca,
+        components = PCAtools::getComponents(pca),
+        vline = c(horn, elbow),
+        vlineWidth = 0.25,
+        sizeCumulativeSumLine = 0.5,
+        sizeCumulativeSumPoints = 1.5
+    ) +
+        geom_text(aes(horn + 1, 50, label = "Horn's", vjust = 2)) +
+        geom_text(aes(elbow + 1, 50, label = "Elbow", vjust = -2)) +
+        theme_slick +
+        ggplot2::theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+    return(scree)
+}
+
+
+horn_g <- PCAtools::parallelPCA(mat = norm_g[, c(1:5)])
+obj_pca_g <- PCAtools::pca(
+    norm_g[, c(1:5)],
+    metadata = dds[dds@rowRanges$genome != "K_lactis", ]@colData
+)
+rownames(obj_pca_g$loadings) <- make.names(
+    dds[dds@rowRanges$genome != "K_lactis", ]@rowRanges$feature,
+    unique = TRUE
+)
+elbow_g <- PCAtools::findElbowPoint(obj_pca_g$variance)
+scree_g <- draw_scree_plot(obj_pca_g, horn = horn_g$n, elbow = elbow_g)
+scree_g
+
+
+horn_r <- PCAtools::parallelPCA(mat = norm_r[, c(1:5)])
+obj_pca_r <- PCAtools::pca(
+    norm_r[, c(1:5)],
+    metadata = dds[dds@rowRanges$genome != "K_lactis", ]@colData
+)
+rownames(obj_pca_r$loadings) <- make.names(
+    dds[dds@rowRanges$genome != "K_lactis", ]@rowRanges$feature,
+    unique = TRUE
+)
+elbow_r <- PCAtools::findElbowPoint(obj_pca_r$variance)
+scree_r <- draw_scree_plot(obj_pca_r, horn = horn_r$n, elbow = elbow_r)
+scree_r
+```
+
+
+## II. Run analyses with *S. cerevisae* features only
 ### Perform size-factor estimation
 Here, we subset out the *K. lactis* features. Thus, we are using only
 *S. cerevisiae* features in the size-factor estimation. No control genes are
 used.
 
-```{r I. Perform size-factor estimation, message=FALSE}
+```{r II. Perform size-factor estimation, message=FALSE}
 dds_SC <- BiocGenerics::estimateSizeFactors(
     dds[dds@rowRanges$genome != "K_lactis", ]
 )
@@ -570,7 +722,7 @@ dds_SC@colData
 
 ### Run `DESeq2`
 #### Call `DESeq2` using default parameters
-```{r I. Call DESeq2 using default parameters, echo=TRUE, results='hide', message=FALSE}
+```{r II. Call DESeq2 using default parameters, echo=TRUE, results='hide', message=FALSE}
 dds_SC <- DESeq2::DESeq(dds_SC)
 
 #  Check model information
@@ -584,7 +736,7 @@ DESeq2::resultsNames(dds_SC)[2]
 <br />
 
 #### Call `DESeq2::results()`
-```{r I. Call DESeq2::results(), echo=FALSE, message=FALSE}
+```{r II. Call DESeq2::results(), echo=FALSE, message=FALSE}
 #  Set up necessary parameters for generation of DESeq2 results table
 independent_filtering <- TRUE
 threshold_p <- 0.05
@@ -623,7 +775,7 @@ rm(independent_filtering, threshold_p, threshold_lfc)
 <br />
 
 #### Make an MA plot that colors features by independent filtering
-```{r I. Make an MA plot: B, echo=FALSE, message=FALSE}
+```{r II. Make an MA plot: B, echo=FALSE, message=FALSE}
 #  Set up temporary variable 'tbl', which will be passed to ggplot
 tbl <- t_DGE_SC
 tbl <- tbl[with(tbl, order(log2FoldChange)), ]
@@ -638,8 +790,8 @@ title <- paste0(
 )
 subtitle <- paste(
     "points: S. cerevisiae features",
-    "| top: up in OsTIR depletion",
-    "| bottom: up in Nab3 depletion"
+    "| top: up in Nab3 depletion",
+    "| bottom: up in OsTIR depletion"
 )  # [1] "strain_o.d_vs_n3.d"
 ggplot(tbl, aes(x = log10baseMean, y = log2FoldChange, colour = threshold)) +
     geom_point(alpha = 0.25, size = 0.5) +
@@ -656,9 +808,9 @@ ggplot(tbl, aes(x = log10baseMean, y = log2FoldChange, colour = threshold)) +
 #TODO 2/2 parameters
 
 #NOTE 1/4 Note that the data are not centered on log2(fold change) = 0;
-#NOTE 2/4 instead, they seem to slope upward with a gentle gradient; this
+#NOTE 2/4 instead, they seem to slope downward with a gentle gradient; this
 #NOTE 3/4 suggests that centering the data with all S. cerevisiae features is
-#NOTE 4/4 not an effective normalization
+#NOTE 4/4 not an effective read-depth normalization
 
 #  Create a vector of features that both passed independent filtering (and thus
 #+ have an inherently high mean expression) and are not statistically
@@ -676,7 +828,7 @@ rm(tbl, title, subtitle)
 <br />
 
 #### Make a volcano plot
-```{r I. Make a volcano plot, echo=FALSE, message=FALSE}
+```{r II. Make a volcano plot, echo=FALSE, message=FALSE}
 #  Identify and isolate the top 5 upregulated features and the top 5 down-
 #+ regulated features
 all <- t_DGE_SC$feature
@@ -697,8 +849,8 @@ title <- paste0(
 )
 subtitle <- paste(
     "points: S. cerevisiae features",
-    "| left: up in Nab3 depletion",
-    "| right: up in OsTIR depletion",
+    "| left: up in OsTIR depletion",
+    "| right: up in Nab3 depletion",
     "|\nlabels: top 5 OsTIR dep. and top 5 Nab3 dep. features"
 )  # [1] "strain_o.d_vs_n3.d"
 p_SC <- plot_volcano(
@@ -724,18 +876,18 @@ p_SC
 
 rm(all, selection, selection_up, selection_down, title, subtitle)
 #TODO 1/2 Why are there 12 labels in the plot, two of which are not top
-#TODO anything? There should only be 10. #FIXME
+#TODO anything? Based on the above code, There should only be 10. #FIXME
 ```
 <br />
 <br />
 
-## II. Run analyses with *K. lactis* features only
+## III. Run analyses with *K. lactis* features only
 ### Perform size-factor estimation
 Here, we subset out&mdash;i.e., remove&mdash;the *S. cerevisiae* features and
 are thus only analyzing *K. lactis* features, using all *K. lactis* features
 in the size-factor estimation.
 
-```{r II. Perform size-factor estimation, echo=TRUE, results='hide', message=FALSE}
+```{r III. Perform size-factor estimation, echo=TRUE, results='hide', message=FALSE}
 dds_KL <- BiocGenerics::estimateSizeFactors(
     dds[dds@rowRanges$genome != "S_cerevisiae", ]
 )
@@ -750,7 +902,7 @@ dds_KL@colData
 
 ### Run `DESeq2`
 #### Call `DESeq2` using default parameters
-```{r II. Call DESeq2 using default parameters, echo=TRUE, results='hide', message=FALSE}
+```{r III. Call DESeq2 using default parameters, echo=TRUE, results='hide', message=FALSE}
 dds_KL <- DESeq2::DESeq(dds_KL)
 
 #  Check model information
@@ -764,7 +916,7 @@ DESeq2::resultsNames(dds_KL)[2]
 <br />
 
 #### Call `DESeq2::results()`
-```{r II. Call DESeq2::results(), echo=FALSE, message=FALSE}
+```{r III. Call DESeq2::results(), echo=FALSE, message=FALSE}
 #  Set up necessary parameters for generation of DESeq2 results table
 independent_filtering <- TRUE
 threshold_p <- 0.05
@@ -803,7 +955,7 @@ rm(independent_filtering, threshold_p, threshold_lfc)
 <br />
 
 #### Make an MA plot that colors features by independent filtering
-```{r II. Make an MA plot: B, echo=FALSE, message=FALSE}
+```{r III. Make an MA plot: B, echo=FALSE, message=FALSE}
 #  Set up temporary variable 'tbl', which will be passed to ggplot
 tbl <- t_DGE_KL
 tbl <- tbl[with(tbl, order(log2FoldChange)), ]
@@ -818,8 +970,8 @@ title <- paste0(
 )
 subtitle <- paste(
     "points: K. lactis features",
-    "| top: up in OsTIR depletion",
-    "| bottom: up in Nab3 depletion"
+    "| top: up in Nab3 depletion",
+    "| bottom: up in OsTIR depletion"
 )  # [1] "strain_o.d_vs_n3.d"
 ggplot(tbl, aes(x = log10baseMean, y = log2FoldChange, colour = threshold)) +
     geom_point(alpha = 0.25, size = 0.5) +
@@ -851,7 +1003,7 @@ rm(tbl, title, subtitle)
 <br />
 
 #### Make a volcano plot
-```{r II. Make a volcano plot, echo=FALSE, message=FALSE}
+```{r III. Make a volcano plot, echo=FALSE, message=FALSE}
 all <- t_DGE_KL$feature
 # selection_down <- t_DGE_KL %>%
 #     dplyr::filter(log2FoldChange < 0) %>%
@@ -873,8 +1025,8 @@ title <- paste0(
 )
 subtitle <- paste(
     "points: K. lactis features",
-    "| left: up in Nab3 depletion",
-    "| right: up in OsTIR depletion",
+    "| left: up in OsTIR depletion",
+    "| right: up in Nab3 depletion",
     "|\nlabels: top 5 OsTIR dep. and top 5 Nab3 dep. features"
 )  # [1] "strain_o.d_vs_n3.d"
 p_KL <- plot_volcano(
@@ -904,7 +1056,7 @@ rm(all, selection, title, subtitle)
 <br />
 <br />
 
-## III. Run analyses of *S.C.* in which all *K.L.* are `controlGenes`
+## IV. Run analyses of *S.C.* in which all *K.L.* are `controlGenes`
 ### Perform size-factor estimation
 To run analyses using all *K.lactis* features as `controlGenes`, we use a
 logical vector (a vector composed of elements with values of either `TRUE` or
@@ -915,7 +1067,7 @@ object. In essence, we're saying, "Return `TRUE` if the `rowRanges` variable
 `TRUE`s to isolate the counts for *K. lactis*-specific features, in turn
 using those values to calculate size factors.
 
-```{r III. Perform size-factor estimation, echo=TRUE, results='hide', message=FALSE}
+```{r IV. Perform size-factor estimation, echo=TRUE, results='hide', message=FALSE}
 #  Recalculate size factors using K. lactis features as `controlGenes`
 dds_SC.ctrl_KL <- BiocGenerics::estimateSizeFactors(
     dds,
@@ -936,7 +1088,7 @@ dds_SC.ctrl_KL@colData
 Since we've already calculated the size factors, I think we can exclude
 *K. lactis* features from our work from here on out. We have to do some index
 subsetting to accomplish this (see below).
-```{r III. Call DESeq2 using default parameters, echo=TRUE, results='hide', message=FALSE}
+```{r IV. Call DESeq2 using default parameters, echo=TRUE, results='hide', message=FALSE}
 dds_SC.ctrl_KL <- DESeq2::DESeq(
     dds_SC.ctrl_KL[dds_SC.ctrl_KL@rowRanges$genome != "K_lactis", ]
 )
@@ -952,7 +1104,7 @@ DESeq2::resultsNames(dds_SC.ctrl_KL)[2]
 <br />
 
 #### Call `DESeq2::results()`
-```{r III. Call DESeq2::results(), echo=FALSE, message=FALSE}
+```{r IV. Call DESeq2::results(), echo=FALSE, message=FALSE}
 #  Set up necessary parameters for generation of DESeq2 results table
 independent_filtering <- TRUE
 threshold_p <- 0.05
@@ -992,7 +1144,7 @@ rm(independent_filtering, threshold_p, threshold_lfc)
 <br />
 
 #### Make an MA plot that colors features by independent filtering
-```{r III. Make an MA plot: B, echo=FALSE, message=FALSE}
+```{r IV. Make an MA plot: B, echo=FALSE, message=FALSE}
 #  Set up temporary variable 'tbl', which will be passed to ggplot
 tbl <- t_DGE_SC.ctrl_KL
 tbl <- tbl[with(tbl, order(log2FoldChange)), ]
@@ -1007,8 +1159,8 @@ title <- paste0(
 )
 subtitle <- paste(
     "points: S. cerevisiae features",
-    "| top: up in OsTIR depletion",
-    "| bottom: up in Nab3 depletion"
+    "| top: up in Nab3 depletion",
+    "| bottom: up in OsTIR depletion"
 )  # [1] "strain_o.d_vs_n3.d"
 ggplot(tbl, aes(x = log10baseMean, y = log2FoldChange, colour = threshold)) +
     geom_point(alpha = 0.25, size = 0.5) +
@@ -1044,7 +1196,7 @@ rm(tbl, title, subtitle)
 ```
 
 #### Make a volcano plot
-```{r III. Make a volcano plot, echo=FALSE, message=FALSE}
+```{r IV. Make a volcano plot, echo=FALSE, message=FALSE}
 all <- t_DGE_SC.ctrl_KL$feature
 selection_down <- t_DGE_SC.ctrl_KL %>%
     dplyr::filter(log2FoldChange < 0) %>%
@@ -1063,8 +1215,8 @@ title <- paste0(
 )
 subtitle <- paste(
     "points: S. cerevisiae features",
-    "| left: up in Nab3 depletion",
-    "| right: up in OsTIR depletion",
+    "| left: up in OsTIR depletion",
+    "| right: up in Nab3 depletion",
     "|\nlabels: top 5 OsTIR dep. and top 5 Nab3 dep. features"
 )  # [1] "strain_o.d_vs_n3.d"
 p_SC.ctrl_KL.1 <- plot_volcano(
@@ -1105,3 +1257,4 @@ p_SC.ctrl_KL.2
 
 rm(all, selection, selection_up, selection_down, title, subtitle)
 ```
+<br />
