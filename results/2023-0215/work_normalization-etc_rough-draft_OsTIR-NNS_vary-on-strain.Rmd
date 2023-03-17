@@ -10,8 +10,8 @@ output: html_notebook
 ### Get situated
 #### Set working directory (`wd`)
 ```{r Set working directory, echo=FALSE, results='hide', message=FALSE}
-# p_local <- "/Users/kalavattam/Dropbox/FHCC"  # KrisMac
-p_local <- "/Users/kalavatt/projects-etc"  # WorkMac
+p_local <- "/Users/kalavattam/Dropbox/FHCC"  # KrisMac
+# p_local <- "/Users/kalavatt/projects-etc"  # WorkMac
 p_wd <- "2022_transcriptome-construction/results/2023-0215"
 #NOTE 1/3 Alison: you can adjust 'p_local' or 'p_wd' (path to working directory 
 #NOTE 2/3 on your personal or work computer ); I have two paths here with one
@@ -559,7 +559,8 @@ genes are skewing results.
 #### Create rlog-normalized counts (unblinded)
 ```{r I. Create rlog-normalized counts, message=FALSE}
 norm_r <- DESeq2::rlog(
-    dds[dds@rowRanges$genome == "S_cerevisiae", ], blind = FALSE
+    dds[dds@rowRanges$genome == "S_cerevisiae", ],
+    blind = FALSE
 ) %>%
     SummarizedExperiment::assay() %>%
     as.data.frame()
@@ -672,6 +673,259 @@ draw_scree_plot <- function(pca, horn, elbow) {
 }
 
 
+get_top_loadings <- function(x, y, z, a) {
+    # :param x: dataframe of PC loadings <data.frame>
+    # :param y: character element for column in dataframe x <chr>
+    # :param z: whether to select all loadings sorted from largest to smallest
+    #           absolute value ('all'), positive loadings sorted from largest
+    #           to smallest value ('pos'), or negative loadings sorted from
+    #           largest to smallest absolute value ('neg') <str>
+    # :param a: whether or not to keep 'sign' and 'abs' columns added in the
+    #           course of processing the dataframe <logical>
+    
+    #  Test
+    # x <- loadings
+    # y <- "PC1"
+    # z <- "neg"
+    # a <- TRUE
+    
+    b <- as.data.frame(x[[y]])
+    rownames(b) <- rownames(x)
+    colnames(b) <- y
+    
+    b[["sign"]] <- ifelse(
+        b[[y]] > 0,
+        "pos",
+        ifelse(
+            b[[y]] == 0,
+            "zero",
+            "neg"
+        )
+    )
+    
+    b[["abs"]] <- abs(b[[y]])
+    
+    if(z == "all") {
+        b <- dplyr::arrange(b, by = desc(abs))
+    } else if(z == "pos") {
+        b <- b[b[[y]] > 0, ] %>% dplyr::arrange(., by = desc(abs))
+    } else if(z == "neg") {
+        b <- b[b[[y]] < 0, ] %>% dplyr::arrange(., by = desc(abs))
+    } else {
+        stop(paste0("Stopping: param z must be either 'all', 'pos', or 'neg'"))
+    }
+    
+    if(isTRUE(a)) {
+        paste0("Retaining 'sign' and 'abs' columns")
+    } else if(isFALSE(a)) {
+        b <- b %>% dplyr::select(-c(sign, abs))
+    } else {
+        stop(paste0("Stopping: param a must be either 'TRUE' or 'FALSE'"))
+    }
+    
+    return(b)
+}
+
+
+plot_pos_neg_loadings_each_axis <- function(
+    df_all, df_pos, df_neg,
+    PC_x, PC_y,
+    row_start, row_end,
+    x_min, x_max, y_min, y_max,
+    x_nudge, y_nudge, x_label, y_label,
+    col_line_pos, col_line_neg, col_seg_pos, col_seg_neg
+) {
+    #TODO Description of function
+    # :param df_all: dataframe: all loadings (from, e.g., PCAtools)
+    # :param df_pos: dataframe: positive loadings ordered largest to smallest
+    # :param df_neg: dataframe: negative loadings ordered smallest to largest
+    # :param PC_x: PC to plot on the x axis
+    # :param PC_y: PC to plot on the y axis
+    # :param row_start: row from which to begin subsetting the PCs on x and y
+    # :param row_end: row at which to end subsetting the PCs on x and y
+    # :param x_min: minimum value on x axis <dbl>
+    # :param x_max: maximum value on x axis <dbl>
+    # :param y_min: minimum value on y axis <dbl>
+    # :param y_max: maximum value on y axis <dbl>
+    # :param x_nudge: amount to nudge labels on the x axis <dbl>
+    # :param y_nudge: amount to nudge labels on the y axis <dbl>
+    # :param x_label: x axis label <chr>
+    # :param y_label: y axis label <chr>
+    # :param col_line_pos: color: lines, arrows for positive loadings <chr>
+    # :param col_line_neg: color: lines, arrows for negative loadings <chr>
+    # :param col_seg_pos: color: segments connecting arrowhead and text bubble
+    #                     for positive loadings <chr>
+    # :param col_seg_neg: color: segments connecting arrowhead and text bubble
+    #                     for negative loadings <chr>
+    
+    #  Test
+    # df_all <- loadings
+    # df_pos <- top_loadings_pos
+    # df_neg <- top_loadings_neg
+    # PC_x <- "PC1"
+    # PC_y <- "PC2"
+    # row_start <- 1
+    # row_end <- 10
+    # x_min <- -0.075
+    # x_max <- 0.075
+    # y_min <- -0.1
+    # y_max <- 0.1
+    # x_nudge <- 0.02
+    # y_nudge <- 0.04
+    # x_label <- "PC1"
+    # y_label <- "PC2"
+    # col_line_pos <- "black"
+    # col_line_neg <- "red"
+    # col_seg_pos <- "grey"
+    # col_seg_neg <- "grey"
+    
+    filter_pos_1 <- rownames(df_pos[[PC_x]][row_start:row_end, ])
+    filter_pos_2 <- rownames(df_pos[[PC_y]][row_start:row_end, ])
+    filter_neg_1 <- rownames(df_neg[[PC_x]][row_start:row_end, ])
+    filter_neg_2 <- rownames(df_neg[[PC_y]][row_start:row_end, ])
+    
+    loadings_filter_pos_1 <- df_all[rownames(df_all) %in% filter_pos_1, ]
+    loadings_filter_pos_2 <- df_all[rownames(df_all) %in% filter_pos_2, ]
+    loadings_filter_neg_1 <- df_all[rownames(df_all) %in% filter_neg_1, ]
+    loadings_filter_neg_2 <- df_all[rownames(df_all) %in% filter_neg_2, ]
+    
+    images <- list()
+    images[["PC_x_pos"]] <- plot_loadings(
+        loadings_filter_pos_1,
+        loadings_filter_pos_1[[PC_x]],
+        loadings_filter_pos_1[[PC_y]],
+        x_min, x_max, y_min, y_max, x_nudge, y_nudge,
+        x_label, y_label, col_line_pos, col_seg_pos
+    )
+    images[["PC_y_pos"]] <- plot_loadings(
+        loadings_filter_pos_2,
+        loadings_filter_pos_2[[PC_x]],
+        loadings_filter_pos_2[[PC_y]],
+        x_min, x_max, y_min, y_max, x_nudge, y_nudge,
+        x_label, y_label, col_line_pos, col_seg_pos
+    )
+    images[["PC_x_neg"]] <- plot_loadings(
+        loadings_filter_neg_1,
+        loadings_filter_neg_1[[PC_x]],
+        loadings_filter_neg_1[[PC_y]],
+        x_min, x_max, y_min, y_max, -y_nudge, x_nudge,
+        x_label, y_label, col_line_neg, col_seg_neg
+    )
+    images[["PC_y_neg"]] <- plot_loadings(
+        loadings_filter_neg_2,
+        loadings_filter_neg_2[[PC_x]],
+        loadings_filter_neg_2[[PC_y]],
+        x_min, x_max, y_min, y_max, x_nudge, -y_nudge,
+        x_label, y_label, col_line_neg, col_seg_neg
+    )
+    return(images)
+}
+
+
+plot_biplot <- function(
+    pca, PC_x, PC_y,
+    loadings_show, loadings_n,
+    meta_color, meta_shape,
+    x_min, x_max, y_min, y_max
+) {
+    #TODO Description of function
+    # :param pca: "pca" list object obtained by running PCAtools::pca()
+    # :param PC_x: PC to plot on the x axis <chr>
+    # :param PC_y: PC to plot on the y axis <chr>
+    # :param loadings_show: whether to overlay component loadings or not <lgl>
+    # :param loadings_n: number of top loadings to show <int >= 0>
+    # :param meta_color: column in "pca" list metadata to color by <chr>
+    # :param meta_shape: column in "pca" list metadata to shape by <chr>
+    # :param x_min: minimum value on x axis <dbl>
+    # :param x_max: maximum value on x axis <dbl>
+    # :param y_min: minimum value on y axis <dbl>
+    # :param y_max: maximum value on y axis <dbl>
+    # :param title: title of biplot <dbl>
+    
+    #  Test
+    # pca <- obj_pca
+    # PC_x <- "PC1"
+    # PC_y <- "PC2"
+    # loadings_show <- FALSE
+    # loadings_n <- 0
+    # meta_color <- "day_detailed_2"
+    # meta_shape <- "cell_type"
+    # x_min <- -150
+    # x_max <- 150
+    # y_min <- -100
+    # y_max <- 100
+    # title <- paste0(
+    #     "PCA biplot: top ", n_loadings, " loadings, rlog-normalized\n",
+    #     "RNA-seq counts for genes with row sums gte ",
+    #     args$threshold_filter, " (PCAtools)"
+    # )
+    
+    image <- pca %>% 
+        PCAtools::biplot(
+            x = PC_x,
+            y = PC_y,
+            lab = NULL,
+            showLoadings = loadings_show,
+            ntopLoadings = loadings_n,
+            boxedLoadingsNames = TRUE,
+            colby = meta_color,
+            shape = meta_shape,
+            encircle = FALSE,
+            ellipse = FALSE,
+            max.overlaps = Inf,
+            xlim = c(x_min, x_max),
+            ylim = c(y_min, y_max)
+        ) +
+            theme_slick
+    
+    return(image)
+}
+
+
+plot_loadings <- function(x, y, z, a, b, d, e, f, g, h, i, j, k) {
+    # :param x: dataframe of PC loadings w/gene names as rownames <data.frame>
+    # :param y: column in dataframe to plot on x axis <dbl>
+    # :param z: column in dataframe to plot on y axis <dbl>
+    # :param a: minimum value on x axis <dbl>
+    # :param b: maximum value on x axis <dbl>
+    # :param d: minimum value on y axis <dbl>
+    # :param e: maximum value on y axis <dbl>
+    # :param f: amount to nudge labels on the x axis <dbl>
+    # :param g: amount to nudge labels on the y axis <dbl>
+    # :param h: x axis label <chr>
+    # :param i: y axis label <chr>
+    # :param j: color of line and arrow <chr>
+    # :param k: color of segment connecting arrowhead and text bubble <chr>
+    ggplot2::ggplot(x, ggplot2::aes(x = y, y = z)) +  #TODO #FUNCTION
+        ggplot2::coord_cartesian(xlim = c(a, b), ylim = c(d, e)) +
+        ggplot2::geom_segment(
+            aes(xend = 0, yend = 0, alpha = 0.5),
+            color = j, 
+            arrow = ggplot2::arrow(
+                ends = "first",
+                type = "open",
+                length = unit(0.125, "inches")
+            )
+        ) +
+        ggrepel::geom_label_repel(
+            mapping = ggplot2::aes(
+                fontface = 1, segment.color = k, segment.size = 0.25
+            ),
+            label = rownames(x),
+            label.size = 0.05,
+            direction = "both",
+            nudge_x = f,  # 0.02
+            nudge_y = g,  # 0.04
+            force = 4,
+            force_pull = 1,
+            hjust = 0
+        ) +
+        ggplot2::xlab(h) +
+        ggplot2::ylab(i) +
+        theme_slick_no_legend
+}
+
+
 horn_g <- PCAtools::parallelPCA(mat = norm_g[, c(1:5)])
 obj_pca_g <- PCAtools::pca(
     norm_g[, c(1:5)],
@@ -685,7 +939,123 @@ elbow_g <- PCAtools::findElbowPoint(obj_pca_g$variance)
 scree_g <- draw_scree_plot(obj_pca_g, horn = horn_g$n, elbow = elbow_g)
 scree_g
 
+loadings <- as.data.frame(obj_pca_g$loadings)
+PCs <- paste0("PC", 1:(as.numeric(elbow_g) + 2))
+top_loadings_all <- lapply(
+    PCs, get_top_loadings, x = loadings, z = "all", a = TRUE
+)
+top_loadings_pos <- lapply(
+    PCs, get_top_loadings, x = loadings, z = "pos", a = TRUE
+)
+top_loadings_neg <- lapply(
+    PCs, get_top_loadings, x = loadings, z = "neg", a = TRUE
+)
 
+names(top_loadings_all) <-
+    names(top_loadings_pos) <-
+    names(top_loadings_neg) <-
+    PCs
+# rm(PCs)
+# top_loadings_all$PC1 %>% head(n = 20)
+# top_loadings_pos$PC1 %>% head(n = 20)
+# top_loadings_neg$PC1 %>% head(n = 20)
+
+
+#  Analyze positive, negative loadings on axes (top 10 per each) of biplots ---
+images <- list()
+mat <- combn(PCs, 2)
+for(i in 1:ncol(mat)) {
+    # i <- 1
+    j <- mat[, i]
+    
+    PC_x <- x_label <- j[1]
+    PC_y <- y_label <- j[2]
+    
+    images[[paste0("PCAtools.", PC_x, ".v.", PC_y)]] <- plot_biplot(
+        pca = obj_pca_g,
+        PC_x = PC_x,
+        PC_y = PC_y,
+        loadings_show = FALSE,
+        loadings_n = 0,
+        meta_color = "strain",
+        meta_shape = "replicate",
+        x_min = -150000,
+        x_max = 150000,
+        y_min = -100000,
+        y_max = 100000
+    )
+    
+    images[[paste0("KA.", PC_x, ".v.", PC_y)]] <-
+        plot_pos_neg_loadings_each_axis(
+            df_all = loadings,
+            df_pos = top_loadings_pos,
+            df_neg = top_loadings_neg,
+            PC_x = PC_x,
+            PC_y = PC_y,
+            row_start = 1,
+            row_end = 30,
+            x_min = -0.15,
+            x_max = 0.15,
+            y_min = -0.1,
+            y_max = 0.1,
+            x_nudge = 0.02,
+            y_nudge = 0.04,
+            x_label = x_label,
+            y_label = y_label,
+            col_line_pos = "black",
+            col_line_neg = "red",
+            col_seg_pos = "grey",
+            col_seg_neg = "grey"
+        )
+    images[[paste0("KA.", PC_x, ".v.", PC_y)]]
+}
+images$PCAtools.PC1.v.PC2
+images$PCAtools.PC1.v.PC3
+images$PCAtools.PC1.v.PC4
+images$PCAtools.PC2.v.PC3
+
+# for(i in 1:length(names(images))) {
+#     # i <- 2
+#     vector_names <- names(images) %>% stringr::str_split("\\.")
+#     
+#     if(vector_names[[i]][1] == "PCAtools") {
+#         save_title <- paste0("panel-plot", ".", names(images)[i], ".pdf")
+#         ggplot2::ggsave(
+#             paste0(args$directory_out, "/", save_title), images[[i]]
+#         )
+#     } else if(vector_names[[i]][1] == "KA") {
+#         save_title <- paste0(
+#             "panel-plot", ".", names(images)[i], ".1-x-positive.pdf"
+#         )
+#         ggplot2::ggsave(
+#             paste0(args$directory_out, "/", save_title), images[[i]][[1]]
+#         )
+#         
+#         save_title <- paste0(
+#             "panel-plot", ".", names(images)[i], ".2-y-positive.pdf"
+#         )
+#         ggplot2::ggsave(
+#             paste0(args$directory_out, "/", save_title), images[[i]][[2]]
+#         )
+#         
+#         save_title <- paste0(
+#             "panel-plot", ".", names(images)[i], ".3-x-negative.pdf"
+#         )
+#         ggplot2::ggsave(
+#             paste0(args$directory_out, "/", save_title), images[[i]][[3]]
+#         )
+#         
+#         save_title <- paste0(
+#             "panel-plot", ".", names(images)[i], ".4-y-negative.pdf"
+#         )
+#         ggplot2::ggsave(
+#             paste0(args$directory_out, "/", save_title), images[[i]][[4]]
+#         )
+#     }
+# }
+```
+
+```{r}
 horn_r <- PCAtools::parallelPCA(mat = norm_r[, c(1:5)])
 obj_pca_r <- PCAtools::pca(
     norm_r[, c(1:5)],
