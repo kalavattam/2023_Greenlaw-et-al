@@ -49,10 +49,19 @@ options(scipen=999)
 #### Initialize necessary functions
 ```{r Initialize necessary functions, results='hide', echo=FALSE,  message=FALSE}
 split_isolate_convert <- function(in_vector, field, column_name) {
-    # :param in_vector: ...
-    # :param field: ...
-    # :param column_name: ...
-    # :return out_df: ...
+    # Take in a character vector of S288C R64-1-1 feature names and split
+    # elements at the underscores that separate feature names from
+    # classifications, e.g., "YER043_mRNA-E1" is split at the underscore. User
+    # has the option to return either the first (feature name) or second
+    # (classification) value in a tibble data type. User must also input a
+    # name for the column in the tibble.
+    #
+    # :param in_vector: character vector of S288C R64-1-1 feature names [vec]
+    # :param field: first or second string separated by underscore
+    #               [int = 1 | int = 2]
+    # :param column_name: name of column in tibble [chr]
+    # :return out_df: tibble of first or second strings separated by underscore
+    #                 [tbl]
     out_df <- in_vector %>%
         stringr::str_split(., c("_")) %>%
         sapply(., "[", field) %>%
@@ -64,14 +73,14 @@ split_isolate_convert <- function(in_vector, field, column_name) {
     return(out_df)
 }
 #TODO Note where this function is being used
-#TODO Add description of what function does
-#TODO Add parameter and return descriptions
 
 
 plot_volcano <- function(
     table, label, selection, label_size, p_cutoff, FC_cutoff,
     xlim, ylim, color, title, subtitle, ...
 ) {
+    #TODO Write a description of this function
+    #
     # :param table: dataframe of test statistics
     # :param label: character vector of all variable names in param table
     # :param selection: character vector of selected variable names in param
@@ -128,11 +137,12 @@ plot_volcano <- function(
     return(volcano)
 }
 #TODO Note where this function is being used
-#TODO Add description of what function does
 #TODO Add return description
 
 
 save_volcano <- function(plot, file, width, height) {
+    #TODO Write a description of this function
+    #
     # :param plot: ...
     # :param file: ...
     # :param width: ...
@@ -148,7 +158,6 @@ save_volcano <- function(plot, file, width, height) {
     )
 }
 #TODO Note where this function is being used
-#TODO Add description of what function does
 #TODO Add return description
 
 
@@ -1705,3 +1714,4 @@ p_all
 
 rm(all, selection, selection_up, selection_down, title, subtitle)
 ```
+<br />
