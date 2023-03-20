@@ -33,7 +33,7 @@ library(GenomicRanges)
 library(ggrepel)
 library(IRanges)
 library(PCAtools)
-library(readxl)  # Needed for reading in Excel file of filenames, variables
+library(readxl)
 library(tidyverse)
 ```
 <br />
@@ -251,7 +251,6 @@ plot_biplot <- function(
     # :param y_max: maximum value on y axis <dbl>
     # :param title: title of biplot <dbl>
     # :return image: ...
-    
     image <- pca %>% 
         PCAtools::biplot(
             x = PC_x,
@@ -308,7 +307,6 @@ plot_pos_neg_loadings_each_axis <- function(
     # :param col_seg_neg: color: segments connecting arrowhead and text bubble
     #                     for negative loadings <chr>
     # :return image: ...
-    
     filter_pos_1 <- rownames(df_pos[[PC_x]][row_start:row_end, ])
     filter_pos_2 <- rownames(df_pos[[PC_y]][row_start:row_end, ])
     filter_neg_1 <- rownames(df_neg[[PC_x]][row_start:row_end, ])
@@ -412,7 +410,6 @@ draw_scree_plot <- function(pca, horn, elbow) {
     # :param horn: ...
     # :param elbow: ...
     # :return scree: ...
-    
     scree <- PCAtools::screeplot(
         pca,
         components = PCAtools::getComponents(pca),
@@ -437,12 +434,8 @@ theme_slick <- theme_classic() +
     theme(
         panel.grid.major = ggplot2::element_line(linewidth = 0.4),
         panel.grid.minor = ggplot2::element_line(linewidth = 0.2),
-        # panel.grid.major = ggplot2::element_line(size = 0.4),
-        # panel.grid.minor = ggplot2::element_line(size = 0.2),
         axis.line = ggplot2::element_line(linewidth = 0.2),
         axis.ticks = ggplot2::element_line(linewidth = 0.4),
-        # axis.line = ggplot2::element_line(size = 0.2),
-        # axis.ticks = ggplot2::element_line(size = 0.4),
         axis.text = ggplot2::element_text(color = "black"),
         axis.title.x = ggplot2::element_text(),
         axis.title.y = ggplot2::element_text(),
