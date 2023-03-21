@@ -1,0 +1,1979 @@
+---
+title: "work_normalization-etc_rough-draft_wild-type_vary-on-state_antisense"
+author: "KA"
+email: "kalavatt@fredhutch.org"
+output: html_notebook
+---
+<br />
+
+## Prepare data for various DGE analyses
+### Get situated
+#### Set working directory (`wd`)
+```{r Set working directory, echo=FALSE, results='hide', message=FALSE}
+# p_local <- "/Users/kalavattam/Dropbox/FHCC"  # KrisMac
+p_local <- "/Users/kalavatt/projects-etc"  # WorkMac
+p_wd <- "2022_transcriptome-construction/results/2023-0215"
+#NOTE 1/3 Alison: you can adjust 'p_local' or 'p_wd' (path to working directory 
+#NOTE 2/3 on your personal or work computer ); I have two paths here with one
+#NOTE 3/3 commented out depending on which computer I am using
+
+setwd(paste(p_local, p_wd, sep = "/"))
+getwd()
+
+rm(p_local, p_wd)
+```
+<br />
+
+#### Load necessary libraries
+```{r Load necessary libraries, echo=FALSE, results='hide', message=FALSE, warning=FALSE}
+library(DESeq2)
+library(edgeR)
+library(EnhancedVolcano)
+library(GenomicRanges)
+library(ggrepel)
+library(IRanges)
+library(PCAtools)
+library(readxl)
+library(tidyverse)
+```
+<br />
+
+#### Set options
+- Use normal numbers instead of default scientific numbers in plots
+- Do not limit number of overlaps when including labels in plots
+```{r Set options, results='hide', message=FALSE, warning=FALSE}
+options(scipen=999)
+options(ggrepel.max.overlaps = Inf)
+```
+<br />
+
+#### Initialize necessary functions
+```{r Initialize necessary functions, echo=FALSE, results='hide', message=FALSE}
+split_isolate_convert <- function(in_vector, field, column_name) {
+    # Take in a character vector of S288C R64-1-1 feature names and split
+    # elements at the underscores that separate feature names from
+    # classifications, e.g., "YER043_mRNA-E1" is split at the underscore. User
+    # has the option to return either the first (feature name) or second
+    # (classification) value in a tibble data type. User must also input a
+    # name for the column in the tibble.
+    #
+    # :param in_vector: character vector of S288C R64-1-1 feature names [vec]
+    # :param field: first or second string separated by underscore
+    #               [int = 1 | int = 2]
+    # :param column_name: name of column in tibble [chr]
+    # :return out_df: tibble of first or second strings separated by underscore
+    #                 [tbl]
+    out_df <- in_vector %>%
+        stringr::str_split(., c("_")) %>%
+        sapply(., "[", field) %>%
+        as.data.frame() %>%
+        tibble::as_tibble()
+    
+    colnames(out_df) <- column_name
+    
+    return(out_df)
+}
+#TODO Note where this function is being used
+#TODO Add return description
+
+
+plot_volcano <- function(
+    table, label, selection, label_size, p_cutoff, FC_cutoff,
+    xlim, ylim, color, title, subtitle, ...
+) {
+    #TODO Write a description of this function
+    #
+    # :param table: dataframe of test statistics [df]
+    # :param label: character vector of all variable names in param table [vec]
+    # :param selection: character vector of selected variable names in param
+    #                   table [vec]
+    # :param label_size: size of label font [float]
+    # :param p_cutoff: cut-off for statistical significance; a horizontal line
+    #                  will be drawn at -log10(pCutoff); p is actually padj
+    #                  [float]
+    # :param FC_cutoff: cut-off for absolute log2 fold-change; vertical lines
+    #                   will be drawn at the negative and positive values of
+    #                   log2FCcutoff
+    #                  [float]
+    # :param xlim: limits of the x-axis [float]
+    # :param ylim: limits of the y-axis [float]
+    # :param color: color of DEGs, e.g., '#52BE9B' [hex]
+    # :param title: plot title [chr]
+    # :param subtitle: plot subtitle [chr]
+    # :return volcano: ...
+    volcano <- EnhancedVolcano::EnhancedVolcano(
+        toptable = table,
+        lab = label,
+        selectLab = selection,
+        x = "log2FoldChange",
+        y = "padj",
+        xlab = "log2(FC)",
+        ylab = "-log10(padj)",
+        pCutoff = p_cutoff,
+        pCutoffCol = "padj",
+        FCcutoff = FC_cutoff,
+        xlim = xlim,
+        ylim = ylim,
+        cutoffLineType = "dashed",
+        cutoffLineWidth = 0.2,
+        pointSize = 1,
+        shape = 16,
+        colAlpha = 0.25,
+        col = c('#D3D3D3', '#D3D3D3', '#D3D3D3', color),
+        title = NULL,
+        subtitle = NULL,
+        caption = NULL,
+        borderColour = "#000000",
+        borderWidth = 0.2,
+        gridlines.major = TRUE,
+        gridlines.minor = TRUE,
+        axisLabSize = 10,
+        labSize = label_size,
+        boxedLabels = TRUE,
+        parseLabels = TRUE,
+        drawConnectors = TRUE,
+        widthConnectors = 0.2,
+        colConnectors = 'black',
+        max.overlaps = Inf
+    ) +
+        theme_slick_no_legend +
+        ggplot2::ggtitle(title, subtitle = subtitle)
+    return(volcano)
+}
+#TODO Note where this function is being used
+#TODO Add return description
+
+
+save_volcano <- function(plot, file, width, height) {
+    #TODO Write a description of this function
+    #
+    # :param plot: ...
+    # :param file: ...
+    # :param width: ...
+    # :param height: ...
+    # :return: ...
+    ggplot2::ggsave(
+        plot,
+        filename = file,
+        device = "pdf",
+        h = width,
+        w = height,
+        units = "in"
+    )
+}
+#TODO Note where this function is being used
+#TODO Add return description
+
+
+get_name_of_var <- function(v) {
+    #TODO Write a description of this function
+    #
+    # :param v: ...
+    # :return v: ...
+    return(deparse(substitute(v)))
+}
+#TODO Note where this function is being used
+
+
+get_top_loadings <- function(x, y, z, a) {
+    #TODO Write a description of this function
+    #
+    # :param x: dataframe of PC loadings <data.frame>
+    # :param y: character element for column in dataframe x <chr>
+    # :param z: whether to select all loadings sorted from largest to smallest
+    #           absolute value ('all'), positive loadings sorted from largest
+    #           to smallest value ('pos'), or negative loadings sorted from
+    #           largest to smallest absolute value ('neg') <str>
+    # :param a: whether or not to keep 'sign' and 'abs' columns added in the
+    #           course of processing the dataframe <logical>
+    # :return b: ...
+    b <- as.data.frame(x[[y]])
+    rownames(b) <- rownames(x)
+    colnames(b) <- y
+    
+    b[["sign"]] <- ifelse(
+        b[[y]] > 0,
+        "pos",
+        ifelse(
+            b[[y]] == 0,
+            "zero",
+            "neg"
+        )
+    )
+    
+    b[["abs"]] <- abs(b[[y]])
+    
+    if(z == "all") {
+        b <- dplyr::arrange(b, by = desc(abs))
+    } else if(z == "pos") {
+        b <- b[b[[y]] > 0, ] %>% dplyr::arrange(., by = desc(abs))
+    } else if(z == "neg") {
+        b <- b[b[[y]] < 0, ] %>% dplyr::arrange(., by = desc(abs))
+    } else {
+        stop(paste0("Stopping: param z must be either 'all', 'pos', or 'neg'"))
+    }
+    
+    if(isTRUE(a)) {
+        paste0("Retaining 'sign' and 'abs' columns")
+    } else if(isFALSE(a)) {
+        b <- b %>% dplyr::select(-c(sign, abs))
+    } else {
+        stop(paste0("Stopping: param a must be either 'TRUE' or 'FALSE'"))
+    }
+    
+    return(b)
+}
+#TODO Note where this function is being used
+#TODO Add return description
+
+
+plot_biplot <- function(
+    pca, PC_x, PC_y,
+    loadings_show, loadings_n,
+    meta_color, meta_shape,
+    x_min, x_max, y_min, y_max
+) {
+    #TODO Write a description of this function
+    #
+    # :param pca: "pca" list object obtained by running PCAtools::pca()
+    # :param PC_x: PC to plot on the x axis <chr>
+    # :param PC_y: PC to plot on the y axis <chr>
+    # :param loadings_show: whether to overlay component loadings or not <lgl>
+    # :param loadings_n: number of top loadings to show <int >= 0>
+    # :param meta_color: column in "pca" list metadata to color by <chr>
+    # :param meta_shape: column in "pca" list metadata to shape by <chr>
+    # :param x_min: minimum value on x axis <dbl>
+    # :param x_max: maximum value on x axis <dbl>
+    # :param y_min: minimum value on y axis <dbl>
+    # :param y_max: maximum value on y axis <dbl>
+    # :param title: title of biplot <dbl>
+    # :return image: ...
+    image <- pca %>% 
+        PCAtools::biplot(
+            x = PC_x,
+            y = PC_y,
+            lab = NULL,
+            showLoadings = loadings_show,
+            ntopLoadings = loadings_n,
+            boxedLoadingsNames = TRUE,
+            colby = meta_color,
+            shape = meta_shape,
+            encircle = FALSE,
+            ellipse = FALSE,
+            max.overlaps = Inf,
+            xlim = c(x_min, x_max),
+            ylim = c(y_min, y_max)
+        ) +
+            theme_slick
+    
+    return(image)
+}
+#TODO Note where this function is being used
+#TODO Add return description
+
+
+plot_pos_neg_loadings_each_axis <- function(
+    df_all, df_pos, df_neg,
+    PC_x, PC_y,
+    row_start, row_end,
+    x_min, x_max, y_min, y_max,
+    x_nudge, y_nudge, x_label, y_label,
+    col_line_pos, col_line_neg, col_seg_pos, col_seg_neg
+) {
+    #TODO Write a description of this function
+    #
+    # :param df_all: dataframe: all loadings (from, e.g., PCAtools)
+    # :param df_pos: dataframe: positive loadings ordered largest to smallest
+    # :param df_neg: dataframe: negative loadings ordered smallest to largest
+    # :param PC_x: PC to plot on the x axis
+    # :param PC_y: PC to plot on the y axis
+    # :param row_start: row from which to begin subsetting the PCs on x and y
+    # :param row_end: row at which to end subsetting the PCs on x and y
+    # :param x_min: minimum value on x axis <dbl>
+    # :param x_max: maximum value on x axis <dbl>
+    # :param y_min: minimum value on y axis <dbl>
+    # :param y_max: maximum value on y axis <dbl>
+    # :param x_nudge: amount to nudge labels on the x axis <dbl>
+    # :param y_nudge: amount to nudge labels on the y axis <dbl>
+    # :param x_label: x axis label <chr>
+    # :param y_label: y axis label <chr>
+    # :param col_line_pos: color: lines, arrows for positive loadings <chr>
+    # :param col_line_neg: color: lines, arrows for negative loadings <chr>
+    # :param col_seg_pos: color: segments connecting arrowhead and text bubble
+    #                     for positive loadings <chr>
+    # :param col_seg_neg: color: segments connecting arrowhead and text bubble
+    #                     for negative loadings <chr>
+    # :return image: ...
+    filter_pos_1 <- rownames(df_pos[[PC_x]][row_start:row_end, ])
+    filter_pos_2 <- rownames(df_pos[[PC_y]][row_start:row_end, ])
+    filter_neg_1 <- rownames(df_neg[[PC_x]][row_start:row_end, ])
+    filter_neg_2 <- rownames(df_neg[[PC_y]][row_start:row_end, ])
+    
+    loadings_filter_pos_1 <- df_all[rownames(df_all) %in% filter_pos_1, ]
+    loadings_filter_pos_2 <- df_all[rownames(df_all) %in% filter_pos_2, ]
+    loadings_filter_neg_1 <- df_all[rownames(df_all) %in% filter_neg_1, ]
+    loadings_filter_neg_2 <- df_all[rownames(df_all) %in% filter_neg_2, ]
+    
+    images <- list()
+    images[["PC_x_pos"]] <- plot_loadings(
+        loadings_filter_pos_1,
+        loadings_filter_pos_1[[PC_x]],
+        loadings_filter_pos_1[[PC_y]],
+        x_min, x_max, y_min, y_max, x_nudge, y_nudge,
+        x_label, y_label, col_line_pos, col_seg_pos
+    )
+    images[["PC_y_pos"]] <- plot_loadings(
+        loadings_filter_pos_2,
+        loadings_filter_pos_2[[PC_x]],
+        loadings_filter_pos_2[[PC_y]],
+        x_min, x_max, y_min, y_max, x_nudge, y_nudge,
+        x_label, y_label, col_line_pos, col_seg_pos
+    )
+    images[["PC_x_neg"]] <- plot_loadings(
+        loadings_filter_neg_1,
+        loadings_filter_neg_1[[PC_x]],
+        loadings_filter_neg_1[[PC_y]],
+        x_min, x_max, y_min, y_max, -y_nudge, x_nudge,
+        x_label, y_label, col_line_neg, col_seg_neg
+    )
+    images[["PC_y_neg"]] <- plot_loadings(
+        loadings_filter_neg_2,
+        loadings_filter_neg_2[[PC_x]],
+        loadings_filter_neg_2[[PC_y]],
+        x_min, x_max, y_min, y_max, x_nudge, -y_nudge,
+        x_label, y_label, col_line_neg, col_seg_neg
+    )
+    return(images)
+}
+#TODO Note where this function is being used
+#TODO Add return description
+
+
+plot_loadings <- function(x, y, z, a, b, d, e, f, g, h, i, j, k) {
+    #TODO Write a description of this function
+    #
+    # :param x: dataframe of PC loadings w/gene names as rownames <data.frame>
+    # :param y: column in dataframe to plot on x axis <dbl>
+    # :param z: column in dataframe to plot on y axis <dbl>
+    # :param a: minimum value on x axis <dbl>
+    # :param b: maximum value on x axis <dbl>
+    # :param d: minimum value on y axis <dbl>
+    # :param e: maximum value on y axis <dbl>
+    # :param f: amount to nudge labels on the x axis <dbl>
+    # :param g: amount to nudge labels on the y axis <dbl>
+    # :param h: x axis label <chr>
+    # :param i: y axis label <chr>
+    # :param j: color of line and arrow <chr>
+    # :param k: color of segment connecting arrowhead and text bubble <chr>
+    l <- ggplot2::ggplot(x, ggplot2::aes(x = y, y = z)) +  #TODO #FUNCTION
+        ggplot2::coord_cartesian(xlim = c(a, b), ylim = c(d, e)) +
+        ggplot2::geom_segment(
+            aes(xend = 0, yend = 0, alpha = 0.5),
+            color = j, 
+            arrow = ggplot2::arrow(
+                ends = "first",
+                type = "open",
+                length = unit(0.125, "inches")
+            )
+        ) +
+        ggrepel::geom_label_repel(
+            mapping = ggplot2::aes(
+                fontface = 1, segment.color = k, segment.size = 0.25
+            ),
+            label = rownames(x),
+            label.size = 0.05,
+            direction = "both",
+            nudge_x = f,  # 0.02
+            nudge_y = g,  # 0.04
+            force = 4,
+            force_pull = 1,
+            hjust = 0
+        ) +
+        ggplot2::xlab(h) +
+        ggplot2::ylab(i) +
+        theme_slick_no_legend
+    
+    return(l)
+}
+#TODO Note where this function is being used
+#TODO Add return description
+
+
+#HERE
+draw_scree_plot <- function(pca, horn, elbow) {
+    #TODO Write a description of this function
+    #
+    # :param pca: "pca" list object obtained by running PCAtools::pca()
+    # :param horn: ...
+    # :param elbow: ...
+    # :return scree: ...
+    scree <- PCAtools::screeplot(
+        pca,
+        components = PCAtools::getComponents(pca),
+        vline = c(horn, elbow),
+        vlineWidth = 0.25,
+        sizeCumulativeSumLine = 0.5,
+        sizeCumulativeSumPoints = 1.5
+    ) +
+        geom_text(aes(horn + 1, 50, label = "Horn's", vjust = 2)) +
+        geom_text(aes(elbow + 1, 50, label = "Elbow", vjust = -2)) +
+        theme_slick +
+        ggplot2::theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+    return(scree)
+}
+#TODO Note where this function is being used
+#TODO Add return description
+
+
+#  Set up custom ggplot2 plot themes ------------------------------------------
+theme_slick <- theme_classic() +
+    theme(
+        panel.grid.major = ggplot2::element_line(linewidth = 0.4),
+        panel.grid.minor = ggplot2::element_line(linewidth = 0.2),
+        axis.line = ggplot2::element_line(linewidth = 0.2),
+        axis.ticks = ggplot2::element_line(linewidth = 0.4),
+        axis.text = ggplot2::element_text(color = "black"),
+        axis.title.x = ggplot2::element_text(),
+        axis.title.y = ggplot2::element_text(),
+        plot.title = ggplot2::element_text(),
+        text = element_text(family = "")
+    )
+#TODO Note where this theme is being used
+
+theme_slick_no_legend <- theme_slick + theme(legend.position = "none")
+#TODO Note where this theme is being used
+```
+<br />
+
+### Load in Excel spreadsheet of samples names and variables
+The spreadsheet includes Alison's original sample names; we can use this
+information to associate the new sample names, which are made up of `DESeq2`
+GLM variables, with the old names, which reflect Alison's wet-lab,
+library-prep, etc. work
+```{r Load spreadsheet, echo=FALSE, results='hide', message=FALSE}
+p_xl <- "notebook"  #INPATH
+f_xl <- "variables.xlsx"  #INFILE
+t_xl <- readxl::read_xlsx(
+    paste(p_xl, f_xl, sep = "/"), sheet = "master", na = "NA"
+)
+
+rm(p_xl, f_xl)
+```
+<br />
+
+### Load in and process `featureCounts` tables
+#### Process the sense `featureCounts` table
+```{r Process sense featureCounts table, echo=FALSE, results='hide', message=FALSE}
+#  Load in featureCounts table ------------------------------------------------
+p_fc_sen <- "outfiles_featureCounts/combined_SC_KL/UT_prim_UMI"  #INPATH
+f_fc_sen <- "UT_prim_UMI.featureCounts"  #INFILE
+t_fc_sen <- read.table(
+    paste(p_fc_sen, f_fc_sen, sep = "/"), header = TRUE, row.names = 1
+) %>% 
+    tibble::rownames_to_column() %>%
+    tibble::as_tibble()
+
+rm(p_fc_sen, f_fc_sen)
+
+
+#  Clean up tibble column names -----------------------------------------------
+colnames(t_fc_sen) <- colnames(t_fc_sen) %>%
+    gsub("rowname", "feature_init", .) %>%
+    gsub("Chr", "chr", .) %>%
+    gsub("Start", "start", .) %>%
+    gsub("End", "end", .) %>%
+    gsub("Strand", "strand", .) %>%
+    gsub("Length", "length", .) %>%
+    gsub("bams_renamed\\.UT_prim_UMI\\.", "", .) %>%
+    gsub("\\.UT_prim_UMI\\.bam", "", .) %>%
+    gsub("\\.d", "-d", .) %>%
+    gsub("\\.n", "-n", .) %>%
+    gsub("aux\\.", "aux-", .) %>%
+    gsub("tc\\.", "tc-", .)
+
+
+#  Order tibble by chromosome names and feature start positions ---------------
+chr_SC <- c(
+    "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII",
+    "XIII", "XIV", "XV", "XVI", "Mito"
+)
+chr_KL <- c("A", "B", "C", "D", "E", "F")
+chr_order <- c(chr_SC, chr_KL)
+t_fc_sen$chr <- t_fc_sen$chr %>% as.factor()
+t_fc_sen$chr <- ordered(t_fc_sen$chr, levels = chr_order)
+
+t_fc_sen <- t_fc_sen %>% dplyr::arrange(chr, start)
+
+
+#  Categorize chromosomes by genome of origin ---------------------------------
+t_fc_sen$genome <- ifelse(
+    t_fc_sen$chr %in% chr_SC,
+    "S_cerevisiae",
+    ifelse(
+        t_fc_sen$chr %in% chr_KL,
+        "K_lactis",
+        NA
+    )
+) %>%
+    as.factor()
+
+#  Move the new column "genome" to a better location in the tibble (before
+#+ column "chr")
+t_fc_sen <- t_fc_sen %>% dplyr::relocate("genome", .before = "chr")
+
+#  Check on variable/column "genome"
+levels(t_fc_sen$genome)
+t_fc_sen %>%
+    dplyr::group_by(genome) %>%
+    dplyr::summarize(tally = length(genome))
+#  The code returns...
+# K_lactis = 5659, S_cerevisiae = 7507
+
+rm(chr_KL, chr_SC, chr_order)
+
+
+#  Split and better organize variable 'feature_init' --------------------------
+#  Split 'feature_init' into two distinct elements (separated by an underscore)
+el_1 <- split_isolate_convert(
+    in_vector = t_fc_sen$feature_init,
+    field = 1,
+    column_name = "feature"
+)
+el_2 <- split_isolate_convert(
+    in_vector = t_fc_sen$feature_init,
+    field = 2,
+    column_name = "type"
+)
+
+#  Append split information to tibble 't_fc_sen'
+t_fc_sen <- dplyr::bind_cols(t_fc_sen, el_1, el_2) %>%
+    dplyr::relocate(c("feature", "type"), .after = "feature_init")
+
+rm(el_1, el_2)
+
+#  Limit the splitting/reorganization to S. cerevisiae features only; the above
+#+ splitting/reorganization work isn't appropriate for K. lactis 'feature_init'
+#+ information because the K. lactis naming/classification differs from the S.
+#+ cerevisiae naming/classification system)
+t_fc_sen$feature <- ifelse(
+    t_fc_sen$genome == "K_lactis", t_fc_sen$feature_init, t_fc_sen$feature
+)
+t_fc_sen$type <- ifelse(
+    t_fc_sen$genome == "K_lactis", NA, t_fc_sen$type
+)
+
+#  Create levels for S. cerevisiae 'type' NAs and K. lactis 'type' NAs, then
+#+ factorize variable 'type': essentially, we're making the NAs into levels so
+#+ that we can tally them (as below) and/or potentially subset them; however,
+#+ before doing so, we're differentiating the NAs by whether they are
+#+ associated with S. cerevisiae features or K. lactis features
+t_fc_sen$type <-  ifelse(
+    (t_fc_sen$genome == "S_cerevisiae" & is.na(t_fc_sen$type)),
+    "NA_SC",
+    ifelse(
+        (t_fc_sen$genome == "K_lactis" & is.na(t_fc_sen$type)),
+        "NA_KL",
+        t_fc_sen$type
+    )
+) %>%
+    as.factor()
+
+#  Do a quick check of the tibble 't_fc_sen' (where "t_fc_sen" stands for "tibble
+#+ featureCounts")
+t_fc_sen
+
+#  Check on the split information: This code tallies the numbers of features
+#+ per classification, where classifications are things like "mRNA-E1",
+#+ "tRNA-E1", "NA_SC" (NAs associated with S. cerevisiae), "NA_KL" (NAs associ-
+#+ ated with K. lactis), etc.
+levels(t_fc_sen$type)  # 19 levels
+t_fc_sen %>%
+    dplyr::group_by(type) %>%
+    dplyr::summarize(tally = length(type))
+#  The code returns things like...
+#+ mRNA-E1 = 6600, mRNA-E2 = 283, NA_KL = 5547, NA_SC = 103, tRNA-E1 = 299,
+#+ tRNA-E2 = 60, etc.
+```
+<br />
+
+#### Process the antisense `featureCounts` table
+```{r Process antisense featureCounts table, echo=FALSE, results='hide', message=FALSE}
+#  Load in featureCounts table ------------------------------------------------
+p_fc_anti <- "outfiles_featureCounts/combined_SC_KL_antisense/UT_prim_UMI"  #INPATH
+f_fc_anti <- "UT_prim_UMI.featureCounts"  #INFILE
+t_fc_anti <- read.table(
+    paste(p_fc_anti, f_fc_anti, sep = "/"), header = TRUE, row.names = 1
+) %>% 
+    tibble::rownames_to_column() %>%
+    tibble::as_tibble()
+
+rm(p_fc_anti, f_fc_anti)
+
+
+#  Clean up tibble column names -----------------------------------------------
+colnames(t_fc_anti) <- colnames(t_fc_anti) %>%
+    gsub("rowname", "feature_init", .) %>%
+    gsub("Chr", "chr", .) %>%
+    gsub("Start", "start", .) %>%
+    gsub("End", "end", .) %>%
+    gsub("Strand", "strand", .) %>%
+    gsub("Length", "length", .) %>%
+    gsub("bams_renamed\\.UT_prim_UMI\\.", "", .) %>%
+    gsub("\\.UT_prim_UMI\\.bam", "", .) %>%
+    gsub("\\.d", "-d", .) %>%
+    gsub("\\.n", "-n", .) %>%
+    gsub("aux\\.", "aux-", .) %>%
+    gsub("tc\\.", "tc-", .)
+
+
+#  Order tibble by chromosome names and feature start positions ---------------
+chr_SC <- c(
+    "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII",
+    "XIII", "XIV", "XV", "XVI", "Mito"
+)
+chr_KL <- c("A", "B", "C", "D", "E", "F")
+chr_order <- c(chr_SC, chr_KL)
+t_fc_anti$chr <- t_fc_anti$chr %>% as.factor()
+t_fc_anti$chr <- ordered(t_fc_anti$chr, levels = chr_order)
+
+t_fc_anti <- t_fc_anti %>% dplyr::arrange(chr, start)
+
+
+#  Categorize chromosomes by genome of origin ---------------------------------
+t_fc_anti$genome <- ifelse(
+    t_fc_anti$chr %in% chr_SC,
+    "S_cerevisiae",
+    ifelse(
+        t_fc_anti$chr %in% chr_KL,
+        "K_lactis",
+        NA
+    )
+) %>%
+    as.factor()
+
+#  Move the new column "genome" to a better location in the tibble (before
+#+ column "chr")
+t_fc_anti <- t_fc_anti %>% dplyr::relocate("genome", .before = "chr")
+
+#  Check on variable/column "genome"
+levels(t_fc_anti$genome)
+t_fc_anti %>%
+    dplyr::group_by(genome) %>%
+    dplyr::summarize(tally = length(genome))
+#  The code returns...
+# K_lactis = 5659, S_cerevisiae = 7507
+
+rm(chr_KL, chr_SC, chr_order)
+
+
+#  Split and better organize variable 'feature_init' --------------------------
+#  Split 'feature_init' into two distinct elements (separated by an underscore)
+el_1 <- split_isolate_convert(
+    in_vector = t_fc_anti$feature_init,
+    field = 1,
+    column_name = "feature"
+)
+el_2 <- split_isolate_convert(
+    in_vector = t_fc_anti$feature_init,
+    field = 2,
+    column_name = "type"
+)
+
+#  Append split information to tibble 't_fc_anti'
+t_fc_anti <- dplyr::bind_cols(t_fc_anti, el_1, el_2) %>%
+    dplyr::relocate(c("feature", "type"), .after = "feature_init")
+
+rm(el_1, el_2)
+
+#  Limit the splitting/reorganization to S. cerevisiae features only; the above
+#+ splitting/reorganization work isn't appropriate for K. lactis 'feature_init'
+#+ information because the K. lactis naming/classification differs from the S.
+#+ cerevisiae naming/classification system)
+t_fc_anti$feature <- ifelse(
+    t_fc_anti$genome == "K_lactis", t_fc_anti$feature_init, t_fc_anti$feature
+)
+t_fc_anti$type <- ifelse(
+    t_fc_anti$genome == "K_lactis", NA, t_fc_anti$type
+)
+
+#  Create levels for S. cerevisiae 'type' NAs and K. lactis 'type' NAs, then
+#+ factorize variable 'type': essentially, we're making the NAs into levels so
+#+ that we can tally them (as below) and/or potentially subset them; however,
+#+ before doing so, we're differentiating the NAs by whether they are
+#+ associated with S. cerevisiae features or K. lactis features
+t_fc_anti$type <-  ifelse(
+    (t_fc_anti$genome == "S_cerevisiae" & is.na(t_fc_anti$type)),
+    "NA_SC",
+    ifelse(
+        (t_fc_anti$genome == "K_lactis" & is.na(t_fc_anti$type)),
+        "NA_KL",
+        t_fc_anti$type
+    )
+) %>%
+    as.factor()
+
+#  Do a quick check of the tibble 't_fc_anti' (where "t_fc_anti" stands for "tibble
+#+ featureCounts")
+t_fc_anti
+
+#  Check on the split information: This code tallies the numbers of features
+#+ per classification, where classifications are things like "mRNA-E1",
+#+ "tRNA-E1", "NA_SC" (NAs associated with S. cerevisiae), "NA_KL" (NAs associ-
+#+ ated with K. lactis), etc.
+levels(t_fc_anti$type)  # 19 levels
+t_fc_anti %>%
+    dplyr::group_by(type) %>%
+    dplyr::summarize(tally = length(type))
+#  The code returns things like...
+#+ mRNA-E1 = 6600, mRNA-E2 = 283, NA_KL = 5547, NA_SC = 103, tRNA-E1 = 299,
+#+ tRNA-E2 = 60, etc.
+```
+<br />
+
+### Create tibble: Antisense *S. cerevisiae* counts, sense *K. lactis* counts
+```{r Create tibble of anti SC and sen KL, echo=FALSE, results='hide', message=FALSE}
+t_fc <- dplyr::bind_rows(
+    t_fc_anti[t_fc_anti$genome == "S_cerevisiae", ],
+    t_fc_sen[t_fc_sen$genome == "K_lactis", ]
+)
+```
+
+
+### Record tibble `t_fc`'s positional information in a `GRanges` object
+`pos_info` will be used in `DESeq2` processing, post-processing, etc.
+
+```{r Record positional information, echo=FALSE, results='hide', message=FALSE}
+pos_info <- GenomicRanges::GRanges(
+    seqnames = t_fc$chr,
+    ranges = IRanges::IRanges(t_fc$start, t_fc$end),
+    strand = t_fc$strand,
+    length = t_fc$length,
+    feature = t_fc$feature,
+    feature_init = t_fc$feature_init,
+    type = t_fc$type,
+    genome = t_fc$genome
+)
+pos_info
+```
+<br />
+<br />
+
+## Perform normalization and run DGE analyses
+### Perform prep work
+#### Establish table of variables for `dds`&mdash;i.e., a "master" model matrix
+- `dds` stands for *"DESeq2 dataset"* and is a `DESeqDataSet` object
+- variables for `dds` are
+    + `strain`
+    + `state`
+    + `time`
+    + `kit` *(`tcn` for "Tecan", `ovn` for "Ovation")*
+    + `transcription` *(`N` for "nascent", `SS` for "steady state")*
+    + `auxin`
+    + `timecourse`
+    + `replicate`
+    + `technical`
+
+```{r Make a master model matrix, echo=FALSE, results='hide', message=FALSE}
+#  Columns 10 through to the last column are composed of sample feature counts;
+#+ get these column names into a vector
+samples <- colnames(t_fc)[10:length(colnames(t_fc))]
+
+#  Convert the vector of column names to a list by splitting each element at
+#+ its underscores; thus, each vector element becomes a list of eight strings,
+#+ with one string for 'strain', one for 'state', etc.; these 
+samples <- stringr::str_split(samples, "_")
+
+#  Convert the list to a dataframe, transpose it, then convert it to a tibble
+#+ [R fun fact: 'tibble' data types can't be built directly from 'list' data
+#+ types; in fact, it can difficult to build 'dataframe' types from 'list'
+#+ types as well; the reason we have no issues doing this is because we have
+#+ ensured ahead of time that each list element has the same number of
+#+ subelements (8); the difficulty arises when lists elements have varying
+#+ numbers of subelements]
+samples <- samples %>%
+    as.data.frame(
+        .,
+        #  Using numeric column names here because the columns will soon be
+        #+ transposed to rows, and I don't want the rows to have proper names
+        col.names = c(seq(1, 62)),
+        #  Using proper row names here because the rows will soon be transposed
+        #+ to columns, and I *do* want the columns to have proper names 
+        row.names = c(
+            "strain", "state", "time", "kit", "transcription", "auxin",
+            "timecourse", "replicate", "technical"
+        )
+    ) %>%
+    t() %>%
+    tibble::as_tibble()
+
+#  Add a keys variable for quickly accessing combinations of variable values
+keys <- vector(mode = "character")
+for(i in seq(1, nrow(samples))) {
+    # i <- 1
+    keys[i] <- paste(
+        samples[i, 1], samples[i, 2], samples[i, 3],
+        samples[i, 4], samples[i, 5], samples[i, 6],
+        samples[i, 7], samples[i, 8], samples[i, 9],
+        sep = "_"
+    )
+}
+keys <- keys %>% as.data.frame()
+colnames(keys) <- "keys"
+
+samples <- dplyr::bind_cols(samples, keys) %>%
+    dplyr::relocate("keys", .before = "strain")
+
+rm(i)
+
+#  Add Alison's original samples names to the 'samples' dataframe using the
+#+ 't_xl' dataframe; here, we're just adding the original sample names, but we
+#+ could potentially add in other information stored in the Excel file
+t_xl <- t_xl %>%
+    dplyr::rename(keys = name) %>%
+    dplyr::select(., c(keys, sample_name))
+samples <- dplyr::full_join(samples, t_xl, by = "keys")
+
+#  Convert all columns to data type 'factor' (having the variable values as
+#+ factors helps with running DESeq2::DESeqDataSetFromMatrix() below)
+samples[sapply(samples, is.character)] <- lapply(
+    samples[sapply(samples, is.character)], as.factor
+)
+
+#  How does it look?
+samples
+
+rm(t_xl, keys)
+```
+<br />
+<br />
+
+## Do prep work for running `DESeq2`
+### Make the counts matrix
+```{r Make the counts matrix, echo=FALSE, results='hide', message=FALSE}
+datasets <- c(
+    "n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1",
+    "n3-d_Q_day7_tcn_N_aux-T_tc-F_rep2_tech1",
+    "n3-d_Q_day7_tcn_N_aux-T_tc-F_rep3_tech1",
+    "o-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1",
+    "o-d_Q_day7_tcn_N_aux-T_tc-F_rep2_tech1"
+)
+counts_data <- t_fc[, colnames(t_fc) %in% datasets] %>%
+    as.data.frame()  #IMPORTANT Output a dataframe, not a tibble
+
+#  How do things look?
+counts_data
+```
+<br />
+
+### Make the model matrix
+```{r make model matrix, echo=FALSE, results='hide', message=FALSE}
+#  Use the "keys" column to isolate datasets of interest
+#REMEMBER Variable datasets is initialized in the preceding code chunk 
+col_data <- samples[samples$keys %in% datasets, ] %>%
+    as.data.frame() %>%  #IMPORTANT Output a dataframe, not a tibble
+    tibble::column_to_rownames(., var = "keys") %>%
+    droplevels()
+
+#  Make Nab3-depletion numerator, OsTIR-depletion denominator by explicitly
+#+ reordering the levels of the factor col_data$strain
+col_data$strain <- factor(col_data$strain, levels = c("o-d", "n3-d"))
+
+#  How do things look?
+col_data
+col_data$strain
+```
+<br />
+
+### Make the `DESeqDataSet`, `dds`
+- Use `counts_data` for the `featureCount` tallies
+- Use `col_data` for setting up the GLM
+- Use `pos_info` for adding feature metadata, subsequent subsetting, etc.
+
+```{r Make the DESeqDataSet, message=FALSE}
+dds <- DESeq2::DESeqDataSetFromMatrix(
+    countData = counts_data,
+    colData = col_data,
+    design = ~ strain,  # Vary on strain: n3-d vs o-d
+    rowRanges = pos_info
+)
+
+#  Make a back-up of the DESeqDataSet object
+bak.dds <- dds
+
+#  How do things look?
+# dds %>% BiocGenerics::counts() %>% head()
+# dds@rowRanges
+# dds@design
+# dds@assays
+```
+<br />
+
+### Prefilter `dds`
+`#TODO` Let's keep this in mind and try it if we come to think lowly expressed
+genes are skewing results.
+
+```{r prefilter dds, echo=TRUE, results='hide', message=FALSE}
+# threshold <- 1000
+# dds_filt <- dds[rowSums(BiocGenerics::counts(dds)) >= threshold, ]
+# 
+#  Breakdown
+#    0 13166
+#    1 12822
+#    2 12719
+#    5 12540
+#   10 12358
+#   20 12144
+#   50 11764
+#  100 11403
+#  200 10927
+#  500 10015
+# 1000 8822
+# 
+# rm(threshold, dds_filt)
+```
+<br />
+<br />
+
+## I. Run PCA, etc.
+### Generate non-normalized counts
+```{r I. Generate non-normalized counts, message=FALSE}
+norm_non <- dds[dds@rowRanges$genome == "S_cerevisiae", ] %>%
+    SummarizedExperiment::assay() %>%
+    as.data.frame()
+norm_non$feature_init <- dds@rowRanges$feature_init[
+    dds@rowRanges$genome == "S_cerevisiae"
+]
+
+#  Associate non-normalized values with feature metadata
+norm_non <- dplyr::full_join(
+    norm_non,
+    t_fc[(t_fc$genome == "S_cerevisiae"), 1:9],
+    by = "feature_init"
+) %>%
+    dplyr::as_tibble()
+```
+<br />
+
+### Generate normalized counts
+#### Calculate rlog-normalized (unblinded) counts
+```{r I. Create rlog-normalized counts, message=FALSE}
+norm_r <- DESeq2::rlog(
+    dds[dds@rowRanges$genome == "S_cerevisiae", ],
+    blind = FALSE
+) %>%
+    SummarizedExperiment::assay() %>%
+    as.data.frame()
+norm_r$feature_init <- dds@rowRanges$feature_init[
+    dds@rowRanges$genome == "S_cerevisiae"
+]
+
+#  Associate normalized values with feature metadata
+norm_r <- dplyr::full_join(
+    norm_r,
+    t_fc[t_fc$genome == "S_cerevisiae", 1:9],
+    by = "feature_init"
+) %>%
+    dplyr::as_tibble()
+```
+<br />
+
+#### Calculate GeTMM-normalized counts
+More details on this relatively new method of normalization, which combines
+inter- and intra-sample normalization methods and (appears to) perform quite
+well:
+
+- [Baraikdar et al. (Truttmann), *Exp Gerontol* 2023](https://www.sciencedirect.com/science/article/pii/S0531556523000281)
+- [Barrett et al. (Hammarlund), *G3* 2021](https://academic.oup.com/g3journal/article/11/7/jkab121/6226485)
+- [Bedre, *self-published* 2023 (most recent update)](https://www.reneshbedre.com/blog/expression_units.html#getmm-method)
+- [Nelson et al. (Wilkins), *Nat Microbiol* 2022](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9418001/)
+- [Smid et al. (Sieuwerts), *BMC Bioinf* 2018](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-018-2246-7)
+- [Walker et al. (Kainer), *Comput Struct Biotechnol J* 2022](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9260260/)
+- [Zatzman et al. (Shlien), *Sci Adv* 2022](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9683723/)
+
+```{r I. Create GeTMM-normalized counts, message=FALSE}
+#  Isolate raw counts for samples of interest
+raw <- dds %>%
+    SummarizedExperiment::assay() %>%
+    as.data.frame()
+raw$feature_init <- dds@rowRanges$feature_init
+
+#  Associate non-normalized values with feature metadata
+raw <- dplyr::full_join(
+    raw,
+    t_fc[, c(seq(1,9))],
+    by = "feature_init"
+) %>%
+    dplyr::as_tibble()
+
+#  Calculate counts per kb of gene length (i.e., correct counts for gene
+#+ length); gene length is initially in bp and converted to kb
+rpk <- ((raw[, 1:5] * 10^3) / raw$length)
+rpk[, 6:14] <- raw[, 6:14]
+
+#  Calculate normalization factors using the raw spike-in (K. lactis) counts
+norm_KL <- edgeR::calcNormFactors(
+    raw[(rpk$genome == "K_lactis"), ][, 1:5]
+)
+
+#  Create factor for categories (groups)
+model_variables <- stringr::str_split(colnames(rpk[, 1:5]), "_") %>%
+    as.data.frame(
+        row.names = c(
+            "sample", "stage", "day", "kit", "tx", "aux", "tc", "rep", "tech"
+        ),
+        col.names = paste0("s", c(1:5))
+    ) %>%
+    t() %>%
+    tibble::as_tibble()
+
+group <- factor(
+    # Second level is numerator, first level is denominator
+    model_variables$sample,
+    levels = c("o-d", "n3-d")
+)
+
+rm(model_variables)
+
+#  Create edgeR DGEList object composed of S. cerevisiae counts per kb gene
+#+ length
+dgel <- edgeR::DGEList(
+    counts = rpk[rpk$genome == "S_cerevisiae", ][, 1:5],
+    group = group
+)
+
+#  In the DGEList object, include the normalization factors calculated from
+#+ spike-in information
+dgel$samples$norm.factors <- norm_KL
+
+#  Check that the normalization factors for each library are appropriately
+#+ assigned
+dgel$samples
+
+#  Scale the values to counts-per-million
+norm_g <- edgeR::cpm(dgel) %>% tibble::as_tibble()
+norm_g[, 6:14] <- rpk[rpk$genome == "S_cerevisiae", 6:14]
+norm_g
+
+#  Clean up unneeded variables
+rm(raw, rpk, norm_KL, group)
+rm(dgel)  #TODO Delete dgel? Or use it for trying out DE analyses with edgeR?
+```
+<br />
+
+#### Calculate TPM-normalized counts
+```{r I. Calculate TPM-normalized counts, message=FALSE}
+#  Isolate raw counts for samples of interest
+raw <- dds %>%
+    SummarizedExperiment::assay() %>%
+    as.data.frame()
+raw$feature_init <- dds@rowRanges$feature_init
+
+#  Associate non-normalized values with feature metadata
+raw <- dplyr::full_join(
+    raw,
+    t_fc[, 1:9],
+    by = "feature_init"
+) %>%
+    dplyr::as_tibble()
+
+#  Calculate counts per kb of gene length (i.e., correct counts for gene
+#+ length or do an "RPK normalization"); then, divide RPK-normalized elements
+#+ by the sum of sample RPK divided by one million: this does the actual TPM
+#+ normalization
+rpk <- tpm <- ((raw[, 1:5] * 10^3) / raw$length)
+for (i in 1:ncol(rpk)) {
+    tpm[, i] <- (rpk[, i] / sum(rpk[, i] / 1e6))
+}
+
+tpm[, 6:14] <- raw[, 6:14]
+norm_t <- tpm[tpm$genome == "S_cerevisiae", ]
+
+rm(raw, rpk, tpm)
+```
+<br />
+
+### Run PCA with variously normalized counts
+#### Part 1
+```{r I. Run PCA with variously normalized counts (part 1), message=FALSE}
+#  Make the following code generic --------------------------------------------
+#+ ...so that we can try it with different normalization objects (counts
+#+ normalized in different ways)
+# norm <- norm_non
+norm <- norm_r
+# norm <- norm_g
+# norm <- norm_t
+
+
+#  Create a PCAtools "pca" S4 object for the normalized counts ----------------
+#+ Assign unique row names too
+obj_pca <- PCAtools::pca(
+    norm[, c(1:5)],
+    metadata = dds[dds@rowRanges$genome != "K_lactis", ]@colData
+)
+rownames(obj_pca$loadings) <- make.names(
+    dds[dds@rowRanges$genome != "K_lactis", ]@rowRanges$feature,
+    unique = TRUE
+)
+
+
+#  Determine "significant" PCs with Horn's parallel analysis ------------------
+#+ See Horn, 1965
+horn <- PCAtools::parallelPCA(mat = sapply(norm[, c(1:5)], as.double))
+
+
+#  Determine "significant" principle components with the elbow method ---------
+#+ See Buja and Eyuboglu, 1992
+elbow <- PCAtools::findElbowPoint(obj_pca$variance)
+
+
+#  Evaluate cumulative proportion of explained variance with a scree plot -----
+scree <- draw_scree_plot(obj_pca, horn = horn$n, elbow = elbow)
+scree
+# save_title <- paste0("panel-plot", ".", "scree", ".pdf")
+# ggplot2::ggsave(paste0(args$directory_out, "/", save_title), scree)
+#TODO Work up some logic for outfile names, location(s) for outfiles, etc.
+
+
+#  Save component loading vectors in their own data frame ---------------------
+loadings <- as.data.frame(obj_pca$loadings)
+
+#  Evaluate the component loading vectors for the number of significant PCs
+#+ identified via the elbow method plus two
+PCs <- paste0("PC", 1:(as.numeric(elbow) + 2))
+top_loadings_all <- lapply(
+    PCs, get_top_loadings, x = loadings, z = "all", a = TRUE
+)
+top_loadings_pos <- lapply(
+    PCs, get_top_loadings, x = loadings, z = "pos", a = TRUE
+)
+top_loadings_neg <- lapply(
+    PCs, get_top_loadings, x = loadings, z = "neg", a = TRUE
+)
+
+names(top_loadings_all) <-
+    names(top_loadings_pos) <-
+    names(top_loadings_neg) <-
+    PCs
+# rm(PCs)
+# top_loadings_all$PC1 %>% head(n = 20)
+# top_loadings_pos$PC1 %>% head(n = 20)
+# top_loadings_neg$PC1 %>% head(n = 20)
+
+
+#  Analyze positive, negative loadings on axes of biplots ---------------------
+#+ Look at the top 15 per axis
+images <- list()
+mat <- combn(PCs, 2)
+for(i in 1:ncol(mat)) {
+    # i <- 1
+    j <- mat[, i]
+    
+    PC_x <- x_label <- j[1]
+    PC_y <- y_label <- j[2]
+    
+    images[[paste0("PCAtools.", PC_x, ".v.", PC_y)]] <- plot_biplot(
+        pca = obj_pca,
+        PC_x = PC_x,
+        PC_y = PC_y,
+        loadings_show = FALSE,
+        loadings_n = 0,
+        meta_color = "strain",
+        meta_shape = "replicate",
+        x_min = -100,
+        x_max = 100,
+        y_min = -100,
+        y_max = 100
+    )
+    #  x and y ranges for non-normalized counts
+    #+ x_min = -200000,
+    #+ x_max = 200000,
+    #+ y_min = -200000,
+    #+ y_max = 200000
+    #+
+    #+ x and y ranges for rlog-normalized counts
+    #+ x_min = -50,
+    #+ x_max = 50,
+    #+ y_min = -50,
+    #+ y_max = 50
+    #+
+    #+ x and y ranges for GeTMM-normalized counts
+    #+ x_min = -50000,
+    #+ x_max = 50000,
+    #+ y_min = -50000,
+    #+ y_max = 50000
+    #+
+    #+ x and y ranges for TPM-normalized counts
+    #+ x_min = -10000,
+    #+ x_max = 10000,
+    #+ y_min = -10000,
+    #+ y_max = 10000
+    
+    #DECISION For now, go with rlog and TPM; continue to test all four
+    
+    images[[paste0("KA.", PC_x, ".v.", PC_y)]] <-
+        plot_pos_neg_loadings_each_axis(
+            df_all = loadings,
+            df_pos = top_loadings_pos,
+            df_neg = top_loadings_neg,
+            PC_x = PC_x,
+            PC_y = PC_y,
+            row_start = 1,
+            row_end = 15,  # 30
+            x_min = -0.1,
+            x_max = 0.1,
+            y_min = -0.1,
+            y_max = 0.1,
+            x_nudge = 0.02,
+            y_nudge = 0.04,
+            x_label = x_label,
+            y_label = y_label,
+            col_line_pos = "black",
+            col_line_neg = "red",
+            col_seg_pos = "grey",
+            col_seg_neg = "grey"
+        )
+    #  x and y ranges (etc.) for non-normalized counts (messy)
+    #+ x_min = -0.75,
+    #+ x_max = 0.75,
+    #+ y_min = -0.33,
+    #+ y_max = 0.33,
+    #+ x_nudge = 0.02,
+    #+ y_nudge = 0.04,
+    #+
+    #  x and y ranges (etc.) for rlog-normalized counts (nice and clean)
+    #+ x_min = -0.1,
+    #+ x_max = 0.1,
+    #+ y_min = -0.1,
+    #+ y_max = 0.1,
+    #+ x_nudge = 0.02,
+    #+ y_nudge = 0.04,
+    #+
+    #+ x and y ranges (etc.) for GeTMM-normalized counts (a bit messy)
+    #+ x_min = -0.5,
+    #+ x_max = 0.5,
+    #+ y_min = -0.5,
+    #+ y_max = 0.5,
+    #+ x_nudge = 0.04,
+    #+ y_nudge = 0.02,
+    #+
+    #+ x and y ranges (etc.) for TPM-normalized counts (a bit less messy)
+    #+ x_min = -0.5,
+    #+ x_max = 0.5,
+    #+ y_min = -0.5,
+    #+ y_max = 0.5,
+    #+ x_nudge = 0.04,
+    #+ y_nudge = 0.02,
+    
+    images[[paste0("KA.", PC_x, ".v.", PC_y)]]
+}
+
+#  How do things look?
+images$PCAtools.PC1.v.PC2
+images$KA.PC1.v.PC2$PC_x_pos
+images$KA.PC1.v.PC2$PC_x_neg
+images$KA.PC1.v.PC2$PC_y_pos
+images$KA.PC1.v.PC2$PC_y_neg
+# images$PCAtools.PC1.v.PC3
+# images$KA.PC1.v.PC3
+# images$PCAtools.PC1.v.PC4
+# images$KA.PC1.v.PC4
+# images$PCAtools.PC2.v.PC3
+# images$KA.PC2.v.PC3
+```
+<br />
+
+#### Part 2
+```{r I. Run PCA with variously normalized counts (part 2), message=FALSE}
+# for(i in 1:length(names(images))) {
+#     # i <- 2
+#     vector_names <- names(images) %>% stringr::str_split("\\.")
+#     
+#     if(vector_names[[i]][1] == "PCAtools") {
+#         save_title <- paste0("panel-plot", ".", names(images)[i], ".pdf")
+#         ggplot2::ggsave(
+#             paste0(args$directory_out, "/", save_title), images[[i]]
+#         )
+#     } else if(vector_names[[i]][1] == "KA") {
+#         save_title <- paste0(
+#             "panel-plot", ".", names(images)[i], ".1-x-positive.pdf"
+#         )
+#         ggplot2::ggsave(
+#             paste0(args$directory_out, "/", save_title), images[[i]][[1]]
+#         )
+#         
+#         save_title <- paste0(
+#             "panel-plot", ".", names(images)[i], ".2-y-positive.pdf"
+#         )
+#         ggplot2::ggsave(
+#             paste0(args$directory_out, "/", save_title), images[[i]][[2]]
+#         )
+#         
+#         save_title <- paste0(
+#             "panel-plot", ".", names(images)[i], ".3-x-negative.pdf"
+#         )
+#         ggplot2::ggsave(
+#             paste0(args$directory_out, "/", save_title), images[[i]][[3]]
+#         )
+#         
+#         save_title <- paste0(
+#             "panel-plot", ".", names(images)[i], ".4-y-negative.pdf"
+#         )
+#         ggplot2::ggsave(
+#             paste0(args$directory_out, "/", save_title), images[[i]][[4]]
+#         )
+#     }
+# }
+#TODO Work up some logic for outfile names, location(s) for outfiles
+
+
+#  Plot the top features on an axis of component loading range ----------------
+#+ ...to visualize the top variables (features) that drive variance among
+#+ principal components of interest
+p_loadings <- PCAtools::plotloadings(
+    obj_pca,
+    components = getComponents(obj_pca, 1),
+    # components = getComponents(obj_pca, 1:5),
+    rangeRetain = 0.05,
+    absolute = FALSE,
+    col = c("#785EF075", "#FFFFFF75", "#FE610075"),
+    title = "Loadings plot",
+    subtitle = "Top 5% of variables (i.e., features)",
+    # shapeSizeRange = c(4, 16),
+    borderColour = "#000000",
+    borderWidth = 0.2,
+    gridlines.major = TRUE,
+    gridlines.minor = TRUE,
+    axisLabSize = 10,
+    labSize = 3,  # label_size
+    drawConnectors = TRUE,
+    widthConnectors = 0.2,
+    typeConnectors = 'closed',
+    colConnectors = 'black'
+) +
+    # ggplot2::coord_flip() +
+    theme_slick_no_legend
+p_loadings
+#TODO Work up some logic for saving the plot
+
+
+#  Evaluate correlations between PCs and model variables ----------------------
+#+ Answer, "What is driving biologically significant variance in our data?"
+PC_cor <- PCAtools::eigencorplot(
+    obj_pca,
+    components = PCAtools::getComponents(obj_pca, 1:5),
+    metavars = c("strain", "replicate"),
+    # metavars = c("strain", "replicate", "sample_name"),
+    col = c("#785EF075", "#648FFF75", "#FFFFFF75", "#FFB00075", "#FE610075"),
+    scale = FALSE,
+    corFUN = "pearson",
+    corMultipleTestCorrection = "BH",
+    plotRsquared = TRUE,
+    colFrame = "#FFFFFF",
+    main = bquote(Pearson ~ r^2 ~ correlates),
+    # main = "PC Pearson r-squared correlates",
+    fontMain = 1,
+    titleX = "Principal components",
+    fontTitleX = 1,
+    fontLabX = 1,
+    titleY = "Model variables",
+    rotTitleY = 90,
+    fontTitleY = 1,
+    fontLabY = 1
+)
+PC_cor
+
+
+#  Get lists of top loadings for GO analyses ----------------------------------
+# for(i in c("PC1", "PC2", "PC3", "PC4")) {
+for(i in c("PC1", "PC2")) {
+    # i <- "PC1"
+    #  Positive
+    loadings_pos_PC <- rownames(top_loadings_pos[[i]])[1:500]
+    save_title_pos_PC <- paste0(
+        "top-500.",
+        stringr::str_replace_all(get_name_of_var(loadings_pos_PC), "_", "-"),
+        ".", i, ".txt"
+    )
+    # readr::write_tsv(
+    #     dplyr::as_tibble(loadings_pos_PC),
+    #     paste0(args$directory_out, "/", save_title_pos_PC),
+    #     col_names = FALSE
+    # )
+    #TODO Work up some logic for location(s) for outfiles
+    
+    #  Negative
+    loadings_neg_PC <- rownames(top_loadings_neg[[i]])[1:500]
+    save_title_neg_PC <- paste0(
+        "top-500.",
+        stringr::str_replace_all(get_name_of_var(loadings_neg_PC), "_", "-"),
+        ".", i, ".txt"
+    )
+    # readr::write_tsv(
+    #     dplyr::as_tibble(loadings_neg_PC),
+    #     paste0(args$directory_out, "/", save_title_neg_PC),
+    #     col_names = FALSE
+    # )
+    #TODO Work up some logic for location(s) for outfiles
+}
+```
+<br />
+<br />
+
+## II. Run analyses with *S. cerevisae* features only
+### Perform size-factor estimation
+Here, we subset out the *K. lactis* features. Thus, we are using only
+*S. cerevisiae* features in the size-factor estimation. No control genes are
+used.
+
+```{r II. Perform size-factor estimation, message=FALSE}
+dds_SC <- BiocGenerics::estimateSizeFactors(
+    dds[dds@rowRanges$genome != "K_lactis", ]
+)
+dds_SC@colData
+# n3-d Q N rep1 1.444025
+# n3-d Q N rep2 1.119446
+# n3-d Q N rep3 1.547506
+# o-d Q N rep1 0.772653
+# o-d Q N rep2 0.526895
+```
+<br />
+
+### Run `DESeq2`
+#### Call `DESeq2` using default parameters
+```{r II. Call DESeq2 using default parameters, echo=TRUE, results='hide', message=FALSE}
+dds_SC <- DESeq2::DESeq(dds_SC)
+
+#  Check model information
+DESeq2::resultsNames(dds_SC)[2]
+#  [1] "strain_o.d_vs_n3.d"  #HERE
+#+ Thus, the model varies on strain, OsTIR-depletion is the numerator,
+#+ Nab3-depletion is the denominator
+#+     - Numerator: "top" in MA plots, "right" in volcano plots
+#+     - Denominator: "bottom" in MA plots, "left" in volcano plots
+```
+<br />
+
+#### Call `DESeq2::results()`
+```{r II. Call DESeq2::results(), echo=FALSE, message=FALSE}
+#  Set up necessary parameters for generation of DESeq2 results table
+independent_filtering <- TRUE
+threshold_p <- 0.05
+threshold_lfc <- 0
+
+#  Output a DESeq2 DataFrame object
+DGE_unshrunken_DF_SC <- DESeq2::results(
+    dds_SC,
+    name = DESeq2::resultsNames(dds_SC)[2],
+    independentFiltering = independent_filtering,
+    alpha = threshold_p,
+    lfcThreshold = threshold_lfc,
+    format = "DataFrame"
+)
+
+#  Output a GRanges object, which we can easily add to and convert to other
+#+ formats (such as a tibble)
+DGE_unshrunken_GR_SC <- DESeq2::results(
+    dds_SC,
+    name = DESeq2::resultsNames(dds_SC)[2],
+    independentFiltering = independent_filtering,
+    alpha = threshold_p,
+    lfcThreshold = threshold_lfc,
+    format = "GRanges"
+)
+DGE_unshrunken_GR_SC$feature <- MatrixGenerics::rowRanges(dds_SC)$feature
+DGE_unshrunken_GR_SC$type <- MatrixGenerics::rowRanges(dds_SC)$type
+DGE_unshrunken_GR_SC$genome <- MatrixGenerics::rowRanges(dds_SC)$genome
+
+t_DGE_SC <- DGE_unshrunken_GR_SC %>%
+    dplyr::as_tibble() %>%
+    dplyr::rename(chr = seqnames)
+
+rm(independent_filtering, threshold_p, threshold_lfc)
+```
+<br />
+
+#### Make an MA plot that colors features by independent filtering
+```{r II. Make an MA plot: B, echo=FALSE, message=FALSE}
+#  Set up temporary variable 'tbl', which will be passed to ggplot
+tbl <- t_DGE_SC
+tbl <- tbl[with(tbl, order(log2FoldChange)), ]
+tbl$threshold <- as.factor(tbl$padj <= 0.05)
+tbl$log10baseMean <- ifelse(
+    is.infinite(log10(tbl$baseMean)), NA, log10(tbl$baseMean)
+)
+
+title <- paste0(
+    "MA plot | S. cerevisiae features |\n",
+    "size factors estimated with all S. cerevisiae features"
+)
+subtitle <- paste(
+    "points: S. cerevisiae features",
+    "| top: up in Nab3 depletion",
+    "| bottom: up in OsTIR depletion"
+)  # [1] "strain_o.d_vs_n3.d"
+ggplot(tbl, aes(x = log10baseMean, y = log2FoldChange, colour = threshold)) +
+    geom_point(alpha = 0.25, size = 0.5) +
+    # geom_hline(aes(yintercept = 0), colour = "#000000", linewidth = 0.25) +
+    geom_hline(aes(yintercept = 0), colour = "#000000", size = 0.25) +
+    # ylim(c(min(tbl$log2FoldChange), max(tbl$log2FoldChange))) +
+    ylim(c(-14, 14)) +
+    xlab("log10(mean normalized counts)") +
+    ylab("log2(fold change)") +
+    scale_colour_discrete(name = "q ≤ 0.05") +
+    ggtitle(title, subtitle) +
+    theme_slick
+#TODO 1/2 Explain and make a decision regarding use of 'size' or 'linewidth'
+#TODO 2/2 parameters
+
+#NOTE 1/4 Note that the data are not centered on log2(fold change) = 0;
+#NOTE 2/4 instead, they seem to slope downward with a gentle gradient; this
+#NOTE 3/4 suggests that centering the data with all S. cerevisiae features is
+#NOTE 4/4 not an effective read-depth normalization
+
+#  Create a vector of features that both passed independent filtering (and thus
+#+ have an inherently high mean expression) and are not statistically
+#+ significant; this vector signifies features that are "stably expressed"
+#+ between conditions
+tbl$stably_expressed <- ifelse(
+    !is.na(tbl$threshold) & tbl$padj > 0.05,
+    TRUE,
+    FALSE
+)
+stably_expressed_SC <- tbl$feature[tbl$stably_expressed == TRUE]
+
+rm(tbl, title, subtitle)
+```
+<br />
+
+#### Make a volcano plot
+```{r II. Make a volcano plot, echo=FALSE, message=FALSE}
+#  Identify and isolate the top 5 upregulated features and the top 5 down-
+#+ regulated features
+all <- t_DGE_SC$feature
+selection_down <- t_DGE_SC %>%
+    dplyr::filter(log2FoldChange < 0) %>%
+    dplyr::arrange(padj) %>%
+    dplyr::slice(1:5)
+selection_up <- t_DGE_SC %>%
+    dplyr::filter(log2FoldChange > 0) %>%
+    dplyr::arrange(padj) %>%
+    dplyr::slice(1:5)
+selection <- c(selection_down[["feature"]], selection_up[["feature"]]) %>%
+        as.character()
+
+title <- paste0(
+    "volcano plot | S. cerevisiae features |\n",
+    "size factors estimated with all S. cerevisiae features"
+)
+subtitle <- paste(
+    "points: S. cerevisiae features",
+    "| left: up in OsTIR depletion",
+    "| right: up in Nab3 depletion",
+    "|\nlabels: top 5 OsTIR dep. and top 5 Nab3 dep. features"
+)  # [1] "strain_o.d_vs_n3.d"
+p_SC <- plot_volcano(
+    table = t_DGE_SC,
+    label = all,
+    selection = selection,
+    label_size = 2.5,
+    p_cutoff = 0.05,
+    FC_cutoff = 1,
+    xlim = c(-14, 14),
+    ylim = c(0, 310),
+    color = "#52BE9B",
+    title = title,
+    subtitle = subtitle
+)
+p_SC
+# save_volcano(
+#     file = "test.pdf",
+#     plot = p,
+#     width = 2,
+#     height = 3
+# )
+
+rm(all, selection, selection_up, selection_down, title, subtitle)
+#TODO 1/2 Why are there 12 labels in the plot, two of which are not top
+#TODO anything? Based on the above code, There should only be 10. #FIXME
+```
+<br />
+<br />
+
+## III. Run analyses with *K. lactis* features only
+### Perform size-factor estimation
+Here, we subset out&mdash;i.e., remove&mdash;the *S. cerevisiae* features and
+are thus only analyzing *K. lactis* features, using all *K. lactis* features
+in the size-factor estimation.
+
+```{r III. Perform size-factor estimation, echo=TRUE, results='hide', message=FALSE}
+dds_KL <- BiocGenerics::estimateSizeFactors(
+    dds[dds@rowRanges$genome != "S_cerevisiae", ]
+)
+dds_KL@colData
+# n3-d Q N rep1 0.907373
+# n3-d Q N rep2 1.034913
+# n3-d Q N rep3 0.944618
+# o-d Q N rep1 1.001126
+# o-d Q N rep2 1.130992
+```
+<br />
+
+### Run `DESeq2`
+#### Call `DESeq2` using default parameters
+```{r III. Call DESeq2 using default parameters, echo=TRUE, results='hide', message=FALSE}
+dds_KL <- DESeq2::DESeq(dds_KL)
+
+#  Check model information
+DESeq2::resultsNames(dds_KL)[2]
+#  [1] "strain_o.d_vs_n3.d"  #HERE
+#+ Thus, the model varies on strain, OsTIR-depletion is the numerator,
+#+ Nab3-depletion is the denominator
+#+     - Numerator: "top" in MA plots, "right" in volcano plots
+#+     - Denominator: "bottom" in MA plots, "left" in volcano plots
+```
+<br />
+
+#### Call `DESeq2::results()`
+```{r III. Call DESeq2::results(), echo=FALSE, message=FALSE}
+#  Set up necessary parameters for generation of DESeq2 results table
+independent_filtering <- TRUE
+threshold_p <- 0.05
+threshold_lfc <- 0
+
+#  Output a DESeq2 DataFrame object
+DGE_unshrunken_DF_KL <- DESeq2::results(
+    dds_KL,
+    name = DESeq2::resultsNames(dds_KL)[2],
+    independentFiltering = independent_filtering,
+    alpha = threshold_p,
+    lfcThreshold = threshold_lfc,
+    format = "DataFrame"
+)
+
+#  Output a GRanges object, which we can easily add to and convert to other
+#+ formats (such as a tibble)
+DGE_unshrunken_GR_KL <- DESeq2::results(
+    dds_KL,
+    name = DESeq2::resultsNames(dds_KL)[2],
+    independentFiltering = independent_filtering,
+    alpha = threshold_p,
+    lfcThreshold = threshold_lfc,
+    format = "GRanges"
+)
+DGE_unshrunken_GR_KL$feature <- MatrixGenerics::rowRanges(dds_KL)$feature
+DGE_unshrunken_GR_KL$type <- MatrixGenerics::rowRanges(dds_KL)$type
+DGE_unshrunken_GR_KL$genome <- MatrixGenerics::rowRanges(dds_KL)$genome
+
+t_DGE_KL <- DGE_unshrunken_GR_KL %>%
+    dplyr::as_tibble() %>%
+    dplyr::rename(chr = seqnames)
+
+rm(independent_filtering, threshold_p, threshold_lfc)
+```
+<br />
+
+#### Make an MA plot that colors features by independent filtering
+```{r III. Make an MA plot: B, echo=FALSE, message=FALSE}
+#  Set up temporary variable 'tbl', which will be passed to ggplot
+tbl <- t_DGE_KL
+tbl <- tbl[with(tbl, order(log2FoldChange)), ]
+tbl$threshold <- as.factor(tbl$padj <= 0.05)
+tbl$log10baseMean <- ifelse(
+    is.infinite(log10(tbl$baseMean)), NA, log10(tbl$baseMean)
+)
+#HERE
+title <- paste0(
+    "MA plot | K. lactis features |\n",
+    "size factors estimated with all K. lactis features"
+)
+subtitle <- paste(
+    "points: K. lactis features",
+    "| top: up in Nab3 depletion",
+    "| bottom: up in OsTIR depletion"
+)  # [1] "strain_o.d_vs_n3.d"
+ggplot(tbl, aes(x = log10baseMean, y = log2FoldChange, colour = threshold)) +
+    geom_point(alpha = 0.25, size = 0.5) +
+    # geom_hline(aes(yintercept = 0), colour = "#000000", linewidth = 0.25) +
+    geom_hline(aes(yintercept = 0), colour = "#000000", size = 0.25) +
+    # ylim(c(min(tbl$log2FoldChange), max(tbl$log2FoldChange))) +
+    ylim(c(-14, 14)) +
+    xlab("log10(mean normalized counts)") +
+    ylab("log2(fold change)") +
+    scale_colour_discrete(name = "q ≤ 0.05") +
+    ggtitle(title, subtitle) +
+    theme_slick
+#TODO 1/2 Explain and make a decision regarding use of 'size' or 'linewidth'
+#TODO 2/2 parameters
+
+#  Create a vector of features that both passed independent filtering and are
+#+ not statistically significant; we can say that this vector signifies
+#+ features that are "stably expressed" between conditions
+tbl$stably_expressed <- ifelse(
+    !is.na(tbl$threshold) & tbl$padj > 0.05,
+    TRUE,
+    FALSE
+)
+stably_expressed_KL <- tbl$feature[tbl$stably_expressed == TRUE]
+#NOTE Probably need to be more stringent here
+
+rm(tbl, title, subtitle)
+```
+<br />
+
+#### Make a volcano plot
+```{r III. Make a volcano plot, echo=FALSE, message=FALSE}
+all <- t_DGE_KL$feature
+# selection_down <- t_DGE_KL %>%
+#     dplyr::filter(log2FoldChange < 0) %>%
+#     dplyr::arrange(padj) %>%
+#     dplyr::slice(1:5)
+# selection_up <- t_DGE_KL %>%
+#     dplyr::filter(log2FoldChange > 0) %>%
+#     dplyr::arrange(padj) %>%
+#     dplyr::slice(1:5)
+# selection <- c(selection_down[["feature"]], selection_up[["feature"]]) %>%
+#         as.character()  #NOTE Nothing significant, so no labeling needed
+
+#  Initialize an empty 'selection' vector b/c the function requires some labels
+selection <- c(rep("", 10))
+
+title <- paste0(
+    "volcano plot | K. lactis features |\n",
+    "size factors estimated with all K. lactis features"
+)
+subtitle <- paste(
+    "points: K. lactis features",
+    "| left: up in OsTIR depletion",
+    "| right: up in Nab3 depletion",
+    "|\nlabels: top 5 OsTIR dep. and top 5 Nab3 dep. features"
+)  # [1] "strain_o.d_vs_n3.d"
+p_KL <- plot_volcano(
+    table = t_DGE_KL,
+    label = all,
+    selection = selection,
+    label_size = 2.5,
+    p_cutoff = 0.05,
+    FC_cutoff = 1,
+    xlim = c(-14, 14),
+    ylim = c(0, 310),
+    color = "#448EE2",
+    title = title,
+    subtitle = subtitle
+)
+p_KL
+# save_volcano(
+#     file = "test.pdf",
+#     plot = p,
+#     width = 2,
+#     height = 3
+# )
+
+# rm(all, selection, selection_up, selection_down, title, subtitle)
+rm(all, selection, title, subtitle)
+```
+<br />
+<br />
+
+## IV. Run analyses of *S.C.* in which all *K.L.* are `controlGenes`
+### Perform size-factor estimation
+To run analyses using all *K.lactis* features as `controlGenes`, we use a
+logical vector (a vector composed of elements with values of either `TRUE` or
+`FALSE`) obtained from parsing the `rowRanges` dataframe within the `dds`
+object. In essence, we're saying, "Return `TRUE` if the `rowRanges` variable
+`genome` has a value of `K_lactis`; otherwise, return `FALSE`." Then,
+`BiocGenerics::estimateSizeFactors()` is using the values associated with those
+`TRUE`s to isolate the counts for *K. lactis*-specific features, in turn
+using those values to calculate size factors.
+
+```{r IV. Perform size-factor estimation, echo=TRUE, results='hide', message=FALSE}
+#  Recalculate size factors using K. lactis features as `controlGenes`
+dds_SC.ctrl_KL <- BiocGenerics::estimateSizeFactors(
+    dds,
+    controlGenes = (dds@rowRanges$genome == "K_lactis")
+)
+dds_SC.ctrl_KL@colData
+#  Using all of the K. lactis features as `controlGenes`
+# n3-d Q N rep1 0.907373
+# n3-d Q N rep2 1.034913
+# n3-d Q N rep3 0.944618
+# o-d Q N rep1 1.001126
+# o-d Q N rep2 1.130992
+```
+<br />
+
+### Run `DESeq2`
+#### Call `DESeq2` using default parameters
+Since we've already calculated the size factors, I think we can exclude
+*K. lactis* features from our work from here on out. We have to do some index
+subsetting to accomplish this (see below).
+```{r IV. Call DESeq2 using default parameters, echo=TRUE, results='hide', message=FALSE}
+dds_SC.ctrl_KL <- DESeq2::DESeq(
+    dds_SC.ctrl_KL[dds_SC.ctrl_KL@rowRanges$genome != "K_lactis", ]
+)
+
+#  Check model information
+DESeq2::resultsNames(dds_SC.ctrl_KL)[2]
+#  [1] "strain_o.d_vs_n3.d"  #HERE
+#+ Thus, the model varies on strain, OsTIR-depletion is the numerator,
+#+ Nab3-depletion is the denominator
+#+     - Numerator: "top" in MA plots, "right" in volcano plots
+#+     - Denominator: "bottom" in MA plots, "left" in volcano plots
+```
+<br />
+
+#### Call `DESeq2::results()`
+```{r IV. Call DESeq2::results(), echo=FALSE, message=FALSE}
+#  Set up necessary parameters for generation of DESeq2 results table
+independent_filtering <- TRUE
+threshold_p <- 0.05
+threshold_lfc <- 0
+
+#  Output a DESeq2 DataFrame object
+DGE_unshrunken_DF_SC.ctrl_KL <- DESeq2::results(
+    dds_SC.ctrl_KL,
+    name = DESeq2::resultsNames(dds_SC.ctrl_KL)[2],
+    independentFiltering = independent_filtering,
+    alpha = threshold_p,
+    lfcThreshold = threshold_lfc,
+    format = "DataFrame"
+)
+
+#  Output a GRanges object, which we can easily add to and convert to other
+#+ formats (such as a tibble)
+DGE_unshrunken_GR_SC.ctrl_KL <- DESeq2::results(
+    dds_SC.ctrl_KL,
+    name = DESeq2::resultsNames(dds_SC.ctrl_KL)[2],
+    independentFiltering = independent_filtering,
+    alpha = threshold_p,
+    lfcThreshold = threshold_lfc,
+    format = "GRanges"
+)
+DGE_unshrunken_GR_SC.ctrl_KL$feature <-
+    MatrixGenerics::rowRanges(dds_SC.ctrl_KL)$feature
+DGE_unshrunken_GR_SC.ctrl_KL$type <-
+    MatrixGenerics::rowRanges(dds_SC.ctrl_KL)$type
+DGE_unshrunken_GR_SC.ctrl_KL$genome <-
+    MatrixGenerics::rowRanges(dds_SC.ctrl_KL)$genome
+
+t_DGE_SC.ctrl_KL <- DGE_unshrunken_GR_SC.ctrl_KL %>% dplyr::as_tibble()
+
+rm(independent_filtering, threshold_p, threshold_lfc)
+```
+<br />
+
+#### Make an MA plot that colors features by independent filtering
+```{r IV. Make an MA plot: B, echo=FALSE, message=FALSE}
+#  Set up temporary variable 'tbl', which will be passed to ggplot
+tbl <- t_DGE_SC.ctrl_KL
+tbl <- tbl[with(tbl, order(log2FoldChange)), ]
+tbl$threshold <- as.factor(tbl$padj <= 0.05)
+tbl$log10baseMean <- ifelse(
+    is.infinite(log10(tbl$baseMean)), NA, log10(tbl$baseMean)
+)
+
+title <- paste0(
+    "MA plot | S. cerevisiae features |\n",
+    "size factors estimated with all K. lactis features"
+)
+subtitle <- paste(
+    "points: S. cerevisiae features",
+    "| top: up in Nab3 depletion",
+    "| bottom: up in OsTIR depletion"
+)  # [1] "strain_o.d_vs_n3.d"
+ggplot(tbl, aes(x = log10baseMean, y = log2FoldChange, colour = threshold)) +
+    geom_point(alpha = 0.25, size = 0.5) +
+    # geom_hline(aes(yintercept = 0), colour = "#000000", linewidth = 0.25) +
+    geom_hline(aes(yintercept = 0), colour = "#000000", size = 0.25) +
+    # ylim(c(min(tbl$log2FoldChange), max(tbl$log2FoldChange))) +
+    ylim(c(-14, 14)) +
+    xlab("log10(mean normalized counts)") +
+    ylab("log2(fold change)") +
+    scale_colour_discrete(name = "q ≤ 0.05") +
+    ggtitle(title, subtitle) +
+    theme_slick
+#TODO 1/2 Explain and make a decision regarding use of 'size' or 'linewidth'
+#TODO 2/2 parameters
+
+#NOTE 1/2 The use of K. lactis features for size-factor estimation centers the
+#NOTE 2/2 data very nicely!
+
+#  Create a vector of features that both passed independent filtering (and thus
+#+ have an inherently high mean expression) and are not statistically
+#+ significant; this vector signifies features that are "stably expressed"
+#+ between conditions
+tbl$stably_expressed <- ifelse(
+    !is.na(tbl$threshold) & tbl$padj > 0.05,
+    TRUE,
+    FALSE
+)
+stably_expressed_SC.ctrl_KL <- tbl$stably_expressed[
+    !is.na(tbl$stably_expressed)
+]
+
+rm(tbl, title, subtitle)
+```
+
+#### Make a volcano plot
+```{r IV. Make a volcano plot, echo=FALSE, message=FALSE}
+all <- t_DGE_SC.ctrl_KL$feature
+selection_down <- t_DGE_SC.ctrl_KL %>%
+    dplyr::filter(log2FoldChange < 0) %>%
+    dplyr::arrange(padj) %>%
+    dplyr::slice(1:5)
+selection_up <- t_DGE_SC.ctrl_KL %>%
+    dplyr::filter(log2FoldChange > 0) %>%
+    dplyr::arrange(padj) %>%
+    dplyr::slice(1:5)
+selection <- c(selection_down[["feature"]], selection_up[["feature"]]) %>%
+        as.character()
+
+title <- paste0(
+    "volcano plot | S. cerevisiae features |\n",
+    "size factors estimated with all K. lactis features"
+)
+subtitle <- paste(
+    "points: S. cerevisiae features",
+    "| left: up in OsTIR depletion",
+    "| right: up in Nab3 depletion",
+    "|\nlabels: top 5 OsTIR dep. and top 5 Nab3 dep. features"
+)  # [1] "strain_o.d_vs_n3.d"
+p_SC.ctrl_KL.1 <- plot_volcano(
+    table = t_DGE_SC.ctrl_KL,
+    label = all,
+    selection = selection,
+    label_size = 2.5,
+    p_cutoff = 0.05,
+    FC_cutoff = 1,
+    xlim = c(-14, 14),
+    ylim = c(0, 310),
+    color = "#A020F0",
+    title = title,
+    subtitle = subtitle
+)
+p_SC.ctrl_KL.1
+
+p_SC.ctrl_KL.2 <- plot_volcano(
+    table = t_DGE_SC.ctrl_KL,
+    label = all,
+    selection = selection,
+    label_size = 2.5,
+    p_cutoff = 0.05,
+    FC_cutoff = 1,
+    xlim = c(-11, 11),
+    ylim = c(0, 120),
+    color = "#A020F0",
+    title = title,
+    subtitle = subtitle
+)
+p_SC.ctrl_KL.2
+# save_volcano(
+#     file = "test.pdf",
+#     plot = p,
+#     width = 2,
+#     height = 3
+# )
+
+rm(all, selection, selection_up, selection_down, title, subtitle)
+```
+<br />
