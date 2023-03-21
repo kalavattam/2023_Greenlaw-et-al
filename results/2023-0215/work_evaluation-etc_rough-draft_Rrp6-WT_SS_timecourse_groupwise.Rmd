@@ -8,22 +8,6 @@ output: html_notebook
 
 ## Prepare data for various DGE analyses
 ### Get situated
-#### Set working directory
-```{r Set working directory, results='hide', message=FALSE}
-# p_local <- "/Users/kalavattam/Dropbox/FHCC"  # KrisMac
-p_local <- "/Users/kalavatt/projects-etc"  # WorkMac
-p_wd <- "2022_transcriptome-construction/results/2023-0215"
-#NOTE 1/3 Alison: you can adjust 'p_local' or 'p_wd' (path to working directory 
-#NOTE 2/3 on your personal or work computer ); I have two paths here with one
-#NOTE 3/3 commented out depending on which computer I am using
-
-setwd(paste(p_local, p_wd, sep = "/"))
-getwd()
-
-rm(p_local, p_wd)
-```
-<br />
-
 #### Load necessary libraries
 ```{r Load necessary libraries, results='hide', message=FALSE, warning=FALSE}
 library(DESeq2)
@@ -35,6 +19,19 @@ library(IRanges)
 library(PCAtools)
 library(readxl)
 library(tidyverse)
+```
+<br />
+
+#### Set working directory
+```{r Set working directory, results='hide', message=FALSE}
+# p_local <- "/Users/kalavattam/Dropbox/FHCC"  # KrisMac
+p_local <- "/Users/kalavatt/projects-etc"  # WorkMac
+p_wd <- "2022_transcriptome-construction/results/2023-0215"
+
+setwd(paste(p_local, p_wd, sep = "/"))
+getwd()
+
+rm(p_local, p_wd)
 ```
 <br />
 
@@ -73,7 +70,6 @@ split_isolate_convert <- function(in_vector, field, column_name) {
     
     return(out_df)
 }
-#TODO Note where this function is being used
 #TODO Add return description
 
 
@@ -140,7 +136,6 @@ plot_volcano <- function(
         ggplot2::ggtitle(title, subtitle = subtitle)
     return(volcano)
 }
-#TODO Note where this function is being used
 #TODO Add return description
 
 
@@ -161,7 +156,6 @@ save_volcano <- function(plot, file, width, height) {
         units = "in"
     )
 }
-#TODO Note where this function is being used
 #TODO Add return description
 
 
@@ -172,7 +166,7 @@ get_name_of_var <- function(v) {
     # :return v: ...
     return(deparse(substitute(v)))
 }
-#TODO Note where this function is being used
+#TODO Add return description
 
 
 get_top_loadings <- function(x, y, z, a) {
@@ -223,7 +217,6 @@ get_top_loadings <- function(x, y, z, a) {
     
     return(b)
 }
-#TODO Note where this function is being used
 #TODO Add return description
 
 
@@ -248,7 +241,6 @@ plot_biplot <- function(
     # :param y_max: maximum value on y axis <dbl>
     # :param title: title of biplot <dbl>
     # :return image: ...
-    
     image <- pca %>% 
         PCAtools::biplot(
             x = PC_x,
@@ -269,7 +261,6 @@ plot_biplot <- function(
     
     return(image)
 }
-#TODO Note where this function is being used
 #TODO Add return description
 
 
@@ -305,7 +296,6 @@ plot_pos_neg_loadings_each_axis <- function(
     # :param col_seg_neg: color: segments connecting arrowhead and text bubble
     #                     for negative loadings <chr>
     # :return image: ...
-    
     filter_pos_1 <- rownames(df_pos[[PC_x]][row_start:row_end, ])
     filter_pos_2 <- rownames(df_pos[[PC_y]][row_start:row_end, ])
     filter_neg_1 <- rownames(df_neg[[PC_x]][row_start:row_end, ])
@@ -347,7 +337,6 @@ plot_pos_neg_loadings_each_axis <- function(
     )
     return(images)
 }
-#TODO Note where this function is being used
 #TODO Add return description
 
 
@@ -367,6 +356,7 @@ plot_loadings <- function(x, y, z, a, b, d, e, f, g, h, i, j, k) {
     # :param i: y axis label <chr>
     # :param j: color of line and arrow <chr>
     # :param k: color of segment connecting arrowhead and text bubble <chr>
+    # :return l: ...
     l <- ggplot2::ggplot(x, ggplot2::aes(x = y, y = z)) +  #TODO #FUNCTION
         ggplot2::coord_cartesian(xlim = c(a, b), ylim = c(d, e)) +
         ggplot2::geom_segment(
@@ -397,11 +387,9 @@ plot_loadings <- function(x, y, z, a, b, d, e, f, g, h, i, j, k) {
     
     return(l)
 }
-#TODO Note where this function is being used
 #TODO Add return description
 
 
-#HERE
 draw_scree_plot <- function(pca, horn, elbow) {
     #TODO Write a description of this function
     #
@@ -409,7 +397,6 @@ draw_scree_plot <- function(pca, horn, elbow) {
     # :param horn: ...
     # :param elbow: ...
     # :return scree: ...
-    
     scree <- PCAtools::screeplot(
         pca,
         components = PCAtools::getComponents(pca),
@@ -425,7 +412,6 @@ draw_scree_plot <- function(pca, horn, elbow) {
 
     return(scree)
 }
-#TODO Note where this function is being used
 #TODO Add return description
 
 
@@ -434,29 +420,23 @@ theme_slick <- theme_classic() +
     theme(
         panel.grid.major = ggplot2::element_line(linewidth = 0.4),
         panel.grid.minor = ggplot2::element_line(linewidth = 0.2),
-        # panel.grid.major = ggplot2::element_line(size = 0.4),
-        # panel.grid.minor = ggplot2::element_line(size = 0.2),
         axis.line = ggplot2::element_line(linewidth = 0.2),
         axis.ticks = ggplot2::element_line(linewidth = 0.4),
-        # axis.line = ggplot2::element_line(size = 0.2),
-        # axis.ticks = ggplot2::element_line(size = 0.4),
         axis.text = ggplot2::element_text(color = "black"),
         axis.title.x = ggplot2::element_text(),
         axis.title.y = ggplot2::element_text(),
         plot.title = ggplot2::element_text(),
         text = element_text(family = "")
     )
-#TODO Note where this theme is being used
 
 theme_slick_no_legend <- theme_slick + theme(legend.position = "none")
-#TODO Note where this theme is being used
 ```
 <br />
 
 ### Load in Excel spreadsheet of samples names and variables
 The spreadsheet includes Alison's original sample names; we can use this
 information to associate the new sample names, which are made up of `DESeq2`
-GLM variables, with the old names, which reflect Alison's wet-lab,
+model variable values, with the old names, which reflect Alison's wet-lab,
 library-prep, etc. work
 ```{r load spreadsheet, results='hide', message=FALSE}
 p_xl <- "notebook"  #INPATH
@@ -697,11 +677,12 @@ t_xl <- t_xl %>%
     dplyr::select(., c(keys, sample_name))
 samples <- dplyr::full_join(samples, t_xl, by = "keys")
 
-#  Convert all columns to data type 'factor' (having the variable values as
-#+ factors helps with running DESeq2::DESeqDataSetFromMatrix() below)
-samples[sapply(samples, is.character)] <- lapply(
-    samples[sapply(samples, is.character)], as.factor
-)
+# #  Convert all columns to data type 'factor' (having the variable values as
+# #+ factors helps with running DESeq2::DESeqDataSetFromMatrix() below)
+# samples[sapply(samples, is.character)] <- lapply(
+#     samples[sapply(samples, is.character)], as.factor
+# )
+#TODO Hold off on factor conversion/ordered-factor conversion
 
 #  How does it look?
 samples
@@ -710,21 +691,38 @@ rm(t_xl, keys)
 ```
 <br />
 
-#### Identify specific samples to evaluate
+#### Begin to assess factor enumeration (rough-draft)
+```{r Begin to assess factor enumeration, results='hide', message=FALSE}
+colnames(samples)
+# samples$keys
+samples$strain %>% as.factor() %>% table()
+samples$state %>% as.factor() %>% table()
+samples$time %>% as.factor() %>% table()
+samples$kit %>% as.factor() %>% table()
+samples$transcription %>% as.factor() %>% table()
+samples$auxin %>% as.factor() %>% table()
+samples$timecourse %>% as.factor() %>% table()
+samples$replicate %>% as.factor() %>% table()
+samples$technical %>% as.factor() %>% table()
+# samples$sample_name %>% as.factor() %>% table()
+```
+<br />
+<br />
+
+## Identify specific samples to evaluate
 ```{bash Identify specific samples, results='hide', message=FALSE}
 #!/bin/bash
 #DONTRUN
 
-
 #  Array of samples sequenced in March, 2023 ----------------------------------
 samples_March=(
-    WT_DSp48_day4_tcn_SS_aux-F_tc-T_rep1_tech2
-    r6-n_DSp48_day4_tcn_SS_aux-F_tc-T_rep2_tech1
-    r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech2
-    WT_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1
-    WT_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1
-    r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1
-    r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1
+    "WT_DSp48_day4_tcn_SS_aux-F_tc-T_rep1_tech2"
+    "r6-n_DSp48_day4_tcn_SS_aux-F_tc-T_rep2_tech1"
+    "r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech2"
+    "WT_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1"
+    "WT_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1"
+    "r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1"
+    "r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1"
 )
 # WT_DSp48_day4_tcn_SS_aux-F_tc-T_rep1_tech2    BM10_DSp48_5781_new    SS timecourse: rrp6∆ vs WT
 # r6-n_DSp48_day4_tcn_SS_aux-F_tc-T_rep2_tech1    BM12_DSp48_7079    SS timecourse: rrp6∆ vs WT
@@ -739,23 +737,23 @@ samples_March=(
 #+ - work_evaluation-etc_rough-draft_Rrp6-WT_SS_timecourse_groupwise.Rmd  #MADE
 #+ - work_evaluation-etc_rough-draft_Rrp6-WT_SS_timecourse_pairwise.Rmd  #MADE
 r6_WT_SS_tc=(
-    r6-n_DSm2_day2_tcn_SS_aux-F_tc-T_rep1_tech1
-    r6-n_DSm2_day2_tcn_SS_aux-F_tc-T_rep2_tech1
-    r6-n_DSp2_day2_tcn_SS_aux-F_tc-T_rep1_tech1
-    r6-n_DSp2_day2_tcn_SS_aux-F_tc-T_rep2_tech1
-    r6-n_DSp24_day3_tcn_SS_aux-F_tc-T_rep1_tech1
-    r6-n_DSp24_day3_tcn_SS_aux-F_tc-T_rep2_tech1
-    r6-n_DSp48_day4_tcn_SS_aux-F_tc-T_rep1_tech1
-    r6-n_DSp48_day4_tcn_SS_aux-F_tc-T_rep2_tech1
-    WT_DSm2_day2_tcn_SS_aux-F_tc-T_rep1_tech1
-    WT_DSm2_day2_tcn_SS_aux-F_tc-T_rep2_tech1
-    WT_DSp2_day2_tcn_SS_aux-F_tc-T_rep1_tech1
-    WT_DSp2_day2_tcn_SS_aux-F_tc-T_rep2_tech1
-    WT_DSp24_day3_tcn_SS_aux-F_tc-T_rep1_tech1
-    WT_DSp24_day3_tcn_SS_aux-F_tc-T_rep2_tech1
-    WT_DSp48_day4_tcn_SS_aux-F_tc-T_rep1_tech1
-    WT_DSp48_day4_tcn_SS_aux-F_tc-T_rep1_tech2
-    WT_DSp48_day4_tcn_SS_aux-F_tc-T_rep2_tech1
+    "r6-n_DSm2_day2_tcn_SS_aux-F_tc-T_rep1_tech1"
+    "r6-n_DSm2_day2_tcn_SS_aux-F_tc-T_rep2_tech1"
+    "r6-n_DSp2_day2_tcn_SS_aux-F_tc-T_rep1_tech1"
+    "r6-n_DSp2_day2_tcn_SS_aux-F_tc-T_rep2_tech1"
+    "r6-n_DSp24_day3_tcn_SS_aux-F_tc-T_rep1_tech1"
+    "r6-n_DSp24_day3_tcn_SS_aux-F_tc-T_rep2_tech1"
+    "r6-n_DSp48_day4_tcn_SS_aux-F_tc-T_rep1_tech1"
+    "r6-n_DSp48_day4_tcn_SS_aux-F_tc-T_rep2_tech1"
+    "WT_DSm2_day2_tcn_SS_aux-F_tc-T_rep1_tech1"
+    "WT_DSm2_day2_tcn_SS_aux-F_tc-T_rep2_tech1"
+    "WT_DSp2_day2_tcn_SS_aux-F_tc-T_rep1_tech1"
+    "WT_DSp2_day2_tcn_SS_aux-F_tc-T_rep2_tech1"
+    "WT_DSp24_day3_tcn_SS_aux-F_tc-T_rep1_tech1"
+    "WT_DSp24_day3_tcn_SS_aux-F_tc-T_rep2_tech1"
+    "WT_DSp48_day4_tcn_SS_aux-F_tc-T_rep1_tech1"
+    "WT_DSp48_day4_tcn_SS_aux-F_tc-T_rep1_tech2"
+    "WT_DSp48_day4_tcn_SS_aux-F_tc-T_rep2_tech1"
 )
 # r6-n_DSm2_day2_tcn_SS_aux-F_tc-T_rep1_tech1    Bp3_DSm2_7078
 # r6-n_DSm2_day2_tcn_SS_aux-F_tc-T_rep2_tech1    BM3_DSm2_7079
@@ -779,10 +777,10 @@ r6_WT_SS_tc=(
 #  G1 N: rrp6∆ vs WT  ---------------------------------------------------------
 #+ - work_evaluation-etc_rough-draft_Rrp6-WT_N_G1_pairwise.Rmd  #MADE
 r6_WT_G1_N=(
-    r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1
-    r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1
-    WT_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1
-    WT_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1
+    "r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1"
+    "r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1"
+    "WT_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1"
+    "WT_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1"
 )
 # r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1    DA3_7078_SS_G1
 # r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1    DA4_7079_SS_G1
@@ -794,12 +792,12 @@ r6_WT_G1_N=(
 #+ - work_evaluation-etc_rough-draft_Rrp6-Rtr1-WT_N_Q_groupwise.Rmd  #MADE
 #+ - work_evaluation-etc_rough-draft_Rrp6-Rtr1-WT_N_Q_pairwise.Rmd  #MADE
 r6_r1_WT_Q_N=(
-    r6-n_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1
-    r6-n_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1
-    r1-n_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1
-    r1-n_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1
-    WT_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1
-    WT_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1
+    "r6-n_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1"
+    "r6-n_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1"
+    "r1-n_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1"
+    "r1-n_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1"
+    "WT_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1"
+    "WT_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1"
 )
 # r6-n_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1    CW6_7078_8day_Q_PD
 # r6-n_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1    CW8_7079_8day_Q_PD
@@ -810,16 +808,16 @@ r6_r1_WT_Q_N=(
 
 
 #  Q SS: rrp6∆ vs rtr1∆ vs WT -------------------------------------------------
-#+    - work_evaluation-etc_rough-draft_Rrp6-Rtr1-WT_SS_Q_groupwise.Rmd  #MADE
-#+    - work_evaluation-etc_rough-draft_Rrp6-Rtr1-WT_SS_Q_pairwise.Rmd  #MADE
+#+ - work_evaluation-etc_rough-draft_Rrp6-Rtr1-WT_SS_Q_groupwise.Rmd  #MADE
+#+ - work_evaluation-etc_rough-draft_Rrp6-Rtr1-WT_SS_Q_pairwise.Rmd  #MADE
 r6_r1_WT_Q_SS=(
-    r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1
-    r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech2
-    r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1
-    r1-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1
-    r1-n_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1
-    WT_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1
-    WT_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1
+    "r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1"
+    "r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech2"
+    "r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1"
+    "r1-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1"
+    "r1-n_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1"
+    "WT_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1"
+    "WT_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1"
 )
 # r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1    CW6_7078_8day_Q_IN
 # r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech2    CW6_7078_day8_Q_SS
@@ -832,16 +830,17 @@ r6_r1_WT_Q_SS=(
 
 #  Tests of the Tecan kit (no samples from March, 2023) -----------------------
 test_Tecan_WT=(
-    WT_Q_day7_tcn_N_aux-F_tc-F_rep2_tech1
-    WT_Q_day7_tcn_SS_aux-F_tc-F_rep2_tech1
+    "WT_Q_day7_tcn_N_aux-F_tc-F_rep2_tech1"
+    "WT_Q_day7_tcn_SS_aux-F_tc-F_rep2_tech1"
 )
 # WT_Q_day7_tcn_N_aux-F_tc-F_rep2_tech1    CU11_5782_Q_Nascent
 # WT_Q_day7_tcn_SS_aux-F_tc-F_rep2_tech1    CU12_5782_Q_SteadyState
 ```
+<br />
+<br />
 
-
-### Do prep work with "`rrp6∆ SS timecourse`"
-#### Make the counts matrix
+## Do prep work with "`SS timecourse: rrp6∆ vs WT`"
+### Make the counts matrix
 ```{r Make the counts matrix, results='hide', message=FALSE}
 datasets <- c(
     "r6-n_DSm2_day2_tcn_SS_aux-F_tc-T_rep1_tech1",
@@ -863,14 +862,14 @@ datasets <- c(
     "WT_DSp48_day4_tcn_SS_aux-F_tc-T_rep2_tech1"
 )
 counts_data <- t_fc[, colnames(t_fc) %in% datasets] %>%
-    as.data.frame()  #IMPORTANT Output a dataframe, not a tibble
+    as.data.frame()
 
 #  How do things look?
 counts_data
 ```
 <br />
 
-#### Make the model matrix
+### Make the model matrix
 ```{r make model matrix, results='hide', message=FALSE}
 #  Use the "keys" column to isolate datasets of interest
 #REMEMBER Variable `datasets` is initialized in the preceding chunk 
@@ -889,7 +888,72 @@ col_data$strain
 ```
 <br />
 
-#### Make the `DESeqDataSet`, `dds`
+### Continue factor enumeration (rough-draft)
+```{r Continue factor enumeration, results='hide', message=FALSE}
+# #  Survey the levels associated with model variables
+# colnames(col_data)
+# col_data$strain %>% as.factor() %>% table()
+# col_data$state %>% as.factor() %>% table()
+# col_data$time %>% as.factor() %>% table()
+# col_data$kit %>% as.factor() %>% table()
+# col_data$transcription %>% as.factor() %>% table()
+# col_data$auxin %>% as.factor() %>% table()
+# col_data$timecourse %>% as.factor() %>% table()
+# col_data$replicate %>% as.factor() %>% table()
+# col_data$technical %>% as.factor() %>% table()
+
+#  Transform the "format" of factors "strain", "state", "time", "replicate",
+#+ from names to positive integers with sapply(), which applies the switch() 
+#+ function to each element
+col_data$no_strain <- sapply(
+    as.character(col_data$strain),
+    switch,
+    "WT" = 1,
+    "r6-n" = 2,
+    USE.NAMES = FALSE
+)
+
+col_data$no_state <- sapply(
+    as.character(col_data$state),
+    switch,
+    "DSm2" = 1,
+    "DSp2" = 2,
+    "DSp24" = 3,
+    "DSp48" = 4,
+    USE.NAMES = FALSE
+)
+
+col_data$no_time <- sapply(
+    as.character(col_data$time),
+    switch,
+    "day2" = 1,
+    "day3" = 2,
+    "day4" = 3,
+    USE.NAMES = FALSE
+)
+
+col_data$no_replicate <- sapply(
+    as.character(col_data$replicate),
+    switch,
+    "rep1" = 1,
+    "rep2" = 2,
+    USE.NAMES = FALSE
+)
+
+col_data$no_technical <- sapply(
+    as.character(col_data$technical),
+    switch,
+    "tech1" = 1,
+    "tech2" = 2,
+    USE.NAMES = FALSE
+)
+
+#  How do things look?
+col_data
+```
+<br />
+
+### Make the `DESeqDataSet`, `dds`
 - Use `counts_data` for the `featureCount` tallies
 - Use `col_data` for setting up the GLM
 - Use `pos_info` for adding feature metadata, subsequent subsetting, etc.
@@ -905,15 +969,18 @@ dds <- DESeq2::DESeqDataSetFromMatrix(
 #  Make a back-up of the DESeqDataSet object
 bak.dds <- dds
 
-#  How do things look?
+# #  How do things look?
 # dds %>% BiocGenerics::counts() %>% head()
 # dds@rowRanges
 # dds@design
 # dds@assays
+
+# #  For tests
+# rm(dds)
 ```
 <br />
 
-#### Prefilter `dds`
+### Prefilter `dds`
 We probably don't need to do this, but then again we may want to. Some people
 think it's important; my thinking has been that, if it makes much of a
 difference (e.g., from doing dimension reduction, hierarchical clustering,
@@ -949,13 +1016,65 @@ genes are skewing results.
 
 ## I. Run PCA, etc.
 ### Generate normalized counts
-#### Calculate rlog-normalized (unblinded) counts
-```{r I. Create rlog-normalized counts, message=FALSE}
-norm_r <- DESeq2::rlog(
+#### Calculate vst-normalized (unblinded) counts
+```{r I. Create vst-normalized counts, message=FALSE}
+vsd <- DESeq2::vst(
     dds[dds@rowRanges$genome == "S_cerevisiae", ],
     blind = FALSE
+)
+
+norm_v <- limma::removeBatchEffect(
+    SummarizedExperiment::assay(vsd),
+    batch = vsd$technical,
+    design = model.matrix(~state, SummarizedExperiment::colData(vsd))
+) %>% 
+    as.data.frame()
+norm_v$feature_init <- dds@rowRanges$feature_init[
+    dds@rowRanges$genome == "S_cerevisiae"
+]
+
+#  Associate normalized values with feature metadata
+norm_v <- dplyr::full_join(
+    norm_v,
+    t_fc[t_fc$genome == "S_cerevisiae", 1:9],
+    by = "feature_init"
 ) %>%
-    SummarizedExperiment::assay() %>%
+    dplyr::as_tibble()
+
+rm(vsd)
+
+# #PREVIOUS
+# norm_v <- DESeq2::vst(
+#     dds[dds@rowRanges$genome == "S_cerevisiae", ],
+#     blind = FALSE
+# ) %>%
+#     SummarizedExperiment::assay() %>%
+#     as.data.frame()
+# norm_v$feature_init <- dds@rowRanges$feature_init[
+#     dds@rowRanges$genome == "S_cerevisiae"
+# ]
+# 
+# #  Associate normalized values with feature metadata
+# norm_v <- dplyr::full_join(
+#     norm_v,
+#     t_fc[t_fc$genome == "S_cerevisiae", 1:9],
+#     by = "feature_init"
+# ) %>%
+#     dplyr::as_tibble()
+```
+
+#### Calculate rlog-normalized (unblinded) counts
+```{r I. Create rlog-normalized counts, message=FALSE}
+rld <- DESeq2::rlog(
+    dds[dds@rowRanges$genome == "S_cerevisiae", ],
+    blind = FALSE
+)
+
+norm_r <- limma::removeBatchEffect(
+    SummarizedExperiment::assay(rld),
+    batch = rld$technical,
+    design = model.matrix(~state, SummarizedExperiment::colData(rld))
+) %>% 
     as.data.frame()
 norm_r$feature_init <- dds@rowRanges$feature_init[
     dds@rowRanges$genome == "S_cerevisiae"
@@ -968,6 +1087,27 @@ norm_r <- dplyr::full_join(
     by = "feature_init"
 ) %>%
     dplyr::as_tibble()
+
+rm(rld)
+
+# #PREVIOUS
+# norm_r <- DESeq2::rlog(
+#     dds[dds@rowRanges$genome == "S_cerevisiae", ],
+#     blind = FALSE
+# ) %>%
+#     SummarizedExperiment::assay() %>%
+#     as.data.frame()
+# norm_r$feature_init <- dds@rowRanges$feature_init[
+#     dds@rowRanges$genome == "S_cerevisiae"
+# ]
+# 
+# #  Associate normalized values with feature metadata
+# norm_r <- dplyr::full_join(
+#     norm_r,
+#     t_fc[t_fc$genome == "S_cerevisiae", 1:9],
+#     by = "feature_init"
+# ) %>%
+#     dplyr::as_tibble()
 ```
 <br />
 
@@ -985,127 +1125,131 @@ well:
 - [Zatzman et al. (Shlien), *Sci Adv* 2022](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9683723/)
 
 ```{r I. Create GeTMM-normalized counts, message=FALSE}
-#  Isolate raw counts for samples of interest
-raw <- dds %>%
-    SummarizedExperiment::assay() %>%
-    as.data.frame()
-raw$feature_init <- dds@rowRanges$feature_init
-
-#  Associate non-normalized values with feature metadata
-raw <- dplyr::full_join(
-    raw,
-    t_fc[, c(seq(1,9))],
-    by = "feature_init"
-) %>%
-    dplyr::as_tibble()
-
-#  Calculate counts per kb of gene length (i.e., correct counts for gene
-#+ length); gene length is initially in bp and converted to kb
-rpk <- ((raw[, 1:17] * 10^3) / raw$length)
-rpk[, 18:26] <- raw[, 18:26]
-
-#  Calculate normalization factors using the raw spike-in (K. lactis) counts
-norm_KL <- edgeR::calcNormFactors(
-    raw[(rpk$genome == "K_lactis"), ][, 1:17]
-)
-
-#  Create factor for categories (groups)
-model_variables <- stringr::str_split(colnames(rpk[, 1:17]), "_") %>%
-    as.data.frame(
-        row.names = c(
-            "sample", "stage", "day", "kit", "tx", "aux", "tc", "rep", "tech"
-        ),
-        col.names = paste0("s", c(1:17))
-    ) %>%
-    t() %>%
-    tibble::as_tibble()
-
-group <- factor(
-    # Second level is numerator, first level is denominator
-    model_variables$sample,
-    levels = c("WT", "r6-n")
-)
-
-rm(model_variables)
-
-#  Create edgeR DGEList object composed of S. cerevisiae counts per kb gene
-#+ length
-dgel <- edgeR::DGEList(
-    counts = rpk[rpk$genome == "S_cerevisiae", ][, 1:17],
-    group = group
-)
-
-#  In the DGEList object, include the normalization factors calculated from
-#+ spike-in information
-dgel$samples$norm.factors <- norm_KL
-
-#  Check that the normalization factors for each library are appropriately
-#+ assigned
-dgel$samples
-
-#  Scale the values to counts-per-million
-norm_g <- edgeR::cpm(dgel) %>% tibble::as_tibble()
-norm_g[, 18:26] <- rpk[rpk$genome == "S_cerevisiae", 18:26]
-norm_g
-
-#  Clean up unneeded variables
-rm(raw, rpk, norm_KL, group)
-rm(dgel)  #TODO Delete dgel? Or use it for trying out DE analyses with edgeR?
+# #PREVIOUS
+# #  Isolate raw counts for samples of interest
+# raw <- dds %>%
+#     SummarizedExperiment::assay() %>%
+#     as.data.frame()
+# raw$feature_init <- dds@rowRanges$feature_init
+# 
+# #  Associate non-normalized values with feature metadata
+# raw <- dplyr::full_join(
+#     raw,
+#     t_fc[, c(seq(1,9))],
+#     by = "feature_init"
+# ) %>%
+#     dplyr::as_tibble()
+# 
+# #  Calculate counts per kb of gene length (i.e., correct counts for gene
+# #+ length); gene length is initially in bp and converted to kb
+# rpk <- ((raw[, 1:17] * 10^3) / raw$length)
+# rpk[, 18:26] <- raw[, 18:26]
+# 
+# #  Calculate normalization factors using the raw spike-in (K. lactis) counts
+# norm_KL <- edgeR::calcNormFactors(
+#     raw[(rpk$genome == "K_lactis"), ][, 1:17]
+# )
+# 
+# #  Create factor for categories (groups)
+# model_variables <- stringr::str_split(colnames(rpk[, 1:17]), "_") %>%
+#     as.data.frame(
+#         row.names = c(
+#             "sample", "stage", "day", "kit", "tx", "aux", "tc", "rep", "tech"
+#         ),
+#         col.names = paste0("s", c(1:17))
+#     ) %>%
+#     t() %>%
+#     tibble::as_tibble()
+# 
+# group <- factor(
+#     # Second level is numerator, first level is denominator
+#     model_variables$sample,
+#     levels = c("WT", "r6-n")
+# )
+# 
+# rm(model_variables)
+# 
+# #  Create edgeR DGEList object composed of S. cerevisiae counts per kb gene
+# #+ length
+# dgel <- edgeR::DGEList(
+#     counts = rpk[rpk$genome == "S_cerevisiae", ][, 1:17],
+#     group = group
+# )
+# 
+# #  In the DGEList object, include the normalization factors calculated from
+# #+ spike-in information
+# dgel$samples$norm.factors <- norm_KL
+# 
+# #  Check that the normalization factors for each library are appropriately
+# #+ assigned
+# dgel$samples
+# 
+# #  Scale the values to counts-per-million
+# norm_g <- edgeR::cpm(dgel) %>% tibble::as_tibble()
+# norm_g[, 18:26] <- rpk[rpk$genome == "S_cerevisiae", 18:26]
+# norm_g
+# 
+# #  Clean up unneeded variables
+# rm(raw, rpk, norm_KL, group)
+# rm(dgel)  #TODO Delete dgel? Or use it for trying out DE analyses with edgeR?
 ```
 <br />
 
 #### Calculate TPM-normalized counts
 ```{r I. Calculate TPM-normalized counts, message=FALSE}
-#  Isolate raw counts for samples of interest
-raw <- dds %>%
-    SummarizedExperiment::assay() %>%
-    as.data.frame()
-raw$feature_init <- dds@rowRanges$feature_init
-
-#  Associate non-normalized values with feature metadata
-raw <- dplyr::full_join(
-    raw,
-    t_fc[, 1:9],
-    by = "feature_init"
-) %>%
-    dplyr::as_tibble()
-
-#  Calculate counts per kb of gene length (i.e., correct counts for gene
-#+ length or do an "RPK normalization"); then, divide RPK-normalized elements
-#+ by the sum of sample RPK divided by one million: this does the actual TPM
-#+ normalization
-rpk <- tpm <- ((raw[, 1:17] * 10^3) / raw$length)
-for (i in 1:ncol(rpk)) {
-    tpm[, i] <- (rpk[, i] / sum(rpk[, i] / 1e6))
-}
-
-tpm[, 18:26] <- raw[, 18:26]
-norm_t <- tpm[tpm$genome == "S_cerevisiae", ]
-
-rm(raw, rpk, tpm)
-
-#CHECK
-#  Check that my calculation above is actually producing TPM-normalized values:
-#+ #QUESTION 1/2 Do my values match the output from code by Mike Love (author
-#+ #QUESTION 2/2 of DESeq2) posted at support.bioconductor.org/p/91218/?
-# x <- raw[, 1:5] / raw$length
-# test <- t((t(x) * 1e6) / colSums(x))
-# test <- test %>% as.data.frame()
-# identical(
-#       round(test$`n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1`, digits = 3),
-#     round(norm_t$`n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1`, digits = 3)
-# )  # [1] TRUE
-#  #ANSWER Basically, the calculations result in equivalent results
+# #PREVIOUS
+# #  Isolate raw counts for samples of interest
+# raw <- dds %>%
+#     SummarizedExperiment::assay() %>%
+#     as.data.frame()
+# raw$feature_init <- dds@rowRanges$feature_init
+# 
+# #  Associate non-normalized values with feature metadata
+# raw <- dplyr::full_join(
+#     raw,
+#     t_fc[, 1:9],
+#     by = "feature_init"
+# ) %>%
+#     dplyr::as_tibble()
+# 
+# #  Calculate counts per kb of gene length (i.e., correct counts for gene
+# #+ length or do an "RPK normalization"); then, divide RPK-normalized elements
+# #+ by the sum of sample RPK divided by one million: this does the actual TPM
+# #+ normalization
+# rpk <- tpm <- ((raw[, 1:17] * 10^3) / raw$length)
+# for (i in 1:ncol(rpk)) {
+#     tpm[, i] <- (rpk[, i] / sum(rpk[, i] / 1e6))
+# }
+# 
+# tpm[, 18:26] <- raw[, 18:26]
+# norm_t <- tpm[tpm$genome == "S_cerevisiae", ]
+# 
+# rm(raw, rpk, tpm)
+# 
+# #CHECK
+# #  Check that my calculation above is actually producing TPM-normalized values:
+# #+ #QUESTION 1/2 Do my values match the output from code by Mike Love (author
+# #+ #QUESTION 2/2 of DESeq2) posted at support.bioconductor.org/p/91218/?
+# # x <- raw[, 1:5] / raw$length
+# # test <- t((t(x) * 1e6) / colSums(x))
+# # test <- test %>% as.data.frame()
+# # identical(
+# #       round(test$`n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1`, digits = 3),
+# #     round(norm_t$`n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1`, digits = 3)
+# # )  # [1] TRUE
+# #  #ANSWER Basically, the calculations result in equivalent results
 ```
 <br />
 
 ### Run PCA with variously normalized counts
+#### Part 1
 ```{r I. Run PCA with variously normalized counts, message=FALSE}
 #  Make the following code generic --------------------------------------------
 #+ ...so that we can try it with different normalization objects (counts
 #+ normalized in different ways)
-norm <- norm_g
-# norm <- norm_r
+# norm <- norm_v
+norm <- norm_r
+# norm <- norm_g
 # norm <- norm_t
 #NOTE 1/3 norm_g and norm_t appear to be the best performing; norm_r (blinded
 #NOTE 2/3 or not) clusters all samples together regardless of model variable
@@ -1133,13 +1277,16 @@ horn <- PCAtools::parallelPCA(mat = norm[, c(1:17)])
 #  Determine "significant" principle components with the elbow method ---------
 #+ See Buja and Eyuboglu, 1992
 elbow <- PCAtools::findElbowPoint(obj_pca$variance)
-elbow
+# elbow
 
 
 #  Evaluate cumulative proportion of explained variance with a scree plot -----
 scree <- draw_scree_plot(obj_pca, horn = horn$n, elbow = elbow)
 scree
+```
 
+#### Part 2
+```{r}
 # save_title <- paste0("panel-plot", ".", "scree", ".pdf")
 # ggplot2::ggsave(paste0(args$directory_out, "/", save_title), scree)
 #TODO Work up some logic for location(s) for outfiles
@@ -1190,34 +1337,11 @@ for(i in 1:ncol(mat)) {
         loadings_n = 0,
         meta_color = "strain",
         meta_shape = "replicate",
-        x_min = -120000,
-        x_max = 120000,
-        y_min = -50000,
-        y_max = 50000
+        x_min = -66,  # -120000,
+        x_max = 66,  # 120000,
+        y_min = -50,  # -50000,
+        y_max = 50  # 50000
     )
-    
-    images[[paste0("KA.", PC_x, ".v.", PC_y)]] <-
-        plot_pos_neg_loadings_each_axis(
-            df_all = loadings,
-            df_pos = top_loadings_pos,
-            df_neg = top_loadings_neg,
-            PC_x = PC_x,
-            PC_y = PC_y,
-            row_start = 1,
-            row_end = 30,
-            x_min = -0.15,
-            x_max = 0.15,
-            y_min = -0.1,
-            y_max = 0.1,
-            x_nudge = 0.02,
-            y_nudge = 0.04,
-            x_label = x_label,
-            y_label = y_label,
-            col_line_pos = "black",
-            col_line_neg = "red",
-            col_seg_pos = "grey",
-            col_seg_neg = "grey"
-        )
     
     #HERE
     images[[paste0("KA.", PC_x, ".v.", PC_y)]] <-
@@ -1229,12 +1353,12 @@ for(i in 1:ncol(mat)) {
             PC_y = PC_y,
             row_start = 1,
             row_end = 15,  # 30
-            x_min = -1.0,  # -0.15
-            x_max = 1.0,  # 0.15
-            y_min = -0.5,  # -0.1
-            y_max = 0.5,  # 0.1
-            x_nudge = 0.04,  # 0.02
-            y_nudge = 0.02,  # 0.04
+            x_min = -0.15,  # -0.15,  # -1.0,
+            x_max = 0.15,  # 0.15,  # 1.0,
+            y_min = -0.15,  # -0.1,  # -0.5,
+            y_max = 0.15,  # 0.1,  # 0.5,
+            x_nudge = 0.02,  # 0.02,  # 0.04,
+            y_nudge = 0.04,  # 0.04,  # 0.02,
             x_label = x_label,
             y_label = y_label,
             col_line_pos = "black",
@@ -1252,13 +1376,48 @@ images$KA.PC1.v.PC2$PC_x_pos
 images$KA.PC1.v.PC2$PC_x_neg
 images$KA.PC1.v.PC2$PC_y_pos
 images$KA.PC1.v.PC2$PC_y_neg
+
+images$PCAtools.PC1.v.PC3
+images$KA.PC1.v.PC3$PC_x_pos
+images$KA.PC1.v.PC3$PC_x_neg
+images$KA.PC1.v.PC3$PC_y_pos
+images$KA.PC1.v.PC3$PC_y_neg
+
+images$PCAtools.PC1.v.PC4
+images$KA.PC1.v.PC4$PC_x_pos
+images$KA.PC1.v.PC4$PC_x_neg
+images$KA.PC1.v.PC4$PC_y_pos
+images$KA.PC1.v.PC4$PC_y_neg
+
+images$PCAtools.PC2.v.PC3
+images$KA.PC2.v.PC3$PC_x_pos
+images$KA.PC2.v.PC3$PC_x_neg
+images$KA.PC2.v.PC3$PC_y_pos
+images$KA.PC2.v.PC3$PC_y_neg
+
+images$PCAtools.PC2.v.PC4
+images$KA.PC2.v.PC4$PC_x_pos
+images$KA.PC2.v.PC4$PC_x_neg
+images$KA.PC2.v.PC4$PC_y_pos
+images$KA.PC2.v.PC4$PC_y_neg
+
+images$PCAtools.PC3.v.PC4
+images$KA.PC3.v.PC4$PC_x_pos
+images$KA.PC3.v.PC4$PC_x_neg
+images$KA.PC3.v.PC4$PC_y_pos
+images$KA.PC3.v.PC4$PC_y_neg
+
 # images$PCAtools.PC1.v.PC3
 # images$KA.PC1.v.PC3
 # images$PCAtools.PC1.v.PC4
 # images$KA.PC1.v.PC4
 # images$PCAtools.PC2.v.PC3
 # images$KA.PC2.v.PC3
+```
+<br />
 
+#### Part 3
+```{r}
 # for(i in 1:length(names(images))) {
 #     # i <- 2
 #     vector_names <- names(images) %>% stringr::str_split("\\.")
@@ -1392,5 +1551,3 @@ for(i in c("PC1", "PC2")) {
 }
 ```
 <br />
-
-There look

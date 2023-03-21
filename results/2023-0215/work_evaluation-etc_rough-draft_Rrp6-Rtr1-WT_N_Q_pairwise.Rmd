@@ -8,6 +8,20 @@ output: html_notebook
 
 ## Prepare data for various DGE analyses
 ### Get situated
+#### Load necessary libraries
+```{r Load necessary libraries, results='hide', message=FALSE, warning=FALSE}
+library(DESeq2)
+library(edgeR)
+library(EnhancedVolcano)
+library(GenomicRanges)
+library(ggrepel)
+library(IRanges)
+library(PCAtools)
+library(readxl)
+library(tidyverse)
+```
+<br />
+
 #### Set working directory
 ```{r Set working directory, results='hide', message=FALSE}
 # p_local <- "/Users/kalavattam/Dropbox/FHCC"  # KrisMac
@@ -24,16 +38,836 @@ rm(p_local, p_wd)
 ```
 <br />
 
-#### Load necessary libraries
-```{r Load necessary libraries, results='hide', message=FALSE, warning=FALSE}
-library(DESeq2)
-library(edgeR)
-library(EnhancedVolcano)
-library(GenomicRanges)
-library(ggrepel)
-library(IRanges)
-library(PCAtools)
-library(readxl)
-library(tidyverse)
+#### Set options
+- Use normal numbers instead of default scientific numbers in plots
+- Do not limit number of overlaps when including labels in plots
+```{r Set options, results='hide', message=FALSE, warning=FALSE}
+options(scipen=999)
+options(ggrepel.max.overlaps = Inf)
+```
+<br />
+
+#### Initialize necessary functions
+```{r Initialize necessary functions, results='hide', message=FALSE}
+split_isolate_convert <- function(in_vector, field, column_name) {
+    # Take in a character vector of S288C R64-1-1 feature names and split
+    # elements at the underscores that separate feature names from
+    # classifications, e.g., "YER043_mRNA-E1" is split at the underscore. User
+    # has the option to return either the first (feature name) or second
+    # (classification) value in a tibble data type. User must also input a
+    # name for the column in the tibble.
+    #
+    # :param in_vector: character vector of S288C R64-1-1 feature names [vec]
+    # :param field: first or second string separated by underscore
+    #               [int = 1 | int = 2]
+    # :param column_name: name of column in tibble [chr]
+    # :return out_df: tibble of first or second strings separated by underscore
+    #                 [tbl]
+    out_df <- in_vector %>%
+        stringr::str_split(., c("_")) %>%
+        sapply(., "[", field) %>%
+        as.data.frame() %>%
+        tibble::as_tibble()
+    
+    colnames(out_df) <- column_name
+    
+    return(out_df)
+}
+#TODO Add return description
+
+
+plot_volcano <- function(
+    table, label, selection, label_size, p_cutoff, FC_cutoff,
+    xlim, ylim, color, title, subtitle, ...
+) {
+    #TODO Write a description of this function
+    #
+    # :param table: dataframe of test statistics [df]
+    # :param label: character vector of all variable names in param table [vec]
+    # :param selection: character vector of selected variable names in param
+    #                   table [vec]
+    # :param label_size: size of label font [float]
+    # :param p_cutoff: cut-off for statistical significance; a horizontal line
+    #                  will be drawn at -log10(pCutoff); p is actually padj
+    #                  [float]
+    # :param FC_cutoff: cut-off for absolute log2 fold-change; vertical lines
+    #                   will be drawn at the negative and positive values of
+    #                   log2FCcutoff
+    #                  [float]
+    # :param xlim: limits of the x-axis [float]
+    # :param ylim: limits of the y-axis [float]
+    # :param color: color of DEGs, e.g., '#52BE9B' [hex]
+    # :param title: plot title [chr]
+    # :param subtitle: plot subtitle [chr]
+    # :return volcano: ...
+    volcano <- EnhancedVolcano::EnhancedVolcano(
+        toptable = table,
+        lab = label,
+        selectLab = selection,
+        x = "log2FoldChange",
+        y = "padj",
+        xlab = "log2(FC)",
+        ylab = "-log10(padj)",
+        pCutoff = p_cutoff,
+        pCutoffCol = "padj",
+        FCcutoff = FC_cutoff,
+        xlim = xlim,
+        ylim = ylim,
+        cutoffLineType = "dashed",
+        cutoffLineWidth = 0.2,
+        pointSize = 1,
+        shape = 16,
+        colAlpha = 0.25,
+        col = c('#D3D3D3', '#D3D3D3', '#D3D3D3', color),
+        title = NULL,
+        subtitle = NULL,
+        caption = NULL,
+        borderColour = "#000000",
+        borderWidth = 0.2,
+        gridlines.major = TRUE,
+        gridlines.minor = TRUE,
+        axisLabSize = 10,
+        labSize = label_size,
+        boxedLabels = TRUE,
+        parseLabels = TRUE,
+        drawConnectors = TRUE,
+        widthConnectors = 0.2,
+        colConnectors = 'black',
+        max.overlaps = Inf
+    ) +
+        theme_slick_no_legend +
+        ggplot2::ggtitle(title, subtitle = subtitle)
+    return(volcano)
+}
+#TODO Add return description
+
+
+save_volcano <- function(plot, file, width, height) {
+    #TODO Write a description of this function
+    #
+    # :param plot: ...
+    # :param file: ...
+    # :param width: ...
+    # :param height: ...
+    # :return: ...
+    ggplot2::ggsave(
+        plot,
+        filename = file,
+        device = "pdf",
+        h = width,
+        w = height,
+        units = "in"
+    )
+}
+#TODO Add return description
+
+
+get_name_of_var <- function(v) {
+    #TODO Write a description of this function
+    #
+    # :param v: ...
+    # :return v: ...
+    return(deparse(substitute(v)))
+}
+#TODO Add return description
+
+
+get_top_loadings <- function(x, y, z, a) {
+    #TODO Write a description of this function
+    #
+    # :param x: dataframe of PC loadings <data.frame>
+    # :param y: character element for column in dataframe x <chr>
+    # :param z: whether to select all loadings sorted from largest to smallest
+    #           absolute value ('all'), positive loadings sorted from largest
+    #           to smallest value ('pos'), or negative loadings sorted from
+    #           largest to smallest absolute value ('neg') <str>
+    # :param a: whether or not to keep 'sign' and 'abs' columns added in the
+    #           course of processing the dataframe <logical>
+    # :return b: ...
+    b <- as.data.frame(x[[y]])
+    rownames(b) <- rownames(x)
+    colnames(b) <- y
+    
+    b[["sign"]] <- ifelse(
+        b[[y]] > 0,
+        "pos",
+        ifelse(
+            b[[y]] == 0,
+            "zero",
+            "neg"
+        )
+    )
+    
+    b[["abs"]] <- abs(b[[y]])
+    
+    if(z == "all") {
+        b <- dplyr::arrange(b, by = desc(abs))
+    } else if(z == "pos") {
+        b <- b[b[[y]] > 0, ] %>% dplyr::arrange(., by = desc(abs))
+    } else if(z == "neg") {
+        b <- b[b[[y]] < 0, ] %>% dplyr::arrange(., by = desc(abs))
+    } else {
+        stop(paste0("Stopping: param z must be either 'all', 'pos', or 'neg'"))
+    }
+    
+    if(isTRUE(a)) {
+        paste0("Retaining 'sign' and 'abs' columns")
+    } else if(isFALSE(a)) {
+        b <- b %>% dplyr::select(-c(sign, abs))
+    } else {
+        stop(paste0("Stopping: param a must be either 'TRUE' or 'FALSE'"))
+    }
+    
+    return(b)
+}
+#TODO Add return description
+
+
+plot_biplot <- function(
+    pca, PC_x, PC_y,
+    loadings_show, loadings_n,
+    meta_color, meta_shape,
+    x_min, x_max, y_min, y_max
+) {
+    #TODO Write a description of this function
+    #
+    # :param pca: "pca" list object obtained by running PCAtools::pca()
+    # :param PC_x: PC to plot on the x axis <chr>
+    # :param PC_y: PC to plot on the y axis <chr>
+    # :param loadings_show: whether to overlay component loadings or not <lgl>
+    # :param loadings_n: number of top loadings to show <int >= 0>
+    # :param meta_color: column in "pca" list metadata to color by <chr>
+    # :param meta_shape: column in "pca" list metadata to shape by <chr>
+    # :param x_min: minimum value on x axis <dbl>
+    # :param x_max: maximum value on x axis <dbl>
+    # :param y_min: minimum value on y axis <dbl>
+    # :param y_max: maximum value on y axis <dbl>
+    # :param title: title of biplot <dbl>
+    # :return image: ...
+    image <- pca %>% 
+        PCAtools::biplot(
+            x = PC_x,
+            y = PC_y,
+            lab = NULL,
+            showLoadings = loadings_show,
+            ntopLoadings = loadings_n,
+            boxedLoadingsNames = TRUE,
+            colby = meta_color,
+            shape = meta_shape,
+            encircle = FALSE,
+            ellipse = FALSE,
+            max.overlaps = Inf,
+            xlim = c(x_min, x_max),
+            ylim = c(y_min, y_max)
+        ) +
+            theme_slick
+    
+    return(image)
+}
+#TODO Add return description
+
+
+plot_pos_neg_loadings_each_axis <- function(
+    df_all, df_pos, df_neg,
+    PC_x, PC_y,
+    row_start, row_end,
+    x_min, x_max, y_min, y_max,
+    x_nudge, y_nudge, x_label, y_label,
+    col_line_pos, col_line_neg, col_seg_pos, col_seg_neg
+) {
+    #TODO Write a description of this function
+    #
+    # :param df_all: dataframe: all loadings (from, e.g., PCAtools)
+    # :param df_pos: dataframe: positive loadings ordered largest to smallest
+    # :param df_neg: dataframe: negative loadings ordered smallest to largest
+    # :param PC_x: PC to plot on the x axis
+    # :param PC_y: PC to plot on the y axis
+    # :param row_start: row from which to begin subsetting the PCs on x and y
+    # :param row_end: row at which to end subsetting the PCs on x and y
+    # :param x_min: minimum value on x axis <dbl>
+    # :param x_max: maximum value on x axis <dbl>
+    # :param y_min: minimum value on y axis <dbl>
+    # :param y_max: maximum value on y axis <dbl>
+    # :param x_nudge: amount to nudge labels on the x axis <dbl>
+    # :param y_nudge: amount to nudge labels on the y axis <dbl>
+    # :param x_label: x axis label <chr>
+    # :param y_label: y axis label <chr>
+    # :param col_line_pos: color: lines, arrows for positive loadings <chr>
+    # :param col_line_neg: color: lines, arrows for negative loadings <chr>
+    # :param col_seg_pos: color: segments connecting arrowhead and text bubble
+    #                     for positive loadings <chr>
+    # :param col_seg_neg: color: segments connecting arrowhead and text bubble
+    #                     for negative loadings <chr>
+    # :return image: ...
+    filter_pos_1 <- rownames(df_pos[[PC_x]][row_start:row_end, ])
+    filter_pos_2 <- rownames(df_pos[[PC_y]][row_start:row_end, ])
+    filter_neg_1 <- rownames(df_neg[[PC_x]][row_start:row_end, ])
+    filter_neg_2 <- rownames(df_neg[[PC_y]][row_start:row_end, ])
+    
+    loadings_filter_pos_1 <- df_all[rownames(df_all) %in% filter_pos_1, ]
+    loadings_filter_pos_2 <- df_all[rownames(df_all) %in% filter_pos_2, ]
+    loadings_filter_neg_1 <- df_all[rownames(df_all) %in% filter_neg_1, ]
+    loadings_filter_neg_2 <- df_all[rownames(df_all) %in% filter_neg_2, ]
+    
+    images <- list()
+    images[["PC_x_pos"]] <- plot_loadings(
+        loadings_filter_pos_1,
+        loadings_filter_pos_1[[PC_x]],
+        loadings_filter_pos_1[[PC_y]],
+        x_min, x_max, y_min, y_max, x_nudge, y_nudge,
+        x_label, y_label, col_line_pos, col_seg_pos
+    )
+    images[["PC_y_pos"]] <- plot_loadings(
+        loadings_filter_pos_2,
+        loadings_filter_pos_2[[PC_x]],
+        loadings_filter_pos_2[[PC_y]],
+        x_min, x_max, y_min, y_max, x_nudge, y_nudge,
+        x_label, y_label, col_line_pos, col_seg_pos
+    )
+    images[["PC_x_neg"]] <- plot_loadings(
+        loadings_filter_neg_1,
+        loadings_filter_neg_1[[PC_x]],
+        loadings_filter_neg_1[[PC_y]],
+        x_min, x_max, y_min, y_max, -y_nudge, x_nudge,
+        x_label, y_label, col_line_neg, col_seg_neg
+    )
+    images[["PC_y_neg"]] <- plot_loadings(
+        loadings_filter_neg_2,
+        loadings_filter_neg_2[[PC_x]],
+        loadings_filter_neg_2[[PC_y]],
+        x_min, x_max, y_min, y_max, x_nudge, -y_nudge,
+        x_label, y_label, col_line_neg, col_seg_neg
+    )
+    return(images)
+}
+#TODO Add return description
+
+
+plot_loadings <- function(x, y, z, a, b, d, e, f, g, h, i, j, k) {
+    #TODO Write a description of this function
+    #
+    # :param x: dataframe of PC loadings w/gene names as rownames <data.frame>
+    # :param y: column in dataframe to plot on x axis <dbl>
+    # :param z: column in dataframe to plot on y axis <dbl>
+    # :param a: minimum value on x axis <dbl>
+    # :param b: maximum value on x axis <dbl>
+    # :param d: minimum value on y axis <dbl>
+    # :param e: maximum value on y axis <dbl>
+    # :param f: amount to nudge labels on the x axis <dbl>
+    # :param g: amount to nudge labels on the y axis <dbl>
+    # :param h: x axis label <chr>
+    # :param i: y axis label <chr>
+    # :param j: color of line and arrow <chr>
+    # :param k: color of segment connecting arrowhead and text bubble <chr>
+    # :return l: ...
+    l <- ggplot2::ggplot(x, ggplot2::aes(x = y, y = z)) +  #TODO #FUNCTION
+        ggplot2::coord_cartesian(xlim = c(a, b), ylim = c(d, e)) +
+        ggplot2::geom_segment(
+            aes(xend = 0, yend = 0, alpha = 0.5),
+            color = j, 
+            arrow = ggplot2::arrow(
+                ends = "first",
+                type = "open",
+                length = unit(0.125, "inches")
+            )
+        ) +
+        ggrepel::geom_label_repel(
+            mapping = ggplot2::aes(
+                fontface = 1, segment.color = k, segment.size = 0.25
+            ),
+            label = rownames(x),
+            label.size = 0.05,
+            direction = "both",
+            nudge_x = f,  # 0.02
+            nudge_y = g,  # 0.04
+            force = 4,
+            force_pull = 1,
+            hjust = 0
+        ) +
+        ggplot2::xlab(h) +
+        ggplot2::ylab(i) +
+        theme_slick_no_legend
+    
+    return(l)
+}
+#TODO Add return description
+
+
+draw_scree_plot <- function(pca, horn, elbow) {
+    #TODO Write a description of this function
+    #
+    # :param pca: "pca" list object obtained by running PCAtools::pca()
+    # :param horn: ...
+    # :param elbow: ...
+    # :return scree: ...
+    scree <- PCAtools::screeplot(
+        pca,
+        components = PCAtools::getComponents(pca),
+        vline = c(horn, elbow),
+        vlineWidth = 0.25,
+        sizeCumulativeSumLine = 0.5,
+        sizeCumulativeSumPoints = 1.5
+    ) +
+        geom_text(aes(horn + 1, 50, label = "Horn's", vjust = 2)) +
+        geom_text(aes(elbow + 1, 50, label = "Elbow", vjust = -2)) +
+        theme_slick +
+        ggplot2::theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+    return(scree)
+}
+#TODO Add return description
+
+
+#  Set up custom ggplot2 plot themes ------------------------------------------
+theme_slick <- theme_classic() +
+    theme(
+        panel.grid.major = ggplot2::element_line(linewidth = 0.4),
+        panel.grid.minor = ggplot2::element_line(linewidth = 0.2),
+        axis.line = ggplot2::element_line(linewidth = 0.2),
+        axis.ticks = ggplot2::element_line(linewidth = 0.4),
+        axis.text = ggplot2::element_text(color = "black"),
+        axis.title.x = ggplot2::element_text(),
+        axis.title.y = ggplot2::element_text(),
+        plot.title = ggplot2::element_text(),
+        text = element_text(family = "")
+    )
+
+theme_slick_no_legend <- theme_slick + theme(legend.position = "none")
+```
+<br />
+
+
+### Load in Excel spreadsheet of samples names and variables
+The spreadsheet includes Alison's original sample names; we can use this
+information to associate the new sample names, which are made up of `DESeq2`
+model variable values, with the old names, which reflect Alison's wet-lab,
+library-prep, etc. work
+```{r load spreadsheet, results='hide', message=FALSE}
+p_xl <- "notebook"  #INPATH
+f_xl <- "variables.xlsx"  #INFILE
+t_xl <- readxl::read_xlsx(
+    paste(p_xl, f_xl, sep = "/"), sheet = "master", na = "NA"
+)
+
+rm(p_xl, f_xl)
+```
+<br />
+
+### Load in and process `featureCounts` table
+```{r Load in and process featureCounts table, results='hide', message=FALSE}
+#  Load in featureCounts table ------------------------------------------------
+p_fc <- "outfiles_featureCounts/combined_SC_KL/UT_prim_UMI"  #INPATH
+f_fc <- "UT_prim_UMI.featureCounts"  #INFILE
+t_fc <- read.table(
+    paste(p_fc, f_fc, sep = "/"), header = TRUE, row.names = 1
+) %>% 
+    tibble::rownames_to_column() %>%
+    tibble::as_tibble()
+
+rm(p_fc, f_fc)
+
+
+#  Clean up tibble column names -----------------------------------------------
+colnames(t_fc) <- colnames(t_fc) %>%
+    gsub("rowname", "feature_init", .) %>%
+    gsub("Chr", "chr", .) %>%
+    gsub("Start", "start", .) %>%
+    gsub("End", "end", .) %>%
+    gsub("Strand", "strand", .) %>%
+    gsub("Length", "length", .) %>%
+    gsub("bams_renamed\\.UT_prim_UMI\\.", "", .) %>%
+    gsub("\\.UT_prim_UMI\\.bam", "", .) %>%
+    gsub("\\.d", "-d", .) %>%
+    gsub("\\.n", "-n", .) %>%
+    gsub("aux\\.", "aux-", .) %>%
+    gsub("tc\\.", "tc-", .)
+
+
+#  Order tibble by chromosome names and feature start positions ---------------
+chr_SC <- c(
+    "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII",
+    "XIII", "XIV", "XV", "XVI", "Mito"
+)
+chr_KL <- c("A", "B", "C", "D", "E", "F")
+chr_order <- c(chr_SC, chr_KL)
+t_fc$chr <- t_fc$chr %>% as.factor()
+t_fc$chr <- ordered(t_fc$chr, levels = chr_order)
+
+t_fc <- t_fc %>% dplyr::arrange(chr, start)
+
+
+#  Categorize chromosomes by genome of origin ---------------------------------
+t_fc$genome <- ifelse(
+    t_fc$chr %in% chr_SC,
+    "S_cerevisiae",
+    ifelse(
+        t_fc$chr %in% chr_KL,
+        "K_lactis",
+        NA
+    )
+) %>%
+    as.factor()
+
+#  Move the new column "genome" to a better location in the tibble (before
+#+ column "chr")
+t_fc <- t_fc %>% dplyr::relocate("genome", .before = "chr")
+
+#  Check on variable/column "genome"
+levels(t_fc$genome)
+t_fc %>%
+    dplyr::group_by(genome) %>%
+    dplyr::summarize(tally = length(genome))
+#  The code returns...
+# K_lactis = 5659, S_cerevisiae = 7507
+
+rm(chr_KL, chr_SC, chr_order)
+
+
+#  Split and better organize variable 'feature_init' --------------------------
+#  Split 'feature_init' into two distinct elements (separated by an underscore)
+el_1 <- split_isolate_convert(
+    in_vector = t_fc$feature_init,
+    field = 1,
+    column_name = "feature"
+)
+el_2 <- split_isolate_convert(
+    in_vector = t_fc$feature_init,
+    field = 2,
+    column_name = "type"
+)
+
+#  Append split information to tibble 't_fc'
+t_fc <- dplyr::bind_cols(t_fc, el_1, el_2) %>%
+    dplyr::relocate(c("feature", "type"), .after = "feature_init")
+
+rm(el_1, el_2)
+
+#  Limit the splitting/reorganization to S. cerevisiae features only; the above
+#+ splitting/reorganization work isn't appropriate for K. lactis 'feature_init'
+#+ information because the K. lactis naming/classification differs from the S.
+#+ cerevisiae naming/classification system)
+t_fc$feature <- ifelse(
+    t_fc$genome == "K_lactis", t_fc$feature_init, t_fc$feature
+)
+t_fc$type <- ifelse(
+    t_fc$genome == "K_lactis", NA, t_fc$type
+)
+
+#  Create levels for S. cerevisiae 'type' NAs and K. lactis 'type' NAs, then
+#+ factorize variable 'type': essentially, we're making the NAs into levels so
+#+ that we can tally them (as below) and/or potentially subset them; however,
+#+ before doing so, we're differentiating the NAs by whether they are
+#+ associated with S. cerevisiae features or K. lactis features
+t_fc$type <-  ifelse(
+    (t_fc$genome == "S_cerevisiae" & is.na(t_fc$type)),
+    "NA_SC",
+    ifelse(
+        (t_fc$genome == "K_lactis" & is.na(t_fc$type)),
+        "NA_KL",
+        t_fc$type
+    )
+) %>%
+    as.factor()
+
+#  Do a quick check of the tibble 't_fc' (where "t_fc" stands for "tibble
+#+ featureCounts")
+t_fc
+
+#  Check on the split information: This code tallies the numbers features per
+#+ classification, where classifications are things like "mRNA-E1", "tRNA-E1",
+#+ "NA_SC" (NAs associated with S. cerevisiae), "NA_KL" (NAs associated with K.
+#+ lactis), etc.
+levels(t_fc$type)  # 19 levels
+t_fc %>%
+    dplyr::group_by(type) %>%
+    dplyr::summarize(tally = length(type))
+#  The code returns things like...
+#+ mRNA-E1 = 6600, mRNA-E2 = 283, NA_KL = 5547, NA_SC = 103, tRNA-E1 = 299,
+#+ tRNA-E2 = 60, etc.
+```
+<br />
+
+### Record tibble `t_fc`'s positional information in a `GRanges` object
+`pos_info` will be used in `DESeq2` processing, post-processing, etc.
+
+```{r Record positional information, results='hide', message=FALSE}
+pos_info <- GenomicRanges::GRanges(
+    seqnames = t_fc$chr,
+    ranges = IRanges::IRanges(t_fc$start, t_fc$end),
+    strand = t_fc$strand,
+    length = t_fc$length,
+    feature = t_fc$feature,
+    feature_init = t_fc$feature_init,
+    type = t_fc$type,
+    genome = t_fc$genome
+)
+pos_info
+```
+<br />
+<br />
+
+## Perform normalization and run DGE analyses
+### Perform prep work
+#### Establish table of variables for `dds`&mdash;i.e., a "master" model matrix
+- `dds` stands for *"DESeq2 dataset"* and is a `DESeqDataSet` object
+- variables for `dds` are
+    + `strain`
+    + `state`
+    + `time`
+    + `kit` *(`tcn` for "Tecan", `ovn` for "Ovation")*
+    + `transcription` *(`N` for "nascent", `SS` for "steady state")*
+    + `auxin`
+    + `timecourse`
+    + `replicate`
+    + `technical`
+
+```{r Make a master model matrix, results='hide', message=FALSE}
+#  Columns ten through to the last column are composed of sample feature
+#+ counts; get these column names into a vector
+samples <- colnames(t_fc)[10:length(colnames(t_fc))]
+
+#  Convert the vector of column names to a list by splitting each element at
+#+ its underscores; thus, each vector element becomes a list of eight strings,
+#+ with one string for 'strain', one for 'state', etc.; these 
+samples <- stringr::str_split(samples, "_")
+
+#  Convert the list to a dataframe, transpose it, then convert it to a tibble
+#+ [R fun fact: 'tibble' data types can't be built directly from 'list' data
+#+ types; in fact, it can difficult to build 'dataframe' types from 'list'
+#+ types as well; the reason we have no issues doing this is because we have
+#+ ensured ahead of time that each list element has the same number of
+#+ subelements (8); the difficulty arises when lists elements have varying
+#+ numbers of subelements]
+samples <- samples %>%
+    as.data.frame(
+        .,
+        #  Using numeric column names here because the columns will soon be
+        #+ transposed to rows, and I don't want the rows to have proper names
+        col.names = c(seq(1, 62)),
+        #  Using proper row names here because the rows will soon be transposed
+        #+ to columns, and I *do* want the columns to have proper names 
+        row.names = c(
+            "strain", "state", "time", "kit", "transcription", "auxin",
+            "timecourse", "replicate", "technical"
+        )
+    ) %>%
+    t() %>%
+    tibble::as_tibble()
+
+#  Add a keys variable for quickly accessing combinations of variable values
+keys <- vector(mode = "character")
+for(i in seq(1, nrow(samples))) {
+    # i <- 1
+    keys[i] <- paste(
+        samples[i, 1], samples[i, 2], samples[i, 3],
+        samples[i, 4], samples[i, 5], samples[i, 6],
+        samples[i, 7], samples[i, 8], samples[i, 9],
+        sep = "_"
+    )
+}
+keys <- keys %>% as.data.frame()
+colnames(keys) <- "keys"
+
+samples <- dplyr::bind_cols(samples, keys) %>%
+    dplyr::relocate("keys", .before = "strain")
+
+rm(i)
+
+#  Add Alison's original samples names to the 'samples' dataframe using the
+#+ 't_xl' dataframe; here, we're just adding the original sample names, but we
+#+ could potentially add in other information stored in the Excel file
+t_xl <- t_xl %>%
+    dplyr::rename(keys = name) %>%
+    dplyr::select(., c(keys, sample_name))
+samples <- dplyr::full_join(samples, t_xl, by = "keys")
+
+# #  Convert all columns to data type 'factor' (having the variable values as
+# #+ factors helps with running DESeq2::DESeqDataSetFromMatrix() below)
+# samples[sapply(samples, is.character)] <- lapply(
+#     samples[sapply(samples, is.character)], as.factor
+# )
+#TODO Hold off on factor conversion/ordered-factor conversion
+
+#  How does it look?
+samples
+
+rm(t_xl, keys)
+```
+<br />
+
+#### Begin to assess factor enumeration (rough-draft)
+```{r Begin to assess factor enumeration, results='hide', message=FALSE}
+colnames(samples)
+# samples$keys
+samples$strain %>% as.factor() %>% table()
+samples$state %>% as.factor() %>% table()
+samples$time %>% as.factor() %>% table()
+samples$kit %>% as.factor() %>% table()
+samples$transcription %>% as.factor() %>% table()
+samples$auxin %>% as.factor() %>% table()
+samples$timecourse %>% as.factor() %>% table()
+samples$replicate %>% as.factor() %>% table()
+samples$technical %>% as.factor() %>% table()
+# samples$sample_name %>% as.factor() %>% table()
+```
+<br />
+<br />
+
+## Identify specific samples to evaluate
+```{bash Identify specific samples, results='hide', message=FALSE}
+#!/bin/bash
+#DONTRUN
+
+#  Array of samples sequenced in March, 2023 ----------------------------------
+samples_March=(
+    "WT_DSp48_day4_tcn_SS_aux-F_tc-T_rep1_tech2"
+    "r6-n_DSp48_day4_tcn_SS_aux-F_tc-T_rep2_tech1"
+    "r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech2"
+    "WT_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1"
+    "WT_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1"
+    "r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1"
+    "r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1"
+)
+# WT_DSp48_day4_tcn_SS_aux-F_tc-T_rep1_tech2    BM10_DSp48_5781_new    SS timecourse: rrp6∆ vs WT
+# r6-n_DSp48_day4_tcn_SS_aux-F_tc-T_rep2_tech1    BM12_DSp48_7079    SS timecourse: rrp6∆ vs WT
+# r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech2    CW6_7078_day8_Q_SS    Q SS: rrp6∆ vs rtr1∆ vs WT
+# WT_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1    DA1_5781_SS_G1    G1 N: rrp6∆ vs WT
+# WT_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1    DA2_5782_SS_G1    G1 N: rrp6∆ vs WT
+# r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1    DA3_7078_SS_G1    G1 N: rrp6∆ vs WT
+# r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1    DA4_7079_SS_G1    G1 N: rrp6∆ vs WT
+
+
+#  SS timecourse: rrp6∆ vs WT -------------------------------------------------
+#+ - work_evaluation-etc_rough-draft_Rrp6-WT_SS_timecourse_groupwise.Rmd  #MADE
+#+ - work_evaluation-etc_rough-draft_Rrp6-WT_SS_timecourse_pairwise.Rmd  #MADE
+r6_WT_SS_tc=(
+    "r6-n_DSm2_day2_tcn_SS_aux-F_tc-T_rep1_tech1"
+    "r6-n_DSm2_day2_tcn_SS_aux-F_tc-T_rep2_tech1"
+    "r6-n_DSp2_day2_tcn_SS_aux-F_tc-T_rep1_tech1"
+    "r6-n_DSp2_day2_tcn_SS_aux-F_tc-T_rep2_tech1"
+    "r6-n_DSp24_day3_tcn_SS_aux-F_tc-T_rep1_tech1"
+    "r6-n_DSp24_day3_tcn_SS_aux-F_tc-T_rep2_tech1"
+    "r6-n_DSp48_day4_tcn_SS_aux-F_tc-T_rep1_tech1"
+    "r6-n_DSp48_day4_tcn_SS_aux-F_tc-T_rep2_tech1"
+    "WT_DSm2_day2_tcn_SS_aux-F_tc-T_rep1_tech1"
+    "WT_DSm2_day2_tcn_SS_aux-F_tc-T_rep2_tech1"
+    "WT_DSp2_day2_tcn_SS_aux-F_tc-T_rep1_tech1"
+    "WT_DSp2_day2_tcn_SS_aux-F_tc-T_rep2_tech1"
+    "WT_DSp24_day3_tcn_SS_aux-F_tc-T_rep1_tech1"
+    "WT_DSp24_day3_tcn_SS_aux-F_tc-T_rep2_tech1"
+    "WT_DSp48_day4_tcn_SS_aux-F_tc-T_rep1_tech1"
+    "WT_DSp48_day4_tcn_SS_aux-F_tc-T_rep1_tech2"
+    "WT_DSp48_day4_tcn_SS_aux-F_tc-T_rep2_tech1"
+)
+# r6-n_DSm2_day2_tcn_SS_aux-F_tc-T_rep1_tech1    Bp3_DSm2_7078
+# r6-n_DSm2_day2_tcn_SS_aux-F_tc-T_rep2_tech1    BM3_DSm2_7079
+# r6-n_DSp2_day2_tcn_SS_aux-F_tc-T_rep1_tech1    Bp6_DSp2_7078
+# r6-n_DSp2_day2_tcn_SS_aux-F_tc-T_rep2_tech1    BM6_DSp2_7079
+# r6-n_DSp24_day3_tcn_SS_aux-F_tc-T_rep1_tech1    Bp9_DSp24_7078
+# r6-n_DSp24_day3_tcn_SS_aux-F_tc-T_rep2_tech1    BM9_DSp24_7079
+# r6-n_DSp48_day4_tcn_SS_aux-F_tc-T_rep1_tech1    Bp12_DSp48_7078
+# r6-n_DSp48_day4_tcn_SS_aux-F_tc-T_rep2_tech1    BM12_DSp48_7079
+# WT_DSm2_day2_tcn_SS_aux-F_tc-T_rep1_tech1    BM1_DSm2_5781
+# WT_DSm2_day2_tcn_SS_aux-F_tc-T_rep2_tech1    Bp1_DSm2_5782
+# WT_DSp2_day2_tcn_SS_aux-F_tc-T_rep1_tech1    BM4_DSp2_5781
+# WT_DSp2_day2_tcn_SS_aux-F_tc-T_rep2_tech1    Bp4_DSp2_5782
+# WT_DSp24_day3_tcn_SS_aux-F_tc-T_rep1_tech1    BM7_DSp24_5781
+# WT_DSp24_day3_tcn_SS_aux-F_tc-T_rep2_tech1    Bp7_DSp24_5782
+# WT_DSp48_day4_tcn_SS_aux-F_tc-T_rep1_tech1    BM10_DSp48_5781
+# WT_DSp48_day4_tcn_SS_aux-F_tc-T_rep1_tech2    BM10_DSp48_5781_new
+# WT_DSp48_day4_tcn_SS_aux-F_tc-T_rep2_tech1    Bp10_DSp48_5782
+
+
+#  G1 N: rrp6∆ vs WT  ---------------------------------------------------------
+#+ - work_evaluation-etc_rough-draft_Rrp6-WT_N_G1_pairwise.Rmd  #MADE
+r6_WT_G1_N=(
+    "r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1"
+    "r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1"
+    "WT_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1"
+    "WT_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1"
+)
+# r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1    DA3_7078_SS_G1
+# r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1    DA4_7079_SS_G1
+# WT_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1    DA1_5781_SS_G1
+# WT_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1    DA2_5782_SS_G1
+
+
+#  Q N: rrp6∆ vs rtr1∆ vs WT (no samples from March, 2023) --------------------
+#+ - work_evaluation-etc_rough-draft_Rrp6-Rtr1-WT_N_Q_groupwise.Rmd  #MADE
+#+ - work_evaluation-etc_rough-draft_Rrp6-Rtr1-WT_N_Q_pairwise.Rmd  #MADE
+r6_r1_WT_Q_N=(
+    "r6-n_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1"
+    "r6-n_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1"
+    "r1-n_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1"
+    "r1-n_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1"
+    "WT_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1"
+    "WT_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1"
+)
+# r6-n_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1    CW6_7078_8day_Q_PD
+# r6-n_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1    CW8_7079_8day_Q_PD
+# r1-n_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1    CW10_7747_8day_Q_PD
+# r1-n_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1    CW12_7748_8day_Q_PD
+# WT_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1    CW2_5781_8day_Q_PD
+# WT_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1    CW4_5782_8day_Q_PD
+
+
+#  Q SS: rrp6∆ vs rtr1∆ vs WT -------------------------------------------------
+#+ - work_evaluation-etc_rough-draft_Rrp6-Rtr1-WT_SS_Q_groupwise.Rmd  #MADE
+#+ - work_evaluation-etc_rough-draft_Rrp6-Rtr1-WT_SS_Q_pairwise.Rmd  #MADE
+r6_r1_WT_Q_SS=(
+    "r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1"
+    "r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech2"
+    "r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1"
+    "r1-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1"
+    "r1-n_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1"
+    "WT_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1"
+    "WT_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1"
+)
+# r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1    CW6_7078_8day_Q_IN
+# r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech2    CW6_7078_day8_Q_SS
+# r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1    CW8_7079_8day_Q_IN
+# r1-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1    CW10_7747_8day_Q_IN
+# r1-n_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1    CW12_7748_8day_Q_IN
+# WT_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1    CW2_5781_8day_Q_IN
+# WT_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1    CW4_5782_8day_Q_IN
+
+
+#  Tests of the Tecan kit (no samples from March, 2023) -----------------------
+test_Tecan_WT=(
+    "WT_Q_day7_tcn_N_aux-F_tc-F_rep2_tech1"
+    "WT_Q_day7_tcn_SS_aux-F_tc-F_rep2_tech1"
+)
+# WT_Q_day7_tcn_N_aux-F_tc-F_rep2_tech1    CU11_5782_Q_Nascent
+# WT_Q_day7_tcn_SS_aux-F_tc-F_rep2_tech1    CU12_5782_Q_SteadyState
+```
+<br />
+<br />
+
+## Do prep work with "`Q N: rrp6∆ vs rtr1∆ vs WT`"
+### Make the counts matrix
+```{r Make the counts matrix, results='hide', message=FALSE}
+datasets_r1_r6 <- c(
+    "r1-n_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1",
+    "r1-n_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1",
+    "r6-n_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1",
+    "r6-n_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1"
+)
+datasets_WT_r6 <- c(
+    "WT_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1",
+    "WT_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1",
+    "r6-n_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1",
+    "r6-n_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1"
+)
+datasets_WT_r1 <- c(
+    "WT_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1",
+    "WT_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1",
+    "r1-n_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1",
+    "r1-n_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1"
+)
+counts_data <- t_fc[, colnames(t_fc) %in% datasets] %>%
+    as.data.frame()
+
+#  How do things look?
+counts_data
 ```
 <br />
