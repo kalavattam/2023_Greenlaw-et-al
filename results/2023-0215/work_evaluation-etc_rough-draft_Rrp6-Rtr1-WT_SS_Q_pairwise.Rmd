@@ -24,12 +24,12 @@ library(tidyverse)
 
 #### Set working directory
 ```{r Set working directory, results='hide', message=FALSE}
-# p_local <- "/Users/kalavattam/Dropbox/FHCC"  # KrisMac
-p_local <- "/Users/kalavatt/projects-etc"  # WorkMac
+if(stringr::str_detect(getwd(), "kalavattam")) {
+    p_local <- "/Users/kalavattam/Dropbox/FHCC"  # KrisMac
+} else {
+    p_local <- "/Users/kalavatt/projects-etc"  # WorkMac
+}
 p_wd <- "2022_transcriptome-construction/results/2023-0215"
-#NOTE 1/3 Alison: you can adjust 'p_local' or 'p_wd' (path to working directory 
-#NOTE 2/3 on your personal or work computer ); I have two paths here with one
-#NOTE 3/3 commented out depending on which computer I am using
 
 setwd(paste(p_local, p_wd, sep = "/"))
 getwd()
@@ -698,17 +698,43 @@ rm(t_xl, keys)
 #### Begin to assess factor enumeration (rough-draft)
 ```{r Begin to assess factor enumeration, results='hide', message=FALSE}
 colnames(samples)
-# samples$keys
-samples$strain %>% as.factor() %>% table()
-samples$state %>% as.factor() %>% table()
-samples$time %>% as.factor() %>% table()
-samples$kit %>% as.factor() %>% table()
-samples$transcription %>% as.factor() %>% table()
-samples$auxin %>% as.factor() %>% table()
-samples$timecourse %>% as.factor() %>% table()
-samples$replicate %>% as.factor() %>% table()
-samples$technical %>% as.factor() %>% table()
-# samples$sample_name %>% as.factor() %>% table()
+cat("\n")
+
+cat("strain")
+table(as.factor(samples$strain))
+cat("\n")
+
+cat("state")
+table(as.factor(samples$state))
+cat("\n")
+
+cat("time")
+table(as.factor(samples$time))
+cat("\n")
+
+cat("kit")
+table(as.factor(samples$kit))
+cat("\n")
+
+cat("transcription")
+table(as.factor(samples$transcription))
+cat("\n")
+
+cat("auxin")
+table(as.factor(samples$auxin))
+cat("\n")
+
+cat("timecourse")
+table(as.factor(samples$timecourse))
+cat("\n")
+
+cat("replicate")
+table(as.factor(samples$replicate))
+cat("\n")
+
+cat("technical")
+table(as.factor(samples$technical))
+cat("\n")
 ```
 <br />
 <br />
@@ -844,9 +870,9 @@ test_Tecan_WT=(
 <br />
 
 ## Do prep work with "`Q SS: rrp6∆ vs rtr1∆ vs WT`"
-### For `datasets_all`, make the counts matrix
-```{r dataset_all: Make the counts matrix, results='hide', message=FALSE}
-datasets_all <- c(
+### Make counts matrices
+```{r Make counts matrices, results='hide', message=FALSE}
+Q_SS_wt_r1_r6 <- c(
     "WT_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1",
     "WT_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1",
     "r1-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1",
@@ -855,29 +881,46 @@ datasets_all <- c(
     "r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech2",
     "r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1"
 )
-# datasets_r1_r6 <- c(
-#     "r1-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1",
-#     "r1-n_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1",
-#     "r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1",
-#     "r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech2",
-#     "r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1"
-# )
-# datasets_WT_r6 <- c(
-#     "WT_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1",
-#     "WT_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1",
-#     "r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1",
-#     "r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech2",
-#     "r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1"
-# )
-# datasets_WT_r1 <- c(
-#     "r1-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1",
-#     "r1-n_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1",
-#     "WT_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1",
-#     "WT_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1"
-# )
+Q_SS_wt_ot_r1_r6_n3 <- c(
+    "WT_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1",
+    "WT_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1",
+    "o-d_Q_day7_tcn_SS_aux-T_tc-F_rep1_tech1",
+    "o-d_Q_day7_tcn_SS_aux-T_tc-F_rep2_tech1",
+    "r1-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1",
+    "r1-n_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1",
+    "r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1",
+    "r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech2",
+    "r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1",
+    "n3-d_Q_day7_tcn_SS_aux-T_tc-F_rep2_tech1",
+    "n3-d_Q_day7_tcn_SS_aux-T_tc-F_rep3_tech1",
+    "n3-d_Q_day7_tcn_SS_aux-T_tc-F_rep1_tech1"
+)
+Q_N_wt_ot_r1_r6_n3 <- c(
+    "WT_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1",
+    "WT_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1",
+    "o-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1",
+    "o-d_Q_day7_tcn_N_aux-T_tc-F_rep2_tech1",
+    "r1-n_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1",
+    "r1-n_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1",
+    "r6-n_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1",
+    "r6-n_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1"
+)
+Q_N_wt_ot_r1_r6_n3 <- c(
+    "WT_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1",
+    "WT_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1",
+    "o-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1",
+    "o-d_Q_day7_tcn_N_aux-T_tc-F_rep2_tech1",
+    "r1-n_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1",
+    "r1-n_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1",
+    "r6-n_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1",
+    "r6-n_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1",
+    "n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1",
+    "n3-d_Q_day7_tcn_N_aux-T_tc-F_rep2_tech1",
+    "n3-d_Q_day7_tcn_N_aux-T_tc-F_rep3_tech1"
+)
 
-#  For now, focus on datasets_all
-datasets <- datasets_all  #IMPORTANT #COMEBACKTOTHIS
+#  For now, focus on Q_SS_wt_r1_r6
+datasets <- Q_SS_wt_r1_r6  #IMPORTANT #COMEBACKTOTHIS
 counts_data <- t_fc[, colnames(t_fc) %in% datasets] %>%
     as.data.frame()
 
@@ -886,8 +929,8 @@ counts_data
 ```
 <br />
 
-### For `datasets_all`, make the model matrix
-```{r datasets_all: Make model matrix, results='hide', message=FALSE}
+### Make the model matrices
+```{r Make the model matrices, results='hide', message=FALSE}
 #  Use the "keys" column to isolate datasets of interest
 #REMEMBER Variable `datasets` is initialized in the preceding chunk 
 col_data <- samples[samples$keys %in% datasets, ] %>%
@@ -908,8 +951,8 @@ col_data$strain
 ```
 <br />
 
-### For `datasets_all`, continue factor enumeration (rough-draft)
-```{r datasets_all: continue factor enumeration, results='hide', message=FALSE}
+### For `datasets_wt_r1_r6`, continue factor enumeration (rough-draft)
+```{r datasets_wt_r1_r6: continue factor enumeration, results='hide', message=FALSE}
 # #  Survey the levels associated with model variables
 # colnames(col_data)
 # col_data$strain %>% as.factor() %>% table()
@@ -948,12 +991,12 @@ col_data
 ```
 <br />
 
-### For `datasets_all`, make the `DESeqDataSet`, `dds`
+### For `datasets_wt_r1_r6`, make the `DESeqDataSet`, `dds`
 - Use `counts_data` for the `featureCount` tallies
 - Use `col_data` for setting up the GLM
 - Use `pos_info` for adding feature metadata, subsequent subsetting, etc.
 
-```{r datasets_all: make dds, results='hide', message=FALSE}
+```{r datasets_wt_r1_r6: make dds, results='hide', message=FALSE}
 dds <- DESeq2::DESeqDataSetFromMatrix(
     countData = counts_data,
     colData = col_data,
@@ -1493,7 +1536,8 @@ PC_cor <- PCAtools::eigencorplot(
     # metavars = c("strain", "state", "time", "replicate", "technical"),
     metavars = c("strain", "replicate", "technical"),
     # metavars = c("strain", "replicate", "sample_name"),
-    col = c("#785EF075", "#FFFFFF75", "#FE610075"),
+    col = c("#FFFFFF75", "#FE610075"),
+    # col = c("#785EF075", "#FFFFFF75", "#FE610075"),
     scale = FALSE,
     corFUN = "pearson",
     corMultipleTestCorrection = "BH",
@@ -1553,50 +1597,47 @@ for(i in c("PC1", "PC2")) {
 `#HERE`
 ## II. Run pairwise analyses
 ```{r Run pairwise analyses, results='hide', message=FALSE}
-datasets_r1_r6 <- c(
+Q_SS_r1_r6 <- c(
     "r1-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1",
     "r1-n_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1",
     "r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1",
     "r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech2",
     "r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1"
 )
-datasets_WT_r6 <- c(
+Q_SS_wt_r6 <- c(
     "WT_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1",
     "WT_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1",
     "r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1",
     "r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech2",
     "r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1"
 )
-datasets_WT_r1 <- c(
-    "r1-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1",
-    "r1-n_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1",
+Q_SS_wt_r1 <- c(
     "WT_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1",
-    "WT_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1"
+    "WT_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1",
+    "r1-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1",
+    "r1-n_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1"
+)
+G1_SS_wt_r6 <- c(
+    "WT_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1",
+    "WT_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1",
+    "r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1",
+    "r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1"
 )
 
 #  Make a named list
 datasets_grouped <- list(
-    "datasets_r1_r6" = datasets_r1_r6,
-    "datasets_WT_r6" = datasets_WT_r6,
-    "datasets_WT_r1" = datasets_WT_r1
+    "Q_SS_r1_r6" = Q_SS_r1_r6,
+    "Q_SS_wt_r6" = Q_SS_wt_r6,
+    "Q_SS_wt_r1" = Q_SS_wt_r1,
+    "G1_SS_wt_r6" = G1_SS_wt_r6
 )
-
-#TEST
-for (i in 1:length(datasets_grouped)) {
-    # i <- 1
-    print(names(datasets_grouped)[[i]])
-    print(datasets_grouped[[i]])
-    cat("\n")
-}
 
 res <- list()
 for (i in 1:length(datasets_grouped)) {
-    # i <- 1
+    # i <- 2
     cat(paste0(
         "#  --------------------------------------------------------\n",
-        "#  Working with '",
-        names(datasets_grouped)[[i]],
-        "' --------------------------\n",
+        "#  Working with '", names(datasets_grouped)[[i]], "'\n",
         "#  --------------------------------------------------------\n\n"
     ))
     
@@ -1672,7 +1713,6 @@ for (i in 1:length(datasets_grouped)) {
             col_data$strain, levels = c(model_d, model_n)
         )
         model_string <- paste(levels(col_data$strain), collapse = " ")
-        model_linear <- "~ technical + strain"
     } else if(
         what_levels %in% what_combos[["WT_r1-n"]] %>%
             all() %>%
@@ -1684,7 +1724,6 @@ for (i in 1:length(datasets_grouped)) {
             col_data$strain, levels = c(model_d, model_n)
         )
         model_string <- paste(levels(col_data$strain), collapse = " ")
-        model_linear <- "~ strain"
     } else if(
         what_levels %in% what_combos[["WT_r6-n"]] %>%
             all() %>%
@@ -1696,7 +1735,13 @@ for (i in 1:length(datasets_grouped)) {
             col_data$strain, levels = c(model_d, model_n)
         )
         model_string <- paste(levels(col_data$strain), collapse = " ")
+    }
+    
+    #  Logic to include "technical" in the GLM or not
+    if(isTRUE(any(unique(col_data$technical) %in% "tech2"))) {
         model_linear <- "~ technical + strain"
+    } else if(isFALSE(any(unique(col_data$technical) %in% "tech2"))) {
+        model_linear <- "~ strain"
     }
     
     cat(paste0(
@@ -1780,9 +1825,7 @@ for (i in 1:length(datasets_grouped)) {
     dds_SC <- BiocGenerics::estimateSizeFactors(
         dds[dds@rowRanges$genome != "K_lactis", ]
     )
-    # dds_SC@colData
     
-    #TODO Print and save some brief table of sample and size factor
     sf_samples <- dds_SC$sizeFactor %>% names() %>% tibble::as_tibble()
     sf_values <- dds_SC$sizeFactor %>% tibble::as_tibble()
     sf_tbl_SC <- dplyr::bind_cols(sf_samples, sf_values)
@@ -1899,26 +1942,24 @@ for (i in 1:length(datasets_grouped)) {
         "points: S. cerevisiae features",
         "| top: up in", model_n,
         "| bottom: up in", model_d
-    )  # [1] "strain_o.d_vs_n3.d"
+    )
     MA_SC <- ggplot(
         tbl, aes(x = log10baseMean, y = log2FoldChange, colour = threshold)
     ) +
         geom_point(alpha = 0.25, size = 0.5) +
-        # geom_hline(aes(yintercept = 0), colour = "#000000", linewidth = 0.25) +
-        geom_hline(aes(yintercept = 0), colour = "#000000", size = 0.25) +
-        # ylim(c(min(tbl$log2FoldChange), max(tbl$log2FoldChange))) +
+        geom_hline(aes(yintercept = 0), colour = "#000000", linewidth = 0.25) +
+        xlim(c(0, 6)) +
         ylim(c(-14, 14)) +
+        # ylim(c(min(tbl$log2FoldChange), max(tbl$log2FoldChange))) +
         xlab("log10(mean normalized counts)") +
         ylab("log2(fold change)") +
         scale_colour_discrete(name = "q ≤ 0.05") +
         ggtitle(title, subtitle) +
         theme_slick
     MA_SC
-    #TODO 1/2 Explain and make a decision regarding use of 'size' or 'linewidth'
-    #TODO 2/2 parameters
-    
-    #  Create a vector of features that both passed independent filtering (and thus
-    #+ have an inherently high mean expression) and are not statistically
+
+    #  Create a vector of features that both passed independent filtering (and
+    #+ thus have an inherently high mean expression) and are not statistically
     #+ significant; this vector signifies features that are "stably expressed"
     #+ between conditions
     tbl$stably_expressed <- ifelse(
@@ -1964,7 +2005,7 @@ for (i in 1:length(datasets_grouped)) {
         "| left: up in", model_d,
         "| right: up in", model_n,
         "|\nlabels: top 5", model_d, "and top 5", model_n, "features"
-    )  # [1] "strain_o.d_vs_n3.d"
+    )
     volcano_SC <- plot_volcano(
         table = t_DGE_SC,
         label = all,
@@ -1972,21 +2013,23 @@ for (i in 1:length(datasets_grouped)) {
         label_size = 2.5,
         p_cutoff = 0.05,
         FC_cutoff = 1,
-        xlim = c(-14, 14),
-        ylim = c(0, 10),
+        xlim = c(
+            (max(abs(t_DGE_SC.ctrl_KL$log2FoldChange), na.rm = TRUE) * -1),
+            max(abs(t_DGE_SC.ctrl_KL$log2FoldChange), na.rm = TRUE)
+        ),
+        # xlim = c(-14, 14),
+        ylim = c(
+            0,
+            max((log10(t_DGE_SC.ctrl_KL$padj) * -1), na.rm = TRUE)
+        ),
+        # ylim = c(0, 10),
         # ylim = c(0, 310),
         color = "#52BE9B",
         title = title,
         subtitle = subtitle
     )
     volcano_SC
-    # save_volcano(
-    #     file = "test.pdf",
-    #     plot = p,
-    #     width = 2,
-    #     height = 3
-    # )
-    
+
     res[[names(datasets_grouped)[[i]]]][["n06e_all"]] <- all
     res[[names(datasets_grouped)[[i]]]][["n06e_selection_down"]] <- selection_down
     res[[names(datasets_grouped)[[i]]]][["n06e_selection_up"]] <- selection_up
@@ -2012,9 +2055,7 @@ for (i in 1:length(datasets_grouped)) {
     dds_KL <- BiocGenerics::estimateSizeFactors(
         dds[dds@rowRanges$genome != "S_cerevisiae", ]
     )
-    # dds_KL@colData
     
-    #TODO Print and save some brief table of sample and size factor
     sf_samples <- dds_KL$sizeFactor %>% names() %>% tibble::as_tibble()
     sf_values <- dds_KL$sizeFactor %>% tibble::as_tibble()
     sf_tbl_KL <- dplyr::bind_cols(sf_samples, sf_values)
@@ -2131,15 +2172,16 @@ for (i in 1:length(datasets_grouped)) {
         "points: K. lactis features",
         "| top: up in", model_n,
         "| bottom: up in", model_d
-    )  # [1] "strain_o.d_vs_n3.d"
+    )
     MA_KL <- ggplot(
         tbl, aes(x = log10baseMean, y = log2FoldChange, colour = threshold)
     ) +
         geom_point(alpha = 0.25, size = 0.5) +
-        # geom_hline(aes(yintercept = 0), colour = "#000000", linewidth = 0.25) +
-        geom_hline(aes(yintercept = 0), colour = "#000000", size = 0.25) +
-        # ylim(c(min(tbl$log2FoldChange), max(tbl$log2FoldChange))) +
+        geom_hline(aes(yintercept = 0), colour = "#000000", linewidth = 0.25) +
+        # geom_hline(aes(yintercept = 0), colour = "#000000", size = 0.25) +
+        xlim(c(0, 6)) +
         ylim(c(-14, 14)) +
+        # ylim(c(min(tbl$log2FoldChange), max(tbl$log2FoldChange))) +
         xlab("log10(mean normalized counts)") +
         ylab("log2(fold change)") +
         scale_colour_discrete(name = "q ≤ 0.05") +
@@ -2149,8 +2191,8 @@ for (i in 1:length(datasets_grouped)) {
     #TODO 1/2 Explain and make a decision regarding use of 'size' or 'linewidth'
     #TODO 2/2 parameters
     
-    #  Create a vector of features that both passed independent filtering (and thus
-    #+ have an inherently high mean expression) and are not statistically
+    #  Create a vector of features that both passed independent filtering (and
+    #+ thus have an inherently high mean expression) and are not statistically
     #+ significant; this vector signifies features that are "stably expressed"
     #+ between conditions
     tbl$stably_expressed <- ifelse(
@@ -2196,7 +2238,7 @@ for (i in 1:length(datasets_grouped)) {
         "| left: up in", model_d,
         "| right: up in", model_n,
         "|\nlabels: top 5", model_d, "and top 5", model_n, "features"
-    )  # [1] "strain_o.d_vs_n3.d"
+    )
     volcano_KL <- plot_volcano(
         table = t_DGE_KL,
         label = all,
@@ -2204,20 +2246,22 @@ for (i in 1:length(datasets_grouped)) {
         label_size = 2.5,
         p_cutoff = 0.05,
         FC_cutoff = 1,
-        xlim = c(-14, 14),
-        ylim = c(0, 10),
+        xlim = c(
+            (max(abs(t_DGE_SC.ctrl_KL$log2FoldChange), na.rm = TRUE) * -1),
+            max(abs(t_DGE_SC.ctrl_KL$log2FoldChange), na.rm = TRUE)
+        ),
+        # xlim = c(-14, 14),
+        ylim = c(
+            0,
+            max((log10(t_DGE_SC.ctrl_KL$padj) * -1), na.rm = TRUE)
+        ),
+        # ylim = c(0, 10),
         # ylim = c(0, 310),
         color = "#52BE9B",
         title = title,
         subtitle = subtitle
     )
     volcano_KL
-    # save_volcano(
-    #     file = "test.pdf",
-    #     plot = p,
-    #     width = 2,
-    #     height = 3
-    # )
     
     res[[names(datasets_grouped)[[i]]]][["n07e_all"]] <- all
     res[[names(datasets_grouped)[[i]]]][["n07e_selection_down"]] <- selection_down
@@ -2245,9 +2289,7 @@ for (i in 1:length(datasets_grouped)) {
         dds,
         controlGenes = (dds@rowRanges$genome == "K_lactis")
     )
-    dds_SC.ctrl_KL@colData
     
-    #TODO Print and save some brief table of sample and size factor
     sf_samples <- dds_SC.ctrl_KL$sizeFactor %>% names() %>% tibble::as_tibble()
     sf_values <- dds_SC.ctrl_KL$sizeFactor %>% tibble::as_tibble()
     sf_tbl_SC.ctrl_KL <- dplyr::bind_cols(sf_samples, sf_values)
@@ -2365,26 +2407,25 @@ for (i in 1:length(datasets_grouped)) {
         "points: S. cerevisiae features",
         "| top: up in", model_n,
         "| bottom: up in", model_d
-    )  # [1] "strain_o.d_vs_n3.d"
+    )
     MA_SC.ctrl_KL <- ggplot(
         tbl, aes(x = log10baseMean, y = log2FoldChange, colour = threshold)
     ) +
         geom_point(alpha = 0.25, size = 0.5) +
-        # geom_hline(aes(yintercept = 0), colour = "#000000", linewidth = 0.25) +
-        geom_hline(aes(yintercept = 0), colour = "#000000", size = 0.25) +
-        # ylim(c(min(tbl$log2FoldChange), max(tbl$log2FoldChange))) +
+        geom_hline(aes(yintercept = 0), colour = "#000000", linewidth = 0.25) +
+        # geom_hline(aes(yintercept = 0), colour = "#000000", size = 0.25) +
+        xlim(c(0, 6)) +
         ylim(c(-14, 14)) +
+        # ylim(c(min(tbl$log2FoldChange), max(tbl$log2FoldChange))) +
         xlab("log10(mean normalized counts)") +
         ylab("log2(fold change)") +
         scale_colour_discrete(name = "q ≤ 0.05") +
         ggtitle(title, subtitle) +
         theme_slick
     MA_SC.ctrl_KL
-    #TODO 1/2 Explain and make a decision regarding use of 'size' or 'linewidth'
-    #TODO 2/2 parameters
-    
-    #  Create a vector of features that both passed independent filtering (and thus
-    #+ have an inherently high mean expression) and are not statistically
+
+    #  Create a vector of features that both passed independent filtering (and
+    #+ thus have an inherently high mean expression) and are not statistically
     #+ significant; this vector signifies features that are "stably expressed"
     #+ between conditions
     tbl$stably_expressed <- ifelse(
@@ -2430,7 +2471,7 @@ for (i in 1:length(datasets_grouped)) {
         "| left: up in", model_d,
         "| right: up in", model_n,
         "|\nlabels: top 5", model_d, "and top 5", model_n, "features"
-    )  # [1] "strain_o.d_vs_n3.d"
+    )
     volcano_SC.ctrl_KL <- plot_volcano(
         table = t_DGE_SC.ctrl_KL,
         label = all,
@@ -2438,20 +2479,22 @@ for (i in 1:length(datasets_grouped)) {
         label_size = 2.5,
         p_cutoff = 0.05,
         FC_cutoff = 1,
-        xlim = c(-14, 14),
-        ylim = c(0, 10),
+        xlim = c(
+            (max(abs(t_DGE_SC.ctrl_KL$log2FoldChange), na.rm = TRUE) * -1),
+            max(abs(t_DGE_SC.ctrl_KL$log2FoldChange), na.rm = TRUE)
+        ),
+        # xlim = c(-14, 14),
+        ylim = c(
+            0,
+            max((log10(t_DGE_SC.ctrl_KL$padj) * -1), na.rm = TRUE)
+        ),
+        # ylim = c(0, 10),
         # ylim = c(0, 310),
         color = "#52BE9B",
         title = title,
         subtitle = subtitle
     )
     volcano_SC.ctrl_KL
-    # save_volcano(
-    #     file = "test.pdf",
-    #     plot = p,
-    #     width = 2,
-    #     height = 3
-    # )
     
     res[[names(datasets_grouped)[[i]]]][["n08e_all"]] <- all
     res[[names(datasets_grouped)[[i]]]][["n08e_selection_down"]] <- selection_down
@@ -2467,30 +2510,76 @@ for (i in 1:length(datasets_grouped)) {
 <br />
 
 ```{r}
-#  MA plots
-res$datasets_r1_r6$n06d_MA_SC
-res$datasets_WT_r6$n06d_MA_SC
-res$datasets_WT_r1$n06d_MA_SC
+#  MA plots ---------------------------
+res$G1_SS_wt_r6$n06d_MA_SC
+res$Q_SS_wt_r6$n06d_MA_SC
+res$Q_SS_r1_r6$n06d_MA_SC
+res$Q_SS_wt_r1$n06d_MA_SC
 
-res$datasets_r1_r6$n07d_MA_KL
-res$datasets_WT_r6$n07d_MA_KL
-res$datasets_WT_r1$n07d_MA_KL
+res$G1_SS_wt_r6$n07d_MA_KL
+res$Q_SS_wt_r6$n07d_MA_KL
+res$Q_SS_r1_r6$n07d_MA_KL
+res$Q_SS_wt_r1$n07d_MA_KL
 
-res$datasets_r1_r6$n08d_MA_SC.ctrl_KL
-res$datasets_WT_r6$n08d_MA_SC.ctrl_KL
-res$datasets_WT_r1$n08d_MA_SC.ctrl_KL
+res$G1_SS_wt_r6$n08d_MA_SC.ctrl_KL
+res$Q_SS_wt_r6$n08d_MA_SC.ctrl_KL
+res$Q_SS_r1_r6$n08d_MA_SC.ctrl_KL
+res$Q_SS_wt_r1$n08d_MA_SC.ctrl_KL
 
-#  Volcano plots
-res$datasets_r1_r6$n06e_volcano_SC
-res$datasets_WT_r6$n06e_volcano_SC
-res$datasets_WT_r1$n06e_volcano_SC
+res$G1_SS_wt_r6$n06d_MA_SC
+res$G1_SS_wt_r6$n07d_MA_KL
+res$G1_SS_wt_r6$n08d_MA_SC.ctrl_KL
 
-res$datasets_r1_r6$n07e_volcano_KL
-res$datasets_WT_r6$n07e_volcano_KL
-res$datasets_WT_r1$n07e_volcano_KL
+res$Q_SS_wt_r6$n06d_MA_SC
+res$Q_SS_wt_r6$n07d_MA_KL
+res$Q_SS_wt_r6$n08d_MA_SC.ctrl_KL
 
-res$datasets_r1_r6$n08e_volcano_SC.ctrl_KL
-res$datasets_WT_r6$n08e_volcano_SC.ctrl_KL
-res$datasets_WT_r1$n08e_volcano_SC.ctrl_KL
+res$Q_SS_r1_r6$n06d_MA_SC
+res$Q_SS_r1_r6$n07d_MA_KL
+res$Q_SS_r1_r6$n08d_MA_SC.ctrl_KL
+
+res$Q_SS_wt_r1$n06d_MA_SC
+res$Q_SS_wt_r1$n07d_MA_KL
+res$Q_SS_wt_r1$n08d_MA_SC.ctrl_KL
+
+
+#  Volcano plots ----------------------
+res$G1_SS_wt_r6$n06e_volcano_SC
+res$Q_SS_wt_r6$n06e_volcano_SC
+res$Q_SS_r1_r6$n06e_volcano_SC
+res$Q_SS_wt_r1$n06e_volcano_SC
+
+res$G1_SS_wt_r6$n07e_volcano_KL
+res$Q_SS_wt_r6$n07e_volcano_KL
+res$Q_SS_r1_r6$n07e_volcano_KL
+res$Q_SS_wt_r1$n07e_volcano_KL
+
+res$G1_SS_wt_r6$n08e_volcano_SC.ctrl_KL
+res$Q_SS_wt_r6$n08e_volcano_SC.ctrl_KL
+res$Q_SS_r1_r6$n08e_volcano_SC.ctrl_KL
+res$Q_SS_wt_r1$n08e_volcano_SC.ctrl_KL
+
+res$G1_SS_wt_r6$n06e_volcano_SC
+res$G1_SS_wt_r6$n07e_volcano_KL
+res$G1_SS_wt_r6$n08e_volcano_SC.ctrl_KL
+
+res$Q_SS_wt_r6$n06e_volcano_SC
+res$Q_SS_wt_r6$n07e_volcano_KL
+res$Q_SS_wt_r6$n08e_volcano_SC.ctrl_KL
+
+res$Q_SS_r1_r6$n06e_volcano_SC
+res$Q_SS_r1_r6$n07e_volcano_KL
+res$Q_SS_r1_r6$n08e_volcano_SC.ctrl_KL
+
+res$Q_SS_wt_r1$n06e_volcano_SC
+res$Q_SS_wt_r1$n07e_volcano_KL
+res$Q_SS_wt_r1$n08e_volcano_SC.ctrl_KL
+
+# save_volcano(
+#     file = "test.pdf",
+#     plot = p,
+#     width = 2,
+#     height = 3
+# )
 ```
 <br />
