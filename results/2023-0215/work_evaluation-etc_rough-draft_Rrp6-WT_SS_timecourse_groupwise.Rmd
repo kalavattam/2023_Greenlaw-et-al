@@ -1062,6 +1062,7 @@ rm(vsd)
 # ) %>%
 #     dplyr::as_tibble()
 ```
+<br />
 
 #### Calculate rlog-normalized (unblinded) counts
 ```{r I. Create rlog-normalized counts, message=FALSE}
@@ -1283,15 +1284,14 @@ elbow <- PCAtools::findElbowPoint(obj_pca$variance)
 #  Evaluate cumulative proportion of explained variance with a scree plot -----
 scree <- draw_scree_plot(obj_pca, horn = horn$n, elbow = elbow)
 scree
-```
-
-#### Part 2
-```{r}
 # save_title <- paste0("panel-plot", ".", "scree", ".pdf")
 # ggplot2::ggsave(paste0(args$directory_out, "/", save_title), scree)
 #TODO Work up some logic for location(s) for outfiles
+```
+<br />
 
-
+#### Part 2
+```{r}
 #  Save component loading vectors in their own data frame ---------------------
 loadings <- as.data.frame(obj_pca$loadings)
 
@@ -1467,6 +1467,7 @@ p_loadings <- PCAtools::plotloadings(
     obj_pca,
     components = getComponents(obj_pca, 1),
     # components = getComponents(obj_pca, 1:5),
+    # components = PCAtools::getComponents(obj_pca, 1:length(obj_pca$loadings)),
     rangeRetain = 0.05,
     absolute = FALSE,
     col = c("#785EF075", "#FFFFFF75", "#FE610075"),

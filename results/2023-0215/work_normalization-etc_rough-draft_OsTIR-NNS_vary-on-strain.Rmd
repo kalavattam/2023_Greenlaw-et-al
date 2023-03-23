@@ -997,8 +997,10 @@ scree
 # save_title <- paste0("panel-plot", ".", "scree", ".pdf")
 # ggplot2::ggsave(paste0(args$directory_out, "/", save_title), scree)
 #TODO Work up some logic for outfile names, location(s) for outfiles, etc.
+```
+<br />
 
-
+```{r I. Run PCA with variously normalized counts (part 2), message=FALSE}
 #  Save component loading vectors in their own data frame ---------------------
 loadings <- as.data.frame(obj_pca$loadings)
 
@@ -1147,8 +1149,8 @@ images$KA.PC1.v.PC2$PC_y_neg
 ```
 <br />
 
-#### Part 2
-```{r I. Run PCA with variously normalized counts (part 2), message=FALSE}
+#### Part 3
+```{r I. Run PCA with variously normalized counts (part 3), message=FALSE}
 # for(i in 1:length(names(images))) {
 #     # i <- 2
 #     vector_names <- names(images) %>% stringr::str_split("\\.")
