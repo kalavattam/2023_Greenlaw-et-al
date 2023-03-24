@@ -1,0 +1,209 @@
+work_evaluation-etc_rough-draft_Rrp6-WT_SS_timecourse_groupwise.Rmd  #MADE #PREP #PCA-ETC
+work_evaluation-etc_rough-draft_Rrp6-WT_SS_timecourse_pairwise.Rmd  #MADE
+
+work_evaluation-etc_rough-draft_Rrp6-WT_N_G1_pairwise.Rmd  #MADE #PREP
+
+work_evaluation-etc_rough-draft_Rrp6-Rtr1-WT_N_Q_groupwise.Rmd  #MADE #PREP
+work_evaluation-etc_rough-draft_Rrp6-Rtr1-WT_N_Q_pairwise.Rmd  #MADE #PREP
+
+work_evaluation-etc_rough-draft_Rrp6-Rtr1-WT_SS_Q_groupwise.Rmd  #MADE #PREP #PCA-ETC #INPAIRWISE
+work_evaluation-etc_rough-draft_Rrp6-Rtr1-WT_SS_Q_pairwise.Rmd  #MADE #PREP #DESEQ2MAVOLCANOETC #NEEDPAIRWISEPCA
+
+#  --------------------------------------------------------
+Q_SS_wt_r1_r6 <- c(
+    "WT_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1",
+    "WT_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1",
+    "r1-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1",
+    "r1-n_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1",
+    "r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1",
+    "r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech2",
+    "r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1"
+)
+
+Q_SS_wt_r6 <- c(
+    "WT_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1",
+    "WT_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1",
+    "r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1",
+    "r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech2",
+    "r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1"
+)
+
+#TODOs ------------------------------------------------------------------------
+
+#TODO Antisense counts matrices in addition to sense counts matrices
+
+#TODO Additional pairwise combinations of samples
+
+#TODO feature_init instead of feature for rownames (etc.); this should sidestep problems with unique names... but #WHERE?
+
+#TODO {6,7,8}a Some kind of column name thing is happening #FIXME
+
+	Note: levels of factors in the design contain characters other than
+	  letters, numbers, '_' and '.'. It is recommended (but not required) to use
+	  only letters, numbers, and delimiters '_' or '.', as these are safe characters
+	  for column names in R. [This is a message, not a warning or an error]
+	New names:
+	• `value` -> `value...1`
+	• `value` -> `value...2`
+
+#TODO Do something about this message from DESeq2:
+
+	Note: levels of factors in the design contain characters other than letters, numbers, '_' and '.'. It is recommended (but not required) to use only letters, numbers, and delimiters '_' or '.', as these are safe characters for column names in R. [This is a message, not a warning or an error]
+
+
+#TODO The tibble filtering performed by AG
+#TODO Function-ize the generation of MA and volcano plots
+#TODO Column subsetting changes based on total number of samples (especially the PCA code)
+
+#DONE title and subtitle
+
+#DONE In the {6,7,8}c code snippets, update the name parameters to select the last term in the GLMs!
+
+#DONE {6,7,8]{d,e} Names of datasets for  
+
+#DONE Get rid of all the #TBDs
+
+#TODO Relevant variables res_gw analyses
+- Q_N_wt_r1_r6 #INPROGRESS
+   - strain: r1-n, r6-n, WT
+
+- Q_SS_wt_r1_r6 #INPROGRESS
+   - strain: r1-n, r6-n, WT
+   - technical: tech1, tech2
+
+- Q_SS_wt_ot_r1_r6_n3 #INPROGRESS
+   - strain
+   - technical
+
+- Q_N_wt_ot_r1_r6_n3 #INPROGRESS
+	- strain
+
+- tc_SS_wt_r6
+    - strain: WT, r6-n
+    - state: DSm2, DSp2, DSp24, DSp48
+    - technical: tech1, tech2
+
+- tc_SS_wt_t4_r6
+	- strain: WT, t4-n, r6-n
+    - state: DSm2, DSp2, DSp24, DSp48
+    - technical: tech1, tech2
+
+- Q_tc_SS_wt_ot_r1_r6_n3
+	- strain: WT, o-d, r6-n, n3-d
+	- state: Q, DSm2, DSp2, DSp24, DSp48
+	- technical
+
+- G1_Q_SS_N_wt
+	- state: G1, Q
+	- transcription: SS, N
+
+#  Q SS: WT vs rrp6∆ – Sense
+	WT_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1
+	WT_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1
+	r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1
+	r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech2
+	r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1
+
+#  G1 SS: WT vs rrp6∆ – Sense
+	WT_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1
+	WT_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1
+	r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1
+	r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1
+
+#  Q N: WT vs rrp6∆ – Sense
+	WT_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1
+	WT_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1
+	r6-n_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1
+	r6-n_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1
+
+#  DS –2 SS: WT vs rrp6∆ – Sense
+	WT_DSm2_day2_tcn_SS_aux-F_tc-T_rep1_tech1
+	WT_DSm2_day2_tcn_SS_aux-F_tc-T_rep2_tech1
+	r6-n_DSm2_day2_tcn_SS_aux-F_tc-T_rep1_tech1
+	r6-n_DSm2_day2_tcn_SS_aux-F_tc-T_rep2_tech1
+
+#  DS +2 SS: WT vs rrp6∆ – Sense
+	WT_DSp2_day2_tcn_SS_aux-F_tc-T_rep1_tech1
+	WT_DSp2_day2_tcn_SS_aux-F_tc-T_rep2_tech1
+	r6-n_DSp2_day2_tcn_SS_aux-F_tc-T_rep1_tech1
+	r6-n_DSp2_day2_tcn_SS_aux-F_tc-T_rep2_tech1
+
+#  DS +24 SS: WT vs rrp6∆ – Sense
+	WT_DSp24_day3_tcn_SS_aux-F_tc-T_rep1_tech1
+	WT_DSp24_day3_tcn_SS_aux-F_tc-T_rep2_tech1
+	r6-n_DSp24_day3_tcn_SS_aux-F_tc-T_rep1_tech1
+	r6-n_DSp24_day3_tcn_SS_aux-F_tc-T_rep2_tech1
+
+#  DS +48 SS: WT vs rrp6∆ – Sense
+	WT_DSp48_day4_tcn_SS_aux-F_tc-T_rep1_tech1
+	WT_DSp48_day4_tcn_SS_aux-F_tc-T_rep1_tech2
+	WT_DSp48_day4_tcn_SS_aux-F_tc-T_rep2_tech1
+	r6-n_DSp48_day4_tcn_SS_aux-F_tc-T_rep1_tech1
+	r6-n_DSp48_day4_tcn_SS_aux-F_tc-T_rep2_tech1
+
+#  Q N: Parent vs NNS depleted – Sense
+	o-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1
+	o-d_Q_day7_tcn_N_aux-T_tc-F_rep2_tech1
+	n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1
+	n3-d_Q_day7_tcn_N_aux-T_tc-F_rep2_tech1
+	n3-d_Q_day7_tcn_N_aux-T_tc-F_rep3_tech1
+
+#  Q SS: Parent vs NNS depleted – Sense
+	o-d_Q_day7_tcn_SS_aux-T_tc-F_rep1_tech1
+	o-d_Q_day7_tcn_SS_aux-T_tc-F_rep2_tech1
+	n3-d_Q_day7_tcn_SS_aux-T_tc-F_rep1_tech1
+	n3-d_Q_day7_tcn_SS_aux-T_tc-F_rep2_tech1
+	n3-d_Q_day7_tcn_SS_aux-T_tc-F_rep3_tech1
+
+
+#  Q SS: WT vs rrp6∆ – Antisense
+#  G1 SS: WT vs rrp6∆ – Antisense
+#  Q N: WT vs rrp6∆ – Antisense
+#  DS –2 SS: WT vs rrp6∆ – Antisense
+#  DS +2 SS: WT vs rrp6∆ – Antisense 
+#  DS +24 SS: WT vs rrp6∆ – Antisense 
+#  DS +48 SS: WT vs rrp6∆ – Antisense 
+#  Q N: Parent vs NNS depleted – Antisense
+#  Q SS: Parent vs NNS depleted – Antisense
+
+
+
+#TRINITY-ETC
+
+
+
+#MAYBE
+#  Q N: WT vs rtr1∆ – Sense
+	  WT_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1
+	  WT_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1
+	r1-n_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1
+	r1-n_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1
+
+#  Q SS: WT vs rtr1∆ – Sense
+	  WT_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1
+	  WT_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1
+	r1-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1
+	r1-n_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1
+
+#  Q N: rtr1∆ vs rrp6∆ – Sense
+	r1-n_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1
+	r1-n_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1
+	r6-n_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1
+	r6-n_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1
+
+#  Q SS: rtr1∆ vs rrp6∆ – Sense
+	  WT_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1
+	  WT_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1
+	r1-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1
+	r1-n_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1
+
+
+
+
+
+#FUN
+
+
+#TEST-ONLY
+WT_Q_day7_tcn_N_aux-F_tc-F_rep2_tech1
+WT_Q_day7_tcn_SS_aux-F_tc-F_rep2_tech1
