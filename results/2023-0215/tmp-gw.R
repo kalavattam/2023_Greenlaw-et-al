@@ -147,8 +147,8 @@ datasets_gw <- list(
 )
 
 res_gw <- list()
-for (i in 1:length(datasets_gw)) {
-    # i <- 1
+# for (i in 1:length(datasets_gw)) {
+    i <- 5
     cat(paste0(
         "#  --------------------------------------------------------\n",
         "#  Working with '", names(datasets_gw)[[i]], "'\n",
@@ -219,7 +219,15 @@ for (i in 1:length(datasets_gw)) {
         )
         string_strain <- paste(levels(col_data$strain), collapse = " ")
         
+        rep_1 <- "rep1"
+        rep_2 <- "rep2"
+        col_data$replicate <- factor(
+            col_data$replicate, levels = c(rep_1, rep_2)
+        )
+        string_replicate <- paste(levels(col_data$replicate), collapse = " ")
+        
         res_gw[[names(datasets_gw)[[i]]]][["n03_string_strain"]] <- string_strain
+        res_gw[[names(datasets_gw)[[i]]]][["n03_string_replicate"]] <- string_replicate
         
         col_data$no_strain <- sapply(
             as.character(col_data$strain),
@@ -227,6 +235,13 @@ for (i in 1:length(datasets_gw)) {
             "WT" = 1,
             "r1-n" = 2,
             "r6-n" = 3,
+            USE.NAMES = FALSE
+        )
+        col_data$no_replicate <- sapply(
+            as.character(col_data$replicate),
+            switch,
+            "rep1" = 1,
+            "rep2" = 2,
             USE.NAMES = FALSE
         )
         
@@ -242,6 +257,13 @@ for (i in 1:length(datasets_gw)) {
         )
         string_strain <- paste(levels(col_data$strain), collapse = " ")
         
+        rep_1 <- "rep1"
+        rep_2 <- "rep2"
+        col_data$replicate <- factor(
+            col_data$replicate, levels = c(rep_1, rep_2)
+        )
+        string_replicate <- paste(levels(col_data$replicate), collapse = " ")
+        
         tech_1 <- "tech1"
         tech_2 <- "tech2"
         col_data$technical <- factor(
@@ -250,6 +272,7 @@ for (i in 1:length(datasets_gw)) {
         string_tech <- paste(levels(col_data$technical), collapse = " ")
         
         res_gw[[names(datasets_gw)[[i]]]][["n03_string_strain"]] <- string_strain
+        res_gw[[names(datasets_gw)[[i]]]][["n03_string_replicate"]] <- string_replicate
         res_gw[[names(datasets_gw)[[i]]]][["n03_string_tech"]] <- string_tech
         
         col_data$no_strain <- sapply(
@@ -258,6 +281,13 @@ for (i in 1:length(datasets_gw)) {
             "WT" = 1,
             "r1-n" = 2,
             "r6-n" = 3,
+            USE.NAMES = FALSE
+        )
+        col_data$no_replicate <- sapply(
+            as.character(col_data$replicate),
+            switch,
+            "rep1" = 1,
+            "rep2" = 2,
             USE.NAMES = FALSE
         )
         col_data$no_technical <- sapply(
@@ -272,7 +302,7 @@ for (i in 1:length(datasets_gw)) {
         
         cat(paste0(
             "#+ 5. Make the DESeqDataSet (dds) object for '",
-            names(datasets_pw)[[i]],
+            names(datasets_gw)[[i]],
             "'\n\n"
         ))
     } else if(isTRUE(names(datasets_gw)[[i]] == "Q_SS_wt_ot_r1_r6_n3")) {
@@ -728,8 +758,11 @@ for (i in 1:length(datasets_gw)) {
     
     #  Create a PCAtools "pca" S4 object for the normalized counts ------------
     #+ Assign unique row names too
+    col_samp_TF <- stringr::str_detect(colnames(norm), "_tech")
+    col_samp_TF_N <- length(col_samp_TF[col_samp_TF ==  TRUE])
+    
     obj_pca <- PCAtools::pca(
-        norm[, 1:6],  #TODO Some way to make this ending number variable
+        norm[, 1:col_samp_TF_N],
         metadata = dds[dds@rowRanges$genome != "K_lactis", ]@colData
     )
     rownames(obj_pca$loadings) <- make.names(
@@ -740,12 +773,12 @@ for (i in 1:length(datasets_gw)) {
     
     #  8 ------------------------------
     cat(paste0(
-        "#+ 8. Determine 'significant' PCs for '",
+        "#+ 8. Determine significant PCs for '",
         names(datasets_gw)[[i]], "'\n\n"
     ))
     #  Determine "significant" PCs with Horn's parallel analysis
     #+ See Horn, 1965
-    horn <- PCAtools::parallelPCA(mat = norm[, 1:6])  #TODO Some way to make this ending number variable
+    horn <- PCAtools::parallelPCA(mat = norm[, 1:col_samp_TF_N])
     # horn$n
     
     
@@ -820,11 +853,11 @@ for (i in 1:length(datasets_gw)) {
             loadings_show = FALSE,
             loadings_n = 0,
             meta_color = "strain",
-            meta_shape = "replicate",
-            x_min = -20,  # -120000,  # -66,
-            x_max = 20,  # 120000,  # 66,
-            y_min = -20,  # -50000,  # -50,
-            y_max = 20  # 50000  # 50
+            meta_shape = "technical",
+            x_min = -100,  # -120000,  # -66,  # -20,
+            x_max = 100,  # 120000,  # 66,  # 20,
+            y_min = -100,  # -50000,  # -50,  # -20,
+            y_max = 100  # 50000  # 50  # 20
         )
         
         #HERE
@@ -853,6 +886,50 @@ for (i in 1:length(datasets_gw)) {
         
         images[[paste0("KA.", PC_x, ".v.", PC_y)]]
     }
+    
+    #  How do things look?
+    images$PCAtools.PC1.v.PC2
+    images$KA.PC1.v.PC2$PC_x_pos
+    images$KA.PC1.v.PC2$PC_x_neg
+    images$KA.PC1.v.PC2$PC_y_pos
+    images$KA.PC1.v.PC2$PC_y_neg
+    
+    images$PCAtools.PC1.v.PC3
+    images$KA.PC1.v.PC3$PC_x_pos
+    images$KA.PC1.v.PC3$PC_x_neg
+    images$KA.PC1.v.PC3$PC_y_pos
+    images$KA.PC1.v.PC3$PC_y_neg
+    
+    # images$PCAtools.PC1.v.PC4
+    # images$KA.PC1.v.PC4$PC_x_pos
+    # images$KA.PC1.v.PC4$PC_x_neg
+    # images$KA.PC1.v.PC4$PC_y_pos
+    # images$KA.PC1.v.PC4$PC_y_neg
+    # 
+    # images$PCAtools.PC2.v.PC3
+    # images$KA.PC2.v.PC3$PC_x_pos
+    # images$KA.PC2.v.PC3$PC_x_neg
+    # images$KA.PC2.v.PC3$PC_y_pos
+    # images$KA.PC2.v.PC3$PC_y_neg
+    # 
+    # images$PCAtools.PC2.v.PC4
+    # images$KA.PC2.v.PC4$PC_x_pos
+    # images$KA.PC2.v.PC4$PC_x_neg
+    # images$KA.PC2.v.PC4$PC_y_pos
+    # images$KA.PC2.v.PC4$PC_y_neg
+    # 
+    # images$PCAtools.PC3.v.PC4
+    # images$KA.PC3.v.PC4$PC_x_pos
+    # images$KA.PC3.v.PC4$PC_x_neg
+    # images$KA.PC3.v.PC4$PC_y_pos
+    # images$KA.PC3.v.PC4$PC_y_neg
+    
+    # images$PCAtools.PC1.v.PC3
+    # images$KA.PC1.v.PC3
+    # images$PCAtools.PC1.v.PC4
+    # images$KA.PC1.v.PC4
+    # images$PCAtools.PC2.v.PC3
+    # images$KA.PC2.v.PC3
     
     # for(i in 1:length(names(images))) {
     #     # i <- 2
@@ -932,7 +1009,8 @@ for (i in 1:length(datasets_gw)) {
         obj_pca,
         components = PCAtools::getComponents(obj_pca, 1:length(obj_pca$loadings)),
         # metavars = c("strain", "state", "time", "replicate", "technical"),
-        metavars = c("strain", "replicate", "technical"),
+        metavars = c("no_strain", "no_replicate", "no_technical"),
+        # metavars = c("strain", "replicate", "technical"),
         # metavars = c("strain", "replicate", "sample_name"),
         col = c("#FFFFFF75", "#FE610075"),
         # col = c("#785EF075", "#FFFFFF75", "#FE610075"),
@@ -1032,7 +1110,7 @@ for (i in 1:length(datasets_gw)) {
     # images$KA.PC1.v.PC4
     # images$PCAtools.PC2.v.PC3
     # images$KA.PC2.v.PC3
-}
+# }
 
 
 

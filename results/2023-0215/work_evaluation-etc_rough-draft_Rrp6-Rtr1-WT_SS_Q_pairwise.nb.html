@@ -2745,8 +2745,9 @@ think lowly expressed genes are skewing results.</p>
 <h4>Calculate vst-normalized (unblinded) counts</h4>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxudnNkIDwtIERFU2VxMjo6dnN0KFxuICAgIGRkc1tkZHNAcm93UmFuZ2VzJGdlbm9tZSA9PSBcXFNfY2VyZXZpc2lhZVxcLCBdLFxuICAgIGJsaW5kID0gRkFMU0Vcbilcblxubm9ybV92IDwtIGxpbW1hOjpyZW1vdmVCYXRjaEVmZmVjdChcbiAgICBTdW1tYXJpemVkRXhwZXJpbWVudDo6YXNzYXkodnNkKSxcbiAgICBiYXRjaCA9IHZzZCR0ZWNobmljYWwsXG4gICAgZGVzaWduID0gbW9kZWwubWF0cml4KH5zdHJhaW4sIFN1bW1hcml6ZWRFeHBlcmltZW50Ojpjb2xEYXRhKHZzZCkpXG4pICU+JSBcbiAgICBhcy5kYXRhLmZyYW1lKClcbm5vcm1fdiRmZWF0dXJlX2luaXQgPC0gZGRzQHJvd1JhbmdlcyRmZWF0dXJlX2luaXRbXG4gICAgZGRzQHJvd1JhbmdlcyRnZW5vbWUgPT0gXFxTX2NlcmV2aXNpYWVcXFxuXVxuXG4jICBBc3NvY2lhdGUgbm9ybWFsaXplZCB2YWx1ZXMgd2l0aCBmZWF0dXJlIG1ldGFkYXRhXG5ub3JtX3YgPC0gZHBseXI6OmZ1bGxfam9pbihcbiAgICBub3JtX3YsXG4gICAgdF9mY1t0X2ZjJGdlbm9tZSA9PSBcXFNfY2VyZXZpc2lhZVxcLCAxOjldLFxuICAgIGJ5ID0gXFxmZWF0dXJlX2luaXRcXFxuKSAlPiVcbiAgICBkcGx5cjo6YXNfdGliYmxlKClcblxucm0odnNkKVxuXG4jICNQUkVWSU9VU1xuIyBub3JtX3YgPC0gREVTZXEyOjp2c3QoXG4jICAgICBkZHNbZGRzQHJvd1JhbmdlcyRnZW5vbWUgPT0gXFxTX2NlcmV2aXNpYWVcXCwgXSxcbiMgICAgIGJsaW5kID0gRkFMU0VcbiMgKSAlPiVcbiMgICAgIFN1bW1hcml6ZWRFeHBlcmltZW50Ojphc3NheSgpICU+JVxuIyAgICAgYXMuZGF0YS5mcmFtZSgpXG4jIG5vcm1fdiRmZWF0dXJlX2luaXQgPC0gZGRzQHJvd1JhbmdlcyRmZWF0dXJlX2luaXRbXG4jICAgICBkZHNAcm93UmFuZ2VzJGdlbm9tZSA9PSBcXFNfY2VyZXZpc2lhZVxcXG4jIF1cbiMgXG4jICMgIEFzc29jaWF0ZSBub3JtYWxpemVkIHZhbHVlcyB3aXRoIGZlYXR1cmUgbWV0YWRhdGFcbiMgbm9ybV92IDwtIGRwbHlyOjpmdWxsX2pvaW4oXG4jICAgICBub3JtX3YsXG4jICAgICB0X2ZjW3RfZmMkZ2Vub21lID09IFxcU19jZXJldmlzaWFlXFwsIDE6OV0sXG4jICAgICBieSA9IFxcZmVhdHVyZV9pbml0XFxcbiMgKSAlPiVcbiMgICAgIGRwbHlyOjphc190aWJibGUoKVxuYGBgXG5gYGAifQ== -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuYGBgclxudnNkIDwtIERFU2VxMjo6dnN0KFxuICAgIGRkc1tkZHNAcm93UmFuZ2VzJGdlbm9tZSA9PSBcXFNfY2VyZXZpc2lhZVxcLCBdLFxuICAgIGJsaW5kID0gRkFMU0Vcbilcblxubm9ybV92IDwtIGxpbW1hOjpyZW1vdmVCYXRjaEVmZmVjdChcbiAgICBTdW1tYXJpemVkRXhwZXJpbWVudDo6YXNzYXkodnNkKSxcbiAgICBiYXRjaCA9IHZzZCR0ZWNobmljYWwsXG4gICAgZGVzaWduID0gbW9kZWwubWF0cml4KH5zdHJhaW4sIFN1bW1hcml6ZWRFeHBlcmltZW50Ojpjb2xEYXRhKHZzZCkpXG4pICU+JSBcbiAgICBhcy5kYXRhLmZyYW1lKClcbm5vcm1fdiRmZWF0dXJlX2luaXQgPC0gZGRzQHJvd1JhbmdlcyRmZWF0dXJlX2luaXRbXG4gICAgZGRzQHJvd1JhbmdlcyRnZW5vbWUgPT0gXFxTX2NlcmV2aXNpYWVcXFxuXVxuXG4jICBBc3NvY2lhdGUgbm9ybWFsaXplZCB2YWx1ZXMgd2l0aCBmZWF0dXJlIG1ldGFkYXRhXG5ub3JtX3YgPC0gZHBseXI6OmZ1bGxfam9pbihcbiAgICBub3JtX3YsXG4gICAgdF9mY1t0X2ZjJGdlbm9tZSA9PSBcXFNfY2VyZXZpc2lhZVxcLCAxOjldLFxuICAgIGJ5ID0gXFxmZWF0dXJlX2luaXRcXFxuKSAlPiVcbiAgICBkcGx5cjo6YXNfdGliYmxlKClcblxucm0odnNkKVxuXG4jICNQUkVWSU9VU1xuIyBub3JtX3YgPC0gREVTZXEyOjp2c3QoXG4jICAgICBkZHNbZGRzQHJvd1JhbmdlcyRnZW5vbWUgPT0gXFxTX2NlcmV2aXNpYWVcXCwgXSxcbiMgICAgIGJsaW5kID0gRkFMU0VcbiMgKSAlPiVcbiMgICAgIFN1bW1hcml6ZWRFeHBlcmltZW50Ojphc3NheSgpICU+JVxuIyAgICAgYXMuZGF0YS5mcmFtZSgpXG4jIG5vcm1fdiRmZWF0dXJlX2luaXQgPC0gZGRzQHJvd1JhbmdlcyRmZWF0dXJlX2luaXRbXG4jICAgICBkZHNAcm93UmFuZ2VzJGdlbm9tZSA9PSBcXFNfY2VyZXZpc2lhZVxcXG4jIF1cbiMgXG4jICMgIEFzc29jaWF0ZSBub3JtYWxpemVkIHZhbHVlcyB3aXRoIGZlYXR1cmUgbWV0YWRhdGFcbiMgbm9ybV92IDwtIGRwbHlyOjpmdWxsX2pvaW4oXG4jICAgICBub3JtX3YsXG4jICAgICB0X2ZjW3RfZmMkZ2Vub21lID09IFxcU19jZXJldmlzaWFlXFwsIDE6OV0sXG4jICAgICBieSA9IFxcZmVhdHVyZV9pbml0XFxcbiMgKSAlPiVcbiMgICAgIGRwbHlyOjphc190aWJibGUoKVxuYGBgXG5gYGBcbmBgYCJ9 -->
 <pre class="r"><code>```r
+```r
 vsd &lt;- DESeq2::vst(
     dds[dds@rowRanges$genome == \S_cerevisiae\, ],
     blind = FALSE
@@ -2790,30 +2791,19 @@ rm(vsd)
 #     by = \feature_init\
 # ) %&gt;%
 #     dplyr::as_tibble()</code></pre>
-<pre><code>
-&lt;!-- rnb-source-end --&gt;
-
-&lt;!-- rnb-chunk-end --&gt;
-
-
-&lt;!-- rnb-text-begin --&gt;
-
-&lt;br /&gt;
-
-#### Calculate rlog-normalized (unblinded) counts
-
-&lt;!-- rnb-text-end --&gt;
-
-
-&lt;!-- rnb-chunk-begin --&gt;
-
-
-&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxucmxkIDwtIERFU2VxMjo6cmxvZyhcbiAgICBkZHNbZGRzQHJvd1JhbmdlcyRnZW5vbWUgPT0gXFxTX2NlcmV2aXNpYWVcXCwgXSxcbiAgICBibGluZCA9IEZBTFNFXG4pXG5cbm5vcm1fciA8LSBsaW1tYTo6cmVtb3ZlQmF0Y2hFZmZlY3QoXG4gICAgU3VtbWFyaXplZEV4cGVyaW1lbnQ6OmFzc2F5KHJsZCksXG4gICAgYmF0Y2ggPSBybGQkdGVjaG5pY2FsLFxuICAgIGRlc2lnbiA9IG1vZGVsLm1hdHJpeCh+c3RyYWluLCBTdW1tYXJpemVkRXhwZXJpbWVudDo6Y29sRGF0YShybGQpKVxuKSAlPiUgXG4gICAgYXMuZGF0YS5mcmFtZSgpXG5ub3JtX3IkZmVhdHVyZV9pbml0IDwtIGRkc0Byb3dSYW5nZXMkZmVhdHVyZV9pbml0W1xuICAgIGRkc0Byb3dSYW5nZXMkZ2Vub21lID09IFxcU19jZXJldmlzaWFlXFxcbl1cblxuIyAgQXNzb2NpYXRlIG5vcm1hbGl6ZWQgdmFsdWVzIHdpdGggZmVhdHVyZSBtZXRhZGF0YVxubm9ybV9yIDwtIGRwbHlyOjpmdWxsX2pvaW4oXG4gICAgbm9ybV9yLFxuICAgIHRfZmNbdF9mYyRnZW5vbWUgPT0gXFxTX2NlcmV2aXNpYWVcXCwgMTo5XSxcbiAgICBieSA9IFxcZmVhdHVyZV9pbml0XFxcbikgJT4lXG4gICAgZHBseXI6OmFzX3RpYmJsZSgpXG5cbnJtKHJsZClcblxuIyAjUFJFVklPVVNcbiMgbm9ybV9yIDwtIERFU2VxMjo6cmxvZyhcbiMgICAgIGRkc1tkZHNAcm93UmFuZ2VzJGdlbm9tZSA9PSBcXFNfY2VyZXZpc2lhZVxcLCBdLFxuIyAgICAgYmxpbmQgPSBGQUxTRVxuIyApICU+JVxuIyAgICAgU3VtbWFyaXplZEV4cGVyaW1lbnQ6OmFzc2F5KCkgJT4lXG4jICAgICBhcy5kYXRhLmZyYW1lKClcbiMgbm9ybV9yJGZlYXR1cmVfaW5pdCA8LSBkZHNAcm93UmFuZ2VzJGZlYXR1cmVfaW5pdFtcbiMgICAgIGRkc0Byb3dSYW5nZXMkZ2Vub21lID09IFxcU19jZXJldmlzaWFlXFxcbiMgXVxuIyBcbiMgIyAgQXNzb2NpYXRlIG5vcm1hbGl6ZWQgdmFsdWVzIHdpdGggZmVhdHVyZSBtZXRhZGF0YVxuIyBub3JtX3IgPC0gZHBseXI6OmZ1bGxfam9pbihcbiMgICAgIG5vcm1fcixcbiMgICAgIHRfZmNbdF9mYyRnZW5vbWUgPT0gXFxTX2NlcmV2aXNpYWVcXCwgMTo5XSxcbiMgICAgIGJ5ID0gXFxmZWF0dXJlX2luaXRcXFxuIyApICU+JVxuIyAgICAgZHBseXI6OmFzX3RpYmJsZSgpXG5gYGBcbmBgYCJ9 --&gt;
-
-```r
-```r
-rld &lt;- DESeq2::rlog(
-    dds[dds@rowRanges$genome == \S_cerevisiae\, ],
+<pre><code></code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p><br /></p>
+</div>
+<div id="calculate-rlog-normalized-unblinded-counts" class="section level4">
+<h4>Calculate rlog-normalized (unblinded) counts</h4>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucmxkIDwtIERFU2VxMjo6cmxvZyhcbiAgICBkZHNbZGRzQHJvd1JhbmdlcyRnZW5vbWUgPT0gXCJTX2NlcmV2aXNpYWVcIiwgXSxcbiAgICBibGluZCA9IEZBTFNFXG4pXG5cbm5vcm1fciA8LSBsaW1tYTo6cmVtb3ZlQmF0Y2hFZmZlY3QoXG4gICAgU3VtbWFyaXplZEV4cGVyaW1lbnQ6OmFzc2F5KHJsZCksXG4gICAgYmF0Y2ggPSBybGQkdGVjaG5pY2FsLFxuICAgIGRlc2lnbiA9IG1vZGVsLm1hdHJpeCh+c3RyYWluLCBTdW1tYXJpemVkRXhwZXJpbWVudDo6Y29sRGF0YShybGQpKVxuKSAlPiUgXG4gICAgYXMuZGF0YS5mcmFtZSgpXG5ub3JtX3IkZmVhdHVyZV9pbml0IDwtIGRkc0Byb3dSYW5nZXMkZmVhdHVyZV9pbml0W1xuICAgIGRkc0Byb3dSYW5nZXMkZ2Vub21lID09IFwiU19jZXJldmlzaWFlXCJcbl1cblxuIyAgQXNzb2NpYXRlIG5vcm1hbGl6ZWQgdmFsdWVzIHdpdGggZmVhdHVyZSBtZXRhZGF0YVxubm9ybV9yIDwtIGRwbHlyOjpmdWxsX2pvaW4oXG4gICAgbm9ybV9yLFxuICAgIHRfZmNbdF9mYyRnZW5vbWUgPT0gXCJTX2NlcmV2aXNpYWVcIiwgMTo5XSxcbiAgICBieSA9IFwiZmVhdHVyZV9pbml0XCJcbikgJT4lXG4gICAgZHBseXI6OmFzX3RpYmJsZSgpXG5cbnJtKHJsZClcblxuIyAjUFJFVklPVVNcbiMgbm9ybV9yIDwtIERFU2VxMjo6cmxvZyhcbiMgICAgIGRkc1tkZHNAcm93UmFuZ2VzJGdlbm9tZSA9PSBcIlNfY2VyZXZpc2lhZVwiLCBdLFxuIyAgICAgYmxpbmQgPSBGQUxTRVxuIyApICU+JVxuIyAgICAgU3VtbWFyaXplZEV4cGVyaW1lbnQ6OmFzc2F5KCkgJT4lXG4jICAgICBhcy5kYXRhLmZyYW1lKClcbiMgbm9ybV9yJGZlYXR1cmVfaW5pdCA8LSBkZHNAcm93UmFuZ2VzJGZlYXR1cmVfaW5pdFtcbiMgICAgIGRkc0Byb3dSYW5nZXMkZ2Vub21lID09IFwiU19jZXJldmlzaWFlXCJcbiMgXVxuIyBcbiMgIyAgQXNzb2NpYXRlIG5vcm1hbGl6ZWQgdmFsdWVzIHdpdGggZmVhdHVyZSBtZXRhZGF0YVxuIyBub3JtX3IgPC0gZHBseXI6OmZ1bGxfam9pbihcbiMgICAgIG5vcm1fcixcbiMgICAgIHRfZmNbdF9mYyRnZW5vbWUgPT0gXCJTX2NlcmV2aXNpYWVcIiwgMTo5XSxcbiMgICAgIGJ5ID0gXCJmZWF0dXJlX2luaXRcIlxuIyApICU+JVxuIyAgICAgZHBseXI6OmFzX3RpYmJsZSgpXG5gYGAifQ== -->
+<pre class="r"><code>rld &lt;- DESeq2::rlog(
+    dds[dds@rowRanges$genome == &quot;S_cerevisiae&quot;, ],
     blind = FALSE
 )
 
@@ -2824,14 +2814,14 @@ norm_r &lt;- limma::removeBatchEffect(
 ) %&gt;% 
     as.data.frame()
 norm_r$feature_init &lt;- dds@rowRanges$feature_init[
-    dds@rowRanges$genome == \S_cerevisiae\
+    dds@rowRanges$genome == &quot;S_cerevisiae&quot;
 ]
 
 #  Associate normalized values with feature metadata
 norm_r &lt;- dplyr::full_join(
     norm_r,
-    t_fc[t_fc$genome == \S_cerevisiae\, 1:9],
-    by = \feature_init\
+    t_fc[t_fc$genome == &quot;S_cerevisiae&quot;, 1:9],
+    by = &quot;feature_init&quot;
 ) %&gt;%
     dplyr::as_tibble()
 
@@ -2839,484 +2829,53 @@ rm(rld)
 
 # #PREVIOUS
 # norm_r &lt;- DESeq2::rlog(
-#     dds[dds@rowRanges$genome == \S_cerevisiae\, ],
+#     dds[dds@rowRanges$genome == &quot;S_cerevisiae&quot;, ],
 #     blind = FALSE
 # ) %&gt;%
 #     SummarizedExperiment::assay() %&gt;%
 #     as.data.frame()
 # norm_r$feature_init &lt;- dds@rowRanges$feature_init[
-#     dds@rowRanges$genome == \S_cerevisiae\
+#     dds@rowRanges$genome == &quot;S_cerevisiae&quot;
 # ]
 # 
 # #  Associate normalized values with feature metadata
 # norm_r &lt;- dplyr::full_join(
 #     norm_r,
-#     t_fc[t_fc$genome == \S_cerevisiae\, 1:9],
-#     by = \feature_init\
+#     t_fc[t_fc$genome == &quot;S_cerevisiae&quot;, 1:9],
+#     by = &quot;feature_init&quot;
 # ) %&gt;%
 #     dplyr::as_tibble()</code></pre>
-<pre><code>
-&lt;!-- rnb-source-end --&gt;
-
-&lt;!-- rnb-chunk-end --&gt;
-
-
-&lt;!-- rnb-text-begin --&gt;
-
-&lt;br /&gt;
-
-#### Calculate GeTMM-normalized counts
-More details on this relatively new method of normalization, which combines
-inter- and intra-sample normalization methods and (appears to) perform quite
-well:
-
-- [Baraikdar et al. (Truttmann), *Exp Gerontol* 2023](https://www.sciencedirect.com/science/article/pii/S0531556523000281)
-- [Barrett et al. (Hammarlund), *G3* 2021](https://academic.oup.com/g3journal/article/11/7/jkab121/6226485)
-- [Bedre, *self-published* 2023 (most recent update)](https://www.reneshbedre.com/blog/expression_units.html#getmm-method)
-- [Nelson et al. (Wilkins), *Nat Microbiol* 2022](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9418001/)
-- [Smid et al. (Sieuwerts), *BMC Bioinf* 2018](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-018-2246-7)
-- [Walker et al. (Kainer), *Comput Struct Biotechnol J* 2022](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9260260/)
-- [Zatzman et al. (Shlien), *Sci Adv* 2022](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9683723/)
-
-
-&lt;!-- rnb-text-end --&gt;
-
-
-&lt;!-- rnb-chunk-begin --&gt;
-
-
-&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuIyAjUFJFVklPVVNcbiMgIyAgSXNvbGF0ZSByYXcgY291bnRzIGZvciBzYW1wbGVzIG9mIGludGVyZXN0XG4jIHJhdyA8LSBkZHMgJT4lXG4jICAgICBTdW1tYXJpemVkRXhwZXJpbWVudDo6YXNzYXkoKSAlPiVcbiMgICAgIGFzLmRhdGEuZnJhbWUoKVxuIyByYXckZmVhdHVyZV9pbml0IDwtIGRkc0Byb3dSYW5nZXMkZmVhdHVyZV9pbml0XG4jIFxuIyAjICBBc3NvY2lhdGUgbm9uLW5vcm1hbGl6ZWQgdmFsdWVzIHdpdGggZmVhdHVyZSBtZXRhZGF0YVxuIyByYXcgPC0gZHBseXI6OmZ1bGxfam9pbihcbiMgICAgIHJhdyxcbiMgICAgIHRfZmNbLCBjKHNlcSgxLDkpKV0sXG4jICAgICBieSA9IFxcZmVhdHVyZV9pbml0XFxcbiMgKSAlPiVcbiMgICAgIGRwbHlyOjphc190aWJibGUoKVxuIyBcbiMgIyAgQ2FsY3VsYXRlIGNvdW50cyBwZXIga2Igb2YgZ2VuZSBsZW5ndGggKGkuZS4sIGNvcnJlY3QgY291bnRzIGZvciBnZW5lXG4jICMrIGxlbmd0aCk7IGdlbmUgbGVuZ3RoIGlzIGluaXRpYWxseSBpbiBicCBhbmQgY29udmVydGVkIHRvIGtiXG4jIHJwayA8LSAoKHJhd1ssIDE6MTddICogMTBeMykgLyByYXckbGVuZ3RoKVxuIyBycGtbLCAxODoyNl0gPC0gcmF3WywgMTg6MjZdXG4jIFxuIyAjICBDYWxjdWxhdGUgbm9ybWFsaXphdGlvbiBmYWN0b3JzIHVzaW5nIHRoZSByYXcgc3Bpa2UtaW4gKEsuIGxhY3RpcykgY291bnRzXG4jIG5vcm1fS0wgPC0gZWRnZVI6OmNhbGNOb3JtRmFjdG9ycyhcbiMgICAgIHJhd1socnBrJGdlbm9tZSA9PSBcXEtfbGFjdGlzXFwpLCBdWywgMToxN11cbiMgKVxuIyBcbiMgIyAgQ3JlYXRlIGZhY3RvciBmb3IgY2F0ZWdvcmllcyAoZ3JvdXBzKVxuIyBtb2RlbF92YXJpYWJsZXMgPC0gc3RyaW5ncjo6c3RyX3NwbGl0KGNvbG5hbWVzKHJwa1ssIDE6MTddKSwgXFxfXFwpICU+JVxuIyAgICAgYXMuZGF0YS5mcmFtZShcbiMgICAgICAgICByb3cubmFtZXMgPSBjKFxuIyAgICAgICAgICAgICBcXHNhbXBsZVxcLCBcXHN0YWdlXFwsIFxcZGF5XFwsIFxca2l0XFwsIFxcdHhcXCwgXFxhdXhcXCwgXFx0Y1xcLCBcXHJlcFxcLCBcXHRlY2hcXFxuIyAgICAgICAgICksXG4jICAgICAgICAgY29sLm5hbWVzID0gcGFzdGUwKFxcc1xcLCBjKDE6MTcpKVxuIyAgICAgKSAlPiVcbiMgICAgIHQoKSAlPiVcbiMgICAgIHRpYmJsZTo6YXNfdGliYmxlKClcbiMgXG4jIGdyb3VwIDwtIGZhY3RvcihcbiMgICAgICMgU2Vjb25kIGxldmVsIGlzIG51bWVyYXRvciwgZmlyc3QgbGV2ZWwgaXMgZGVub21pbmF0b3JcbiMgICAgIG1vZGVsX3ZhcmlhYmxlcyRzYW1wbGUsXG4jICAgICBsZXZlbHMgPSBjKFxcV1RcXCwgXFxyNi1uXFwpXG4jIClcbiMgXG4jIHJtKG1vZGVsX3ZhcmlhYmxlcylcbiMgXG4jICMgIENyZWF0ZSBlZGdlUiBER0VMaXN0IG9iamVjdCBjb21wb3NlZCBvZiBTLiBjZXJldmlzaWFlIGNvdW50cyBwZXIga2IgZ2VuZVxuIyAjKyBsZW5ndGhcbiMgZGdlbCA8LSBlZGdlUjo6REdFTGlzdChcbiMgICAgIGNvdW50cyA9IHJwa1tycGskZ2Vub21lID09IFxcU19jZXJldmlzaWFlXFwsIF1bLCAxOjE3XSxcbiMgICAgIGdyb3VwID0gZ3JvdXBcbiMgKVxuIyBcbiMgIyAgSW4gdGhlIERHRUxpc3Qgb2JqZWN0LCBpbmNsdWRlIHRoZSBub3JtYWxpemF0aW9uIGZhY3RvcnMgY2FsY3VsYXRlZCBmcm9tXG4jICMrIHNwaWtlLWluIGluZm9ybWF0aW9uXG4jIGRnZWwkc2FtcGxlcyRub3JtLmZhY3RvcnMgPC0gbm9ybV9LTFxuIyBcbiMgIyAgQ2hlY2sgdGhhdCB0aGUgbm9ybWFsaXphdGlvbiBmYWN0b3JzIGZvciBlYWNoIGxpYnJhcnkgYXJlIGFwcHJvcHJpYXRlbHlcbiMgIysgYXNzaWduZWRcbiMgZGdlbCRzYW1wbGVzXG4jIFxuIyAjICBTY2FsZSB0aGUgdmFsdWVzIHRvIGNvdW50cy1wZXItbWlsbGlvblxuIyBub3JtX2cgPC0gZWRnZVI6OmNwbShkZ2VsKSAlPiUgdGliYmxlOjphc190aWJibGUoKVxuIyBub3JtX2dbLCAxODoyNl0gPC0gcnBrW3JwayRnZW5vbWUgPT0gXFxTX2NlcmV2aXNpYWVcXCwgMTg6MjZdXG4jIG5vcm1fZ1xuIyBcbiMgIyAgQ2xlYW4gdXAgdW5uZWVkZWQgdmFyaWFibGVzXG4jIHJtKHJhdywgcnBrLCBub3JtX0tMLCBncm91cClcbiMgcm0oZGdlbCkgICNUT0RPIERlbGV0ZSBkZ2VsPyBPciB1c2UgaXQgZm9yIHRyeWluZyBvdXQgREUgYW5hbHlzZXMgd2l0aCBlZGdlUj9cbmBgYFxuYGBgIn0= --&gt;
-
-```r
-```r
-# #PREVIOUS
-# #  Isolate raw counts for samples of interest
-# raw &lt;- dds %&gt;%
-#     SummarizedExperiment::assay() %&gt;%
-#     as.data.frame()
-# raw$feature_init &lt;- dds@rowRanges$feature_init
-# 
-# #  Associate non-normalized values with feature metadata
-# raw &lt;- dplyr::full_join(
-#     raw,
-#     t_fc[, c(seq(1,9))],
-#     by = \feature_init\
-# ) %&gt;%
-#     dplyr::as_tibble()
-# 
-# #  Calculate counts per kb of gene length (i.e., correct counts for gene
-# #+ length); gene length is initially in bp and converted to kb
-# rpk &lt;- ((raw[, 1:17] * 10^3) / raw$length)
-# rpk[, 18:26] &lt;- raw[, 18:26]
-# 
-# #  Calculate normalization factors using the raw spike-in (K. lactis) counts
-# norm_KL &lt;- edgeR::calcNormFactors(
-#     raw[(rpk$genome == \K_lactis\), ][, 1:17]
-# )
-# 
-# #  Create factor for categories (groups)
-# model_variables &lt;- stringr::str_split(colnames(rpk[, 1:17]), \_\) %&gt;%
-#     as.data.frame(
-#         row.names = c(
-#             \sample\, \stage\, \day\, \kit\, \tx\, \aux\, \tc\, \rep\, \tech\
-#         ),
-#         col.names = paste0(\s\, c(1:17))
-#     ) %&gt;%
-#     t() %&gt;%
-#     tibble::as_tibble()
-# 
-# group &lt;- factor(
-#     # Second level is numerator, first level is denominator
-#     model_variables$sample,
-#     levels = c(\WT\, \r6-n\)
-# )
-# 
-# rm(model_variables)
-# 
-# #  Create edgeR DGEList object composed of S. cerevisiae counts per kb gene
-# #+ length
-# dgel &lt;- edgeR::DGEList(
-#     counts = rpk[rpk$genome == \S_cerevisiae\, ][, 1:17],
-#     group = group
-# )
-# 
-# #  In the DGEList object, include the normalization factors calculated from
-# #+ spike-in information
-# dgel$samples$norm.factors &lt;- norm_KL
-# 
-# #  Check that the normalization factors for each library are appropriately
-# #+ assigned
-# dgel$samples
-# 
-# #  Scale the values to counts-per-million
-# norm_g &lt;- edgeR::cpm(dgel) %&gt;% tibble::as_tibble()
-# norm_g[, 18:26] &lt;- rpk[rpk$genome == \S_cerevisiae\, 18:26]
-# norm_g
-# 
-# #  Clean up unneeded variables
-# rm(raw, rpk, norm_KL, group)
-# rm(dgel)  #TODO Delete dgel? Or use it for trying out DE analyses with edgeR?</code></pre>
-<pre><code>
-&lt;!-- rnb-source-end --&gt;
-
-&lt;!-- rnb-chunk-end --&gt;
-
-
-&lt;!-- rnb-text-begin --&gt;
-
-&lt;br /&gt;
-
-#### Calculate TPM-normalized counts
-
-&lt;!-- rnb-text-end --&gt;
-
-
-&lt;!-- rnb-chunk-begin --&gt;
-
-
-&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuIyAjUFJFVklPVVNcbiMgIyAgSXNvbGF0ZSByYXcgY291bnRzIGZvciBzYW1wbGVzIG9mIGludGVyZXN0XG4jIHJhdyA8LSBkZHMgJT4lXG4jICAgICBTdW1tYXJpemVkRXhwZXJpbWVudDo6YXNzYXkoKSAlPiVcbiMgICAgIGFzLmRhdGEuZnJhbWUoKVxuIyByYXckZmVhdHVyZV9pbml0IDwtIGRkc0Byb3dSYW5nZXMkZmVhdHVyZV9pbml0XG4jIFxuIyAjICBBc3NvY2lhdGUgbm9uLW5vcm1hbGl6ZWQgdmFsdWVzIHdpdGggZmVhdHVyZSBtZXRhZGF0YVxuIyByYXcgPC0gZHBseXI6OmZ1bGxfam9pbihcbiMgICAgIHJhdyxcbiMgICAgIHRfZmNbLCAxOjldLFxuIyAgICAgYnkgPSBcXGZlYXR1cmVfaW5pdFxcXG4jICkgJT4lXG4jICAgICBkcGx5cjo6YXNfdGliYmxlKClcbiMgXG4jICMgIENhbGN1bGF0ZSBjb3VudHMgcGVyIGtiIG9mIGdlbmUgbGVuZ3RoIChpLmUuLCBjb3JyZWN0IGNvdW50cyBmb3IgZ2VuZVxuIyAjKyBsZW5ndGggb3IgZG8gYW4gXFxSUEsgbm9ybWFsaXphdGlvblxcKTsgdGhlbiwgZGl2aWRlIFJQSy1ub3JtYWxpemVkIGVsZW1lbnRzXG4jICMrIGJ5IHRoZSBzdW0gb2Ygc2FtcGxlIFJQSyBkaXZpZGVkIGJ5IG9uZSBtaWxsaW9uOiB0aGlzIGRvZXMgdGhlIGFjdHVhbCBUUE1cbiMgIysgbm9ybWFsaXphdGlvblxuIyBycGsgPC0gdHBtIDwtICgocmF3WywgMToxN10gKiAxMF4zKSAvIHJhdyRsZW5ndGgpXG4jIGZvciAoaSBpbiAxOm5jb2wocnBrKSkge1xuIyAgICAgdHBtWywgaV0gPC0gKHJwa1ssIGldIC8gc3VtKHJwa1ssIGldIC8gMWU2KSlcbiMgfVxuIyBcbiMgdHBtWywgMTg6MjZdIDwtIHJhd1ssIDE4OjI2XVxuIyBub3JtX3QgPC0gdHBtW3RwbSRnZW5vbWUgPT0gXFxTX2NlcmV2aXNpYWVcXCwgXVxuIyBcbiMgcm0ocmF3LCBycGssIHRwbSlcbiMgXG4jICNDSEVDS1xuIyAjICBDaGVjayB0aGF0IG15IGNhbGN1bGF0aW9uIGFib3ZlIGlzIGFjdHVhbGx5IHByb2R1Y2luZyBUUE0tbm9ybWFsaXplZCB2YWx1ZXM6XG4jICMrICNRVUVTVElPTiAxLzIgRG8gbXkgdmFsdWVzIG1hdGNoIHRoZSBvdXRwdXQgZnJvbSBjb2RlIGJ5IE1pa2UgTG92ZSAoYXV0aG9yXG4jICMrICNRVUVTVElPTiAyLzIgb2YgREVTZXEyKSBwb3N0ZWQgYXQgc3VwcG9ydC5iaW9jb25kdWN0b3Iub3JnL3AvOTEyMTgvP1xuIyAjIHggPC0gcmF3WywgMTo1XSAvIHJhdyRsZW5ndGhcbiMgIyB0ZXN0IDwtIHQoKHQoeCkgKiAxZTYpIC8gY29sU3Vtcyh4KSlcbiMgIyB0ZXN0IDwtIHRlc3QgJT4lIGFzLmRhdGEuZnJhbWUoKVxuIyAjIGlkZW50aWNhbChcbiMgIyAgICAgICByb3VuZCh0ZXN0JGBuMy1kX1FfZGF5N190Y25fTl9hdXgtVF90Yy1GX3JlcDFfdGVjaDFgLCBkaWdpdHMgPSAzKSxcbiMgIyAgICAgcm91bmQobm9ybV90JGBuMy1kX1FfZGF5N190Y25fTl9hdXgtVF90Yy1GX3JlcDFfdGVjaDFgLCBkaWdpdHMgPSAzKVxuIyAjICkgICMgWzFdIFRSVUVcbiMgIyAgI0FOU1dFUiBCYXNpY2FsbHksIHRoZSBjYWxjdWxhdGlvbnMgcmVzdWx0IGluIGVxdWl2YWxlbnQgcmVzdWx0c1xuYGBgXG5gYGAifQ== --&gt;
-
-```r
-```r
-# #PREVIOUS
-# #  Isolate raw counts for samples of interest
-# raw &lt;- dds %&gt;%
-#     SummarizedExperiment::assay() %&gt;%
-#     as.data.frame()
-# raw$feature_init &lt;- dds@rowRanges$feature_init
-# 
-# #  Associate non-normalized values with feature metadata
-# raw &lt;- dplyr::full_join(
-#     raw,
-#     t_fc[, 1:9],
-#     by = \feature_init\
-# ) %&gt;%
-#     dplyr::as_tibble()
-# 
-# #  Calculate counts per kb of gene length (i.e., correct counts for gene
-# #+ length or do an \RPK normalization\); then, divide RPK-normalized elements
-# #+ by the sum of sample RPK divided by one million: this does the actual TPM
-# #+ normalization
-# rpk &lt;- tpm &lt;- ((raw[, 1:17] * 10^3) / raw$length)
-# for (i in 1:ncol(rpk)) {
-#     tpm[, i] &lt;- (rpk[, i] / sum(rpk[, i] / 1e6))
-# }
-# 
-# tpm[, 18:26] &lt;- raw[, 18:26]
-# norm_t &lt;- tpm[tpm$genome == \S_cerevisiae\, ]
-# 
-# rm(raw, rpk, tpm)
-# 
-# #CHECK
-# #  Check that my calculation above is actually producing TPM-normalized values:
-# #+ #QUESTION 1/2 Do my values match the output from code by Mike Love (author
-# #+ #QUESTION 2/2 of DESeq2) posted at support.bioconductor.org/p/91218/?
-# # x &lt;- raw[, 1:5] / raw$length
-# # test &lt;- t((t(x) * 1e6) / colSums(x))
-# # test &lt;- test %&gt;% as.data.frame()
-# # identical(
-# #       round(test$`n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1`, digits = 3),
-# #     round(norm_t$`n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1`, digits = 3)
-# # )  # [1] TRUE
-# #  #ANSWER Basically, the calculations result in equivalent results</code></pre>
-<pre><code>
-&lt;!-- rnb-source-end --&gt;
-
-&lt;!-- rnb-chunk-end --&gt;
-
-
-&lt;!-- rnb-text-begin --&gt;
-
-&lt;br /&gt;
-
-### Run PCA with variously normalized counts
-#### Part 1
-
-&lt;!-- rnb-text-end --&gt;
-
-
-&lt;!-- rnb-chunk-begin --&gt;
-
-
-&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuIyAgTWFrZSB0aGUgZm9sbG93aW5nIGNvZGUgZ2VuZXJpYyAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLVxuIysgLi4uc28gdGhhdCB3ZSBjYW4gdHJ5IGl0IHdpdGggZGlmZmVyZW50IG5vcm1hbGl6YXRpb24gb2JqZWN0cyAoY291bnRzXG4jKyBub3JtYWxpemVkIGluIGRpZmZlcmVudCB3YXlzKVxuIyBub3JtIDwtIG5vcm1fdlxubm9ybSA8LSBub3JtX3JcbiMgbm9ybSA8LSBub3JtX2dcbiMgbm9ybSA8LSBub3JtX3RcbiNOT1RFIDEvMyBub3JtX2cgYW5kIG5vcm1fdCBhcHBlYXIgdG8gYmUgdGhlIGJlc3QgcGVyZm9ybWluZzsgbm9ybV9yIChibGluZGVkXG4jTk9URSAyLzMgb3Igbm90KSBjbHVzdGVycyBhbGwgc2FtcGxlcyB0b2dldGhlciByZWdhcmRsZXNzIG9mIG1vZGVsIHZhcmlhYmxlXG4jTk9URSAzLzMgJ3N0cmFpbidcblxuIyAgQ3JlYXRlIGEgUENBdG9vbHMgXFxwY2FcXCBTNCBvYmplY3QgZm9yIHRoZSBub3JtYWxpemVkIGNvdW50cyAtLS0tLS0tLS0tLS0tLS0tXG4jKyBBc3NpZ24gdW5pcXVlIHJvdyBuYW1lcyB0b29cbm9ial9wY2EgPC0gUENBdG9vbHM6OnBjYShcbiAgICBub3JtWywgMTo3XSxcbiAgICBtZXRhZGF0YSA9IGRkc1tkZHNAcm93UmFuZ2VzJGdlbm9tZSAhPSBcXEtfbGFjdGlzXFwsIF1AY29sRGF0YVxuKVxucm93bmFtZXMob2JqX3BjYSRsb2FkaW5ncykgPC0gbWFrZS5uYW1lcyhcbiAgICBkZHNbZGRzQHJvd1JhbmdlcyRnZW5vbWUgIT0gXFxLX2xhY3Rpc1xcLCBdQHJvd1JhbmdlcyRmZWF0dXJlLFxuICAgIHVuaXF1ZSA9IFRSVUVcbilcbiMgY29sbmFtZXMob2JqX3BjYSRsb2FkaW5ncylcblxuXG4jICBEZXRlcm1pbmUgXFxzaWduaWZpY2FudFxcIFBDcyB3aXRoIEhvcm4ncyBwYXJhbGxlbCBhbmFseXNpcyAtLS0tLS0tLS0tLS0tLS0tLS1cbiMrIFNlZSBIb3JuLCAxOTY1XG5ob3JuIDwtIFBDQXRvb2xzOjpwYXJhbGxlbFBDQShtYXQgPSBub3JtWywgMTo3XSlcbiMgaG9ybiRuXG5cblxuIyAgRGV0ZXJtaW5lIFxcc2lnbmlmaWNhbnRcXCBwcmluY2lwbGUgY29tcG9uZW50cyB3aXRoIHRoZSBlbGJvdyBtZXRob2QgLS0tLS0tLS0tXG4jKyBTZWUgQnVqYSBhbmQgRXl1Ym9nbHUsIDE5OTJcbmVsYm93IDwtIFBDQXRvb2xzOjpmaW5kRWxib3dQb2ludChvYmpfcGNhJHZhcmlhbmNlKVxuIyBlbGJvd1xuXG5cbiMgIEV2YWx1YXRlIGN1bXVsYXRpdmUgcHJvcG9ydGlvbiBvZiBleHBsYWluZWQgdmFyaWFuY2Ugd2l0aCBhIHNjcmVlIHBsb3QgLS0tLS1cbnNjcmVlIDwtIGRyYXdfc2NyZWVfcGxvdChvYmpfcGNhLCBob3JuID0gaG9ybiRuLCBlbGJvdyA9IGVsYm93KVxuc2NyZWVcbiMgc2F2ZV90aXRsZSA8LSBwYXN0ZTAoXFxwYW5lbC1wbG90XFwsIFxcLlxcLCBcXHNjcmVlXFwsIFxcLnBkZlxcKVxuIyBnZ3Bsb3QyOjpnZ3NhdmUocGFzdGUwKGFyZ3MkZGlyZWN0b3J5X291dCwgXFwvXFwsIHNhdmVfdGl0bGUpLCBzY3JlZSlcbiNUT0RPIFdvcmsgdXAgc29tZSBsb2dpYyBmb3IgbG9jYXRpb24ocykgZm9yIG91dGZpbGVzXG5gYGBcbmBgYCJ9 --&gt;
-
-```r
-```r
-#  Make the following code generic --------------------------------------------
-#+ ...so that we can try it with different normalization objects (counts
-#+ normalized in different ways)
-# norm &lt;- norm_v
-norm &lt;- norm_r
-# norm &lt;- norm_g
-# norm &lt;- norm_t
-#NOTE 1/3 norm_g and norm_t appear to be the best performing; norm_r (blinded
-#NOTE 2/3 or not) clusters all samples together regardless of model variable
-#NOTE 3/3 &#39;strain&#39;
-
-#  Create a PCAtools \pca\ S4 object for the normalized counts ----------------
-#+ Assign unique row names too
-obj_pca &lt;- PCAtools::pca(
-    norm[, 1:7],
-    metadata = dds[dds@rowRanges$genome != \K_lactis\, ]@colData
-)
-rownames(obj_pca$loadings) &lt;- make.names(
-    dds[dds@rowRanges$genome != \K_lactis\, ]@rowRanges$feature,
-    unique = TRUE
-)
-# colnames(obj_pca$loadings)
-
-
-#  Determine \significant\ PCs with Horn&#39;s parallel analysis ------------------
-#+ See Horn, 1965
-horn &lt;- PCAtools::parallelPCA(mat = norm[, 1:7])
-# horn$n
-
-
-#  Determine \significant\ principle components with the elbow method ---------
-#+ See Buja and Eyuboglu, 1992
-elbow &lt;- PCAtools::findElbowPoint(obj_pca$variance)
-# elbow
-
-
-#  Evaluate cumulative proportion of explained variance with a scree plot -----
-scree &lt;- draw_scree_plot(obj_pca, horn = horn$n, elbow = elbow)
-scree
-# save_title &lt;- paste0(\panel-plot\, \.\, \scree\, \.pdf\)
-# ggplot2::ggsave(paste0(args$directory_out, \/\, save_title), scree)
-#TODO Work up some logic for location(s) for outfiles</code></pre>
-<pre><code>
-&lt;!-- rnb-source-end --&gt;
-
-&lt;!-- rnb-chunk-end --&gt;
-
-
-&lt;!-- rnb-text-begin --&gt;
-
-&lt;br /&gt;
-
-#### Part 2
-
-&lt;!-- rnb-text-end --&gt;
-
-
-&lt;!-- rnb-chunk-begin --&gt;
-
-
-&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuIyAgU2F2ZSBjb21wb25lbnQgbG9hZGluZyB2ZWN0b3JzIGluIHRoZWlyIG93biBkYXRhIGZyYW1lIC0tLS0tLS0tLS0tLS0tLS0tLS0tLVxubG9hZGluZ3MgPC0gYXMuZGF0YS5mcmFtZShvYmpfcGNhJGxvYWRpbmdzKVxuXG4jICBFdmFsdWF0ZSB0aGUgY29tcG9uZW50IGxvYWRpbmcgdmVjdG9ycyBmb3IgdGhlIG51bWJlciBvZiBzaWduaWZpY2FudCBQQ3NcbiMrIGlkZW50aWZpZWQgdmlhIHRoZSBlbGJvdyBtZXRob2QgcGx1cyB0d29cblBDcyA8LSBwYXN0ZTAoXFxQQ1xcLCAxOihhcy5udW1lcmljKGVsYm93KSArIDIpKVxudG9wX2xvYWRpbmdzX2FsbCA8LSBsYXBwbHkoXG4gICAgUENzLCBnZXRfdG9wX2xvYWRpbmdzLCB4ID0gbG9hZGluZ3MsIHogPSBcXGFsbFxcLCBhID0gVFJVRVxuKVxudG9wX2xvYWRpbmdzX3BvcyA8LSBsYXBwbHkoXG4gICAgUENzLCBnZXRfdG9wX2xvYWRpbmdzLCB4ID0gbG9hZGluZ3MsIHogPSBcXHBvc1xcLCBhID0gVFJVRVxuKVxudG9wX2xvYWRpbmdzX25lZyA8LSBsYXBwbHkoXG4gICAgUENzLCBnZXRfdG9wX2xvYWRpbmdzLCB4ID0gbG9hZGluZ3MsIHogPSBcXG5lZ1xcLCBhID0gVFJVRVxuKVxuXG5uYW1lcyh0b3BfbG9hZGluZ3NfYWxsKSA8LVxuICAgIG5hbWVzKHRvcF9sb2FkaW5nc19wb3MpIDwtXG4gICAgbmFtZXModG9wX2xvYWRpbmdzX25lZykgPC1cbiAgICBQQ3NcbiMgcm0oUENzKVxuIyB0b3BfbG9hZGluZ3NfYWxsJFBDMSAlPiUgaGVhZChuID0gMjApXG4jIHRvcF9sb2FkaW5nc19wb3MkUEMxICU+JSBoZWFkKG4gPSAyMClcbiMgdG9wX2xvYWRpbmdzX25lZyRQQzEgJT4lIGhlYWQobiA9IDIwKVxuXG5cbiMgIEFuYWx5emUgcG9zaXRpdmUsIG5lZ2F0aXZlIGxvYWRpbmdzIG9uIGF4ZXMgb2YgYmlwbG90cyAtLS0tLS0tLS0tLS0tLS0tLS0tLS1cbiMrIExvb2sgYXQgdGhlIHRvcCAxNSBwZXIgYXhpc1xuaW1hZ2VzIDwtIGxpc3QoKVxubWF0IDwtIGNvbWJuKFBDcywgMilcbmZvcihpIGluIDE6bmNvbChtYXQpKSB7XG4gICAgIyBpIDwtIDFcbiAgICBqIDwtIG1hdFssIGldXG4gICAgXG4gICAgUENfeCA8LSB4X2xhYmVsIDwtIGpbMV1cbiAgICBQQ195IDwtIHlfbGFiZWwgPC0galsyXVxuICAgIFxuICAgIGltYWdlc1tbcGFzdGUwKFxcUENBdG9vbHMuXFwsIFBDX3gsIFxcLnYuXFwsIFBDX3kpXV0gPC0gcGxvdF9iaXBsb3QoXG4gICAgICAgIHBjYSA9IG9ial9wY2EsXG4gICAgICAgIFBDX3ggPSBQQ194LFxuICAgICAgICBQQ195ID0gUENfeSxcbiAgICAgICAgbG9hZGluZ3Nfc2hvdyA9IEZBTFNFLFxuICAgICAgICBsb2FkaW5nc19uID0gMCxcbiAgICAgICAgbWV0YV9jb2xvciA9IFxcc3RyYWluXFwsXG4gICAgICAgIG1ldGFfc2hhcGUgPSBcXHJlcGxpY2F0ZVxcLFxuICAgICAgICB4X21pbiA9IC0yMCwgICMgLTEyMDAwMCwgICMgLTY2LFxuICAgICAgICB4X21heCA9IDIwLCAgIyAxMjAwMDAsICAjIDY2LFxuICAgICAgICB5X21pbiA9IC0yMCwgICMgLTUwMDAwLCAgIyAtNTAsXG4gICAgICAgIHlfbWF4ID0gMjAgICMgNTAwMDAgICMgNTBcbiAgICApXG4gICAgXG4gICAgI0hFUkVcbiAgICBpbWFnZXNbW3Bhc3RlMChcXEtBLlxcLCBQQ194LCBcXC52LlxcLCBQQ195KV1dIDwtXG4gICAgICAgIHBsb3RfcG9zX25lZ19sb2FkaW5nc19lYWNoX2F4aXMoXG4gICAgICAgICAgICBkZl9hbGwgPSBsb2FkaW5ncyxcbiAgICAgICAgICAgIGRmX3BvcyA9IHRvcF9sb2FkaW5nc19wb3MsXG4gICAgICAgICAgICBkZl9uZWcgPSB0b3BfbG9hZGluZ3NfbmVnLFxuICAgICAgICAgICAgUENfeCA9IFBDX3gsXG4gICAgICAgICAgICBQQ195ID0gUENfeSxcbiAgICAgICAgICAgIHJvd19zdGFydCA9IDEsXG4gICAgICAgICAgICByb3dfZW5kID0gMTUsICAjIDMwXG4gICAgICAgICAgICB4X21pbiA9IC0wLjE1LCAgIyAtMC4xNSwgICMgLTEuMCxcbiAgICAgICAgICAgIHhfbWF4ID0gMC4xNSwgICMgMC4xNSwgICMgMS4wLFxuICAgICAgICAgICAgeV9taW4gPSAtMC4xNSwgICMgLTAuMSwgICMgLTAuNSxcbiAgICAgICAgICAgIHlfbWF4ID0gMC4xNSwgICMgMC4xLCAgIyAwLjUsXG4gICAgICAgICAgICB4X251ZGdlID0gMC4wMiwgICMgMC4wMiwgICMgMC4wNCxcbiAgICAgICAgICAgIHlfbnVkZ2UgPSAwLjA0LCAgIyAwLjA0LCAgIyAwLjAyLFxuICAgICAgICAgICAgeF9sYWJlbCA9IHhfbGFiZWwsXG4gICAgICAgICAgICB5X2xhYmVsID0geV9sYWJlbCxcbiAgICAgICAgICAgIGNvbF9saW5lX3BvcyA9IFxcYmxhY2tcXCxcbiAgICAgICAgICAgIGNvbF9saW5lX25lZyA9IFxccmVkXFwsXG4gICAgICAgICAgICBjb2xfc2VnX3BvcyA9IFxcZ3JleVxcLFxuICAgICAgICAgICAgY29sX3NlZ19uZWcgPSBcXGdyZXlcXFxuICAgICAgICApXG4gICAgXG4gICAgaW1hZ2VzW1twYXN0ZTAoXFxLQS5cXCwgUENfeCwgXFwudi5cXCwgUENfeSldXVxufVxuXG4jICBIb3cgZG8gdGhpbmdzIGxvb2s/XG5pbWFnZXMkUENBdG9vbHMuUEMxLnYuUEMyXG5pbWFnZXMkS0EuUEMxLnYuUEMyJFBDX3hfcG9zXG5pbWFnZXMkS0EuUEMxLnYuUEMyJFBDX3hfbmVnXG5pbWFnZXMkS0EuUEMxLnYuUEMyJFBDX3lfcG9zXG5pbWFnZXMkS0EuUEMxLnYuUEMyJFBDX3lfbmVnXG5cbiMgaW1hZ2VzJFBDQXRvb2xzLlBDMS52LlBDM1xuIyBpbWFnZXMkS0EuUEMxLnYuUEMzJFBDX3hfcG9zXG4jIGltYWdlcyRLQS5QQzEudi5QQzMkUENfeF9uZWdcbiMgaW1hZ2VzJEtBLlBDMS52LlBDMyRQQ195X3Bvc1xuIyBpbWFnZXMkS0EuUEMxLnYuUEMzJFBDX3lfbmVnXG4jIFxuIyBpbWFnZXMkUENBdG9vbHMuUEMxLnYuUEM0XG4jIGltYWdlcyRLQS5QQzEudi5QQzQkUENfeF9wb3NcbiMgaW1hZ2VzJEtBLlBDMS52LlBDNCRQQ194X25lZ1xuIyBpbWFnZXMkS0EuUEMxLnYuUEM0JFBDX3lfcG9zXG4jIGltYWdlcyRLQS5QQzEudi5QQzQkUENfeV9uZWdcbiMgXG4jIGltYWdlcyRQQ0F0b29scy5QQzIudi5QQzNcbiMgaW1hZ2VzJEtBLlBDMi52LlBDMyRQQ194X3Bvc1xuIyBpbWFnZXMkS0EuUEMyLnYuUEMzJFBDX3hfbmVnXG4jIGltYWdlcyRLQS5QQzIudi5QQzMkUENfeV9wb3NcbiMgaW1hZ2VzJEtBLlBDMi52LlBDMyRQQ195X25lZ1xuIyBcbiMgaW1hZ2VzJFBDQXRvb2xzLlBDMi52LlBDNFxuIyBpbWFnZXMkS0EuUEMyLnYuUEM0JFBDX3hfcG9zXG4jIGltYWdlcyRLQS5QQzIudi5QQzQkUENfeF9uZWdcbiMgaW1hZ2VzJEtBLlBDMi52LlBDNCRQQ195X3Bvc1xuIyBpbWFnZXMkS0EuUEMyLnYuUEM0JFBDX3lfbmVnXG4jIFxuIyBpbWFnZXMkUENBdG9vbHMuUEMzLnYuUEM0XG4jIGltYWdlcyRLQS5QQzMudi5QQzQkUENfeF9wb3NcbiMgaW1hZ2VzJEtBLlBDMy52LlBDNCRQQ194X25lZ1xuIyBpbWFnZXMkS0EuUEMzLnYuUEM0JFBDX3lfcG9zXG4jIGltYWdlcyRLQS5QQzMudi5QQzQkUENfeV9uZWdcblxuIyBpbWFnZXMkUENBdG9vbHMuUEMxLnYuUEMzXG4jIGltYWdlcyRLQS5QQzEudi5QQzNcbiMgaW1hZ2VzJFBDQXRvb2xzLlBDMS52LlBDNFxuIyBpbWFnZXMkS0EuUEMxLnYuUEM0XG4jIGltYWdlcyRQQ0F0b29scy5QQzIudi5QQzNcbiMgaW1hZ2VzJEtBLlBDMi52LlBDM1xuYGBgXG5gYGAifQ== --&gt;
-
-```r
-```r
-#  Save component loading vectors in their own data frame ---------------------
-loadings &lt;- as.data.frame(obj_pca$loadings)
-
-#  Evaluate the component loading vectors for the number of significant PCs
-#+ identified via the elbow method plus two
-PCs &lt;- paste0(\PC\, 1:(as.numeric(elbow) + 2))
-top_loadings_all &lt;- lapply(
-    PCs, get_top_loadings, x = loadings, z = \all\, a = TRUE
-)
-top_loadings_pos &lt;- lapply(
-    PCs, get_top_loadings, x = loadings, z = \pos\, a = TRUE
-)
-top_loadings_neg &lt;- lapply(
-    PCs, get_top_loadings, x = loadings, z = \neg\, a = TRUE
-)
-
-names(top_loadings_all) &lt;-
-    names(top_loadings_pos) &lt;-
-    names(top_loadings_neg) &lt;-
-    PCs
-# rm(PCs)
-# top_loadings_all$PC1 %&gt;% head(n = 20)
-# top_loadings_pos$PC1 %&gt;% head(n = 20)
-# top_loadings_neg$PC1 %&gt;% head(n = 20)
-
-
-#  Analyze positive, negative loadings on axes of biplots ---------------------
-#+ Look at the top 15 per axis
-images &lt;- list()
-mat &lt;- combn(PCs, 2)
-for(i in 1:ncol(mat)) {
-    # i &lt;- 1
-    j &lt;- mat[, i]
-    
-    PC_x &lt;- x_label &lt;- j[1]
-    PC_y &lt;- y_label &lt;- j[2]
-    
-    images[[paste0(\PCAtools.\, PC_x, \.v.\, PC_y)]] &lt;- plot_biplot(
-        pca = obj_pca,
-        PC_x = PC_x,
-        PC_y = PC_y,
-        loadings_show = FALSE,
-        loadings_n = 0,
-        meta_color = \strain\,
-        meta_shape = \replicate\,
-        x_min = -20,  # -120000,  # -66,
-        x_max = 20,  # 120000,  # 66,
-        y_min = -20,  # -50000,  # -50,
-        y_max = 20  # 50000  # 50
-    )
-    
-    #HERE
-    images[[paste0(\KA.\, PC_x, \.v.\, PC_y)]] &lt;-
-        plot_pos_neg_loadings_each_axis(
-            df_all = loadings,
-            df_pos = top_loadings_pos,
-            df_neg = top_loadings_neg,
-            PC_x = PC_x,
-            PC_y = PC_y,
-            row_start = 1,
-            row_end = 15,  # 30
-            x_min = -0.15,  # -0.15,  # -1.0,
-            x_max = 0.15,  # 0.15,  # 1.0,
-            y_min = -0.15,  # -0.1,  # -0.5,
-            y_max = 0.15,  # 0.1,  # 0.5,
-            x_nudge = 0.02,  # 0.02,  # 0.04,
-            y_nudge = 0.04,  # 0.04,  # 0.02,
-            x_label = x_label,
-            y_label = y_label,
-            col_line_pos = \black\,
-            col_line_neg = \red\,
-            col_seg_pos = \grey\,
-            col_seg_neg = \grey\
-        )
-    
-    images[[paste0(\KA.\, PC_x, \.v.\, PC_y)]]
-}
-
-#  How do things look?
-images$PCAtools.PC1.v.PC2
-images$KA.PC1.v.PC2$PC_x_pos
-images$KA.PC1.v.PC2$PC_x_neg
-images$KA.PC1.v.PC2$PC_y_pos
-images$KA.PC1.v.PC2$PC_y_neg
-
-# images$PCAtools.PC1.v.PC3
-# images$KA.PC1.v.PC3$PC_x_pos
-# images$KA.PC1.v.PC3$PC_x_neg
-# images$KA.PC1.v.PC3$PC_y_pos
-# images$KA.PC1.v.PC3$PC_y_neg
-# 
-# images$PCAtools.PC1.v.PC4
-# images$KA.PC1.v.PC4$PC_x_pos
-# images$KA.PC1.v.PC4$PC_x_neg
-# images$KA.PC1.v.PC4$PC_y_pos
-# images$KA.PC1.v.PC4$PC_y_neg
-# 
-# images$PCAtools.PC2.v.PC3
-# images$KA.PC2.v.PC3$PC_x_pos
-# images$KA.PC2.v.PC3$PC_x_neg
-# images$KA.PC2.v.PC3$PC_y_pos
-# images$KA.PC2.v.PC3$PC_y_neg
-# 
-# images$PCAtools.PC2.v.PC4
-# images$KA.PC2.v.PC4$PC_x_pos
-# images$KA.PC2.v.PC4$PC_x_neg
-# images$KA.PC2.v.PC4$PC_y_pos
-# images$KA.PC2.v.PC4$PC_y_neg
-# 
-# images$PCAtools.PC3.v.PC4
-# images$KA.PC3.v.PC4$PC_x_pos
-# images$KA.PC3.v.PC4$PC_x_neg
-# images$KA.PC3.v.PC4$PC_y_pos
-# images$KA.PC3.v.PC4$PC_y_neg
-
-# images$PCAtools.PC1.v.PC3
-# images$KA.PC1.v.PC3
-# images$PCAtools.PC1.v.PC4
-# images$KA.PC1.v.PC4
-# images$PCAtools.PC2.v.PC3
-# images$KA.PC2.v.PC3</code></pre>
-<pre><code>
-&lt;!-- rnb-source-end --&gt;
-
-&lt;!-- rnb-chunk-end --&gt;
-
-
-&lt;!-- rnb-text-begin --&gt;
-
-&lt;br /&gt;
-
-#### Part 3
-
-&lt;!-- rnb-text-end --&gt;
-
-
-&lt;!-- rnb-chunk-begin --&gt;
-
-
-&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuIyBmb3IoaSBpbiAxOmxlbmd0aChuYW1lcyhpbWFnZXMpKSkge1xuIyAgICAgIyBpIDwtIDJcbiMgICAgIHZlY3Rvcl9uYW1lcyA8LSBuYW1lcyhpbWFnZXMpICU+JSBzdHJpbmdyOjpzdHJfc3BsaXQoXFxcXFxcLlxcKVxuIyAgICAgXG4jICAgICBpZih2ZWN0b3JfbmFtZXNbW2ldXVsxXSA9PSBcXFBDQXRvb2xzXFwpIHtcbiMgICAgICAgICBzYXZlX3RpdGxlIDwtIHBhc3RlMChcXHBhbmVsLXBsb3RcXCwgXFwuXFwsIG5hbWVzKGltYWdlcylbaV0sIFxcLnBkZlxcKVxuIyAgICAgICAgIGdncGxvdDI6Omdnc2F2ZShcbiMgICAgICAgICAgICAgcGFzdGUwKGFyZ3MkZGlyZWN0b3J5X291dCwgXFwvXFwsIHNhdmVfdGl0bGUpLCBpbWFnZXNbW2ldXVxuIyAgICAgICAgIClcbiMgICAgIH0gZWxzZSBpZih2ZWN0b3JfbmFtZXNbW2ldXVsxXSA9PSBcXEtBXFwpIHtcbiMgICAgICAgICBzYXZlX3RpdGxlIDwtIHBhc3RlMChcbiMgICAgICAgICAgICAgXFxwYW5lbC1wbG90XFwsIFxcLlxcLCBuYW1lcyhpbWFnZXMpW2ldLCBcXC4xLXgtcG9zaXRpdmUucGRmXFxcbiMgICAgICAgICApXG4jICAgICAgICAgZ2dwbG90Mjo6Z2dzYXZlKFxuIyAgICAgICAgICAgICBwYXN0ZTAoYXJncyRkaXJlY3Rvcnlfb3V0LCBcXC9cXCwgc2F2ZV90aXRsZSksIGltYWdlc1tbaV1dW1sxXV1cbiMgICAgICAgICApXG4jICAgICAgICAgXG4jICAgICAgICAgc2F2ZV90aXRsZSA8LSBwYXN0ZTAoXG4jICAgICAgICAgICAgIFxccGFuZWwtcGxvdFxcLCBcXC5cXCwgbmFtZXMoaW1hZ2VzKVtpXSwgXFwuMi15LXBvc2l0aXZlLnBkZlxcXG4jICAgICAgICAgKVxuIyAgICAgICAgIGdncGxvdDI6Omdnc2F2ZShcbiMgICAgICAgICAgICAgcGFzdGUwKGFyZ3MkZGlyZWN0b3J5X291dCwgXFwvXFwsIHNhdmVfdGl0bGUpLCBpbWFnZXNbW2ldXVtbMl1dXG4jICAgICAgICAgKVxuIyAgICAgICAgIFxuIyAgICAgICAgIHNhdmVfdGl0bGUgPC0gcGFzdGUwKFxuIyAgICAgICAgICAgICBcXHBhbmVsLXBsb3RcXCwgXFwuXFwsIG5hbWVzKGltYWdlcylbaV0sIFxcLjMteC1uZWdhdGl2ZS5wZGZcXFxuIyAgICAgICAgIClcbiMgICAgICAgICBnZ3Bsb3QyOjpnZ3NhdmUoXG4jICAgICAgICAgICAgIHBhc3RlMChhcmdzJGRpcmVjdG9yeV9vdXQsIFxcL1xcLCBzYXZlX3RpdGxlKSwgaW1hZ2VzW1tpXV1bWzNdXVxuIyAgICAgICAgIClcbiMgICAgICAgICBcbiMgICAgICAgICBzYXZlX3RpdGxlIDwtIHBhc3RlMChcbiMgICAgICAgICAgICAgXFxwYW5lbC1wbG90XFwsIFxcLlxcLCBuYW1lcyhpbWFnZXMpW2ldLCBcXC40LXktbmVnYXRpdmUucGRmXFxcbiMgICAgICAgICApXG4jICAgICAgICAgZ2dwbG90Mjo6Z2dzYXZlKFxuIyAgICAgICAgICAgICBwYXN0ZTAoYXJncyRkaXJlY3Rvcnlfb3V0LCBcXC9cXCwgc2F2ZV90aXRsZSksIGltYWdlc1tbaV1dW1s0XV1cbiMgICAgICAgICApXG4jICAgICB9XG4jIH1cbiNUT0RPIFdvcmsgdXAgc29tZSBsb2dpYyBmb3IgbG9jYXRpb24ocykgZm9yIG91dGZpbGVzXG5cblxuIyAgUGxvdCB0aGUgdG9wIGZlYXR1cmVzIG9uIGFuIGF4aXMgb2YgY29tcG9uZW50IGxvYWRpbmcgcmFuZ2UgLS0tLS0tLS0tLS0tLS0tLVxuIysgLi4udG8gdmlzdWFsaXplIHRoZSB0b3AgdmFyaWFibGVzIChmZWF0dXJlcykgdGhhdCBkcml2ZSB2YXJpYW5jZSBhbW9uZ1xuIysgcHJpbmNpcGFsIGNvbXBvbmVudHMgb2YgaW50ZXJlc3RcbnBfbG9hZGluZ3MgPC0gUENBdG9vbHM6OnBsb3Rsb2FkaW5ncyhcbiAgICBvYmpfcGNhLFxuICAgIGNvbXBvbmVudHMgPSBnZXRDb21wb25lbnRzKG9ial9wY2EsIDEpLFxuICAgICMgY29tcG9uZW50cyA9IGdldENvbXBvbmVudHMob2JqX3BjYSwgMTo1KSxcbiAgICByYW5nZVJldGFpbiA9IDAuMDUsXG4gICAgYWJzb2x1dGUgPSBGQUxTRSxcbiAgICBjb2wgPSBjKFxcIzc4NUVGMDc1XFwsIFxcI0ZGRkZGRjc1XFwsIFxcI0ZFNjEwMDc1XFwpLFxuICAgIHRpdGxlID0gXFxMb2FkaW5ncyBwbG90XFwsXG4gICAgc3VidGl0bGUgPSBcXFRvcCA1JSBvZiB2YXJpYWJsZXMgKGkuZS5cbmBgYCJ9 --&gt;
-
-```r
-```r
-# for(i in 1:length(names(images))) {
-#     # i &lt;- 2
-#     vector_names &lt;- names(images) %&gt;% stringr::str_split(\\\.\)
-#     
-#     if(vector_names[[i]][1] == \PCAtools\) {
-#         save_title &lt;- paste0(\panel-plot\, \.\, names(images)[i], \.pdf\)
-#         ggplot2::ggsave(
-#             paste0(args$directory_out, \/\, save_title), images[[i]]
-#         )
-#     } else if(vector_names[[i]][1] == \KA\) {
-#         save_title &lt;- paste0(
-#             \panel-plot\, \.\, names(images)[i], \.1-x-positive.pdf\
-#         )
-#         ggplot2::ggsave(
-#             paste0(args$directory_out, \/\, save_title), images[[i]][[1]]
-#         )
-#         
-#         save_title &lt;- paste0(
-#             \panel-plot\, \.\, names(images)[i], \.2-y-positive.pdf\
-#         )
-#         ggplot2::ggsave(
-#             paste0(args$directory_out, \/\, save_title), images[[i]][[2]]
-#         )
-#         
-#         save_title &lt;- paste0(
-#             \panel-plot\, \.\, names(images)[i], \.3-x-negative.pdf\
-#         )
-#         ggplot2::ggsave(
-#             paste0(args$directory_out, \/\, save_title), images[[i]][[3]]
-#         )
-#         
-#         save_title &lt;- paste0(
-#             \panel-plot\, \.\, names(images)[i], \.4-y-negative.pdf\
-#         )
-#         ggplot2::ggsave(
-#             paste0(args$directory_out, \/\, save_title), images[[i]][[4]]
-#         )
-#     }
-# }
-#TODO Work up some logic for location(s) for outfiles
-
-
-#  Plot the top features on an axis of component loading range ----------------
-#+ ...to visualize the top variables (features) that drive variance among
-#+ principal components of interest
-p_loadings &lt;- PCAtools::plotloadings(
-    obj_pca,
-    components = getComponents(obj_pca, 1),
-    # components = getComponents(obj_pca, 1:5),
-    rangeRetain = 0.05,
-    absolute = FALSE,
-    col = c(\#785EF075\, \#FFFFFF75\, \#FE610075\),
-    title = \Loadings plot\,
-    subtitle = \Top 5% of variables (i.e.</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
-<p><br /> <br /></p>
-<p><code>#HERE</code> ## II. Run pairwise analyses</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
 <p><br /></p>
+</div>
+<div id="calculate-getmm-normalized-counts" class="section level4">
+<h4>Calculate GeTMM-normalized counts</h4>
+<p>More details on this relatively new method of normalization, which
+combines inter- and intra-sample normalization methods and (appears to)
+perform quite well:</p>
+<ul>
+<li><a href="https://www.sciencedirect.com/science/article/pii/S0531556523000281">Baraikdar
+et al. (Truttmann), <em>Exp Gerontol</em> 2023</a></li>
+<li><a href="https://academic.oup.com/g3journal/article/11/7/jkab121/6226485">Barrett
+et al. (Hammarlund), <em>G3</em> 2021</a></li>
+<li><a href="https://www.reneshbedre.com/blog/expression_units.html#getmm-method">Bedre,
+<em>self-published</em> 2023 (most recent update)</a></li>
+<li><a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9418001/">Nelson et
+al. (Wilkins), <em>Nat Microbiol</em> 2022</a></li>
+<li><a href="https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-018-2246-7">Smid
+et al. (Sieuwerts), <em>BMC Bioinf</em> 2018</a></li>
+<li><a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9260260/">Walker et
+al. (Kainer), <em>Comput Struct Biotechnol J</em> 2022</a></li>
+<li><a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9683723/">Zatzman et
+al. (Shlien), <em>Sci Adv</em> 2022</a></li>
+</ul>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuIyAgTUEgcGxvdHMgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tXG5yZXNfcHckRzFfU1Nfd3RfcjYkbjA2ZF9NQV9TQ1xucmVzX3B3JFFfU1Nfd3RfcjYkbjA2ZF9NQV9TQ1xucmVzX3B3JFFfU1NfcjFfcjYkbjA2ZF9NQV9TQ1xucmVzX3B3JFFfU1Nfd3RfcjEkbjA2ZF9NQV9TQ1xuXG5yZXNfcHckRzFfU1Nfd3RfcjYkbjA3ZF9NQV9LTFxucmVzX3B3JFFfU1Nfd3RfcjYkbjA3ZF9NQV9LTFxucmVzX3B3JFFfU1NfcjFfcjYkbjA3ZF9NQV9LTFxucmVzX3B3JFFfU1Nfd3RfcjEkbjA3ZF9NQV9LTFxuXG5yZXNfcHckRzFfU1Nfd3RfcjYkbjA4ZF9NQV9TQy5jdHJsX0tMXG5yZXNfcHckUV9TU193dF9yNiRuMDhkX01BX1NDLmN0cmxfS0xcbnJlc19wdyRRX1NTX3IxX3I2JG4wOGRfTUFfU0MuY3RybF9LTFxucmVzX3B3JFFfU1Nfd3RfcjEkbjA4ZF9NQV9TQy5jdHJsX0tMXG5cbnJlc19wdyRHMV9TU193dF9yNiRuMDZkX01BX1NDXG5yZXNfcHckRzFfU1Nfd3RfcjYkbjA3ZF9NQV9LTFxucmVzX3B3JEcxX1NTX3d0X3I2JG4wOGRfTUFfU0MuY3RybF9LTFxuXG5yZXNfcHckUV9TU193dF9yNiRuMDZkX01BX1NDXG5yZXNfcHckUV9TU193dF9yNiRuMDdkX01BX0tMXG5yZXNfcHckUV9TU193dF9yNiRuMDhkX01BX1NDLmN0cmxfS0xcblxucmVzX3B3JFFfU1NfcjFfcjYkbjA2ZF9NQV9TQ1xucmVzX3B3JFFfU1NfcjFfcjYkbjA3ZF9NQV9LTFxucmVzX3B3JFFfU1NfcjFfcjYkbjA4ZF9NQV9TQy5jdHJsX0tMXG5cbnJlc19wdyRRX1NTX3d0X3IxJG4wNmRfTUFfU0NcbnJlc19wdyRRX1NTX3d0X3IxJG4wN2RfTUFfS0xcbnJlc19wdyRRX1NTX3d0X3IxJG4wOGRfTUFfU0MuY3RybF9LTFxuXG5cbiMgIFZvbGNhbm8gcGxvdHMgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLVxucmVzX3B3JEcxX1NTX3d0X3I2JG4wNmVfdm9sY2Fub19TQ1xucmVzX3B3JFFfU1Nfd3RfcjYkbjA2ZV92b2xjYW5vX1NDXG5yZXNfcHckUV9TU19yMV9yNiRuMDZlX3ZvbGNhbm9fU0NcbnJlc19wdyRRX1NTX3d0X3IxJG4wNmVfdm9sY2Fub19TQ1xuXG5yZXNfcHckRzFfU1Nfd3RfcjYkbjA3ZV92b2xjYW5vX0tMXG5yZXNfcHckUV9TU193dF9yNiRuMDdlX3ZvbGNhbm9fS0xcbnJlc19wdyRRX1NTX3IxX3I2JG4wN2Vfdm9sY2Fub19LTFxucmVzX3B3JFFfU1Nfd3RfcjEkbjA3ZV92b2xjYW5vX0tMXG5cbnJlc19wdyRHMV9TU193dF9yNiRuMDhlX3ZvbGNhbm9fU0MuY3RybF9LTFxucmVzX3B3JFFfU1Nfd3RfcjYkbjA4ZV92b2xjYW5vX1NDLmN0cmxfS0xcbnJlc19wdyRRX1NTX3IxX3I2JG4wOGVfdm9sY2Fub19TQy5jdHJsX0tMXG5yZXNfcHckUV9TU193dF9yMSRuMDhlX3ZvbGNhbm9fU0MuY3RybF9LTFxuXG5yZXNfcHckRzFfU1Nfd3RfcjYkbjA2ZV92b2xjYW5vX1NDXG5yZXNfcHckRzFfU1Nfd3RfcjYkbjA3ZV92b2xjYW5vX0tMXG5yZXNfcHckRzFfU1Nfd3RfcjYkbjA4ZV92b2xjYW5vX1NDLmN0cmxfS0xcblxucmVzX3B3JFFfU1Nfd3RfcjYkbjA2ZV92b2xjYW5vX1NDXG5yZXNfcHckUV9TU193dF9yNiRuMDdlX3ZvbGNhbm9fS0xcbnJlc19wdyRRX1NTX3d0X3I2JG4wOGVfdm9sY2Fub19TQy5jdHJsX0tMXG5cbnJlc19wdyRRX1NTX3IxX3I2JG4wNmVfdm9sY2Fub19TQ1xucmVzX3B3JFFfU1NfcjFfcjYkbjA3ZV92b2xjYW5vX0tMXG5yZXNfcHckUV9TU19yMV9yNiRuMDhlX3ZvbGNhbm9fU0MuY3RybF9LTFxuXG5yZXNfcHckUV9TU193dF9yMSRuMDZlX3ZvbGNhbm9fU0NcbnJlc19wdyRRX1NTX3d0X3IxJG4wN2Vfdm9sY2Fub19LTFxucmVzX3B3JFFfU1Nfd3RfcjEkbjA4ZV92b2xjYW5vX1NDLmN0cmxfS0xcblxuIyBzYXZlX3ZvbGNhbm8oXG4jICAgICBmaWxlID0gXFx0ZXN0LnBkZlxcLFxuIyAgICAgcGxvdCA9IHAsXG4jICAgICB3aWR0aCA9IDIsXG4jICAgICBoZWlnaHQgPSAzXG4jIClcblxucmVzX3B3JEcxX1NTX3d0X3I2JG4wOGRfTUFfU0MuY3RybF9LTFxucmVzX3B3JFFfU1Nfd3RfcjYkbjA4ZF9NQV9TQy5jdHJsX0tMXG5yZXNfcHckUV9TU19yMV9yNiRuMDhkX01BX1NDLmN0cmxfS0xcbnJlc19wdyRRX1NTX3d0X3IxJG4wOGRfTUFfU0MuY3RybF9LTFxuXG5yZXNfcHckRzFfU1Nfd3RfcjYkbjA4ZV92b2xjYW5vX1NDLmN0cmxfS0xcbnJlc19wdyRRX1NTX3d0X3I2JG4wOGVfdm9sY2Fub19TQy5jdHJsX0tMXG5yZXNfcHckUV9TU19yMV9yNiRuMDhlX3ZvbGNhbm9fU0MuY3RybF9LTFxucmVzX3B3JFFfU1Nfd3RfcjEkbjA4ZV92b2xjYW5vX1NDLmN0cmxfS0xcbmBgYFxuYGBgIn0= -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuYGBgclxuIyAgTUEgcGxvdHMgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tXG5yZXNfcHckRzFfU1Nfd3RfcjYkbjA2ZF9NQV9TQ1xucmVzX3B3JFFfU1Nfd3RfcjYkbjA2ZF9NQV9TQ1xucmVzX3B3JFFfU1NfcjFfcjYkbjA2ZF9NQV9TQ1xucmVzX3B3JFFfU1Nfd3RfcjEkbjA2ZF9NQV9TQ1xuXG5yZXNfcHckRzFfU1Nfd3RfcjYkbjA3ZF9NQV9LTFxucmVzX3B3JFFfU1Nfd3RfcjYkbjA3ZF9NQV9LTFxucmVzX3B3JFFfU1NfcjFfcjYkbjA3ZF9NQV9LTFxucmVzX3B3JFFfU1Nfd3RfcjEkbjA3ZF9NQV9LTFxuXG5yZXNfcHckRzFfU1Nfd3RfcjYkbjA4ZF9NQV9TQy5jdHJsX0tMXG5yZXNfcHckUV9TU193dF9yNiRuMDhkX01BX1NDLmN0cmxfS0xcbnJlc19wdyRRX1NTX3IxX3I2JG4wOGRfTUFfU0MuY3RybF9LTFxucmVzX3B3JFFfU1Nfd3RfcjEkbjA4ZF9NQV9TQy5jdHJsX0tMXG5cbnJlc19wdyRHMV9TU193dF9yNiRuMDZkX01BX1NDXG5yZXNfcHckRzFfU1Nfd3RfcjYkbjA3ZF9NQV9LTFxucmVzX3B3JEcxX1NTX3d0X3I2JG4wOGRfTUFfU0MuY3RybF9LTFxuXG5yZXNfcHckUV9TU193dF9yNiRuMDZkX01BX1NDXG5yZXNfcHckUV9TU193dF9yNiRuMDdkX01BX0tMXG5yZXNfcHckUV9TU193dF9yNiRuMDhkX01BX1NDLmN0cmxfS0xcblxucmVzX3B3JFFfU1NfcjFfcjYkbjA2ZF9NQV9TQ1xucmVzX3B3JFFfU1NfcjFfcjYkbjA3ZF9NQV9LTFxucmVzX3B3JFFfU1NfcjFfcjYkbjA4ZF9NQV9TQy5jdHJsX0tMXG5cbnJlc19wdyRRX1NTX3d0X3IxJG4wNmRfTUFfU0NcbnJlc19wdyRRX1NTX3d0X3IxJG4wN2RfTUFfS0xcbnJlc19wdyRRX1NTX3d0X3IxJG4wOGRfTUFfU0MuY3RybF9LTFxuXG5cbiMgIFZvbGNhbm8gcGxvdHMgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLVxucmVzX3B3JEcxX1NTX3d0X3I2JG4wNmVfdm9sY2Fub19TQ1xucmVzX3B3JFFfU1Nfd3RfcjYkbjA2ZV92b2xjYW5vX1NDXG5yZXNfcHckUV9TU19yMV9yNiRuMDZlX3ZvbGNhbm9fU0NcbnJlc19wdyRRX1NTX3d0X3IxJG4wNmVfdm9sY2Fub19TQ1xuXG5yZXNfcHckRzFfU1Nfd3RfcjYkbjA3ZV92b2xjYW5vX0tMXG5yZXNfcHckUV9TU193dF9yNiRuMDdlX3ZvbGNhbm9fS0xcbnJlc19wdyRRX1NTX3IxX3I2JG4wN2Vfdm9sY2Fub19LTFxucmVzX3B3JFFfU1Nfd3RfcjEkbjA3ZV92b2xjYW5vX0tMXG5cbnJlc19wdyRHMV9TU193dF9yNiRuMDhlX3ZvbGNhbm9fU0MuY3RybF9LTFxucmVzX3B3JFFfU1Nfd3RfcjYkbjA4ZV92b2xjYW5vX1NDLmN0cmxfS0xcbnJlc19wdyRRX1NTX3IxX3I2JG4wOGVfdm9sY2Fub19TQy5jdHJsX0tMXG5yZXNfcHckUV9TU193dF9yMSRuMDhlX3ZvbGNhbm9fU0MuY3RybF9LTFxuXG5yZXNfcHckRzFfU1Nfd3RfcjYkbjA2ZV92b2xjYW5vX1NDXG5yZXNfcHckRzFfU1Nfd3RfcjYkbjA3ZV92b2xjYW5vX0tMXG5yZXNfcHckRzFfU1Nfd3RfcjYkbjA4ZV92b2xjYW5vX1NDLmN0cmxfS0xcblxucmVzX3B3JFFfU1Nfd3RfcjYkbjA2ZV92b2xjYW5vX1NDXG5yZXNfcHckUV9TU193dF9yNiRuMDdlX3ZvbGNhbm9fS0xcbnJlc19wdyRRX1NTX3d0X3I2JG4wOGVfdm9sY2Fub19TQy5jdHJsX0tMXG5cbnJlc19wdyRRX1NTX3IxX3I2JG4wNmVfdm9sY2Fub19TQ1xucmVzX3B3JFFfU1NfcjFfcjYkbjA3ZV92b2xjYW5vX0tMXG5yZXNfcHckUV9TU19yMV9yNiRuMDhlX3ZvbGNhbm9fU0MuY3RybF9LTFxuXG5yZXNfcHckUV9TU193dF9yMSRuMDZlX3ZvbGNhbm9fU0NcbnJlc19wdyRRX1NTX3d0X3IxJG4wN2Vfdm9sY2Fub19LTFxucmVzX3B3JFFfU1Nfd3RfcjEkbjA4ZV92b2xjYW5vX1NDLmN0cmxfS0xcblxuIyBzYXZlX3ZvbGNhbm8oXG4jICAgICBmaWxlID0gXFx0ZXN0LnBkZlxcLFxuIyAgICAgcGxvdCA9IHAsXG4jICAgICB3aWR0aCA9IDIsXG4jICAgICBoZWlnaHQgPSAzXG4jIClcblxucmVzX3B3JEcxX1NTX3d0X3I2JG4wOGRfTUFfU0MuY3RybF9LTFxucmVzX3B3JFFfU1Nfd3RfcjYkbjA4ZF9NQV9TQy5jdHJsX0tMXG5yZXNfcHckUV9TU19yMV9yNiRuMDhkX01BX1NDLmN0cmxfS0xcbnJlc19wdyRRX1NTX3d0X3IxJG4wOGRfTUFfU0MuY3RybF9LTFxuXG5yZXNfcHckRzFfU1Nfd3RfcjYkbjA4ZV92b2xjYW5vX1NDLmN0cmxfS0xcbnJlc19wdyRRX1NTX3d0X3I2JG4wOGVfdm9sY2Fub19TQy5jdHJsX0tMXG5yZXNfcHckUV9TU19yMV9yNiRuMDhlX3ZvbGNhbm9fU0MuY3RybF9LTFxucmVzX3B3JFFfU1Nfd3RfcjEkbjA4ZV92b2xjYW5vX1NDLmN0cmxfS0xcbmBgYFxuYGBgXG5gYGAifQ== -->
 <pre class="r"><code>```r
+```r
 #  MA plots ---------------------------
 res_pw$G1_SS_wt_r6$n06d_MA_SC
 res_pw$Q_SS_wt_r6$n06d_MA_SC
@@ -3398,7 +2957,482 @@ res_pw$G1_SS_wt_r6$n08e_volcano_SC.ctrl_KL
 res_pw$Q_SS_wt_r6$n08e_volcano_SC.ctrl_KL
 res_pw$Q_SS_r1_r6$n08e_volcano_SC.ctrl_KL
 res_pw$Q_SS_wt_r1$n08e_volcano_SC.ctrl_KL</code></pre>
-<p>```</p>
+<pre><code></code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p><br /></p>
+</div>
+<div id="calculate-tpm-normalized-counts" class="section level4">
+<h4>Calculate TPM-normalized counts</h4>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyAjUFJFVklPVVNcbiMgIyAgSXNvbGF0ZSByYXcgY291bnRzIGZvciBzYW1wbGVzIG9mIGludGVyZXN0XG4jIHJhdyA8LSBkZHMgJT4lXG4jICAgICBTdW1tYXJpemVkRXhwZXJpbWVudDo6YXNzYXkoKSAlPiVcbiMgICAgIGFzLmRhdGEuZnJhbWUoKVxuIyByYXckZmVhdHVyZV9pbml0IDwtIGRkc0Byb3dSYW5nZXMkZmVhdHVyZV9pbml0XG4jIFxuIyAjICBBc3NvY2lhdGUgbm9uLW5vcm1hbGl6ZWQgdmFsdWVzIHdpdGggZmVhdHVyZSBtZXRhZGF0YVxuIyByYXcgPC0gZHBseXI6OmZ1bGxfam9pbihcbiMgICAgIHJhdyxcbiMgICAgIHRfZmNbLCAxOjldLFxuIyAgICAgYnkgPSBcImZlYXR1cmVfaW5pdFwiXG4jICkgJT4lXG4jICAgICBkcGx5cjo6YXNfdGliYmxlKClcbiMgXG4jICMgIENhbGN1bGF0ZSBjb3VudHMgcGVyIGtiIG9mIGdlbmUgbGVuZ3RoIChpLmUuLCBjb3JyZWN0IGNvdW50cyBmb3IgZ2VuZVxuIyAjKyBsZW5ndGggb3IgZG8gYW4gXCJSUEsgbm9ybWFsaXphdGlvblwiKTsgdGhlbiwgZGl2aWRlIFJQSy1ub3JtYWxpemVkIGVsZW1lbnRzXG4jICMrIGJ5IHRoZSBzdW0gb2Ygc2FtcGxlIFJQSyBkaXZpZGVkIGJ5IG9uZSBtaWxsaW9uOiB0aGlzIGRvZXMgdGhlIGFjdHVhbCBUUE1cbiMgIysgbm9ybWFsaXphdGlvblxuIyBycGsgPC0gdHBtIDwtICgocmF3WywgMToxN10gKiAxMF4zKSAvIHJhdyRsZW5ndGgpXG4jIGZvciAoaSBpbiAxOm5jb2wocnBrKSkge1xuIyAgICAgdHBtWywgaV0gPC0gKHJwa1ssIGldIC8gc3VtKHJwa1ssIGldIC8gMWU2KSlcbiMgfVxuIyBcbiMgdHBtWywgMTg6MjZdIDwtIHJhd1ssIDE4OjI2XVxuIyBub3JtX3QgPC0gdHBtW3RwbSRnZW5vbWUgPT0gXCJTX2NlcmV2aXNpYWVcIiwgXVxuIyBcbiMgcm0ocmF3LCBycGssIHRwbSlcbiMgXG4jICNDSEVDS1xuIyAjICBDaGVjayB0aGF0IG15IGNhbGN1bGF0aW9uIGFib3ZlIGlzIGFjdHVhbGx5IHByb2R1Y2luZyBUUE0tbm9ybWFsaXplZCB2YWx1ZXM6XG4jICMrICNRVUVTVElPTiAxLzIgRG8gbXkgdmFsdWVzIG1hdGNoIHRoZSBvdXRwdXQgZnJvbSBjb2RlIGJ5IE1pa2UgTG92ZSAoYXV0aG9yXG4jICMrICNRVUVTVElPTiAyLzIgb2YgREVTZXEyKSBwb3N0ZWQgYXQgc3VwcG9ydC5iaW9jb25kdWN0b3Iub3JnL3AvOTEyMTgvP1xuIyAjIHggPC0gcmF3WywgMTo1XSAvIHJhdyRsZW5ndGhcbiMgIyB0ZXN0IDwtIHQoKHQoeCkgKiAxZTYpIC8gY29sU3Vtcyh4KSlcbiMgIyB0ZXN0IDwtIHRlc3QgJT4lIGFzLmRhdGEuZnJhbWUoKVxuIyAjIGlkZW50aWNhbChcbiMgIyAgICAgICByb3VuZCh0ZXN0JGBuMy1kX1FfZGF5N190Y25fTl9hdXgtVF90Yy1GX3JlcDFfdGVjaDFgLCBkaWdpdHMgPSAzKSxcbiMgIyAgICAgcm91bmQobm9ybV90JGBuMy1kX1FfZGF5N190Y25fTl9hdXgtVF90Yy1GX3JlcDFfdGVjaDFgLCBkaWdpdHMgPSAzKVxuIyAjICkgICMgWzFdIFRSVUVcbiMgIyAgI0FOU1dFUiBCYXNpY2FsbHksIHRoZSBjYWxjdWxhdGlvbnMgcmVzdWx0IGluIGVxdWl2YWxlbnQgcmVzdWx0c1xuYGBgIn0= -->
+<pre class="r"><code># #PREVIOUS
+# #  Isolate raw counts for samples of interest
+# raw &lt;- dds %&gt;%
+#     SummarizedExperiment::assay() %&gt;%
+#     as.data.frame()
+# raw$feature_init &lt;- dds@rowRanges$feature_init
+# 
+# #  Associate non-normalized values with feature metadata
+# raw &lt;- dplyr::full_join(
+#     raw,
+#     t_fc[, 1:9],
+#     by = &quot;feature_init&quot;
+# ) %&gt;%
+#     dplyr::as_tibble()
+# 
+# #  Calculate counts per kb of gene length (i.e., correct counts for gene
+# #+ length or do an &quot;RPK normalization&quot;); then, divide RPK-normalized elements
+# #+ by the sum of sample RPK divided by one million: this does the actual TPM
+# #+ normalization
+# rpk &lt;- tpm &lt;- ((raw[, 1:17] * 10^3) / raw$length)
+# for (i in 1:ncol(rpk)) {
+#     tpm[, i] &lt;- (rpk[, i] / sum(rpk[, i] / 1e6))
+# }
+# 
+# tpm[, 18:26] &lt;- raw[, 18:26]
+# norm_t &lt;- tpm[tpm$genome == &quot;S_cerevisiae&quot;, ]
+# 
+# rm(raw, rpk, tpm)
+# 
+# #CHECK
+# #  Check that my calculation above is actually producing TPM-normalized values:
+# #+ #QUESTION 1/2 Do my values match the output from code by Mike Love (author
+# #+ #QUESTION 2/2 of DESeq2) posted at support.bioconductor.org/p/91218/?
+# # x &lt;- raw[, 1:5] / raw$length
+# # test &lt;- t((t(x) * 1e6) / colSums(x))
+# # test &lt;- test %&gt;% as.data.frame()
+# # identical(
+# #       round(test$`n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1`, digits = 3),
+# #     round(norm_t$`n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1`, digits = 3)
+# # )  # [1] TRUE
+# #  #ANSWER Basically, the calculations result in equivalent results</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p><br /></p>
+</div>
+</div>
+<div id="run-pca-with-variously-normalized-counts" class="section level3">
+<h3>Run PCA with variously normalized counts</h3>
+<div id="part-1" class="section level4">
+<h4>Part 1</h4>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyAgTWFrZSB0aGUgZm9sbG93aW5nIGNvZGUgZ2VuZXJpYyAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLVxuIysgLi4uc28gdGhhdCB3ZSBjYW4gdHJ5IGl0IHdpdGggZGlmZmVyZW50IG5vcm1hbGl6YXRpb24gb2JqZWN0cyAoY291bnRzXG4jKyBub3JtYWxpemVkIGluIGRpZmZlcmVudCB3YXlzKVxuIyBub3JtIDwtIG5vcm1fdlxubm9ybSA8LSBub3JtX3JcbiMgbm9ybSA8LSBub3JtX2dcbiMgbm9ybSA8LSBub3JtX3RcbiNOT1RFIDEvMyBub3JtX2cgYW5kIG5vcm1fdCBhcHBlYXIgdG8gYmUgdGhlIGJlc3QgcGVyZm9ybWluZzsgbm9ybV9yIChibGluZGVkXG4jTk9URSAyLzMgb3Igbm90KSBjbHVzdGVycyBhbGwgc2FtcGxlcyB0b2dldGhlciByZWdhcmRsZXNzIG9mIG1vZGVsIHZhcmlhYmxlXG4jTk9URSAzLzMgJ3N0cmFpbidcblxuIyAgQ3JlYXRlIGEgUENBdG9vbHMgXCJwY2FcIiBTNCBvYmplY3QgZm9yIHRoZSBub3JtYWxpemVkIGNvdW50cyAtLS0tLS0tLS0tLS0tLS0tXG4jKyBBc3NpZ24gdW5pcXVlIHJvdyBuYW1lcyB0b29cbm9ial9wY2EgPC0gUENBdG9vbHM6OnBjYShcbiAgICBub3JtWywgMTo3XSxcbiAgICBtZXRhZGF0YSA9IGRkc1tkZHNAcm93UmFuZ2VzJGdlbm9tZSAhPSBcIktfbGFjdGlzXCIsIF1AY29sRGF0YVxuKVxucm93bmFtZXMob2JqX3BjYSRsb2FkaW5ncykgPC0gbWFrZS5uYW1lcyhcbiAgICBkZHNbZGRzQHJvd1JhbmdlcyRnZW5vbWUgIT0gXCJLX2xhY3Rpc1wiLCBdQHJvd1JhbmdlcyRmZWF0dXJlLFxuICAgIHVuaXF1ZSA9IFRSVUVcbilcbiMgY29sbmFtZXMob2JqX3BjYSRsb2FkaW5ncylcblxuXG4jICBEZXRlcm1pbmUgXCJzaWduaWZpY2FudFwiIFBDcyB3aXRoIEhvcm4ncyBwYXJhbGxlbCBhbmFseXNpcyAtLS0tLS0tLS0tLS0tLS0tLS1cbiMrIFNlZSBIb3JuLCAxOTY1XG5ob3JuIDwtIFBDQXRvb2xzOjpwYXJhbGxlbFBDQShtYXQgPSBub3JtWywgMTo3XSlcbiMgaG9ybiRuXG5cblxuIyAgRGV0ZXJtaW5lIFwic2lnbmlmaWNhbnRcIiBwcmluY2lwbGUgY29tcG9uZW50cyB3aXRoIHRoZSBlbGJvdyBtZXRob2QgLS0tLS0tLS0tXG4jKyBTZWUgQnVqYSBhbmQgRXl1Ym9nbHUsIDE5OTJcbmVsYm93IDwtIFBDQXRvb2xzOjpmaW5kRWxib3dQb2ludChvYmpfcGNhJHZhcmlhbmNlKVxuIyBlbGJvd1xuXG5cbiMgIEV2YWx1YXRlIGN1bXVsYXRpdmUgcHJvcG9ydGlvbiBvZiBleHBsYWluZWQgdmFyaWFuY2Ugd2l0aCBhIHNjcmVlIHBsb3QgLS0tLS1cbnNjcmVlIDwtIGRyYXdfc2NyZWVfcGxvdChvYmpfcGNhLCBob3JuID0gaG9ybiRuLCBlbGJvdyA9IGVsYm93KVxuc2NyZWVcbiMgc2F2ZV90aXRsZSA8LSBwYXN0ZTAoXCJwYW5lbC1wbG90XCIsIFwiLlwiLCBcInNjcmVlXCIsIFwiLnBkZlwiKVxuIyBnZ3Bsb3QyOjpnZ3NhdmUocGFzdGUwKGFyZ3MkZGlyZWN0b3J5X291dCwgXCIvXCIsIHNhdmVfdGl0bGUpLCBzY3JlZSlcbiNUT0RPIFdvcmsgdXAgc29tZSBsb2dpYyBmb3IgbG9jYXRpb24ocykgZm9yIG91dGZpbGVzXG5gYGAifQ== -->
+<pre class="r"><code>#  Make the following code generic --------------------------------------------
+#+ ...so that we can try it with different normalization objects (counts
+#+ normalized in different ways)
+# norm &lt;- norm_v
+norm &lt;- norm_r
+# norm &lt;- norm_g
+# norm &lt;- norm_t
+#NOTE 1/3 norm_g and norm_t appear to be the best performing; norm_r (blinded
+#NOTE 2/3 or not) clusters all samples together regardless of model variable
+#NOTE 3/3 &#39;strain&#39;
+
+#  Create a PCAtools &quot;pca&quot; S4 object for the normalized counts ----------------
+#+ Assign unique row names too
+obj_pca &lt;- PCAtools::pca(
+    norm[, 1:7],
+    metadata = dds[dds@rowRanges$genome != &quot;K_lactis&quot;, ]@colData
+)
+rownames(obj_pca$loadings) &lt;- make.names(
+    dds[dds@rowRanges$genome != &quot;K_lactis&quot;, ]@rowRanges$feature,
+    unique = TRUE
+)
+# colnames(obj_pca$loadings)
+
+
+#  Determine &quot;significant&quot; PCs with Horn&#39;s parallel analysis ------------------
+#+ See Horn, 1965
+horn &lt;- PCAtools::parallelPCA(mat = norm[, 1:7])
+# horn$n
+
+
+#  Determine &quot;significant&quot; principle components with the elbow method ---------
+#+ See Buja and Eyuboglu, 1992
+elbow &lt;- PCAtools::findElbowPoint(obj_pca$variance)
+# elbow
+
+
+#  Evaluate cumulative proportion of explained variance with a scree plot -----
+scree &lt;- draw_scree_plot(obj_pca, horn = horn$n, elbow = elbow)
+scree
+# save_title &lt;- paste0(&quot;panel-plot&quot;, &quot;.&quot;, &quot;scree&quot;, &quot;.pdf&quot;)
+# ggplot2::ggsave(paste0(args$directory_out, &quot;/&quot;, save_title), scree)
+#TODO Work up some logic for location(s) for outfiles</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p><br /></p>
+</div>
+<div id="part-2" class="section level4">
+<h4>Part 2</h4>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyAgU2F2ZSBjb21wb25lbnQgbG9hZGluZyB2ZWN0b3JzIGluIHRoZWlyIG93biBkYXRhIGZyYW1lIC0tLS0tLS0tLS0tLS0tLS0tLS0tLVxubG9hZGluZ3MgPC0gYXMuZGF0YS5mcmFtZShvYmpfcGNhJGxvYWRpbmdzKVxuXG4jICBFdmFsdWF0ZSB0aGUgY29tcG9uZW50IGxvYWRpbmcgdmVjdG9ycyBmb3IgdGhlIG51bWJlciBvZiBzaWduaWZpY2FudCBQQ3NcbiMrIGlkZW50aWZpZWQgdmlhIHRoZSBlbGJvdyBtZXRob2QgcGx1cyB0d29cblBDcyA8LSBwYXN0ZTAoXCJQQ1wiLCAxOihhcy5udW1lcmljKGVsYm93KSArIDIpKVxudG9wX2xvYWRpbmdzX2FsbCA8LSBsYXBwbHkoXG4gICAgUENzLCBnZXRfdG9wX2xvYWRpbmdzLCB4ID0gbG9hZGluZ3MsIHogPSBcImFsbFwiLCBhID0gVFJVRVxuKVxudG9wX2xvYWRpbmdzX3BvcyA8LSBsYXBwbHkoXG4gICAgUENzLCBnZXRfdG9wX2xvYWRpbmdzLCB4ID0gbG9hZGluZ3MsIHogPSBcInBvc1wiLCBhID0gVFJVRVxuKVxudG9wX2xvYWRpbmdzX25lZyA8LSBsYXBwbHkoXG4gICAgUENzLCBnZXRfdG9wX2xvYWRpbmdzLCB4ID0gbG9hZGluZ3MsIHogPSBcIm5lZ1wiLCBhID0gVFJVRVxuKVxuXG5uYW1lcyh0b3BfbG9hZGluZ3NfYWxsKSA8LVxuICAgIG5hbWVzKHRvcF9sb2FkaW5nc19wb3MpIDwtXG4gICAgbmFtZXModG9wX2xvYWRpbmdzX25lZykgPC1cbiAgICBQQ3NcbiMgcm0oUENzKVxuIyB0b3BfbG9hZGluZ3NfYWxsJFBDMSAlPiUgaGVhZChuID0gMjApXG4jIHRvcF9sb2FkaW5nc19wb3MkUEMxICU+JSBoZWFkKG4gPSAyMClcbiMgdG9wX2xvYWRpbmdzX25lZyRQQzEgJT4lIGhlYWQobiA9IDIwKVxuXG5cbiMgIEFuYWx5emUgcG9zaXRpdmUsIG5lZ2F0aXZlIGxvYWRpbmdzIG9uIGF4ZXMgb2YgYmlwbG90cyAtLS0tLS0tLS0tLS0tLS0tLS0tLS1cbiMrIExvb2sgYXQgdGhlIHRvcCAxNSBwZXIgYXhpc1xuaW1hZ2VzIDwtIGxpc3QoKVxubWF0IDwtIGNvbWJuKFBDcywgMilcbmZvcihpIGluIDE6bmNvbChtYXQpKSB7XG4gICAgIyBpIDwtIDFcbiAgICBqIDwtIG1hdFssIGldXG4gICAgXG4gICAgUENfeCA8LSB4X2xhYmVsIDwtIGpbMV1cbiAgICBQQ195IDwtIHlfbGFiZWwgPC0galsyXVxuICAgIFxuICAgIGltYWdlc1tbcGFzdGUwKFwiUENBdG9vbHMuXCIsIFBDX3gsIFwiLnYuXCIsIFBDX3kpXV0gPC0gcGxvdF9iaXBsb3QoXG4gICAgICAgIHBjYSA9IG9ial9wY2EsXG4gICAgICAgIFBDX3ggPSBQQ194LFxuICAgICAgICBQQ195ID0gUENfeSxcbiAgICAgICAgbG9hZGluZ3Nfc2hvdyA9IEZBTFNFLFxuICAgICAgICBsb2FkaW5nc19uID0gMCxcbiAgICAgICAgbWV0YV9jb2xvciA9IFwic3RyYWluXCIsXG4gICAgICAgIG1ldGFfc2hhcGUgPSBcInJlcGxpY2F0ZVwiLFxuICAgICAgICB4X21pbiA9IC0yMCwgICMgLTEyMDAwMCwgICMgLTY2LFxuICAgICAgICB4X21heCA9IDIwLCAgIyAxMjAwMDAsICAjIDY2LFxuICAgICAgICB5X21pbiA9IC0yMCwgICMgLTUwMDAwLCAgIyAtNTAsXG4gICAgICAgIHlfbWF4ID0gMjAgICMgNTAwMDAgICMgNTBcbiAgICApXG4gICAgXG4gICAgI0hFUkVcbiAgICBpbWFnZXNbW3Bhc3RlMChcIktBLlwiLCBQQ194LCBcIi52LlwiLCBQQ195KV1dIDwtXG4gICAgICAgIHBsb3RfcG9zX25lZ19sb2FkaW5nc19lYWNoX2F4aXMoXG4gICAgICAgICAgICBkZl9hbGwgPSBsb2FkaW5ncyxcbiAgICAgICAgICAgIGRmX3BvcyA9IHRvcF9sb2FkaW5nc19wb3MsXG4gICAgICAgICAgICBkZl9uZWcgPSB0b3BfbG9hZGluZ3NfbmVnLFxuICAgICAgICAgICAgUENfeCA9IFBDX3gsXG4gICAgICAgICAgICBQQ195ID0gUENfeSxcbiAgICAgICAgICAgIHJvd19zdGFydCA9IDEsXG4gICAgICAgICAgICByb3dfZW5kID0gMTUsICAjIDMwXG4gICAgICAgICAgICB4X21pbiA9IC0wLjE1LCAgIyAtMC4xNSwgICMgLTEuMCxcbiAgICAgICAgICAgIHhfbWF4ID0gMC4xNSwgICMgMC4xNSwgICMgMS4wLFxuICAgICAgICAgICAgeV9taW4gPSAtMC4xNSwgICMgLTAuMSwgICMgLTAuNSxcbiAgICAgICAgICAgIHlfbWF4ID0gMC4xNSwgICMgMC4xLCAgIyAwLjUsXG4gICAgICAgICAgICB4X251ZGdlID0gMC4wMiwgICMgMC4wMiwgICMgMC4wNCxcbiAgICAgICAgICAgIHlfbnVkZ2UgPSAwLjA0LCAgIyAwLjA0LCAgIyAwLjAyLFxuICAgICAgICAgICAgeF9sYWJlbCA9IHhfbGFiZWwsXG4gICAgICAgICAgICB5X2xhYmVsID0geV9sYWJlbCxcbiAgICAgICAgICAgIGNvbF9saW5lX3BvcyA9IFwiYmxhY2tcIixcbiAgICAgICAgICAgIGNvbF9saW5lX25lZyA9IFwicmVkXCIsXG4gICAgICAgICAgICBjb2xfc2VnX3BvcyA9IFwiZ3JleVwiLFxuICAgICAgICAgICAgY29sX3NlZ19uZWcgPSBcImdyZXlcIlxuICAgICAgICApXG4gICAgXG4gICAgaW1hZ2VzW1twYXN0ZTAoXCJLQS5cIiwgUENfeCwgXCIudi5cIiwgUENfeSldXVxufVxuXG4jICBIb3cgZG8gdGhpbmdzIGxvb2s/XG5pbWFnZXMkUENBdG9vbHMuUEMxLnYuUEMyXG5pbWFnZXMkS0EuUEMxLnYuUEMyJFBDX3hfcG9zXG5pbWFnZXMkS0EuUEMxLnYuUEMyJFBDX3hfbmVnXG5pbWFnZXMkS0EuUEMxLnYuUEMyJFBDX3lfcG9zXG5pbWFnZXMkS0EuUEMxLnYuUEMyJFBDX3lfbmVnXG5cbiMgaW1hZ2VzJFBDQXRvb2xzLlBDMS52LlBDM1xuIyBpbWFnZXMkS0EuUEMxLnYuUEMzJFBDX3hfcG9zXG4jIGltYWdlcyRLQS5QQzEudi5QQzMkUENfeF9uZWdcbiMgaW1hZ2VzJEtBLlBDMS52LlBDMyRQQ195X3Bvc1xuIyBpbWFnZXMkS0EuUEMxLnYuUEMzJFBDX3lfbmVnXG4jIFxuIyBpbWFnZXMkUENBdG9vbHMuUEMxLnYuUEM0XG4jIGltYWdlcyRLQS5QQzEudi5QQzQkUENfeF9wb3NcbiMgaW1hZ2VzJEtBLlBDMS52LlBDNCRQQ194X25lZ1xuIyBpbWFnZXMkS0EuUEMxLnYuUEM0JFBDX3lfcG9zXG4jIGltYWdlcyRLQS5QQzEudi5QQzQkUENfeV9uZWdcbiMgXG4jIGltYWdlcyRQQ0F0b29scy5QQzIudi5QQzNcbiMgaW1hZ2VzJEtBLlBDMi52LlBDMyRQQ194X3Bvc1xuIyBpbWFnZXMkS0EuUEMyLnYuUEMzJFBDX3hfbmVnXG4jIGltYWdlcyRLQS5QQzIudi5QQzMkUENfeV9wb3NcbiMgaW1hZ2VzJEtBLlBDMi52LlBDMyRQQ195X25lZ1xuIyBcbiMgaW1hZ2VzJFBDQXRvb2xzLlBDMi52LlBDNFxuIyBpbWFnZXMkS0EuUEMyLnYuUEM0JFBDX3hfcG9zXG4jIGltYWdlcyRLQS5QQzIudi5QQzQkUENfeF9uZWdcbiMgaW1hZ2VzJEtBLlBDMi52LlBDNCRQQ195X3Bvc1xuIyBpbWFnZXMkS0EuUEMyLnYuUEM0JFBDX3lfbmVnXG4jIFxuIyBpbWFnZXMkUENBdG9vbHMuUEMzLnYuUEM0XG4jIGltYWdlcyRLQS5QQzMudi5QQzQkUENfeF9wb3NcbiMgaW1hZ2VzJEtBLlBDMy52LlBDNCRQQ194X25lZ1xuIyBpbWFnZXMkS0EuUEMzLnYuUEM0JFBDX3lfcG9zXG4jIGltYWdlcyRLQS5QQzMudi5QQzQkUENfeV9uZWdcblxuIyBpbWFnZXMkUENBdG9vbHMuUEMxLnYuUEMzXG4jIGltYWdlcyRLQS5QQzEudi5QQzNcbiMgaW1hZ2VzJFBDQXRvb2xzLlBDMS52LlBDNFxuIyBpbWFnZXMkS0EuUEMxLnYuUEM0XG4jIGltYWdlcyRQQ0F0b29scy5QQzIudi5QQzNcbiMgaW1hZ2VzJEtBLlBDMi52LlBDM1xuYGBgIn0= -->
+<pre class="r"><code>#  Save component loading vectors in their own data frame ---------------------
+loadings &lt;- as.data.frame(obj_pca$loadings)
+
+#  Evaluate the component loading vectors for the number of significant PCs
+#+ identified via the elbow method plus two
+PCs &lt;- paste0(&quot;PC&quot;, 1:(as.numeric(elbow) + 2))
+top_loadings_all &lt;- lapply(
+    PCs, get_top_loadings, x = loadings, z = &quot;all&quot;, a = TRUE
+)
+top_loadings_pos &lt;- lapply(
+    PCs, get_top_loadings, x = loadings, z = &quot;pos&quot;, a = TRUE
+)
+top_loadings_neg &lt;- lapply(
+    PCs, get_top_loadings, x = loadings, z = &quot;neg&quot;, a = TRUE
+)
+
+names(top_loadings_all) &lt;-
+    names(top_loadings_pos) &lt;-
+    names(top_loadings_neg) &lt;-
+    PCs
+# rm(PCs)
+# top_loadings_all$PC1 %&gt;% head(n = 20)
+# top_loadings_pos$PC1 %&gt;% head(n = 20)
+# top_loadings_neg$PC1 %&gt;% head(n = 20)
+
+
+#  Analyze positive, negative loadings on axes of biplots ---------------------
+#+ Look at the top 15 per axis
+images &lt;- list()
+mat &lt;- combn(PCs, 2)
+for(i in 1:ncol(mat)) {
+    # i &lt;- 1
+    j &lt;- mat[, i]
+    
+    PC_x &lt;- x_label &lt;- j[1]
+    PC_y &lt;- y_label &lt;- j[2]
+    
+    images[[paste0(&quot;PCAtools.&quot;, PC_x, &quot;.v.&quot;, PC_y)]] &lt;- plot_biplot(
+        pca = obj_pca,
+        PC_x = PC_x,
+        PC_y = PC_y,
+        loadings_show = FALSE,
+        loadings_n = 0,
+        meta_color = &quot;strain&quot;,
+        meta_shape = &quot;replicate&quot;,
+        x_min = -20,  # -120000,  # -66,
+        x_max = 20,  # 120000,  # 66,
+        y_min = -20,  # -50000,  # -50,
+        y_max = 20  # 50000  # 50
+    )
+    
+    #HERE
+    images[[paste0(&quot;KA.&quot;, PC_x, &quot;.v.&quot;, PC_y)]] &lt;-
+        plot_pos_neg_loadings_each_axis(
+            df_all = loadings,
+            df_pos = top_loadings_pos,
+            df_neg = top_loadings_neg,
+            PC_x = PC_x,
+            PC_y = PC_y,
+            row_start = 1,
+            row_end = 15,  # 30
+            x_min = -0.15,  # -0.15,  # -1.0,
+            x_max = 0.15,  # 0.15,  # 1.0,
+            y_min = -0.15,  # -0.1,  # -0.5,
+            y_max = 0.15,  # 0.1,  # 0.5,
+            x_nudge = 0.02,  # 0.02,  # 0.04,
+            y_nudge = 0.04,  # 0.04,  # 0.02,
+            x_label = x_label,
+            y_label = y_label,
+            col_line_pos = &quot;black&quot;,
+            col_line_neg = &quot;red&quot;,
+            col_seg_pos = &quot;grey&quot;,
+            col_seg_neg = &quot;grey&quot;
+        )
+    
+    images[[paste0(&quot;KA.&quot;, PC_x, &quot;.v.&quot;, PC_y)]]
+}
+
+#  How do things look?
+images$PCAtools.PC1.v.PC2
+images$KA.PC1.v.PC2$PC_x_pos
+images$KA.PC1.v.PC2$PC_x_neg
+images$KA.PC1.v.PC2$PC_y_pos
+images$KA.PC1.v.PC2$PC_y_neg
+
+# images$PCAtools.PC1.v.PC3
+# images$KA.PC1.v.PC3$PC_x_pos
+# images$KA.PC1.v.PC3$PC_x_neg
+# images$KA.PC1.v.PC3$PC_y_pos
+# images$KA.PC1.v.PC3$PC_y_neg
+# 
+# images$PCAtools.PC1.v.PC4
+# images$KA.PC1.v.PC4$PC_x_pos
+# images$KA.PC1.v.PC4$PC_x_neg
+# images$KA.PC1.v.PC4$PC_y_pos
+# images$KA.PC1.v.PC4$PC_y_neg
+# 
+# images$PCAtools.PC2.v.PC3
+# images$KA.PC2.v.PC3$PC_x_pos
+# images$KA.PC2.v.PC3$PC_x_neg
+# images$KA.PC2.v.PC3$PC_y_pos
+# images$KA.PC2.v.PC3$PC_y_neg
+# 
+# images$PCAtools.PC2.v.PC4
+# images$KA.PC2.v.PC4$PC_x_pos
+# images$KA.PC2.v.PC4$PC_x_neg
+# images$KA.PC2.v.PC4$PC_y_pos
+# images$KA.PC2.v.PC4$PC_y_neg
+# 
+# images$PCAtools.PC3.v.PC4
+# images$KA.PC3.v.PC4$PC_x_pos
+# images$KA.PC3.v.PC4$PC_x_neg
+# images$KA.PC3.v.PC4$PC_y_pos
+# images$KA.PC3.v.PC4$PC_y_neg
+
+# images$PCAtools.PC1.v.PC3
+# images$KA.PC1.v.PC3
+# images$PCAtools.PC1.v.PC4
+# images$KA.PC1.v.PC4
+# images$PCAtools.PC2.v.PC3
+# images$KA.PC2.v.PC3</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p><br /></p>
+</div>
+<div id="part-3" class="section level4">
+<h4>Part 3</h4>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBmb3IoaSBpbiAxOmxlbmd0aChuYW1lcyhpbWFnZXMpKSkge1xuIyAgICAgIyBpIDwtIDJcbiMgICAgIHZlY3Rvcl9uYW1lcyA8LSBuYW1lcyhpbWFnZXMpICU+JSBzdHJpbmdyOjpzdHJfc3BsaXQoXCJcXFxcLlwiKVxuIyAgICAgXG4jICAgICBpZih2ZWN0b3JfbmFtZXNbW2ldXVsxXSA9PSBcIlBDQXRvb2xzXCIpIHtcbiMgICAgICAgICBzYXZlX3RpdGxlIDwtIHBhc3RlMChcInBhbmVsLXBsb3RcIiwgXCIuXCIsIG5hbWVzKGltYWdlcylbaV0sIFwiLnBkZlwiKVxuIyAgICAgICAgIGdncGxvdDI6Omdnc2F2ZShcbiMgICAgICAgICAgICAgcGFzdGUwKGFyZ3MkZGlyZWN0b3J5X291dCwgXCIvXCIsIHNhdmVfdGl0bGUpLCBpbWFnZXNbW2ldXVxuIyAgICAgICAgIClcbiMgICAgIH0gZWxzZSBpZih2ZWN0b3JfbmFtZXNbW2ldXVsxXSA9PSBcIktBXCIpIHtcbiMgICAgICAgICBzYXZlX3RpdGxlIDwtIHBhc3RlMChcbiMgICAgICAgICAgICAgXCJwYW5lbC1wbG90XCIsIFwiLlwiLCBuYW1lcyhpbWFnZXMpW2ldLCBcIi4xLXgtcG9zaXRpdmUucGRmXCJcbiMgICAgICAgICApXG4jICAgICAgICAgZ2dwbG90Mjo6Z2dzYXZlKFxuIyAgICAgICAgICAgICBwYXN0ZTAoYXJncyRkaXJlY3Rvcnlfb3V0LCBcIi9cIiwgc2F2ZV90aXRsZSksIGltYWdlc1tbaV1dW1sxXV1cbiMgICAgICAgICApXG4jICAgICAgICAgXG4jICAgICAgICAgc2F2ZV90aXRsZSA8LSBwYXN0ZTAoXG4jICAgICAgICAgICAgIFwicGFuZWwtcGxvdFwiLCBcIi5cIiwgbmFtZXMoaW1hZ2VzKVtpXSwgXCIuMi15LXBvc2l0aXZlLnBkZlwiXG4jICAgICAgICAgKVxuIyAgICAgICAgIGdncGxvdDI6Omdnc2F2ZShcbiMgICAgICAgICAgICAgcGFzdGUwKGFyZ3MkZGlyZWN0b3J5X291dCwgXCIvXCIsIHNhdmVfdGl0bGUpLCBpbWFnZXNbW2ldXVtbMl1dXG4jICAgICAgICAgKVxuIyAgICAgICAgIFxuIyAgICAgICAgIHNhdmVfdGl0bGUgPC0gcGFzdGUwKFxuIyAgICAgICAgICAgICBcInBhbmVsLXBsb3RcIiwgXCIuXCIsIG5hbWVzKGltYWdlcylbaV0sIFwiLjMteC1uZWdhdGl2ZS5wZGZcIlxuIyAgICAgICAgIClcbiMgICAgICAgICBnZ3Bsb3QyOjpnZ3NhdmUoXG4jICAgICAgICAgICAgIHBhc3RlMChhcmdzJGRpcmVjdG9yeV9vdXQsIFwiL1wiLCBzYXZlX3RpdGxlKSwgaW1hZ2VzW1tpXV1bWzNdXVxuIyAgICAgICAgIClcbiMgICAgICAgICBcbiMgICAgICAgICBzYXZlX3RpdGxlIDwtIHBhc3RlMChcbiMgICAgICAgICAgICAgXCJwYW5lbC1wbG90XCIsIFwiLlwiLCBuYW1lcyhpbWFnZXMpW2ldLCBcIi40LXktbmVnYXRpdmUucGRmXCJcbiMgICAgICAgICApXG4jICAgICAgICAgZ2dwbG90Mjo6Z2dzYXZlKFxuIyAgICAgICAgICAgICBwYXN0ZTAoYXJncyRkaXJlY3Rvcnlfb3V0LCBcIi9cIiwgc2F2ZV90aXRsZSksIGltYWdlc1tbaV1dW1s0XV1cbiMgICAgICAgICApXG4jICAgICB9XG4jIH1cbiNUT0RPIFdvcmsgdXAgc29tZSBsb2dpYyBmb3IgbG9jYXRpb24ocykgZm9yIG91dGZpbGVzXG5cblxuIyAgUGxvdCB0aGUgdG9wIGZlYXR1cmVzIG9uIGFuIGF4aXMgb2YgY29tcG9uZW50IGxvYWRpbmcgcmFuZ2UgLS0tLS0tLS0tLS0tLS0tLVxuIysgLi4udG8gdmlzdWFsaXplIHRoZSB0b3AgdmFyaWFibGVzIChmZWF0dXJlcykgdGhhdCBkcml2ZSB2YXJpYW5jZSBhbW9uZ1xuIysgcHJpbmNpcGFsIGNvbXBvbmVudHMgb2YgaW50ZXJlc3RcbnBfbG9hZGluZ3MgPC0gUENBdG9vbHM6OnBsb3Rsb2FkaW5ncyhcbiAgICBvYmpfcGNhLFxuICAgIGNvbXBvbmVudHMgPSBnZXRDb21wb25lbnRzKG9ial9wY2EsIDEpLFxuICAgICMgY29tcG9uZW50cyA9IGdldENvbXBvbmVudHMob2JqX3BjYSwgMTo1KSxcbiAgICByYW5nZVJldGFpbiA9IDAuMDUsXG4gICAgYWJzb2x1dGUgPSBGQUxTRSxcbiAgICBjb2wgPSBjKFwiIzc4NUVGMDc1XCIsIFwiI0ZGRkZGRjc1XCIsIFwiI0ZFNjEwMDc1XCIpLFxuICAgIHRpdGxlID0gXCJMb2FkaW5ncyBwbG90XCIsXG4gICAgc3VidGl0bGUgPSBcIlRvcCA1JSBvZiB2YXJpYWJsZXMgKGkuZS4sIGZlYXR1cmVzKVwiLFxuICAgICMgc2hhcGVTaXplUmFuZ2UgPSBjKDQsIDE2KSxcbiAgICBib3JkZXJDb2xvdXIgPSBcIiMwMDAwMDBcIixcbiAgICBib3JkZXJXaWR0aCA9IDAuMixcbiAgICBncmlkbGluZXMubWFqb3IgPSBUUlVFLFxuICAgIGdyaWRsaW5lcy5taW5vciA9IFRSVUUsXG4gICAgYXhpc0xhYlNpemUgPSAxMCxcbiAgICBsYWJTaXplID0gMywgICMgbGFiZWxfc2l6ZVxuICAgIGRyYXdDb25uZWN0b3JzID0gVFJVRSxcbiAgICB3aWR0aENvbm5lY3RvcnMgPSAwLjIsXG4gICAgdHlwZUNvbm5lY3RvcnMgPSAnY2xvc2VkJyxcbiAgICBjb2xDb25uZWN0b3JzID0gJ2JsYWNrJ1xuKSArXG4gICAgIyBnZ3Bsb3QyOjpjb29yZF9mbGlwKCkgK1xuICAgIHRoZW1lX3NsaWNrX25vX2xlZ2VuZFxucF9sb2FkaW5nc1xuI1RPRE8gV29yayB1cCBzb21lIGxvZ2ljIGZvciBzYXZpbmcgdGhlIHBsb3RcblxuXG4jICBFdmFsdWF0ZSBjb3JyZWxhdGlvbnMgYmV0d2VlbiBQQ3MgYW5kIG1vZGVsIHZhcmlhYmxlcyAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tXG4jKyBBbnN3ZXIsIFwiV2hhdCBpcyBkcml2aW5nIGJpb2xvZ2ljYWxseSBzaWduaWZpY2FudCB2YXJpYW5jZSBpbiBvdXIgZGF0YT9cIlxuUENfY29yIDwtIFBDQXRvb2xzOjplaWdlbmNvcnBsb3QoXG4gICAgb2JqX3BjYSxcbiAgICBjb21wb25lbnRzID0gUENBdG9vbHM6OmdldENvbXBvbmVudHMob2JqX3BjYSwgMTpsZW5ndGgob2JqX3BjYSRsb2FkaW5ncykpLFxuICAgICMgbWV0YXZhcnMgPSBjKFwic3RyYWluXCIsIFwic3RhdGVcIiwgXCJ0aW1lXCIsIFwicmVwbGljYXRlXCIsIFwidGVjaG5pY2FsXCIpLFxuICAgIG1ldGF2YXJzID0gYyhcInN0cmFpblwiLCBcInJlcGxpY2F0ZVwiLCBcInRlY2huaWNhbFwiKSxcbiAgICAjIG1ldGF2YXJzID0gYyhcInN0cmFpblwiLCBcInJlcGxpY2F0ZVwiLCBcInNhbXBsZV9uYW1lXCIpLFxuICAgIGNvbCA9IGMoXCIjRkZGRkZGNzVcIiwgXCIjRkU2MTAwNzVcIiksXG4gICAgIyBjb2wgPSBjKFwiIzc4NUVGMDc1XCIsIFwiI0ZGRkZGRjc1XCIsIFwiI0ZFNjEwMDc1XCIpLFxuICAgIHNjYWxlID0gRkFMU0UsXG4gICAgY29yRlVOID0gXCJwZWFyc29uXCIsXG4gICAgY29yTXVsdGlwbGVUZXN0Q29ycmVjdGlvbiA9IFwiQkhcIixcbiAgICBwbG90UnNxdWFyZWQgPSBUUlVFLFxuICAgIGNvbEZyYW1lID0gXCIjRkZGRkZGXCIsXG4gICAgbWFpbiA9IGJxdW90ZShQZWFyc29uIH4gcl4yIH4gY29ycmVsYXRlcyksXG4gICAgIyBtYWluID0gXCJQQyBQZWFyc29uIHItc3F1YXJlZCBjb3JyZWxhdGVzXCIsXG4gICAgZm9udE1haW4gPSAxLFxuICAgIHRpdGxlWCA9IFwiUHJpbmNpcGFsIGNvbXBvbmVudHNcIixcbiAgICBmb250VGl0bGVYID0gMSxcbiAgICBmb250TGFiWCA9IDEsXG4gICAgdGl0bGVZID0gXCJNb2RlbCB2YXJpYWJsZXNcIixcbiAgICByb3RUaXRsZVkgPSA5MCxcbiAgICBmb250VGl0bGVZID0gMSxcbiAgICBmb250TGFiWSA9IDFcbilcblBDX2NvclxuXG5cbiMgIEdldCBsaXN0cyBvZiB0b3AgbG9hZGluZ3MgZm9yIEdPIGFuYWx5c2VzIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS1cbiMgZm9yKGkgaW4gYyhcIlBDMVwiLCBcIlBDMlwiLCBcIlBDM1wiLCBcIlBDNFwiKSkge1xuZm9yKGkgaW4gYyhcIlBDMVwiLCBcIlBDMlwiKSkge1xuICAgICNUT0RPIFdyaXRlIHJlc3VsdHMgdG8gbGlzdCBzbyB0aGF0IEkgb25seSBuZWVkIHRvIHF1ZXJ5IGEgc2luZ2xlIG9iamVjdFxuICAgICMgaSA8LSBcIlBDMVwiXG4gICAgIyAgUG9zaXRpdmVcbiAgICBsb2FkaW5nc19wb3NfUEMgPC0gcm93bmFtZXModG9wX2xvYWRpbmdzX3Bvc1tbaV1dKVsxOjUwMF1cbiAgICBzYXZlX3RpdGxlX3Bvc19QQyA8LSBwYXN0ZTAoXG4gICAgICAgIFwidG9wLTUwMC5cIixcbiAgICAgICAgc3RyaW5ncjo6c3RyX3JlcGxhY2VfYWxsKGdldF9uYW1lX29mX3Zhcihsb2FkaW5nc19wb3NfUEMpLCBcIl9cIiwgXCItXCIpLFxuICAgICAgICBcIi5cIiwgaSwgXCIudHh0XCJcbiAgICApXG4gICAgIyByZWFkcjo6d3JpdGVfdHN2KFxuICAgICMgICAgIGRwbHlyOjphc190aWJibGUobG9hZGluZ3NfcG9zX1BDKSxcbiAgICAjICAgICBwYXN0ZTAoYXJncyRkaXJlY3Rvcnlfb3V0LCBcIi9cIiwgc2F2ZV90aXRsZV9wb3NfUEMpLFxuICAgICMgICAgIGNvbF9uYW1lcyA9IEZBTFNFXG4gICAgIyApXG4gICAgI1RPRE8gV29yayB1cCBzb21lIGxvZ2ljIGZvciBsb2NhdGlvbihzKSBmb3Igb3V0ZmlsZXNcbiAgICBcbiAgICAjICBOZWdhdGl2ZVxuICAgIGxvYWRpbmdzX25lZ19QQyA8LSByb3duYW1lcyh0b3BfbG9hZGluZ3NfbmVnW1tpXV0pWzE6NTAwXVxuICAgIHNhdmVfdGl0bGVfbmVnX1BDIDwtIHBhc3RlMChcbiAgICAgICAgXCJ0b3AtNTAwLlwiLFxuICAgICAgICBzdHJpbmdyOjpzdHJfcmVwbGFjZV9hbGwoZ2V0X25hbWVfb2ZfdmFyKGxvYWRpbmdzX25lZ19QQyksIFwiX1wiLCBcIi1cIiksXG4gICAgICAgIFwiLlwiLCBpLCBcIi50eHRcIlxuICAgIClcbiAgICAjIHJlYWRyOjp3cml0ZV90c3YoXG4gICAgIyAgICAgZHBseXI6OmFzX3RpYmJsZShsb2FkaW5nc19uZWdfUEMpLFxuICAgICMgICAgIHBhc3RlMChhcmdzJGRpcmVjdG9yeV9vdXQsIFwiL1wiLCBzYXZlX3RpdGxlX25lZ19QQyksXG4gICAgIyAgICAgY29sX25hbWVzID0gRkFMU0VcbiAgICAjIClcbiAgICAjVE9ETyBXb3JrIHVwIHNvbWUgbG9naWMgZm9yIGxvY2F0aW9uKHMpIGZvciBvdXRmaWxlc1xufVxuYGBgIn0= -->
+<pre class="r"><code># for(i in 1:length(names(images))) {
+#     # i &lt;- 2
+#     vector_names &lt;- names(images) %&gt;% stringr::str_split(&quot;\\.&quot;)
+#     
+#     if(vector_names[[i]][1] == &quot;PCAtools&quot;) {
+#         save_title &lt;- paste0(&quot;panel-plot&quot;, &quot;.&quot;, names(images)[i], &quot;.pdf&quot;)
+#         ggplot2::ggsave(
+#             paste0(args$directory_out, &quot;/&quot;, save_title), images[[i]]
+#         )
+#     } else if(vector_names[[i]][1] == &quot;KA&quot;) {
+#         save_title &lt;- paste0(
+#             &quot;panel-plot&quot;, &quot;.&quot;, names(images)[i], &quot;.1-x-positive.pdf&quot;
+#         )
+#         ggplot2::ggsave(
+#             paste0(args$directory_out, &quot;/&quot;, save_title), images[[i]][[1]]
+#         )
+#         
+#         save_title &lt;- paste0(
+#             &quot;panel-plot&quot;, &quot;.&quot;, names(images)[i], &quot;.2-y-positive.pdf&quot;
+#         )
+#         ggplot2::ggsave(
+#             paste0(args$directory_out, &quot;/&quot;, save_title), images[[i]][[2]]
+#         )
+#         
+#         save_title &lt;- paste0(
+#             &quot;panel-plot&quot;, &quot;.&quot;, names(images)[i], &quot;.3-x-negative.pdf&quot;
+#         )
+#         ggplot2::ggsave(
+#             paste0(args$directory_out, &quot;/&quot;, save_title), images[[i]][[3]]
+#         )
+#         
+#         save_title &lt;- paste0(
+#             &quot;panel-plot&quot;, &quot;.&quot;, names(images)[i], &quot;.4-y-negative.pdf&quot;
+#         )
+#         ggplot2::ggsave(
+#             paste0(args$directory_out, &quot;/&quot;, save_title), images[[i]][[4]]
+#         )
+#     }
+# }
+#TODO Work up some logic for location(s) for outfiles
+
+
+#  Plot the top features on an axis of component loading range ----------------
+#+ ...to visualize the top variables (features) that drive variance among
+#+ principal components of interest
+p_loadings &lt;- PCAtools::plotloadings(
+    obj_pca,
+    components = getComponents(obj_pca, 1),
+    # components = getComponents(obj_pca, 1:5),
+    rangeRetain = 0.05,
+    absolute = FALSE,
+    col = c(&quot;#785EF075&quot;, &quot;#FFFFFF75&quot;, &quot;#FE610075&quot;),
+    title = &quot;Loadings plot&quot;,
+    subtitle = &quot;Top 5% of variables (i.e., features)&quot;,
+    # shapeSizeRange = c(4, 16),
+    borderColour = &quot;#000000&quot;,
+    borderWidth = 0.2,
+    gridlines.major = TRUE,
+    gridlines.minor = TRUE,
+    axisLabSize = 10,
+    labSize = 3,  # label_size
+    drawConnectors = TRUE,
+    widthConnectors = 0.2,
+    typeConnectors = &#39;closed&#39;,
+    colConnectors = &#39;black&#39;
+) +
+    # ggplot2::coord_flip() +
+    theme_slick_no_legend
+p_loadings
+#TODO Work up some logic for saving the plot
+
+
+#  Evaluate correlations between PCs and model variables ----------------------
+#+ Answer, &quot;What is driving biologically significant variance in our data?&quot;
+PC_cor &lt;- PCAtools::eigencorplot(
+    obj_pca,
+    components = PCAtools::getComponents(obj_pca, 1:length(obj_pca$loadings)),
+    # metavars = c(&quot;strain&quot;, &quot;state&quot;, &quot;time&quot;, &quot;replicate&quot;, &quot;technical&quot;),
+    metavars = c(&quot;strain&quot;, &quot;replicate&quot;, &quot;technical&quot;),
+    # metavars = c(&quot;strain&quot;, &quot;replicate&quot;, &quot;sample_name&quot;),
+    col = c(&quot;#FFFFFF75&quot;, &quot;#FE610075&quot;),
+    # col = c(&quot;#785EF075&quot;, &quot;#FFFFFF75&quot;, &quot;#FE610075&quot;),
+    scale = FALSE,
+    corFUN = &quot;pearson&quot;,
+    corMultipleTestCorrection = &quot;BH&quot;,
+    plotRsquared = TRUE,
+    colFrame = &quot;#FFFFFF&quot;,
+    main = bquote(Pearson ~ r^2 ~ correlates),
+    # main = &quot;PC Pearson r-squared correlates&quot;,
+    fontMain = 1,
+    titleX = &quot;Principal components&quot;,
+    fontTitleX = 1,
+    fontLabX = 1,
+    titleY = &quot;Model variables&quot;,
+    rotTitleY = 90,
+    fontTitleY = 1,
+    fontLabY = 1
+)
+PC_cor
+
+
+#  Get lists of top loadings for GO analyses ----------------------------------
+# for(i in c(&quot;PC1&quot;, &quot;PC2&quot;, &quot;PC3&quot;, &quot;PC4&quot;)) {
+for(i in c(&quot;PC1&quot;, &quot;PC2&quot;)) {
+    #TODO Write results to list so that I only need to query a single object
+    # i &lt;- &quot;PC1&quot;
+    #  Positive
+    loadings_pos_PC &lt;- rownames(top_loadings_pos[[i]])[1:500]
+    save_title_pos_PC &lt;- paste0(
+        &quot;top-500.&quot;,
+        stringr::str_replace_all(get_name_of_var(loadings_pos_PC), &quot;_&quot;, &quot;-&quot;),
+        &quot;.&quot;, i, &quot;.txt&quot;
+    )
+    # readr::write_tsv(
+    #     dplyr::as_tibble(loadings_pos_PC),
+    #     paste0(args$directory_out, &quot;/&quot;, save_title_pos_PC),
+    #     col_names = FALSE
+    # )
+    #TODO Work up some logic for location(s) for outfiles
+    
+    #  Negative
+    loadings_neg_PC &lt;- rownames(top_loadings_neg[[i]])[1:500]
+    save_title_neg_PC &lt;- paste0(
+        &quot;top-500.&quot;,
+        stringr::str_replace_all(get_name_of_var(loadings_neg_PC), &quot;_&quot;, &quot;-&quot;),
+        &quot;.&quot;, i, &quot;.txt&quot;
+    )
+    # readr::write_tsv(
+    #     dplyr::as_tibble(loadings_neg_PC),
+    #     paste0(args$directory_out, &quot;/&quot;, save_title_neg_PC),
+    #     col_names = FALSE
+    # )
+    #TODO Work up some logic for location(s) for outfiles
+}</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p><br /> <br /></p>
+<p><code>#HERE</code> ## II. Run pairwise analyses</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p><br /></p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyAgTUEgcGxvdHMgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tXG5yZXNfcHckRzFfU1Nfd3RfcjYkbjA2ZF9NQV9TQ1xucmVzX3B3JFFfU1Nfd3RfcjYkbjA2ZF9NQV9TQ1xucmVzX3B3JFFfU1NfcjFfcjYkbjA2ZF9NQV9TQ1xucmVzX3B3JFFfU1Nfd3RfcjEkbjA2ZF9NQV9TQ1xuXG5yZXNfcHckRzFfU1Nfd3RfcjYkbjA3ZF9NQV9LTFxucmVzX3B3JFFfU1Nfd3RfcjYkbjA3ZF9NQV9LTFxucmVzX3B3JFFfU1NfcjFfcjYkbjA3ZF9NQV9LTFxucmVzX3B3JFFfU1Nfd3RfcjEkbjA3ZF9NQV9LTFxuXG5yZXNfcHckRzFfU1Nfd3RfcjYkbjA4ZF9NQV9TQy5jdHJsX0tMXG5yZXNfcHckUV9TU193dF9yNiRuMDhkX01BX1NDLmN0cmxfS0xcbnJlc19wdyRRX1NTX3IxX3I2JG4wOGRfTUFfU0MuY3RybF9LTFxucmVzX3B3JFFfU1Nfd3RfcjEkbjA4ZF9NQV9TQy5jdHJsX0tMXG5cbnJlc19wdyRHMV9TU193dF9yNiRuMDZkX01BX1NDXG5yZXNfcHckRzFfU1Nfd3RfcjYkbjA3ZF9NQV9LTFxucmVzX3B3JEcxX1NTX3d0X3I2JG4wOGRfTUFfU0MuY3RybF9LTFxuXG5yZXNfcHckUV9TU193dF9yNiRuMDZkX01BX1NDXG5yZXNfcHckUV9TU193dF9yNiRuMDdkX01BX0tMXG5yZXNfcHckUV9TU193dF9yNiRuMDhkX01BX1NDLmN0cmxfS0xcblxucmVzX3B3JFFfU1NfcjFfcjYkbjA2ZF9NQV9TQ1xucmVzX3B3JFFfU1NfcjFfcjYkbjA3ZF9NQV9LTFxucmVzX3B3JFFfU1NfcjFfcjYkbjA4ZF9NQV9TQy5jdHJsX0tMXG5cbnJlc19wdyRRX1NTX3d0X3IxJG4wNmRfTUFfU0NcbnJlc19wdyRRX1NTX3d0X3IxJG4wN2RfTUFfS0xcbnJlc19wdyRRX1NTX3d0X3IxJG4wOGRfTUFfU0MuY3RybF9LTFxuXG5cbiMgIFZvbGNhbm8gcGxvdHMgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLVxucmVzX3B3JEcxX1NTX3d0X3I2JG4wNmVfdm9sY2Fub19TQ1xucmVzX3B3JFFfU1Nfd3RfcjYkbjA2ZV92b2xjYW5vX1NDXG5yZXNfcHckUV9TU19yMV9yNiRuMDZlX3ZvbGNhbm9fU0NcbnJlc19wdyRRX1NTX3d0X3IxJG4wNmVfdm9sY2Fub19TQ1xuXG5yZXNfcHckRzFfU1Nfd3RfcjYkbjA3ZV92b2xjYW5vX0tMXG5yZXNfcHckUV9TU193dF9yNiRuMDdlX3ZvbGNhbm9fS0xcbnJlc19wdyRRX1NTX3IxX3I2JG4wN2Vfdm9sY2Fub19LTFxucmVzX3B3JFFfU1Nfd3RfcjEkbjA3ZV92b2xjYW5vX0tMXG5cbnJlc19wdyRHMV9TU193dF9yNiRuMDhlX3ZvbGNhbm9fU0MuY3RybF9LTFxucmVzX3B3JFFfU1Nfd3RfcjYkbjA4ZV92b2xjYW5vX1NDLmN0cmxfS0xcbnJlc19wdyRRX1NTX3IxX3I2JG4wOGVfdm9sY2Fub19TQy5jdHJsX0tMXG5yZXNfcHckUV9TU193dF9yMSRuMDhlX3ZvbGNhbm9fU0MuY3RybF9LTFxuXG5yZXNfcHckRzFfU1Nfd3RfcjYkbjA2ZV92b2xjYW5vX1NDXG5yZXNfcHckRzFfU1Nfd3RfcjYkbjA3ZV92b2xjYW5vX0tMXG5yZXNfcHckRzFfU1Nfd3RfcjYkbjA4ZV92b2xjYW5vX1NDLmN0cmxfS0xcblxucmVzX3B3JFFfU1Nfd3RfcjYkbjA2ZV92b2xjYW5vX1NDXG5yZXNfcHckUV9TU193dF9yNiRuMDdlX3ZvbGNhbm9fS0xcbnJlc19wdyRRX1NTX3d0X3I2JG4wOGVfdm9sY2Fub19TQy5jdHJsX0tMXG5cbnJlc19wdyRRX1NTX3IxX3I2JG4wNmVfdm9sY2Fub19TQ1xucmVzX3B3JFFfU1NfcjFfcjYkbjA3ZV92b2xjYW5vX0tMXG5yZXNfcHckUV9TU19yMV9yNiRuMDhlX3ZvbGNhbm9fU0MuY3RybF9LTFxuXG5yZXNfcHckUV9TU193dF9yMSRuMDZlX3ZvbGNhbm9fU0NcbnJlc19wdyRRX1NTX3d0X3IxJG4wN2Vfdm9sY2Fub19LTFxucmVzX3B3JFFfU1Nfd3RfcjEkbjA4ZV92b2xjYW5vX1NDLmN0cmxfS0xcblxuIyBzYXZlX3ZvbGNhbm8oXG4jICAgICBmaWxlID0gXCJ0ZXN0LnBkZlwiLFxuIyAgICAgcGxvdCA9IHAsXG4jICAgICB3aWR0aCA9IDIsXG4jICAgICBoZWlnaHQgPSAzXG4jIClcblxucmVzX3B3JEcxX1NTX3d0X3I2JG4wOGRfTUFfU0MuY3RybF9LTFxucmVzX3B3JFFfU1Nfd3RfcjYkbjA4ZF9NQV9TQy5jdHJsX0tMXG5yZXNfcHckUV9TU19yMV9yNiRuMDhkX01BX1NDLmN0cmxfS0xcbnJlc19wdyRRX1NTX3d0X3IxJG4wOGRfTUFfU0MuY3RybF9LTFxuXG5yZXNfcHckRzFfU1Nfd3RfcjYkbjA4ZV92b2xjYW5vX1NDLmN0cmxfS0xcbnJlc19wdyRRX1NTX3d0X3I2JG4wOGVfdm9sY2Fub19TQy5jdHJsX0tMXG5yZXNfcHckUV9TU19yMV9yNiRuMDhlX3ZvbGNhbm9fU0MuY3RybF9LTFxucmVzX3B3JFFfU1Nfd3RfcjEkbjA4ZV92b2xjYW5vX1NDLmN0cmxfS0xcbmBgYCJ9 -->
+<pre class="r"><code>#  MA plots ---------------------------
+res_pw$G1_SS_wt_r6$n06d_MA_SC
+res_pw$Q_SS_wt_r6$n06d_MA_SC
+res_pw$Q_SS_r1_r6$n06d_MA_SC
+res_pw$Q_SS_wt_r1$n06d_MA_SC
+
+res_pw$G1_SS_wt_r6$n07d_MA_KL
+res_pw$Q_SS_wt_r6$n07d_MA_KL
+res_pw$Q_SS_r1_r6$n07d_MA_KL
+res_pw$Q_SS_wt_r1$n07d_MA_KL
+
+res_pw$G1_SS_wt_r6$n08d_MA_SC.ctrl_KL
+res_pw$Q_SS_wt_r6$n08d_MA_SC.ctrl_KL
+res_pw$Q_SS_r1_r6$n08d_MA_SC.ctrl_KL
+res_pw$Q_SS_wt_r1$n08d_MA_SC.ctrl_KL
+
+res_pw$G1_SS_wt_r6$n06d_MA_SC
+res_pw$G1_SS_wt_r6$n07d_MA_KL
+res_pw$G1_SS_wt_r6$n08d_MA_SC.ctrl_KL
+
+res_pw$Q_SS_wt_r6$n06d_MA_SC
+res_pw$Q_SS_wt_r6$n07d_MA_KL
+res_pw$Q_SS_wt_r6$n08d_MA_SC.ctrl_KL
+
+res_pw$Q_SS_r1_r6$n06d_MA_SC
+res_pw$Q_SS_r1_r6$n07d_MA_KL
+res_pw$Q_SS_r1_r6$n08d_MA_SC.ctrl_KL
+
+res_pw$Q_SS_wt_r1$n06d_MA_SC
+res_pw$Q_SS_wt_r1$n07d_MA_KL
+res_pw$Q_SS_wt_r1$n08d_MA_SC.ctrl_KL
+
+
+#  Volcano plots ----------------------
+res_pw$G1_SS_wt_r6$n06e_volcano_SC
+res_pw$Q_SS_wt_r6$n06e_volcano_SC
+res_pw$Q_SS_r1_r6$n06e_volcano_SC
+res_pw$Q_SS_wt_r1$n06e_volcano_SC
+
+res_pw$G1_SS_wt_r6$n07e_volcano_KL
+res_pw$Q_SS_wt_r6$n07e_volcano_KL
+res_pw$Q_SS_r1_r6$n07e_volcano_KL
+res_pw$Q_SS_wt_r1$n07e_volcano_KL
+
+res_pw$G1_SS_wt_r6$n08e_volcano_SC.ctrl_KL
+res_pw$Q_SS_wt_r6$n08e_volcano_SC.ctrl_KL
+res_pw$Q_SS_r1_r6$n08e_volcano_SC.ctrl_KL
+res_pw$Q_SS_wt_r1$n08e_volcano_SC.ctrl_KL
+
+res_pw$G1_SS_wt_r6$n06e_volcano_SC
+res_pw$G1_SS_wt_r6$n07e_volcano_KL
+res_pw$G1_SS_wt_r6$n08e_volcano_SC.ctrl_KL
+
+res_pw$Q_SS_wt_r6$n06e_volcano_SC
+res_pw$Q_SS_wt_r6$n07e_volcano_KL
+res_pw$Q_SS_wt_r6$n08e_volcano_SC.ctrl_KL
+
+res_pw$Q_SS_r1_r6$n06e_volcano_SC
+res_pw$Q_SS_r1_r6$n07e_volcano_KL
+res_pw$Q_SS_r1_r6$n08e_volcano_SC.ctrl_KL
+
+res_pw$Q_SS_wt_r1$n06e_volcano_SC
+res_pw$Q_SS_wt_r1$n07e_volcano_KL
+res_pw$Q_SS_wt_r1$n08e_volcano_SC.ctrl_KL
+
+# save_volcano(
+#     file = &quot;test.pdf&quot;,
+#     plot = p,
+#     width = 2,
+#     height = 3
+# )
+
+res_pw$G1_SS_wt_r6$n08d_MA_SC.ctrl_KL
+res_pw$Q_SS_wt_r6$n08d_MA_SC.ctrl_KL
+res_pw$Q_SS_r1_r6$n08d_MA_SC.ctrl_KL
+res_pw$Q_SS_wt_r1$n08d_MA_SC.ctrl_KL
+
+res_pw$G1_SS_wt_r6$n08e_volcano_SC.ctrl_KL
+res_pw$Q_SS_wt_r6$n08e_volcano_SC.ctrl_KL
+res_pw$Q_SS_r1_r6$n08e_volcano_SC.ctrl_KL
+res_pw$Q_SS_wt_r1$n08e_volcano_SC.ctrl_KL</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
