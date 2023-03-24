@@ -849,28 +849,6 @@ test_Tecan_WT=(
 <br />
 
 ## I. Run groupwise analyses
-### Make the model matrices
-```{r Make the model matrices, results='hide', message=FALSE}
-#  Use the "keys" column to isolate datasets of interest
-#REMEMBER Variable `datasets` is initialized in the preceding chunk 
-col_data <- samples[samples$keys %in% datasets, ] %>%
-    as.data.frame() %>%  #IMPORTANT Output a dataframe, not a tibble
-    tibble::column_to_rownames(., var = "keys") %>%  #IMPORTANT Have row names
-    droplevels() 
-
-#  Make Rrp6-null numerator, wild-type denominator by explicitly reordering the
-#+ levels of the factor col_data$strain
-col_data$strain <- factor(col_data$strain, levels = c("WT", "r1-n", "r6-n"))
-
-#  Explicitly reorder the levels of the col_data$technical
-col_data$technical <- factor(col_data$technical, levels = c("tech1", "tech2"))
-
-#  How do things look?
-col_data
-col_data$strain
-```
-<br />
-
 ### For `datasets_wt_r1_r6`, continue factor enumeration (rough-draft)
 ```{r datasets_wt_r1_r6: continue factor enumeration, results='hide', message=FALSE}
 # #  Survey the levels associated with model variables
