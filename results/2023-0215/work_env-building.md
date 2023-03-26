@@ -25,6 +25,7 @@
 </details>
 <br />
 
+`#TODO` Make sure this doc is at parity with the doc in `2023_expression`
 <a id="set-up-environment-for-normalization-etc-analyses"></a>
 ## Set up environment for normalization, etc. analyses
 <a id="get-situated-make-directory-for-featurecounts-work-etc"></a>
@@ -934,6 +935,12 @@ mamba install \
 mamba install -c conda-forge r-markdown  # Needed by RStudio on WorkMac...
 
 mamba install -c conda-forge r-roxygen2  #TODO Copy in installation text...
+
+mamba install -c bioconda bioconductor-sva
+
+mamba install -c conda-forge r-ggalt
+
+mamba install -c conda-forge r-rjson
 ```
 </details>
 <br />
@@ -941,7 +948,7 @@ mamba install -c conda-forge r-roxygen2  #TODO Copy in installation text...
 <a id="printed-2"></a>
 ##### Printed
 <details>
-<summary><i>Printed: </i></summary>
+<summary><i>Printed: Create a new environment for normalization work, install programs, etc.: Create the environment on WorkMac</i></summary>
 
 ```txt
 ❯ create_x86_conda_environment \
@@ -1903,6 +1910,285 @@ Transaction
 
 Confirm changes: [Y/n] Y
 r-markdown                                         122.1kB @ 597.3kB/s  0.2s
+Preparing transaction: done
+Verifying transaction: done
+Executing transaction: done
+
+
+❯ mamba install -c bioconda bioconductor-sva
+
+                  __    __    __    __
+                 /  \  /  \  /  \  /  \
+                /    \/    \/    \/    \
+███████████████/  /██/  /██/  /██/  /████████████████████████
+              /  / \   / \   / \   / \  \____
+             /  /   \_/   \_/   \_/   \    o \__,
+            / _/                       \_____/  `
+            |/
+        ███╗   ███╗ █████╗ ███╗   ███╗██████╗  █████╗
+        ████╗ ████║██╔══██╗████╗ ████║██╔══██╗██╔══██╗
+        ██╔████╔██║███████║██╔████╔██║██████╔╝███████║
+        ██║╚██╔╝██║██╔══██║██║╚██╔╝██║██╔══██╗██╔══██║
+        ██║ ╚═╝ ██║██║  ██║██║ ╚═╝ ██║██████╔╝██║  ██║
+        ╚═╝     ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝╚═════╝ ╚═╝  ╚═╝
+
+        mamba (0.27.0) supported by @QuantStack
+
+        GitHub:  https://github.com/mamba-org/mamba
+        Twitter: https://twitter.com/QuantStack
+
+█████████████████████████████████████████████████████████████
+
+
+Looking for: ['bioconductor-sva']
+
+bioconda/osx-64                                      3.8MB @   4.8MB/s  0.9s
+pkgs/r/noarch                                                 No change
+bioconda/noarch                                      4.2MB @   4.2MB/s  1.1s
+pkgs/main/osx-64                                     5.2MB @   4.7MB/s  1.2s
+pkgs/r/osx-64                                                 No change
+pkgs/main/noarch                                   820.1kB @ 673.2kB/s  0.3s
+conda-forge/noarch                                  11.7MB @   4.5MB/s  2.8s
+conda-forge/osx-64                                  27.6MB @   5.0MB/s  6.2s
+
+Pinned packages:
+  - python 3.11.*
+
+
+Transaction
+
+  Prefix: /Users/kalavatt/mambaforge/envs/expression_env
+
+  Updating specs:
+
+   - bioconductor-sva
+   - ca-certificates
+   - certifi
+   - openssl
+
+
+  Package             Version  Build          Channel              Size
+─────────────────────────────────────────────────────────────────────────
+  Install:
+─────────────────────────────────────────────────────────────────────────
+
+  + bioconductor-sva   3.46.0  r42h3be46a4_0  bioconda/osx-64     489kB
+
+  Summary:
+
+  Install: 1 packages
+
+  Total download: 489kB
+
+─────────────────────────────────────────────────────────────────────────
+
+Confirm changes: [Y/n] Y
+bioconductor-sva                                   488.8kB @   1.9MB/s  0.3s
+Preparing transaction: done
+Verifying transaction: done
+Executing transaction: done
+
+
+❯ mamba install -c conda-forge r-ggalt
+                  __    __    __    __
+                 /  \  /  \  /  \  /  \
+                /    \/    \/    \/    \
+███████████████/  /██/  /██/  /██/  /████████████████████████
+              /  / \   / \   / \   / \  \____
+             /  /   \_/   \_/   \_/   \    o \__,
+            / _/                       \_____/  `
+            |/
+        ███╗   ███╗ █████╗ ███╗   ███╗██████╗  █████╗
+        ████╗ ████║██╔══██╗████╗ ████║██╔══██╗██╔══██╗
+        ██╔████╔██║███████║██╔████╔██║██████╔╝███████║
+        ██║╚██╔╝██║██╔══██║██║╚██╔╝██║██╔══██╗██╔══██║
+        ██║ ╚═╝ ██║██║  ██║██║ ╚═╝ ██║██████╔╝██║  ██║
+        ╚═╝     ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝╚═════╝ ╚═╝  ╚═╝
+
+        mamba (0.27.0) supported by @QuantStack
+
+        GitHub:  https://github.com/mamba-org/mamba
+        Twitter: https://twitter.com/QuantStack
+
+█████████████████████████████████████████████████████████████
+
+
+Looking for: ['r-ggalt']
+
+bioconda/osx-64                                               No change
+pkgs/r/noarch                                                 No change
+pkgs/main/noarch                                              No change
+pkgs/r/osx-64                                                 No change
+bioconda/noarch                                      4.2MB @   4.6MB/s  1.0s
+pkgs/main/osx-64                                     5.2MB @   4.9MB/s  1.2s
+conda-forge/noarch                                  11.7MB @   5.2MB/s  2.5s
+conda-forge/osx-64                                  27.6MB @   4.8MB/s  6.4s
+
+Pinned packages:
+  - python 3.11.*
+
+
+Transaction
+
+  Prefix: /Users/kalavatt/mambaforge/envs/expression_env
+
+  Updating specs:
+
+   - r-ggalt
+   - ca-certificates
+   - certifi
+   - openssl
+
+
+  Package          Version  Build             Channel                  Size
+─────────────────────────────────────────────────────────────────────────────
+  Install:
+─────────────────────────────────────────────────────────────────────────────
+
+  + proj             9.1.1  hf909084_2        conda-forge/osx-64        3MB
+  + r-ash           1.0_15  r42h1e4e481_1007  conda-forge/osx-64       45kB
+  + r-crosstalk      1.2.0  r42hc72bb7e_1     conda-forge/noarch      377kB
+  + r-extrafont       0.18  r42ha770c72_1     conda-forge/noarch       69kB
+  + r-extrafontdb      1.0  r42hc72bb7e_1004  conda-forge/noarch       20kB
+  + r-ggalt          0.4.0  r42ha770c72_3     conda-forge/noarch        2MB
+  + r-hexbin        1.28.3  r42h1e4e481_0     conda-forge/osx-64        2MB
+  + r-htmlwidgets    1.6.2  r42hc72bb7e_0     conda-forge/noarch      424kB
+  + r-later          1.3.0  r42hf00d5e6_1     conda-forge/osx-64      116kB
+  + r-lazyeval       0.2.2  r42h815d134_3     conda-forge/osx-64      168kB
+  + r-maps           3.4.1  r42h815d134_1     conda-forge/osx-64        2MB
+  + r-plotly        4.10.1  r42hc72bb7e_0     conda-forge/noarch        3MB
+  + r-proj4         1.0_12  r42h2df1cd0_1     conda-forge/osx-64       37kB
+  + r-promises     1.2.0.1  r42h49197e3_1     conda-forge/osx-64        2MB
+  + r-rttf2pt1      1.3.12  r42h815d134_0     conda-forge/osx-64      109kB
+  + sqlite          3.40.0  h9ae0607_0        conda-forge/osx-64     Cached
+
+  Summary:
+
+  Install: 16 packages
+
+  Total download: 15MB
+
+─────────────────────────────────────────────────────────────────────────────
+
+Confirm changes: [Y/n] Y
+r-lazyeval                                         167.8kB @   3.0MB/s  0.1s
+r-maps                                               2.4MB @  26.6MB/s  0.1s
+r-htmlwidgets                                      424.0kB @   4.8MB/s  0.0s
+proj                                                 2.6MB @  19.5MB/s  0.0s
+r-later                                            115.6kB @ 779.7kB/s  0.1s
+r-rttf2pt1                                         108.9kB @ 673.2kB/s  0.2s
+r-extrafontdb                                       20.3kB @  65.8kB/s  0.2s
+r-ash                                               44.8kB @ 141.7kB/s  0.3s
+r-ggalt                                              2.4MB @   7.1MB/s  0.2s
+r-proj4                                             37.4kB @ 111.1kB/s  0.2s
+r-plotly                                             3.0MB @   8.9MB/s  0.3s
+r-extrafont                                         69.0kB @ 164.3kB/s  0.1s
+r-crosstalk                                        376.9kB @ 861.5kB/s  0.1s
+r-promises                                           1.6MB @   3.5MB/s  0.1s
+r-hexbin                                             1.6MB @   3.4MB/s  0.2s
+Preparing transaction: done
+Verifying transaction: done
+Executing transaction: done
+
+
+❯ mamba install -c conda-forge r-rjson
+
+                  __    __    __    __
+                 /  \  /  \  /  \  /  \
+                /    \/    \/    \/    \
+███████████████/  /██/  /██/  /██/  /████████████████████████
+              /  / \   / \   / \   / \  \____
+             /  /   \_/   \_/   \_/   \    o \__,
+            / _/                       \_____/  `
+            |/
+        ███╗   ███╗ █████╗ ███╗   ███╗██████╗  █████╗
+        ████╗ ████║██╔══██╗████╗ ████║██╔══██╗██╔══██╗
+        ██╔████╔██║███████║██╔████╔██║██████╔╝███████║
+        ██║╚██╔╝██║██╔══██║██║╚██╔╝██║██╔══██╗██╔══██║
+        ██║ ╚═╝ ██║██║  ██║██║ ╚═╝ ██║██████╔╝██║  ██║
+        ╚═╝     ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝╚═════╝ ╚═╝  ╚═╝
+
+        mamba (0.27.0) supported by @QuantStack
+
+        GitHub:  https://github.com/mamba-org/mamba
+        Twitter: https://twitter.com/QuantStack
+
+█████████████████████████████████████████████████████████████
+
+
+Looking for: ['r-rjson']
+
+pkgs/main/osx-64                                              No change
+bioconda/osx-64                                               No change
+pkgs/r/noarch                                                 No change
+bioconda/noarch                                               No change
+pkgs/r/osx-64                                                 No change
+pkgs/main/noarch                                              No change
+conda-forge/noarch                                  11.7MB @   5.0MB/s  2.6s
+conda-forge/osx-64                                  27.6MB @   5.1MB/s  6.1s
+
+Pinned packages:
+  - python 3.11.*
+
+
+Transaction
+
+  Prefix: /Users/kalavatt/mambaforge/envs/expression_env
+
+  Updating specs:
+
+   - r-rjson
+   - ca-certificates
+   - certifi
+   - openssl
+
+
+  Package    Version  Build          Channel                 Size
+───────────────────────────────────────────────────────────────────
+  Install:
+───────────────────────────────────────────────────────────────────
+
+  + r-rjson   0.2.21  r42h49197e3_2  conda-forge/osx-64     167kB
+
+  Summary:
+
+  Install: 1 packages
+
+  Total download: 167kB
+
+───────────────────────────────────────────────────────────────────
+
+Confirm changes: [Y/n] Y
+Pinned packages:
+  - python 3.11.*
+
+
+Transaction
+
+  Prefix: /Users/kalavatt/mambaforge/envs/expression_env
+
+  Updating specs:
+
+   - r-rjson
+   - ca-certificates
+   - certifi
+   - openssl
+
+
+  Package    Version  Build          Channel                 Size
+───────────────────────────────────────────────────────────────────
+  Install:
+───────────────────────────────────────────────────────────────────
+
+  + r-rjson   0.2.21  r42h49197e3_2  conda-forge/osx-64     167kB
+
+  Summary:
+
+  Install: 1 packages
+
+  Total download: 167kB
+
+r-rjson                                            167.4kB @ 341.8kB/s  0.5s
 Preparing transaction: done
 Verifying transaction: done
 Executing transaction: done
