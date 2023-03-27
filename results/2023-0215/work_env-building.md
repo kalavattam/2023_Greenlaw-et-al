@@ -13,7 +13,7 @@
     1. [Install featureCounts in Trinity_env](#install-featurecounts-in-trinity_env)
         1. [Code](#code-1)
         1. [Printed](#printed)
-    1. [Create a new environment for normalization work, install programs, etc.](#create-a-new-environment-for-normalization-work-install-programs-etc)
+    1. [Create a new environment, `expression_env`, for normalization work, etc.](#create-a-new-environment-expression_env-for-normalization-work-etc)
         1. [Create the environment on KrisMac](#create-the-environment-on-krismac)
             1. [Code](#code-2)
             1. [Printed](#printed-1)
@@ -157,8 +157,8 @@ Executing transaction: done
 </details>
 <br />
 
-<a id="create-a-new-environment-for-normalization-work-install-programs-etc"></a>
-### Create a new environment for normalization work, install programs, etc.
+<a id="create-a-new-environment-expression_env-for-normalization-work-etc"></a>
+### Create a new environment, `expression_env`, for normalization work, etc.
 <a id="create-the-environment-on-krismac"></a>
 #### Create the environment on KrisMac
 <a id="code-2"></a>
@@ -941,6 +941,8 @@ mamba install -c bioconda bioconductor-sva
 mamba install -c conda-forge r-ggalt
 
 mamba install -c conda-forge r-rjson
+
+mamba install -c bioconda bioconductor-rtracklayer
 ```
 </details>
 <br />
@@ -2192,7 +2194,148 @@ r-rjson                                            167.4kB @ 341.8kB/s  0.5s
 Preparing transaction: done
 Verifying transaction: done
 Executing transaction: done
+
+
+❯ mamba install -c bioconda bioconductor-rtracklayer
+
+                  __    __    __    __
+                 /  \  /  \  /  \  /  \
+                /    \/    \/    \/    \
+███████████████/  /██/  /██/  /██/  /████████████████████████
+              /  / \   / \   / \   / \  \____
+             /  /   \_/   \_/   \_/   \    o \__,
+            / _/                       \_____/  `
+            |/
+        ███╗   ███╗ █████╗ ███╗   ███╗██████╗  █████╗
+        ████╗ ████║██╔══██╗████╗ ████║██╔══██╗██╔══██╗
+        ██╔████╔██║███████║██╔████╔██║██████╔╝███████║
+        ██║╚██╔╝██║██╔══██║██║╚██╔╝██║██╔══██╗██╔══██║
+        ██║ ╚═╝ ██║██║  ██║██║ ╚═╝ ██║██████╔╝██║  ██║
+        ╚═╝     ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝╚═════╝ ╚═╝  ╚═╝
+
+        mamba (0.27.0) supported by @QuantStack
+
+        GitHub:  https://github.com/mamba-org/mamba
+        Twitter: https://twitter.com/QuantStack
+
+█████████████████████████████████████████████████████████████
+
+
+Looking for: ['bioconductor-rtracklayer']
+
+bioconda/osx-64                                      3.8MB @   4.4MB/s  0.9s
+pkgs/r/noarch                                                 No change
+pkgs/main/noarch                                              No change
+bioconda/noarch                                      4.2MB @   4.3MB/s  1.1s
+pkgs/r/osx-64                                                 No change
+pkgs/main/osx-64                                     5.2MB @   4.8MB/s  1.2s
+conda-forge/noarch                                  11.7MB @   4.5MB/s  2.9s
+conda-forge/osx-64                                  27.6MB @   5.0MB/s  6.2s
+
+Pinned packages:
+  - python 3.11.*
+
+
+warning  libmamba Invalid package cache, file '/Users/kalavatt/mambaforge/pkgs/r-base-4.2.2-h841e2fe_3/lib/R/doc/html/packages.html' has incorrect size
+Transaction
+
+  Prefix: /Users/kalavatt/mambaforge/envs/expression_env
+
+  Updating specs:
+
+   - bioconductor-rtracklayer
+   - ca-certificates
+   - certifi
+   - openssl
+
+
+  Package                           Version  Build               Channel                  Size
+────────────────────────────────────────────────────────────────────────────────────────────────
+  Install:
+────────────────────────────────────────────────────────────────────────────────────────────────
+
+  + bioconductor-biocio               1.8.0  r42hdfd78af_0       bioconda/noarch         429kB
+  + bioconductor-genomicalignments   1.34.0  r42h3be46a4_0       bioconda/osx-64        Cached
+  + bioconductor-rhtslib              2.0.0  r42h3be46a4_0       bioconda/osx-64        Cached
+  + bioconductor-rsamtools           2.14.0  r42hb890f52_0       bioconda/osx-64        Cached
+  + bioconductor-rtracklayer         1.58.0  r42h6e925bd_1       bioconda/osx-64           6MB
+  + r-restfulr                       0.0.15  r42h9f1ad2d_1       bioconda/osx-64         440kB
+
+  Change:
+────────────────────────────────────────────────────────────────────────────────────────────────
+
+  - krb5                             1.20.1  h049b76e_0          conda-forge
+  + krb5                             1.20.1  h0165f36_0          conda-forge/osx-64        1MB
+  - libarchive                        3.6.2  h6d8d9f1_0          conda-forge
+  + libarchive                        3.6.2  h7181a6f_0          conda-forge/osx-64      728kB
+  - libssh2                          1.10.0  h47af595_3          conda-forge
+  + libssh2                          1.10.0  h7535e13_3          conda-forge/osx-64     Cached
+  - python                           3.11.0  he7542f4_1_cpython  conda-forge
+  + python                           3.11.0  h4150a38_1_cpython  conda-forge/osx-64       15MB
+  - sigtool                           0.1.3  h88f4db0_0          conda-forge
+  + sigtool                           0.1.3  h57ddcff_0          conda-forge/osx-64     Cached
+
+  Downgrade:
+────────────────────────────────────────────────────────────────────────────────────────────────
+
+  - cryptography                     39.0.2  py311h61927ef_0     conda-forge
+  + cryptography                     39.0.0  py311h8661239_0     conda-forge/osx-64        1MB
+  - curl                             7.88.1  h6df9250_0          conda-forge
+  + curl                             7.87.0  haf73cf8_0          conda-forge/osx-64      141kB
+  - libcurl                          7.88.1  h6df9250_0          conda-forge
+  + libcurl                          7.87.0  haf73cf8_0          conda-forge/osx-64      331kB
+  - libmamba                          1.3.1  h9d281b0_2          conda-forge
+  + libmamba                          1.2.0  h1ca9962_0          conda-forge/osx-64        1MB
+  - libmambapy                        1.3.1  py311hcc19a12_2     conda-forge
+  + libmambapy                        1.2.0  py311h8020b13_0     conda-forge/osx-64      237kB
+  - libnghttp2                       1.52.0  he2ab024_0          conda-forge
+  + libnghttp2                       1.51.0  h0dd9d14_0          conda-forge/osx-64      609kB
+  - mamba                             1.3.1  py311h8082e30_2     conda-forge
+  + mamba                             1.2.0  py311h280fce9_0     conda-forge/osx-64       65kB
+  - openssl                           3.1.0  hfd90126_0          conda-forge
+  + openssl                          1.1.1t  hfd90126_0          conda-forge/osx-64        2MB
+  - r-base                            4.2.3  h841e2fe_0          conda-forge
+  + r-base                            4.2.2  h841e2fe_3          conda-forge/osx-64     Cached
+  - r-openssl                         2.0.6  r42hfeb9312_0       conda-forge
+  + r-openssl                         2.0.5  r42h13d56fc_0       conda-forge/osx-64      626kB
+
+  Summary:
+
+  Install: 6 packages
+  Change: 5 packages
+  Downgrade: 10 packages
+
+  Total download: 30MB
+
+────────────────────────────────────────────────────────────────────────────────────────────────
+
+Confirm changes: [Y/n] Y
+libarchive                                         727.7kB @   8.5MB/s  0.1s
+openssl                                              1.7MB @  18.6MB/s  0.1s
+libnghttp2                                         609.3kB @   6.1MB/s  0.1s
+krb5                                                 1.1MB @  10.9MB/s  0.1s
+libcurl                                            331.2kB @   2.5MB/s  0.0s
+python                                              15.3MB @  50.6MB/s  0.3s
+mamba                                               65.4kB @ 215.6kB/s  0.2s
+curl                                               141.3kB @ 431.0kB/s  0.0s
+libmambapy                                         237.1kB @ 716.2kB/s  0.2s
+bioconductor-biocio                                429.4kB @   1.2MB/s  0.3s
+r-restfulr                                         440.1kB @ 788.7kB/s  0.2s
+r-openssl                                          626.4kB @   1.0MB/s  0.3s
+bioconductor-rtracklayer                             5.6MB @   9.1MB/s  0.5s
+cryptography                                         1.2MB @   1.7MB/s  0.4s
+libmamba                                             1.2MB @   1.5MB/s  0.5s
+Preparing transaction: done
+Verifying transaction: /
+SafetyError: The package for r-base located at /Users/kalavatt/mambaforge/pkgs/r-base-4.2.2-h841e2fe_3
+appears to be corrupted. The path 'lib/R/doc/html/packages.html'
+has an incorrect size.
+  reported size: 3423 bytes
+  actual size: 41091 bytes
+
+
+done
+Executing transaction: done
 ```
 </details>
 <br />
-

@@ -8,19 +8,19 @@
 <!-- MarkdownTOC -->
 
 1. [Install `conda`/`mamba` environment: `expression_env`](#install-condamamba-environment-expression_env)
-	1. [Code](#code)
+    1. [Code](#code)
 1. [Get situated](#get-situated)
-	1. [Code](#code-1)
+    1. [Code](#code-1)
 1. [Run htseq-count on bams in bams_renamed/](#run-htseq-count-on-bams-in-bams_renamed)
-	1. [Run htseq-count on bams in bams_renamed/ with combined_SC_KL.gff3](#run-htseq-count-on-bams-in-bams_renamed-with-combined_sc_klgff3)
-		1. [Get situated](#get-situated-1)
-			1. [Code](#code-2)
-		1. [Set up arrays](#set-up-arrays)
-			1. [Code](#code-3)
-		1. [Index all bams in arrays](#index-all-bams-in-arrays)
-			1. [Code](#code-4)
-		1. [Run featureCounts with combined_SC_KL.gff3](#run-featurecounts-with-combined_sc_klgff3)
-			1. [Code](#code-5)
+    1. [Run htseq-count on bams in bams_renamed/ with combined_SC_KL.gff3](#run-htseq-count-on-bams-in-bams_renamed-with-combined_sc_klgff3)
+        1. [Get situated](#get-situated-1)
+            1. [Code](#code-2)
+        1. [Set up arrays](#set-up-arrays)
+            1. [Code](#code-3)
+        1. [Index all bams in arrays](#index-all-bams-in-arrays)
+            1. [Code](#code-4)
+        1. [Run htseq-count with combined_SC_KL.gff3](#run-htseq-count-with-combined_sc_klgff3)
+            1. [Code](#code-5)
 
 <!-- /MarkdownTOC -->
 </details>
@@ -427,6 +427,7 @@ echo "${#UTK_prim_no[@]}"
 #!/bin/bash
 #DONTRUN #CONTINUE
 
+#TODO Check that this is necessary with an if/else statement
 ml SAMtools/1.16.1-GCC-11.2.0
 
 for i in \
@@ -445,13 +446,15 @@ module purge SAMtools/1.16.1-GCC-11.2.0
 </details>
 <br />
 
-<a id="run-featurecounts-with-combined_sc_klgff3"></a>
-#### Run featureCounts with combined_SC_KL.gff3
+<a id="run-htseq-count-with-combined_sc_klgff3"></a>
+#### Run htseq-count with combined_SC_KL.gff3
 <a id="code-5"></a>
 ##### Code
 <details>
-<summary><i>Code: Run featureCounts with combined_SC_KL.gff3</i></summary>
+<summary><i>Code: Run htseq-count with combined_SC_KL.gff3</i></summary>
 
+`#TODO` `#IMPORTANT` Change `--type "exon"` to `--type "mRNA"`
+`#TODO` `#QUESTION` Need to change `--idattr "ID"`?
 ```bash
 #  Set up unchanging variables
 threads="${SLURM_CPUS_ON_NODE}"  # echo "${threads}"
