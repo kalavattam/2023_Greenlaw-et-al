@@ -1,0 +1,462 @@
+---
+title: "work_assessment-processing_gtfs"
+author: "KA"
+email: "kalavatt@fredhutch.org"
+output:
+    html_notebook:
+        toc: yes
+---
+<br />
+
+## Prepare data for various DGE analyses
+### Get situated
+#### Load necessary libraries
+```{r Load necessary libraries, results='hide', message=FALSE, warning=FALSE}
+library(GenomicRanges)
+library(IRanges)
+library(readxl)
+library(rtracklayer)
+library(tidyverse)
+```
+<br />
+
+#### Set working directory
+```{r Set working directory, results='hide', message=FALSE}
+if(stringr::str_detect(getwd(), "kalavattam")) {
+    p_local <- "/Users/kalavattam/Dropbox/FHCC"
+} else {
+    p_local <- "/Users/kalavatt/projects-etc"
+}
+p_wd <- "2022_transcriptome-construction/results/2023-0215"
+
+setwd(paste(p_local, p_wd, sep = "/"))
+getwd()
+
+rm(p_local, p_wd)
+```
+<br />
+
+#### Set options
+```{r Set options, results='hide', message=FALSE, warning=FALSE}
+options(scipen = 999)
+options(ggrepel.max.overlaps = Inf)
+```
+<br />
+<br />
+
+## Assess the gtf/gff3 files
+### Describe the provenance of the files
+Manually copied the following files into the directory `gtf-gff3-tsv` in
+`2022_transcriptome-construction/results/2023-0215`:
+
+- `combined_SC_KL_20S.gff3`
+- `combined_SC_KL.gff3`
+- `combined.gtf`
+- `Kluyveromyces_lactis_gca_000002515.ASM251v1.55.gff3`
+- `Saccharomyces_cerevisiae.R64-1-1.108.gtf`
+- `Saccharomyces_cerevisiae.R64-1-1.108.plus-chr-rename.gtf`
+
+For details regarding `combined_SC_KL.gff3`, including it creation, see
+`results/2022-1025/notebook.md` and `results/2022-1201/work-Trinity-1.md`
+(contains code for the creation of the gff3 file).
+
+Regarding `combined_SC_KL_20S.gff3`, see the above two files as well as
+`work_gff3_include-20S.md` (which will be merged with the contents of this
+notebook `#TODO` `#LATER`).
+
+`combined.gtf` was created by someone who was in Christine Cuccinota's graduate
+laboratory&mdash;I don't really know if the material in it is accurate, let
+alone if it has been edited since its creation, the time of which I also don't
+know. But AG seems fine using it. Certainly, the structure does not follow the
+WashU/UCSC data structural guidelines for gtf, etc. files...
+
+`Kluyveromyces_lactis_gca_000002515.ASM251v1.55.gff3`:
+
+- genome build: Genolevures Consortium ASM251v1
+- genome version: ASM251v1
+- genome build accession: GCA_000002515.1
+- gene build last updated: 2015-02
+- No editing/other changes
+
+`Saccharomyces_cerevisiae.R64-1-1.108.gtf`:
+
+- genome build: R64-1-1
+- genome version: R64-1-1
+- genome date: 2011-09
+- genome build accession: GCA_000146045.2
+- gene build last updated: 2018-10
+- No editing/other changes
+
+`Saccharomyces_cerevisiae.R64-1-1.108.plus-chr-rename.gtf`:
+
+- Same as above
+- Editing performed/detailed in `results/2022-1101/work-TPM-calculation.md`
+
+### What are the gtfs/gff3s to assess?
+```{r, results='hide', message=FALSE}
+path_g <- "gtf-gff3-tsv"
+list.files(path_g)
+```
+<br />
+
+### Examine data structures for read-in gtfs/gff3s
+```{r, results='hide', message=FALSE}
+import_g <- function(file) {
+    rtracklayer::import(file)
+}
+
+
+g_sk2 <- import_g(paste(path_g, list.files(path_g)[1], sep = "/"))
+g_sk <- import_g(paste(path_g, list.files(path_g)[2], sep = "/"))
+g_comb <- import_g(paste(path_g, list.files(path_g)[3], sep = "/"))
+g_k <- import_g(paste(path_g, list.files(path_g)[4], sep = "/"))
+g_s <- import_g(paste(path_g, list.files(path_g)[5], sep = "/"))
+g_sre <- import_g(paste(path_g, list.files(path_g)[6], sep = "/"))
+```
+<br />
+
+#### Reviewing GenomicRanges accessor functions, etc.
+Building on the material [here](https://bioconductor.org/packages/devel/bioc/vignettes/GenomicRanges/inst/doc/GenomicRangesIntroduction.html)
+
+```{r, results='hide', message=FALSE}
+cat("# -------------------------------------\n")
+cat("# seqnames()\n")
+seqnames(g_k)
+cat("\n\n")
+
+cat("# -------------------------------------\n")
+cat("# ranges()\n")
+ranges(g_k)
+cat("\n\n")
+
+cat("# -------------------------------------\n")
+cat("# strand()\n")
+strand(g_k)
+cat("\n\n")
+
+cat("# -------------------------------------\n")
+cat("# granges()\n")
+granges(g_k)
+cat("\n\n")
+
+cat("# -------------------------------------\n")
+cat("# mcols()\n")
+mcols(g_k)
+cat("\n\n")
+
+cat("# -------------------------------------\n")
+cat("# mcols() %>% colnames()\n")
+#  Get all "columns" in GRanges object
+mcols(g_k) %>% colnames()
+cat("\n\n")
+
+cat("# -------------------------------------\n")
+cat("# seqlengths()\n")
+cat("# (Need to add this info yourself...)\n")
+seqlengths(g_k)
+
+cat("\n\n")
+
+# g_s
+```
+<br />
+
+#### Review the structure of a GRanges object
+```{r, results='hide', message=FALSE}
+cat("# -------------------------------------\n")
+cat("# g_k %>% as.data.frame() %>% length()\n")
+g_k %>% as.data.frame() %>% length()
+cat("\n\n")
+
+cat("# -------------------------------------\n")
+cat("# mcols(g_k) %>% length()\n")
+mcols(g_k) %>% length()
+cat("\n\n")
+
+cat("# -------------------------------------\n")
+cat("#QUESTION Why the discrepancy?\n\n")
+
+cat("# -------------------------------------\n")
+cat("# g_k %>% as.data.frame() %>% colnames()\n")
+g_k %>% as.data.frame() %>% colnames()
+cat("\n\n")
+
+cat("# -------------------------------------\n")
+cat("# mcols(g_k) %>% colnames()\n")
+mcols(g_k) %>% colnames()
+cat("\n\n")
+
+cat("# -------------------------------------\n")
+cat("#ANSWER mcols() is returning the metadata columns, not all\n")
+```
+<br />
+
+#### Explore a GRanges-to-data.frame-to-GRanges conversion
+Building on info [here](https://web.mit.edu/~r/current/arch/i386_linux26/lib/R/library/GenomicRanges/html/makeGRangesFromDataFrame.html)
+
+```{r, results='hide', message=FALSE}
+cat("# -------------------------------------\n")
+cat("#QUESTION If I convert, say, g_k to a data.frame, can I successfully\n")
+cat("          convert it back to a GRanges object?\n\n")
+
+d_k <- g_k %>% as.data.frame()
+
+#  "Reconstitute" the GRanges object ("rg")
+rg_k <- GenomicRanges::makeGRangesFromDataFrame(
+    d_k, keep.extra.columns = TRUE
+)
+isTRUE(length(mcols(g_k)) == length(mcols(rg_k)))
+
+#  Eyeball the reconstituted files
+rtracklayer::export(rg_k, "test.gtf")
+rtracklayer::export(rg_k, "test.gff3")
+
+#  It works! Empty vector elements are now included in the metadata of
+#+ test.gff3 vs. Kluyveromyces_lactis_gca_000002515.ASM251v1.55.gff3; besides
+#+ that, they are the same. Now, can delete the above test files.
+unlink(c("test.gtf", "test.gff3"))
+file.exists(c("test.gtf", "test.gff3"))
+```
+<br />
+
+## Process the gff3 files assoc. with Trinity transcriptome builds
+### Copy in gff3 files of interest
+```{bash}
+#!/bin/bash
+
+p_repo="${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction"
+p_exp="results/2023-0111"
+p_GG="outfiles_GMAP_rough-draft"
+
+p_cur="results/2023-0215"
+p_gff3="gtf-gff3-tsv"
+
+cd "${p_repo}/${p_exp}/${p_GG}"
+cp -r "Trinity-GG/" "${p_repo}/${p_cur}/${p_gff3}"
+```
+<br />
+
+### Details the experiment
+#### Background details
+Contents of `Trinity-GG/`:
+
+```{bash}
+#!/bin/bash
+
+#  From within 2023-0215/gtf-gff3-tsv/Trinity-GG...
+.,s
+```
+
+```{txt}
+./G_N:
+total 43M
+drwx------ 8 kalavatt  256 Feb 24 15:16 ./
+drwx------ 4 kalavatt  128 Mar 27 11:08 ../
+-rwx------ 1 kalavatt 6.8M Feb 24 15:07 trinity-gg_mkc-16_mir-0.05_mg-2_gf-0.05.gff3*
+-rwx------ 1 kalavatt 8.2M Feb 24 15:10 trinity-gg_mkc-1_mir-0.05_mg-2_gf-0.05.gff3*
+-rwx------ 1 kalavatt 7.6M Feb 24 15:09 trinity-gg_mkc-2_mir-0.05_mg-2_gf-0.05.gff3*
+-rwx------ 1 kalavatt 6.5M Feb 24 15:07 trinity-gg_mkc-32_mir-0.05_mg-2_gf-0.05.gff3*
+-rwx------ 1 kalavatt 7.0M Feb 24 15:09 trinity-gg_mkc-4_mir-0.05_mg-2_gf-0.05.gff3*
+-rwx------ 1 kalavatt 6.8M Feb 24 15:08 trinity-gg_mkc-8_mir-0.05_mg-2_gf-0.05.gff3*
+
+./Q_N:
+total 52M
+drwx------ 8 kalavatt  256 Feb 24 15:16 ./
+drwx------ 4 kalavatt  128 Mar 27 11:08 ../
+-rwx------ 1 kalavatt 8.3M Feb 24 14:44 trinity-gg_mkc-16_mir-0.05_mg-2_gf-0.05.gff3*
+-rwx------ 1 kalavatt  11M Feb 24 14:47 trinity-gg_mkc-1_mir-0.05_mg-2_gf-0.05.gff3*
+-rwx------ 1 kalavatt 9.5M Feb 24 14:46 trinity-gg_mkc-2_mir-0.05_mg-2_gf-0.05.gff3*
+-rwx------ 1 kalavatt 6.9M Feb 24 14:44 trinity-gg_mkc-32_mir-0.05_mg-2_gf-0.05.gff3*
+-rwx------ 1 kalavatt 8.7M Feb 24 14:46 trinity-gg_mkc-4_mir-0.05_mg-2_gf-0.05.gff3*
+-rwx------ 1 kalavatt 8.3M Feb 24 14:45 trinity-gg_mkc-8_mir-0.05_mg-2_gf-0.05.gff3*
+```
+
+Details for how these files were made are in the following notebooks:
+
+- For the fasta files from running Trinity (genome-guided mode): `results/2023-0111/work_Trinity-GF-GG-optimization_submit-jobs.md`
+- For aligning the fasta sequences to generate gff3 files: `results/2023-0111/work_GMAP_rough-draft.md`
+<br />
+
+#### Experiment game plan
+1. Use the Perl command-line utility `AGAT` (which I believe is already installed within Trinity_env) to convert the gff3 files to gtf files (`agat_convert_sp_gff2gtf.pl`): e.g., `agat_convert_sp_gff2gtf.pl --gff "${stem}.gff" -o "${stem}.gtf"`
+2. use `GffCompare` to discard "matching and 'contained' [transcript fragments, a.k.a. 'transfrags'] ... (i.e., collapse intron-redundant transfrags across all query files):" e.g., `gffcompare -C "${stem}.gtf" -o "${stem}.collapsed.gtf"`)
+3. use `featureCounts` to perform feature counting with the converted, collapsed gtf files
+4. use `tidyverse` to load resulting counts matrices into R
+5. in terms of (raw, non-normalized) alignment-to-transfrag tallies, filter out transfrags (i.e., putative transcripts) in the bottom
+    i. 5th percentile
+    ii. 10th percentile
+    iii. 15th percentile
+    iv. 20th percentile
+    v. 25th percentile
+6. use `rtracklayer` to write the converted, collapsed, counts-filtered data objects as .gtf files
+7. send the processed .gtf files to AG for inspection with `IGV`
+
+For both Q and G1, AG asked me to filter the assemblies generated with mkc = 1, 4, 8 (for the sake of completeness, and to understand clearly what "incorrectness" looks like, I have resolved to also filter 2, 16, 32; remember that the parameters mir, mg, and gf were held at default levels for the specific assemblies eyeballed by AG so far).
+<br />
+
+### 0. Set up an environment for gff3 processing
+#### Get situated
+##### Code
+<details>
+<summary><i>Code: Get situated</i></summary>
+
+```{bash}
+#!/bin/bash
+
+transcriptome && 
+    {
+        cd "results/2023-0215" \
+            || echo "cd'ing failed; check on this..."
+    }
+
+if [[ "${CONDA_DEFAULT_ENV}" != "base" ]]; then 
+    conda deactivate
+fi
+```
+</details>
+<br />
+
+#### Set up gff3_env
+Need the following packages:
+
+- https://anaconda.org/bioconda/agat
+- https://anaconda.org/bioconda/gffcompare]
+- https://anaconda.org/bioconda/subread (`featureCounts`)
+- https://anaconda.org/bioconda/htseq (`htseq-count`)
+- https://anaconda.org/bioconda/bioconductor-rtracklayer
+- https://anaconda.org/bioconda/bioconductor-genomicranges
+- https://anaconda.org/conda-forge/r-tidyverse
+
+##### Code
+<details>
+<summary><i>Code: Set up gff3_env</i></summary>
+
+```{bash}
+#!/bin/bash
+
+mamba create -n gff3_env \
+    -c bioconda \
+    --yes \
+        agat \
+        gffcompare \
+        subread \
+        htseq \
+        bioconductor-rtracklayer \
+        bioconductor-genomicranges
+
+source activate gff3_env
+mamba install \
+    -c conda-forge \
+        markdown \
+        r-markdown \
+        r-tidyverse \
+        bioconductor-rtracklayer==1.58.0
+```
+</details>
+<br />
+
+#### Add appropriate shortcut to `.zaliases`
+##### Code
+<details>
+<summary><i>Code: Add appropriate shortcut to .zaliases</i></summary>
+
+```{bash}
+#!/bin/bash
+
+alias R-gff3="(
+    source activate gff3_env
+    open -na /Applications/RStudio.app
+)"
+```
+</details>
+<br />
+
+### 1. Run AGAT
+#### Get situated
+##### Code
+<details>
+<summary><i>Code: Get situated</i></summary>
+
+```{bash}
+#!/bin/bash
+
+transcriptome && 
+    {
+        cd "results/2023-0215/gtf-gff3-tsv/Trinity-GG" \
+            || echo "cd'ing failed; check on this..."
+    }
+
+if [[ "${CONDA_DEFAULT_ENV}" != "base" ]]; then 
+    conda deactivate
+fi
+source activate gff3_env
+```
+</details>
+<br />
+
+#### Create an array of relevant files
+##### Code
+<details>
+<summary><i>Code: Create an array of relevant files</i></summary>
+
+```{bash}
+#!/bin/bash
+
+unset gff3s
+typeset -a gff3s
+while IFS=" " read -r -d $'\0'; do
+    gff3s+=( "${REPLY}" )
+done < <(\
+        find . \
+            -type f \
+            -name "*.gff3" \
+            -print0 \
+                | sort -z\
+)
+echo_test "${gff3s[@]}"
+echo "${#gff3s[@]}"  # 12
+```
+</details>
+<br />
+
+#### Loop through array elements with agat_convert_sp_gff2gtf.pl
+##### Code
+<details>
+<summary><i>Code: </i></summary>
+
+```{bash}
+#!/bin/bash
+
+for i in "${gff3s[@]}"; do
+    # i="${gff3s[1]}"  # echo "${i}"
+    agat_convert_sp_gff2gtf.pl \
+        --gff "${i}" \
+        -o "${i%.gff3}.gtf" \
+            > >(tee -a "${i%.gff3}.stdout.txt") \
+            2> >(tee -a "${i%.gff3}.stderr.txt")
+done
+```
+</details>
+<br />
+
+### 2. Run GffCompare
+#### Loop through array elements with gffcompare
+##### Code
+<details>
+<summary><i>Code: Loop through array elements with gffcompare</i></summary>
+
+```{bash}
+#!/bin/bash
+
+for i in "${gff3s[@]}"; do
+    gtf_in="${i%.gff3}.gtf"
+    gtf_out="${i%.gff3}.collapsed.gtf"
+    gffcompare -C "${gtf_in}" -o "${gtf_out}" \
+        > >(tee -a "${gtf_out%.gtf}.stdout.txt") \
+        2> >(tee -a "${gtf_out%.gtf}.stderr.txt")
+done
+```
+</details>
+<br />
+
+### 3. 
