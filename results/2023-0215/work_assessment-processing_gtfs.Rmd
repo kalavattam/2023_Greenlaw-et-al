@@ -46,7 +46,12 @@ options(ggrepel.max.overlaps = Inf)
 
 ## Assess the gtf/gff3 files
 ### Describe the provenance of the files
-Manually copied the following files into the directory `gtf-gff3-tsv` in
+#### Text
+<details>
+<summary><i>Text: Describe the provenance of the files</i></summary>
+
+In notebook `work_assessment-processing_gtfs.md`, copied the following files
+into the new directory `infiles_gtf-gff3/already` within
 `2022_transcriptome-construction/results/2023-0215`:
 
 - `combined_SC_KL_20S.gff3`
@@ -58,49 +63,54 @@ Manually copied the following files into the directory `gtf-gff3-tsv` in
 
 For details regarding `combined_SC_KL.gff3`, including it creation, see
 `results/2022-1025/notebook.md` and `results/2022-1201/work-Trinity-1.md`
-(contains code for the creation of the gff3 file).
+(contains code for the creation of the `gff3` file).
 
 Regarding `combined_SC_KL_20S.gff3`, see the above two files as well as
-`work_gff3_include-20S.md` (which will be merged with the contents of this
-notebook `#TODO` `#LATER`).
+`work_gff3_include-20S.md` (which will likely be merged with the contents of this
+notebook `#TODO` `#MAYBE` `#LATER`).
 
 `combined.gtf` was created by someone who was in Christine Cuccinota's graduate
 laboratory&mdash;I don't really know if the material in it is accurate, let
 alone if it has been edited since its creation, the time of which I also don't
-know. But AG seems fine using it. Certainly, the structure does not follow the
-WashU/UCSC data structural guidelines for gtf, etc. files...
+know. But Alison Greenlaw seems fine using it. Certainly, the structure does
+not follow the WashU/UCSC data structural guidelines for `gtf` and related
+files...
 
 `Kluyveromyces_lactis_gca_000002515.ASM251v1.55.gff3`:
 
-- genome build: Genolevures Consortium ASM251v1
-- genome version: ASM251v1
-- genome build accession: GCA_000002515.1
-- gene build last updated: 2015-02
-- No editing/other changes
+- genome build: `Genolevures Consortium ASM251v1`
+- genome version: `ASM251v1`
+- genome build accession: `GCA_000002515.1`
+- gene build last updated: `2015-02`
+- *No editing/other changes*
 
 `Saccharomyces_cerevisiae.R64-1-1.108.gtf`:
 
-- genome build: R64-1-1
-- genome version: R64-1-1
-- genome date: 2011-09
-- genome build accession: GCA_000146045.2
-- gene build last updated: 2018-10
-- No editing/other changes
+- genome build: `R64-1-1`
+- genome version: `R64-1-1`
+- genome date: `2011-09`
+- genome build accession: `GCA_000146045.2`
+- gene build last updated: `2018-10`
+- *No editing/other changes*
 
 `Saccharomyces_cerevisiae.R64-1-1.108.plus-chr-rename.gtf`:
 
-- Same as above
+- *Same as above*
 - Editing performed/detailed in `results/2022-1101/work-TPM-calculation.md`
 
-### What are the gtfs/gff3s to assess?
-```{r, results='hide', message=FALSE}
-path_g <- "gtf-gff3-tsv"
+`#TODO` *Write up details for the Trinity-GG `gff3` files*
+</details>
+<br />
+
+### What are the non-`Trinity-GG` gtfs/gff3s to later assess?
+```{r}
+path_g <- "infiles_gtf-gff3/already"
 list.files(path_g)
 ```
 <br />
 
 ### Examine data structures for read-in gtfs/gff3s
-```{r, results='hide', message=FALSE}
+```{r}
 import_g <- function(file) {
     rtracklayer::import(file)
 }
@@ -119,6 +129,10 @@ g_sre <- import_g(paste(path_g, list.files(path_g)[6], sep = "/"))
 Building on the material [here](https://bioconductor.org/packages/devel/bioc/vignettes/GenomicRanges/inst/doc/GenomicRangesIntroduction.html)
 
 ```{r, results='hide', message=FALSE}
+cat("# =====================================\n")
+cat("# Review the GenomicRanges accessor functions by looking at Kluyveromyces_lactis_gca_000002515.ASM251v1.55.gff3")
+cat("\n\n")
+
 cat("# -------------------------------------\n")
 cat("# seqnames()\n")
 seqnames(g_k)
@@ -152,7 +166,7 @@ cat("\n\n")
 
 cat("# -------------------------------------\n")
 cat("# seqlengths()\n")
-cat("# (Need to add this info yourself...)\n")
+cat("# (Apparently, will need to add this info yourself...)\n")
 seqlengths(g_k)
 
 cat("\n\n")
@@ -163,6 +177,10 @@ cat("\n\n")
 
 #### Review the structure of a GRanges object
 ```{r, results='hide', message=FALSE}
+cat("# =====================================\n")
+cat("# Review the structure of a GRanges object with Kluyveromyces_lactis_gca_000002515.ASM251v1.55.gff3")
+cat("\n\n")
+
 cat("# -------------------------------------\n")
 cat("# g_k %>% as.data.frame() %>% length()\n")
 g_k %>% as.data.frame() %>% length()
@@ -215,37 +233,32 @@ rtracklayer::export(rg_k, "test.gff3")
 #+ test.gff3 vs. Kluyveromyces_lactis_gca_000002515.ASM251v1.55.gff3; besides
 #+ that, they are the same. Now, can delete the above test files.
 unlink(c("test.gtf", "test.gff3"))
-file.exists(c("test.gtf", "test.gff3"))
+# file.exists(c("test.gtf", "test.gff3"))
+
+cat("\n# -------------------------------------\n")
+cat("#ANSWER Yes")
+cat("\n\n")
 ```
 <br />
 
-## Process the gff3 files assoc. with Trinity transcriptome builds
-### Copy in gff3 files of interest
-```{bash}
-#!/bin/bash
-
-p_repo="${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction"
-p_exp="results/2023-0111"
-p_GG="outfiles_GMAP_rough-draft"
-
-p_cur="results/2023-0215"
-p_gff3="gtf-gff3-tsv"
-
-cd "${p_repo}/${p_exp}/${p_GG}"
-cp -r "Trinity-GG/" "${p_repo}/${p_cur}/${p_gff3}"
-```
-<br />
-
-### Details the experiment
-#### Background details
-Contents of `Trinity-GG/`:
+## Describe details/game plan for the experiment
+### The contents of `infiles_gtf-gff3/Trinity-GG`
+#### Code
+<details>
+<summary><i>Code: The contents of infiles_gtf-gff3/Trinity-GG</i></summary>
 
 ```{bash}
 #!/bin/bash
 
-#  From within 2023-0215/gtf-gff3-tsv/Trinity-GG...
+#  From within 2023-0215/infiles_gtf-gff3/Trinity-GG
 .,s
 ```
+</details>
+<br />
+
+#### Printed
+<details>
+<summary><i>Printed: The contents of infiles_gtf-gff3/Trinity-GG</i></summary>
 
 ```{txt}
 ./G_N:
@@ -270,14 +283,27 @@ drwx------ 4 kalavatt  128 Mar 27 11:08 ../
 -rwx------ 1 kalavatt 8.7M Feb 24 14:46 trinity-gg_mkc-4_mir-0.05_mg-2_gf-0.05.gff3*
 -rwx------ 1 kalavatt 8.3M Feb 24 14:45 trinity-gg_mkc-8_mir-0.05_mg-2_gf-0.05.gff3*
 ```
+</details>
+<br />
+
+### Written descriptions
+#### Background
+##### Text
+<details>
+<summary><i>Text: Background</i></summary>
 
 Details for how these files were made are in the following notebooks:
 
 - For the fasta files from running Trinity (genome-guided mode): `results/2023-0111/work_Trinity-GF-GG-optimization_submit-jobs.md`
 - For aligning the fasta sequences to generate gff3 files: `results/2023-0111/work_GMAP_rough-draft.md`
+</details>
 <br />
 
-#### Experiment game plan
+#### Experiment gameplan
+##### Text
+<details>
+<summary><i>Text: Experiment gameplan</i></summary>
+
 1. Use the Perl command-line utility `AGAT` (which I believe is already installed within Trinity_env) to convert the gff3 files to gtf files (`agat_convert_sp_gff2gtf.pl`): e.g., `agat_convert_sp_gff2gtf.pl --gff "${stem}.gff" -o "${stem}.gtf"`
 2. use `GffCompare` to discard "matching and 'contained' [transcript fragments, a.k.a. 'transfrags'] ... (i.e., collapse intron-redundant transfrags across all query files):" e.g., `gffcompare -C "${stem}.gtf" -o "${stem}.collapsed.gtf"`)
 3. use `featureCounts` to perform feature counting with the converted, collapsed gtf files
@@ -292,171 +318,370 @@ Details for how these files were made are in the following notebooks:
 7. send the processed .gtf files to AG for inspection with `IGV`
 
 For both Q and G1, AG asked me to filter the assemblies generated with mkc = 1, 4, 8 (for the sake of completeness, and to understand clearly what "incorrectness" looks like, I have resolved to also filter 2, 16, 32; remember that the parameters mir, mg, and gf were held at default levels for the specific assemblies eyeballed by AG so far).
+</details>
+<br />
 <br />
 
-### 0. Set up an environment for gff3 processing
+## Command-line work
+See `#work_assessment-processing_gtfs.md`  
+`#TODO` *Link to the notebook*
+<br />
+<br />
+
+## Processing `gtf` files, counts matrices in an `R` environment
+Following on the in `#work_assessment-processing_gtfs.md` with "*step 5*"
+
+`#HERE`
+### 5. Filter transfrags by counts-matrix percentiles
 #### Get situated
-##### Code
-<details>
-<summary><i>Code: Get situated</i></summary>
-
-```{bash}
-#!/bin/bash
-
-transcriptome && 
-    {
-        cd "results/2023-0215" \
-            || echo "cd'ing failed; check on this..."
-    }
-
-if [[ "${CONDA_DEFAULT_ENV}" != "base" ]]; then 
-    conda deactivate
-fi
+##### Load necessary libraries
+```{r, results='hide', message=FALSE, warning=FALSE}
+library(GenomicRanges)
+library(IRanges)
+library(readxl)
+library(rtracklayer)
+library(tidyverse)
 ```
-</details>
 <br />
 
-#### Set up gff3_env
-Need the following packages:
+##### Set working directory
+```{r, results='hide', message=FALSE}
+if(stringr::str_detect(getwd(), "kalavattam")) {
+    p_local <- "/Users/kalavattam/Dropbox/FHCC"
+} else {
+    p_local <- "/Users/kalavatt/projects-etc"
+}
+p_wd <- "2022_transcriptome-construction/results/2023-0215"
 
-- https://anaconda.org/bioconda/agat
-- https://anaconda.org/bioconda/gffcompare]
-- https://anaconda.org/bioconda/subread (`featureCounts`)
-- https://anaconda.org/bioconda/htseq (`htseq-count`)
-- https://anaconda.org/bioconda/bioconductor-rtracklayer
-- https://anaconda.org/bioconda/bioconductor-genomicranges
-- https://anaconda.org/conda-forge/r-tidyverse
+setwd(paste(p_local, p_wd, sep = "/"))
+getwd()
 
-##### Code
-<details>
-<summary><i>Code: Set up gff3_env</i></summary>
-
-```{bash}
-#!/bin/bash
-
-mamba create -n gff3_env \
-    -c bioconda \
-    --yes \
-        agat \
-        gffcompare \
-        subread \
-        htseq \
-        bioconductor-rtracklayer \
-        bioconductor-genomicranges
-
-source activate gff3_env
-mamba install \
-    -c conda-forge \
-        markdown \
-        r-markdown \
-        r-tidyverse \
-        bioconductor-rtracklayer==1.58.0
+rm(p_local, p_wd)
 ```
-</details>
 <br />
 
-#### Add appropriate shortcut to `.zaliases`
-##### Code
-<details>
-<summary><i>Code: Add appropriate shortcut to .zaliases</i></summary>
-
-```{bash}
-#!/bin/bash
-
-alias R-gff3="(
-    source activate gff3_env
-    open -na /Applications/RStudio.app
-)"
+##### Set options
+```{r, results='hide', message=FALSE, warning=FALSE}
+options(scipen = 999)
+options(ggrepel.max.overlaps = Inf)
 ```
-</details>
 <br />
 
-### 1. Run AGAT
-#### Get situated
-##### Code
-<details>
-<summary><i>Code: Get situated</i></summary>
+#### Read in and process `gtf` files (as `data.frame`s)
+```{r}
+import_g <- function(file) {
+    rtracklayer::import(file)
+}
 
-```{bash}
-#!/bin/bash
 
-transcriptome && 
-    {
-        cd "results/2023-0215/gtf-gff3-tsv/Trinity-GG" \
-            || echo "cd'ing failed; check on this..."
-    }
+read_in_gtfs <- function(vector_files) {
+    list <- sapply(
+        vector_files,
+        import_g,
+        simplify = FALSE,
+        USE.NAMES = TRUE
+    )
+    names(list) <- paste0("k", c(1, 16, 2, 32, 4, 8))
+    
+    df <- sapply(
+        list,
+        as.data.frame,
+        simplify = FALSE,
+        USE.NAMES = TRUE
+    )
+    return(df)
+}
 
-if [[ "${CONDA_DEFAULT_ENV}" != "base" ]]; then 
-    conda deactivate
-fi
-source activate gff3_env
-```
-</details>
-<br />
 
-#### Create an array of relevant files
-##### Code
-<details>
-<summary><i>Code: Create an array of relevant files</i></summary>
-
-```{bash}
-#!/bin/bash
-
-unset gff3s
-typeset -a gff3s
-while IFS=" " read -r -d $'\0'; do
-    gff3s+=( "${REPLY}" )
-done < <(\
-        find . \
-            -type f \
-            -name "*.gff3" \
-            -print0 \
-                | sort -z\
+#  G1 ---------------------------------
+path_gtf_G <- "outfiles_gtf-gff3/Trinity-GG/G_N"
+files_G <- list.files(
+    path_gtf_G, pattern = "*.combined.gtf", full.names = TRUE
 )
-echo_test "${gff3s[@]}"
-echo "${#gff3s[@]}"  # 12
+l_G_gtf <- read_in_gtfs(files_G)
+
+
+#  Q ----------------------------------
+path_gtf_Q <- "outfiles_gtf-gff3/Trinity-GG/Q_N"
+files_Q <- list.files(
+    path_gtf_Q, pattern = "*.combined.gtf", full.names = TRUE
+)
+l_Q_gtf <- read_in_gtfs(files_Q)
+
+
+#  Comparisons ------------------------
+# l_G_gtf[["k1"]] %>% head()
+# l_G_gtf[["k2"]] %>% head()
+# 
+# l_G_gtf[["k1"]] %>% head()
+# l_Q_gtf[["k1"]] %>% head()
+# 
+# l_Q_gtf[["k1"]] %>% head()
+# l_Q_gtf[["k2"]] %>% head()
 ```
-</details>
 <br />
 
-#### Loop through array elements with agat_convert_sp_gff2gtf.pl
-##### Code
-<details>
-<summary><i>Code: </i></summary>
+#### Read in and process counts matrices
+```{r}
+read_in_mat <- function(vector_of_files) {
+    out_list <- sapply(
+        vector_of_files,
+        readr::read_tsv,
+        simplify = FALSE,
+        USE.NAMES = TRUE
+    )
+    names(out_list) <- paste0("k", c(1, 16, 2, 32, 4, 8))
+    
+    return(out_list)
+}
 
-```{bash}
-#!/bin/bash
 
-for i in "${gff3s[@]}"; do
-    # i="${gff3s[1]}"  # echo "${i}"
-    agat_convert_sp_gff2gtf.pl \
-        --gff "${i}" \
-        -o "${i%.gff3}.gtf" \
-            > >(tee -a "${i%.gff3}.stdout.txt") \
-            2> >(tee -a "${i%.gff3}.stderr.txt")
-done
+#  G1 ---------------------------------
+path_mat_G <- "outfiles_htseq-count/Trinity-GG/G_N"
+
+files_G_sam <- list.files(
+    path_mat_G, pattern = "*.yes.tsv", full.names = TRUE
+)
+l_G_mat_sam <- read_in_mat(files_G_sam) %>% suppressMessages()
+
+
+files_G_rev <- list.files(
+    path_mat_G, pattern = "*.reverse.tsv", full.names = TRUE
+)
+l_G_mat_rev <- read_in_mat(files_G_rev) %>% suppressMessages()
+
+
+#  Q ----------------------------------
+path_gtf_Q <- "outfiles_htseq-count/Trinity-GG/Q_N"
+
+files_Q_sam <- list.files(
+    path_gtf_Q, pattern = "*.yes.tsv", full.names = TRUE
+)
+l_Q_mat_sam <- read_in_mat(files_Q_sam) %>% suppressMessages()
+
+files_Q_rev <- list.files(
+    path_gtf_Q, pattern = "*.reverse.tsv", full.names = TRUE
+)
+l_Q_mat_rev <- read_in_mat(files_Q_rev) %>% suppressMessages()
+
+#  Comparisons ------------------------
+# l_Q_mat_sam[["k1"]] %>% head()
+# l_Q_mat_sam[["k2"]] %>% head()
+# 
+# l_Q_mat_sam[["k1"]] %>% head()
+# l_Q_mat_rev[["k1"]] %>% head()
+
+
+#  Rename columns ---------------------
+#+ ...in each dataframe composing each list
+rename_columns <- function(list) {
+    lapply(
+        list,
+        function(df) {
+            names(df) <- gsub("bams_renamed\\/UT_prim_UMI\\/WT_", "", names(df)) %>%
+                gsub("_day1_ovn_", "_", .) %>%
+                gsub("_day7_ovn_", "_", .) %>% 
+                gsub("_aux-F_tc-F_", "_", .) %>%
+                gsub("_tech1\\.UT_prim_UMI\\.bam", "", .) %>%
+                gsub("^\\.\\.\\.1", "gene_id", .)
+            
+            return(df)
+        }
+    )
+}
+
+l_G_mat_sam <- rename_columns(l_G_mat_sam)
+l_G_mat_rev <- rename_columns(l_G_mat_rev)
+l_Q_mat_sam <- rename_columns(l_Q_mat_sam)
+l_Q_mat_rev <- rename_columns(l_Q_mat_rev)
+
+
+#  Check ------------------------------
+# l_G_mat_sam$k32 %>% tail()
 ```
-</details>
 <br />
 
-### 2. Run GffCompare
-#### Loop through array elements with gffcompare
-##### Code
-<details>
-<summary><i>Code: Loop through array elements with gffcompare</i></summary>
+#### Categorize transfrags by percentile
+```{r}
+filter_transfrags <- function(x, y) {
+    df <- x
+    
+    if(y == "G1" | y == "G") {
+        df <- x[, 1:3] %>% head(., -5)
+    } else if(y == "Q") {
+        df <- x[, c(1, 6, 7)] %>% head(., -5)
+    } else if(y != "G1" | y != "G" | y != "Q") {
+        stop("Parameter y must be either 'G1', 'G', or 'Q'")
+    }
+    
+    df[, 4] <- df[, 2] + df[, 3]
+    colnames(df)[4] <- "sum"
 
-```{bash}
-#!/bin/bash
+    ids <- list()
 
-for i in "${gff3s[@]}"; do
-    gtf_in="${i%.gff3}.gtf"
-    gtf_out="${i%.gff3}.collapsed.gtf"
-    gffcompare -C "${gtf_in}" -o "${gtf_out}" \
-        > >(tee -a "${gtf_out%.gtf}.stdout.txt") \
-        2> >(tee -a "${gtf_out%.gtf}.stderr.txt")
-done
+    ids$percentiles <- quantile(
+        df$sum, probs = c(0.05, 0.10, 0.15, 0.20, 0.25, 0.30, 0.35, 0.40)
+    ) %>%
+        round()
+    
+    df$below_05 <- ifelse(df$sum <= ids$percentiles[1], TRUE, FALSE)
+    df$below_10 <- ifelse(df$sum <= ids$percentiles[2], TRUE, FALSE)
+    df$below_15 <- ifelse(df$sum <= ids$percentiles[3], TRUE, FALSE)
+    df$below_20 <- ifelse(df$sum <= ids$percentiles[4], TRUE, FALSE)
+    df$below_25 <- ifelse(df$sum <= ids$percentiles[5], TRUE, FALSE)
+    df$below_30 <- ifelse(df$sum <= ids$percentiles[6], TRUE, FALSE)
+    df$below_35 <- ifelse(df$sum <= ids$percentiles[7], TRUE, FALSE)
+    df$below_40 <- ifelse(df$sum <= ids$percentiles[8], TRUE, FALSE)
+    
+    ids$below_05 <- df[df$below_05 == FALSE, ]$gene_id
+    ids$below_10 <- df[df$below_10 == FALSE, ]$gene_id
+    ids$below_15 <- df[df$below_15 == FALSE, ]$gene_id
+    ids$below_20 <- df[df$below_20 == FALSE, ]$gene_id
+    ids$below_25 <- df[df$below_25 == FALSE, ]$gene_id
+    ids$below_30 <- df[df$below_30 == FALSE, ]$gene_id
+    ids$below_35 <- df[df$below_35 == FALSE, ]$gene_id
+    ids$below_40 <- df[df$below_40 == FALSE, ]$gene_id
+    
+    return(ids)
+    
+    
+    #  Checks -------------------------
+    # df$below_05 %>% table()
+    # df$below_10 %>% table()
+    # df$below_15 %>% table()
+    # df$below_20 %>% table()
+    # df$below_25 %>% table()
+    # df$below_30 %>% table()
+    
+    
+    #  Scraps -----------------------------
+    # quantile(
+    #     test$G1_N_rep1, probs = c(0.05, 0.10, 0.15, 0.20, 0.25, 0.30)
+    # ) %>%
+    #     round()
+    # quantile(
+    #     test$G1_N_rep2, probs = c(0.05, 0.10, 0.15, 0.20, 0.25, 0.30)
+    # ) %>%
+    #     round()
+}
+
+
+f_G_mat_sam <- sapply(
+    l_G_mat_sam,
+    filter_transfrags,
+    simplify = FALSE,
+    USE.NAMES = TRUE,
+    y = "G1"
+)
+f_G_mat_rev <- sapply(
+    l_G_mat_rev,
+    filter_transfrags,
+    simplify = FALSE,
+    USE.NAMES = TRUE,
+    y = "G1"
+)
+f_Q_mat_sam <- sapply(
+    l_Q_mat_sam,
+    filter_transfrags,
+    simplify = FALSE,
+    USE.NAMES = TRUE,
+    y = "Q"
+)
+f_Q_mat_rev <- sapply(
+    l_Q_mat_rev,
+    filter_transfrags,
+    simplify = FALSE,
+    USE.NAMES = TRUE,
+    y = "Q"
+)
+
+
+#  Checks -------------------------
+# f_G_mat_sam$k4$below_05 %>% length()
+# f_G_mat_sam$k4$below_10 %>% length()
+# f_G_mat_sam$k4$below_15 %>% length()
+# f_G_mat_sam$k4$below_20 %>% length()
+# f_G_mat_sam$k4$below_25 %>% length()
+# f_G_mat_sam$k4$below_30 %>% length()
+# 
+# f_G_mat_rev$k4$below_05 %>% length()
+# f_G_mat_rev$k4$below_10 %>% length()
+# f_G_mat_rev$k4$below_15 %>% length()
+# f_G_mat_rev$k4$below_20 %>% length()
+# f_G_mat_rev$k4$below_25 %>% length()
+# f_G_mat_rev$k4$below_30 %>% length()
+# 
+# f_Q_mat_sam$k4$below_05 %>% length()
+# f_Q_mat_sam$k4$below_10 %>% length()
+# f_Q_mat_sam$k4$below_15 %>% length()
+# f_Q_mat_sam$k4$below_20 %>% length()
+# f_Q_mat_sam$k4$below_25 %>% length()
+# f_Q_mat_sam$k4$below_30 %>% length()
+# 
+# f_Q_mat_rev$k4$below_05 %>% length()
+# f_Q_mat_rev$k4$below_10 %>% length()
+# f_Q_mat_rev$k4$below_15 %>% length()
+# f_Q_mat_rev$k4$below_20 %>% length()
+# f_Q_mat_rev$k4$below_25 %>% length()
+# f_Q_mat_rev$k4$below_30 %>% length()
+# 
+# f_G_mat_sam$k16$percentiles
+# f_G_mat_rev$k16$percentiles
+# 
+# f_Q_mat_sam$k16$percentiles
+# f_Q_mat_rev$k16$percentiles
 ```
-</details>
 <br />
 
-### 3. 
+#### Subset gtf dataframe to retain percentile-filtered `gene_id`s
+```{r}
+names(l_G_gtf)
+names(l_G_mat_sam)
+
+
+subset_dataframes <- function(x, y) {
+    x <- l_G_gtf
+    y <- f_G_mat_sam
+    
+    dfs <- list()
+    
+    for(i in names(x)) {
+        # i <- "k32"
+        df[[i]] <- x[[i]]
+        mat[[i]] <- y[[i]]
+
+        dfs[[i]]$below_05 <- df[df$gene_id %in% mat$below_05, ]
+        dfs[[i]]$below_10 <- df[df$gene_id %in% mat$below_10, ]
+        dfs[[i]]$below_15 <- df[df$gene_id %in% mat$below_15, ]
+        dfs[[i]]$below_20 <- df[df$gene_id %in% mat$below_20, ]
+        dfs[[i]]$below_25 <- df[df$gene_id %in% mat$below_25, ]
+        dfs[[i]]$below_30 <- df[df$gene_id %in% mat$below_30, ]
+        dfs[[i]]$below_35 <- df[df$gene_id %in% mat$below_35, ]
+        dfs[[i]]$below_40 <- df[df$gene_id %in% mat$below_40, ]
+    }
+    
+    
+    
+    
+    
+    #  Checks -----------------------------
+    dfs$below_05
+    dfs$below_10
+    dfs$below_15
+    dfs$below_20
+    dfs$below_25
+    dfs$below_30
+    dfs$below_35
+    dfs$below_40
+    
+    dfs$below_05[dfs$below_05$type == "transcript", ]
+    dfs$below_10[dfs$below_10$type == "transcript", ]
+    dfs$below_15[dfs$below_15$type == "transcript", ]
+    dfs$below_20[dfs$below_20$type == "transcript", ]
+    dfs$below_25[dfs$below_25$type == "transcript", ]
+    dfs$below_30[dfs$below_30$type == "transcript", ]
+    dfs$below_35[dfs$below_35$type == "transcript", ]
+    dfs$below_40[dfs$below_40$type == "transcript", ]
+}
+```
+
