@@ -7,215 +7,26 @@
 <summary><b><font size="+2">Table of Contents</font></b></summary>
 <!-- MarkdownTOC -->
 
-1. [Install `conda`/`mamba` environment: `expression_env`](#install-condamamba-environment-expression_env)
-    1. [Code](#code)
 1. [Get situated](#get-situated)
-    1. [Code](#code-1)
+    1. [Code](#code)
 1. [Run htseq-count on bams in bams_renamed/](#run-htseq-count-on-bams-in-bams_renamed)
     1. [Run htseq-count on bams in bams_renamed/ with combined_SC_KL.gff3](#run-htseq-count-on-bams-in-bams_renamed-with-combined_sc_klgff3)
         1. [Get situated](#get-situated-1)
-            1. [Code](#code-2)
+            1. [Code](#code-1)
         1. [Set up arrays](#set-up-arrays)
-            1. [Code](#code-3)
+            1. [Code](#code-2)
         1. [Index all bams in arrays](#index-all-bams-in-arrays)
-            1. [Code](#code-4)
+            1. [Code](#code-3)
         1. [Run htseq-count with combined_SC_KL.gff3](#run-htseq-count-with-combined_sc_klgff3)
-            1. [Code](#code-5)
+            1. [Code](#code-4)
 
 <!-- /MarkdownTOC -->
 </details>
 <br />
 
-<a id="install-condamamba-environment-expression_env"></a>
-## Install `conda`/`mamba` environment: `expression_env`
-<a id="code"></a>
-### Code
-<details>
-<summary><i>Code: Install conda/mamba environment: expression_env</i></summary>
-
-```bash
-#!/bin/bash
-
-conda config --add channels defaults
-conda config --add channels bioconda
-conda config --add channels conda-forge
-
-mamba create -n htseq_env -c bioconda python=3.9 htseq=2.0.2=py39h919a90d_0
-```
-</details>
-<br />
-
-<details>
-<summary><i>Printed: Install conda/mamba environment: expression_env</i></summary>
-
-```txt
-❯ mamba create -n htseq_env -c bioconda python=3.9 htseq=2.0.2=py39h919a90d_0
-
-                  __    __    __    __
-                 /  \  /  \  /  \  /  \
-                /    \/    \/    \/    \
-███████████████/  /██/  /██/  /██/  /████████████████████████
-              /  / \   / \   / \   / \  \____
-             /  /   \_/   \_/   \_/   \    o \__,
-            / _/                       \_____/  `
-            |/
-        ███╗   ███╗ █████╗ ███╗   ███╗██████╗  █████╗
-        ████╗ ████║██╔══██╗████╗ ████║██╔══██╗██╔══██╗
-        ██╔████╔██║███████║██╔████╔██║██████╔╝███████║
-        ██║╚██╔╝██║██╔══██║██║╚██╔╝██║██╔══██╗██╔══██║
-        ██║ ╚═╝ ██║██║  ██║██║ ╚═╝ ██║██████╔╝██║  ██║
-        ╚═╝     ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝╚═════╝ ╚═╝  ╚═╝
-
-        mamba (1.3.1) supported by @QuantStack
-
-        GitHub:  https://github.com/mamba-org/mamba
-        Twitter: https://twitter.com/QuantStack
-
-█████████████████████████████████████████████████████████████
-
-
-Looking for: ['python=3.9', 'htseq==2.0.2=py39h919a90d_0']
-
-bioconda/linux-64                                           Using cache
-bioconda/noarch                                             Using cache
-conda-forge/linux-64                                        Using cache
-conda-forge/noarch                                          Using cache
-pkgs/main/linux-64                                            No change
-pkgs/r/linux-64                                               No change
-pkgs/main/noarch                                              No change
-pkgs/r/noarch                                                 No change
-Transaction
-
-  Prefix: /home/kalavatt/miniconda3/envs/htseq_env
-
-  Updating specs:
-
-   - python=3.9
-   - htseq==2.0.2=py39h919a90d_0
-
-
-  Package                     Version  Build                Channel                    Size
-─────────────────────────────────────────────────────────────────────────────────────────────
-  Install:
-─────────────────────────────────────────────────────────────────────────────────────────────
-
-  + _libgcc_mutex                 0.1  conda_forge          conda-forge/linux-64     Cached
-  + _openmp_mutex                 4.5  2_gnu                conda-forge/linux-64     Cached
-  + brotli                      1.0.9  h166bdaf_8           conda-forge/linux-64     Cached
-  + brotli-bin                  1.0.9  h166bdaf_8           conda-forge/linux-64     Cached
-  + bzip2                       1.0.8  h7f98852_4           conda-forge/linux-64     Cached
-  + c-ares                     1.18.1  h7f98852_0           conda-forge/linux-64     Cached
-  + ca-certificates         2022.12.7  ha878542_0           conda-forge/linux-64     Cached
-  + certifi                 2022.12.7  pyhd8ed1ab_0         conda-forge/noarch       Cached
-  + contourpy                   1.0.7  py39h4b4f3f3_0       conda-forge/linux-64      216kB
-  + cycler                     0.11.0  pyhd8ed1ab_0         conda-forge/noarch       Cached
-  + fonttools                  4.39.2  py39h72bdee0_0       conda-forge/linux-64        2MB
-  + freetype                   2.12.1  hca18f0e_1           conda-forge/linux-64     Cached
-  + htseq                       2.0.2  py39h919a90d_0       bioconda/linux-64         393kB
-  + importlib-resources        5.12.0  pyhd8ed1ab_0         conda-forge/noarch          9kB
-  + importlib_resources        5.12.0  pyhd8ed1ab_0         conda-forge/noarch         31kB
-  + jpeg                           9e  h0b41bf4_3           conda-forge/linux-64     Cached
-  + keyutils                    1.6.1  h166bdaf_0           conda-forge/linux-64     Cached
-  + kiwisolver                  1.4.4  py39hf939315_1       conda-forge/linux-64       78kB
-  + krb5                       1.20.1  hf9c8cef_0           conda-forge/linux-64     Cached
-  + lcms2                        2.14  h6ed2654_0           conda-forge/linux-64     Cached
-  + ld_impl_linux-64             2.40  h41732ed_0           conda-forge/linux-64     Cached
-  + lerc                        4.0.0  h27087fc_0           conda-forge/linux-64     Cached
-  + libblas                     3.9.0  16_linux64_openblas  conda-forge/linux-64     Cached
-  + libbrotlicommon             1.0.9  h166bdaf_8           conda-forge/linux-64     Cached
-  + libbrotlidec                1.0.9  h166bdaf_8           conda-forge/linux-64     Cached
-  + libbrotlienc                1.0.9  h166bdaf_8           conda-forge/linux-64     Cached
-  + libcblas                    3.9.0  16_linux64_openblas  conda-forge/linux-64     Cached
-  + libcurl                    7.87.0  h6312ad2_0           conda-forge/linux-64     Cached
-  + libdeflate                   1.13  h166bdaf_0           conda-forge/linux-64     Cached
-  + libedit              3.1.20191231  he28a2e2_2           conda-forge/linux-64     Cached
-  + libev                        4.33  h516909a_1           conda-forge/linux-64     Cached
-  + libffi                      3.4.2  h7f98852_5           conda-forge/linux-64     Cached
-  + libgcc-ng                  12.2.0  h65d4601_19          conda-forge/linux-64     Cached
-  + libgfortran-ng             12.2.0  h69a702a_19          conda-forge/linux-64     Cached
-  + libgfortran5               12.2.0  h337968e_19          conda-forge/linux-64     Cached
-  + libgomp                    12.2.0  h65d4601_19          conda-forge/linux-64     Cached
-  + liblapack                   3.9.0  16_linux64_openblas  conda-forge/linux-64     Cached
-  + libnghttp2                 1.51.0  hdcd2b5c_0           conda-forge/linux-64     Cached
-  + libnsl                      2.0.0  h7f98852_0           conda-forge/linux-64     Cached
-  + libopenblas                0.3.21  pthreads_h78a6416_3  conda-forge/linux-64     Cached
-  + libpng                     1.6.39  h753d276_0           conda-forge/linux-64     Cached
-  + libsqlite                  3.40.0  h753d276_0           conda-forge/linux-64     Cached
-  + libssh2                    1.10.0  haa6b8db_3           conda-forge/linux-64     Cached
-  + libstdcxx-ng               12.2.0  h46fd767_19          conda-forge/linux-64     Cached
-  + libtiff                     4.4.0  h0e0dad5_3           conda-forge/linux-64     Cached
-  + libuuid                    2.32.1  h7f98852_1000        conda-forge/linux-64     Cached
-  + libwebp-base                1.3.0  h0b41bf4_0           conda-forge/linux-64      357kB
-  + libxcb                       1.13  h7f98852_1004        conda-forge/linux-64     Cached
-  + libzlib                    1.2.13  h166bdaf_4           conda-forge/linux-64     Cached
-  + matplotlib-base             3.7.1  py39he190548_0       conda-forge/linux-64        7MB
-  + munkres                     1.0.7  py_1                 bioconda/noarch          Cached
-  + ncurses                       6.3  h27087fc_1           conda-forge/linux-64     Cached
-  + numpy                      1.24.2  py39h7360e5f_0       conda-forge/linux-64        7MB
-  + openjpeg                    2.5.0  h7d73246_1           conda-forge/linux-64     Cached
-  + openssl                    1.1.1t  h0b41bf4_0           conda-forge/linux-64     Cached
-  + packaging                    23.0  pyhd8ed1ab_0         conda-forge/noarch       Cached
-  + pillow                      9.2.0  py39hf3a2cdf_3       conda-forge/linux-64       47MB
-  + pip                        23.0.1  pyhd8ed1ab_0         conda-forge/noarch       Cached
-  + pthread-stubs                 0.4  h36c2ea0_1001        conda-forge/linux-64     Cached
-  + pyparsing                   3.0.9  pyhd8ed1ab_0         conda-forge/noarch       Cached
-  + pysam                      0.20.0  py39h9abd093_0       bioconda/linux-64           3MB
-  + python                     3.9.15  h47a2c10_0_cpython   conda-forge/linux-64       22MB
-  + python-dateutil             2.8.2  pyhd8ed1ab_0         conda-forge/noarch       Cached
-  + python_abi                    3.9  3_cp39               conda-forge/linux-64     Cached
-  + readline                    8.1.2  h0f457ee_0           conda-forge/linux-64     Cached
-  + setuptools                 67.6.0  pyhd8ed1ab_0         conda-forge/noarch       Cached
-  + six                        1.16.0  pyh6c4a22f_0         conda-forge/noarch       Cached
-  + tk                         8.6.12  h27826a3_0           conda-forge/linux-64     Cached
-  + tzdata                      2022g  h191b570_0           conda-forge/noarch       Cached
-  + unicodedata2               15.0.0  py39hb9d737c_0       conda-forge/linux-64      512kB
-  + wheel                      0.40.0  pyhd8ed1ab_0         conda-forge/noarch         56kB
-  + xorg-libxau                 1.0.9  h7f98852_0           conda-forge/linux-64     Cached
-  + xorg-libxdmcp               1.1.3  h7f98852_0           conda-forge/linux-64     Cached
-  + xz                          5.2.6  h166bdaf_0           conda-forge/linux-64     Cached
-  + zipp                       3.15.0  pyhd8ed1ab_0         conda-forge/noarch         17kB
-  + zlib                       1.2.13  h166bdaf_4           conda-forge/linux-64     Cached
-  + zstd                        1.5.2  h3eb15da_6           conda-forge/linux-64     Cached
-
-  Summary:
-
-  Install: 77 packages
-
-  Total download: 89MB
-
-─────────────────────────────────────────────────────────────────────────────────────────────
-
-
-Confirm changes: [Y/n] Y
-importlib_resources                                 31.0kB @ 391.1kB/s  0.1s
-zipp                                                17.2kB @ 182.8kB/s  0.1s
-libwebp-base                                       356.8kB @   3.4MB/s  0.1s
-wheel                                               55.7kB @ 526.8kB/s  0.1s
-contourpy                                          215.5kB @   1.7MB/s  0.1s
-unicodedata2                                       512.1kB @   3.6MB/s  0.0s
-kiwisolver                                          77.5kB @ 443.2kB/s  0.0s
-matplotlib-base                                      6.8MB @  30.7MB/s  0.1s
-importlib-resources                                  9.3kB @  40.6kB/s  0.0s
-htseq                                              393.3kB @   1.7MB/s  0.1s
-pysam                                                2.8MB @   8.9MB/s  0.1s
-fonttools                                            2.1MB @   6.4MB/s  0.1s
-numpy                                                6.7MB @  17.6MB/s  0.2s
-python                                              21.9MB @  53.5MB/s  0.4s
-pillow                                              47.5MB @  87.9MB/s  0.5s
-
-Downloading and Extracting Packages
-
-Preparing transaction: done
-Verifying transaction: done
-
-```
-</details>
-<br />
-<br />
-
 <a id="get-situated"></a>
 ## Get situated
-<a id="code-1"></a>
+<a id="code"></a>
 ### Code
 <details>
 <summary><i>Code: Get situated</i></summary>
@@ -289,7 +100,7 @@ drwxrws---  4 kalavatt   74 Mar 20 13:57 outfiles_htseq-count/
 ### Run htseq-count on bams in bams_renamed/ with combined_SC_KL.gff3
 <a id="get-situated-1"></a>
 #### Get situated
-<a id="code-2"></a>
+<a id="code-1"></a>
 ##### Code
 <details>
 <summary><i>Code: Get situated</i></summary>
@@ -321,7 +132,7 @@ mkdir -p outfiles_htseq-count/{combined_SC_KL,combined_SC_KL_antisense}/{strande
 
 <a id="set-up-arrays"></a>
 #### Set up arrays
-<a id="code-3"></a>
+<a id="code-2"></a>
 ##### Code
 <details>
 <summary><i>Code: Set up arrays</i></summary>
@@ -418,7 +229,7 @@ echo "${#UTK_prim_no[@]}"
 
 <a id="index-all-bams-in-arrays"></a>
 #### Index all bams in arrays
-<a id="code-4"></a>
+<a id="code-3"></a>
 ##### Code
 <details>
 <summary><i>Code: Index all bams in arrays</i></summary>
@@ -448,7 +259,7 @@ module purge SAMtools/1.16.1-GCC-11.2.0
 
 <a id="run-htseq-count-with-combined_sc_klgff3"></a>
 #### Run htseq-count with combined_SC_KL.gff3
-<a id="code-5"></a>
+<a id="code-4"></a>
 ##### Code
 <details>
 <summary><i>Code: Run htseq-count with combined_SC_KL.gff3</i></summary>
