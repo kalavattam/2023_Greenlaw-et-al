@@ -12,35 +12,33 @@
 1. [0. Copy in files of interest](#0-copy-in-files-of-interest)
     1. [Code](#code-1)
 1. [1. Run AGAT](#1-run-agat)
-    1. [Get situated](#get-situated)
-        1. [Code](#code-2)
     1. [Make associated storage directories](#make-associated-storage-directories)
+        1. [Code](#code-2)
+    1. [Create arrays of relevant `gff3` and `bam` files](#create-arrays-of-relevant-gff3-and-bam-files)
         1. [Code](#code-3)
-    1. [Create arrays of relevant gff3 and bam files](#create-arrays-of-relevant-gff3-and-bam-files)
+    1. [Loop through array elements with `agat_convert_sp_gff2gtf.pl`](#loop-through-array-elements-with-agat_convert_sp_gff2gtfpl)
         1. [Code](#code-4)
-    1. [Loop through array elements with agat_convert_sp_gff2gtf.pl](#loop-through-array-elements-with-agat_convert_sp_gff2gtfpl)
-        1. [Code](#code-5)
 1. [2. Run GffCompare](#2-run-gffcompare)
     1. [Loop through array elements with `gffcompare`](#loop-through-array-elements-with-gffcompare)
-        1. [Code](#code-6)
+        1. [Code](#code-5)
 1. [3. Strip string "chr" from collapsed gtf files](#3-strip-string-chr-from-collapsed-gtf-files)
     1. [...](#)
-        1. [Code](#code-7)
+        1. [Code](#code-6)
 1. [4. Run `htseq-count`](#4-run-htseq-count)
-    1. [Perform a trial run of `htseq-count` on bams in `bams_renamed/`](#perform-a-trial-run-of-htseq-count-on-bams-in-bams_renamed)
-        1. [Code](#code-8)
+    1. [Perform an "echo" run of `htseq-count` on bams in `bams_renamed/`](#perform-an-echo-run-of-htseq-count-on-bams-in-bams_renamed)
+        1. [Code](#code-7)
     1. [Set up necessary variables](#set-up-necessary-variables)
-        1. [Code](#code-9)
+        1. [Code](#code-8)
     1. [Generate lists of arguments](#generate-lists-of-arguments)
+        1. [Code](#code-9)
+    1. [Break the full, multi-line lists into individual per-line lists](#break-the-full-multi-line-lists-into-individual-per-line-lists)
         1. [Code](#code-10)
-    1. [Break the full, multi-line list into individual per-line lists](#break-the-full-multi-line-list-into-individual-per-line-lists)
-        1. [Code](#code-11)
     1. [Use a `HEREDOC` to write a '`run`' script](#use-a-heredoc-to-write-a-run-script)
+        1. [Code](#code-11)
+    1. [Use a `HEREDOC` to write '`submit`' scripts](#use-a-heredoc-to-write-submit-scripts)
         1. [Code](#code-12)
-    1. [Use a `HEREDOC` to write '`submit`' script](#use-a-heredoc-to-write-submit-script)
-        1. [Code](#code-13)
     1. [Use `sbatch` to run the '`submission`' and '`run`' scripts](#use-sbatch-to-run-the-submission-and-run-scripts)
-        1. [Code](#code-14)
+        1. [Code](#code-13)
 
 <!-- /MarkdownTOC -->
 </details>
@@ -57,8 +55,8 @@
 ```bash
 #!/bin/bash
 
-tmux new -s gff3
-tmux attach -t gff3
+# tmux new -s gff3
+# tmux attach -t gff3
 grabnode  # 8, defaults
 
 transcriptome && 
@@ -70,6 +68,7 @@ transcriptome &&
 if [[ "${CONDA_DEFAULT_ENV}" != "base" ]]; then 
     conda deactivate
 fi
+source activate gff3_env
 ```
 </details>
 <br />
@@ -141,7 +140,10 @@ fi
 p_trinity="${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0111/outfiles_GMAP_rough-draft/Trinity-GG"
 p_gtf="${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/infiles_gtf-gff3"
 
-cp -r "${p_trinity}" "${p_gtf}"
+if [[ ! -d "${p_gtf}/Trinity-GG" ]]; then
+    echo " No \${p_gtf}/Trinity-GG... Copying it in now"
+    cp -r "${p_trinity}" "${p_gtf}"
+fi
 ```
 </details>
 <br />
@@ -149,37 +151,9 @@ cp -r "${p_trinity}" "${p_gtf}"
 
 <a id="1-run-agat"></a>
 ## 1. Run AGAT
-<a id="get-situated"></a>
-### Get situated
-<a id="code-2"></a>
-#### Code
-<details>
-<summary><i>Code: Get situated</i></summary>
-
-```bash
-#!/bin/bash
-
-# tmux new -s install
-# tmux attach -t install
-grabnode  # 8, defaults
-
-transcriptome && 
-    {
-        cd "results/2023-0215" \
-            || echo "cd'ing failed; check on this..."
-    }
-
-if [[ "${CONDA_DEFAULT_ENV}" != "base" ]]; then 
-    conda deactivate
-fi
-source activate gff3_env
-```
-</details>
-<br />
-
 <a id="make-associated-storage-directories"></a>
 ### Make associated storage directories
-<a id="code-3"></a>
+<a id="code-2"></a>
 #### Code
 <details>
 <summary><i>Code: Make associated storage directories</i></summary>
@@ -197,8 +171,8 @@ mkdir -p outfiles_htseq-count/Trinity-GG/{G_N,Q_N}/{sh,list,err_out}
 <br />
 
 <a id="create-arrays-of-relevant-gff3-and-bam-files"></a>
-### Create arrays of relevant gff3 and bam files
-<a id="code-4"></a>
+### Create arrays of relevant `gff3` and `bam` files
+<a id="code-3"></a>
 #### Code
 <details>
 <summary><i>Code: Create arrays of relevant gff3 and bam files</i></summary>
@@ -238,8 +212,8 @@ echo "${#bams[@]}"  # 8
 <br />
 
 <a id="loop-through-array-elements-with-agat_convert_sp_gff2gtfpl"></a>
-### Loop through array elements with agat_convert_sp_gff2gtf.pl
-<a id="code-5"></a>
+### Loop through array elements with `agat_convert_sp_gff2gtf.pl`
+<a id="code-4"></a>
 #### Code
 <details>
 <summary><i>Code: Loop through array elements with agat_convert_sp_gff2gtf.pl</i></summary>
@@ -247,22 +221,34 @@ echo "${#bams[@]}"  # 8
 ```bash
 #!/bin/bash
 
-for i in "${stems[@]}"; do
-    in="${i}.gff3"
-    out="$(echo "${i}" | sed 's/infiles/outfiles/g' - )"
-    err_out="$(dirname "${out}")/err_out/01-agat.$(basename "${out}")"
-    echo "Running agat_convert_sp_gff2gtf.pl"
-    echo "        in   ${in}"
-    echo "       out  ${out}.gtf"
-    echo "    stdout  ${err_out}.stdout.txt"
-    echo "    stderr  ${err_out}.stderr.txt"
-    echo ""
+for h in ./outfiles_gtf-gff3/Trinity-GG/{G_N,Q_N}/trinity-gg_*.gtf; do
+    #  Check if the glob gets expanded to existing files; if not, then "${h}"
+    #+ will be exactly the pattern above and the negated ("!") exists-test will
+    #+ evaluate to TRUE
+    if [[ ! -e "${h}" ]]; then
+        for i in "${stems[@]}"; do
+            in="${i}.gff3"
+            out="$(echo "${i}" | sed 's/infiles/outfiles/g' - )"
+            err_out="$(dirname "${out}")/err_out/01-agat.$(basename "${out}")"
+            echo "Running agat_convert_sp_gff2gtf.pl"
+            echo "        in   ${in}"
+            echo "       out  ${out}.gtf"
+            echo "    stdout  ${err_out}.stdout.txt"
+            echo "    stderr  ${err_out}.stderr.txt"
+            echo ""
 
-    agat_convert_sp_gff2gtf.pl \
-        --gff "${in}" \
-        -o "${out}.gtf" \
-            > >(tee -a "${err_out}.stdout.txt") \
-            2> >(tee -a "${err_out}.stderr.txt")
+            agat_convert_sp_gff2gtf.pl \
+                --gff "${in}" \
+                -o "${out}.gtf" \
+                    > >(tee -a "${err_out}.stdout.txt") \
+                    2> >(tee -a "${err_out}.stderr.txt")
+        done
+    else
+        echo "Files already exist; thus, skipping the running of AGAT"
+    fi
+    
+    #  This is all we need to know, so we can break after the first iteration
+    break
 done
 ```
 </details>
@@ -272,7 +258,7 @@ done
 ## 2. Run GffCompare
 <a id="loop-through-array-elements-with-gffcompare"></a>
 ### Loop through array elements with `gffcompare`
-<a id="code-6"></a>
+<a id="code-5"></a>
 #### Code
 <details>
 <summary><i>Code: Loop through array elements with gffcompare</i></summary>
@@ -280,28 +266,36 @@ done
 ```bash
 #!/bin/bash
 
-for i in "${stems[@]}"; do
-    in="$(echo "${i}" | sed 's/infiles/outfiles/g' - ).gtf"
-    out="${in%.gtf}"
-    err_out="$(dirname "${out}")/err_out/02-gffcompare.$(basename "${out}")"
-    echo "Running gffcompare"
-    echo "        in  ${in}"
-    echo "       out  ${out}"
-    echo "    stdout  ${err_out}.stdout.txt"
-    echo "    stderr  ${err_out}.stderr.txt"
-    echo ""
-    
-    echo "\
-    gffcompare -C \"${in}\" \\
-        -o \"${out}\" \\
-            > >(tee -a \"${err_out%.gtf}.stdout.txt\") \\
-            2> >(tee -a \"${err_out%.gtf}.stderr.txt\")
-    "
+for h in ./outfiles_gtf-gff3/Trinity-GG/{G_N,Q_N}/trinity-gg_*.gffcompare; do
+    if [[ ! -e "${h}" ]]; then
+        for i in "${stems[@]}"; do
+            in="$(echo "${i}" | sed 's/infiles/outfiles/g' - ).gtf"
+            out="${in%.gtf}"
+            err_out="$(dirname "${out}")/err_out/02-gffcompare.$(basename "${out}")"
+            echo "Running gffcompare"
+            echo "        in  ${in}"
+            echo "       out  ${out}"
+            echo "    stdout  ${err_out}.stdout.txt"
+            echo "    stderr  ${err_out}.stderr.txt"
+            echo ""
+            
+            echo "\
+            gffcompare -C \"${in}\" \\
+                -o \"${out}\" \\
+                    > >(tee -a \"${err_out%.gtf}.stdout.txt\") \\
+                    2> >(tee -a \"${err_out%.gtf}.stderr.txt\")
+            "
 
-    gffcompare -C "${in}" \
-        -o "${out}.gffcompare" \
-        > >(tee -a "${err_out%.gtf}.stdout.txt") \
-        2> >(tee -a "${err_out%.gtf}.stderr.txt")
+            gffcompare -C "${in}" \
+                -o "${out}.gffcompare" \
+                > >(tee -a "${err_out%.gtf}.stdout.txt") \
+                2> >(tee -a "${err_out%.gtf}.stderr.txt")
+        done
+    else
+        echo "Files already exist; thus, skipping the running of GffCompare"
+    fi
+
+    break
 done
 ```
 </details>
@@ -311,7 +305,7 @@ done
 ## 3. Strip string "chr" from collapsed gtf files
 <a id="..."></a>
 ### ...
-<a id="code-7"></a>
+<a id="code-6"></a>
 #### Code
 <details>
 <summary><i>Code: Strip string "chr" from collapsed gtf files</i></summary>
@@ -320,20 +314,28 @@ done
 #!/bin/bash
 #DONTRUN #CONTINUE
 
-for j in "${stems[@]}"; do
-    in="$(echo "${j}" | sed 's/infiles/outfiles/g' - ).gffcompare.combined.gtf"
-    out="${in%.gtf}.sans-chr.gtf"
-    err_out="$(dirname "${out}")/err_out/03-chr-rename.$(basename "${out}" .gffcompare.combined.sans-chr.gtf)"
-    echo "Running htseq-count"
-    echo "        in                        ${in}"
-    echo "       out                        ${out}"
-    echo "    stdout  ${err_out}.stdout.txt"
-    echo "    stderr  ${err_out}.stderr.txt"
-    echo ""
+for h in ./outfiles_gtf-gff3/Trinity-GG/{G_N,Q_N}/trinity-gg_*.gffcompare.combined.sans-chr.gtf; do
+    if [[ ! -e "${h}" ]]; then
+        for i in "${stems[@]}"; do
+            in="$(echo "${i}" | sed 's/infiles/outfiles/g' - ).gffcompare.combined.gtf"
+            out="${in%.gtf}.sans-chr.gtf"
+            err_out="$(dirname "${out}")/err_out/03-chr-rename.$(basename "${out}" .gffcompare.combined.sans-chr.gtf)"
+            echo "Running htseq-count"
+            echo "        in                        ${in}"
+            echo "       out                        ${out}"
+            echo "    stdout  ${err_out}.stdout.txt"
+            echo "    stderr  ${err_out}.stderr.txt"
+            echo ""
 
-    echo "awk -F '\t' 'BEGIN {OFS = FS} { gsub(/chr/, "", \$1); print }' ${in} > ${out}"
+            echo "awk -F '\t' 'BEGIN {OFS = FS} { gsub(/chr/, "", \$1); print }' ${in} > ${out}"
 
-    awk -F '\t' 'BEGIN {OFS = FS} { gsub(/chr/, "", $1); print }' ${in} > ${out}
+            awk -F '\t' 'BEGIN {OFS = FS} { gsub(/chr/, "", $1); print }' ${in} > ${out}
+        done
+    else
+        echo "Files already exist; thus, skipping the running of awk"
+    fi
+
+    break
 done
 ```
 </details>
@@ -341,67 +343,76 @@ done
 
 <a id="4-run-htseq-count"></a>
 ## 4. Run `htseq-count`
-<a id="perform-a-trial-run-of-htseq-count-on-bams-in-bams_renamed"></a>
-### Perform a trial run of `htseq-count` on bams in `bams_renamed/`
-<a id="code-8"></a>
+<a id="perform-an-echo-run-of-htseq-count-on-bams-in-bams_renamed"></a>
+### Perform an "echo" run of `htseq-count` on bams in `bams_renamed/`
+<a id="code-7"></a>
 #### Code
 <details>
-<summary><i>Code: Perform a trial run of htseq-count on bams in bams_renamed/</i></summary>
+<summary><i>Code: Perform an "echo" run of htseq-count on bams in bams_renamed/</i></summary>
 
 ```bash
 #!/bin/bash
 
-k=0
-for i in "yes" "reverse"; do
-    for j in "${stems[@]}"; do
-        # i="reverse"  # echo "${i}"
-        # j="${stems[0]}"  # echo "${j}"
-        in="$(echo "${j}" | sed 's/infiles/outfiles/g' - ).gffcompare.combined.sans-chr.gtf"  # ., "${in}"
-        out="$(echo "${j}" | sed 's/infiles_gtf-gff3/outfiles_htseq-count/g' - ).htseq-count-${i}.tsv"  # echo "${out}"
-        err_out="$(dirname "${out}")/err_out/03-htseq-count-${i}.$(basename "${out}" .tsv)"  # echo "${err_out}"
-        echo "Running htseq-count"
-        echo "        in                                    ${in}"
-        echo "       out                                 ${out}"
-        echo "    stdout  ${err_out}.stdout.txt"
-        echo "    stderr  ${err_out}.stderr.txt"
-        echo ""
+h=0
+for i in "strd-eq" "strd-rv"; do
+    for j in "all" "none"; do
+        for k in "${stems[@]}"; do
+            # i="reverse"  # echo "${i}"
+            # j="all"  # echo "${j}"
+            # k="${stems[0]}"  # echo "${k}"            
+            in="$(echo "${k}" | sed 's/infiles/outfiles/g' - ).gffcompare.combined.sans-chr.gtf"  # ., "${in}"
+            out="$(echo "${k}" | sed 's/infiles_gtf-gff3/outfiles_htseq-count/g' - ).hc-${i}.tsv"  # echo "${out}"
+            err_out="$(dirname "${out}")/err_out/03-htseq-count-${i}.$(basename "${out}" .tsv)"  # echo "${err_out}"
+            echo "Running htseq-count"
+            echo "        in                                    ${in}"
+            echo "       out                                 ${out}"
+            echo "    stdout  ${err_out}.stdout.txt"
+            echo "    stderr  ${err_out}.stderr.txt"
+            echo ""
 
-        let k++
-        printf "    Iteration '%d'\n\n" "${k}"
+            if [[ "${i}" == "strd-eq" ]]; then
+                hc_strd="yes"
+            elif [[ "${i}" == "strd-rv" ]]; then
+                hc_strd="reverse"
+            fi
 
-        echo "\
-        htseq-count \\
-            --order \"pos\" \\
-            --stranded \"${i}\" \\
-            --nonunique \"all\" \\
-            --type \"transcript\" \\
-            --idattr \"gene_id\" \\
-            --nprocesses \"${SLURM_CPUS_ON_NODE}\" \\
-            --counts_output \"${out}\" \\
-            --with-header \\
-            \${bams[*]} \\
-            \"${in}\" \\
-                > >(tee -a \"${err_out}.stdout.txt\") \\
-                2> >(tee -a \"${err_out}.stderr.txt\")
-        "
+            let h++
+            printf "    Iteration '%d'\n\n" "${h}"
 
-        # start="$(date +%s.%N)"
-        # htseq-count \
-        #     --order "pos" \
-        #     --stranded "${i}" \
-        #     --nonunique "all" \
-        #     --type "transcript" \
-        #     --idattr "gene_id" \
-        #     --nprocesses "${SLURM_CPUS_ON_NODE}" \
-        #     --counts_output "${out}" \
-        #     --with-header \
-        #     ${bams[*]} \
-        #     "${in}" \
-        #         > >(tee -a "${err_out}.stdout.txt") \
-        #         2> >(tee -a "${err_out}.stderr.txt")
-        # end="$(date +%s.%N)"
-        # run_time="$( echo "$end - $start" | bc -l )"
-        # echo "${run_time}"  # ~18 minutes per iteration
+            echo "\
+            htseq-count \\
+                --order \"pos\" \\
+                --stranded \"${hc_strd}\" \\
+                --nonunique \"all\" \\
+                --type \"transcript\" \\
+                --idattr \"gene_id\" \\
+                --nprocesses \"${SLURM_CPUS_ON_NODE}\" \\
+                --counts_output \"${out}\" \\
+                --with-header \\
+                \${bams[*]} \\
+                \"${in}\" \\
+                     > >(tee -a \"${err_out}.stdout.txt\") \\
+                    2> >(tee -a \"${err_out}.stderr.txt\")
+            "
+
+            # start="$(date +%s.%N)"
+            # htseq-count \
+            #     --order "pos" \
+            #     --stranded "${i}" \
+            #     --nonunique "all" \
+            #     --type "transcript" \
+            #     --idattr "gene_id" \
+            #     --nprocesses "${SLURM_CPUS_ON_NODE}" \
+            #     --counts_output "${out}" \
+            #     --with-header \
+            #     ${bams[*]} \
+            #     "${in}" \
+            #         > >(tee -a "${err_out}.stdout.txt") \
+            #         2> >(tee -a "${err_out}.stderr.txt")
+            # end="$(date +%s.%N)"
+            # run_time="$( echo "$end - $start" | bc -l )"
+            # echo "${run_time}"  # ~18 minutes per iteration
+        done
     done
 done
 ```
@@ -410,7 +421,7 @@ done
 
 <a id="set-up-necessary-variables"></a>
 ### Set up necessary variables
-<a id="code-9"></a>
+<a id="code-8"></a>
 #### Code
 <details>
 <summary><i>Code: Set up necessary variables</i></summary>
@@ -441,7 +452,7 @@ max_id_task=12  # echo "${max_id_task}"
 
 <a id="generate-lists-of-arguments"></a>
 ### Generate lists of arguments
-<a id="code-10"></a>
+<a id="code-9"></a>
 #### Code
 <details>
 <summary><i>Code: Generate lists of arguments</i></summary>
@@ -519,12 +530,12 @@ done
 </details>
 <br />
 
-<a id="break-the-full-multi-line-list-into-individual-per-line-lists"></a>
-### Break the full, multi-line list into individual per-line lists
-<a id="code-11"></a>
+<a id="break-the-full-multi-line-lists-into-individual-per-line-lists"></a>
+### Break the full, multi-line lists into individual per-line lists
+<a id="code-10"></a>
 #### Code
 <details>
-<summary><i>Code: Break the full, multi-line list into individual per-line lists</i></summary>
+<summary><i>Code: Break the full, multi-line lists into individual per-line lists</i></summary>
 
 ```bash
 #!/bin/bash
@@ -600,7 +611,7 @@ done
 
 <a id="use-a-heredoc-to-write-a-run-script"></a>
 ### Use a `HEREDOC` to write a '`run`' script
-<a id="code-12"></a>
+<a id="code-11"></a>
 #### Code
 <details>
 <summary><i>Code: Use a HEREDOC to write a 'run' script</i></summary>
@@ -720,12 +731,12 @@ fi
 </details>
 <br />
 
-<a id="use-a-heredoc-to-write-submit-script"></a>
-### Use a `HEREDOC` to write '`submit`' script
-<a id="code-13"></a>
+<a id="use-a-heredoc-to-write-submit-scripts"></a>
+### Use a `HEREDOC` to write '`submit`' scripts
+<a id="code-12"></a>
 #### Code
 <details>
-<summary><i>Code: Use a HEREDOC to write 'submit' script</i></summary>
+<summary><i>Code: Use a HEREDOC to write 'submit' scripts</i></summary>
 
 ```bash
 #!/bin/bash
@@ -832,7 +843,7 @@ script
 
 <a id="use-sbatch-to-run-the-submission-and-run-scripts"></a>
 ### Use `sbatch` to run the '`submission`' and '`run`' scripts
-<a id="code-14"></a>
+<a id="code-13"></a>
 #### Code
 <details>
 <summary><i>Code: Use sbatch to run the 'submission' and 'run' scripts</i></summary>
@@ -848,7 +859,5 @@ source activate gff3_env
 
 sbatch "${store_scripts_G}/${script_submit}"
 sbatch "${store_scripts_Q}/${script_submit}"
-# alias crj=".,f ./sh_err_out/err_out/ | tail -220"
-# alias grj="cd ./sh_err_out/err_out/ && .,f | tail -220"
-# alias t220=".,f | tail -220"
 ```
+<br />
