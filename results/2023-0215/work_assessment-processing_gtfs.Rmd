@@ -396,7 +396,7 @@ read_in_gtfs <- function(vector_files) {
 #  G1 ---------------------------------
 path_gtf_G <- "outfiles_gtf-gff3/Trinity-GG/G_N"
 files_G <- list.files(
-    path_gtf_G, pattern = "*.combined.gtf", full.names = TRUE
+    path_gtf_G, pattern = "*.combined.sans-chr.gtf", full.names = TRUE
 )
 l_G_gtf <- read_in_gtfs(files_G)
 
@@ -404,7 +404,7 @@ l_G_gtf <- read_in_gtfs(files_G)
 #  Q ----------------------------------
 path_gtf_Q <- "outfiles_gtf-gff3/Trinity-GG/Q_N"
 files_Q <- list.files(
-    path_gtf_Q, pattern = "*.combined.gtf", full.names = TRUE
+    path_gtf_Q, pattern = "*.combined.sans-chr.gtf", full.names = TRUE
 )
 l_Q_gtf <- read_in_gtfs(files_Q)
 
@@ -635,53 +635,85 @@ f_Q_mat_rev <- sapply(
 
 #### Subset gtf dataframe to retain percentile-filtered `gene_id`s
 ```{r}
-names(l_G_gtf)
-names(l_G_mat_sam)
-
-
 subset_dataframes <- function(x, y) {
-    x <- l_G_gtf
-    y <- f_G_mat_sam
-    
-    dfs <- list()
+    df <- list()
+    mat <- list()
+    out <- list()
     
     for(i in names(x)) {
-        # i <- "k32"
         df[[i]] <- x[[i]]
         mat[[i]] <- y[[i]]
 
-        dfs[[i]]$below_05 <- df[df$gene_id %in% mat$below_05, ]
-        dfs[[i]]$below_10 <- df[df$gene_id %in% mat$below_10, ]
-        dfs[[i]]$below_15 <- df[df$gene_id %in% mat$below_15, ]
-        dfs[[i]]$below_20 <- df[df$gene_id %in% mat$below_20, ]
-        dfs[[i]]$below_25 <- df[df$gene_id %in% mat$below_25, ]
-        dfs[[i]]$below_30 <- df[df$gene_id %in% mat$below_30, ]
-        dfs[[i]]$below_35 <- df[df$gene_id %in% mat$below_35, ]
-        dfs[[i]]$below_40 <- df[df$gene_id %in% mat$below_40, ]
+        out[[i]]$below_05 <- df[[i]][df[[i]]$gene_id %in% mat[[i]]$below_05, ]
+        out[[i]]$below_10 <- df[[i]][df[[i]]$gene_id %in% mat[[i]]$below_10, ]
+        out[[i]]$below_15 <- df[[i]][df[[i]]$gene_id %in% mat[[i]]$below_15, ]
+        out[[i]]$below_20 <- df[[i]][df[[i]]$gene_id %in% mat[[i]]$below_20, ]
+        out[[i]]$below_25 <- df[[i]][df[[i]]$gene_id %in% mat[[i]]$below_25, ]
+        out[[i]]$below_30 <- df[[i]][df[[i]]$gene_id %in% mat[[i]]$below_30, ]
+        out[[i]]$below_35 <- df[[i]][df[[i]]$gene_id %in% mat[[i]]$below_35, ]
+        out[[i]]$below_40 <- df[[i]][df[[i]]$gene_id %in% mat[[i]]$below_40, ]
     }
     
-    
-    
-    
-    
-    #  Checks -----------------------------
-    dfs$below_05
-    dfs$below_10
-    dfs$below_15
-    dfs$below_20
-    dfs$below_25
-    dfs$below_30
-    dfs$below_35
-    dfs$below_40
-    
-    dfs$below_05[dfs$below_05$type == "transcript", ]
-    dfs$below_10[dfs$below_10$type == "transcript", ]
-    dfs$below_15[dfs$below_15$type == "transcript", ]
-    dfs$below_20[dfs$below_20$type == "transcript", ]
-    dfs$below_25[dfs$below_25$type == "transcript", ]
-    dfs$below_30[dfs$below_30$type == "transcript", ]
-    dfs$below_35[dfs$below_35$type == "transcript", ]
-    dfs$below_40[dfs$below_40$type == "transcript", ]
+    return(out)
 }
+
+
+out_G_gtf <- subset_dataframes(l_G_gtf, f_G_mat_sam)
+out_Q_gtf <- subset_dataframes(l_Q_gtf, f_Q_mat_sam)
 ```
 
+
+```{r}
+path_G <- "outfiles_gtf-gff3/Trinity-GG/G_N/filtered"
+if(isFALSE(dir.exists(path_G))) dir.create(path_G)
+
+path_Q <- "outfiles_gtf-gff3/Trinity-GG/Q_N/filtered"
+if(isFALSE(dir.exists(path_Q))) dir.create(path_Q)
+
+for(i in names(out_G_gtf)) {
+    for(j in c(paste0(
+        "below_", c("05", "10", "15", "20", "25", "30", "35", "40"))
+    )) {
+        # i <- "k2"
+        # j <- "below_05"
+        cat("Saving G1", i, j, "\n")
+        cat(paste0(
+            path_G, "/G1_mkc-", gsub("k", "", i), "_",
+            gsub("below_", "gte-pctl-", j), ".gtf"
+        ))
+        cat("\n\n")
+        
+        out_G_conv <- GenomicRanges::makeGRangesFromDataFrame(
+            out_G_gtf[[i]][[j]], keep.extra.columns = TRUE
+        )
+
+        rtracklayer::export(
+            out_G_gtf[[i]][[j]],
+            paste0(
+                path_G, "/G1_mkc-", gsub("k", "", i), "_",
+                gsub("below_", "gte-pctl-", j), ".gtf"
+            )
+        )
+        
+        cat("Saving Q", i, j, "\n")
+        cat(paste0(
+            path_Q, "/Q_mkc-", gsub("k", "", i), "_",
+            gsub("below_", "gte-pctl-", j), ".gtf"
+        ))
+        cat("\n\n")
+        
+        out_Q_conv <- GenomicRanges::makeGRangesFromDataFrame(
+            out_Q_gtf[[i]][[j]], keep.extra.columns = TRUE
+        )
+
+        rtracklayer::export(
+            out_Q_gtf[[i]][[j]],
+            paste0(
+                path_Q, "/Q_mkc-", gsub("k", "", i), "_",
+                gsub("below_", "gte-pctl-", j), ".gtf"
+            )
+        )
+    }
+}
+```
+<br >

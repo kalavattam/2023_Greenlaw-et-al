@@ -2442,8 +2442,8 @@ fi
 # conda config --set channel_priority strict
 
 mamba create -n gff3_env \
-    -c bioconda \
     --yes \
+    -c bioconda \
         agat \
         gffcompare \
         subread \
@@ -2454,13 +2454,18 @@ mamba create -n gff3_env \
 source activate gff3_env
 
 mamba install \
+    --yes \
     -c conda-forge \
         markdown \
         r-markdown \
         r-tidyverse \
         bioconductor-rtracklayer==1.58.0
 
-mamba install -c conda-forge parallel
+mamba install \
+    --yes \
+    -c conda-forge \
+        parallel \
+        bioconductor-rtracklayer==1.58.0
 ```
 </details>
 <br />
