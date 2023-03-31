@@ -98,13 +98,13 @@ check_exists_directory() {
             [[ -d "${2}" ]] ||
                 {
                     printf "%s\n" "Exiting: ${2} does not exist."
-                    exit 1
+                    # exit 1
                 }
             ;;
         *) \
             printf "%s\n" "Exiting: param 1 is not \"TRUE\" or \"FALSE\"."
             printf "%s\n" "${what}"
-            exit 1
+            # exit 1
             ;;
     esac
 }
@@ -142,7 +142,7 @@ print_usage() {
     #TODO Checks...
     """
     echo "${1}"
-    exit 1
+    # exit 1
 }
 
 
@@ -160,14 +160,15 @@ check_etc() {
     #  Check that "${querydir}" exists
     check_exists_directory FALSE "${querydir}"
 
-    #  If TRUE, then make "${outdir}" if it does not exist; if FALSE (i.e.,
-    #+ "${outdir}" does not exist), then exit
-    check_exists_directory TRUE "${outdir}"
+    #  If TRUE, then make "$(dirname ${outpath})" if it does not exist; if
+    #+ FALSE (i.e., "$(dirname ${outpath})" does not exist), then exit
+    check_exists_directory FALSE "$(dirname ${outpath})"
 
     #  Check on the specified value for "${string}"
     case "$(convert_chr_lower "${string}")" in
-        antisense_transcript | cut | mrna | nuts | rrna | snorna | snrna | \
-        srat | sut | trna | xut) \
+        antisense_transcript | cut | cut_2016 | cut_4x | hc-strd-eq | \
+        hc-strd-op | mrna | ncrna | nuts | rrna | snorna | snrna | srat | \
+        sut | trna | xut) \
             :
             ;;
         *) \
@@ -175,7 +176,12 @@ check_etc() {
             Exiting: -s \"\${string}\" must be one of the following:
                 - antisense_transcript
                 - CUT
+                - CUT_2016
+                - CUT_4X
+                - hc-strd-eq
+                - hc-strd-op
                 - mRNA
+                - ncRNA
                 - NUTs
                 - rRNA
                 - snoRNA
@@ -186,15 +192,15 @@ check_etc() {
                 - XUT
             """
             printf "%s\n\n" "${message}"
-            exit 1
+            # exit 1
             ;;
     esac
 
     #  ------------------------------------
     #  Assign path and name for the tempfile and outfile
     #  ------------------------------------
-    file_t="${outdir}/htseq-count.combined.${identifier}.${string}.tmp.txt"
-    file_o="${file_t/.tmp.txt/.txt}"
+    file_t="$(dirname "${outpath}")/tmp.$(basename "${outpath}")"
+    file_o="${outpath}"
     # echo "${file_t}"
     # echo "${file_o}"
 
@@ -217,13 +223,13 @@ main() {
     typeset -a files
     while IFS=" " read -r -d $'\0'; do
         files+=( "${REPLY}" )
-    done < <(\
+    done < <(
         find "${querydir}" \
             -maxdepth 1 \
             -type f \
             -name "*${string}*" \
             -print0 \
-                | sort -zV\
+                | sort -zV
     )
     # echo_test "${files[@]}"
     # echo "${#files[@]}"
@@ -304,17 +310,22 @@ help="""
 #  ------------------------------------
 Search user-specified directory for sample-specific htseq-count outfiles
 containing strings for specific features in their filenames (e.g.,the feature
-'mRNA', the feature 'antisense_transcript', etc.); if found, then combine all
+'mRNA', the feature 'antisense_transcript', etc.). If found, then combine all
 sample-specific files for the feature into a single tabular dataframe (with
 features as rows, samples as columns, and counts as cells). Order of columns
 (samples) is determined by an alphanumeric sort of filenames; the script
 assumes that rows in feature-specific htseq-count outfiles are ordered in the
-same way (i.e., it neither checks for nor changes the order of the rows).
+same way (i.e., it neither checks nor changes the order of the rows).
 
 The following strings for features are supported:
     - antisense_transcript
     - CUT
+    - CUT_2016
+    - CUT_4X
+    - hc-strd-eq
+    - hc-strd-op
     - mRNA
+    - ncRNA
     - NUTs
     - rRNA
     - snoRNA
@@ -326,8 +337,7 @@ The following strings for features are supported:
 
 (Uppercase, lowercase, or mixed case is accepted.)
 
-Outfiles have this general format:
-    \${outdir}/htseq-count.combined.\${identifier}.\${string}.txt
+Outfiles have the format specified with argument \${outpath}.
 
 Dependencies:
     - Linux paste (GNU or BSD) >= version #TBD
@@ -336,10 +346,10 @@ Dependencies:
 Arguments:
     -u  safe_mode   use safe mode: TRUE or FALSE <lgl> [default: FALSE]
     -q  querydir    directory to examine (query), including path <chr>
-    -o  outdir      outfile directory, including path; if not found, will be
-                    mkdir'd <chr>
-    -i  identifier  string to be included in the outfile name <chr>
-    -s  string      string to query; options: antisense_transcript, CUT, mRNA,
+    -o  outpath     outpath/directory and file; if path/directory is not
+                    found, will exit <chr>
+    -s  string      string to query; options: antisense_transcript, CUT,
+                    CUT_2016, CUT_4X, hc-strd-eq, hc-strd-op, mRNA, ncRNA,
                     NUTs, rRNA, snoRNA, snRNA, SRAT, SUT, tRNA, XUT <chr>
                     [default: mRNA]
 
@@ -350,18 +360,16 @@ Arguments:
 ❯ bash process_htseq-count_outfiles.sh \\
     -u FALSE \\
     -q \".\" \\
-    -o \"./out\" \\
-    -i \"timecourse\" \\
+    -o \"./out/htseq-count.combined.timecourse.antisense_transcript.txt\" \\
     -s \"antisense_transcript\"
 #  Outfile will be \"./out/htseq-count.combined.timecourse.antisense_transcript.txt\"
 """
 
-while getopts "u:q:o:i:s:" opt; do
+while getopts "u:q:o:s:" opt; do
     case "${opt}" in
         u) safe_mode="${OPTARG}" ;;
         q) querydir="${OPTARG}" ;;
-        o) outdir="${OPTARG}" ;;
-        i) identifier="${OPTARG}" ;;
+        o) outpath="${OPTARG}" ;;
         s) string="${OPTARG}" ;;
         *) print_usage "${help}" ;;
     esac
@@ -375,16 +383,9 @@ done
         echo ""
         print_usage "${help}"
     }
-[[ -z "${outdir}" ]] && \
+[[ -z "${outpath}" ]] && \
     {
-        echo "Argument -o [outdir (outfile directory)] is empty"
-        echo "Printing help message and exiting..."
-        echo ""
-        print_usage "${help}"
-    }
-[[ -z "${identifier}" ]] && \
-    {
-        echo "Argument -i [identifier] is empty"
+        echo "Argument -o [outpath (outpath/directory and file)] is empty"
         echo "Printing help message and exiting..."
         echo ""
         print_usage "${help}"
@@ -396,21 +397,19 @@ done
         value of 'mRNA'"
     }
 
-#TEST (2023-0207)
-# safe_mode=FALSE
-# querydir="."  # cd "${querydir}"
-# outdir="./test.KA.2023-0207"  # ., "${outdir}"
-# identifier="test.KA.2023-0207"
-# string="CUT"
-#
-# echo "${safe_mode}"
-# echo "${querydir}"
-# echo "${outdir}"
-# echo "${identifier}"
-# echo "${string}"
-#
-# ls -lhaFG "${querydir}"
-# ls -lhaFG "${outdir}"
+#TEST (2023-0331)
+safe_mode=FALSE
+querydir="."  # cd "${querydir}"
+outpath="./test.KA.2023-0331"  # ., "${outdir}"
+string="hc-strd-eq"
+
+echo "${safe_mode}"
+echo "${querydir}"
+echo "${outpath}"
+echo "${string}"
+
+ls -lhaFG "${querydir}"
+ls -lhaFG "$(dirname "${outpath}")"
 
 
 #  ------------------------------------
