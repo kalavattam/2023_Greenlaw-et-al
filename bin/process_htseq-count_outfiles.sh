@@ -20,7 +20,7 @@ check_dependency() {
             {
                 printf "%s\n" "Exiting: \"${1}\" not found in \"\${PATH}\"."
                 printf "%s\n\n" "         Check your env or install \"${1}\"?"
-                # exit 1
+                exit 1
             }
     fi
 }
@@ -46,7 +46,7 @@ check_argument_safe_mode() {
             printf "%s\n" "\"Safe mode\" is FALSE." ;;
         *) \
             printf "%s\n" "Exiting: \"Safe mode\" must be TRUE or FALSE."
-            # exit 1
+            exit 1
             ;;
     esac
 }
@@ -67,7 +67,7 @@ check_exists_file() {
         printf "%s\n" "${what}"
     elif [[ ! -f "${1}" ]]; then
         printf "%s\n\n" "Exiting: File \"${1}\" does not exist."
-        # exit 1
+        exit 1
     else
         :
     fi
@@ -98,13 +98,13 @@ check_exists_directory() {
             [[ -d "${2}" ]] ||
                 {
                     printf "%s\n" "Exiting: ${2} does not exist."
-                    # exit 1
+                    exit 1
                 }
             ;;
         *) \
             printf "%s\n" "Exiting: param 1 is not \"TRUE\" or \"FALSE\"."
             printf "%s\n" "${what}"
-            # exit 1
+            exit 1
             ;;
     esac
 }
@@ -142,7 +142,7 @@ print_usage() {
     #TODO Checks...
     """
     echo "${1}"
-    # exit 1
+    exit 1
 }
 
 
@@ -192,7 +192,7 @@ check_etc() {
                 - XUT
             """
             printf "%s\n\n" "${message}"
-            # exit 1
+            exit 1
             ;;
     esac
 
