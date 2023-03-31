@@ -2466,6 +2466,10 @@ mamba install \
     -c conda-forge \
         parallel \
         bioconductor-rtracklayer==1.58.0
+
+mamba install -c \
+    bioconda rename \
+    bioconductor-rtracklayer==1.58.0
 ```
 </details>
 <br />
