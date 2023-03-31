@@ -397,19 +397,19 @@ done
         value of 'mRNA'"
     }
 
-#TEST (2023-0331)
-safe_mode=FALSE
-querydir="."  # cd "${querydir}"
-outpath="./test.KA.2023-0331"  # ., "${outdir}"
-string="hc-strd-eq"
-
-echo "${safe_mode}"
-echo "${querydir}"
-echo "${outpath}"
-echo "${string}"
-
-ls -lhaFG "${querydir}"
-ls -lhaFG "$(dirname "${outpath}")"
+# #TEST (2023-0331)
+# safe_mode=FALSE
+# querydir="."  # cd "${querydir}"
+# outpath="./test.KA.2023-0331"  # ., "${outdir}"
+# string="hc-strd-eq"
+#
+# echo "${safe_mode}"
+# echo "${querydir}"
+# echo "${outpath}"
+# echo "${string}"
+#
+# ls -lhaFG "${querydir}"
+# ls -lhaFG "$(dirname "${outpath}")"
 
 
 #  ------------------------------------
