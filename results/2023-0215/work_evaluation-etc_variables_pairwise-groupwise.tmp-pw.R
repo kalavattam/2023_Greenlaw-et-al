@@ -48,7 +48,7 @@ for (i in 1:length(datasets_pw)) {
     
     res_pw[[names(datasets_pw)[[i]]]] <- list()
     
-    #  0 ------------------------------
+    #  0. Assign datasets -----------------------------------------------------
     cat("#+ 0. Datasets are...\n\n")
     print(datasets_pw[[i]])
     cat("\n")
@@ -58,7 +58,8 @@ for (i in 1:length(datasets_pw)) {
     
     res_pw[[names(datasets_pw)[[i]]]][["n00_datasets"]] <- datasets
     
-    #  1 ------------------------------
+    
+    #  1. Create 'counts_data' matrix -----------------------------------------
     cat(paste0(
         "#+ 1. Creating 'counts_data' matrix for '",
         names(datasets_pw)[[i]],
@@ -69,7 +70,8 @@ for (i in 1:length(datasets_pw)) {
     
     res_pw[[names(datasets_pw)[[i]]]][["n01_counts_data"]] <- counts_data
     
-    #  2 ------------------------------
+    
+    #  2. Isolate datasets of interest ----------------------------------------
     cat(paste0(
         "#+ 2. Isolate datasets of interest for '",
         names(datasets_pw)[[i]],
@@ -90,9 +92,10 @@ for (i in 1:length(datasets_pw)) {
     
     res_pw[[names(datasets_pw)[[i]]]][["n02_col_data"]] <- col_data
     
-    #  3 ------------------------------
+    
+    #  3. Assign model numerators and denominators ----------------------------
     cat(paste0(
-        "#+ 3. Assign model numerators, denominators for '",
+        "#+ 3. Assign model numerators and denominators for '",
         names(datasets_pw)[[i]],
         "'\n\n"
     ))
@@ -160,7 +163,8 @@ for (i in 1:length(datasets_pw)) {
     res_pw[[names(datasets_pw)[[i]]]][["n03_model_string"]] <- model_string
     res_pw[[names(datasets_pw)[[i]]]][["n03_model_linear"]] <- model_string
     
-    #  4 ------------------------------
+    
+    #  4. Perform appropriate factor-to-integer conversions -------------------
     cat(paste0(
         "#+ 4. Perform factor-to-integer conversions for '",
         names(datasets_pw)[[i]],
@@ -193,7 +197,8 @@ for (i in 1:length(datasets_pw)) {
 
     res_pw[[names(datasets_pw)[[i]]]][["n04_col_data"]] <- col_data
     
-    #  5 ------------------------------
+    
+    #  5. Make DESeqDataSet (dds) object --------------------------------------
     cat(paste0(
         "#+ 5. Make the DESeqDataSet (dds) object for '",
         names(datasets_pw)[[i]],
@@ -210,14 +215,16 @@ for (i in 1:length(datasets_pw)) {
     res_pw[[names(datasets_pw)[[i]]]][["n05_dds"]] <- dds
     res_pw[[names(datasets_pw)[[i]]]][["n05_design"]] <- dds@design
     
-    #  6 ------------------------------
+    
+    #  6. Run DE analyses -----------------------------------------------------
     cat(paste0(
         "#+ 6. Run DE analyses for '", names(datasets_pw)[[i]],
         "', examining S. cerevisiae features and ",
         "using S. cerevisiae features for size-factor estimation\n\n"
     ))
     
-    #  6a -----------------------------
+    
+    #  6a. Perform size-factor estimation -------
     cat(paste0(
         "#+ 6a. Perform size-factor estimation\n\n"
     ))
@@ -234,8 +241,9 @@ for (i in 1:length(datasets_pw)) {
 
     res_pw[[names(datasets_pw)[[i]]]][["n06a_dds_SC"]] <- dds_SC
     res_pw[[names(datasets_pw)[[i]]]][["n06a_sf_tbl_SC"]] <- sf_tbl_SC
-
-    #  6b -----------------------------
+    
+    
+    #  6b. Call DESeq2 w/default parameters -----
     cat(paste0(
         "#+ 6b. Call DESeq2 using default parameters\n\n"
     ))
@@ -252,8 +260,9 @@ for (i in 1:length(datasets_pw)) {
     ))
 
     res_pw[[names(datasets_pw)[[i]]]][["n06b_dds_SC"]] <- dds_SC
-
-    #  6c -----------------------------
+    
+    
+    #  6c. Call DESeq2::results() ---------------
     cat(paste0(
         "#+ 6c. Call DESeq2::results()\n\n"
     ))
@@ -324,8 +333,9 @@ for (i in 1:length(datasets_pw)) {
     res_pw[[names(datasets_pw)[[i]]]][["n06c_t_DGE_SC"]] <- t_DGE_SC
 
     rm(independent_filtering, threshold_p, threshold_lfc)
-
-    #  6d -----------------------------
+    
+    
+    #  6d. Make an MA plot ----------------------
     cat(paste0(
         "#+ 6d. Make an MA plot that colors features by ",
         "independent filtering\n\n"
@@ -381,8 +391,9 @@ for (i in 1:length(datasets_pw)) {
     res_pw[[names(datasets_pw)[[i]]]][["n06d_stably_expressed_SC"]] <- stably_expressed_SC
 
     rm(tbl, title, subtitle)
-
-    #  6e -----------------------------
+    
+    
+    #  6e. Make a volcano plot ------------------
     cat(paste0(
         "#+ 6e. Make a volcano plot\n\n"
     ))
@@ -444,8 +455,9 @@ for (i in 1:length(datasets_pw)) {
     res_pw[[names(datasets_pw)[[i]]]][["n06e_volcano_SC"]] <- volcano_SC
 
     rm(all, selection, selection_up, selection_down, title, subtitle)
-
-    #  7 ------------------------------
+    
+    
+    #  7. Run DE analyses --------------
     cat(paste0(
         "#+ 7. Run DE analyses for '", names(datasets_pw)[[i]],
         "', examining K. lactis features and ",

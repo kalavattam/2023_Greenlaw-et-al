@@ -1,0 +1,262 @@
+---
+title: "work_preprocess-prepare_htseq-counts-matrices_gtf-gff3_etc.Rmd"
+author: "KA"
+email: "kalavatt@fredhutch.org"
+output: html_notebook
+---
+<br />
+
+## Prepare data for various DGE analyses
+### Get situated
+#### Load necessary libraries
+```{r Load necessary libraries, results='hide', message=FALSE, warning=FALSE}
+library(GenomicRanges)
+library(tidyverse)
+```
+<br />
+
+#### Set working directory
+```{r Set working directory, results='hide', message=FALSE}
+if(stringr::str_detect(getwd(), "kalavattam")) {
+    p_local <- "/Users/kalavattam/Dropbox/FHCC"
+} else {
+    p_local <- "/Users/kalavatt/projects-etc"
+}
+p_wd <- "2022_transcriptome-construction/results/2023-0215"
+
+setwd(paste(p_local, p_wd, sep = "/"))
+getwd()
+
+rm(p_local, p_wd)
+```
+<br />
+
+#### Set options
+- Use normal numbers instead of default scientific numbers in plots
+- Do not limit number of overlaps when including labels in plots
+```{r Set options, results='hide', message=FALSE, warning=FALSE}
+options(scipen = 999)
+options(ggrepel.max.overlaps = Inf)
+```
+<br />
+<br />
+
+## Load in, preprocess, prepare `htseq-count` tables, etc.
+### Load in and process sacCer3 R64-1-1 gff3
+```{r}
+#  To associate features (mRNA) with metadata, load combined_SC_KL_20S.gff3 ---
+p_gff3 <- "./infiles_gtf-gff3/already"
+f_gff3 <- "combined_SC_KL_20S.gff3"
+t_gff3 <- rtracklayer::import(paste(p_gff3, f_gff3, sep = "/")) %>%
+    as.data.frame() %>%
+    dplyr::as_tibble()
+
+rm(p_gff3, f_gff3)
+
+
+#  Subset combined_SC_KL_20S.gff3 for ID "mRNA" -------------------------------
+#+ (specified in the call to htseq-count)
+t_gff3 <- t_gff3[t_gff3$type == "mRNA", ]
+t_gff3$ID <- t_gff3$ID %>%
+    gsub("^transcript\\:", "", .) %>%
+    gsub("_mRNA", "", .)
+
+
+#  Subset tibble to keep only relevant columns --------------------------------
+keep <- c(
+    "seqnames", "start", "end", "width", "strand", "type", "ID", "biotype",
+    "Name"
+)
+t_gff3 <- t_gff3[, colnames(t_gff3) %in% keep] %>%
+    dplyr::rename(
+        c(length = width, chr = seqnames, names = Name, features = ID)
+    )
+rm(keep)
+
+
+#  Convert column Name from list to character vector --------------------------
+#+ ...and replace empty fields NA character values
+t_gff3$names <- ifelse(
+    as.character(t_gff3$names) == "character(0)",
+    NA_character_,
+    as.character(t_gff3$names)
+)
+
+
+#  Create a "complete" column of names ----------------------------------------
+t_gff3$complete <- ifelse(!is.na(t_gff3$names), t_gff3$names, t_gff3$features)
+
+
+#  Order tibble by chromosome names and feature start positions ---------------
+chr_SC <- c(
+    "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII",
+    "XIII", "XIV", "XV", "XVI", "Mito"
+)
+chr_KL <- c("A", "B", "C", "D", "E", "F")
+chr_20S <- "20S"
+chr_order <- c(chr_SC, chr_KL, chr_20S)
+t_gff3$chr <- t_gff3$chr %>% as.factor()
+t_gff3$chr <- ordered(t_gff3$chr, levels = chr_order)
+
+t_gff3 <- t_gff3 %>% dplyr::arrange(chr, start)
+
+
+#  Add a column for "genome" --------------------------------------------------
+t_gff3$genome <- ifelse(
+    t_gff3$chr %in% chr_SC,
+    "S_cerevisiae",
+    ifelse(
+        t_gff3$chr %in% chr_KL,
+        "K_lactis",
+        ifelse(
+            t_gff3$chr %in% chr_20S,
+            "20S",
+            NA
+        )
+    )
+) %>%
+    as.factor()
+
+
+#  Rename and reorder certain columns -----------------------------------------
+t_gff3 <- t_gff3 %>%
+    dplyr::relocate(c(type, biotype), .after = complete) %>%
+    dplyr::relocate(genome, .before = chr)
+```
+<br />
+
+### Load in and process custom gtf for ncRNA features, etc.
+```{r}
+#  To associate features (mRNA) with metadata, load combined_AG.sans-chr.gtf --
+p_gtf <- "./infiles_gtf-gff3/already"
+f_gtf <- "combined_AG.sans-chr.gtf"
+t_gtf <- rtracklayer::import(paste(p_gtf, f_gtf, sep = "/")) %>%
+    as.data.frame() %>%
+    dplyr::as_tibble()
+
+rm(p_gtf, f_gtf)
+
+
+#  Subset tibble to keep only relevant columns --------------------------------
+keep <- c(
+    "seqnames", "start", "end", "width", "strand", "source", "type", "score",
+    "gene_id"
+)
+t_gtf <- t_gtf[, colnames(t_gtf) %in% keep] %>%
+    dplyr::rename(length = width)
+rm(keep)
+
+
+#  For consistency, rename "NUTs" to "NUT" ------------------------------------
+t_gtf$type <- stringr::str_replace_all(t_gtf$type, c("NUTs" = "NUT"))
+t_gtf$gene_id <- stringr::str_replace_all(t_gtf$gene_id, c("NUTs" = "NUT"))
+
+
+#  Create a "descriptive" column of names -------------------------------------
+t_gtf$descriptive <- paste(t_gtf$type, t_gtf$gene_id)
+
+
+#  Add a column for "genome" --------------------------------------------------
+t_gtf$genome <- "S_cerevisiae"
+
+
+#  Rename and reorder certain columns -----------------------------------------
+t_gtf <- t_gtf %>% dplyr::rename(
+    c(chr = seqnames, features = gene_id)
+) %>%
+    dplyr::relocate(c(source, score), .after = descriptive) %>%
+    dplyr::relocate(genome, .before = chr) %>%
+    dplyr::relocate(features, .before = type)
+```
+<br />
+
+### Prepare tibbles of sacCer3 R64-1-1 and etc. mRNA counts
+```{r Load in and process htseq-count table, results='hide', message=FALSE}
+#  Load in htseq-count table --------------------------------------------------
+p_mRNA_SC_KL <- "outfiles_htseq-count/already/combined-SC-KL-20S/UT_prim_UMI"
+f_mRNA_SC_KL <- "all-samples.combined-SC-KL-20S.hc-strd-eq.mRNA.tsv"
+t_mRNA_SC_KL <- readr::read_tsv(
+    paste(p_mRNA_SC_KL, f_mRNA_SC_KL, sep = "/"), show_col_types = FALSE
+) %>%
+    dplyr::slice(-1)
+
+rm(p_mRNA_SC_KL, f_mRNA_SC_KL)
+
+
+#  Clean up tibble column names -----------------------------------------------
+colnames(t_mRNA_SC_KL) <- colnames(t_mRNA_SC_KL) %>%
+    gsub("\\.UT_prim_UMI\\.hc-strd-eq\\.tsv$", "", .) %>%
+    gsub("\\.UT_prim_UMI\\.hc-strd-op\\.tsv$", "", .)
+
+t_mRNA_SC_KL$features <- t_mRNA_SC_KL$features %>%
+    gsub("^transcript\\:", "", .) %>%
+    gsub("_mRNA", "", .)
+
+
+#  Join t_mRNA_SC_KL and t_gff3 -----------------------------------------------
+t_mRNA_SC_KL <- dplyr::full_join(t_gff3, t_mRNA_SC_KL, by = "features") %>%
+    dplyr::rename(feature = features)
+# rm(t_gff3)
+
+
+#  Filter rows to create different tibbles ------------------------------------
+t_mRNA_SC_KL_20S_metrics <- t_mRNA_SC_KL %>% dplyr::filter(grepl("__", feature))
+t_mRNA_20S <- t_mRNA_SC_KL %>% dplyr::filter(grepl("20S", feature))
+t_mRNA_KL <- t_mRNA_SC_KL %>%
+    dplyr::filter(genome == "K_lactis") %>%
+    dplyr::select(-c(names, complete))
+t_mRNA_SC_KL <- t_mRNA_SC_KL %>%
+    dplyr::filter(!grepl("__", feature)) %>%
+    dplyr::filter(!grepl("20S", feature))
+t_mRNA_SC_KL$genome <- t_mRNA_SC_KL$genome %>% droplevels()
+
+
+#  Check on variable/column "genome" ------------------------------------------
+# t_mRNA_SC_KL %>%
+#     dplyr::group_by(genome) %>%
+#     dplyr::summarize(tally = length(genome))
+# #  The code returns...
+# # K_lactis = 5076, S_cerevisiae = 6600
+```
+<br />
+
+### Prepare tibbles of counts against ncRNAs, etc.
+```{r}
+read_in_table <- function(path, file) {
+    table <- readr::read_tsv(
+        paste(path, file, sep = "/"), show_col_types = FALSE
+    ) %>%
+        dplyr::slice(-1)
+    
+    return(table)
+}
+
+
+p_various <- "outfiles_htseq-count/already/combined-AG"
+f_AS <- "antisense_transcript/UT_prim_UMI/all-samples.combined-AG.hc-strd-eq.antisense_transcript.tsv"
+f_CUT <- "CUT/UT_prim_UMI/all-samples.combined-AG.hc-strd-eq.CUT.tsv"
+f_CUT_4X <- "CUT_4X/UT_prim_UMI/all-samples.combined-AG.hc-strd-eq.CUT_4X.tsv"
+f_CUT_2016 <- "CUT_2016/UT_prim_UMI/all-samples.combined-AG.hc-strd-eq.CUT_2016.tsv"
+f_mRNA <- "mRNA/UT_prim_UMI/all-samples.combined-AG.hc-strd-eq.mRNA.tsv"
+f_ncRNA <- "ncRNA/UT_prim_UMI/all-samples.combined-AG.hc-strd-eq.ncRNA.tsv"
+f_NUTs <- "NUTs/UT_prim_UMI/all-samples.combined-AG.hc-strd-eq.NUTs.tsv"
+f_snoRNA <- "snoRNA/UT_prim_UMI/all-samples.combined-AG.hc-strd-eq.snoRNA.tsv"
+f_snRNA <- "snRNA/UT_prim_UMI/all-samples.combined-AG.hc-strd-eq.snRNA.tsv"
+f_SRAT <- "SRAT/UT_prim_UMI/all-samples.combined-AG.hc-strd-eq.SRAT.tsv"
+f_SUT <- "SUT/UT_prim_UMI/all-samples.combined-AG.hc-strd-eq.SUT.tsv"
+f_XUT <- "XUT/UT_prim_UMI/all-samples.combined-AG.hc-strd-eq.XUT.tsv"
+
+t_nc_AS <- read_in_table(p_various, f_AS)
+t_nc_CUT <- read_in_table(p_various, f_CUT)
+t_nc_CUT_4X <- read_in_table(p_various, f_CUT_4X)
+t_nc_CUT_2016 <- read_in_table(p_various, f_CUT_2016)
+t_nc_mRNA <- read_in_table(p_various, f_mRNA)
+t_nc_ncRNA <- read_in_table(p_various, f_ncRNA)
+t_nc_NUTs <- read_in_table(p_various, f_NUTs)
+t_nc_snoRNA <- read_in_table(p_various, f_snoRNA)
+t_nc_snRNA <- read_in_table(p_various, f_snRNA)
+t_nc_SRAT <- read_in_table(p_various, f_SRAT)
+t_nc_SUT <- read_in_table(p_various, f_SUT)
+t_nc_XUT <- read_in_table(p_various, f_XUT)
+```
+<br />

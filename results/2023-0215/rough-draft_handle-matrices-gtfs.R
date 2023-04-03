@@ -117,7 +117,7 @@ chr_SC <- c(
     "XIII", "XIV", "XV", "XVI", "Mito"
 )
 chr_KL <- c("A", "B", "C", "D", "E", "F")
-chr_20S <- c("20S")
+chr_20S <- "20S"
 chr_order <- c(chr_SC, chr_KL, chr_20S)
 t_mat$chr <- t_mat$chr %>% as.factor()
 t_mat$chr <- ordered(t_mat$chr, levels = chr_order)

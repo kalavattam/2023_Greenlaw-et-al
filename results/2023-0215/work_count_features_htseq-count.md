@@ -53,7 +53,6 @@
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 # tmux new -s htseq
 # tmux a -t htseq
@@ -975,9 +974,9 @@ typeset -a features=(
     # SUT
     # tRNA
     # XUT
-    CUT_2016
-    # SRAT  #WAITING
-    # NUTs  #WAITING
+    # CUT_2016
+    SRAT
+    NUTs
 )
 # echo_test "${features[@]}"
 # echo "${#features[@]}"
@@ -1390,6 +1389,114 @@ total 672K
 drwxrws--- 2 kalavatt   65 Mar 31 15:51 ./
 drwxrws--- 3 kalavatt   29 Mar 31 14:33 ../
 -rw-rw---- 1 kalavatt 172K Mar 31 15:51 all-samples.combined-AG.hc-strd-eq.CUT_2016.tsv
+
+
+❯ for i in "${features[@]}"; do
+>     echo "#  -------------------------------------"
+>     echo "#+ combined-AG/${i}/UT_prim_UMI"
+> 
+>     cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/outfiles_htseq-count/already/combined-AG/${i}/UT_prim_UMI"
+>     # .,
+>     # ls *.tsv | wc -l
+>     pwd
+> 
+>     echo """
+>     bash ../../../../../../../bin/process_htseq-count_outfiles.sh \\
+>         -u FALSE \\
+>         -q \".\" \\
+>         -o \"./all-samples.combined-AG.hc-strd-eq.${i}.tsv\" \\
+>         -s \"hc-strd-eq\""""
+> 
+>     bash ../../../../../../../bin/process_htseq-count_outfiles.sh \
+>         -u FALSE \
+>         -q "." \
+>         -o "./all-samples.combined-AG.hc-strd-eq.${i}.tsv" \
+>         -s "hc-strd-eq"
+> 
+>     echo """    cp \\
+>         \"all-samples.combined-AG.hc-strd-eq.${i}.tsv\" \\
+>         \"${HOME}/tsukiyamalab/alisong/tsvs_htseq-count_2023-0331/already/combined-AG/${i}/UT_prim_UMI\"
+>     """
+> 
+>     if [[ -f "all-samples.combined-AG.hc-strd-eq.${i}.tsv" ]]; then
+>         cp \
+>             "all-samples.combined-AG.hc-strd-eq.${i}.tsv" \
+>             "${HOME}/tsukiyamalab/alisong/tsvs_htseq-count_2023-0331/already/combined-AG/${i}/UT_prim_UMI"
+>     else
+>         echo "Error: Some problem with generation of 'all-samples.*' file; breaking"
+>         # break
+>     fi
+>     echo ""
+> 
+>     ., "${HOME}/tsukiyamalab/alisong/tsvs_htseq-count_2023-0331/already/combined-AG/${i}/UT_prim_UMI"
+>     echo ""
+>     echo ""
+> done
+#  -------------------------------------
+#+ combined-AG/SRAT/UT_prim_UMI
+/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/outfiles_htseq-count/already/combined-AG/SRAT/UT_prim_UMI
+
+    bash ../../../../../../../bin/process_htseq-count_outfiles.sh \
+        -u FALSE \
+        -q "." \
+        -o "./all-samples.combined-AG.hc-strd-eq.SRAT.tsv" \
+        -s "hc-strd-eq"
+"Safe mode" is FALSE.
+
+    cp \
+        "all-samples.combined-AG.hc-strd-eq.SRAT.tsv" \
+        "/home/kalavatt/tsukiyamalab/alisong/tsvs_htseq-count_2023-0331/already/combined-AG/SRAT/UT_prim_UMI"
+
+'all-samples.combined-AG.hc-strd-eq.SRAT.tsv' -> '/home/kalavatt/tsukiyamalab/alisong/tsvs_htseq-count_2023-0331/already/combined-AG/SRAT/UT_prim_UMI/all-samples.combined-AG.hc-strd-eq.SRAT.tsv'
+
+total 520K
+drwxrws--- 2 kalavatt  61 Apr  1 10:16 ./
+drwxrws--- 3 kalavatt  29 Mar 31 14:33 ../
+-rw-rw---- 1 kalavatt 99K Apr  1 10:16 all-samples.combined-AG.hc-strd-eq.SRAT.tsv
+
+
+#  -------------------------------------
+#+ combined-AG/NUTs/UT_prim_UMI
+/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/outfiles_htseq-count/already/combined-AG/NUTs/UT_prim_UMI
+
+    bash ../../../../../../../bin/process_htseq-count_outfiles.sh \
+        -u FALSE \
+        -q "." \
+        -o "./all-samples.combined-AG.hc-strd-eq.NUTs.tsv" \
+        -s "hc-strd-eq"
+"Safe mode" is FALSE.
+
+    cp \
+        "all-samples.combined-AG.hc-strd-eq.NUTs.tsv" \
+        "/home/kalavatt/tsukiyamalab/alisong/tsvs_htseq-count_2023-0331/already/combined-AG/NUTs/UT_prim_UMI"
+
+'all-samples.combined-AG.hc-strd-eq.NUTs.tsv' -> '/home/kalavatt/tsukiyamalab/alisong/tsvs_htseq-count_2023-0331/already/combined-AG/NUTs/UT_prim_UMI/all-samples.combined-AG.hc-strd-eq.NUTs.tsv'
+
+total 384K
+drwxrws--- 2 kalavatt   61 Apr  1 10:16 ./
+drwxrws--- 3 kalavatt   29 Mar 31 14:33 ../
+-rw-rw---- 1 kalavatt 313K Apr  1 10:16 all-samples.combined-AG.hc-strd-eq.NUTs.tsv
+```
+</details>
+<br />
+
+<details>
+<summary><i>Code: </i></summary>
+
+`#TODO` *Better place or different notebook for this (and related) code chunks?*
+```bash
+#!/bin/bash
+
+cd ~/tsukiyamalab/alisong/tsvs_htseq-count_2023-0331
+mkdir -p gtf-gff3/combined
+
+cp \
+    ~/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/infiles_gtf-gff3/already/{combined_AG.sans-chr.gtf,combined_SC_KL_20S.gff3} \
+    gtf-gff3/combined
+
+mv already/ combined/
+mkdir matrices
+mv combined/ matrices/
 ```
 </details>
 <br />
