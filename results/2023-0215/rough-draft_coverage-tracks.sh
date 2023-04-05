@@ -25,19 +25,66 @@ threads=8
 
 p_excl="/home/kalavatt/2022_transcriptome-construction_2023-0215/outfiles_gtf-gff3/already"
 f_excl="SC_features-rRNA-tRNA.bed"
-do_blacklist=TRUE
+do_blacklist=FALSE
 blacklist="${p_excl}/${f_excl}"
 
 unset a_bam
 typeset -A a_bam
-a_bam["${p_bam}/WT_G1_day1_ovn_N_aux-F_tc-F_rep1_tech1.UT_prim_UMI.bam"]="${p_bw}/WT_G1_N_rep1"
-a_bam["${p_bam}/WT_G1_day1_ovn_N_aux-F_tc-F_rep2_tech1.UT_prim_UMI.bam"]="${p_bw}/WT_G1_N_rep2"
-a_bam["${p_bam}/WT_G1_day1_ovn_SS_aux-F_tc-F_rep1_tech1.UT_prim_UMI.bam"]="${p_bw}/WT_G1_SS_rep1"
-a_bam["${p_bam}/WT_G1_day1_ovn_SS_aux-F_tc-F_rep2_tech1.UT_prim_UMI.bam"]="${p_bw}/WT_G1_SS_rep2"
-a_bam["${p_bam}/WT_Q_day7_ovn_N_aux-F_tc-F_rep1_tech1.UT_prim_UMI.bam"]="${p_bw}/WT_Q_N_rep1"
-a_bam["${p_bam}/WT_Q_day7_ovn_N_aux-F_tc-F_rep2_tech1.UT_prim_UMI.bam"]="${p_bw}/WT_Q_N_rep2"
-a_bam["${p_bam}/WT_Q_day7_ovn_SS_aux-F_tc-F_rep1_tech1.UT_prim_UMI.bam"]="${p_bw}/WT_Q_SS_rep1"
-a_bam["${p_bam}/WT_Q_day7_ovn_SS_aux-F_tc-F_rep2_tech1.UT_prim_UMI.bam"]="${p_bw}/WT_Q_SS_rep2"
+#  samples_fig_1_5
+a_bam["${p_bam}/WT_G1_day1_ovn_N_aux-F_tc-F_rep1_tech1.UT_prim_UMI.bam"]="${p_bw}/wt_ovn/WT_G1_N_rep1"
+a_bam["${p_bam}/WT_G1_day1_ovn_N_aux-F_tc-F_rep2_tech1.UT_prim_UMI.bam"]="${p_bw}/wt_ovn/WT_G1_N_rep2"
+a_bam["${p_bam}/WT_G1_day1_ovn_SS_aux-F_tc-F_rep1_tech1.UT_prim_UMI.bam"]="${p_bw}/wt_ovn/WT_G1_SS_rep1"
+a_bam["${p_bam}/WT_G1_day1_ovn_SS_aux-F_tc-F_rep2_tech1.UT_prim_UMI.bam"]="${p_bw}/wt_ovn/WT_G1_SS_rep2"
+a_bam["${p_bam}/WT_Q_day7_ovn_N_aux-F_tc-F_rep1_tech1.UT_prim_UMI.bam"]="${p_bw}/wt_ovn/WT_Q_N_rep1"
+a_bam["${p_bam}/WT_Q_day7_ovn_N_aux-F_tc-F_rep2_tech1.UT_prim_UMI.bam"]="${p_bw}/wt_ovn/WT_Q_N_rep2"
+a_bam["${p_bam}/WT_Q_day7_ovn_SS_aux-F_tc-F_rep1_tech1.UT_prim_UMI.bam"]="${p_bw}/wt_ovn/WT_Q_SS_rep1"
+a_bam["${p_bam}/WT_Q_day7_ovn_SS_aux-F_tc-F_rep2_tech1.UT_prim_UMI.bam"]="${p_bw}/wt_ovn/WT_Q_SS_rep2"
+
+#  samples_fig_2
+a_bam["${p_bam}/WT_DSm2_day2_tcn_SS_aux-F_tc-T_rep1_tech1.UT_prim_UMI.bam"]="${p_bw}/timecourse_rrp6_wt/WT_DSm2_SS_rep1"
+a_bam["${p_bam}/WT_DSm2_day2_tcn_SS_aux-F_tc-T_rep2_tech1.UT_prim_UMI.bam"]="${p_bw}/timecourse_rrp6_wt/WT_DSm2_SS_rep2"
+a_bam["${p_bam}/WT_DSp2_day2_tcn_SS_aux-F_tc-T_rep1_tech1.UT_prim_UMI.bam"]="${p_bw}/timecourse_rrp6_wt/WT_DSp2_SS_rep1"
+a_bam["${p_bam}/WT_DSp2_day2_tcn_SS_aux-F_tc-T_rep2_tech1.UT_prim_UMI.bam"]="${p_bw}/timecourse_rrp6_wt/WT_DSp2_SS_rep2"
+a_bam["${p_bam}/WT_DSp24_day3_tcn_SS_aux-F_tc-T_rep1_tech1.UT_prim_UMI.bam"]="${p_bw}/timecourse_rrp6_wt/WT_DSp24_SS_rep1"
+a_bam["${p_bam}/WT_DSp24_day3_tcn_SS_aux-F_tc-T_rep2_tech1.UT_prim_UMI.bam"]="${p_bw}/timecourse_rrp6_wt/WT_DSp24_SS_rep2"
+a_bam["${p_bam}/WT_DSp48_day4_tcn_SS_aux-F_tc-T_rep1_tech1.UT_prim_UMI.bam"]="${p_bw}/timecourse_rrp6_wt/WT_DSp48_SS_rep1"
+a_bam["${p_bam}/WT_DSp48_day4_tcn_SS_aux-F_tc-T_rep1_tech2.UT_prim_UMI.bam"]="${p_bw}/timecourse_rrp6_wt/WT_DSp48_SS_rep1"
+a_bam["${p_bam}/WT_DSp48_day4_tcn_SS_aux-F_tc-T_rep2_tech1.UT_prim_UMI.bam"]="${p_bw}/timecourse_rrp6_wt/WT_DSp48_SS_rep2"
+a_bam["${p_bam}/r6-n_DSm2_day2_tcn_SS_aux-F_tc-T_rep1_tech1.UT_prim_UMI.bam"]="${p_bw}/timecourse_rrp6_wt/r6-n_DSm2_SS_rep1"
+a_bam["${p_bam}/r6-n_DSm2_day2_tcn_SS_aux-F_tc-T_rep2_tech1.UT_prim_UMI.bam"]="${p_bw}/timecourse_rrp6_wt/r6-n_DSm2_SS_rep2"
+a_bam["${p_bam}/r6-n_DSp2_day2_tcn_SS_aux-F_tc-T_rep1_tech1.UT_prim_UMI.bam"]="${p_bw}/timecourse_rrp6_wt/r6-n_DSp2_SS_rep1"
+a_bam["${p_bam}/r6-n_DSp2_day2_tcn_SS_aux-F_tc-T_rep2_tech1.UT_prim_UMI.bam"]="${p_bw}/timecourse_rrp6_wt/r6-n_DSp2_SS_rep2"
+a_bam["${p_bam}/r6-n_DSp24_day3_tcn_SS_aux-F_tc-T_rep1_tech1.UT_prim_UMI.bam"]="${p_bw}/timecourse_rrp6_wt/r6-n_DSp24_SS_rep1"
+a_bam["${p_bam}/r6-n_DSp24_day3_tcn_SS_aux-F_tc-T_rep2_tech1.UT_prim_UMI.bam"]="${p_bw}/timecourse_rrp6_wt/r6-n_DSp24_SS_rep2"
+a_bam["${p_bam}/r6-n_DSp48_day4_tcn_SS_aux-F_tc-T_rep1_tech1.UT_prim_UMI.bam"]="${p_bw}/timecourse_rrp6_wt/r6-n_DSp48_SS_rep1"
+a_bam["${p_bam}/r6-n_DSp48_day4_tcn_SS_aux-F_tc-T_rep2_tech1.UT_prim_UMI.bam"]="${p_bw}/timecourse_rrp6_wt/r6-n_DSp48_SS_rep2"
+
+#  samples_fig_3
+a_bam["${p_bam}/WT_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1.UT_prim_UMI.bam"]="${p_bw}/rrp6_wt/WT_G1_SS_rep1"
+a_bam["${p_bam}/WT_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1.UT_prim_UMI.bam"]="${p_bw}/rrp6_wt/WT_G1_SS_rep2"
+a_bam["${p_bam}/WT_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1.UT_prim_UMI.bam"]="${p_bw}/rrp6_wt/WT_Q_N_rep1"
+a_bam["${p_bam}/WT_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1.UT_prim_UMI.bam"]="${p_bw}/rrp6_wt/WT_Q_N_rep2"
+a_bam["${p_bam}/WT_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1.UT_prim_UMI.bam"]="${p_bw}/rrp6_wt/WT_Q_SS_rep1"
+a_bam["${p_bam}/WT_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1.UT_prim_UMI.bam"]="${p_bw}/rrp6_wt/WT_Q_SS_rep2"
+a_bam["${p_bam}/r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1.UT_prim_UMI.bam"]="${p_bw}/rrp6_wt/r6-n_G1_SS_rep1"
+a_bam["${p_bam}/r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1.UT_prim_UMI.bam"]="${p_bw}/rrp6_wt/r6-n_G1_SS_rep2"
+a_bam["${p_bam}/r6-n_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1.UT_prim_UMI.bam"]="${p_bw}/rrp6_wt/r6-n_Q_N_rep1"
+a_bam["${p_bam}/r6-n_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1.UT_prim_UMI.bam"]="${p_bw}/rrp6_wt/r6-n_Q_N_rep2"
+a_bam["${p_bam}/r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1.UT_prim_UMI.bam"]="${p_bw}/rrp6_wt/r6-n_Q_SS_rep1"
+a_bam["${p_bam}/r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech2.UT_prim_UMI.bam"]="${p_bw}/rrp6_wt/r6-n_Q_SS_rep1"
+a_bam["${p_bam}/r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1.UT_prim_UMI.bam"]="${p_bw}/rrp6_wt/r6-n_Q_SS_rep2"
+
+#  samples_fig_4
+a_bam["${p_bam}/n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI.bam"]="${p_bw}/nab3_ostir/n3-d_Q_N_rep1"
+a_bam["${p_bam}/n3-d_Q_day7_tcn_N_aux-T_tc-F_rep2_tech1.UT_prim_UMI.bam"]="${p_bw}/nab3_ostir/n3-d_Q_N_rep2"
+a_bam["${p_bam}/n3-d_Q_day7_tcn_N_aux-T_tc-F_rep3_tech1.UT_prim_UMI.bam"]="${p_bw}/nab3_ostir/n3-d_Q_N_rep3"
+a_bam["${p_bam}/n3-d_Q_day7_tcn_SS_aux-T_tc-F_rep1_tech1.UT_prim_UMI.bam"]="${p_bw}/nab3_ostir/n3-d_Q_SS_rep1"
+a_bam["${p_bam}/n3-d_Q_day7_tcn_SS_aux-T_tc-F_rep2_tech1.UT_prim_UMI.bam"]="${p_bw}/nab3_ostir/n3-d_Q_SS_rep2"
+a_bam["${p_bam}/n3-d_Q_day7_tcn_SS_aux-T_tc-F_rep3_tech1.UT_prim_UMI.bam"]="${p_bw}/nab3_ostir/n3-d_Q_SS_rep3"
+a_bam["${p_bam}/o-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI.bam"]="${p_bw}/nab3_ostir/o-d_Q_N_rep1"
+a_bam["${p_bam}/o-d_Q_day7_tcn_N_aux-T_tc-F_rep2_tech1.UT_prim_UMI.bam"]="${p_bw}/nab3_ostir/o-d_Q_N_rep2"
+a_bam["${p_bam}/o-d_Q_day7_tcn_SS_aux-T_tc-F_rep1_tech1.UT_prim_UMI.bam"]="${p_bw}/nab3_ostir/o-d_Q_SS_rep1"
+a_bam["${p_bam}/o-d_Q_day7_tcn_SS_aux-T_tc-F_rep2_tech1.UT_prim_UMI.bam"]="${p_bw}/nab3_ostir/o-d_Q_SS_rep2"
 
 unset strand
 typeset -a strand=("forward" "reverse")
@@ -45,11 +92,11 @@ typeset -a strand=("forward" "reverse")
 
 
 #  Create outdirectories if not present ---------------------------------------
-# if [[ ! -d  "${p_bw}" ]]; then mkdir -p "${p_bw}"; fi
-# if [[ ! -d  "${p_eo}" ]]; then mkdir -p "${p_eo}"; fi
+if [[ ! -d  "${p_bw}" ]]; then mkdir -p ${p_bw}/{wt_ovn,timecourse_rrp6_wt,rrp6_wt,nab3_ostir}; fi
+if [[ ! -d  "${p_eo}" ]]; then mkdir -p "${p_eo}"; fi
 
 
-#  Submit jobs: No blacklisting ----------------------------------------------- 
+#  Submit jobs ---------------------------------------------------------------- 
 for i in "${!a_bam[@]}"; do
     for j in "${strand[@]}"; do
         if [[ "${do_blacklist}" == FALSE ]]; then
@@ -85,7 +132,7 @@ for i in "${!a_bam[@]}"; do
                     --filterRNAstrand="${filter}" \
                     --outFileName "${out}"
 
-            sleep 0.15
+            sleep 0.33
         elif [[ "${do_blacklist}" == TRUE ]]; then
             if [[ "${j}" == "forward" ]]; then
                 ext="bl-TPM.m.bw"
@@ -120,7 +167,7 @@ for i in "${!a_bam[@]}"; do
                     --blackListFileName "${blacklist}" \
                     --outFileName "${out}"
             
-            sleep 0.15
+            sleep 0.33
         fi
     done
 done
