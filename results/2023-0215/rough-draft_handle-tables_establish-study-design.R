@@ -408,7 +408,7 @@ design[[sec_b]][[get_object_name(col_data)]] <- col_data
 design[[sec_b]][[get_object_name(dds_intcp)]] <- dds_intcp
 design[[sec_b]][[get_object_name(size_factors)]] <- size_factors
 
-rm(datasets, counts_data, col_data, size_factors)
+rm(datasets, t_hc_fig_1_5, counts_data, col_data, dds_intcp, size_factors)
 
 
 #  samples_fig_2 --------------------------------------------------------------
@@ -435,42 +435,65 @@ dds_intcp <- BiocGenerics::estimateSizeFactors(
 size_factors <- dds_intcp$sizeFactor
 
 
-#  Determine appropriate pairwise combinations ------------
-comb_denom <- outer("WT", samples_fig_2$state, "paste") %>%
-    as.character() %>%
-    unique()
+#  Determine pairwise combinations for DE analyses --------
+exp_details <- list()
+
 comb_num <- outer("r6-n", samples_fig_2$state, "paste") %>%
     as.character() %>%
     unique()
-
+comb_denom <- outer("WT", samples_fig_2$state, "paste") %>%
+    as.character() %>%
+    unique()
 comb_pairwise <- outer(comb_num, comb_denom, "paste")
 
-exp_details <- list()
-model_table <- matrix(data = NA, nrow = 4, ncol = 4)
+table_models <- matrix(data = NA, nrow = 4, ncol = 4)
 for(i in 1:ncol(comb_pairwise)) {
     for(j in 1:ncol(comb_pairwise)) {
-        # i <- 2
-        # j <- 2
-        tbl_1 <- samples_fig_2 %>%
-            dplyr::filter(grepl(unlist(stringr::str_split(comb_pairwise[i, j], " "))[1], strain)) %>% 
-            dplyr::filter(grepl(unlist(stringr::str_split(comb_pairwise[i, j], " "))[2], state)) %>%
+        # i <- 1
+        # j <- 1
+        tbl_num <- samples_fig_2 %>%
+            dplyr::filter(
+                grepl(
+                    paste0("^", unlist(stringr::str_split(comb_pairwise[i, j], " "))[1], "$"), strain
+                )
+            ) %>% 
+            dplyr::filter(
+                grepl(paste0("^", unlist(stringr::str_split(comb_pairwise[i, j], " "))[2], "$"), state)
+            ) %>%
             dplyr::select(keys, strain, state, technical)
         
-        tbl_2 <- samples_fig_2 %>%
-            dplyr::filter(grepl(unlist(stringr::str_split(comb_pairwise[i, j], " "))[3], strain)) %>% 
-            dplyr::filter(grepl(unlist(stringr::str_split(comb_pairwise[i, j], " "))[4], state)) %>%
+        tbl_denom <- samples_fig_2 %>%
+            dplyr::filter(
+                grepl(paste0("^", unlist(stringr::str_split(comb_pairwise[i, j], " "))[3], "$"), strain)
+            ) %>% 
+            dplyr::filter(
+                grepl(paste0("^", unlist(stringr::str_split(comb_pairwise[i, j], " "))[4], "$"), state)
+            ) %>%
             dplyr::select(keys, strain, state, technical)
         
-        if(any(c(tbl_1$technical, tbl_2$technical) %in% "tech2")) {
-            if(unique(tbl_1$state) == unique(tbl_2$state)) {
-                model_table[i, j] <- "~ technical + strain"
+        # rstudio-pubs-static.s3.amazonaws.com/329027_593046fb6d7a427da6b2c538caf601e1.html
+        if(any(c(tbl_num$technical, tbl_denom$technical) %in% "tech2")) {
+            if(unique(tbl_num$state) == unique(tbl_denom$state)) {
+                table_models[i, j] <- "~ technical + strain"
+            } else {
+                table_models[i, j] <- "\'~ technical + strain + state\', \'~ technical + strain + state + strain:state\', \'~ technical + state + strain\', etc."
             }
-            
         } else {
-            model_table[i, j] <- FALSE
+            if(unique(tbl_num$state) == unique(tbl_denom$state)) {
+                table_models[i, j] <- "~ state"
+            } else {
+                table_models[i, j] <- "\'~ strain + state\', \'~ strain + state + strain:state\', \'~ state + strain\', etc."
+            }
         }
+        
+        exp_details[["numerator"]][[paste(i, "by", j)]] <- tbl_num
+        exp_details[["denominator"]][[paste(i, "by", j)]] <- tbl_denom
     }
 }
+exp_details[["combinations"]] <- comb_pairwise
+exp_details[["models"]] <- table_models
+
+rm(comb_pairwise, tbl_num, tbl_denom, table_models, i, j)
 
 
 #  Save the size factors, etc. to object 'design' ---------
@@ -482,8 +505,115 @@ design[[sec_c]][[get_object_name(counts_data)]] <- counts_data
 design[[sec_c]][[get_object_name(col_data)]] <- col_data
 design[[sec_c]][[get_object_name(dds_intcp)]] <- dds_intcp
 design[[sec_c]][[get_object_name(size_factors)]] <- size_factors
+design[[sec_c]][[get_object_name(exp_details)]] <- exp_details
 
-rm(datasets, counts_data, col_data, size_factors)
+rm(
+    datasets, t_hc_fig_2, counts_data, col_data, dds_intcp, size_factors,
+    exp_details
+)
+
+
+#INPROGRESS #PICKUPHERE
+#  samples_fig_3 --------------------------------------------------------------
+#  Subset t_hc by relevant samples ------------------------
+datasets <- samples_fig_3$keys
+keep <- c(colnames(t_hc)[1:11], datasets)
+t_hc_fig_3 <- t_hc[, colnames(t_hc) %in% keep]
+rm(keep)
+
+
+#  Create a dds object ------------------------------------
+counts_data <- t_hc_fig_3[, datasets] %>%
+    as.data.frame() %>%
+    sapply(., as.integer)
+
+col_data <- make_col_data(samples_fig_3)
+
+dds_intcp <- make_dds_model_intercept(counts_data, col_data, pos_info)
+dds_intcp <- BiocGenerics::estimateSizeFactors(
+    dds_intcp[dds_intcp@rowRanges$genome == "K_lactis", ]
+)
+
+#  Evaluate K. lactis-based size factors 
+size_factors <- dds_intcp$sizeFactor
+
+
+#  Determine pairwise combinations for DE analyses --------
+exp_details <- list()
+
+comb_num <- outer("r6-n", samples_fig_3$state, "paste") %>%
+    as.character() %>%
+    unique()
+comb_denom <- outer("WT", samples_fig_3$state, "paste") %>%
+    as.character() %>%
+    unique()
+comb_pairwise <- outer(comb_num, comb_denom, "paste")
+
+table_models <- matrix(data = NA, nrow = 4, ncol = 4)
+for(i in 1:ncol(comb_pairwise)) {
+    for(j in 1:ncol(comb_pairwise)) {
+        # i <- 1
+        # j <- 1
+        tbl_num <- samples_fig_3 %>%
+            dplyr::filter(
+                grepl(
+                    paste0("^", unlist(stringr::str_split(comb_pairwise[i, j], " "))[1], "$"), strain
+                )
+            ) %>% 
+            dplyr::filter(
+                grepl(paste0("^", unlist(stringr::str_split(comb_pairwise[i, j], " "))[2], "$"), state)
+            ) %>%
+            dplyr::select(keys, strain, state, technical)
+        
+        tbl_denom <- samples_fig_3 %>%
+            dplyr::filter(
+                grepl(paste0("^", unlist(stringr::str_split(comb_pairwise[i, j], " "))[3], "$"), strain)
+            ) %>% 
+            dplyr::filter(
+                grepl(paste0("^", unlist(stringr::str_split(comb_pairwise[i, j], " "))[4], "$"), state)
+            ) %>%
+            dplyr::select(keys, strain, state, technical)
+        
+        # rstudio-pubs-static.s3.amazonaws.com/329027_593046fb6d7a427da6b2c538caf601e1.html
+        if(any(c(tbl_num$technical, tbl_denom$technical) %in% "tech2")) {
+            if(unique(tbl_num$state) == unique(tbl_denom$state)) {
+                table_models[i, j] <- "~ technical + strain"
+            } else {
+                table_models[i, j] <- "\'~ technical + strain + state\', \'~ technical + strain + state + strain:state\', \'~ technical + state + strain\', etc."
+            }
+        } else {
+            if(unique(tbl_num$state) == unique(tbl_denom$state)) {
+                table_models[i, j] <- "~ state"
+            } else {
+                table_models[i, j] <- "\'~ strain + state\', \'~ strain + state + strain:state\', \'~ state + strain\', etc."
+            }
+        }
+        
+        exp_details[["numerator"]][[paste(i, "by", j)]] <- tbl_num
+        exp_details[["denominator"]][[paste(i, "by", j)]] <- tbl_denom
+    }
+}
+exp_details[["combinations"]] <- comb_pairwise
+exp_details[["models"]] <- table_models
+
+rm(comb_pairwise, tbl_num, tbl_denom, table_models, i, j)
+
+
+#  Save the size factors, etc. to object 'design' ---------
+design[[sec_c]][[get_object_name(datasets)]] <- datasets
+design[[sec_c]][["counts_metadata"]] <- t_hc_fig_3
+design[[sec_c]][["metrics"]] <- m_hc[, colnames(m_hc) %in% c("feature", datasets)]
+design[[sec_c]][["positional"]] <- pos_info
+design[[sec_c]][[get_object_name(counts_data)]] <- counts_data
+design[[sec_c]][[get_object_name(col_data)]] <- col_data
+design[[sec_c]][[get_object_name(dds_intcp)]] <- dds_intcp
+design[[sec_c]][[get_object_name(size_factors)]] <- size_factors
+design[[sec_c]][[get_object_name(exp_details)]] <- exp_details
+
+rm(
+    datasets, t_hc_fig_3, counts_data, col_data, dds_intcp, size_factors,
+    exp_details
+)
 
 
 
