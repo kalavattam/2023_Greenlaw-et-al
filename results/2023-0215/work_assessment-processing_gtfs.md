@@ -222,9 +222,6 @@ echo "${#bams[@]}"  # 8
 #!/bin/bash
 
 for h in ./outfiles_gtf-gff3/Trinity-GG/{G_N,Q_N}/trinity-gg_*.gtf; do
-    #  Check if the glob gets expanded to existing files; if not, then "${h}"
-    #+ will be exactly the pattern above and the negated ("!") exists-test will
-    #+ evaluate to TRUE
     if [[ ! -e "${h}" ]]; then
         for i in "${stems[@]}"; do
             in="${i}.gff3"
@@ -247,7 +244,6 @@ for h in ./outfiles_gtf-gff3/Trinity-GG/{G_N,Q_N}/trinity-gg_*.gtf; do
         echo "Files already exist; thus, skipping the running of AGAT"
     fi
     
-    #  This is all we need to know, so we can break after the first iteration
     break
 done
 ```

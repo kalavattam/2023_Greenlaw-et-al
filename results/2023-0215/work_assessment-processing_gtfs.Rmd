@@ -337,7 +337,7 @@ Details for how these files were made are in the following notebooks:
 6. Use `rtracklayer` to write the converted, collapsed, counts-filtered data objects as `gtf` files
 7. Send the processed `gtf` files to Alison Greenlaw for visual inspection with `IGV`
 
-For both Q and G1, Alison asked me to filter the assemblies generated with `Trinity` parameter `mkc` = 1, 4, 8. However, for the sake of completeness, and to understand clearly what "incorrectness" looks like, I have resolved to also filter `mkc` = 2, 16, 32 as well. Remember that the `Trinity` parameters `mir`, `mg`, and `gf` were held at default levels for the specific assemblies to be eyeballed by Alison.
+For both Q and G1, Alison asked me to filter the assemblies generated with `Trinity` parameter `mkc` = 1, 4, 8. However, for the sake of completeness, and to understand clearly what "incorrectness" looks like, I will filter `mkc` = 2, 16, 32 as well. Remember that the `Trinity` parameters `mir`, `mg`, and `gf` were held at default levels for the specific assemblies to be eyeballed by Alison.
 </details>
 <br />
 <br />
@@ -373,7 +373,7 @@ if(stringr::str_detect(getwd(), "kalavattam")) {
 p_wd <- "2022_transcriptome-construction/results/2023-0215"
 
 setwd(paste(p_local, p_wd, sep = "/"))
-getwd()
+# getwd()
 
 rm(p_local, p_wd)
 ```

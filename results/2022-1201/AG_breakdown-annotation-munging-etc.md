@@ -1,5 +1,5 @@
 
-`#breakdown-bedtools.md`
+`#AG_breakdown-annotation-munging-etc.md`
 <br />
 <br />
 
@@ -68,6 +68,7 @@
 
 <!-- /MarkdownTOC -->
 </details>
+<br />
 <br />
 
 <a id="email-notes-on-trinity"></a>
@@ -452,7 +453,7 @@ The program GffCompare can be used to compare, merge, annotate and estimate accu
 ```bash
 gffcompare -r annotation.gff transcripts.gtf
 ```
-The reference annotation is specified in the `annotation.gff` file and `transcripts.gtf` represents the query file (more than one query file can be provided). Unless the `-o` option was provided, the output will be found in multiple files with the prefix "gffcmp.". A list of the more important options for the GffCompare utility is provided in [Table 3](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7222033/table/T3/?report=objectonly).
+The reference annotation is specified in the `annotation.gff` file and `transcripts.gtf` represents the query file (more than one query file can be provided). Unless the `-o` option was provided, the output will be found in multiple files with the prefix "gffcmp." A list of the more important options for the GffCompare utility is provided in [Table 3](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7222033/table/T3/?report=objectonly).
 
 <a id="use-cases-transcript-accuracy-estimation-with-gffcompare"></a>
 ##### Use cases: Transcript accuracy estimation with `GffCompare`

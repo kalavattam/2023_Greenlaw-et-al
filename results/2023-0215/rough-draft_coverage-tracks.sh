@@ -9,6 +9,8 @@ cd ~/2022_transcriptome-construction/results/2023-0215 \
     || echo "cd'ing failed; check on this..."
 
 # mamba create -n coverage_env -c bioconda deeptools  # Only if not installed
+#LATER Install bowtie2 as well:  mamba install -c bioconda bowtie2
+#LATER Install samtools as well: mamba install -c bioconda samtools
 source activate coverage_env
 
 
