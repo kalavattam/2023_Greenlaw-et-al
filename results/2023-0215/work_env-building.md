@@ -2468,8 +2468,14 @@ mamba install \
         bioconductor-rtracklayer==1.58.0
 
 mamba install -c \
-    bioconda rename \
-    bioconductor-rtracklayer==1.58.0
+    bioconda \
+        rename \
+        bioconductor-rtracklayer==1.58.0
+
+mamba install -c \
+    bioconda \
+        gffread \
+        bioconductor-rtracklayer==1.58.0
 ```
 </details>
 <br />
@@ -3224,6 +3230,86 @@ Transaction
 
 Confirm changes: [Y/n] Y
 parallel                                             1.9MB @  19.1MB/s  0.1s
+
+Downloading and Extracting Packages
+
+Preparing transaction: done
+Verifying transaction: done
+Executing transaction: done
+
+❯ mamba install -c \
+>     bioconda gffread \
+>     bioconductor-rtracklayer==1.58.0
+
+                  __    __    __    __
+                 /  \  /  \  /  \  /  \
+                /    \/    \/    \/    \
+███████████████/  /██/  /██/  /██/  /████████████████████████
+              /  / \   / \   / \   / \  \____
+             /  /   \_/   \_/   \_/   \    o \__,
+            / _/                       \_____/  `
+            |/
+        ███╗   ███╗ █████╗ ███╗   ███╗██████╗  █████╗
+        ████╗ ████║██╔══██╗████╗ ████║██╔══██╗██╔══██╗
+        ██╔████╔██║███████║██╔████╔██║██████╔╝███████║
+        ██║╚██╔╝██║██╔══██║██║╚██╔╝██║██╔══██╗██╔══██║
+        ██║ ╚═╝ ██║██║  ██║██║ ╚═╝ ██║██████╔╝██║  ██║
+        ╚═╝     ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝╚═════╝ ╚═╝  ╚═╝
+
+        mamba (1.3.1) supported by @QuantStack
+
+        GitHub:  https://github.com/mamba-org/mamba
+        Twitter: https://twitter.com/QuantStack
+
+█████████████████████████████████████████████████████████████
+
+
+Looking for: ['gffread', 'bioconductor-rtracklayer==1.58.0']
+
+bioconda/linux-64                                           Using cache
+bioconda/noarch                                             Using cache
+conda-forge/noarch                                          Using cache
+pkgs/main/noarch                                              No change
+pkgs/main/linux-64                                            No change
+pkgs/r/noarch                                                 No change
+pkgs/r/linux-64                                               No change
+conda-forge/linux-64                                30.7MB @   4.7MB/s  7.5s
+
+Pinned packages:
+  - python 3.10.*
+
+
+Transaction
+
+  Prefix: /home/kalavatt/miniconda3/envs/gff3_env
+
+  Updating specs:
+
+   - gffread
+   - bioconductor-rtracklayer==1.58.0
+   - ca-certificates
+   - certifi
+   - openssl
+
+
+  Package    Version  Build       Channel                Size
+───────────────────────────────────────────────────────────────
+  Install:
+───────────────────────────────────────────────────────────────
+
+  + gffread   0.12.7  hd03093a_1  bioconda/linux-64     131kB
+
+  Summary:
+
+  Install: 1 packages
+
+  Total download: 131kB
+
+───────────────────────────────────────────────────────────────
+
+
+Confirm changes: [Y/n] Y
+gffread                                            130.9kB @ 846.8kB/s  0.2s
 
 Downloading and Extracting Packages
 
