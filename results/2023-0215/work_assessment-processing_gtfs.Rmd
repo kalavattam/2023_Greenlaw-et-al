@@ -415,7 +415,8 @@ read_in_gtfs <- function(vector_files) {
 #  G1 ---------------------------------
 path_gtf_G <- "outfiles_gtf-gff3/Trinity-GG/G_N"
 files_G <- list.files(
-    path_gtf_G, pattern = "*.combined.sans-chr.gtf", full.names = TRUE
+    # path_gtf_G, pattern = "*.combined.sans-chr.gtf", full.names = TRUE  # Approach #1
+    path_gtf_G, pattern = "*.gffread.gff3", full.names = TRUE  # Approach #2
 )
 l_G_gtf <- read_in_gtfs(files_G)
 
@@ -423,7 +424,8 @@ l_G_gtf <- read_in_gtfs(files_G)
 #  Q ----------------------------------
 path_gtf_Q <- "outfiles_gtf-gff3/Trinity-GG/Q_N"
 files_Q <- list.files(
-    path_gtf_Q, pattern = "*.combined.sans-chr.gtf", full.names = TRUE
+    # path_gtf_Q, pattern = "*.combined.sans-chr.gtf", full.names = TRUE  # Approach #1
+    path_gtf_Q, pattern = "*.gffread.gff3", full.names = TRUE  # Approach #2
 )
 l_Q_gtf <- read_in_gtfs(files_Q)
 
@@ -465,30 +467,51 @@ read_in_mat <- function(vector_of_files) {
 #  G1 ---------------------------------
 path_mat_G <- "outfiles_htseq-count/Trinity-GG/G_N"
 
-files_G_sam <- list.files(
-    path_mat_G, pattern = "*.yes.tsv", full.names = TRUE
+# files_G_sam <- list.files(  # Approach #1
+#     path_mat_G, pattern = "*.yes.tsv", full.names = TRUE
+# )
+# l_G_mat_sam <- read_in_mat(files_G_sam) %>% suppressMessages()
+# 
+# 
+# files_G_rev <- list.files(  # Approach #1
+#     path_mat_G, pattern = "*.reverse.tsv", full.names = TRUE
+# )
+# l_G_mat_rev <- read_in_mat(files_G_rev) %>% suppressMessages()
+
+files_G_locus <- list.files(  # Approach #2
+    path_mat_G, pattern = "*-locus.tsv", full.names = TRUE
 )
-l_G_mat_sam <- read_in_mat(files_G_sam) %>% suppressMessages()
+l_G_mat_locus <- read_in_mat(files_G_locus) %>% suppressMessages()
 
 
-files_G_rev <- list.files(
-    path_mat_G, pattern = "*.reverse.tsv", full.names = TRUE
-)
-l_G_mat_rev <- read_in_mat(files_G_rev) %>% suppressMessages()
+# files_G_mRNA <- list.files(  # Approach #2
+#     path_mat_G, pattern = "*-mRNA.tsv", full.names = TRUE
+# )
+# l_G_mat_mRNA <- read_in_mat(files_G_mRNA) %>% suppressMessages()
 
 
 #  Q ----------------------------------
-path_gtf_Q <- "outfiles_htseq-count/Trinity-GG/Q_N"
+path_mat_Q <- "outfiles_htseq-count/Trinity-GG/Q_N"
 
-files_Q_sam <- list.files(
-    path_gtf_Q, pattern = "*.yes.tsv", full.names = TRUE
-)
-l_Q_mat_sam <- read_in_mat(files_Q_sam) %>% suppressMessages()
+# files_Q_sam <- list.files(  # Approach #1
+#     path_mat_Q, pattern = "*.yes.tsv", full.names = TRUE
+# )
+# l_Q_mat_sam <- read_in_mat(files_Q_sam) %>% suppressMessages()
+# 
+# files_Q_rev <- list.files(  # Approach #1
+#     path_mat_Q, pattern = "*.reverse.tsv", full.names = TRUE
+# )
+# l_Q_mat_rev <- read_in_mat(files_Q_rev) %>% suppressMessages()
 
-files_Q_rev <- list.files(
-    path_gtf_Q, pattern = "*.reverse.tsv", full.names = TRUE
+files_Q_locus <- list.files(  # Approach #2
+    path_mat_Q, pattern = "*-locus.tsv", full.names = TRUE
 )
-l_Q_mat_rev <- read_in_mat(files_Q_rev) %>% suppressMessages()
+l_Q_mat_locus <- read_in_mat(files_Q_locus) %>% suppressMessages()
+
+# files_Q_mRNA <- list.files(  # Approach #2
+#     path_mat_Q, pattern = "*-mRNA.tsv", full.names = TRUE
+# )
+# l_Q_mat_mRNA <- read_in_mat(files_Q_mRNA) %>% suppressMessages()
 
 
 #  Comparisons ------------------------
@@ -517,11 +540,15 @@ rename_columns <- function(list) {
     )
 }
 
-l_G_mat_sam <- rename_columns(l_G_mat_sam)
-l_G_mat_rev <- rename_columns(l_G_mat_rev)
-l_Q_mat_sam <- rename_columns(l_Q_mat_sam)
-l_Q_mat_rev <- rename_columns(l_Q_mat_rev)
+# l_G_mat_sam <- rename_columns(l_G_mat_sam)  # Approach #1
+# l_G_mat_rev <- rename_columns(l_G_mat_rev)  # Approach #1
+# l_Q_mat_sam <- rename_columns(l_Q_mat_sam)  # Approach #1
+# l_Q_mat_rev <- rename_columns(l_Q_mat_rev)  # Approach #1
 
+l_G_mat_locus <- rename_columns(l_G_mat_locus)  # Approach #2
+# l_G_mat_mRNA <- rename_columns(l_G_mat_mRNA)  # Approach #2
+l_Q_mat_locus <- rename_columns(l_Q_mat_locus)  # Approach #2
+# l_Q_mat_mRNA <- rename_columns(l_Q_mat_mRNA)  # Approach #2
 
 #  Check ------------------------------
 # l_G_mat_sam$k32 %>% tail()
@@ -554,7 +581,10 @@ filter_transfrags <- function(x, y) {
     ids <- list()
 
     ids$percentiles <- quantile(
-        df$sum, probs = c(0.05, 0.10, 0.15, 0.20, 0.25, 0.30, 0.35, 0.40)
+        df$sum, probs = c(
+            0.05, 0.10, 0.15, 0.20, 0.25, 0.30, 0.35, 0.40, 0.45, 0.50,
+            0.55, 0.60, 0.65, 0.70, 0.75, 0.80, 0.85, 0.90, 0.95
+        )
     ) %>%
         round()
     
@@ -566,6 +596,17 @@ filter_transfrags <- function(x, y) {
     df$below_30 <- ifelse(df$sum <= ids$percentiles[6], TRUE, FALSE)
     df$below_35 <- ifelse(df$sum <= ids$percentiles[7], TRUE, FALSE)
     df$below_40 <- ifelse(df$sum <= ids$percentiles[8], TRUE, FALSE)
+    df$below_45 <- ifelse(df$sum <= ids$percentiles[9], TRUE, FALSE)
+    df$below_50 <- ifelse(df$sum <= ids$percentiles[10], TRUE, FALSE)
+    df$below_55 <- ifelse(df$sum <= ids$percentiles[11], TRUE, FALSE)
+    df$below_60 <- ifelse(df$sum <= ids$percentiles[12], TRUE, FALSE)
+    df$below_65 <- ifelse(df$sum <= ids$percentiles[13], TRUE, FALSE)
+    df$below_70 <- ifelse(df$sum <= ids$percentiles[14], TRUE, FALSE)
+    df$below_75 <- ifelse(df$sum <= ids$percentiles[15], TRUE, FALSE)
+    df$below_80 <- ifelse(df$sum <= ids$percentiles[16], TRUE, FALSE)
+    df$below_85 <- ifelse(df$sum <= ids$percentiles[17], TRUE, FALSE)
+    df$below_90 <- ifelse(df$sum <= ids$percentiles[18], TRUE, FALSE)
+    df$below_95 <- ifelse(df$sum <= ids$percentiles[19], TRUE, FALSE)
     
     ids$below_05 <- df[df$below_05 == FALSE, ]$gene_id
     ids$below_10 <- df[df$below_10 == FALSE, ]$gene_id
@@ -575,6 +616,17 @@ filter_transfrags <- function(x, y) {
     ids$below_30 <- df[df$below_30 == FALSE, ]$gene_id
     ids$below_35 <- df[df$below_35 == FALSE, ]$gene_id
     ids$below_40 <- df[df$below_40 == FALSE, ]$gene_id
+    ids$below_45 <- df[df$below_45 == FALSE, ]$gene_id
+    ids$below_50 <- df[df$below_50 == FALSE, ]$gene_id
+    ids$below_55 <- df[df$below_55 == FALSE, ]$gene_id
+    ids$below_60 <- df[df$below_60 == FALSE, ]$gene_id
+    ids$below_65 <- df[df$below_65 == FALSE, ]$gene_id
+    ids$below_70 <- df[df$below_70 == FALSE, ]$gene_id
+    ids$below_75 <- df[df$below_75 == FALSE, ]$gene_id
+    ids$below_80 <- df[df$below_80 == FALSE, ]$gene_id
+    ids$below_85 <- df[df$below_85 == FALSE, ]$gene_id
+    ids$below_90 <- df[df$below_90 == FALSE, ]$gene_id
+    ids$below_95 <- df[df$below_95 == FALSE, ]$gene_id
     
     return(ids)
     
@@ -600,35 +652,63 @@ filter_transfrags <- function(x, y) {
 }
 
 
-f_G_mat_sam <- sapply(
-    l_G_mat_sam,
-    filter_transfrags,
-    simplify = FALSE,
-    USE.NAMES = TRUE,
-    y = "G1"
-)
-f_G_mat_rev <- sapply(
-    l_G_mat_rev,
-    filter_transfrags,
-    simplify = FALSE,
-    USE.NAMES = TRUE,
-    y = "G1"
-)
-f_Q_mat_sam <- sapply(
-    l_Q_mat_sam,
-    filter_transfrags,
-    simplify = FALSE,
-    USE.NAMES = TRUE,
-    y = "Q"
-)
-f_Q_mat_rev <- sapply(
-    l_Q_mat_rev,
-    filter_transfrags,
-    simplify = FALSE,
-    USE.NAMES = TRUE,
-    y = "Q"
-)
+# f_G_mat_sam <- sapply(  # Approach #1
+#     l_G_mat_sam,
+#     filter_transfrags,
+#     simplify = FALSE,
+#     USE.NAMES = TRUE,
+#     y = "G1"
+# )
+# f_G_mat_rev <- sapply(  # Approach #1
+#     l_G_mat_rev,
+#     filter_transfrags,
+#     simplify = FALSE,
+#     USE.NAMES = TRUE,
+#     y = "G1"
+# )
+# f_Q_mat_sam <- sapply(  # Approach #1
+#     l_Q_mat_sam,
+#     filter_transfrags,
+#     simplify = FALSE,
+#     USE.NAMES = TRUE,
+#     y = "Q"
+# )
+# f_Q_mat_rev <- sapply(  # Approach #1
+#     l_Q_mat_rev,
+#     filter_transfrags,
+#     simplify = FALSE,
+#     USE.NAMES = TRUE,
+#     y = "Q"
+# )
 
+f_G_mat_locus <- sapply(  # Approach #2
+    l_G_mat_locus,
+    filter_transfrags,
+    simplify = FALSE,
+    USE.NAMES = TRUE,
+    y = "G1"
+)
+# f_G_mat_mRNA <- sapply(  # Approach #2
+#     l_G_mat_mRNA,
+#     filter_transfrags,
+#     simplify = FALSE,
+#     USE.NAMES = TRUE,
+#     y = "G1"
+# )
+f_Q_mat_locus <- sapply(  # Approach #2
+    l_Q_mat_locus,
+    filter_transfrags,
+    simplify = FALSE,
+    USE.NAMES = TRUE,
+    y = "Q"
+)
+# f_Q_mat_mRNA <- sapply(  # Approach #2
+#     l_Q_mat_mRNA,
+#     filter_transfrags,
+#     simplify = FALSE,
+#     USE.NAMES = TRUE,
+#     y = "Q"
+# )
 
 #  Checks -------------------------
 # f_G_mat_sam$k4$below_05 %>% length()
@@ -685,22 +765,60 @@ subset_dataframes <- function(x, y) {
         df[[i]] <- x[[i]]
         mat[[i]] <- y[[i]]
 
-        out[[i]]$below_05 <- df[[i]][df[[i]]$gene_id %in% mat[[i]]$below_05, ]
-        out[[i]]$below_10 <- df[[i]][df[[i]]$gene_id %in% mat[[i]]$below_10, ]
-        out[[i]]$below_15 <- df[[i]][df[[i]]$gene_id %in% mat[[i]]$below_15, ]
-        out[[i]]$below_20 <- df[[i]][df[[i]]$gene_id %in% mat[[i]]$below_20, ]
-        out[[i]]$below_25 <- df[[i]][df[[i]]$gene_id %in% mat[[i]]$below_25, ]
-        out[[i]]$below_30 <- df[[i]][df[[i]]$gene_id %in% mat[[i]]$below_30, ]
-        out[[i]]$below_35 <- df[[i]][df[[i]]$gene_id %in% mat[[i]]$below_35, ]
-        out[[i]]$below_40 <- df[[i]][df[[i]]$gene_id %in% mat[[i]]$below_40, ]
+        #  Approach #1
+        # out[[i]]$below_05 <- df[[i]][df[[i]]$gene_id %in% mat[[i]]$below_05, ]
+        # out[[i]]$below_10 <- df[[i]][df[[i]]$gene_id %in% mat[[i]]$below_10, ]
+        # out[[i]]$below_15 <- df[[i]][df[[i]]$gene_id %in% mat[[i]]$below_15, ]
+        # out[[i]]$below_20 <- df[[i]][df[[i]]$gene_id %in% mat[[i]]$below_20, ]
+        # out[[i]]$below_25 <- df[[i]][df[[i]]$gene_id %in% mat[[i]]$below_25, ]
+        # out[[i]]$below_30 <- df[[i]][df[[i]]$gene_id %in% mat[[i]]$below_30, ]
+        # out[[i]]$below_35 <- df[[i]][df[[i]]$gene_id %in% mat[[i]]$below_35, ]
+        # out[[i]]$below_40 <- df[[i]][df[[i]]$gene_id %in% mat[[i]]$below_40, ]
+        # out[[i]]$below_45 <- df[[i]][df[[i]]$gene_id %in% mat[[i]]$below_45, ]
+        # out[[i]]$below_50 <- df[[i]][df[[i]]$gene_id %in% mat[[i]]$below_50, ]
+        # out[[i]]$below_55 <- df[[i]][df[[i]]$gene_id %in% mat[[i]]$below_55, ]
+        # out[[i]]$below_60 <- df[[i]][df[[i]]$gene_id %in% mat[[i]]$below_60, ]
+        # out[[i]]$below_65 <- df[[i]][df[[i]]$gene_id %in% mat[[i]]$below_65, ]
+        # out[[i]]$below_70 <- df[[i]][df[[i]]$gene_id %in% mat[[i]]$below_70, ]
+        # out[[i]]$below_75 <- df[[i]][df[[i]]$gene_id %in% mat[[i]]$below_75, ]
+        # out[[i]]$below_80 <- df[[i]][df[[i]]$gene_id %in% mat[[i]]$below_80, ]
+        # out[[i]]$below_85 <- df[[i]][df[[i]]$gene_id %in% mat[[i]]$below_85, ]
+        # out[[i]]$below_90 <- df[[i]][df[[i]]$gene_id %in% mat[[i]]$below_90, ]
+        # out[[i]]$below_95 <- df[[i]][df[[i]]$gene_id %in% mat[[i]]$below_95, ]
+        
+        #  Approach #2
+        out[[i]]$below_05 <- df[[i]][df[[i]]$ID %in% mat[[i]]$below_05, ]
+        out[[i]]$below_10 <- df[[i]][df[[i]]$ID %in% mat[[i]]$below_10, ]
+        out[[i]]$below_15 <- df[[i]][df[[i]]$ID %in% mat[[i]]$below_15, ]
+        out[[i]]$below_20 <- df[[i]][df[[i]]$ID %in% mat[[i]]$below_20, ]
+        out[[i]]$below_25 <- df[[i]][df[[i]]$ID %in% mat[[i]]$below_25, ]
+        out[[i]]$below_30 <- df[[i]][df[[i]]$ID %in% mat[[i]]$below_30, ]
+        out[[i]]$below_35 <- df[[i]][df[[i]]$ID %in% mat[[i]]$below_35, ]
+        out[[i]]$below_40 <- df[[i]][df[[i]]$ID %in% mat[[i]]$below_40, ]
+        out[[i]]$below_45 <- df[[i]][df[[i]]$ID %in% mat[[i]]$below_45, ]
+        out[[i]]$below_50 <- df[[i]][df[[i]]$ID %in% mat[[i]]$below_50, ]
+        out[[i]]$below_55 <- df[[i]][df[[i]]$ID %in% mat[[i]]$below_55, ]
+        out[[i]]$below_60 <- df[[i]][df[[i]]$ID %in% mat[[i]]$below_60, ]
+        out[[i]]$below_65 <- df[[i]][df[[i]]$ID %in% mat[[i]]$below_65, ]
+        out[[i]]$below_70 <- df[[i]][df[[i]]$ID %in% mat[[i]]$below_70, ]
+        out[[i]]$below_75 <- df[[i]][df[[i]]$ID %in% mat[[i]]$below_75, ]
+        out[[i]]$below_80 <- df[[i]][df[[i]]$ID %in% mat[[i]]$below_80, ]
+        out[[i]]$below_85 <- df[[i]][df[[i]]$ID %in% mat[[i]]$below_85, ]
+        out[[i]]$below_90 <- df[[i]][df[[i]]$ID %in% mat[[i]]$below_90, ]
+        out[[i]]$below_95 <- df[[i]][df[[i]]$ID %in% mat[[i]]$below_95, ]
     }
     
     return(out)
 }
 
 
-out_G_gtf <- subset_dataframes(l_G_gtf, f_G_mat_sam)
-out_Q_gtf <- subset_dataframes(l_Q_gtf, f_Q_mat_sam)
+# out_G_gtf <- subset_dataframes(l_G_gtf, f_G_mat_sam)  # Approach #1
+# out_Q_gtf <- subset_dataframes(l_Q_gtf, f_Q_mat_sam)  # Approach #1
+
+out_G_gtf_locus <- subset_dataframes(l_G_gtf, f_G_mat_locus)  # Approach #2
+# out_G_gtf_mRNA <- subset_dataframes(l_G_gtf, f_G_mat_mRNA)  # Approach #2
+out_Q_gtf_locus <- subset_dataframes(l_Q_gtf, f_Q_mat_locus)  # Approach #2
+# out_Q_gtf_mRNA <- subset_dataframes(l_Q_gtf, f_Q_mat_mRNA)  # Approach #2
 ```
 </details>
 <br />
@@ -713,52 +831,114 @@ out_Q_gtf <- subset_dataframes(l_Q_gtf, f_Q_mat_sam)
 ```{r}
 #!/usr/bin/env Rscript
 
-path_G <- "outfiles_gtf-gff3/Trinity-GG/G_N/filtered"
-if(isFALSE(dir.exists(path_G))) dir.create(path_G)
+# path_G <- "outfiles_gtf-gff3/Trinity-GG/G_N/filtered"  # Approach #1
+# if(isFALSE(dir.exists(path_G))) dir.create(path_G)
+# 
+# path_Q <- "outfiles_gtf-gff3/Trinity-GG/Q_N/filtered"  # Approach #1
+# if(isFALSE(dir.exists(path_Q))) dir.create(path_Q)
 
-path_Q <- "outfiles_gtf-gff3/Trinity-GG/Q_N/filtered"
-if(isFALSE(dir.exists(path_Q))) dir.create(path_Q)
+path_G_locus <- "outfiles_gtf-gff3/Trinity-GG/G_N/filtered/locus"  # Approach #2
+if(isFALSE(dir.exists(path_G_locus))) dir.create(path_G_locus, recursive = TRUE)
 
-for(i in names(out_G_gtf)) {
+path_Q_locus <- "outfiles_gtf-gff3/Trinity-GG/Q_N/filtered/locus"  # Approach #2
+if(isFALSE(dir.exists(path_Q_locus))) dir.create(path_Q_locus, recursive = TRUE)
+
+#  Approach #1
+# for(i in names(out_G_gtf)) {
+#     for(j in c(paste0(
+#         "below_",
+#         c(
+#             "05", "10", "15", "20", "25", "30", "35", "40", "45", "50",
+#             "55", "60", "65", "70", "75", "80", "85", "90", "95"
+#         )
+#     ))) {
+#         # i <- "k2"
+#         # j <- "below_05"
+#         cat("Saving G1", i, j, "\n")
+#         cat(paste0(
+#             path_G, "/G1_mkc-", gsub("k", "", i), "_",
+#             gsub("below_", "gte-pctl-", j), ".gtf"
+#         ))
+#         cat("\n\n")
+#         
+#         out_G_conv <- GenomicRanges::makeGRangesFromDataFrame(
+#             out_G_gtf[[i]][[j]], keep.extra.columns = TRUE
+#         )
+# 
+#         rtracklayer::export(
+#             out_G_gtf[[i]][[j]],
+#             paste0(
+#                 path_G, "/G1_mkc-", gsub("k", "", i), "_",
+#                 gsub("below_", "gte-pctl-", j), ".gtf"
+#             )
+#         )
+#         
+#         cat("Saving Q", i, j, "\n")
+#         cat(paste0(
+#             path_Q, "/Q_mkc-", gsub("k", "", i), "_",
+#             gsub("below_", "gte-pctl-", j), ".gtf"
+#         ))
+#         cat("\n\n")
+#         
+#         out_Q_conv <- GenomicRanges::makeGRangesFromDataFrame(
+#             out_Q_gtf[[i]][[j]], keep.extra.columns = TRUE
+#         )
+# 
+#         rtracklayer::export(
+#             out_Q_gtf[[i]][[j]],
+#             paste0(
+#                 path_Q, "/Q_mkc-", gsub("k", "", i), "_",
+#                 gsub("below_", "gte-pctl-", j), ".gtf"
+#             )
+#         )
+#     }
+# }
+
+#  Approach #2
+for(i in names(out_G_gtf_locus)) {
     for(j in c(paste0(
-        "below_", c("05", "10", "15", "20", "25", "30", "35", "40"))
-    )) {
+        "below_",
+        c(
+            "05", "10", "15", "20", "25", "30", "35", "40", "45", "50",
+            "55", "60", "65", "70", "75", "80", "85", "90", "95"
+        )
+    ))) {
         # i <- "k2"
         # j <- "below_05"
         cat("Saving G1", i, j, "\n")
         cat(paste0(
-            path_G, "/G1_mkc-", gsub("k", "", i), "_",
+            path_G_locus, "/G1_mkc-", gsub("k", "", i), "_",
             gsub("below_", "gte-pctl-", j), ".gtf"
         ))
         cat("\n\n")
         
         out_G_conv <- GenomicRanges::makeGRangesFromDataFrame(
-            out_G_gtf[[i]][[j]], keep.extra.columns = TRUE
+            out_G_gtf_locus[[i]][[j]], keep.extra.columns = TRUE
         )
 
         rtracklayer::export(
-            out_G_gtf[[i]][[j]],
+            out_G_gtf_locus[[i]][[j]],
             paste0(
-                path_G, "/G1_mkc-", gsub("k", "", i), "_",
+                path_G_locus, "/G1_mkc-", gsub("k", "", i), "_",
                 gsub("below_", "gte-pctl-", j), ".gtf"
             )
         )
         
         cat("Saving Q", i, j, "\n")
         cat(paste0(
-            path_Q, "/Q_mkc-", gsub("k", "", i), "_",
+            path_Q_locus, "/Q_mkc-", gsub("k", "", i), "_",
             gsub("below_", "gte-pctl-", j), ".gtf"
         ))
         cat("\n\n")
         
         out_Q_conv <- GenomicRanges::makeGRangesFromDataFrame(
-            out_Q_gtf[[i]][[j]], keep.extra.columns = TRUE
+            out_Q_gtf_locus[[i]][[j]], keep.extra.columns = TRUE
         )
 
         rtracklayer::export(
-            out_Q_gtf[[i]][[j]],
+            out_Q_gtf_locus[[i]][[j]],
             paste0(
-                path_Q, "/Q_mkc-", gsub("k", "", i), "_",
+                path_Q_locus, "/Q_mkc-", gsub("k", "", i), "_",
                 gsub("below_", "gte-pctl-", j), ".gtf"
             )
         )

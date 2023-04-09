@@ -589,26 +589,26 @@ for i in "strd-eq"; do
 
             #  Approach #2
             echo """
-            --------------------------
-            Call to htseq-count: locus
-            --------------------------
-            sbatch \\
-                --job-name=\"htseq-count-locus\" \\
-                --nodes=1 \\
-                --cpus-per-task=8 \\
-                --error=\"${err_out}-locus.%A.stderr.txt\" \\
-                --output=\"${err_out}-locus.%A.stdout.txt\" \\
-                htseq-count \\
-                    --order \"pos\" \\
-                    --stranded \"${hc_strd}\" \\
-                    --nonunique \"all\" \\
-                    --type \"locus\" \\
-                    --idattr \"ID\" \\
-                    --nprocesses 8 \\
-                    --counts_output \"${out/.tsv/-locus.tsv}\" \\
-                    --with-header \\
-                    \${bams[*]} \\
-                    \"${in}\"
+            # --------------------------
+            # Call to htseq-count: locus
+            # --------------------------
+            # sbatch \\
+            #     --job-name=\"htseq-count-locus\" \\
+            #     --nodes=1 \\
+            #     --cpus-per-task=8 \\
+            #     --error=\"${err_out}-locus.%A.stderr.txt\" \\
+            #     --output=\"${err_out}-locus.%A.stdout.txt\" \\
+            #     htseq-count \\
+            #         --order \"pos\" \\
+            #         --stranded \"${hc_strd}\" \\
+            #         --nonunique \"all\" \\
+            #         --type \"locus\" \\
+            #         --idattr \"ID\" \\
+            #         --nprocesses 8 \\
+            #         --counts_output \"${out/.tsv/-locus.tsv}\" \\
+            #         --with-header \\
+            #         \${bams[*]} \\
+            #         \"${in}\"
 
             -------------------------
             Call to htseq-count: mRNA
@@ -630,26 +630,68 @@ for i in "strd-eq"; do
                     --with-header \\
                     \${bams[*]} \\
                     \"${in}\"
+
+            -------------------------
+            Call to htseq-count: exon
+            -------------------------
+            sbatch \\
+                --job-name=\"htseq-count-exon\" \\
+                --nodes=1 \\
+                --cpus-per-task=8 \\
+                --error=\"${err_out}-exon.%A.stderr.txt\" \\
+                --output=\"${err_out}-exon.%A.stdout.txt\" \\
+                htseq-count \\
+                    --order \"pos\" \\
+                    --stranded \"${hc_strd}\" \\
+                    --nonunique \"all\" \\
+                    --type \"exon\" \\
+                    --idattr \"Parent\" \\
+                    --nprocesses 8 \\
+                    --counts_output \"${out/.tsv/-exon.tsv}\" \\
+                    --with-header \\
+                    \${bams[*]} \\
+                    \"${in}\"
+
+            ------------------------
+            Call to htseq-count: CDS
+            ------------------------
+            sbatch \\
+                --job-name=\"htseq-count-CDS\" \\
+                --nodes=1 \\
+                --cpus-per-task=8 \\
+                --error=\"${err_out}-CDS.%A.stderr.txt\" \\
+                --output=\"${err_out}-CDS.%A.stdout.txt\" \\
+                htseq-count \\
+                    --order \"pos\" \\
+                    --stranded \"${hc_strd}\" \\
+                    --nonunique \"all\" \\
+                    --type \"CDS\" \\
+                    --idattr \"Parent\" \\
+                    --nprocesses 8 \\
+                    --counts_output \"${out/.tsv/-CDS.tsv}\" \\
+                    --with-header \\
+                    \${bams[*]} \\
+                    \"${in}\"
             """
             
-            sbatch \
-                --job-name="htseq-count-locus" \
-                --nodes=1 \
-                --cpus-per-task=8 \
-                --error="${err_out}-locus.%A.stderr.txt" \
-                --output="${err_out}-locus.%A.stdout.txt" \
-                htseq-count \
-                    --order "pos" \
-                    --stranded "${hc_strd}" \
-                    --nonunique "all" \
-                    --type "locus" \
-                    --idattr "ID" \
-                    --nprocesses 8 \
-                    --counts_output "${out/.tsv/-locus.tsv}" \
-                    --with-header \
-                    ${bams[*]} \
-                    "${in}"
-            sleep 0.33
+            # sbatch \
+            #     --job-name="htseq-count-locus" \
+            #     --nodes=1 \
+            #     --cpus-per-task=8 \
+            #     --error="${err_out}-locus.%A.stderr.txt" \
+            #     --output="${err_out}-locus.%A.stdout.txt" \
+            #     htseq-count \
+            #         --order "pos" \
+            #         --stranded "${hc_strd}" \
+            #         --nonunique "all" \
+            #         --type "locus" \
+            #         --idattr "ID" \
+            #         --nprocesses 8 \
+            #         --counts_output "${out/.tsv/-locus.tsv}" \
+            #         --with-header \
+            #         ${bams[*]} \
+            #         "${in}"
+            # sleep 0.33
             
             sbatch \
                 --job-name="htseq-count-mRNA" \
@@ -665,6 +707,44 @@ for i in "strd-eq"; do
                     --idattr "ID" \
                     --nprocesses 8 \
                     --counts_output "${out/.tsv/-mRNA.tsv}" \
+                    --with-header \
+                    ${bams[*]} \
+                    "${in}"
+            sleep 0.33
+
+            sbatch \
+                --job-name="htseq-count-exon" \
+                --nodes=1 \
+                --cpus-per-task=8 \
+                --error="${err_out}-exon.%A.stderr.txt" \
+                --output="${err_out}-exon.%A.stdout.txt" \
+                htseq-count \
+                    --order "pos" \
+                    --stranded "${hc_strd}" \
+                    --nonunique "all" \
+                    --type "exon" \
+                    --idattr "Parent" \
+                    --nprocesses 8 \
+                    --counts_output "${out/.tsv/-exon.tsv}" \
+                    --with-header \
+                    ${bams[*]} \
+                    "${in}"
+            sleep 0.33
+
+            sbatch \
+                --job-name="htseq-count-CDS" \
+                --nodes=1 \
+                --cpus-per-task=8 \
+                --error="${err_out}-CDS.%A.stderr.txt" \
+                --output="${err_out}-CDS.%A.stdout.txt" \
+                htseq-count \
+                    --order "pos" \
+                    --stranded "${hc_strd}" \
+                    --nonunique "all" \
+                    --type "CDS" \
+                    --idattr "Parent" \
+                    --nprocesses 8 \
+                    --counts_output "${out/.tsv/-CDS.tsv}" \
                     --with-header \
                     ${bams[*]} \
                     "${in}"
