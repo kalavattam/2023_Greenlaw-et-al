@@ -353,6 +353,7 @@ See [`#work_assessment-processing_gtfs.md`](./work_assessment-processing_gtfs.md
 <details>
 <summary><i>Code: Get situated</i></summary>
 
+`#START`
 ```{r}
 #!/usr/bin/env Rscript
 
@@ -373,7 +374,7 @@ if(stringr::str_detect(getwd(), "kalavattam")) {
 p_wd <- "2022_transcriptome-construction/results/2023-0215"
 
 setwd(paste(p_local, p_wd, sep = "/"))
-# getwd()
+getwd()
 
 rm(p_local, p_wd)
 ```
@@ -420,6 +421,11 @@ files_G <- list.files(
 )
 l_G_gtf <- read_in_gtfs(files_G)
 
+files_G_introns_filtered <- list.files(
+    path_gtf_G, pattern = "*.gffread-intron-filtering-only.gff3", full.names = TRUE
+)
+l_G_gtf_introns_filtered <- read_in_gtfs(files_G_introns_filtered)
+
 
 #  Q ----------------------------------
 path_gtf_Q <- "outfiles_gtf-gff3/Trinity-GG/Q_N"
@@ -428,6 +434,11 @@ files_Q <- list.files(
     path_gtf_Q, pattern = "*.gffread.gff3", full.names = TRUE  # Approach #2
 )
 l_Q_gtf <- read_in_gtfs(files_Q)
+
+files_Q_introns_filtered <- list.files(
+    path_gtf_Q, pattern = "*.gffread-intron-filtering-only.gff3", full.names = TRUE
+)
+l_Q_gtf_introns_filtered <- read_in_gtfs(files_Q_introns_filtered)
 
 
 #  Comparisons ------------------------
@@ -483,11 +494,26 @@ files_G_locus <- list.files(  # Approach #2
 )
 l_G_mat_locus <- read_in_mat(files_G_locus) %>% suppressMessages()
 
+files_G_mRNA <- list.files(  # Approach #2
+    path_mat_G, pattern = "*-mRNA.tsv", full.names = TRUE
+)
+l_G_mat_mRNA <- read_in_mat(files_G_mRNA) %>% suppressMessages()
 
-# files_G_mRNA <- list.files(  # Approach #2
-#     path_mat_G, pattern = "*-mRNA.tsv", full.names = TRUE
-# )
-# l_G_mat_mRNA <- read_in_mat(files_G_mRNA) %>% suppressMessages()
+files_G_exon <- list.files(  # Approach #2
+    path_mat_G, pattern = "*-exon.tsv", full.names = TRUE
+)
+l_G_mat_exon <- read_in_mat(files_G_exon) %>% suppressMessages()
+
+files_G_CDS <- list.files(  # Approach #2
+    path_mat_G, pattern = "*-CDS.tsv", full.names = TRUE
+)
+l_G_mat_CDS <- read_in_mat(files_G_CDS) %>% suppressMessages()
+
+files_G_introns_filtered <- list.files(
+    path_mat_G, pattern = "*.gffread-intron-filtering-only.hc-strd-eq-gene.tsv", full.names = TRUE
+)
+l_G_mat_introns_filtered <- read_in_mat(files_G_introns_filtered) %>% suppressMessages()
+
 
 
 #  Q ----------------------------------
@@ -508,10 +534,26 @@ files_Q_locus <- list.files(  # Approach #2
 )
 l_Q_mat_locus <- read_in_mat(files_Q_locus) %>% suppressMessages()
 
-# files_Q_mRNA <- list.files(  # Approach #2
-#     path_mat_Q, pattern = "*-mRNA.tsv", full.names = TRUE
-# )
-# l_Q_mat_mRNA <- read_in_mat(files_Q_mRNA) %>% suppressMessages()
+files_Q_mRNA <- list.files(  # Approach #2
+    path_mat_Q, pattern = "*-mRNA.tsv", full.names = TRUE
+)
+l_Q_mat_mRNA <- read_in_mat(files_Q_mRNA) %>% suppressMessages()
+
+files_Q_exon <- list.files(  # Approach #2
+    path_mat_Q, pattern = "*-exon.tsv", full.names = TRUE
+)
+l_Q_mat_exon <- read_in_mat(files_Q_exon) %>% suppressMessages()
+
+files_Q_CDS <- list.files(  # Approach #2
+    path_mat_Q, pattern = "*-CDS.tsv", full.names = TRUE
+)
+l_Q_mat_CDS <- read_in_mat(files_Q_CDS) %>% suppressMessages()
+
+files_Q_introns_filtered <- list.files(
+    path_mat_Q, pattern = "*.gffread-intron-filtering-only.hc-strd-eq-gene.tsv", full.names = TRUE
+)
+l_Q_mat_introns_filtered <- read_in_mat(files_Q_introns_filtered) %>% suppressMessages()
+
 
 
 #  Comparisons ------------------------
@@ -533,7 +575,7 @@ rename_columns <- function(list) {
                 gsub("_day7_ovn_", "_", .) %>% 
                 gsub("_aux-F_tc-F_", "_", .) %>%
                 gsub("_tech1\\.UT_prim_UMI\\.bam", "", .) %>%
-                gsub("^\\.\\.\\.1", "gene_id", .)
+                gsub("^\\.\\.\\.1", "id", .)
             
             return(df)
         }
@@ -546,9 +588,16 @@ rename_columns <- function(list) {
 # l_Q_mat_rev <- rename_columns(l_Q_mat_rev)  # Approach #1
 
 l_G_mat_locus <- rename_columns(l_G_mat_locus)  # Approach #2
-# l_G_mat_mRNA <- rename_columns(l_G_mat_mRNA)  # Approach #2
+l_G_mat_mRNA <- rename_columns(l_G_mat_mRNA)  # Approach #2
+l_G_mat_exon <- rename_columns(l_G_mat_exon)  # Approach #2
+l_G_mat_CDS <- rename_columns(l_G_mat_CDS)  # Approach #2
+l_G_mat_introns_filtered <- rename_columns(l_G_mat_introns_filtered)
+
 l_Q_mat_locus <- rename_columns(l_Q_mat_locus)  # Approach #2
-# l_Q_mat_mRNA <- rename_columns(l_Q_mat_mRNA)  # Approach #2
+l_Q_mat_mRNA <- rename_columns(l_Q_mat_mRNA)  # Approach #2
+l_Q_mat_exon <- rename_columns(l_Q_mat_exon)  # Approach #2
+l_Q_mat_CDS <- rename_columns(l_Q_mat_CDS)  # Approach #2
+l_Q_mat_introns_filtered <- rename_columns(l_Q_mat_introns_filtered)
 
 #  Check ------------------------------
 # l_G_mat_sam$k32 %>% tail()
@@ -608,25 +657,25 @@ filter_transfrags <- function(x, y) {
     df$below_90 <- ifelse(df$sum <= ids$percentiles[18], TRUE, FALSE)
     df$below_95 <- ifelse(df$sum <= ids$percentiles[19], TRUE, FALSE)
     
-    ids$below_05 <- df[df$below_05 == FALSE, ]$gene_id
-    ids$below_10 <- df[df$below_10 == FALSE, ]$gene_id
-    ids$below_15 <- df[df$below_15 == FALSE, ]$gene_id
-    ids$below_20 <- df[df$below_20 == FALSE, ]$gene_id
-    ids$below_25 <- df[df$below_25 == FALSE, ]$gene_id
-    ids$below_30 <- df[df$below_30 == FALSE, ]$gene_id
-    ids$below_35 <- df[df$below_35 == FALSE, ]$gene_id
-    ids$below_40 <- df[df$below_40 == FALSE, ]$gene_id
-    ids$below_45 <- df[df$below_45 == FALSE, ]$gene_id
-    ids$below_50 <- df[df$below_50 == FALSE, ]$gene_id
-    ids$below_55 <- df[df$below_55 == FALSE, ]$gene_id
-    ids$below_60 <- df[df$below_60 == FALSE, ]$gene_id
-    ids$below_65 <- df[df$below_65 == FALSE, ]$gene_id
-    ids$below_70 <- df[df$below_70 == FALSE, ]$gene_id
-    ids$below_75 <- df[df$below_75 == FALSE, ]$gene_id
-    ids$below_80 <- df[df$below_80 == FALSE, ]$gene_id
-    ids$below_85 <- df[df$below_85 == FALSE, ]$gene_id
-    ids$below_90 <- df[df$below_90 == FALSE, ]$gene_id
-    ids$below_95 <- df[df$below_95 == FALSE, ]$gene_id
+    ids$below_05 <- df[df$below_05 == FALSE, ]$id
+    ids$below_10 <- df[df$below_10 == FALSE, ]$id
+    ids$below_15 <- df[df$below_15 == FALSE, ]$id
+    ids$below_20 <- df[df$below_20 == FALSE, ]$id
+    ids$below_25 <- df[df$below_25 == FALSE, ]$id
+    ids$below_30 <- df[df$below_30 == FALSE, ]$id
+    ids$below_35 <- df[df$below_35 == FALSE, ]$id
+    ids$below_40 <- df[df$below_40 == FALSE, ]$id
+    ids$below_45 <- df[df$below_45 == FALSE, ]$id
+    ids$below_50 <- df[df$below_50 == FALSE, ]$id
+    ids$below_55 <- df[df$below_55 == FALSE, ]$id
+    ids$below_60 <- df[df$below_60 == FALSE, ]$id
+    ids$below_65 <- df[df$below_65 == FALSE, ]$id
+    ids$below_70 <- df[df$below_70 == FALSE, ]$id
+    ids$below_75 <- df[df$below_75 == FALSE, ]$id
+    ids$below_80 <- df[df$below_80 == FALSE, ]$id
+    ids$below_85 <- df[df$below_85 == FALSE, ]$id
+    ids$below_90 <- df[df$below_90 == FALSE, ]$id
+    ids$below_95 <- df[df$below_95 == FALSE, ]$id
     
     return(ids)
     
@@ -681,6 +730,7 @@ filter_transfrags <- function(x, y) {
 #     y = "Q"
 # )
 
+#  G1
 f_G_mat_locus <- sapply(  # Approach #2
     l_G_mat_locus,
     filter_transfrags,
@@ -688,13 +738,36 @@ f_G_mat_locus <- sapply(  # Approach #2
     USE.NAMES = TRUE,
     y = "G1"
 )
-# f_G_mat_mRNA <- sapply(  # Approach #2
-#     l_G_mat_mRNA,
-#     filter_transfrags,
-#     simplify = FALSE,
-#     USE.NAMES = TRUE,
-#     y = "G1"
-# )
+f_G_mat_mRNA <- sapply(  # Approach #2
+    l_G_mat_mRNA,
+    filter_transfrags,
+    simplify = FALSE,
+    USE.NAMES = TRUE,
+    y = "G1"
+)
+f_G_mat_exon <- sapply(  # Approach #2
+    l_G_mat_exon,
+    filter_transfrags,
+    simplify = FALSE,
+    USE.NAMES = TRUE,
+    y = "G1"
+)
+f_G_mat_CDS <- sapply(  # Approach #2
+    l_G_mat_CDS,
+    filter_transfrags,
+    simplify = FALSE,
+    USE.NAMES = TRUE,
+    y = "G1"
+)
+f_G_mat_introns_filtered <- sapply(  # Approach #2
+    l_G_mat_introns_filtered,
+    filter_transfrags,
+    simplify = FALSE,
+    USE.NAMES = TRUE,
+    y = "G1"
+)
+
+#  Q
 f_Q_mat_locus <- sapply(  # Approach #2
     l_Q_mat_locus,
     filter_transfrags,
@@ -702,13 +775,35 @@ f_Q_mat_locus <- sapply(  # Approach #2
     USE.NAMES = TRUE,
     y = "Q"
 )
-# f_Q_mat_mRNA <- sapply(  # Approach #2
-#     l_Q_mat_mRNA,
-#     filter_transfrags,
-#     simplify = FALSE,
-#     USE.NAMES = TRUE,
-#     y = "Q"
-# )
+f_Q_mat_mRNA <- sapply(  # Approach #2
+    l_Q_mat_mRNA,
+    filter_transfrags,
+    simplify = FALSE,
+    USE.NAMES = TRUE,
+    y = "Q"
+)
+f_Q_mat_exon <- sapply(  # Approach #2
+    l_Q_mat_exon,
+    filter_transfrags,
+    simplify = FALSE,
+    USE.NAMES = TRUE,
+    y = "Q"
+)
+f_Q_mat_CDS <- sapply(  # Approach #2
+    l_Q_mat_CDS,
+    filter_transfrags,
+    simplify = FALSE,
+    USE.NAMES = TRUE,
+    y = "Q"
+)
+f_Q_mat_introns_filtered <- sapply(  # Approach #2
+    l_Q_mat_introns_filtered,
+    filter_transfrags,
+    simplify = FALSE,
+    USE.NAMES = TRUE,
+    y = "Q"
+)
+
 
 #  Checks -------------------------
 # f_G_mat_sam$k4$below_05 %>% length()
@@ -815,10 +910,19 @@ subset_dataframes <- function(x, y) {
 # out_G_gtf <- subset_dataframes(l_G_gtf, f_G_mat_sam)  # Approach #1
 # out_Q_gtf <- subset_dataframes(l_Q_gtf, f_Q_mat_sam)  # Approach #1
 
+#  G1
 out_G_gtf_locus <- subset_dataframes(l_G_gtf, f_G_mat_locus)  # Approach #2
-# out_G_gtf_mRNA <- subset_dataframes(l_G_gtf, f_G_mat_mRNA)  # Approach #2
+out_G_gtf_mRNA <- subset_dataframes(l_G_gtf, f_G_mat_mRNA)  # Approach #2
+out_G_gtf_exon <- subset_dataframes(l_G_gtf, f_G_mat_exon)  # Approach #2
+out_G_gtf_CDS <- subset_dataframes(l_G_gtf, f_G_mat_CDS)  # Approach #2
+out_G_gtf_introns_filtered <- subset_dataframes(l_G_gtf_introns_filtered, f_G_mat_introns_filtered)  # Approach #2
+
+#  Q
 out_Q_gtf_locus <- subset_dataframes(l_Q_gtf, f_Q_mat_locus)  # Approach #2
-# out_Q_gtf_mRNA <- subset_dataframes(l_Q_gtf, f_Q_mat_mRNA)  # Approach #2
+out_Q_gtf_mRNA <- subset_dataframes(l_Q_gtf, f_Q_mat_mRNA)  # Approach #2
+out_Q_gtf_exon <- subset_dataframes(l_Q_gtf, f_Q_mat_exon)  # Approach #2
+out_Q_gtf_CDS <- subset_dataframes(l_Q_gtf, f_Q_mat_CDS)  # Approach #2
+out_Q_gtf_introns_filtered <- subset_dataframes(l_Q_gtf_introns_filtered, f_Q_mat_introns_filtered)  # Approach #2
 ```
 </details>
 <br />
@@ -837,11 +941,37 @@ out_Q_gtf_locus <- subset_dataframes(l_Q_gtf, f_Q_mat_locus)  # Approach #2
 # path_Q <- "outfiles_gtf-gff3/Trinity-GG/Q_N/filtered"  # Approach #1
 # if(isFALSE(dir.exists(path_Q))) dir.create(path_Q)
 
+#  G
 path_G_locus <- "outfiles_gtf-gff3/Trinity-GG/G_N/filtered/locus"  # Approach #2
 if(isFALSE(dir.exists(path_G_locus))) dir.create(path_G_locus, recursive = TRUE)
 
+path_G_mRNA <- "outfiles_gtf-gff3/Trinity-GG/G_N/filtered/mRNA"  # Approach #2
+if(isFALSE(dir.exists(path_G_mRNA))) dir.create(path_G_mRNA, recursive = TRUE)
+
+path_G_exon <- "outfiles_gtf-gff3/Trinity-GG/G_N/filtered/exon"  # Approach #2
+if(isFALSE(dir.exists(path_G_exon))) dir.create(path_G_exon, recursive = TRUE)
+
+path_G_CDS <- "outfiles_gtf-gff3/Trinity-GG/G_N/filtered/CDS"  # Approach #2
+if(isFALSE(dir.exists(path_G_CDS))) dir.create(path_G_CDS, recursive = TRUE)
+
+path_G_introns_filtered <- "outfiles_gtf-gff3/Trinity-GG/G_N/filtered/introns_filtered"  # Approach #2
+if(isFALSE(dir.exists(path_G_introns_filtered))) dir.create(path_G_introns_filtered, recursive = TRUE)
+
+#  Q
 path_Q_locus <- "outfiles_gtf-gff3/Trinity-GG/Q_N/filtered/locus"  # Approach #2
 if(isFALSE(dir.exists(path_Q_locus))) dir.create(path_Q_locus, recursive = TRUE)
+
+path_Q_mRNA <- "outfiles_gtf-gff3/Trinity-GG/Q_N/filtered/mRNA"  # Approach #2
+if(isFALSE(dir.exists(path_Q_mRNA))) dir.create(path_Q_mRNA, recursive = TRUE)
+
+path_Q_exon <- "outfiles_gtf-gff3/Trinity-GG/Q_N/filtered/exon"  # Approach #2
+if(isFALSE(dir.exists(path_Q_exon))) dir.create(path_Q_exon, recursive = TRUE)
+
+path_Q_CDS <- "outfiles_gtf-gff3/Trinity-GG/Q_N/filtered/CDS"  # Approach #2
+if(isFALSE(dir.exists(path_Q_CDS))) dir.create(path_Q_CDS, recursive = TRUE)
+
+path_Q_introns_filtered <- "outfiles_gtf-gff3/Trinity-GG/Q_N/filtered/introns_filtered"  # Approach #2
+if(isFALSE(dir.exists(path_Q_introns_filtered))) dir.create(path_Q_introns_filtered, recursive = TRUE)
 
 #  Approach #1
 # for(i in names(out_G_gtf)) {
@@ -903,45 +1033,224 @@ for(i in names(out_G_gtf_locus)) {
             "55", "60", "65", "70", "75", "80", "85", "90", "95"
         )
     ))) {
-        # i <- "k2"
-        # j <- "below_05"
-        cat("Saving G1", i, j, "\n")
-        cat(paste0(
-            path_G_locus, "/G1_mkc-", gsub("k", "", i), "_",
-            gsub("below_", "gte-pctl-", j), ".gtf"
-        ))
-        cat("\n\n")
+        for(k in c(
+            path_G_locus, path_G_mRNA, path_G_exon, path_G_CDS, path_G_introns_filtered,
+            path_Q_locus, path_Q_mRNA, path_Q_exon, path_Q_CDS, path_Q_introns_filtered
+        )) {
+            # i <- "k2"
+            # j <- "below_05"
+            # k <- path_Q_locus
+            if(isTRUE(k == path_G_locus)) {
+                cat("Saving G1", i, j, "in", k, "\n")
+                cat(paste0(
+                    path_G_locus, "/G1_mkc-", gsub("k", "", i), "_",
+                    gsub("below_", "gte-pctl-", j), ".gtf"
+                ))
+                cat("\n\n")
+                
+                out_G_conv <- GenomicRanges::makeGRangesFromDataFrame(
+                    out_G_gtf_locus[[i]][[j]], keep.extra.columns = TRUE
+                )
         
-        out_G_conv <- GenomicRanges::makeGRangesFromDataFrame(
-            out_G_gtf_locus[[i]][[j]], keep.extra.columns = TRUE
-        )
-
-        rtracklayer::export(
-            out_G_gtf_locus[[i]][[j]],
-            paste0(
-                path_G_locus, "/G1_mkc-", gsub("k", "", i), "_",
-                gsub("below_", "gte-pctl-", j), ".gtf"
-            )
-        )
+                rtracklayer::export(
+                    out_G_gtf_locus[[i]][[j]],
+                    paste0(
+                        path_G_locus, "/G1_mkc-", gsub("k", "", i), "_",
+                        gsub("below_", "gte-pctl-", j), ".gtf"
+                    )
+                )
+            } else if(isTRUE(k == path_G_mRNA)) {
+                cat("Saving G1", i, j, "in", k, "\n")
+                cat(paste0(
+                    path_G_mRNA, "/G1_mkc-", gsub("k", "", i), "_",
+                    gsub("below_", "gte-pctl-", j), ".gtf"
+                ))
+                cat("\n\n")
+                
+                out_G_conv <- GenomicRanges::makeGRangesFromDataFrame(
+                    out_G_gtf_mRNA[[i]][[j]], keep.extra.columns = TRUE
+                )
         
-        cat("Saving Q", i, j, "\n")
-        cat(paste0(
-            path_Q_locus, "/Q_mkc-", gsub("k", "", i), "_",
-            gsub("below_", "gte-pctl-", j), ".gtf"
-        ))
-        cat("\n\n")
+                rtracklayer::export(
+                    out_G_gtf_mRNA[[i]][[j]],
+                    paste0(
+                        path_G_mRNA, "/G1_mkc-", gsub("k", "", i), "_",
+                        gsub("below_", "gte-pctl-", j), ".gtf"
+                    )
+                )
+            } else if(isTRUE(k == path_G_exon)) {
+                cat("Saving G1", i, j, "in", k, "\n")
+                cat(paste0(
+                    path_G_exon, "/G1_mkc-", gsub("k", "", i), "_",
+                    gsub("below_", "gte-pctl-", j), ".gtf"
+                ))
+                cat("\n\n")
+                
+                out_G_conv <- GenomicRanges::makeGRangesFromDataFrame(
+                    out_G_gtf_exon[[i]][[j]], keep.extra.columns = TRUE
+                )
         
-        out_Q_conv <- GenomicRanges::makeGRangesFromDataFrame(
-            out_Q_gtf_locus[[i]][[j]], keep.extra.columns = TRUE
-        )
-
-        rtracklayer::export(
-            out_Q_gtf_locus[[i]][[j]],
-            paste0(
-                path_Q_locus, "/Q_mkc-", gsub("k", "", i), "_",
-                gsub("below_", "gte-pctl-", j), ".gtf"
-            )
-        )
+                rtracklayer::export(
+                    out_G_gtf_exon[[i]][[j]],
+                    paste0(
+                        path_G_exon, "/G1_mkc-", gsub("k", "", i), "_",
+                        gsub("below_", "gte-pctl-", j), ".gtf"
+                    )
+                )
+            } else if(isTRUE(k == path_G_CDS)) {
+                cat("Saving G1", i, j, "in", k, "\n")
+                cat(paste0(
+                    path_G_CDS, "/G1_mkc-", gsub("k", "", i), "_",
+                    gsub("below_", "gte-pctl-", j), ".gtf"
+                ))
+                cat("\n\n")
+                
+                out_G_conv <- GenomicRanges::makeGRangesFromDataFrame(
+                    out_G_gtf_CDS[[i]][[j]], keep.extra.columns = TRUE
+                )
+        
+                rtracklayer::export(
+                    out_G_gtf_CDS[[i]][[j]],
+                    paste0(
+                        path_G_CDS, "/G1_mkc-", gsub("k", "", i), "_",
+                        gsub("below_", "gte-pctl-", j), ".gtf"
+                    )
+                )
+            } else if(isTRUE(k == path_G_introns_filtered)) {
+                cat("Saving G1", i, j, "in", k, "\n")
+                cat(paste0(
+                    path_G_introns_filtered, "/G1_mkc-", gsub("k", "", i), "_",
+                    gsub("below_", "gte-pctl-", j), ".gtf"
+                ))
+                cat("\n\n")
+                
+                out_G_conv <- GenomicRanges::makeGRangesFromDataFrame(
+                    out_G_gtf_introns_filtered[[i]][[j]], keep.extra.columns = TRUE
+                )
+        
+                rtracklayer::export(
+                    out_G_gtf_introns_filtered[[i]][[j]],
+                    paste0(
+                        path_G_introns_filtered, "/G1_mkc-", gsub("k", "", i), "_",
+                        gsub("below_", "gte-pctl-", j), ".gtf"
+                    )
+                )
+            } else if(isTRUE(k == path_Q_locus)) {
+                cat("Saving Q", i, j, "in", k, "\n")
+                cat(paste0(
+                    path_Q_locus, "/Q_mkc-", gsub("k", "", i), "_",
+                    gsub("below_", "gte-pctl-", j), ".gtf"
+                ))
+                cat("\n\n")
+                
+                out_Q_conv <- GenomicRanges::makeGRangesFromDataFrame(
+                    out_Q_gtf_locus[[i]][[j]], keep.extra.columns = TRUE
+                )
+        
+                rtracklayer::export(
+                    out_Q_gtf_locus[[i]][[j]],
+                    paste0(
+                        path_Q_locus, "/Q_mkc-", gsub("k", "", i), "_",
+                        gsub("below_", "gte-pctl-", j), ".gtf"
+                    )
+                )
+            } else if(isTRUE(k == path_Q_mRNA)) {
+                cat("Saving Q", i, j, "in", k, "\n")
+                cat(paste0(
+                    path_Q_mRNA, "/Q_mkc-", gsub("k", "", i), "_",
+                    gsub("below_", "gte-pctl-", j), ".gtf"
+                ))
+                cat("\n\n")
+                
+                out_Q_conv <- GenomicRanges::makeGRangesFromDataFrame(
+                    out_Q_gtf_mRNA[[i]][[j]], keep.extra.columns = TRUE
+                )
+        
+                rtracklayer::export(
+                    out_Q_gtf_mRNA[[i]][[j]],
+                    paste0(
+                        path_Q_mRNA, "/Q_mkc-", gsub("k", "", i), "_",
+                        gsub("below_", "gte-pctl-", j), ".gtf"
+                    )
+                )
+            } else if(isTRUE(k == path_Q_exon)) {
+                cat("Saving Q", i, j, "in", k, "\n")
+                cat(paste0(
+                    path_Q_exon, "/Q_mkc-", gsub("k", "", i), "_",
+                    gsub("below_", "gte-pctl-", j), ".gtf"
+                ))
+                cat("\n\n")
+                
+                out_Q_conv <- GenomicRanges::makeGRangesFromDataFrame(
+                    out_Q_gtf_exon[[i]][[j]], keep.extra.columns = TRUE
+                )
+        
+                rtracklayer::export(
+                    out_Q_gtf_exon[[i]][[j]],
+                    paste0(
+                        path_Q_exon, "/Q_mkc-", gsub("k", "", i), "_",
+                        gsub("below_", "gte-pctl-", j), ".gtf"
+                    )
+                )
+            } else if(isTRUE(k == path_Q_CDS)) {
+                cat("Saving Q", i, j, "in", k, "\n")
+                cat(paste0(
+                    path_Q_CDS, "/Q_mkc-", gsub("k", "", i), "_",
+                    gsub("below_", "gte-pctl-", j), ".gtf"
+                ))
+                cat("\n\n")
+                
+                out_Q_conv <- GenomicRanges::makeGRangesFromDataFrame(
+                    out_Q_gtf_CDS[[i]][[j]], keep.extra.columns = TRUE
+                )
+        
+                rtracklayer::export(
+                    out_Q_gtf_CDS[[i]][[j]],
+                    paste0(
+                        path_Q_CDS, "/Q_mkc-", gsub("k", "", i), "_",
+                        gsub("below_", "gte-pctl-", j), ".gtf"
+                    )
+                )
+            } else if(isTRUE(k == path_Q_introns_filtered)) {
+                cat("Saving Q", i, j, "in", k, "\n")
+                cat(paste0(
+                    path_Q_introns_filtered, "/Q_mkc-", gsub("k", "", i), "_",
+                    gsub("below_", "gte-pctl-", j), ".gtf"
+                ))
+                cat("\n\n")
+                
+                out_Q_conv <- GenomicRanges::makeGRangesFromDataFrame(
+                    out_Q_gtf_introns_filtered[[i]][[j]], keep.extra.columns = TRUE
+                )
+        
+                rtracklayer::export(
+                    out_Q_gtf_introns_filtered[[i]][[j]],
+                    paste0(
+                        path_Q_introns_filtered, "/Q_mkc-", gsub("k", "", i), "_",
+                        gsub("below_", "gte-pctl-", j), ".gtf"
+                    )
+                )
+            }
+            
+            # cat("Saving Q", i, j, "\n")
+            # cat(paste0(
+            #     path_Q_locus, "/Q_mkc-", gsub("k", "", i), "_",
+            #     gsub("below_", "gte-pctl-", j), ".gtf"
+            # ))
+            # cat("\n\n")
+            # 
+            # out_Q_conv <- GenomicRanges::makeGRangesFromDataFrame(
+            #     out_Q_gtf_locus[[i]][[j]], keep.extra.columns = TRUE
+            # )
+            # 
+            # rtracklayer::export(
+            #     out_Q_gtf_locus[[i]][[j]],
+            #     paste0(
+            #         path_Q_locus, "/Q_mkc-", gsub("k", "", i), "_",
+            #         gsub("below_", "gte-pctl-", j), ".gtf"
+            #     )
+            # )
+        }
     }
 }
 ```
