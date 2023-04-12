@@ -1,0 +1,138 @@
+---
+title: "work_combined-gtf_collapse-merged.Rmd"
+author: "KA"
+email: "kalavatt@fredhutch.org"
+output: html_notebook
+---
+<br />
+
+## Section to be titled
+### Get situated
+#### Code
+<details>
+<summary><i>Code: Get situated</i></summary>
+
+`#START`
+```{r}
+#!/usr/bin/env Rscript
+
+#  Load packages ----------------------
+library(GenomicRanges)
+library(IRanges)
+library(readxl)
+library(rtracklayer)
+library(tidyverse)
+
+
+#  Set options ------------------------
+options(scipen = 999)
+options(ggrepel.max.overlaps = Inf)
+
+
+#  Set working directory --------------
+if(stringr::str_detect(getwd(), "kalavattam")) {
+    p_local <- "/Users/kalavattam/Dropbox/FHCC"
+} else {
+    p_local <- "/Users/kalavatt/projects-etc"
+}
+p_wd <- "2022_transcriptome-construction/results/2023-0215"
+
+setwd(paste(p_local, p_wd, sep = "/"))
+getwd()
+
+rm(p_local, p_wd)
+
+
+#  Initialize functions ---------------
+`%notin%` <- Negate(`%in%`)
+```
+</details>
+<br />
+
+### Read in `combined.gtf` as `tibble`
+#### Code
+<details>
+<summary><i>Code: Read in `combined.gtf` as `tibble`</i></summary>
+
+```{r}
+p_gtf <- "infiles_gtf-gff3/already"
+f_gtf <- "combined_AG.sans-chr.gtf"
+t_gtf <- paste(p_gtf, f_gtf, sep = "/") %>%
+    rtracklayer::import() %>%
+    tibble::as_tibble() %>%
+    dplyr::select(-phase)
+```
+`#QUESTION` What is the score attribute for some of the features in this file?
+</details>
+<br />
+
+### Process the `tibble`
+#### Code
+<details>
+<summary><i>Code: Process the `tibble`</i></summary>
+
+```{r}
+#  Prep work ----------------------------------------------
+#  Factorize column 'type'
+t_gtf$type <- t_gtf$type %>% forcats::as_factor()
+
+#  Correct name of mitochondrion
+t_gtf$seqnames <- t_gtf$seqnames %>% gsub("mt", "Mito", .)
+# t_gtf$type %>% table()
+
+#  Create a tibble of exclusively ncRNA annotations
+t_ncRNA <- t_gtf[t_gtf$type %notin% c("mRNA", "snoRNA", "snRNA"), ]
+t_ncRNA$source %>% forcats::as_factor() %>% table()
+t_ncRNA$type %>% forcats::as_factor() %>% table()
+
+
+#  Examine Xu: CUT, SUT -----------------------------------
+Xu <- t_ncRNA[t_ncRNA$source == "Xu_2009", ]
+Xu$type %>% forcats::as_factor() %>% table()
+
+SUT <- t_ncRNA[t_ncRNA$type == "SUT", ]
+SUT$source %>% forcats::as_factor() %>% table()
+
+CUT <- t_ncRNA[t_ncRNA$type == "CUT", ]
+CUT$source %>% forcats::as_factor() %>% table()
+
+
+#  Vera: CUT_4X, CUT_2016 ---------------------------------
+Vera <- t_ncRNA[stringr::str_detect(t_ncRNA$source, "^Vera*"), ]
+Vera$source %>% forcats::as_factor() %>% table()
+Vera$type %>% forcats::as_factor() %>% table()
+
+#  Which rows are not duplicated?
+Vera <- t_ncRNA[stringr::str_detect(t_ncRNA$source, "^Vera*"), ]
+Vera$gene_id[!(
+        duplicated(Vera$gene_id) |
+        duplicated(Vera$gene_id, fromLast = TRUE)
+)]
+Vera[Vera$gene_id %in% c("CUT4251", "CUT4379"), ]
+
+
+#  Schulz: NUT --------------------------------------------
+Schulz <- t_ncRNA[t_ncRNA$source == "Schulz_2013", ]
+Schulz$type %>% forcats::as_factor() %>% table()
+
+
+#  Yassour: antisense_transcript --------------------------
+Yassour <- t_ncRNA[t_ncRNA$source == "Yassour_2010", ]
+Yassour$type %>% forcats::as_factor() %>% table()
+
+
+#  Venkatesh: antisense_transcript ------------------------
+Venkatesh <- t_ncRNA[stringr::str_detect(t_ncRNA$source, "^Venkatesh*"), ]
+Venkatesh$type %>% forcats::as_factor() %>% table()
+
+
+#  van Dijk: XUT ------------------------------------------
+van_Dijk <- t_ncRNA[t_ncRNA$source == "van_Dijk_2011", ]
+van_Dijk$type %>% forcats::as_factor() %>% table()
+
+
+#  Neil
+```
+</details>
+<br />
+
