@@ -1,0 +1,787 @@
+---
+title: "work_representative-non-coding-transcriptome.Rmd"
+author: "KA"
+email: "kalavatt@fredhutch.org"
+output:
+    html_notebook:
+        toc: yes
+        toc_float: true
+---
+<br />
+
+## Get situated
+### Code
+<details>
+<summary><i>Code: Get situated</i></summary>
+```{r}
+#!/usr/bin/env Rscript
+
+library(GenomicRanges)
+library(IRanges)
+library(readxl)
+library(rtracklayer)
+library(tidyverse)
+
+options(scipen = 999)
+options(ggrepel.max.overlaps = Inf)
+
+if(stringr::str_detect(getwd(), "kalavattam")) {
+    p_local <- "/Users/kalavattam/Dropbox/FHCC"
+} else {
+    p_local <- "/Users/kalavatt/projects-etc"
+}
+p_wd <- "2022_transcriptome-construction/results/2023-0215"
+
+setwd(paste(p_local, p_wd, sep = "/"))
+getwd()
+
+rm(p_local, p_wd)
+```
+</details>
+<br />
+<br />
+
+## Read in and process `gtf` files (as `data.frame`s)
+The [CUT](https://static-content.springer.com/esm/art%3A10.1038%2Fnature07728/MediaObjects/41586_2009_BFnature07728_MOESM276_ESM.xls), [SUT](https://static-content.springer.com/esm/art%3A10.1038%2Fnature07728/MediaObjects/41586_2009_BFnature07728_MOESM276_ESM.xls), and [XUT](http://vm-gb.curie.fr/XUT/XUTs_Van_Dijk_et_al_2011.gff) [[Xu et al. (Huber, Steinmetz), 2009](https://www.nature.com/articles/nature07728); [van Dijk et al. (Thermes, Morillon), 2011](https://www.nature.com/articles/nature10118)] annotations need to be converted from prior S288c coordinate systems to the modern coordinate system used for this study: [R64](http://sgd-archive.yeastgenome.org/sequence/S288C_reference/genome_releases/). The CUTs and SUTs need to be "lifted" from [R56](sgd-archive.yeastgenome.org/sequence/S288C_reference/genome_releases/liftover/V56_2007_04_06_V64_2011_02_03.over.chain) to R64, and the XUTs need to be "lifted" from [R63](sgd-archive.yeastgenome.org/sequence/S288C_reference/genome_releases/liftover/V63_2010_01_05_V64_2011_02_03.over.chain) to R64. More details in [`work_representative-non-coding-transcriptome.md`](./work_representative-non-coding-transcriptome.md).
+
+### Code
+<details>
+<summary><i>Code: Read in and process `gtf` files (as `data.frame`s)</i></summary>
+
+```{r}
+#!/usr/bin/env Rscript
+
+# list.files("./infiles_gtf-gff3/representation/CUTs_SUTs")
+# list.files("./infiles_gtf-gff3/representation/XUTs")
+# 
+# list.files("./infiles_gtf-gff3/representation/CUTs_SUTs/CUTs_SUTs.xls")
+# list.files("./infiles_gtf-gff3/representation/XUTs/XUTs.gff")
+
+CUTs <- readxl::read_xls(
+    "./infiles_gtf-gff3/representation/CUTs_SUTs/CUTs_SUTs.xls",
+    sheet = "C"
+)
+SUTs <- readxl::read_xls(
+    "./infiles_gtf-gff3/representation/CUTs_SUTs/CUTs_SUTs.xls",
+    sheet = "B"
+)
+XUTs <- rtracklayer::import(
+    "./infiles_gtf-gff3/representation/XUTs/XUTs.gff"
+) %>%
+    tibble::as_tibble()
+```
+</details>
+<br />
+<br />
+
+## Convert chromosome names, order the `data.frame`s
+### Code
+<details>
+<summary><i>Code: Convert chromosome names, order the `data.frame`s</i></summary>
+```{r}
+#!/usr/bin/env Rscript
+
+switch_name_format_integer <- function(x) {
+    y <- sapply(
+        as.character(x),
+        switch,
+         "1" = "I",
+         "2" = "II",
+         "3" = "III",
+         "4" = "IV",
+         "5" = "V",
+         "6" = "VI",
+         "7" = "VII",
+         "8" = "VIII",
+         "9" = "IX",
+        "10" = "X",
+        "11" = "XI",
+        "12" = "XII",
+        "13" = "XIII",
+        "14" = "XIV",
+        "15" = "XV",
+        "16" = "XVI",
+        USE.NAMES = FALSE
+    )
+    return(y)
+}
+
+
+switch_name_format_chr_padded <- function(x) {
+    y <- sapply(
+        as.character(x),
+        switch,
+        "chr01" = "I",
+        "chr02" = "II",
+        "chr03" = "III",
+        "chr04" = "IV",
+        "chr05" = "V",
+        "chr06" = "VI",
+        "chr07" = "VII",
+        "chr08" = "VIII",
+        "chr09" = "IX",
+        "chr10" = "X",
+        "chr11" = "XI",
+        "chr12" = "XII",
+        "chr13" = "XIII",
+        "chr14" = "XIV",
+        "chr15" = "XV",
+        "chr16" = "XVI",
+        USE.NAMES = FALSE
+    )
+    return(y)
+}
+
+
+colnames(XUTs)[colnames(XUTs) == "seqnames"] <- "chr"
+
+CUTs$chr <- switch_name_format_integer(CUTs$chr)
+SUTs$chr <- switch_name_format_integer(SUTs$chr)
+XUTs$chr <- switch_name_format_chr_padded(XUTs$chr)
+
+CUTs <- CUTs %>% dplyr::arrange(chr, start)
+SUTs <- SUTs %>% dplyr::arrange(chr, start)
+XUTs <- XUTs %>% dplyr::arrange(chr, start)
+```
+</details>
+<br />
+<br />
+
+## Write `data.frame`s as `bed` files
+### Refomat `data.frame`s
+#### Code
+<details>
+<summary><i>Code: Refomat `data.frame`s</i></summary>
+```{r}
+#!/usr/bin/env Rscript
+
+reformat_CUTs_SUTs <- function(x) {
+    y <- x %>%
+        tidyr::unite(
+            col = "name",
+            c("type", "name", "ID", "endConfidence", "source")
+        ) %>%
+        dplyr::select(-"commonName") %>%
+        dplyr::mutate("score" = 0) %>%
+        dplyr::relocate(c("chr", "start", "end", "name", "score", "strand"))
+    return(y)
+}
+
+
+reformat_XUTs <- function(x) {
+    y <- x %>%
+        dplyr::select(-c("score", "phase", "Name", "width")) %>%
+        tidyr::unite(col = "name", c("type", "source", "ID")) %>%
+        dplyr::mutate("score" = 0) %>%
+        dplyr::relocate(c("chr", "start", "end", "name", "score", "strand"))
+    return(y)
+}
+
+
+#  Check
+# identical(CUTs$name, CUTs$commonName)  # [1] TRUE
+# identical(SUTs$name, SUTs$commonName)  # [1] TRUE
+# identical(XUTs$ID, XUTs$Name)  # [1] TRUE
+# is.na(XUTs$score) %>% table()
+# is.na(XUTs$phase) %>% table()
+# ((XUTs$end - XUTs$start) == XUTs$width) %>% table()  # FALSE 1658
+# ((XUTs$end - XUTs$start + 1) == XUTs$width) %>% table()  # TRUE 1658
+
+CUTs_r <- reformat_CUTs_SUTs(CUTs)
+SUTs_r <- reformat_CUTs_SUTs(SUTs)
+XUTs_r <- reformat_XUTs(XUTs)
+```
+</details>
+<br />
+
+### Write `data.frame`s as `bed` files
+#### Code
+<details>
+<summary><i>Code: Write `data.frames` as `bed` files</i></summary>
+```{r}
+#!/usr/bin/env Rscript
+
+p_rep <- paste(getwd(), "infiles_gtf-gff3/representation", sep = "/")
+
+#  Check
+# p_rep %>% dir.exists()
+# paste(p_rep, "CUTs_SUTs", sep = "/") %>% dir.exists()
+# paste(p_rep, "CUTs_SUTs", sep = "/") %>% dir.exists()
+# paste(p_rep, "XUTs", sep = "/") %>% dir.exists()
+
+CUTs_f <- paste(p_rep, "CUTs_SUTs", "CUTs.coord-R56.bed", sep = "/")
+SUTs_f <- paste(p_rep, "CUTs_SUTs", "SUTs.coord-R56.bed", sep = "/")
+XUTs_f <- paste(p_rep, "XUTs", "XUTs.coord-R63.bed", sep = "/")
+
+export.bed(CUTs_r, con = CUTs_f)
+export.bed(SUTs_r, con = SUTs_f)
+export.bed(XUTs_r, con = XUTs_f)
+```
+</details>
+<br />
+<br />
+
+## Create `data.frame` from various non-coding annotations
+### Get situated
+#### Code
+<details>
+<summary><i>Code: Get situated</i></summary>
+```{r}
+#!/usr/bin/env Rscript
+
+library(ComplexUpset)
+library(GenomicRanges)
+library(ggplot2)
+library(IRanges)
+library(plyr)
+library(readxl)
+library(rtracklayer)
+library(tidyverse)
+
+options(scipen = 999)
+options(ggrepel.max.overlaps = Inf)
+
+if(stringr::str_detect(getwd(), "kalavattam")) {
+    p_local <- "/Users/kalavattam/Dropbox/FHCC"
+} else {
+    p_local <- "/Users/kalavatt/projects-etc"
+}
+p_wd <- "2022_transcriptome-construction/results/2023-0215"
+
+setwd(paste(p_local, p_wd, sep = "/"))
+getwd()
+```
+</details>
+<br />
+
+### Read in and process annotation files
+#### Code
+<details>
+<summary><i>Code: Read in and process annotation files</i></summary>
+```{r}
+#!/usr/bin/env Rscript
+
+load_bed_CUTs_SUTs_XUTs <- function(x) {
+    y <- readr::read_tsv(x, col_names = FALSE, show_col_types = FALSE)
+    colnames(y) <- c("chr", "start", "end", "name_etc", "score", "strand")
+    return(y)
+}
+
+
+load_xlsx_CUTs_4x <- function(x) {
+    y <- readxl::read_xlsx(x)
+    colnames(y) <- c("chr", "start", "end", "name_etc", "strand")
+    y$chr <- gsub("chr", "", y$chr)
+    y <- y %>% dplyr::arrange(chr, start)
+    return(y)
+}
+
+
+load_txt_CUTs_HMM <- function(x) {
+    y <- readr::read_tsv(in_CUTs_HMM, show_col_types = FALSE)
+    colnames(y) <- c(
+        "chr", "start", "end", "name_etc", "strand",
+        "avg_covg_WT", "avg_covg_rrp6", "avg_fold"
+    )
+    y$chr <- gsub("chr", "", y$chr)
+    y <- y %>% dplyr::arrange(chr, start)
+    return(y)
+}
+
+
+load_gtf_NUTs <- function(x) {
+    y <- rtracklayer::import(in_NUTs) %>%
+        tibble::as_tibble() %>%
+        dplyr::select(-c("score", "phase"))
+    colnames(y) <- c(
+        "chr", "start", "end", "width", "strand",
+        "source", "type", "gene_id", "transcript_id"
+    )
+    y$chr <- gsub("chr", "", y$chr)
+    y <- y %>% dplyr::arrange(chr, start)
+    return(y)
+}
+
+
+load_csv_SRATs <- function(x) {
+    y <- readr::read_csv(in_SRATs, skip = 1, show_col_types = FALSE)
+    colnames(y) <- c("chr", "start", "end", "info_sense", "strand", "name_etc")
+    y$chr <- gsub("chr", "", y$chr)
+    y <- y %>% dplyr::arrange(chr, start)
+    return(y)
+}
+
+
+p_base <- "./infiles_gtf-gff3/representation"
+
+#  Check
+# list.dirs(p_base)
+# list.files(paste(p_base, "CUTs_SUTs", sep = "/"))
+# list.files(paste(p_base, "CUTs-HMM_CUTs-4X", sep = "/"))
+# list.files(paste(p_base, "NUTs", sep = "/"))
+# list.files(paste(p_base, "SRATs", sep = "/"))
+# list.files(paste(p_base, "XUTs", sep = "/"))
+
+in_CUTs <- paste(p_base, "CUTs_SUTs/CUTs.coord-R64.bed", sep = "/")
+in_CUTs_4x <- paste(p_base, "CUTs-HMM_CUTs-4X/CUTs-4x.xlsx", sep = "/")
+in_CUTs_HMM <- paste(p_base, "CUTs-HMM_CUTs-4X/CUTs-HMM.txt.gz", sep = "/")
+in_NUTs <- paste(p_base, "NUTs/NUTs.gtf", sep = "/")
+in_SRATs <- paste(p_base, "SRATs/SRATs.csv", sep = "/")
+in_SUTs <- paste(p_base, "CUTs_SUTs/SUTs.coord-R64.bed", sep = "/")
+in_XUTs <- paste(p_base, "XUTs/XUTs.coord-R64.bed", sep = "/")
+
+#  Check
+# file.exists(in_CUTs)
+# file.exists(in_SUTs)
+# file.exists(in_CUTs_4x)
+# file.exists(in_CUTs_HMM)
+# file.exists(in_NUTs)
+# file.exists(in_SRATs)
+# file.exists(in_XUTs)
+
+CUTs <- load_bed_CUTs_SUTs_XUTs(in_CUTs)
+CUTs_4x <- load_xlsx_CUTs_4x(in_CUTs_4x)
+CUTs_HMM <- load_txt_CUTs_HMM(in_CUTs_HMM)
+NUTs <- load_gtf_NUTs(in_NUTs)
+SRATs <- load_csv_SRATs(in_SRATs)
+SUTs <- load_bed_CUTs_SUTs_XUTs(in_SUTs)
+XUTs <- load_bed_CUTs_SUTs_XUTs(in_XUTs)
+```
+</details>
+<br />
+
+### Munge the `data.frame`s such that they have the same columns
+#### Code
+<details>
+<summary><i>Code: Munge the `data.frame`s</i></summary>
+```{r}
+#!/usr/bin/env Rscript
+
+CUTs <- CUTs %>%
+    dplyr::mutate(
+                 id = stringr::str_sub(CUTs$name_etc, 6, 11),
+               type = stringr::str_sub(CUTs$name_etc, 1, 4),
+             source = "Xu et al. (Steinmetz), Nature 2009",
+        coordinates = "lifted from R56 to R64",
+                etc = stringr::str_sub(CUTs$name_etc, 13, nchar(CUTs$name_etc))
+    ) %>%
+    dplyr::select(-c(name_etc, score)) %>%
+    dplyr::arrange(chr, start, strand)
+
+CUTs_4x <- CUTs_4x %>%
+    dplyr::mutate(
+                 id = name_etc,
+               type = "CUTs_4x",
+                etc = NA_character_,
+             source = "Vera (Dowell), BMC Genomics 2016",
+        coordinates = "R64 (no liftOver)"
+    ) %>%
+    dplyr::select(-name_etc)
+
+CUTs_HMM <- CUTs_HMM %>%
+    dplyr::mutate(
+                 id = name_etc,
+               type = "CUTs_HMM",
+             source = "Vera (Dowell), BMC Genomics 2016",
+        coordinates = "R64 (no liftOver)"
+    ) %>%
+    dplyr::select(-name_etc) %>%
+    tidyr::unite(
+        etc, c(avg_covg_WT, avg_covg_rrp6, avg_fold)
+    ) %>%
+    dplyr::arrange(chr, start, strand)
+
+NUTs <- NUTs %>%
+    dplyr::select(-c("type", "source", "width")) %>%
+    dplyr::mutate(
+               type = "NUTs",
+             source = "Schulz et al. (Cramer), Cell 2013",
+        coordinates = "R64 (no liftOver)"
+    ) %>%
+    dplyr::rename(id = transcript_id, etc = gene_id)
+        
+SRATs <- SRATs %>%
+    dplyr::mutate(
+               type = "SRATs",
+             source = "Venkatesh et al. (Workman), Nat Comm 2016",
+        coordinates = "R64 (no liftOver)"
+    ) %>%
+    dplyr::rename(id = name_etc, etc = info_sense) %>%
+    dplyr::arrange(chr, start, strand)
+
+SUTs <- SUTs %>%
+    dplyr::select(-"score") %>%
+    dplyr::mutate(
+                 id = stringr::str_sub(SUTs$name_etc, 6, 11),
+               type = stringr::str_sub(SUTs$name_etc, 1, 4),
+             source = "Xu et al. (Steinmetz), Nature 2009",
+        coordinates = "lifted from R56 to R64",
+                etc = stringr::str_sub(SUTs$name_etc, 13, nchar(SUTs$name_etc))
+    ) %>%
+    dplyr::select(-name_etc) %>%
+    dplyr::arrange(chr, start, strand)
+
+XUTs <- XUTs %>%
+    dplyr::select(-"score") %>%
+    dplyr::mutate(
+               type = paste0(stringr::str_sub(XUTs$name_etc, 1, 3), "s"),
+                 id = stringr::str_sub(XUTs$name_etc, 14, nchar(XUTs$name_etc)),
+             source = "van Dijk et al. (Thermes, Morillon), Nature 2011",
+        coordinates = "lifted from R63 to R64",
+           name_etc = NA_character_
+    ) %>%
+    dplyr::rename(etc = name_etc) %>%
+    dplyr::arrange(chr, start, strand)
+```
+</details>
+<br />
+
+### Bind `data.frame`s
+#### Code
+<details>
+<summary><i>Code: Bind `data.frame`s</i></summary>
+```{r}
+#!/usr/bin/env Rscript
+
+ncRNAs <- dplyr::bind_rows(
+    CUTs, CUTs_4x, CUTs_HMM, NUTs, SRATs, SUTs, XUTs
+) %>%
+    dplyr::arrange(chr, start, strand)
+```
+</details>
+<br />
+
+### Determine, record, and format overlaps between ncRNA features
+#### Links records by overlaps
+##### Code
+<details>
+<summary><i>Code: Links records by overlaps</i></summary>
+```{r}
+#!/usr/bin/env Rscript
+
+#  Do the linking stratified by 'chr'
+group_chr <- plyr::ddply(
+    ncRNAs,
+    "chr",
+    function(x) { 
+        #  Check if a record should be linked with the previous record
+        y <- c(NA, x$end[-nrow(x)])
+        z <- ifelse(is.na(y), 0, y)
+        z <- cummax(z)
+        z[is.na(y)] <- NA
+        x$previous_end <- z
+        
+        return(x)
+    }
+)
+
+group_chr$new_group <- is.na(group_chr$previous_end) | 
+    (group_chr$start >= group_chr$previous_end)
+group_chr$group <- cumsum(group_chr$new_group)
+
+#  Do the linking stratified by both 'chr' and 'strand'
+group_chr_strand <- plyr::ddply(
+    ncRNAs,
+    c("chr", "strand"),
+    function(x) { 
+        #  Check if a record should be linked with the previous record
+        y <- c(NA, x$end[-nrow(x)])
+        z <- ifelse(is.na(y), 0, y)
+        z <- cummax(z)
+        z[is.na(y)] <- NA
+        x$previous_end <- z
+        
+        return(x)
+    }
+) %>%
+    dplyr::arrange(chr, start, strand)
+
+group_chr_strand$new_group <- is.na(group_chr_strand$previous_end) | 
+    (group_chr_strand$start >= group_chr_strand$previous_end)
+group_chr_strand$group <- cumsum(group_chr_strand$new_group)
+
+# #  Check groups with and without grouping by strand
+# group_chr %>% dplyr::select(chr, start, end, strand, group)
+# group_chr_strand %>% dplyr::select(chr, start, end, strand, group)
+# 
+# #  Check numbers of groups with and without grouping by strand
+# group_chr$group %>% forcats::as_factor() %>% levels() %>% length()
+# group_chr_strand$group %>% forcats::as_factor() %>% levels() %>% length()
+```
+</details>
+<br />
+
+#### For overlaps by '`chr`', identify new groups on '`previous_end`'
+##### Code
+<details>
+<summary><i>Code: For overlaps by '`chr`', identify new groups on '`previous_end`'</i></summary>
+```{r}
+#!/usr/bin/env Rscript
+
+#  Aggregate the data
+agg_chr <- plyr::ddply(
+    group_chr,
+    .(chr, group),
+    plyr::summarize, 
+    start = min(start),
+    end = max(end),
+    details_type = paste0(type, collapse = "; "),
+    details_all = paste0(type, ": ", id, ", ", strand, collapse = "; ")
+) %>%
+    dplyr::arrange(chr, start) %>%
+    dplyr::mutate(strand = ".") %>%
+    dplyr::relocate(
+        c(chr, start, end, strand, details_type, details_all, group)
+    ) %>%
+    dplyr::rename(
+        details_type_init = details_type, details_all_init = details_all
+    )
+
+# #  Check
+# agg_chr$details_type_init %>% head()
+# agg_chr$details_all_init %>% head()
+
+#  stackoverflow.com/questions/49389792/how-to-collapse-all-character-vectors-in-a-list
+details_type <- agg_chr$details_type %>%
+    stringr::str_remove_all("s") %>%
+    stringr::str_split("; ") %>%
+    purrr::map(sort) %>%
+    purrr::map(unique)
+details_type <- sapply(
+    details_type[!sapply(details_type, purrr::is_empty)],
+    paste,
+    collapse = " "
+) %>%
+    tibble::as_tibble_col(column_name = "details_type")
+
+details_all <- agg_chr$details_all %>%
+    stringr::str_remove_all("s") %>%
+    stringr::str_split("; ") %>%
+    purrr::map(sort) %>%
+    purrr::map(unique)
+details_all <- sapply(
+    details_all[!sapply(details_all, purrr::is_empty)],
+    paste,
+    collapse = "; "
+) %>%
+    tibble::as_tibble_col(column_name = "details_all")
+
+details_id <- agg_chr$details_all %>%
+    stringr::str_remove_all("s|,\\s\\+|,\\s\\-") %>%
+    stringr::str_replace_all(
+        "(CUT|CUT_4x|CUT_HMM|NUT|SRAT|SUT|XUT):\\s", ""
+    ) %>%
+    stringr::str_split("; ") %>%
+    purrr::map(sort) %>%
+    purrr::map(unique)
+details_id <- sapply(
+    details_id[!sapply(details_id, purrr::is_empty)],
+    paste,
+    collapse = "; "
+) %>%
+    tibble::as_tibble_col(column_name = "details_id")
+
+details_strand <- agg_chr$details_all %>%
+    stringr::str_remove_all("s") %>%
+    stringr::str_remove_all(
+        "(CUT|CUT_4x|CUT_HMM|NUT|SRAT|SUT|XUT):\\s|\\;|\\,"
+    ) %>%
+    stringr::str_remove_all(
+        "(CUT|NUT|SRAT|SUT)\\d+\\s|[:digit:]+(F|R)\\-\\d+\\s"
+    ) %>%
+    tibble::as_tibble_col(column_name = "details_strand")
+
+n_features <- lengths(
+    gregexpr("(^[A-z]|[1-9])*;", details_id$details_id)
+) + 1L
+
+agg_chr <- dplyr::bind_cols(
+    agg_chr, details_type, details_id, details_strand, n_features, details_all
+) %>%
+    dplyr::select(-group) %>%
+    dplyr::relocate(
+        c(details_type_init, details_all_init),
+        .after = details_all
+    ) %>%
+    dplyr::rename("n_features" = "...11")
+
+agg_chr$n_features <- ifelse(
+    (agg_chr$n_features == 2 & agg_chr$details_strand == "+") |
+    (agg_chr$n_features == 2 & agg_chr$details_strand == "-"),
+    1,
+    agg_chr$n_features
+)
+
+rm(details_id, details_type, details_strand, n_features, details_all)
+```
+</details>
+<br />
+
+#### For overlaps by '`chr`' and '`strand`, identify new groups on '`previous_end`'
+##### Code
+<details>
+<summary><i>Code: For overlaps by '`chr`' and '`strand`, identify new groups on '`previous_end`'</i></summary>
+```{r}
+#!/usr/bin/env Rscript
+
+#  Aggregate the data
+agg_chr_strand <- plyr::ddply(
+    group_chr_strand,
+    .(chr, strand, group),
+    plyr::summarize, 
+    start = min(start),
+    end = max(end),
+    details_type = paste0(type, collapse = "; "),
+    details_all = paste0(type, ": ", id, collapse = "; ")
+) %>%
+    dplyr::arrange(chr, start, strand) %>%
+    dplyr::relocate(
+        c(chr, start, end, strand, details_type, details_all, group)
+    ) %>%
+    dplyr::rename(
+        details_type_init = details_type, details_all_init = details_all
+    )
+
+# #  Check
+# agg_chr_strand$details_type_init %>% head()
+# agg_chr_strand$details_all_init %>% head()
+
+#  stackoverflow.com/questions/49389792/how-to-collapse-all-character-vectors-in-a-list
+details_type <- agg_chr_strand$details_type %>%
+    stringr::str_remove_all("s") %>%
+    stringr::str_split("; ") %>%
+    purrr::map(sort) %>%
+    purrr::map(unique)
+details_type <- sapply(
+    details_type[!sapply(details_type, purrr::is_empty)],
+    paste,
+    collapse = " "
+) %>%
+    tibble::as_tibble_col(column_name = "details_type")
+
+details_all <- agg_chr_strand$details_all %>%
+    stringr::str_remove_all("s") %>%
+    stringr::str_split("; ") %>%
+    purrr::map(sort) %>%
+    purrr::map(unique)
+details_all <- sapply(
+    details_all[!sapply(details_all, purrr::is_empty)],
+    paste,
+    collapse = "; "
+) %>%
+    tibble::as_tibble_col(column_name = "details_all")
+
+details_id <- agg_chr_strand$details_all %>%
+    stringr::str_remove_all("s") %>%
+    stringr::str_replace_all(
+        "(CUT|CUT_4x|CUT_HMM|NUT|SRAT|SUT|XUT):\\s", ""
+    ) %>%
+    stringr::str_split("; ") %>%
+    purrr::map(sort) %>%
+    purrr::map(unique)
+details_id <- sapply(
+    details_id[!sapply(details_id, purrr::is_empty)],
+    paste,
+    collapse = "; "
+) %>%
+    tibble::as_tibble_col(column_name = "details_id")
+
+n_features <- lengths(
+    gregexpr("(^[A-z]|[1-9])*;", details_id$details_id)
+) + 1L
+
+agg_chr_strand <- dplyr::bind_cols(
+    agg_chr_strand, details_type, details_id, n_features, details_all
+) %>%
+    dplyr::select(-group) %>%
+    dplyr::relocate(
+        c(details_type_init, details_all_init),
+        .after = details_all
+    ) %>%
+    dplyr::rename("n_features" = "...10")
+
+agg_chr_strand$n_features <- ifelse(
+    grepl(";", agg_chr_strand$details_id, fixed = TRUE),
+    agg_chr_strand$n_features,
+    1L
+)
+
+rm(details_id, details_type, n_features, details_all)
+```
+</details>
+<br />
+
+### Examine overlaps between collapsed/merged ncRNAs and SGD
+#### Code
+<details>
+<summary><i>Code: Join `data.frame`s</i></summary>
+
+```{r}
+#!/usr/bin/env Rscript
+
+in_SGD <- paste("./infiles_gtf-gff3/already/Saccharomyces_cerevisiae.R64-1-1.108.gtf")
+# file.exists(in_SGD)
+```
+</details>
+<br />
+<br />
+
+## Try out `ComplexUpset`
+#### Code
+<details>
+<summary><i>Code: Try out `ComplexUpset`</i></summary>
+Working through the example [here](https://krassowski.github.io/complex-upset/articles/Examples_R.html)
+```{r}
+#!/usr/bin/env Rscript
+
+# stringr::str_count(agg_chr_strand$details_type_init, "$CUTs|CUTs;|CUTs$")
+# agg_chr_strand_abbrev <- agg_chr_strand[, c(1:4, 7, 9)]
+# agg_chr_strand_abbrev <- agg_chr_strand_abbrev %>% dplyr::mutate(
+#     CUT = stringr::str_count(details_type_init, "$CUTs|CUTs;|CUTs$"),
+#     CUT_4x = stringr::str_count(details_type_init, "CUTs_4x"),
+#     CUT_HMM = stringr::str_count(details_type_init, "CUTs_HMM"),
+#     NUT = stringr::str_count(details_type_init, "NUT"),
+#     SRAT = stringr::str_count(details_type_init, "SRAT"),
+#     SUT = stringr::str_count(details_type_init, "SUT"),
+#     XUT = stringr::str_count(details_type_init, "XUT")
+# )
+
+agg_chr_strand <- agg_chr_strand %>% dplyr::mutate(
+    CUT = stringr::str_count(details_type_init, "$CUTs|CUTs;|CUTs$"),
+    CUT_4x = stringr::str_count(details_type_init, "CUTs_4x"),
+    CUT_HMM = stringr::str_count(details_type_init, "CUTs_HMM"),
+    NUT = stringr::str_count(details_type_init, "NUT"),
+    SRAT = stringr::str_count(details_type_init, "SRAT"),
+    SUT = stringr::str_count(details_type_init, "SUT"),
+    XUT = stringr::str_count(details_type_init, "XUT")
+)
+
+ncRNAs_cats <- colnames(agg_chr_strand)[11:17]
+agg_chr_strand[ncRNAs_cats] = agg_chr_strand[ncRNAs_cats] == 1
+
+agg_chr_strand[ncRNAs_cats] %>% head(15) %>% t
+
+agg_chr_strand$length <- agg_chr_strand$end - agg_chr_strand$start
+# agg_chr_strand$n_features <- agg_chr_strand$n_features %>% forcats::as_factor()
+
+ComplexUpset::upset(
+    agg_chr_strand,
+    ncRNAs_cats,
+    annotations = list(
+        'Length (bp)' = agg_chr_strand %>%
+            ggplot2::ggplot(., aes(x = intersection, y = length)) +
+            geom_violin(na.rm = TRUE),
+        'No. features' = agg_chr_strand %>%
+            # ggplot(aes(fill = n_features, x = intersection, y = n_features)) + 
+            # geom_bar(position = "fill", stat = "identity")
+            ggplot2::ggplot(., aes(x = intersection, y = n_features)) +
+            geom_violin(na.rm = TRUE)
+    ),
+    name = "Groups of ncRNA categories",
+    n_intersection = 30,
+    # min_size = 8,
+    width_ratio = 0.1
+)
+```
+</details>
+<br />
