@@ -1,0 +1,226 @@
+---
+title: "work_representative-non-coding-transcriptome_part-2.Rmd"
+author: "KA"
+email: "kalavatt@fredhutch.org"
+output:
+    html_notebook:
+        toc: yes
+        toc_float: true
+---
+<br />
+
+## Get situated
+### Code
+<details>
+<summary><i>Code: Get situated</i></summary>
+```{r}
+#!/usr/bin/env Rscript
+
+library(GenomicRanges)
+library(IRanges)
+library(readxl)
+library(rtracklayer)
+library(tidyverse)
+
+options(scipen = 999)
+options(ggrepel.max.overlaps = Inf)
+
+if(stringr::str_detect(getwd(), "kalavattam")) {
+    p_local <- "/Users/kalavattam/Dropbox/FHCC"
+} else {
+    p_local <- "/Users/kalavatt/projects-etc"
+}
+p_wd <- "2022_transcriptome-construction/results/2023-0215"
+
+setwd(paste(p_local, p_wd, sep = "/"))
+getwd()
+
+rm(p_local, p_wd)
+```
+</details>
+<br />
+<br />
+
+## Read in and process `gtf` files (as `data.frame`s)
+The [CUT](https://static-content.springer.com/esm/art%3A10.1038%2Fnature07728/MediaObjects/41586_2009_BFnature07728_MOESM276_ESM.xls), [SUT](https://static-content.springer.com/esm/art%3A10.1038%2Fnature07728/MediaObjects/41586_2009_BFnature07728_MOESM276_ESM.xls), and [XUT](http://vm-gb.curie.fr/XUT/XUTs_Van_Dijk_et_al_2011.gff) [[Xu et al. (Huber, Steinmetz), 2009](https://www.nature.com/articles/nature07728); [van Dijk et al. (Thermes, Morillon), 2011](https://www.nature.com/articles/nature10118)] annotations need to be converted from prior S288c coordinate systems to the modern coordinate system used for this study: [R64](http://sgd-archive.yeastgenome.org/sequence/S288C_reference/genome_releases/). The CUTs and SUTs need to be "lifted" from [R56](sgd-archive.yeastgenome.org/sequence/S288C_reference/genome_releases/liftover/V56_2007_04_06_V64_2011_02_03.over.chain) to R64, and the XUTs need to be "lifted" from [R63](sgd-archive.yeastgenome.org/sequence/S288C_reference/genome_releases/liftover/V63_2010_01_05_V64_2011_02_03.over.chain) to R64. More details in [`work_representative-non-coding-transcriptome.md`](./work_representative-non-coding-transcriptome.md).
+
+### Code
+<details>
+<summary><i>Code: Read in and process `gtf` files (as `data.frame`s)</i></summary>
+
+```{r}
+#!/usr/bin/env Rscript
+
+# list.files("./infiles_gtf-gff3/representation/CUTs_SUTs")
+# list.files("./infiles_gtf-gff3/representation/XUTs")
+# 
+# list.files("./infiles_gtf-gff3/representation/CUTs_SUTs/CUTs_SUTs.xls")
+# list.files("./infiles_gtf-gff3/representation/XUTs/XUTs.gff")
+
+CUTs <- readxl::read_xls(
+    "./infiles_gtf-gff3/representation/CUTs_SUTs/CUTs_SUTs.xls",
+    sheet = "C"
+)
+SUTs <- readxl::read_xls(
+    "./infiles_gtf-gff3/representation/CUTs_SUTs/CUTs_SUTs.xls",
+    sheet = "B"
+)
+XUTs <- rtracklayer::import(
+    "./infiles_gtf-gff3/representation/XUTs/XUTs.gff"
+) %>%
+    tibble::as_tibble()
+```
+</details>
+<br />
+<br />
+
+## Convert chromosome names, order the `data.frame`s
+### Code
+<details>
+<summary><i>Code: Convert chromosome names, order the `data.frame`s</i></summary>
+```{r}
+#!/usr/bin/env Rscript
+
+switch_name_format_integer <- function(x) {
+    y <- sapply(
+        as.character(x),
+        switch,
+         "1" = "I",
+         "2" = "II",
+         "3" = "III",
+         "4" = "IV",
+         "5" = "V",
+         "6" = "VI",
+         "7" = "VII",
+         "8" = "VIII",
+         "9" = "IX",
+        "10" = "X",
+        "11" = "XI",
+        "12" = "XII",
+        "13" = "XIII",
+        "14" = "XIV",
+        "15" = "XV",
+        "16" = "XVI",
+        USE.NAMES = FALSE
+    )
+    return(y)
+}
+
+
+switch_name_format_chr_padded <- function(x) {
+    y <- sapply(
+        as.character(x),
+        switch,
+        "chr01" = "I",
+        "chr02" = "II",
+        "chr03" = "III",
+        "chr04" = "IV",
+        "chr05" = "V",
+        "chr06" = "VI",
+        "chr07" = "VII",
+        "chr08" = "VIII",
+        "chr09" = "IX",
+        "chr10" = "X",
+        "chr11" = "XI",
+        "chr12" = "XII",
+        "chr13" = "XIII",
+        "chr14" = "XIV",
+        "chr15" = "XV",
+        "chr16" = "XVI",
+        USE.NAMES = FALSE
+    )
+    return(y)
+}
+
+
+colnames(XUTs)[colnames(XUTs) == "seqnames"] <- "chr"
+
+CUTs$chr <- switch_name_format_integer(CUTs$chr)
+SUTs$chr <- switch_name_format_integer(SUTs$chr)
+XUTs$chr <- switch_name_format_chr_padded(XUTs$chr)
+
+CUTs <- CUTs %>% dplyr::arrange(chr, start)
+SUTs <- SUTs %>% dplyr::arrange(chr, start)
+XUTs <- XUTs %>% dplyr::arrange(chr, start)
+```
+</details>
+<br />
+<br />
+
+## Write `data.frame`s as `bed` files
+### Refomat `data.frame`s
+#### Code
+<details>
+<summary><i>Code: Refomat `data.frame`s</i></summary>
+```{r}
+#!/usr/bin/env Rscript
+
+reformat_CUTs_SUTs <- function(x) {
+    y <- x %>%
+        tidyr::unite(
+            col = "name",
+            c("type", "name", "ID", "endConfidence", "source")
+        ) %>%
+        dplyr::select(-"commonName") %>%
+        dplyr::mutate("score" = 0) %>%
+        dplyr::relocate(c("chr", "start", "end", "name", "score", "strand"))
+    return(y)
+}
+
+
+reformat_XUTs <- function(x) {
+    y <- x %>%
+        dplyr::select(-c("score", "phase", "Name", "width")) %>%
+        tidyr::unite(col = "name", c("type", "source", "ID")) %>%
+        dplyr::mutate("score" = 0) %>%
+        dplyr::relocate(c("chr", "start", "end", "name", "score", "strand"))
+    return(y)
+}
+
+
+#  Check
+# identical(CUTs$name, CUTs$commonName)  # [1] TRUE
+# identical(SUTs$name, SUTs$commonName)  # [1] TRUE
+# identical(XUTs$ID, XUTs$Name)  # [1] TRUE
+# is.na(XUTs$score) %>% table()
+# is.na(XUTs$phase) %>% table()
+# ((XUTs$end - XUTs$start) == XUTs$width) %>% table()  # FALSE 1658
+# ((XUTs$end - XUTs$start + 1) == XUTs$width) %>% table()  # TRUE 1658
+
+CUTs_r <- reformat_CUTs_SUTs(CUTs)
+SUTs_r <- reformat_CUTs_SUTs(SUTs)
+XUTs_r <- reformat_XUTs(XUTs)
+```
+</details>
+<br />
+
+### Write `data.frame`s as `bed` files
+#### Code
+<details>
+<summary><i>Code: Write `data.frames` as `bed` files</i></summary>
+```{r}
+#!/usr/bin/env Rscript
+
+p_rep <- paste(getwd(), "infiles_gtf-gff3/representation", sep = "/")
+
+#  Check
+# p_rep %>% dir.exists()
+# paste(p_rep, "CUTs_SUTs", sep = "/") %>% dir.exists()
+# paste(p_rep, "CUTs_SUTs", sep = "/") %>% dir.exists()
+# paste(p_rep, "XUTs", sep = "/") %>% dir.exists()
+
+CUTs_f <- paste(p_rep, "CUTs_SUTs", "CUTs.coord-R56.bed", sep = "/")
+SUTs_f <- paste(p_rep, "CUTs_SUTs", "SUTs.coord-R56.bed", sep = "/")
+XUTs_f <- paste(p_rep, "XUTs", "XUTs.coord-R63.bed", sep = "/")
+
+export.bed(CUTs_r, con = CUTs_f)
+export.bed(SUTs_r, con = SUTs_f)
+export.bed(XUTs_r, con = XUTs_f)
+```
+</details>
+<br />
+<br />
+
+## Next step
+Go to `work_representative-non-coding-transcriptome_part-3.md`
+<br />
