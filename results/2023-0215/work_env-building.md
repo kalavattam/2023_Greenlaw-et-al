@@ -27,8 +27,12 @@
         1. [Code](#code-5)
     1. [Set up `gff3_env`](#set-up-gff3_env)
         1. [Code](#code-6)
+        1. [Printed](#printed-3)
     1. [Add appropriate shortcut to `.zaliases` and `.bash_aliases`](#add-appropriate-shortcut-to-zaliases-and-bash_aliases-1)
         1. [Code](#code-7)
+1. [Create an environment for running Python with spyder](#create-an-environment-for-running-python-with-spyder)
+    1. [Code](#code-8)
+    1. [Printed](#printed-4)
 
 <!-- /MarkdownTOC -->
 </details>
@@ -2514,6 +2518,8 @@ mamba install \
 </details>
 <br />
 
+<a id="printed-3"></a>
+#### Printed
 <details>
 <summary><i>Printed: Set up gff3_env</i></summary>
 
@@ -3591,6 +3597,538 @@ alias R-gff3="(
 
 #  .bash_aliases
 alias gff3_env="source activate gff3_env"
+```
+</details>
+<br />
+<br />
+
+<a id="create-an-environment-for-running-python-with-spyder"></a>
+## Create an environment for running Python with spyder
+<a id="code-8"></a>
+### Code
+<details>
+<summary><i>Code: Create an environment for running Python with spyder</i></summary>
+
+```bash
+#!/bin/bash
+
+create_x86_conda_environment spyder_env
+# source activate spyder_env
+
+mamba install -c conda-forge spyder numpy
+mamba install -c conda-forge pandas
+mamba install -c conda-forge nltk
+```
+</details>
+<br />
+
+<a id="printed-4"></a>
+### Printed
+<details>
+<summary><i>Printed: </i></summary>
+
+```txt
+❯ create_x86_conda_environment spyder_env
+Retrieving notices: ...working... done
+Collecting package metadata (current_repodata.json): done
+Solving environment: done
+
+
+==> WARNING: A newer version of conda exists. <==
+  current version: 23.1.0
+  latest version: 23.3.1
+
+Please update conda by running
+
+    $ conda update -n base -c conda-forge conda
+
+Or to minimize the number of packages updated during conda update use
+
+     conda install conda=23.3.1
+
+
+
+## Package Plan ##
+
+  environment location: /Users/kalavatt/mambaforge/envs/spyder_env
+
+
+
+Proceed ([y]/n)? y
+
+Preparing transaction: done
+Verifying transaction: done
+Executing transaction: done
+#
+# To activate this environment, use
+#
+#     $ conda activate spyder_env
+#
+# To deactivate an active environment, use
+#
+#     $ conda deactivate
+
+
+❯ mamba install -c conda-forge spyder numpy
+
+                  __    __    __    __
+                 /  \  /  \  /  \  /  \
+                /    \/    \/    \/    \
+███████████████/  /██/  /██/  /██/  /████████████████████████
+              /  / \   / \   / \   / \  \____
+             /  /   \_/   \_/   \_/   \    o \__,
+            / _/                       \_____/  `
+            |/
+        ███╗   ███╗ █████╗ ███╗   ███╗██████╗  █████╗
+        ████╗ ████║██╔══██╗████╗ ████║██╔══██╗██╔══██╗
+        ██╔████╔██║███████║██╔████╔██║██████╔╝███████║
+        ██║╚██╔╝██║██╔══██║██║╚██╔╝██║██╔══██╗██╔══██║
+        ██║ ╚═╝ ██║██║  ██║██║ ╚═╝ ██║██████╔╝██║  ██║
+        ╚═╝     ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝╚═════╝ ╚═╝  ╚═╝
+
+        mamba (1.4.1) supported by @QuantStack
+
+        GitHub:  https://github.com/mamba-org/mamba
+        Twitter: https://twitter.com/QuantStack
+
+█████████████████████████████████████████████████████████████
+
+
+Looking for: ['spyder', 'numpy']
+
+conda-forge/osx-64                                          Using cache
+conda-forge/noarch                                          Using cache
+bioconda/osx-64                                             Using cache
+bioconda/noarch                                             Using cache
+pkgs/r/osx-64                                                 No change
+pkgs/r/noarch                                                 No change
+pkgs/main/osx-64                                              No change
+pkgs/main/noarch                                              No change
+Transaction
+
+  Prefix: /Users/kalavatt/mambaforge/envs/spyder_env
+
+  Updating specs:
+
+   - spyder
+   - numpy
+
+
+  Package                               Version  Build               Channel                  Size
+────────────────────────────────────────────────────────────────────────────────────────────────────
+  Install:
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+  + alabaster                            0.7.13  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + applaunchservices                     0.3.0  pyhd8ed1ab_2        conda-forge/noarch     Cached
+  + appnope                               0.1.3  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + arrow                                 1.2.3  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + astroid                              2.15.3  py311h6eed73b_0     conda-forge/osx-64     Cached
+  + asttokens                             2.2.1  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + atomicwrites                          1.4.1  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + attrs                                22.2.0  pyh71513ae_0        conda-forge/noarch     Cached
+  + autopep8                              2.0.2  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + babel                                2.12.1  pyhd8ed1ab_1        conda-forge/noarch     Cached
+  + backcall                              0.2.0  pyh9f0ad1d_0        conda-forge/noarch     Cached
+  + backports                               1.0  pyhd8ed1ab_3        conda-forge/noarch     Cached
+  + backports.functools_lru_cache         1.6.4  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + beautifulsoup4                       4.12.2  pyha770c72_0        conda-forge/noarch     Cached
+  + binaryornot                           0.4.4  py_1                conda-forge/noarch     Cached
+  + black                                23.3.0  py311h6eed73b_0     conda-forge/osx-64     Cached
+  + bleach                                6.0.0  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + brotlipy                              0.7.0  py311h5547dcb_1005  conda-forge/osx-64     Cached
+  + bzip2                                 1.0.8  h0d85af4_4          conda-forge/osx-64     Cached
+  + ca-certificates                   2022.12.7  h033912b_0          conda-forge/osx-64     Cached
+  + certifi                           2022.12.7  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + cffi                                 1.15.1  py311ha86e640_3     conda-forge/osx-64     Cached
+  + chardet                               5.1.0  py311h6eed73b_0     conda-forge/osx-64     Cached
+  + charset-normalizer                    3.1.0  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + click                                 8.1.3  unix_pyhd8ed1ab_2   conda-forge/noarch     Cached
+  + cloudpickle                           2.2.1  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + colorama                              0.4.6  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + comm                                  0.1.3  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + cookiecutter                          2.1.1  pyh6c4a22f_0        conda-forge/noarch     Cached
+  + cryptography                         40.0.2  py311h61927ef_0     conda-forge/osx-64     Cached
+  + debugpy                               1.6.7  py311h814d153_0     conda-forge/osx-64     Cached
+  + decorator                             5.1.1  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + defusedxml                            0.7.1  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + diff-match-patch                   20200713  pyh9f0ad1d_0        conda-forge/noarch     Cached
+  + dill                                  0.3.6  pyhd8ed1ab_1        conda-forge/noarch     Cached
+  + docstring-to-markdown                  0.12  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + docutils                               0.19  py311h6eed73b_1     conda-forge/osx-64     Cached
+  + entrypoints                             0.4  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + executing                             1.2.0  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + flake8                                6.0.0  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + gettext                              0.21.1  h8a4c099_0          conda-forge/osx-64     Cached
+  + giflib                                5.2.1  hb7f2c08_3          conda-forge/osx-64     Cached
+  + glib                                 2.76.1  hbc0c0cd_0          conda-forge/osx-64     Cached
+  + glib-tools                           2.76.1  hbc0c0cd_0          conda-forge/osx-64     Cached
+  + gst-plugins-base                     1.22.0  h37e1711_2          conda-forge/osx-64     Cached
+  + gstreamer                            1.22.0  h1d18e73_2          conda-forge/osx-64     Cached
+  + icu                                    72.1  h7336db1_0          conda-forge/osx-64     Cached
+  + idna                                    3.4  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + imagesize                             1.4.1  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + importlib-metadata                    6.5.0  pyha770c72_0        conda-forge/noarch     Cached
+  + importlib_metadata                    6.5.0  hd8ed1ab_0          conda-forge/noarch     Cached
+  + importlib_resources                  5.12.0  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + inflection                            0.5.1  pyh9f0ad1d_0        conda-forge/noarch     Cached
+  + intervaltree                          3.0.2  py_0                conda-forge/noarch     Cached
+  + ipykernel                            6.22.0  pyh736e0ef_0        conda-forge/noarch     Cached
+  + ipython                              8.12.0  pyhd1c38e8_0        conda-forge/noarch     Cached
+  + ipython_genutils                      0.2.0  py_1                conda-forge/noarch     Cached
+  + isort                                5.12.0  pyhd8ed1ab_1        conda-forge/noarch     Cached
+  + jaraco.classes                        3.2.3  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + jedi                                 0.18.2  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + jellyfish                             0.9.0  py311h5547dcb_2     conda-forge/osx-64     Cached
+  + jinja2                                3.1.2  pyhd8ed1ab_1        conda-forge/noarch     Cached
+  + jinja2-time                           0.2.0  pyhd8ed1ab_3        conda-forge/noarch     Cached
+  + jsonschema                           4.17.3  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + jupyter_client                        8.2.0  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + jupyter_core                          5.3.0  py311h6eed73b_0     conda-forge/osx-64     Cached
+  + jupyterlab_pygments                   0.2.2  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + keyring                             23.13.1  py311h6eed73b_0     conda-forge/osx-64     Cached
+  + krb5                                 1.20.1  h049b76e_0          conda-forge/osx-64     Cached
+  + lazy-object-proxy                     1.9.0  py311h5547dcb_0     conda-forge/osx-64     Cached
+  + lerc                                  4.0.0  hb486fe8_0          conda-forge/osx-64     Cached
+  + libblas                               3.9.0  16_osx64_openblas   conda-forge/osx-64     Cached
+  + libcblas                              3.9.0  16_osx64_openblas   conda-forge/osx-64     Cached
+  + libclang                             14.0.6  default_h55ffa42_0  conda-forge/osx-64     Cached
+  + libclang13                           14.0.6  default_hb5731bd_0  conda-forge/osx-64     Cached
+  + libcxx                               16.0.1  h71dddab_0          conda-forge/osx-64     Cached
+  + libdeflate                             1.18  hac1461d_0          conda-forge/osx-64     Cached
+  + libedit                        3.1.20191231  h0678c8f_2          conda-forge/osx-64     Cached
+  + libexpat                              2.5.0  hf0c8a7f_1          conda-forge/osx-64     Cached
+  + libffi                                3.4.2  h0d85af4_5          conda-forge/osx-64     Cached
+  + libgfortran                           5.0.0  11_3_0_h97931a8_31  conda-forge/osx-64     Cached
+  + libgfortran5                         12.2.0  he409387_31         conda-forge/osx-64     Cached
+  + libglib                              2.76.1  h4c723e1_0          conda-forge/osx-64     Cached
+  + libiconv                               1.17  hac89ed1_0          conda-forge/osx-64     Cached
+  + libjpeg-turbo                       2.1.5.1  hb7f2c08_0          conda-forge/osx-64     Cached
+  + liblapack                             3.9.0  16_osx64_openblas   conda-forge/osx-64     Cached
+  + libllvm14                            14.0.6  h5b596cc_1          conda-forge/osx-64     Cached
+  + libogg                                1.3.4  h35c211d_1          conda-forge/osx-64     Cached
+  + libopenblas                          0.3.21  openmp_h429af6e_3   conda-forge/osx-64     Cached
+  + libopus                               1.3.1  hc929b4f_1          conda-forge/osx-64     Cached
+  + libpng                               1.6.39  ha978bb4_0          conda-forge/osx-64     Cached
+  + libpq                                  15.2  h3640bf0_0          conda-forge/osx-64     Cached
+  + libsodium                            1.0.18  hbcb3906_1          conda-forge/osx-64     Cached
+  + libspatialindex                       1.9.3  he49afe7_4          conda-forge/osx-64     Cached
+  + libsqlite                            3.40.0  ha978bb4_0          conda-forge/osx-64     Cached
+  + libtiff                               4.5.0  hedf67fa_6          conda-forge/osx-64     Cached
+  + libvorbis                             1.3.7  h046ec9c_0          conda-forge/osx-64     Cached
+  + libwebp                               1.3.0  ha9aa8fa_0          conda-forge/osx-64     Cached
+  + libwebp-base                          1.3.0  hb7f2c08_0          conda-forge/osx-64     Cached
+  + libzlib                              1.2.13  hfd90126_4          conda-forge/osx-64     Cached
+  + llvm-openmp                          16.0.1  h61d9ccf_0          conda-forge/osx-64     Cached
+  + markupsafe                            2.1.2  py311h5547dcb_0     conda-forge/osx-64     Cached
+  + matplotlib-inline                     0.1.6  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + mccabe                                0.7.0  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + mistune                               2.0.5  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + more-itertools                        9.1.0  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + mypy_extensions                       1.0.0  pyha770c72_0        conda-forge/noarch     Cached
+  + mysql-common                         8.0.32  hc4b2c72_1          conda-forge/osx-64     Cached
+  + mysql-libs                           8.0.32  h8658499_1          conda-forge/osx-64     Cached
+  + nbclient                              0.7.3  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + nbconvert                             7.3.1  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + nbconvert-core                        7.3.1  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + nbconvert-pandoc                      7.3.1  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + nbformat                              5.8.0  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + ncurses                                 6.3  h96cf925_1          conda-forge/osx-64     Cached
+  + nest-asyncio                          1.5.6  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + nspr                                   4.35  hea0b92c_0          conda-forge/osx-64     Cached
+  + nss                                    3.89  h78b00b3_0          conda-forge/osx-64     Cached
+  + numpy                                1.24.2  py311ha9d2c9f_0     conda-forge/osx-64        8MB
+  + numpydoc                              1.5.0  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + openssl                               3.1.0  hfd90126_0          conda-forge/osx-64     Cached
+  + packaging                              23.1  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + pandoc                               2.19.2  h694c41f_2          conda-forge/osx-64     Cached
+  + pandocfilters                         1.5.0  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + parso                                 0.8.3  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + pathspec                             0.11.1  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + pcre2                                 10.40  h1c4e4bc_0          conda-forge/osx-64     Cached
+  + pexpect                               4.8.0  pyh1a96a4e_2        conda-forge/noarch     Cached
+  + pickleshare                           0.7.5  py_1003             conda-forge/noarch     Cached
+  + pip                                    23.1  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + pkgutil-resolve-name                 1.3.10  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + platformdirs                          3.2.0  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + pluggy                                1.0.0  pyhd8ed1ab_5        conda-forge/noarch     Cached
+  + ply                                    3.11  py_1                conda-forge/noarch     Cached
+  + prompt-toolkit                       3.0.38  pyha770c72_0        conda-forge/noarch     Cached
+  + prompt_toolkit                       3.0.38  hd8ed1ab_0          conda-forge/noarch     Cached
+  + psutil                                5.9.5  py311h5547dcb_0     conda-forge/osx-64     Cached
+  + ptyprocess                            0.7.0  pyhd3deb0d_0        conda-forge/noarch     Cached
+  + pure_eval                             0.2.2  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + pycodestyle                          2.10.0  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + pycparser                              2.21  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + pydocstyle                            6.3.0  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + pyflakes                              3.0.1  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + pygments                             2.15.0  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + pylint                               2.17.2  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + pylint-venv                           3.0.1  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + pyls-spyder                           0.4.0  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + pyobjc-core                           9.1.1  py311hfd07503_0     conda-forge/osx-64     Cached
+  + pyobjc-framework-cocoa                  9.1  py311hfd07503_0     conda-forge/osx-64     Cached
+  + pyobjc-framework-coreservices           9.0  py311h5547dcb_0     conda-forge/osx-64     Cached
+  + pyobjc-framework-fsevents               9.1  py311h6eed73b_0     conda-forge/osx-64     Cached
+  + pyopenssl                            23.1.1  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + pyqt                                 5.15.7  py311h8771221_3     conda-forge/osx-64     Cached
+  + pyqt5-sip                           12.11.0  py311h78fa98d_3     conda-forge/osx-64     Cached
+  + pyqtwebengine                        5.15.7  py311heb9b8d8_3     conda-forge/osx-64     Cached
+  + pyrsistent                           0.19.3  py311h5547dcb_0     conda-forge/osx-64     Cached
+  + pysocks                               1.7.1  pyha2e5f31_6        conda-forge/noarch     Cached
+  + python                               3.11.3  h99528f9_0_cpython  conda-forge/osx-64     Cached
+  + python-dateutil                       2.8.2  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + python-fastjsonschema                2.16.3  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + python-lsp-black                      1.2.1  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + python-lsp-jsonrpc                    1.0.0  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + python-lsp-server                     1.7.2  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + python-lsp-server-base                1.7.2  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + python-slugify                        8.0.1  pyhd8ed1ab_1        conda-forge/noarch     Cached
+  + python.app                              1.4  py311h5547dcb_1     conda-forge/osx-64     Cached
+  + python_abi                             3.11  3_cp311             conda-forge/osx-64     Cached
+  + pytoolconfig                          1.2.5  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + pytz                                 2023.3  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + pyyaml                                  6.0  py311h5547dcb_5     conda-forge/osx-64     Cached
+  + pyzmq                                25.0.2  py311habfacb3_0     conda-forge/osx-64     Cached
+  + qdarkstyle                              3.1  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + qstylizer                             0.2.2  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + qt-main                              5.15.8  h0afe88e_9          conda-forge/osx-64     Cached
+  + qt-webengine                         5.15.8  h84e7aee_0          conda-forge/osx-64     Cached
+  + qtawesome                             1.2.3  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + qtconsole                             5.4.2  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + qtconsole-base                        5.4.2  pyha770c72_0        conda-forge/noarch     Cached
+  + qtpy                                  2.3.1  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + readline                                8.2  h9e318b2_1          conda-forge/osx-64     Cached
+  + requests                             2.28.2  pyhd8ed1ab_1        conda-forge/noarch     Cached
+  + rope                                  1.7.0  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + rtree                                 1.0.1  py311hbc1f44b_1     conda-forge/osx-64     Cached
+  + setuptools                           67.6.1  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + sip                                   6.7.8  py311h814d153_0     conda-forge/osx-64     Cached
+  + six                                  1.16.0  pyh6c4a22f_0        conda-forge/noarch     Cached
+  + snowballstemmer                       2.2.0  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + sortedcontainers                      2.4.0  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + soupsieve                       2.3.2.post1  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + sphinx                                6.1.3  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + sphinxcontrib-applehelp               1.0.4  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + sphinxcontrib-devhelp                 1.0.2  py_0                conda-forge/noarch     Cached
+  + sphinxcontrib-htmlhelp                2.0.1  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + sphinxcontrib-jsmath                  1.0.1  py_0                conda-forge/noarch     Cached
+  + sphinxcontrib-qthelp                  1.0.3  py_0                conda-forge/noarch     Cached
+  + sphinxcontrib-serializinghtml         1.1.5  pyhd8ed1ab_2        conda-forge/noarch     Cached
+  + spyder                                5.4.3  py311h6eed73b_0     conda-forge/osx-64     Cached
+  + spyder-kernels                        2.4.3  unix_pyhd8ed1ab_0   conda-forge/noarch     Cached
+  + stack_data                            0.6.2  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + text-unidecode                          1.3  py_0                conda-forge/noarch     Cached
+  + textdistance                          4.5.0  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + three-merge                           0.1.1  pyh9f0ad1d_0        conda-forge/noarch     Cached
+  + tinycss2                              1.2.1  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + tk                                   8.6.12  h5dbffcc_0          conda-forge/osx-64     Cached
+  + toml                                 0.10.2  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + tomli                                 2.0.1  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + tomlkit                              0.11.7  pyha770c72_0        conda-forge/noarch     Cached
+  + tornado                                 6.3  py311h5547dcb_0     conda-forge/osx-64     Cached
+  + traitlets                             5.9.0  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + typing                             3.10.0.0  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + typing-extensions                     4.5.0  hd8ed1ab_0          conda-forge/noarch     Cached
+  + typing_extensions                     4.5.0  pyha770c72_0        conda-forge/noarch     Cached
+  + tzdata                                2023c  h71feb2d_0          conda-forge/noarch     Cached
+  + ujson                                 5.7.0  py311h814d153_0     conda-forge/osx-64     Cached
+  + unidecode                             1.3.6  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + urllib3                             1.26.15  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + watchdog                              3.0.0  py311h6fddac2_0     conda-forge/osx-64     Cached
+  + wcwidth                               0.2.6  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + webencodings                          0.5.1  py_1                conda-forge/noarch     Cached
+  + whatthepatch                          1.0.4  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + wheel                                0.40.0  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + wrapt                                1.15.0  py311h5547dcb_0     conda-forge/osx-64     Cached
+  + wurlitzer                             3.0.3  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + xz                                    5.2.6  h775f41a_0          conda-forge/osx-64     Cached
+  + yaml                                  0.2.5  h0d85af4_2          conda-forge/osx-64     Cached
+  + yapf                                 0.32.0  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + zeromq                                4.3.4  he49afe7_1          conda-forge/osx-64     Cached
+  + zipp                                 3.15.0  pyhd8ed1ab_0        conda-forge/noarch     Cached
+  + zstd                                  1.5.2  hbc0c0cd_6          conda-forge/osx-64     Cached
+
+  Summary:
+
+  Install: 229 packages
+
+  Total download: 8MB
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+Confirm changes: [Y/n] Y
+numpy                                                7.5MB @  33.7MB/s  0.2s
+
+Downloading and Extracting Packages
+
+Preparing transaction: done
+Verifying transaction: done
+Executing transaction: done
+
+
+❯ mamba install -c conda-forge pandas
+
+                  __    __    __    __
+                 /  \  /  \  /  \  /  \
+                /    \/    \/    \/    \
+███████████████/  /██/  /██/  /██/  /████████████████████████
+              /  / \   / \   / \   / \  \____
+             /  /   \_/   \_/   \_/   \    o \__,
+            / _/                       \_____/  `
+            |/
+        ███╗   ███╗ █████╗ ███╗   ███╗██████╗  █████╗
+        ████╗ ████║██╔══██╗████╗ ████║██╔══██╗██╔══██╗
+        ██╔████╔██║███████║██╔████╔██║██████╔╝███████║
+        ██║╚██╔╝██║██╔══██║██║╚██╔╝██║██╔══██╗██╔══██║
+        ██║ ╚═╝ ██║██║  ██║██║ ╚═╝ ██║██████╔╝██║  ██║
+        ╚═╝     ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝╚═════╝ ╚═╝  ╚═╝
+
+        mamba (1.4.1) supported by @QuantStack
+
+        GitHub:  https://github.com/mamba-org/mamba
+        Twitter: https://twitter.com/QuantStack
+
+█████████████████████████████████████████████████████████████
+
+
+Looking for: ['pandas']
+
+conda-forge/osx-64                                          Using cache
+conda-forge/noarch                                          Using cache
+bioconda/osx-64                                             Using cache
+bioconda/noarch                                             Using cache
+pkgs/main/osx-64                                              No change
+pkgs/r/noarch                                                 No change
+pkgs/main/noarch                                              No change
+pkgs/r/osx-64                                                 No change
+
+Pinned packages:
+  - python 3.11.*
+
+
+Transaction
+
+  Prefix: /Users/kalavatt/mambaforge/envs/spyder_env
+
+  Updating specs:
+
+   - pandas
+   - ca-certificates
+   - certifi
+   - openssl
+
+
+  Package          Version  Build            Channel                 Size
+───────────────────────────────────────────────────────────────────────────
+  Install:
+───────────────────────────────────────────────────────────────────────────
+
+  + pandas           2.0.0  py311hd84f3f5_0  conda-forge/osx-64      14MB
+  + python-tzdata   2023.3  pyhd8ed1ab_0     conda-forge/noarch     143kB
+
+  Summary:
+
+  Install: 2 packages
+
+  Total download: 14MB
+
+───────────────────────────────────────────────────────────────────────────
+
+
+Confirm changes: [Y/n] Y
+python-tzdata                                      143.1kB @   2.5MB/s  0.1s
+pandas                                              14.1MB @  74.7MB/s  0.2s
+
+Downloading and Extracting Packages
+
+Preparing transaction: done
+Verifying transaction: done
+Executing transaction: done
+
+
+❯ mamba install -c conda-forge nltk
+
+                  __    __    __    __
+                 /  \  /  \  /  \  /  \
+                /    \/    \/    \/    \
+███████████████/  /██/  /██/  /██/  /████████████████████████
+              /  / \   / \   / \   / \  \____
+             /  /   \_/   \_/   \_/   \    o \__,
+            / _/                       \_____/  `
+            |/
+        ███╗   ███╗ █████╗ ███╗   ███╗██████╗  █████╗
+        ████╗ ████║██╔══██╗████╗ ████║██╔══██╗██╔══██╗
+        ██╔████╔██║███████║██╔████╔██║██████╔╝███████║
+        ██║╚██╔╝██║██╔══██║██║╚██╔╝██║██╔══██╗██╔══██║
+        ██║ ╚═╝ ██║██║  ██║██║ ╚═╝ ██║██████╔╝██║  ██║
+        ╚═╝     ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝╚═════╝ ╚═╝  ╚═╝
+
+        mamba (1.4.1) supported by @QuantStack
+
+        GitHub:  https://github.com/mamba-org/mamba
+        Twitter: https://twitter.com/QuantStack
+
+█████████████████████████████████████████████████████████████
+
+
+Looking for: ['nltk']
+
+bioconda/osx-64                                               No change
+pkgs/main/osx-64                                              No change
+bioconda/noarch                                               No change
+pkgs/main/noarch                                              No change
+pkgs/r/noarch                                                 No change
+pkgs/r/osx-64                                                 No change
+conda-forge/noarch                                  11.9MB @   4.2MB/s  3.1s
+conda-forge/osx-64                                  27.9MB @   4.9MB/s  6.3s
+
+Pinned packages:
+  - python 3.11.*
+
+
+Transaction
+
+  Prefix: /Users/kalavatt/mambaforge/envs/spyder_env
+
+  Updating specs:
+
+   - nltk
+   - ca-certificates
+   - certifi
+   - openssl
+
+
+  Package     Version  Build            Channel                  Size
+───────────────────────────────────────────────────────────────────────
+  Install:
+───────────────────────────────────────────────────────────────────────
+
+  + joblib      1.2.0  pyhd8ed1ab_0     conda-forge/noarch      210kB
+  + nltk        3.8.1  pyhd8ed1ab_0     conda-forge/noarch        1MB
+  + regex   2023.3.23  py311h5547dcb_0  conda-forge/osx-64      372kB
+  + tqdm       4.65.0  pyhd8ed1ab_1     conda-forge/noarch     Cached
+
+  Summary:
+
+  Install: 4 packages
+
+  Total download: 2MB
+
+───────────────────────────────────────────────────────────────────────
+
+
+Confirm changes: [Y/n] Y
+joblib                                             210.0kB @   1.3MB/s  0.2s
+nltk                                                 1.1MB @   6.0MB/s  0.2s
+regex                                              372.0kB @   1.9MB/s  0.2s
+
+Downloading and Extracting Packages
+
+Preparing transaction: done
+Verifying transaction: done
+Executing transaction: done
 ```
 </details>
 <br />

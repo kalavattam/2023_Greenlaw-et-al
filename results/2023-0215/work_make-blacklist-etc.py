@@ -10,14 +10,33 @@ Created on Tue Dec 13 10:14:09 2022
 import gzip
 import numpy as np
 import pandas as pd
-# import os
+import os
 import re
-# import sys
+import sys
 
-# os.getcwd()
-# os.chdir('/Users/kalavatt/projects-etc/2022_transcriptome-construction/results/2022-1201/files_features/SGD_genome-current-release/S288C_reference_genome_R64-3-1_20210421')
-# os.listdir(os.curdir)  # List files and directories
+# import nltk.tokenize
+import urllib.request
+import shutil
+import gzip
 
+os.getcwd()
+os.chdir('/Users/kalavatt/projects-etc/2022_transcriptome-construction/results/2023-0215')
+os.listdir(os.curdir)  # List files and directories
+
+d_blacklist = "infiles_gtf-gff3/blacklist"
+exists = os.path.exists(d_blacklist)
+if not exists: os.makedirs(d_blacklist)
+
+urllib.request.urlretrieve(
+    "http://sgd-archive.yeastgenome.org/sequence/S288C_reference/genome_releases/S288C_reference_genome_R64-1-1_20110203.tgz",
+    d_blacklist + "/" + "S288C_reference_genome_R64-1-1_20110203.tgz"
+)
+
+# exists = os.path.exists(d_blacklist + "/" + "S288C_reference_genome_R64-1-1_20110203")
+# if not exists:
+#     with gzip.open(d_blacklist + "/" + "S288C_reference_genome_R64-1-1_20110203.tgz", 'rb') as d_in:
+#         with open(d_blacklist + "/" + "S288C_reference_genome_R64-1-1_20110203", 'wb') as d_out:
+#             shutil.copyfileobj(d_in, d_out)
 
 # Functions -------------------------------------------------------------------
 # stackoverflow.com/questions/43067373/split-by-comma-and-how-to-exclude-comma-from-quotes-in-split
@@ -51,16 +70,48 @@ def tokenize(string, separator=',', quote='"'):
     return comma_separated_list
 
 
+# def parse_header(fasta):
+#     headers = []
+#
+#     with open(fasta) as f:
+#         header = None
+#         for line in f:
+#             if line.startswith('>'):  # Identifies fasta header line
+#                 headers.append(line[1:-1])  # Append all of the line that isn't >
+#                 header = line[1:]  # Reset header
+#
+#     # newHeader = (header.replace(':',',') for header in headers)  # Format to be accepted later
+#     # newnewHeader = (header.replace('-',',') for header in newHeader)  # Format to accept later
+#     # bed_head = (header.split(',') for header in newnewHeader)  # Separate by comma from format above
+#
+#     headers_A = []
+#     for i in headers:
+#         if i.find('Genome Release 64-1-1, reverse complement,') != -1:
+#             print(i)
+#             headers_A.append(i)
+#         else:
+#             headers_A.append(
+#                 i.replace(
+#                     'Genome Release 64-1-1,',
+#                     'Genome Release 64-1-1, forward complement,'
+#                 )
+#             )
+#     bed_head = (i.split(',') for i in headers_A)  # Separate by comma from format above        
+#     return bed_head
+
+
 # -----------------------------------------------------------------------------
 # Drafting it all... ----------------------------------------------------------
 # -----------------------------------------------------------------------------
 # Read in .fasta
 # #QUESTION Will this work for the other SGD .fastas?
-fasta = "NotFeature_R64-3-1_20210421.fasta.gz"
-# fasta = "orf_coding_all_R64-3-1_20210421.fasta.gz"
-# fasta = "orf_trans_all_R64-3-1_20210421.fasta.gz"
-# fasta = "other_features_genomic_R64-3-1_20210421.fasta.gz"
-# fasta = "rna_coding_R64-3-1_20210421.fasta.gz"
+# fasta = d_blacklist + "/" + "S288C_reference_genome_R64-1-1_20110203" + "/" + "NotFeature_R64-1-1_20110203.fasta"
+# fasta = d_blacklist + "/" + "S288C_reference_genome_R64-1-1_20110203" + "/" + "orf_coding_all_R64-1-1_20110203.fasta"
+# fasta = d_blacklist + "/" + "S288C_reference_genome_R64-1-1_20110203" + "/" + "orf_trans_all_R64-1-1_20110203.fasta"
+# fasta = d_blacklist + "/" + "S288C_reference_genome_R64-1-1_20110203" + "/" + "other_features_genomic_R64-1-1_20110203.fasta"
+fasta = d_blacklist + "/" + "S288C_reference_genome_R64-1-1_20110203" + "/" + "rna_coding_R64-1-1_20110203.fasta"
+
+os.path.isfile(fasta)
 
 # #NOTE As written, does not work for NotFeature_*
 
@@ -101,14 +152,15 @@ del(f, line)
 # complement' designation on certain lines
 headers_fix_complement = []
 for i in headers:
-    if i.find('Genome Release 64-3-1, reverse complement,') != -1:
+    if i.find(', reverse complement,') != -1:
         headers_fix_complement.append(i)
     else:
         headers_fix_complement.append(
-            i.replace(
-                'Genome Release 64-3-1,',
-                'Genome Release 64-3-1, forward complement,'
-            )
+            re.sub(r', Chr\b.+\-.+?[\d], ', r'\g<0>forward complement, ', i)
+            # i.replace(
+            #     ', ',
+            #     ', forward complement,'
+            # )
         )
 del(i)
 
@@ -125,6 +177,17 @@ for i in header_fix_comma:
     header_list.append(tokenize(i))
 del(i)
 
+#  Exclude any subelements with value " intron sequence removed"
+header_list = [
+    [i for i in nested if i != " intron sequence removed"] for nested in header_list
+]
+
+headers[332]
+header_fix_comma[331]
+header_fix_comma[332]
+header_list[331]
+header_list[332]
+
 
 # -----------------------------------------------------------------------------
 # Add columns names
@@ -133,8 +196,7 @@ del(i)
 header_df = pd.DataFrame(
     header_list,
     columns=[
-        'feature', 'coord_written', 'release', 'strand_written', 'category',
-        'notes'
+        'feature', 'coord_written', 'strand_written', 'category', 'notes'
     ]
 )
 
@@ -205,8 +267,7 @@ header_df['strand'] = np.where(
 # # Extract substring before colon for 'chr'
 # header_df['coord_pre_n'].str.split(':').str[0]
 
-header_df['chr'] = header_df['coord_pre_n']\
-    .str.split(':').str[0]
+header_df['chr'] = header_df['coord_pre_n'].str.split(':').str[0]
 
 # stackoverflow.com/questions/20025882/add-a-string-prefix-to-each-value-in-a-string-column-using-pandas
 chr_pre_y = 'Chr' + header_df['chr']
@@ -261,6 +322,7 @@ test = header_df[header_df['coord_written'].str.contains('_')]
 test['fir'] = test['coord_pre_n'].str.split(':').str[1].str.split('_').str[0]
 test['sec'] = test['coord_pre_n'].str.split(':').str[1].str.split('_').str[1]
 
+test_no_us = header_df[~header_df['coord_written'].str.contains('_')]
 
 # Delete column 'name_standard'  #NOTE Don't actually do this
 # header_df = header_df.drop('name_standard', axis = 1)
@@ -278,36 +340,6 @@ header_df = header_df.drop('strand', axis=1)
 tally_3 = header_df[3].value_counts().to_frame().reset_index()
 tally_4 = header_df[4].value_counts().to_frame().reset_index()
 tally_5 = header_df[5].value_counts().to_frame().reset_index()
-
-
-def parse_header(fasta):
-    headers = []
-
-    with open(fasta) as f:
-        header = None
-        for line in f:
-            if line.startswith('>'):  # Identifies fasta header line
-                headers.append(line[1:-1])  # Append all of the line that isn't >
-                header = line[1:]  # Reset header
-
-    # newHeader = (header.replace(':',',') for header in headers)  # Format to be accepted later
-    # newnewHeader = (header.replace('-',',') for header in newHeader)  # Format to accept later
-    # bed_head = (header.split(',') for header in newnewHeader)  # Separate by comma from format above
-
-    headers_A = []
-    for i in headers:
-        if i.find('Genome Release 64-3-1, reverse complement,') != -1:
-            print(i)
-            headers_A.append(i)
-        else:
-            headers_A.append(
-                i.replace(
-                    'Genome Release 64-3-1,',
-                    'Genome Release 64-3-1, forward complement,'
-                )
-            )
-    bed_head = (i.split(',') for i in headers_A)  # Separate by comma from format above        
-    return bed_head
 
 
 if __name__=="__main__":
