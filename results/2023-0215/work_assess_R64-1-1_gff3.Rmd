@@ -1,0 +1,42 @@
+---
+title: "work_assess_R64-1-1_gff3.Rmd"
+output: html_notebookauthor: "KA"
+email: "kalavatt@fredhutch.org"
+output:
+    html_notebook:
+        toc: yes
+        toc_float: true
+---
+<br />
+
+## Get situated
+### Code
+<details>
+<summary><i>Code: Get situated</i></summary>
+```{r}
+#!/usr/bin/env Rscript
+
+library(GenomicRanges)
+library(IRanges)
+library(readxl)
+library(rtracklayer)
+library(tidyverse)
+
+options(scipen = 999)
+options(ggrepel.max.overlaps = Inf)
+
+if(stringr::str_detect(getwd(), "kalavattam")) {
+    p_local <- "/Users/kalavattam/Dropbox/FHCC"
+} else {
+    p_local <- "/Users/kalavatt/projects-etc"
+}
+p_wd <- "2022_transcriptome-construction/results/2023-0215"
+
+setwd(paste(p_local, p_wd, sep = "/"))
+getwd()
+
+rm(p_local, p_wd)
+```
+</details>
+<br />
+<br />

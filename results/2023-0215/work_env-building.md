@@ -30,7 +30,7 @@
         1. [Printed](#printed-3)
     1. [Add appropriate shortcut to `.zaliases` and `.bash_aliases`](#add-appropriate-shortcut-to-zaliases-and-bash_aliases-1)
         1. [Code](#code-7)
-1. [Create an environment for running Python with spyder](#create-an-environment-for-running-python-with-spyder)
+1. [Create an environment for running `Python` with `spyder`](#create-an-environment-for-running-python-with-spyder)
     1. [Code](#code-8)
     1. [Printed](#printed-4)
 
@@ -3603,7 +3603,7 @@ alias gff3_env="source activate gff3_env"
 <br />
 
 <a id="create-an-environment-for-running-python-with-spyder"></a>
-## Create an environment for running Python with spyder
+## Create an environment for running `Python` with `spyder`
 <a id="code-8"></a>
 ### Code
 <details>
@@ -3617,7 +3617,8 @@ create_x86_conda_environment spyder_env
 
 mamba install -c conda-forge spyder numpy
 mamba install -c conda-forge pandas
-mamba install -c conda-forge nltk
+mamba install -c conda-forge nltk  #NOTE Don't need this
+mamba install -c conda-forge pipe
 ```
 </details>
 <br />
@@ -4123,6 +4124,84 @@ Confirm changes: [Y/n] Y
 joblib                                             210.0kB @   1.3MB/s  0.2s
 nltk                                                 1.1MB @   6.0MB/s  0.2s
 regex                                              372.0kB @   1.9MB/s  0.2s
+
+Downloading and Extracting Packages
+
+Preparing transaction: done
+Verifying transaction: done
+Executing transaction: done
+
+
+❯ mamba install -c conda-forge pipe
+
+                  __    __    __    __
+                 /  \  /  \  /  \  /  \
+                /    \/    \/    \/    \
+███████████████/  /██/  /██/  /██/  /████████████████████████
+              /  / \   / \   / \   / \  \____
+             /  /   \_/   \_/   \_/   \    o \__,
+            / _/                       \_____/  `
+            |/
+        ███╗   ███╗ █████╗ ███╗   ███╗██████╗  █████╗
+        ████╗ ████║██╔══██╗████╗ ████║██╔══██╗██╔══██╗
+        ██╔████╔██║███████║██╔████╔██║██████╔╝███████║
+        ██║╚██╔╝██║██╔══██║██║╚██╔╝██║██╔══██╗██╔══██║
+        ██║ ╚═╝ ██║██║  ██║██║ ╚═╝ ██║██████╔╝██║  ██║
+        ╚═╝     ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝╚═════╝ ╚═╝  ╚═╝
+
+        mamba (1.4.1) supported by @QuantStack
+
+        GitHub:  https://github.com/mamba-org/mamba
+        Twitter: https://twitter.com/QuantStack
+
+█████████████████████████████████████████████████████████████
+
+
+Looking for: ['pipe']
+
+bioconda/osx-64                                      3.8MB @   4.1MB/s  1.0s
+bioconda/noarch                                      4.2MB @   4.0MB/s  1.1s
+pkgs/main/osx-64                                     5.3MB @   4.5MB/s  1.3s
+pkgs/r/noarch                                                 No change
+pkgs/r/osx-64                                                 No change
+pkgs/main/noarch                                              No change
+conda-forge/noarch                                  12.0MB @   4.5MB/s  2.9s
+conda-forge/osx-64                                  27.9MB @   4.5MB/s  6.9s
+
+Pinned packages:
+  - python 3.11.*
+
+
+Transaction
+
+  Prefix: /Users/kalavatt/mambaforge/envs/spyder_env
+
+  Updating specs:
+
+   - pipe
+   - ca-certificates
+   - certifi
+   - openssl
+
+
+  Package  Version  Build         Channel                Size
+───────────────────────────────────────────────────────────────
+  Install:
+───────────────────────────────────────────────────────────────
+
+  + pipe       2.0  pyhd8ed1ab_0  conda-forge/noarch     13kB
+
+  Summary:
+
+  Install: 1 packages
+
+  Total download: 13kB
+
+───────────────────────────────────────────────────────────────
+
+
+Confirm changes: [Y/n] Y
+pipe                                                12.7kB @ 102.7kB/s  0.1s
 
 Downloading and Extracting Packages
 

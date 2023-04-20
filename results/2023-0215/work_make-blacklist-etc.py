@@ -6,37 +6,47 @@ Created on Tue Dec 13 10:14:09 2022
 @author: kalavatt
 """
 
+# TODO Find a spot for this link
 # bioinformatics.stackexchange.com/questions/5435/how-to-create-a-bed-file-from-fasta
-import gzip
-import numpy as np
-import pandas as pd
-import os
-import re
-import sys
 
-# import nltk.tokenize
-import urllib.request
-import shutil
 import gzip
+# import nltk.tokenize
+import numpy as np
+import os
+import pandas as pd
+# import pipe
+import re
+# import shutil
+# import sys
+import tarfile
+import urllib.request
+
 
 os.getcwd()
 os.chdir('/Users/kalavatt/projects-etc/2022_transcriptome-construction/results/2023-0215')
 os.listdir(os.curdir)  # List files and directories
 
-d_blacklist = "infiles_gtf-gff3/blacklist"
-exists = os.path.exists(d_blacklist)
-if not exists: os.makedirs(d_blacklist)
+d_comprehensive = "infiles_gtf-gff3/comprehensive"
+exists = os.path.exists(d_comprehensive)
+if not exists:
+    os.makedirs(d_comprehensive)
 
-urllib.request.urlretrieve(
-    "http://sgd-archive.yeastgenome.org/sequence/S288C_reference/genome_releases/S288C_reference_genome_R64-1-1_20110203.tgz",
-    d_blacklist + "/" + "S288C_reference_genome_R64-1-1_20110203.tgz"
-)
+URL = "http://sgd-archive.yeastgenome.org/sequence/S288C_reference/genome_releases/S288C_reference_genome_R64-1-1_20110203.tgz"
+f_comprehensive = d_comprehensive + "/" + "S288C_reference_genome_R64-1-1_20110203.tgz"
+exists = os.path.isfile(f_comprehensive)
+if not exists:
+    urllib.request.urlretrieve(URL, f_comprehensive)
 
-# exists = os.path.exists(d_blacklist + "/" + "S288C_reference_genome_R64-1-1_20110203")
-# if not exists:
-#     with gzip.open(d_blacklist + "/" + "S288C_reference_genome_R64-1-1_20110203.tgz", 'rb') as d_in:
-#         with open(d_blacklist + "/" + "S288C_reference_genome_R64-1-1_20110203", 'wb') as d_out:
-#             shutil.copyfileobj(d_in, d_out)
+exists = os.path.exists(f_comprehensive.removesuffix(".tgz"))
+if not exists:
+    decompressed = tarfile.open(f_comprehensive)
+    decompressed.extractall(d_comprehensive)
+    del(decompressed)  # TODO Do it without initializing a variable
+
+#  Clean up
+d_comprehensive = f_comprehensive.removesuffix(".tgz")
+del(exists, f_comprehensive, URL)
+
 
 # Functions -------------------------------------------------------------------
 # stackoverflow.com/questions/43067373/split-by-comma-and-how-to-exclude-comma-from-quotes-in-split
@@ -103,15 +113,14 @@ def tokenize(string, separator=',', quote='"'):
 # -----------------------------------------------------------------------------
 # Drafting it all... ----------------------------------------------------------
 # -----------------------------------------------------------------------------
-# Read in .fasta
-# #QUESTION Will this work for the other SGD .fastas?
-# fasta = d_blacklist + "/" + "S288C_reference_genome_R64-1-1_20110203" + "/" + "NotFeature_R64-1-1_20110203.fasta"
-# fasta = d_blacklist + "/" + "S288C_reference_genome_R64-1-1_20110203" + "/" + "orf_coding_all_R64-1-1_20110203.fasta"
-# fasta = d_blacklist + "/" + "S288C_reference_genome_R64-1-1_20110203" + "/" + "orf_trans_all_R64-1-1_20110203.fasta"
-# fasta = d_blacklist + "/" + "S288C_reference_genome_R64-1-1_20110203" + "/" + "other_features_genomic_R64-1-1_20110203.fasta"
-fasta = d_blacklist + "/" + "S288C_reference_genome_R64-1-1_20110203" + "/" + "rna_coding_R64-1-1_20110203.fasta"
+# Read in fasta files
+fa_not_fea = d_comprehensive + "/" + "NotFeature_R64-1-1_20110203.fasta"
+fa_orf_cod = d_comprehensive + "/" + "orf_coding_all_R64-1-1_20110203.fasta"
+fa_orf_tra = d_comprehensive + "/" + "orf_trans_all_R64-1-1_20110203.fasta"
+fa_oth_fea = d_comprehensive + "/" + "other_features_genomic_R64-1-1_20110203.fasta"
+fa_rna_cod = d_comprehensive + "/" + "rna_coding_R64-1-1_20110203.fasta"
 
-os.path.isfile(fasta)
+
 
 # #NOTE As written, does not work for NotFeature_*
 
@@ -131,74 +140,149 @@ os.path.isfile(fasta)
 # #TODO Generalize the script: Make it reusable
 
 # Extract the headers
-headers = []
-if fasta[-2:]=='gz':
-    with gzip.open(fasta, mode='rt') as f:
-        header = None
-        for line in f:
-            if line.startswith('>'):  # Identifies fasta header line
-                headers.append(line[1:-1])  # Append all of the line that isn't >
-                header = line[1:]  # Reset header
-else:
-    with open(fasta) as f:
-        header = None
-        for line in f:
-            if line.startswith('>'):  # Identifies fasta header line
-                headers.append(line[1:-1])  # Append all of the line that isn't >
-                header = line[1:]  # Reset header
-del(f, line)
+fastas = [fa_not_fea, fa_orf_cod, fa_orf_tra, fa_oth_fea, fa_rna_cod]
+headers_processed = []
+for fasta in fastas:
+    #  Check
+    print(fasta + ": " + str(os.path.isfile(fasta)) + "\n")
 
-# Add a 'forward complement' designation to match the presence of a 'reverse
-# complement' designation on certain lines
-headers_fix_complement = []
-for i in headers:
-    if i.find(', reverse complement,') != -1:
-        headers_fix_complement.append(i)
+    #  For tests
+    # fasta = fa_not_fea  #OK
+    # fasta = fa_orf_cod  #OK
+    # fasta = fa_orf_tra  #OK
+    # fasta = fa_oth_fea  #OK
+    # fasta = fa_rna_cod  #OK
+
+    headers = []
+    if fasta[-2:]=='gz':
+        with gzip.open(fasta, mode='rt') as f:
+            header = None
+            for line in f:
+                if line.startswith('>'):  # Identifies fasta header line
+                    headers.append(line[1:-1])  # Append all of the line that isn't >
+                    header = line[1:]  # Reset header
     else:
-        headers_fix_complement.append(
-            re.sub(r', Chr\b.+\-.+?[\d], ', r'\g<0>forward complement, ', i)
-            # i.replace(
-            #     ', ',
-            #     ', forward complement,'
-            # )
-        )
-del(i)
+        with open(fasta) as f:
+            header = None
+            for line in f:
+                if line.startswith('>'):  # Identifies fasta header line
+                    headers.append(line[1:-1])  # Append all of the line that isn't >
+                    header = line[1:]  # Reset header
+    del(f, line)
+    
+    # Add a 'forward complement' designation to match the presence of a 'reverse
+    # complement' designation on certain lines
+    headers_fix_complement = []
+    if fasta != fa_not_fea:
+        for i in headers:
+            if re.search('^YPL236C', i):
+                headers_fix_complement.append(
+                    # CURRENT
+                    re.sub(
+                        # r', (Chr|2-micron)\b.+?\-[\d]+, ',
+                        r', Uncharacterized ORF',
+                        r'\g<0>, "KA, 2023-0420: No note present in fasta infile; adding this note to facilitate header parsing"',
+                        i
+                    )
+                )
+            elif i.find(', reverse complement,') != -1:
+                headers_fix_complement.append(i)
+            else:
+                headers_fix_complement.append(
+                    #NOTE This does not work with "orf_coding_all_R64-1-1_20110203.fasta", but does with
+                    # "NotFeature_R64-1-1_20110203.fasta"
+                    # "orf_trans_all_R64-1-1_20110203.fasta": Total number of underscores: 7; thus, need to make 14 additional columns
+                    # "other_features_genomic_R64-1-1_20110203.fasta": empty sequence ∴ 0
+                    # "rna_coding_R64-1-1_20110203.fasta": 2 ∴ 4
+                    
+                    # CURRENT
+                    re.sub(
+                        r', (Chr|2-micron)\b.+?\-[\d]+, ',
+                        r'\g<0>forward complement, ',
+                        i
+                    )
+                    # Chr\b.+?\-[\d]+,
+                    # NOTE This seems to work with "orf_coding_all_R64-1-1_20110203.fasta", but does it work for the others?
+        
+                    # PREVIOUS Too greedy or non-specific?
+                    # re.sub(r', Chr\b.+\-.+?[\d], ', r'\g<0>forward complement, ', i)
+                    
+                    
+                    # i.replace(
+                    #     ', ',
+                    #     ', forward complement,'
+                    # )
+                )
+            
+            # i = headers[6407]
+            # if re.search('^YPL236C', i):
+            
+            
+        del(i)
+    else:
+        for i in headers:
+            headers_fix_complement.append(
+                re.sub(
+                    r', Chr\b.+?\-[\d]+, ',
+                    r'\g<0>both complements, sans-feature, ',
+                    i
+                )
+            )
+    
+    
+    pattern = re.compile(r'(?<=\d),(?=\d)')
+    header_fix_comma = []
+    for i in headers_fix_complement:
+        header_fix_comma.append(pattern.sub('_', i))
+    del(i, pattern)
+    
+    header_list = []
+    for i in header_fix_comma:
+        print(tokenize(i))
+        header_list.append(tokenize(i))
+        # headers_processed.append(tokenize(i))
+    del(i)
+    
+    #  Exclude any subelements with value " intron sequence removed" (only present
+    #+ in multi-exonic features)
+    header_list = [
+        [i for i in nested if i != " intron sequence removed"] for nested in header_list
+    ]
+    # headers_processed = [
+    #     [i for i in nested if i != " intron sequence removed"] for nested in headers_processed
+    # ]
+    
+    headers_processed.append(header_list)
 
+# max(list(map(len, header_list)))
+# min(list(map(len, header_list)))
 
-pattern = re.compile(r'(?<=\d),(?=\d)')
-header_fix_comma = []
-for i in headers_fix_complement:
-    header_fix_comma.append(pattern.sub('_', i))
-del(i, pattern)
+#  For fixing the regex greediness and other issues
+# headers[332]
+# header_fix_comma[331]
+# header_fix_comma[332]
+# header_list[331]
+# header_list[332]
+# headers[404]
+# header_list[404]
 
-header_list = []
-for i in header_fix_comma:
-    print(tokenize(i))
-    header_list.append(tokenize(i))
-del(i)
-
-#  Exclude any subelements with value " intron sequence removed"
-header_list = [
-    [i for i in nested if i != " intron sequence removed"] for nested in header_list
-]
-
-headers[332]
-header_fix_comma[331]
-header_fix_comma[332]
-header_list[331]
-header_list[332]
-
+# headers[6715]
+# headers[6407]
+# header_list[6407]
 
 # -----------------------------------------------------------------------------
 # Add columns names
 # stackoverflow.com/questions/18915941/create-a-pandas-dataframe-from-generator
 # sparkbyexamples.com/pandas/pandas-add-column-names-to-dataframe/
+
 header_df = pd.DataFrame(
     header_list,
     columns=[
-        'feature', 'coord_written', 'strand_written', 'category', 'notes'
+        "feature", "coord_written", "strand_written", "category", "notes"
     ]
 )
+#NOTE "orf_coding_all_R64-1-1_20110203.fasta": Some records have six fields, some four
+#NOTE "NotFeature_R64-1-1_20110203.fasta": All records have four fields; there's no "category" entry
 
 # Clean up variables
 del(header)
@@ -206,6 +290,7 @@ del(headers)
 del(headers_fix_complement)
 del(header_fix_comma)
 del(header_list)
+# del(header_df)
 
 # There are leading spaces in string columns; strip these away
 # stackoverflow.com/questions/49551336/pandas-trim-leading-trailing-white-space-in-a-dataframe
@@ -216,7 +301,7 @@ header_df = header_df.applymap(
 
 
 # -----------------------------------------------------------------------------
-# Split column 'feature' on space
+# Split column 'feature' on spaces
 # stackoverflow.com/questions/37333299/splitting-a-pandas-dataframe-column-by-delimiter
 header_df[['name_systematic', 'name_standard', 'SGDID']] = header_df[
     'feature'
@@ -228,6 +313,7 @@ header_df['name_standard'].equals(header_df['name_systematic'])  # False
 
 # Return where two columns are different
 header_df.query('name_standard != name_systematic')
+# e.g.,
 #     feature                    coord  ... name_standard             SGDID
 # 11   ARS109      Chr I from 159907-160127  ...    ARS101  SGDID:S000077372
 # 86    RE301      Chr III from 29108-29809  ...        RE  SGDID:S000303804
@@ -319,8 +405,22 @@ header_df['end'] = np.where(
 # -----------------------------------------------------------------------------
 # If row contains specific text in specific field, then select it
 test = header_df[header_df['coord_written'].str.contains('_')]
-test['fir'] = test['coord_pre_n'].str.split(':').str[1].str.split('_').str[0]
-test['sec'] = test['coord_pre_n'].str.split(':').str[1].str.split('_').str[1]
+test["no_us"] = test.coord_written.str.count("_")
+print(
+      "Total number of underscores: " + 
+      str(max(test["no_us"])) + "; thus, need to make " +
+      str(max(test["no_us"]) * 2) + " additional columns"
+)
+
+#NOTES
+# "NotFeature_R64-1-1_20110203.fasta":
+# "orf_coding_all_R64-1-1_20110203.fasta":
+# "orf_trans_all_R64-1-1_20110203.fasta": Total number of underscores: 7; thus, need to make 14 additional columns
+# "other_features_genomic_R64-1-1_20110203.fasta": empty sequence ∴ 0
+# "rna_coding_R64-1-1_20110203.fasta": 2 ∴ 4
+
+# test['fir'] = test['coord_pre_n'].str.split(':').str[1].str.split('_').str[0]
+# test['sec'] = test['coord_pre_n'].str.split(':').str[1].str.split('_').str[1]
 
 test_no_us = header_df[~header_df['coord_written'].str.contains('_')]
 
