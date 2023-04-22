@@ -1,0 +1,230 @@
+---
+title: "work_examine-snRNA-snoRNA-annotations.Rmd"
+author: "KA"
+email: "kalavatt@fredhutch.org"
+output:
+    html_notebook:
+        toc: yes
+        toc_float: true
+---
+<br />
+
+Want to see if the snRNA and snoRNA records in `combined_AG.sans-chr.gtf` match those in the official complete R64 `gff3`, `saccharomyces_cerevisiae_R64-1-1_20110208.gff`. If so, then Alison can just reuse the snRNA and snoRNA `gtf`s and counts matrices for derived from `combined_AG.sans-chr.gtf`. If not, then I need to remake the `gtf`s from `saccharomyces_cerevisiae_R64-1-1_20110208.gff` and generate new counts matrices from them.
+
+## ...
+### Get situated
+#### Load necessary libraries
+<details>
+<summary><i>Code: Load necessary libraries</i></summary>
+```{r Load necessary libraries, results='hide', message=FALSE, warning=FALSE}
+library(GenomicRanges)
+library(rtracklayer)
+library(tidyverse)
+```
+</details>
+<br />
+
+#### Set working directory
+<details>
+<summary><i>Code: Set working directory</i></summary>
+```{r Set working directory, results='hide', message=FALSE, warning=FALSE}
+if(stringr::str_detect(getwd(), "kalavattam")) {
+    p_local <- "/Users/kalavattam/Dropbox/FHCC"
+} else {
+    p_local <- "/Users/kalavatt/projects-etc"
+}
+p_wd <- "2022_transcriptome-construction/results/2023-0215"
+
+setwd(paste(p_local, p_wd, sep = "/"))
+getwd()
+
+rm(p_local, p_wd)
+```
+</details>
+<br />
+
+#### Set options
+<details>
+<summary><i>Code: Set options</i></summary>
+```{r Set options, results='hide', message=FALSE, warning=FALSE}
+options(scipen = 999)
+options(ggrepel.max.overlaps = Inf)
+```
+</details>
+<br />
+<br />
+
+## Load `gtf`, `gff3`
+### Load "R64" (`saccharomyces_cerevisiae_R64-1-1_20110208.gff`)
+#### Code
+<details>
+<summary><i>Code: Load "R64" (`saccharomyces_cerevisiae_R64-1-1_20110208.gff`)</i></summary>
+```{r Load "R64", results='hide', message=FALSE, warning=FALSE}
+p_R64 <- "./infiles_gtf-gff3/comprehensive/S288C_reference_genome_R64-1-1_20110203"
+f_R64 <- "saccharomyces_cerevisiae_R64-1-1_20110208.gff"
+g_R64 <- paste(p_R64, f_R64, sep = "/") %>%
+    rtracklayer::import() %>%
+    tibble::as_tibble()
+
+rm(p_R64, f_R64)
+```
+</details>
+<br />
+
+### Load "AG" (`combined_AG.sans-chr.gtf`)
+#### Code
+<details>
+<summary><i>Code: Load "AG" (`combined_AG.sans-chr.gtf`)</i></summary>
+```{r Load "AG", results='hide', message=FALSE, warning=FALSE}
+p_AG <- "./infiles_gtf-gff3/already"
+f_AG <- "combined_AG.sans-chr.gtf"
+g_AG <- paste(p_AG, f_AG, sep = "/") %>%
+    rtracklayer::import() %>%
+    tibble::as_tibble()
+
+rm(p_AG, f_AG)
+```
+</details>
+<br />
+<br />
+
+## Perform comparisons
+### Are the numbers of sn/snoRNA features per `gtf`/`gff3` the same?
+#### Code
+<details>
+<summary><i>Code: Are the numbers of sn/snoRNA features per `gtf`/`gff3` the same?</i></summary>
+```{r Are the numbers of sn/snoRNA features per gtf/gff3 the same?, results='hide', message=FALSE, warning=FALSE}
+type_R64 <- g_R64 %>%
+    dplyr::group_by(type) %>%
+    dplyr::summarize(n = dplyr::n())
+# snoRNA 77
+#  snRNA 6
+
+type_AG <- g_AG %>%
+    dplyr::group_by(type) %>% 
+    dplyr::summarize(n = dplyr::n())
+# snoRNA 77
+#  snRNA 6
+```
+</details>
+<br />
+
+In terms of absolute counts, they are equal&mdash;but how about the coordinates?
+
+### Are the coordinates for sn/snoRNA features the same?
+#### Code
+<details>
+<summary><i>Code: Are the coordinates for sn/snoRNA features the same?</i></summary>
+```{r Are the coordinates for sn/snoRNA features the same?, results='hide', message=FALSE, warning=FALSE}
+g_R64$seqnames <- gsub("chr", "", g_R64$seqnames)
+
+s_R64 <- g_R64[g_R64$type %in% c("snoRNA", "snRNA"), ]
+s_AG <- g_AG[g_AG$type %in% c("snoRNA", "snRNA"), ]
+
+s_R64 <- s_R64[, colnames(s_R64) %in% c("seqnames", "start", "end")] %>%
+    dplyr::mutate(comb = paste(seqnames, start, end, sep = "_"))
+s_AG <- s_AG[, colnames(s_AG) %in% c("seqnames", "start", "end")] %>%
+    dplyr::mutate(comb = paste(seqnames, start, end, sep = "_"))
+
+dplyr::setdiff(s_R64$comb, s_AG$comb)
+# character(0)
+
+(s_R64$comb %in% s_AG$comb) %>% table()
+# TRUE 
+#   83
+```
+</details>
+<br />
+
+Yes, they're the same.
+<br />
+<br />
+
+## Generate a sn/snoRNA-specific `gtf` from "R64"
+### Code
+<details>
+<summary><i>Code: Generate a sn/snoRNA-specific `gtf` from "R64"</i></summary>
+```{r Generate a sn/snoRNA-specific gtf from "R64", results='hide', message=FALSE, warning=FALSE}
+write_gtf <- function(x, y) {
+    # :param x: tibble
+    # :param y: outfile
+    # :return: NA
+    readr::write_tsv(
+        x,
+        y,
+        col_names = FALSE,
+        quote = "none",
+        escape = "none"
+    )
+}
+
+
+format_R64_tibble <- function(x) {
+    y <- x %>%
+        dplyr::arrange(seqnames, start) %>%
+        dplyr::rename(seqname =  seqnames) %>% 
+        dplyr::mutate(feature = "feature", score = ".", frame = ".") %>%
+        dplyr::relocate(c(source, feature), .after = seqname) %>%
+        dplyr::relocate(c(score, strand, frame), .after = end) %>%
+        dplyr::mutate(
+            attribute = paste(
+                paste0("gene_id \"", gene, "\""),
+                paste0("transcript_id \"", ID, "\""),
+                paste0("name \"", Name, "\""),
+                # paste0("aliases \"", gsub(" ", "+", Alias), "\""),
+                # paste0("aliases \"", Alias, "\""),
+                paste0("type \"", type, "\""),
+                paste0("source_id \"", gsub("SGD:", "", dbxref), "\""),
+                # paste0("go_id \"", gsub(" ", "+", Ontology_term), "\""),
+                # paste0("go_id \"", Ontology_term, "\""),
+                # paste0("width \"", width, "\""),
+                # paste0("note \"", unlist(Note), "\""),
+                # paste0(
+                #     "note \"",
+                #     #+ running htseq-count
+                #     gsub(" ", "+", gsub("'", "", unlist(Note))),
+                #     "\""
+                # ),
+                sep = "; "
+            )
+        ) %>%
+        dplyr::select(-c(
+            phase, orf_classification, Parent, gene, ID, Name, Alias, type,
+            dbxref, width, Ontology_term, width, Note
+        ))
+    
+    return(y)
+}
+
+
+# #  Tests
+# test_pre <- g_R64[g_R64$type %in% c("snoRNA", "snRNA"), ]
+# test_post <- g_R64[g_R64$type %in% c("snoRNA", "snRNA"), ] %>%
+#     format_R64_tibble()
+# 
+# test_pre %>% slice(41)
+# slice(test_pre, 41)$Alias
+# test_post %>% slice(41)
+# slice(test_post, 41)$attribute
+# 
+# test_post$attribute
+
+
+d_gtf <- "outfiles_gtf-gff3/comprehensive/S288C_reference_genome_R64-1-1_20110203"
+f_gtf <- "saccharomyces_cerevisiae_R64-1-1_20110208.snRNA-snoRNA.gtf"
+
+ifelse(
+    dir.exists(d_gtf),
+    print("Directory exists"),
+    dir.create(d_gtf, recursive = TRUE)
+)
+
+g_R64[g_R64$type %in% c("snoRNA", "snRNA"), ] %>%
+    format_R64_tibble() %>%
+    write_gtf(., paste(d_gtf, f_gtf, sep = "/"))
+
+# #  Check
+# file.exists(paste(d_gtf, f_gtf, sep = "/"))  # [1] TRUE
+```
+</details>
+<br />

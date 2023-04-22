@@ -9,6 +9,9 @@ output:
 ---
 <br />
 
+Want to see how this file from SGD differs from the Ensembl 108 file we have been using
+`#TODO` Include file names, more info
+
 ## Get situated
 ### Code
 <details>
@@ -39,4 +42,87 @@ rm(p_local, p_wd)
 ```
 </details>
 <br />
+<br />
+
+## Load `gtf`, `gff3` files
+### Code
+<details>
+<summary><i>Code: Load "R64" (`saccharomyces_cerevisiae_R64-1-1_20110208.gff`)</i></summary>
+```{r Load "R64", results='hide', message=FALSE, warning=FALSE}
+p_SGD <- "./infiles_gtf-gff3/comprehensive/S288C_reference_genome_R64-1-1_20110203"
+f_SGD <- "saccharomyces_cerevisiae_R64-1-1_20110208.gff"
+gff3_SGD <- paste(p_SGD, f_SGD, sep = "/") %>%
+    rtracklayer::import() %>%
+    tibble::as_tibble() %>%
+    dplyr::arrange(seqnames, start) %>%
+    dplyr::mutate(seqnames = gsub("chr", "", seqnames))
+
+rm(p_SGD, f_SGD)
+
+p_Ens <- "./infiles_gtf-gff3/already"
+f_Ens <- "Saccharomyces_cerevisiae.R64-1-1.108.gff3"
+gff3_Ens <- paste(p_Ens, f_Ens, sep = "/") %>%
+    rtracklayer::import() %>%
+    tibble::as_tibble() %>%
+    dplyr::arrange(seqnames, start)
+
+rm(p_Ens, f_Ens)
+
+p_Ens <- "./infiles_gtf-gff3/already"
+f_Ens <- "Saccharomyces_cerevisiae.R64-1-1.108.gtf"
+gtf_Ens <- paste(p_Ens, f_Ens, sep = "/") %>%
+    rtracklayer::import() %>%
+    tibble::as_tibble() %>%
+    dplyr::arrange(seqnames, start)
+
+rm(p_Ens, f_Ens)
+```
+</details>
+<br />
+<br />
+
+## Perform comparisons
+### Are the numbers of sn/snoRNA features per `gtf`/`gff3` the same?
+#### Code
+<details>
+<summary><i>Code: Are the numbers of sn/snoRNA features per `gtf`/`gff3` the same?</i></summary>
+```{r Are the numbers of sn/snoRNA features per gtf/gff3 the same?, results='hide', message=FALSE, warning=FALSE}
+gff3_SGD %>% colnames()
+gff3_Ens %>% colnames()
+gtf_Ens %>% colnames()
+
+type_gff3_SGD <- gff3_SGD %>%
+    dplyr::group_by(type) %>%
+    dplyr::summarize(n = dplyr::n())
+
+type_gff3_Ens <- gff3_Ens %>%
+    dplyr::group_by(type) %>% 
+    dplyr::summarize(n = dplyr::n())
+
+type_gtf_Ens <- gtf_Ens %>%
+    dplyr::group_by(type) %>% 
+    dplyr::summarize(n = dplyr::n())
+
+biotype_gff3_SGD <- gff3_SGD %>%
+    dplyr::group_by(type) %>%
+    dplyr::summarize(n = dplyr::n())
+
+biotype_gff3_Ens <- gff3_Ens %>%
+    dplyr::group_by(biotype) %>% 
+    dplyr::summarize(n = dplyr::n())
+
+biotype_gtf_Ens <- gtf_Ens %>%
+    dplyr::group_by(gene_biotype) %>% 
+    dplyr::summarize(n = dplyr::n())
+```
+</details>
+<br />
+
+```{r}
+rm(gff3_SGD_repeat_region) <- gff3_SGD %>%
+    dplyr::filter(type == "repeat_region")
+
+rm(gff3_SGD_telomere) <- gff3_SGD %>%
+    dplyr::filter(type == "telomere")
+```
 <br />

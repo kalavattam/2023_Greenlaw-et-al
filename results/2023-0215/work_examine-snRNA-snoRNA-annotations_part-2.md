@@ -1,5 +1,5 @@
 
-`work_representative-non-coding-transcriptome_part-5.md`
+`work_examine-snRNA-snoRNA-annotations_part-2.md`
 <br />
 <br />
 
@@ -8,19 +8,19 @@
 <!-- MarkdownTOC -->
 
 1. [Get situated](#get-situated)
-    1. [Code](#code)
-1. [Run `htseq-count` on bams in `bams_renamed/` with `.gtf`s in `outfiles_gtf-gff3/representation`](#run-htseq-count-on-bams-in-bams_renamed-with-gtfs-in-outfiles_gtf-gff3representation)
-    1. [Set up outfile directories](#set-up-outfile-directories)
-        1. [Code](#code-1)
-    1. [Set up arrays of bams](#set-up-arrays-of-bams)
-        1. [Code](#code-2)
-    1. [Index bams](#index-bams)
-        1. [Code](#code-3)
-    1. [Run `htseq-count` with `.gtf`s in `outfiles_gtf-gff3/representation`](#run-htseq-count-with-gtfs-in-outfiles_gtf-gff3representation)
-        1. [Set up necessary arrays, variables](#set-up-necessary-arrays-variables)
-            1. [Code](#code-4)
-        1. [Set up and submit `htseq-count` jobs](#set-up-and-submit-htseq-count-jobs)
-            1. [Code](#code-5)
+	1. [Code](#code)
+1. [Run `htseq-count` with `.gtf`](#run-htseq-count-with-gtf)
+	1. [Set up outfile directories](#set-up-outfile-directories)
+		1. [Code](#code-1)
+	1. [Set up arrays of bams](#set-up-arrays-of-bams)
+		1. [Code](#code-2)
+	1. [Index bams](#index-bams)
+		1. [Code](#code-3)
+	1. [Run `htseq-count` with `.gtf`](#run-htseq-count-with-gtf-1)
+		1. [Set up necessary arrays, variables](#set-up-necessary-arrays-variables)
+			1. [Code](#code-4)
+		1. [Set up and submit `htseq-count` jobs](#set-up-and-submit-htseq-count-jobs)
+			1. [Code](#code-5)
 
 <!-- /MarkdownTOC -->
 </details>
@@ -36,9 +36,6 @@
 ```bash
 #!/bin/bash
 
-# tmux new -s htseq
-# tmux a -t htseq
-
 transcriptome && 
     {
         cd "results/2023-0215/" \
@@ -51,8 +48,10 @@ source activate gff3_env
 <br />
 <br />
 
-<a id="run-htseq-count-on-bams-in-bams_renamed-with-gtfs-in-outfiles_gtf-gff3representation"></a>
-## Run `htseq-count` on bams in `bams_renamed/` with `.gtf`s in `outfiles_gtf-gff3/representation`
+<a id="run-htseq-count-with-gtf"></a>
+## Run `htseq-count` with `.gtf`
+...in `outfiles_gtf-gff3/comprehensive/S288C_reference_genome_R64-1-1_20110203`; use `bam`s in `bams_renamed/`
+
 <a id="set-up-outfile-directories"></a>
 ### Set up outfile directories
 <a id="code-1"></a>
@@ -63,9 +62,9 @@ source activate gff3_env
 ```bash
 #!/bin/bash
 
-for h in ./outfiles_htseq-count/representation/UT_prim_UMI/*; do
+for h in ./outfiles_htseq-count/comprehensive/S288C_reference_genome_R64-1-1_20110203/UT_prim_UMI/*; do
     if [[ ! -e "${h}" ]]; then
-        mkdir -p outfiles_htseq-count/representation/UT_prim_UMI/err_out
+        mkdir -p outfiles_htseq-count/comprehensive/S288C_reference_genome_R64-1-1_20110203/UT_prim_UMI/err_out
     else
         echo "Directories present; skipping mkdir'ing of outfile directories"
     fi
@@ -134,8 +133,10 @@ done
 </details>
 <br />
 
-<a id="run-htseq-count-with-gtfs-in-outfiles_gtf-gff3representation"></a>
-### Run `htseq-count` with `.gtf`s in `outfiles_gtf-gff3/representation`
+<a id="run-htseq-count-with-gtf-1"></a>
+### Run `htseq-count` with `.gtf`
+...in `outfiles_gtf-gff3/comprehensive/S288C_reference_genome_R64-1-1_20110203`; use `bam`s in `bams_renamed/`
+
 <a id="set-up-necessary-arrays-variables"></a>
 #### Set up necessary arrays, variables
 <a id="code-4"></a>
@@ -146,17 +147,9 @@ done
 ```bash
 #!/bin/bash
 
-p_gtf=outfiles_gtf-gff3/representation  # ls -1 "${p_gtf}"
+p_gtf=outfiles_gtf-gff3/comprehensive/S288C_reference_genome_R64-1-1_20110203  # ls -1 "${p_gtf}"
 gtf=(
-    "${p_gtf}/Greenlaw-et-al_CUTs-4x.gtf"
-    # "${p_gtf}/Greenlaw-et-al_CUTs.gtf"
-    "${p_gtf}/Greenlaw-et-al_CUTs-HMM.gtf"
-    # "${p_gtf}/Greenlaw-et-al_non-collapsed-non-coding-transcriptome.gtf"
-    # "${p_gtf}/Greenlaw-et-al_NUTs.gtf"
-    # "${p_gtf}/Greenlaw-et-al_representative-non-coding-transcriptome.gtf"
-    # "${p_gtf}/Greenlaw-et-al_SRATs.gtf"
-    # "${p_gtf}/Greenlaw-et-al_SUTs.gtf"
-    # "${p_gtf}/Greenlaw-et-al_XUTs.gtf"
+    "${p_gtf}/saccharomyces_cerevisiae_R64-1-1_20110208.snRNA-snoRNA.gtf"
 )
 echo_test "${gtf[@]}"
 echo "${#gtf[@]}"
@@ -164,10 +157,7 @@ echo "${#gtf[@]}"
 job_name="run_htseq-count"  # echo "${job_name}"
 threads=8  # echo "${threads}"
 
-job_no_max=24  # echo "${job_no_max}"
-
-# echo_test "${UT_prim_UMI[@]}"
-# echo "${#UT_prim_UMI[@]}"
+job_no_max=1  # echo "${job_no_max}"
 ```
 </details>
 <br />
@@ -186,13 +176,13 @@ h=0
 for i in "strd-eq"; do
     for j in "${gtf[@]}"; do
         # i="strd-eq"  # echo "${i}"
-        # j="${gtf[3]}"  # echo "${j}"
+        # j="${gtf[0]}"  # echo "${j}"
 
         #  -------------------------------------
         count_against="${j}"  # echo "${count_against}"
-        out="outfiles_htseq-count/representation/UT_prim_UMI/$(
+        out="outfiles_htseq-count/comprehensive/S288C_reference_genome_R64-1-1_20110203/UT_prim_UMI/$(
             echo $(basename "${count_against}") \
-                | sed 's/Greenlaw-et-al_//g;s/.gtf//g'
+                | sed 's/.gtf//g'
         ).hc-${i}.tsv"   # echo "${out}"  # ., "$(dirname "${out}")"
 
         err_out="$(
