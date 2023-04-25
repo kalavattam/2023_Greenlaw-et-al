@@ -276,7 +276,8 @@ for fasta in fastas:
 # sparkbyexamples.com/pandas/pandas-add-column-names-to-dataframe/
 
 header_df = pd.DataFrame(
-    header_list,
+    # header_list,
+    headers_processed[0],
     columns=[
         "feature", "coord_written", "strand_written", "category", "notes"
     ]
@@ -301,18 +302,18 @@ header_df = header_df.applymap(
 
 
 # -----------------------------------------------------------------------------
-# Split column 'feature' on spaces
-# stackoverflow.com/questions/37333299/splitting-a-pandas-dataframe-column-by-delimiter
-header_df[['name_systematic', 'name_standard', 'SGDID']] = header_df[
-    'feature'
-].str.split(' ', expand=True)
+# # Split column 'feature' on spaces (not needed for NotFeature dataframe)
+# # stackoverflow.com/questions/37333299/splitting-a-pandas-dataframe-column-by-delimiter
+# header_df[['name_systematic', 'name_standard', 'SGDID']] = header_df[
+#     'feature'
+# ].str.split(' ', expand=True)
 
-# Check that 'name_standard' is exactly the same as 'feature'
+# # Check that 'name_standard' is exactly the same as 'feature'
 # geeksforgeeks.org/how-to-compare-two-columns-in-pandas/
-header_df['name_standard'].equals(header_df['name_systematic'])  # False
+# header_df['name_standard'].equals(header_df['name_systematic'])  # False
 
-# Return where two columns are different
-header_df.query('name_standard != name_systematic')
+# # Return where two columns are different
+# header_df.query('name_standard != name_systematic')
 # e.g.,
 #     feature                    coord  ... name_standard             SGDID
 # 11   ARS109      Chr I from 159907-160127  ...    ARS101  SGDID:S000077372
@@ -329,9 +330,9 @@ header_df.query('name_standard != name_systematic')
 # yeastgenome.org/locus/S000007644
 
 # -----------------------------------------------------------------------------
-# Strip string 'SGDID:' from column 'SGDID'
-# stackoverflow.com/questions/13682044/remove-unwanted-parts-from-strings-in-a-column
-header_df['SGDID'] = header_df['SGDID'].str.replace('SGDID:', '')
+# # Strip string 'SGDID:' from column 'SGDID' (not needed for NotFeature dataframe)
+# # stackoverflow.com/questions/13682044/remove-unwanted-parts-from-strings-in-a-column
+# header_df['SGDID'] = header_df['SGDID'].str.replace('SGDID:', '')
 
 # Create 'coord_...' columns derived from 'coord_written'
 header_df['coord_pre_y'] = header_df['coord_written']\
@@ -340,17 +341,17 @@ header_df['coord_pre_n'] = header_df['coord_written']\
         .str.replace(' from ', ':').str.replace('Chr ', '')
 
 # -----------------------------------------------------------------------------
-# Populate new column based on value in other column
-# towardsdatascience.com/create-new-column-based-on-other-columns-pandas-5586d87de73d
-# stackoverflow.com/questions/10715519/conditionally-fill-column-values-based-on-another-columns-value-in-pandas
-# numpy.org/doc/stable/reference/generated/numpy.where.html
-header_df['strand'] = np.where(
-    header_df['strand_written'] == 'reverse complement', '-', '+'
-)
+# # Populate new column based on value in other column (not needed for NotFeature dataframe)
+# # towardsdatascience.com/create-new-column-based-on-other-columns-pandas-5586d87de73d
+# # stackoverflow.com/questions/10715519/conditionally-fill-column-values-based-on-another-columns-value-in-pandas
+# # numpy.org/doc/stable/reference/generated/numpy.where.html
+# header_df['strand'] = np.where(
+#     header_df['strand_written'] == 'reverse complement', '-', '+'
+# )
 
 # -----------------------------------------------------------------------------
 # Extracting substrings to populate columns 'chr', 'start', 'end'
-# # Extract substring before colon for 'chr'
+# Extract substring before colon for 'chr'
 # header_df['coord_pre_n'].str.split(':').str[0]
 
 header_df['chr'] = header_df['coord_pre_n'].str.split(':').str[0]
@@ -401,9 +402,11 @@ header_df['end'] = np.where(
         .str.split(':').str[1].str.split('-').str[0]
 )
 
+header_df.to_csv("infiles_gtf-gff3/comprehensive/S288C_reference_genome_R64-1-1_20110203/NotFeature_R64-1-1_20110203.dataframe.tsv", sep = "\t")
+
 
 # -----------------------------------------------------------------------------
-# If row contains specific text in specific field, then select it
+# If row contains specific text in specific field, then select it (not needed for NotFeature dataframe)
 test = header_df[header_df['coord_written'].str.contains('_')]
 test["no_us"] = test.coord_written.str.count("_")
 print(
@@ -411,6 +414,7 @@ print(
       str(max(test["no_us"])) + "; thus, need to make " +
       str(max(test["no_us"]) * 2) + " additional columns"
 )
+del(test)
 
 #NOTES
 # "NotFeature_R64-1-1_20110203.fasta":
