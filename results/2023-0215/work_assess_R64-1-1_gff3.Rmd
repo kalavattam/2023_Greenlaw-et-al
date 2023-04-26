@@ -589,9 +589,9 @@ We can also exclude `type` "region", which seem to be encompassed in other featu
 
 Retain `type` "five_prime_UTR_intron"
 
-Retain `type` "gene_cassette"
+~~Retain `type` "gene_cassette"~~ After discussion with Toshi, we realize that these features will be encompassed by other features (e.g., within `type` "gene"), so we can exclude `type` "gene_cassette"
 
-Retain `type` "external_transcribed_spacer_region" and "internal_transcribed_spacer_region"
+~~Retain `type` "external_transcribed_spacer_region" and "internal_transcribed_spacer_region"~~ Actually, don't b/c these are already covered by `type` "rRNA"
 
 
 ## Survey all of the notes I have taken so far and make decisions
@@ -607,16 +607,16 @@ So, here's what to include for `type`:
 - "ARS"
 - "centromere"
 - "five_prime_UTR_intron"
-- "telomere"
-- "gene_cassette"
 - "gene"
 - "long_terminal_repeat"
 - "LTR_retrotransposon"
 - "ncRNA"
 - "pseudogene"
+- "repeat_region"
 - "rRNA"
 - "snRNA"
 - "snoRNA"
+- "telomere"
 - "transposable_element_gene"
 - "tRNA"
 
@@ -624,48 +624,224 @@ And here's what not to include for `type`:
 - "binding_site"
 - "CDS"
 - "chromosome"
-- "external_transcribed_spacer_region" (they're already in "rRNA")
+- "external_transcribed_spacer_region" (they're already in `type` "rRNA")
+- "gene_cassette"
 - "insertion"
-- "internal_transcribed_spacer_region" (they're already in "rRNA")
+- "internal_transcribed_spacer_region" (they're already in `type` "rRNA")
 - "intron"
 - "noncoding_exon"
 - "nucleotide_match"
-- "repeat_region"
 - "region"
 
 ```{r}
-to_include <- gff3_SGD %>%
+#  To start, only want to include the features for which we (may) want to
+#+ obtain antisense counts
+features_etc <- gff3_SGD %>%
     dplyr::filter(
-        type == "ARS" |
-        type == "centromere" |
+        # type == "centromere" |  # Handle this separately b/c don't want antisense counts
         type == "five_prime_UTR_intron" |
-        type == "telomere" |
-        type == "gene_cassette" |
         type == "gene" |
         type == "long_terminal_repeat" |
         type == "LTR_retrotransposon" |
         type == "ncRNA" |
         type == "pseudogene" |
+        type == "repeat_region" |
         type == "rRNA" |
         type == "snRNA" |
         type == "snoRNA" |
+        # type == "telomere" |  # Handle this separately b/c don't want antisense counts
         type == "transposable_element_gene" |
         type == "tRNA"
     )
-to_include$Note <- process_list_column(to_include$Note)
-to_include$Parent <- process_list_column(to_include$Parent)
-to_include$Alias <- process_list_column(to_include$Alias)
-to_include$Ontology_term <- process_list_column(to_include$Ontology_term)
-to_include$Name <- ifelse(
-    to_include$type == "five_prime_UTR_intron",
-    paste0(to_include$Name, "_5p"),
-    to_include$Name
+features_etc$Note <- process_list_column(features_etc$Note)
+features_etc$Parent <- process_list_column(features_etc$Parent)
+features_etc$Alias <- process_list_column(features_etc$Alias)
+features_etc$Ontology_term <- process_list_column(features_etc$Ontology_term)
+features_etc$Name <- ifelse(
+    features_etc$type == "five_prime_UTR_intron",
+    paste0(features_etc$Name, "_5p"),
+    ifelse(
+        features_etc$type == "repeat_region",
+        paste(
+            features_etc$Name,
+            paste0(
+                features_etc$seqnames, ":",
+                features_etc$start, "-",
+                features_etc$end
+            ),
+            sep = "_"
+        ),
+        features_etc$Name
+    )
 )
-to_include$ID <- ifelse(is.na(to_include$ID), to_include$Name, to_include$ID)
+features_etc$ID <- features_etc$Name
 
-duplicated(to_include$Name) %>% table()
-all(to_include$ID == to_include$Name)
+# duplicated(features_etc$Name) %>% table()
+# duplicated(features_etc$ID) %>% table()
 
+# features_etc %>%
+#     dplyr::group_by(type) %>%
+#     dplyr::summarize(n = dplyr::n()) %>%
+#     dplyr::arrange(dplyr::desc(n))
+# all(features_etc$ID == features_etc$Name)
+
+
+#  Create a dataframe of features antisense to features in features_etc -------
+features_etc_AS <- features_etc
+# features_etc_AS %>%
+#     dplyr::group_by(strand) %>%
+#     dplyr::summarize(n = dplyr::n())
+
+features_etc_AS$strand <- ifelse(features_etc_AS$strand == "+", "-", "+")
+features_etc_AS$source <- "SGD (KA)"
+features_etc_AS$type <- paste("antisense", features_etc_AS$type, sep = "_")
+features_etc_AS$ID <- features_etc_AS$Name <- paste(features_etc_AS$Name, "AS", sep = "_")
+
+
+#  Make ARS, telomere, and centromere entries for plus and minus strands ------
+ARS_etc_plus <- gff3_SGD %>% dplyr::filter(
+    type == "ARS" |
+    type == "telomere" |
+    type == "centromere"
+)
+ARS_etc_plus$Note <- process_list_column(ARS_etc_plus$Note)
+ARS_etc_plus$Parent <- process_list_column(ARS_etc_plus$Parent)
+ARS_etc_plus$Alias <- process_list_column(ARS_etc_plus$Alias)
+ARS_etc_plus$Ontology_term <- process_list_column(ARS_etc_plus$Ontology_term)
+ARS_etc_plus$Name <- ifelse(
+    ARS_etc_plus$type == "five_prime_UTR_intron",
+    paste0(ARS_etc_plus$Name, "_5p"),
+    ifelse(
+        ARS_etc_plus$type == "repeat_region",
+        paste(
+            ARS_etc_plus$Name,
+            paste0(ARS_etc_plus$seqnames, ":", ARS_etc_plus$start, "-", ARS_etc_plus$end),
+            sep = "_"
+        ),
+        ARS_etc_plus$Name
+    )
+)
+ARS_etc_plus$ID <- ARS_etc_plus$Name
+
+ARS_etc_minus <- ARS_etc_plus
+ARS_etc_plus$strand <- "+"
+ARS_etc_minus$strand <- "-"
+ARS_etc_plus$ID <- ARS_etc_plus$Name <- paste(ARS_etc_plus$Name, "plus", sep = "_")
+ARS_etc_minus$ID <- ARS_etc_minus$Name <- paste(ARS_etc_minus$Name, "minus", sep = "_")
+
+
+#  Bind dataframes features_etc_sense, ARS_etc_plus, ARS_etc_minus ------------
+features_etc_sense <- dplyr::bind_rows(
+    features_etc, ARS_etc_plus, ARS_etc_minus
+) %>%
+    dplyr::arrange(seqnames, start, strand) %>%
+    dplyr::filter(seqnames != "2-micron" & seqnames != "Mito")
+# rm(features_etc)
+
+features_etc_sense_antisense <- dplyr::bind_rows(
+    features_etc_sense, features_etc_AS
+) %>%
+    dplyr::arrange(seqnames, start, strand) %>%
+    dplyr::filter(seqnames != "2-micron" & seqnames != "Mito")
+
+
+#  Include intergenic annotations in the dataframe ----------------------------
+intergenic_plus <- readr::read_tsv(
+    "infiles_gtf-gff3/comprehensive/S288C_reference_genome_R64-1-1_20110203/NotFeature_R64-1-1_20110203.dataframe.tsv",
+    show_col_types = FALSE
+) %>%
+    dplyr::select(-"...1")
+
+
+
+chr_roman <- sapply(
+    intergenic_plus$chr,
+    function(x) {
+        as.character(
+            if(grepl("^2-micron$", x)) "2-micron"
+            else if(grepl("^Mito$", x)) "Mito"
+            else if(grepl("^[1-9]\\d*$", x)) as.roman(x)
+        )
+    }
+)
+chr_roman %>%
+    as_tibble() %>%
+    group_by(value) %>%
+    summarize(n = n())
+
+intergenic_plus$chr <- chr_roman
+rm(chr_roman)
+
+intergenic_plus %>%
+    dplyr::group_by(chr) %>%
+    dplyr::summarize(n = dplyr::n()) %>%
+    dplyr::arrange(chr)
+    
+intergenic_plus <- intergenic_plus %>%    
+    dplyr::mutate(
+        seqnames = chr,
+        width = (end - start) + 1,
+        source = "SGD (KA)",
+        type = "intergenic",
+        score =  NA_integer_,
+        phase = NA_character_,
+        ID = feature,
+        dbxref = NA_character_,
+        Name = feature,
+        Ontology_term = NA_character_,
+        orf_classification = NA_character_,
+        Parent = NA_character_,
+        Alias = coord_pre_n,
+        gene = NA_character_
+    ) %>%
+    dplyr::rename(Note = notes) %>%
+    dplyr::select(-c(
+        chr, strand_written, category, feature, coord_written, coord_pre_y,
+        coord_pre_n, chr_pre_y
+    )) %>%
+    dplyr::relocate(c(
+        seqnames, start, end, width, strand, source, type, score, phase, ID,
+        dbxref, Name, Note, Ontology_term, orf_classification, Parent, Alias,
+        gene
+    ))
+
+intergenic_minus <- intergenic_plus
+intergenic_minus$strand <- "-"
+intergenic_minus$ID <- paste(intergenic_minus$ID, "minus", sep = "_")
+intergenic_plus$ID <- paste(intergenic_plus$ID, "plus", sep = "_")
+intergenic_minus$Name <- paste(intergenic_minus$Name, "minus", sep = "_")
+intergenic_plus$Name <- paste(intergenic_plus$Name, "plus", sep = "_")
+intergenic_minus$Alias <- paste(intergenic_minus$Alias, "minus", sep = "_")
+intergenic_plus$Alias <- paste(intergenic_plus$Alias, "plus", sep = "_")
+intergenic_minus$Note <- intergenic_minus$Note %>% gsub("between", "Between", .)
+intergenic_plus$Note <- intergenic_plus$Note %>% gsub("between", "Between", .)
+
+intergenic <- dplyr::bind_rows(intergenic_plus, intergenic_minus) %>%
+    dplyr::arrange(seqnames, start, strand) %>%
+    dplyr::filter(seqnames != "2-micron" & seqnames != "Mito")
+
+
+rm(intergenic_minus, intergenic_plus)
+
+
+#  Bind dataframes features_etc and intergenic
+features_intergenic_etc <- dplyr::bind_rows(
+    dplyr::select(features_etc, -c(score, phase)),
+    dplyr::select(intergenic, -c(score, phase))
+) %>%
+    dplyr::arrange(seqnames, start, strand) %>%
+    dplyr::filter(seqnames != "2-micron" & seqnames != "Mito")
+
+colnames(features_etc)
+colnames(intergenic)
+
+
+
+
+
+#  Scraps
+# all(colnames(test) == colnames(features_etc))  # [1] TRUE
+#
 # gff3_SGD %>%
 #     dplyr::filter(type == "gene") %>%
 #     dplyr::group_by(orf_classification) %>%

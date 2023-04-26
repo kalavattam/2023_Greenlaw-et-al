@@ -183,4 +183,7 @@ done
 #+ Thus, in our context for RF libraries, --filterRNAstrand=forward gives us
 #+ plus-strand reads; --filterRNAstrand=reverse gives us minus-strand reads.
 
+#  WARNING Need to double check what was written above; in the code, I'm
+#+ assigning "forward" to the minus strand and "reverse" to the plus strand
+
 #DONE For --blackListFileName, make a gtf of rRNA, tRNA, and Ty elements
