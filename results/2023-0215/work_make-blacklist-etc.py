@@ -23,7 +23,8 @@ import urllib.request
 
 
 os.getcwd()
-os.chdir('/Users/kalavatt/projects-etc/2022_transcriptome-construction/results/2023-0215')
+os.chdir('/Users/kalavattam/Dropbox/FHCC/2022_transcriptome-construction/results/2023-0215')
+# os.chdir('/Users/kalavatt/projects-etc/2022_transcriptome-construction/results/2023-0215')
 os.listdir(os.curdir)  # List files and directories
 
 d_comprehensive = "infiles_gtf-gff3/comprehensive"
@@ -377,12 +378,11 @@ del(chr_pre_y)
 # header_df['coord_pre_n']\
 #     .str.split(':').str[1].str.split('-').str[1]  # '-' 'start'
 
+header_df['strand'] = '+'  # For NotFeature only
 header_df['start'] = np.where(
     header_df['strand'] == '+',
-    header_df['coord_pre_n']\
-        .str.split(':').str[1].str.split('-').str[0],
-    header_df['coord_pre_n']\
-        .str.split(':').str[1].str.split('-').str[1]
+    header_df['coord_pre_n'].str.split(':').str[1].str.split('-').str[0],
+    header_df['coord_pre_n'].str.split(':').str[1].str.split('-').str[1]
 )
 
 # end -------------

@@ -734,14 +734,19 @@ ARS_etc_minus$ID <- ARS_etc_minus$Name <- paste(ARS_etc_minus$Name, "minus", sep
 features_etc_sense <- dplyr::bind_rows(
     features_etc, ARS_etc_plus, ARS_etc_minus
 ) %>%
-    dplyr::arrange(seqnames, start, strand) %>%
+    dplyr::arrange(seqnames, start, end, strand) %>%
     dplyr::filter(seqnames != "2-micron" & seqnames != "Mito")
-# rm(features_etc)
 
 features_etc_sense_antisense <- dplyr::bind_rows(
     features_etc_sense, features_etc_AS
 ) %>%
-    dplyr::arrange(seqnames, start, strand) %>%
+    dplyr::arrange(seqnames, start, end, strand) %>%
+    dplyr::filter(seqnames != "2-micron" & seqnames != "Mito")
+
+features_etc_antisense <- dplyr::bind_rows(
+    features_etc_AS, ARS_etc_plus, ARS_etc_minus
+) %>%
+    dplyr::arrange(seqnames, start, end, strand) %>%
     dplyr::filter(seqnames != "2-micron" & seqnames != "Mito")
 
 
@@ -751,8 +756,6 @@ intergenic_plus <- readr::read_tsv(
     show_col_types = FALSE
 ) %>%
     dplyr::select(-"...1")
-
-
 
 chr_roman <- sapply(
     intergenic_plus$chr,
@@ -825,18 +828,95 @@ rm(intergenic_minus, intergenic_plus)
 
 
 #  Bind dataframes features_etc and intergenic
-features_intergenic_etc <- dplyr::bind_rows(
-    dplyr::select(features_etc, -c(score, phase)),
+features_intergenic_sense <- dplyr::bind_rows(
+    dplyr::select(features_etc_sense, -c(score, phase)),
     dplyr::select(intergenic, -c(score, phase))
 ) %>%
-    dplyr::arrange(seqnames, start, strand) %>%
+    dplyr::arrange(seqnames, start, end, strand) %>%
     dplyr::filter(seqnames != "2-micron" & seqnames != "Mito")
 
-colnames(features_etc)
-colnames(intergenic)
+features_intergenic_sense_antisense <- dplyr::bind_rows(
+    dplyr::select(features_etc_sense_antisense, -c(score, phase)),
+    dplyr::select(intergenic, -c(score, phase))
+) %>%
+    dplyr::arrange(seqnames, start, end, strand) %>%
+    dplyr::filter(seqnames != "2-micron" & seqnames != "Mito")
+
+features_intergenic_antisense <- dplyr::bind_rows(
+    dplyr::select(features_etc_antisense, -c(score, phase)),
+    dplyr::select(intergenic, -c(score, phase))
+) %>%
+    dplyr::arrange(seqnames, start, end, strand) %>%
+    dplyr::filter(seqnames != "2-micron" & seqnames != "Mito")
 
 
+write_gtf <- function(x, y) {
+    # :param x: tibble
+    # :param y: outfile
+    # :return: NA
+    readr::write_tsv(
+        x,
+        y,
+        col_names = FALSE,
+        quote = "none",
+        escape = "none"
+    )
+}
 
+
+format_SGD_tibble <- function(x) {
+    # x <- to_include
+    # x %>% 
+    y <- x %>%
+        dplyr::arrange(seqnames, start) %>%
+        dplyr::rename(seqname =  seqnames) %>%
+        dplyr::filter(seqname != "2-micron") %>%
+        dplyr::mutate(feature = "feature", score = ".", frame = ".") %>%
+        dplyr::relocate(c(source, feature), .after = seqname) %>%
+        dplyr::relocate(c(score, strand, frame), .after = end) %>%
+        dplyr::mutate(
+            attribute = paste(
+                paste0("gene_id \"", ID, "\""),
+                paste0("transcript_id \"", ID, "\""),
+                # paste0("aliases \"", gsub(" ", "+", Alias), "\""),
+                # paste0("aliases \"", Alias, "\""),
+                paste0("type \"", type, "\""),
+                paste0("orf_classification \"", orf_classification, "\""),
+                paste0("source_id \"", gsub("SGD:", "", dbxref), "\""),
+                # paste0("go_id \"", gsub(" ", "+", Ontology_term), "\""),
+                # paste0("go_id \"", Ontology_term, "\""),
+                # paste0("width \"", width, "\""),
+                # paste0("note \"", unlist(Note), "\""),
+                # paste0(
+                #     "note \"",
+                #     #+ running htseq-count
+                #     gsub(" ", "+", gsub("'", "", unlist(Note))),
+                #     "\""
+                # ),
+                sep = "; "
+            )
+        ) %>%
+        dplyr::select(-c(
+            phase, orf_classification, Parent, gene, ID, Name, Alias, type,
+            dbxref, width, Ontology_term, width, Note
+        ))
+    
+    return(y)
+}
+
+
+write_gtf(
+    format_SGD_tibble(features_intergenic_sense),
+    "outfiles_gtf-gff3/comprehensive/S288C_reference_genome_R64-1-1_20110203/test_features_intergenic_sense.gtf"
+)
+write_gtf(
+    format_SGD_tibble(features_intergenic_antisense),
+    "outfiles_gtf-gff3/comprehensive/S288C_reference_genome_R64-1-1_20110203/test_features_intergenic_antisense.gtf"
+)
+write_gtf(
+    format_SGD_tibble(features_intergenic_sense_antisense),
+    "outfiles_gtf-gff3/comprehensive/S288C_reference_genome_R64-1-1_20110203/test_features_intergenic_sense_antisense.gtf"
+)
 
 
 #  Scraps
