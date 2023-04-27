@@ -8,12 +8,11 @@
 
 library(plyr)
 
-
 d <- data.frame(
     chrom = c(1, 1, 1, 14, 16, 16), 
     name  = c("a", "b", "c", "d", "e", "f"), 
     start = as.numeric(c(70001, 70203, 70060, 40004, 50000872, 50000872)), 
-    stop  = as.numeric(c(71200, 80001, 71051, 42004, 50000890, 51000952))
+    end  = as.numeric(c(71200, 80001, 71051, 42004, 50000890, 51000952))
 )
 
 
@@ -22,9 +21,9 @@ d <- data.frame(
 # d <- d[order(d$start), ]
 # 
 # #  Check if a record should be linked with the previous
-# d$previous_stop <- c(NA, d$stop[-nrow(d)])
-# d$previous_stop <- cummax(ifelse(is.na(d$previous_stop), 0, d$previous_stop))
-# d$new_group <- is.na(d$previous_stop) | d$start >= d$previous_stop
+# d$previous_end <- c(NA, d$end[-nrow(d)])
+# d$previous_end <- cummax(ifelse(is.na(d$previous_end), 0, d$previous_end))
+# d$new_group <- is.na(d$previous_end) | d$start >= d$previous_end
 # 
 # #  The number of the current group of records is the number of times we have
 # #+ switched to a new group
@@ -36,7 +35,7 @@ d <- data.frame(
 #     "group",
 #     summarize, 
 #     start = min(start),
-#     stop = max(stop),
+#     end = max(end),
 #     name = paste(name, collapse = ",")
 # )
 
@@ -44,24 +43,24 @@ d <- data.frame(
 #  Don't ignore chromosome ----------------------------------------------------
 #  But this ignores the chrom column: To account for it, do the same thing for
 #+ each chromosome separately
-d <- d[order(d$chrom, d$start), ]
+d <- d[order(d$chrom, d$start, d$end), ]
 d <- plyr::ddply(
     d,
     "chrom",
     function(u) { 
         #  Check if a record should be linked with the previous record
-        x <- c(NA, u$stop[-nrow(u)])
+        x <- c(NA, u$end[-nrow(u)])
         y <- ifelse(is.na(x), 0, x)
         y <- cummax(y)
         y[is.na(x)] <- NA
-        u$previous_stop <- y
+        u$previous_end <- y
         
         return(u)
     }
 )
 
-#  Identify new groups based on 'previous_stop'
-d$new_group <- is.na(d$previous_stop) | d$start >= d$previous_stop
+#  Identify new groups based on 'previous_end'
+d$new_group <- is.na(d$previous_end) | d$start >= d$previous_end
 d$group <- cumsum(d$new_group)
 
 #  Aggregate the data
@@ -70,6 +69,6 @@ plyr::ddply(
     .(chrom, group),
     plyr::summarize, 
     start = min(start),
-    stop = max(stop),
+    end = max(end),
     name = paste(name, collapse = ",")
 )

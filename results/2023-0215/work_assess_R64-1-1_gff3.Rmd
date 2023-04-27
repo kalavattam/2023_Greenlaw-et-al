@@ -21,6 +21,7 @@ Want to see how this file from SGD differs from the Ensembl 108 file we have bee
 
 library(GenomicRanges)
 library(IRanges)
+library(plyr)
 library(readxl)
 library(rtracklayer)
 library(tidyverse)
@@ -604,60 +605,247 @@ We should exclude `type` "repeat_region" in favor of `type` "telomere". "Centrom
 We can exclude `type` "noncoding exon" since these will be included in variously "ncRNA", "tRNA", "snoRNA", "snRNA", "rRNA".
 
 So, here's what to include for `type`:
-- "ARS"
-- "centromere"
-- "five_prime_UTR_intron"
-- "gene"
-- "long_terminal_repeat"
-- "LTR_retrotransposon"
-- "ncRNA"
-- "pseudogene"
-- "repeat_region"
-- "rRNA"
-- "snRNA"
-- "snoRNA"
-- "telomere"
-- "transposable_element_gene"
-- "tRNA"
+- "ARS" (both strands)
+- "centromere" (both strands)
+- "five_prime_UTR_intron" (antisense too)
+- "gene" (antisense too)
+- "ncRNA" (antisense too)
+- "pseudogene" (antisense too)
+- "rRNA" (antisense too)
+- "snRNA" (antisense too)
+- "snoRNA" (antisense too)
+- "telomere" (both strands)
+- "transposable_element" (made from collapsing/merging "long_terminal_repeat", "LTR_retrotransposon", and "transposable_element_gene") (antisense too)
+- "tRNA" (antisense too)
+
 
 And here's what not to include for `type`:
 - "binding_site"
 - "CDS"
 - "chromosome"
-- "external_transcribed_spacer_region" (they're already in `type` "rRNA")
+- "external_transcribed_spacer_region" (already in `type` "rRNA")
 - "gene_cassette"
 - "insertion"
-- "internal_transcribed_spacer_region" (they're already in `type` "rRNA")
+- "internal_transcribed_spacer_region" (already in `type` "rRNA")
 - "intron"
 - "noncoding_exon"
 - "nucleotide_match"
 - "region"
+- "repeat_region"
 
 ```{r}
-#  To start, only want to include the features for which we (may) want to
-#+ obtain antisense counts
+# stackoverflow.com/questions/6190051/how-can-i-remove-all-objects-but-one-from-the-workspace-in-r
+rm(list = setdiff(ls(), "gff3_SGD"))
+
+
+#  Initialize functions -------------------------------------------------------
+# `%+=%` <- function(x, y) eval.parent(substitute(x <- x + y))
+# # stackoverflow.com/questions/5738831/r-plus-equals-and-plus-plus-equivalent-from-c-c-java-etc
+
+
+# detect_overlap <- function(x, y) {
+#     # Detect overlaps
+#     # :param x: row number <numeric>
+#     # :param y: range start and end columns/vectors <numeric>
+#     # :return z: Boolean <0 or 1>
+#     z <- ifelse(x[2] >= y[1], 1, 0)
+#     return(z)
+# }
+
+
+# nonOverlappingGR <- function(
+#     #' Retrieve a non-overlapping set of regions from a `GenomicRanges` object
+#     #' 
+#     #' This function returns a `GRanges` object containing a non-overlapping set 
+#     #' regions derived from a supplied `GenomicRanges` object. Taken from
+#     #' github.com/GreenleafLab/ArchR/blob/master/R/GRangesUtils.R#L60
+#     #'
+#     #' @param gr A `GRanges` object.
+#     #' @param by The name of a column in `mcols(gr)` that should be used to
+#     #' determine how overlapping regions should be resolved.
+#     #' The resolution of overlapping regions also depends on `decreasing`. For
+#     #' example, if a column named "score" is used for `by`, `decreasing = TRUE`
+#     #' means that the highest "score" in the overlap will be retained and
+#     #' `decreasing = FALSE` means that the lowest "score" in the overlap will
+#     #' be retained.
+#     #' @param decreasing A boolean value indicating whether the values in the
+#     #' column indicated via `by` should be ordered in decreasing order. If
+#     #' `TRUE`, the higher value in `by` will be retained.
+#     #' @param verbose A boolean value indicating whether the output should
+#     #' include extra reporting.
+#     #' @export
+# 	gr = NULL, 
+# 	by = "score", 
+# 	decreasing = TRUE, 
+# 	verbose = FALSE
+#   ){
+#     # .validInput(input = gr, name = "gr", valid = c("GRanges"))
+#     # .validInput(input = by, name = "by", valid = c("character"))
+#     # .validInput(input = decreasing, name = "decreasing", valid = c("boolean"))
+#     # .validInput(input = verbose, name = "verbose", valid = c("boolean"))
+#     
+#     stopifnot(by %in% colnames(mcols(gr)))
+#     
+#     #  Cluster GRanges into islands using reduce and then select based on input
+#     .clusterGRanges <- function(
+#         gr = NULL,
+#         filter = TRUE,
+#         by = "score",
+#         decreasing = TRUE
+#     ){
+#         gr <- sort(sortSeqlevels(gr))
+#         r <- GenomicRanges::reduce(gr, min.gapwidth = 0L, ignore.strand = TRUE)
+#         o <- findOverlaps(gr, r, ignore.strand = TRUE)
+#         mcols(gr)$cluster <- subjectHits(o)
+#         gr <- gr[order(mcols(gr)[, by], decreasing = decreasing), ]
+#         gr <- gr[!duplicated(mcols(gr)$cluster), ]
+#         gr <- sort(sortSeqlevels(gr))
+#         mcols(gr)$cluster <- NULL
+#         return(gr)
+#     }
+#     
+#     if(verbose) message("Converging", appendLF = FALSE)
+#     
+#     i <-  0
+#     grConverge <- gr
+#     while(length(grConverge) > 0) {
+#         if(verbose){
+#             message(".", appendLF = FALSE)
+#         }
+#         i <-  i + 1
+#         grSelect <- .clusterGRanges(
+#             gr = grConverge, 
+#             filter = TRUE, 
+#             by = by, 
+#             decreasing = decreasing
+#         )
+#         
+#         grConverge <- subsetByOverlaps(
+#             grConverge,
+#             grSelect, 
+#             invert=TRUE, 
+#             ignore.strand = TRUE
+#         )  # Blacklist selected gr
+#         
+#         if(i == 1){  # If i is 1, then set gr_all to clustered
+#             grAll <- grSelect
+#         } else {
+#             grAll <- c(grAll, grSelect)
+#         } 
+#     
+#     }
+#     message(sprintf("Converged after %s iterations!", i))
+#     
+#     if(verbose) {
+#         message("\nSelected ", length(grAll), " from ", length(gr))
+#     }
+#     grAll <- sort(sortSeqlevels(grAll))
+#     
+#     return(grAll)
+# }
+
+
+flatten_elements_to_one <- function(x) {
+    # For character list elements with two or more subelements, collapse the
+    # subelements into a single character element
+    # 
+    # :param x: list
+    # :return: character vector of collapsed list elements (list e)
+    
+    l_collapsed <- x[lengths(x) >= 2] %>% length()
+    collapsed <- vector(mode = "character", length = l_collapsed)
+    for(i in 1:l_collapsed) {
+        # i <- 1
+        # cat(i, "\n")
+        # cat(x[lengths(x) >= 2][[i]], "\n")
+        collapsed[i] <- stringr::str_c(
+            x[lengths(x) >= 2][[i]],
+            collapse = ", "
+        )
+    }
+    
+    return(collapsed)
+}
+
+
+process_list_column <- function(x) {
+    x[lengths(x) == 0] <- NA_character_
+    if(length(x[lengths(x) >= 2]) != 0) {
+        x[lengths(x) >= 2] <- x[lengths(x) >= 2] %>% flatten_elements_to_one()
+    }
+    y <- x %>% unlist()
+
+    return(y)
+}
+
+
+write_gtf <- function(x, y) {
+    # ...
+    # :param x: tibble
+    # :param y: outfile
+    # :return: NA
+    readr::write_tsv(
+        x,
+        y,
+        col_names = FALSE,
+        quote = "none",
+        escape = "none"
+    )
+}
+
+
+format_SGD_tibble <- function(x) {
+    # ...
+    # :param x: tibble
+    # :return y: tibble in a basic gtf/gff2 format
+    y <- x %>%
+        dplyr::arrange(seqnames, start) %>%
+        dplyr::rename(seqname =  seqnames) %>%
+        dplyr::filter(seqname != "2-micron") %>%
+        dplyr::mutate(feature = "feature", score = ".", frame = ".") %>%
+        dplyr::relocate(c(source, feature), .after = seqname) %>%
+        dplyr::relocate(c(score, strand, frame), .after = end) %>%
+        dplyr::mutate(
+            attribute = paste(
+                paste0("gene_id \"", ID, "\""),
+                paste0("transcript_id \"", ID, "\""),
+                paste0("type \"", type, "\""),
+                paste0("orf_classification \"", orf_classification, "\""),
+                paste0("source_id \"", gsub("SGD:", "", dbxref), "\""),
+                sep = "; "
+            )
+        ) %>%
+        dplyr::select(-c(
+            Alias, dbxref, gene, ID, Name, Note, Ontology_term,
+            orf_classification, type, width
+        ))
+    
+    return(y)
+}
+
+
+#  Isolate the features that we (may) want to obtain antisense counts ---------
 features_etc <- gff3_SGD %>%
     dplyr::filter(
-        # type == "centromere" |  # Handle this separately b/c don't want antisense counts
         type == "five_prime_UTR_intron" |
         type == "gene" |
-        type == "long_terminal_repeat" |
-        type == "LTR_retrotransposon" |
         type == "ncRNA" |
         type == "pseudogene" |
-        type == "repeat_region" |
         type == "rRNA" |
         type == "snRNA" |
         type == "snoRNA" |
-        # type == "telomere" |  # Handle this separately b/c don't want antisense counts
-        type == "transposable_element_gene" |
         type == "tRNA"
-    )
+    ) %>%
+    dplyr::filter(
+        seqnames != "2-micron" &
+        seqnames != "Mito"
+    ) %>%
+    dplyr::select(-c(Parent, phase, score)) %>%
+    dplyr::arrange(seqnames, start, strand)
 features_etc$Note <- process_list_column(features_etc$Note)
-features_etc$Parent <- process_list_column(features_etc$Parent)
 features_etc$Alias <- process_list_column(features_etc$Alias)
 features_etc$Ontology_term <- process_list_column(features_etc$Ontology_term)
-features_etc$Name <- ifelse(
+features_etc$ID <- features_etc$Name <- ifelse(
     features_etc$type == "five_prime_UTR_intron",
     paste0(features_etc$Name, "_5p"),
     ifelse(
@@ -674,7 +862,6 @@ features_etc$Name <- ifelse(
         features_etc$Name
     )
 )
-features_etc$ID <- features_etc$Name
 
 # duplicated(features_etc$Name) %>% table()
 # duplicated(features_etc$ID) %>% table()
@@ -683,19 +870,148 @@ features_etc$ID <- features_etc$Name
 #     dplyr::group_by(type) %>%
 #     dplyr::summarize(n = dplyr::n()) %>%
 #     dplyr::arrange(dplyr::desc(n))
+
 # all(features_etc$ID == features_etc$Name)
 
 
 #  Create a dataframe of features antisense to features in features_etc -------
-features_etc_AS <- features_etc
-# features_etc_AS %>%
+features_etc_antisense <- features_etc
+features_etc_antisense$strand <- ifelse(features_etc_antisense$strand == "+", "-", "+")
+features_etc_antisense$source <- "SGD (KA)"
+features_etc_antisense$type <- paste("antisense", features_etc_antisense$type, sep = "_")
+features_etc_antisense$ID <- features_etc_antisense$Name <- paste(features_etc_antisense$Name, "AS", sep = "_")
+
+# features_etc_antisense %>%
 #     dplyr::group_by(strand) %>%
 #     dplyr::summarize(n = dplyr::n())
 
-features_etc_AS$strand <- ifelse(features_etc_AS$strand == "+", "-", "+")
-features_etc_AS$source <- "SGD (KA)"
-features_etc_AS$type <- paste("antisense", features_etc_AS$type, sep = "_")
-features_etc_AS$ID <- features_etc_AS$Name <- paste(features_etc_AS$Name, "AS", sep = "_")
+
+#  Collapse and merge transposable-element and related features ---------------
+transposable_elements <- gff3_SGD %>% dplyr::filter(        
+    type == "long_terminal_repeat" |
+    type == "LTR_retrotransposon" |
+    type == "transposable_element_gene"
+) %>%
+    dplyr::filter(
+        seqnames != "2-micron" &
+        seqnames != "Mito"
+    ) %>%
+    dplyr::select(-c(score, phase, Parent)) %>%
+    dplyr::arrange(seqnames, start, strand)
+transposable_elements$Note <- process_list_column(transposable_elements$Note)
+transposable_elements$Alias <- process_list_column(transposable_elements$Alias)
+transposable_elements$Ontology_term <- process_list_column(transposable_elements$Ontology_term)
+transposable_elements$ID <- transposable_elements$Name <- ifelse(
+    transposable_elements$type == "five_prime_UTR_intron",
+    paste0(transposable_elements$Name, "_5p"),
+    ifelse(
+        transposable_elements$type == "repeat_region",
+        paste(
+            transposable_elements$Name,
+            paste0(
+                transposable_elements$seqnames, ":",
+                transposable_elements$start, "-",
+                transposable_elements$end
+            ),
+            sep = "_"
+        ),
+        transposable_elements$Name
+    )
+)
+
+#  Link rows after stratifying for both 'chr' and 'strand'
+group_chr_strand <- plyr::ddply(
+    transposable_elements,
+    c("seqnames", "strand"),
+    function(x) { 
+        #  Check if a record should be linked with the previous record
+        y <- c(NA, x$end[-nrow(x)])
+        z <- ifelse(is.na(y), 0, y)
+        z <- cummax(z)
+        z[is.na(y)] <- NA
+        x$previous_end <- z
+        
+        return(x)
+    }
+)
+group_chr_strand$new_group <- is.na(group_chr_strand$previous_end) | 
+    (group_chr_strand$start >= group_chr_strand$previous_end)
+group_chr_strand$group <- cumsum(group_chr_strand$new_group)
+group_chr_strand <- group_chr_strand %>%
+    dplyr::mutate(
+        type_ID = paste0(type, ": ", ID)
+    )
+
+
+#  Aggregate the data
+agg_chr_strand <- plyr::ddply(
+    group_chr_strand,
+    .(seqnames, strand, group),
+    plyr::summarize, 
+    start = min(start),
+    end = max(end),
+    width = (end - start) + 1,
+    ID = paste0(ID, collapse = "; "),
+    dbxref = paste0(dbxref, collapse = "; "),
+    Name = paste0(type_ID, collapse = "; "),
+    Note = paste0(Note, collapse = "; "),
+    Ontology_term = paste0(Ontology_term, collapse = "; "),
+    Alias = paste0(type, collapse = "; ")
+) %>%
+    dplyr::mutate(
+        strand = strand,
+        source = "SGD (KA)",
+        type = "transposable_element",
+        orf_classification = NA_character_,
+        gene = NA_character_
+    ) %>%
+    dplyr::select(-group) %>% 
+    dplyr::arrange(seqnames, start, strand) %>%
+    dplyr::relocate(c(
+        seqnames, start, end, width, strand, source, type, ID, dbxref, Name,
+        Note, Ontology_term, orf_classification, Alias, gene
+    ))
+
+details_Alias <- agg_chr_strand$Alias %>%
+    stringr::str_remove_all("s") %>%
+    stringr::str_split("; ") %>%
+    purrr::map(sort) %>%
+    purrr::map(unique)
+details_Alias <- sapply(
+    details_Alias[!sapply(details_Alias, purrr::is_empty)],
+    paste,
+    collapse = " "
+) %>%
+    gsub("long_terminal_repeat", "LTR", .) %>%
+    gsub("LTR_retrotranpoon", "RT", .) %>%
+    gsub("tranpoable_element_gene", "TE_gene", .)
+
+details_Name <- agg_chr_strand$Name %>%
+    stringr::str_remove_all("s") %>%
+    stringr::str_split("; ") %>%
+    purrr::map(sort) %>%
+    purrr::map(unique)
+details_Name <- sapply(
+    details_Name[!sapply(details_Name, purrr::is_empty)],
+    paste,
+    collapse = "; "
+) %>%
+    gsub("long_terminal_repeat", "LTR", .) %>%
+    gsub("LTR_retrotranpoon", "RT", .) %>%
+    gsub("tranpoable_element_gene", "TE_gene", .)
+
+agg_chr_strand$Name <- details_Name
+agg_chr_strand$Alias <- details_Alias
+agg_chr_strand$n_types <- ifelse(
+    grepl(" ", agg_chr_strand$Alias, fixed = TRUE),
+    stringr::str_count(agg_chr_strand$Alias, " ") + 1,
+    1
+)
+agg_chr_strand$n_features <- ifelse(
+    grepl(";", agg_chr_strand$ID, fixed = TRUE),
+    stringr::str_count(agg_chr_strand$ID, ";") + 1,
+    1
+)
 
 
 #  Make ARS, telomere, and centromere entries for plus and minus strands ------
@@ -848,61 +1164,6 @@ features_intergenic_antisense <- dplyr::bind_rows(
 ) %>%
     dplyr::arrange(seqnames, start, end, strand) %>%
     dplyr::filter(seqnames != "2-micron" & seqnames != "Mito")
-
-
-write_gtf <- function(x, y) {
-    # :param x: tibble
-    # :param y: outfile
-    # :return: NA
-    readr::write_tsv(
-        x,
-        y,
-        col_names = FALSE,
-        quote = "none",
-        escape = "none"
-    )
-}
-
-
-format_SGD_tibble <- function(x) {
-    # x <- to_include
-    # x %>% 
-    y <- x %>%
-        dplyr::arrange(seqnames, start) %>%
-        dplyr::rename(seqname =  seqnames) %>%
-        dplyr::filter(seqname != "2-micron") %>%
-        dplyr::mutate(feature = "feature", score = ".", frame = ".") %>%
-        dplyr::relocate(c(source, feature), .after = seqname) %>%
-        dplyr::relocate(c(score, strand, frame), .after = end) %>%
-        dplyr::mutate(
-            attribute = paste(
-                paste0("gene_id \"", ID, "\""),
-                paste0("transcript_id \"", ID, "\""),
-                # paste0("aliases \"", gsub(" ", "+", Alias), "\""),
-                # paste0("aliases \"", Alias, "\""),
-                paste0("type \"", type, "\""),
-                paste0("orf_classification \"", orf_classification, "\""),
-                paste0("source_id \"", gsub("SGD:", "", dbxref), "\""),
-                # paste0("go_id \"", gsub(" ", "+", Ontology_term), "\""),
-                # paste0("go_id \"", Ontology_term, "\""),
-                # paste0("width \"", width, "\""),
-                # paste0("note \"", unlist(Note), "\""),
-                # paste0(
-                #     "note \"",
-                #     #+ running htseq-count
-                #     gsub(" ", "+", gsub("'", "", unlist(Note))),
-                #     "\""
-                # ),
-                sep = "; "
-            )
-        ) %>%
-        dplyr::select(-c(
-            phase, orf_classification, Parent, gene, ID, Name, Alias, type,
-            dbxref, width, Ontology_term, width, Note
-        ))
-    
-    return(y)
-}
 
 
 write_gtf(
