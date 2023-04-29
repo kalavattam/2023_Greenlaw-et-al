@@ -600,22 +600,22 @@ Go with the SGD annotation for this work.
 
 We should not remove any entries from `type` "gene" despite there being an extra four chromosomal genes in the SGD annotation versus the Ensembl R64-1-1 annotation.
 
-We should exclude `type` "repeat_region" in favor of `type` "telomere". "Centromere" can be included without any problems with any features, I think.
+We should exclude `type` "repeat_region" in favor of `type` "telomere". "Centromere" can be included without any problems with any features.
 
 We can exclude `type` "noncoding exon" since these will be included in variously "ncRNA", "tRNA", "snoRNA", "snRNA", "rRNA".
 
+`#DEKHO` `#IMPORTANT`
 So, here's what to include for `type`:
 - "ARS" (both strands)
 - "centromere" (both strands)
-- "five_prime_UTR_intron" (antisense too)
 - "gene" (antisense too)
 - "ncRNA" (antisense too)
-- "pseudogene" (antisense too)
+- "pseudogene" (those that are not collapsed/merged into "transposable_element" below; antisense too)
 - "rRNA" (antisense too)
 - "snRNA" (antisense too)
 - "snoRNA" (antisense too)
 - "telomere" (both strands)
-- "transposable_element" (made from collapsing/merging "long_terminal_repeat", "LTR_retrotransposon", and "transposable_element_gene") (antisense too)
+- "transposable_element" (made from collapsing/merging "long_terminal_repeat", "LTR_retrotransposon", "transposable_element_gene" and "pseudogene"; antisense too)
 - "tRNA" (antisense too)
 
 
@@ -624,7 +624,8 @@ And here's what not to include for `type`:
 - "CDS"
 - "chromosome"
 - "external_transcribed_spacer_region" (already in `type` "rRNA")
-- "gene_cassette"
+- "five_prime_UTR_intron" (already in `type` "gene" and `type` intergenic)
+- "gene_cassette" (already in `type` "gene" and `type` "intergenic")
 - "insertion"
 - "internal_transcribed_spacer_region" (already in `type` "rRNA")
 - "intron"
@@ -755,9 +756,6 @@ flatten_elements_to_one <- function(x) {
     l_collapsed <- x[lengths(x) >= 2] %>% length()
     collapsed <- vector(mode = "character", length = l_collapsed)
     for(i in 1:l_collapsed) {
-        # i <- 1
-        # cat(i, "\n")
-        # cat(x[lengths(x) >= 2][[i]], "\n")
         collapsed[i] <- stringr::str_c(
             x[lengths(x) >= 2][[i]],
             collapse = ", "
@@ -827,10 +825,8 @@ format_SGD_tibble <- function(x) {
 #  Isolate the features that we (may) want to obtain antisense counts ---------
 features_etc <- gff3_SGD %>%
     dplyr::filter(
-        type == "five_prime_UTR_intron" |
         type == "gene" |
         type == "ncRNA" |
-        type == "pseudogene" |
         type == "rRNA" |
         type == "snRNA" |
         type == "snoRNA" |
@@ -893,10 +889,11 @@ features_etc_antisense$ID <-
 
 
 #  Collapse and merge transposable-element and related features ---------------
-TEs <- gff3_SGD %>% dplyr::filter(        
+TE_PG <- gff3_SGD %>% dplyr::filter(        
     type == "long_terminal_repeat" |
     type == "LTR_retrotransposon" |
-    type == "transposable_element_gene"
+    type == "transposable_element_gene" |
+    type == "pseudogene"
 ) %>%
     dplyr::filter(
         seqnames != "2-micron" &
@@ -904,30 +901,31 @@ TEs <- gff3_SGD %>% dplyr::filter(
     ) %>%
     dplyr::select(-c(score, phase, Parent)) %>%
     dplyr::arrange(seqnames, start, strand)
-TEs$Note <- process_list_column(TEs$Note)
-TEs$Alias <- process_list_column(TEs$Alias)
-TEs$Ontology_term <- process_list_column(TEs$Ontology_term)
-TEs$ID <- TEs$Name <- ifelse(
-    TEs$type == "five_prime_UTR_intron",
-    paste0(TEs$Name, "_5p"),
+TE_PG$Note <- process_list_column(TE_PG$Note)
+TE_PG$Alias <- process_list_column(TE_PG$Alias)
+TE_PG$Ontology_term <- process_list_column(TE_PG$Ontology_term)
+TE_PG$ID <- TE_PG$Name <- ifelse(
+    TE_PG$type == "five_prime_UTR_intron",
+    paste0(TE_PG$Name, "_5p"),
     ifelse(
-        TEs$type == "repeat_region",
+        TE_PG$type == "repeat_region",
         paste(
-            TEs$Name,
+            TE_PG$Name,
             paste0(
-                TEs$seqnames, ":",
-                TEs$start, "-",
-                TEs$end
+                TE_PG$seqnames, ":",
+                TE_PG$start, "-",
+                TE_PG$end
             ),
             sep = "_"
         ),
-        TEs$Name
+        TE_PG$Name
     )
 )
 
-#  Group rows after stratifying for 'chr' and 'strand'
-TEs_group_chr_strand <- plyr::ddply(
-    TEs,
+#  If they overlap, and after stratifying for 'chr' and 'strand', then organize
+#+ rows into groups  
+TE_PG_group_chr_strand <- plyr::ddply(
+    TE_PG,
     c("seqnames", "strand"),
     function(x) { 
         #  Check if a record should be linked with the previous record
@@ -940,15 +938,15 @@ TEs_group_chr_strand <- plyr::ddply(
         return(x)
     }
 )
-TEs_group_chr_strand$new_group <- is.na(TEs_group_chr_strand$previous_end) | 
-    (TEs_group_chr_strand$start >= TEs_group_chr_strand$previous_end)
-TEs_group_chr_strand$group <- cumsum(TEs_group_chr_strand$new_group)
-TEs_group_chr_strand <- TEs_group_chr_strand %>%
+TE_PG_group_chr_strand$new_group <- is.na(TE_PG_group_chr_strand$previous_end) | 
+    (TE_PG_group_chr_strand$start >= TE_PG_group_chr_strand$previous_end)
+TE_PG_group_chr_strand$group <- cumsum(TE_PG_group_chr_strand$new_group)
+TE_PG_group_chr_strand <- TE_PG_group_chr_strand %>%
     dplyr::mutate(type_ID = paste0(type, ": ", ID))
 
 #  Aggregate the data
-TEs_agg_chr_strand <- plyr::ddply(
-    TEs_group_chr_strand,
+TE_PG_agg_chr_strand <- plyr::ddply(
+    TE_PG_group_chr_strand,
     .(seqnames, strand, group),
     plyr::summarize, 
     start = min(start),
@@ -964,7 +962,11 @@ TEs_agg_chr_strand <- plyr::ddply(
     dplyr::mutate(
         strand = strand,
         source = "SGD (KA)",
-        type = "transposable_element",
+        type = ifelse(
+            Alias == "pseudogene" | Alias == "pseudogene; pseudogene",
+            "PG",
+            "TE"
+        ),
         orf_classification = NA_character_,
         gene = NA_character_
     ) %>%
@@ -975,7 +977,7 @@ TEs_agg_chr_strand <- plyr::ddply(
         Note, Ontology_term, orf_classification, Alias, gene
     ))
 
-details_Alias <- TEs_agg_chr_strand$Alias %>%
+details_Alias <- TE_PG_agg_chr_strand$Alias %>%
     stringr::str_remove_all("s") %>%
     stringr::str_split("; ") %>%
     purrr::map(sort) %>%
@@ -987,9 +989,10 @@ details_Alias <- sapply(
 ) %>%
     gsub("long_terminal_repeat", "LTR", .) %>%
     gsub("LTR_retrotranpoon", "RT", .) %>%
-    gsub("tranpoable_element_gene", "TE_gene", .)
+    gsub("tranpoable_element_gene", "TE", .) %>%
+    gsub("peudogene", "PG", .)
 
-details_Name <- TEs_agg_chr_strand$Name %>%
+details_Name <- TE_PG_agg_chr_strand$Name %>%
     stringr::str_remove_all("s") %>%
     stringr::str_split("; ") %>%
     purrr::map(sort) %>%
@@ -1001,43 +1004,47 @@ details_Name <- sapply(
 ) %>%
     gsub("long_terminal_repeat", "LTR", .) %>%
     gsub("LTR_retrotranpoon", "RT", .) %>%
-    gsub("tranpoable_element_gene", "TE_gene", .)
+    gsub("tranpoable_element_gene", "TE_gene", .) %>%
+    gsub("peudogene", "PG", .)
 
-TEs_agg_chr_strand$Name <- details_Name
-TEs_agg_chr_strand$Alias <- details_Alias
-TEs_agg_chr_strand$n_types <- ifelse(
-    grepl(" ", TEs_agg_chr_strand$Alias, fixed = TRUE),
-    stringr::str_count(TEs_agg_chr_strand$Alias, " ") + 1,
+TE_PG_agg_chr_strand$Name <- details_Name
+TE_PG_agg_chr_strand$Alias <- details_Alias
+TE_PG_agg_chr_strand$n_types <- ifelse(
+    grepl(" ", TE_PG_agg_chr_strand$Alias, fixed = TRUE),
+    stringr::str_count(TE_PG_agg_chr_strand$Alias, " ") + 1,
     1
 )
-TEs_agg_chr_strand$n_features <- ifelse(
-    grepl(";", TEs_agg_chr_strand$ID, fixed = TRUE),
-    stringr::str_count(TEs_agg_chr_strand$ID, ";") + 1,
+TE_PG_agg_chr_strand$n_features <- ifelse(
+    grepl(";", TE_PG_agg_chr_strand$ID, fixed = TRUE),
+    stringr::str_count(TE_PG_agg_chr_strand$ID, ";") + 1,
     1
 )
 
-TEs <- TEs_agg_chr_strand
-TEs$ID <- gsub("; ", "_", TEs$ID)
-TEs$Name <- TEs$Name %>%
+TE_PG <- TE_PG_agg_chr_strand
+TE_PG$ID <- gsub("; ", "_", TE_PG$ID)
+TE_PG$Ontology_term <- TE_PG$Ontology_term %>%
+    gsub("; ", "_", .) %>%
+    gsub(", ", "-", .)
+TE_PG$Name <- TE_PG$Name %>%
     gsub(": ", "-", .) %>%
     gsub("; ", "_", .) %>%
     gsub("TE_gene", "TE", .)
-# TEs %>%
+# TE_PG %>%
 #     dplyr::group_by(strand) %>%
 #     dplyr::summarize(n = dplyr::n())
 
-rm(TEs_agg_chr_strand, TEs_group_chr_strand)
+rm(TE_PG_agg_chr_strand, TE_PG_group_chr_strand, details_Alias, details_Name)
 
 
 #  Create a dataframe of TE features antisense to features in features_etc ----
-TEs_antisense <- TEs
-TEs_antisense$strand <- ifelse(TEs_antisense$strand == "+", "-", "+")
-TEs_antisense$source <- "SGD (KA)"
-TEs_antisense$type <- paste("antisense", TEs_antisense$type, sep = "_")
-TEs_antisense$ID <- paste("AS", TEs_antisense$ID, sep = "_")
-TEs_antisense$Name <- paste("AS", TEs_antisense$Name, sep = "_")
+TE_PG_antisense <- TE_PG
+TE_PG_antisense$strand <- ifelse(TE_PG_antisense$strand == "+", "-", "+")
+TE_PG_antisense$source <- "SGD (KA)"
+TE_PG_antisense$type <- paste("antisense", TE_PG_antisense$type, sep = "_")
+TE_PG_antisense$ID <- paste("AS", TE_PG_antisense$ID, sep = "_")
+TE_PG_antisense$Name <- paste("AS", TE_PG_antisense$Name, sep = "_")
 
-# TEs_antisense %>%
+# TE_PG_antisense %>%
 #     dplyr::group_by(strand) %>%
 #     dplyr::summarize(n = dplyr::n())
 
@@ -1080,38 +1087,7 @@ ARS_etc_minus$ID <-
     paste("minus", ARS_etc_minus$Name, sep = "_")
 
 
-#  Bind dataframes features_etc_sense, ARS_etc_plus, ARS_etc_minus ------------
-z_sense <- dplyr::bind_rows(
-    features_etc,
-    dplyr::select(TEs, -c(n_types, n_features)),
-    ARS_etc_plus,
-    ARS_etc_minus
-) %>%
-    dplyr::arrange(seqnames, start, end, strand) %>%
-    dplyr::filter(seqnames != "2-micron" & seqnames != "Mito")
-
-z_sense_antisense <- dplyr::bind_rows(
-    features_etc,
-    features_etc_antisense,
-    dplyr::select(TEs, -c(n_types, n_features)),
-    dplyr::select(TEs_antisense, -c(n_types, n_features)),
-    ARS_etc_plus,
-    ARS_etc_minus
-) %>%
-    dplyr::arrange(seqnames, start, end, strand) %>%
-    dplyr::filter(seqnames != "2-micron" & seqnames != "Mito")
-
-z_antisense <- dplyr::bind_rows(
-    features_etc_antisense,
-    dplyr::select(TEs_antisense, -c(n_types, n_features)),
-    ARS_etc_plus,
-    ARS_etc_minus
-) %>%
-    dplyr::arrange(seqnames, start, end, strand) %>%
-    dplyr::filter(seqnames != "2-micron" & seqnames != "Mito")
-
-
-#  Include intergenic annotations in the dataframe ----------------------------
+#  Load dataframe of intergenic annotations -----------------------------------
 p_tsv <- "infiles_gtf-gff3/comprehensive/S288C_reference_genome_R64-1-1_20110203"
 f_tsv <- "NotFeature_R64-1-1_20110203.dataframe.tsv"
 intergenic_plus <- readr::read_tsv(
@@ -1143,7 +1119,8 @@ rm(chr_roman)
 #     dplyr::group_by(chr) %>%
 #     dplyr::summarize(n = dplyr::n()) %>%
 #     dplyr::arrange(chr)
-    
+
+#  Format the dataframe for binding with dataframes of other features
 intergenic_plus <- intergenic_plus %>%    
     dplyr::mutate(
         seqnames = chr,
@@ -1168,6 +1145,8 @@ intergenic_plus <- intergenic_plus %>%
         Note, Ontology_term, orf_classification, Alias, gene
     ))
 
+#  Add a dataframe for minus-strand intergenic frames; then, continue to format
+#+ the plus- and minus-strand dataframes
 intergenic_minus <- intergenic_plus
 intergenic_minus$strand <- "-"
 intergenic_minus$ID <- paste("minus", intergenic_minus$ID, sep = "_")
@@ -1179,6 +1158,7 @@ intergenic_plus$Alias <- paste("plus", intergenic_plus$Alias, sep = "_")
 intergenic_minus$Note <- intergenic_minus$Note %>% gsub("between", "Between", .)
 intergenic_plus$Note <- intergenic_plus$Note %>% gsub("between", "Between", .)
 
+#+ Row-bind the plus- and minus-strand dataframes
 intergenic <- dplyr::bind_rows(intergenic_plus, intergenic_minus) %>%
     dplyr::arrange(seqnames, start, strand) %>%
     dplyr::filter(seqnames != "2-micron" & seqnames != "Mito")
@@ -1186,7 +1166,43 @@ intergenic <- dplyr::bind_rows(intergenic_plus, intergenic_minus) %>%
 rm(intergenic_minus, intergenic_plus)
 
 
-#  Bind dataframes features_etc and intergenic --------------------------------
+#  Row-bind dataframes --------------------------------------------------------
+#  S features/TE_PG with dual-strand ARS, telomeres, and centromeres
+#+ 6972 + 348 + (385*2)
+z_sense <- dplyr::bind_rows(
+    features_etc,
+    dplyr::select(TE_PG, -c(n_types, n_features)),
+    ARS_etc_plus,
+    ARS_etc_minus
+) %>%
+    dplyr::arrange(seqnames, start, end, strand) %>%
+    dplyr::filter(seqnames != "2-micron" & seqnames != "Mito")
+
+#  S and AS features/TE_PG with dual-strand ARS, telomeres, and centromeres
+#+ (6972 + 348)*2 + (385*2)
+z_sense_antisense <- dplyr::bind_rows(
+    features_etc,
+    features_etc_antisense,
+    dplyr::select(TE_PG, -c(n_types, n_features)),
+    dplyr::select(TE_PG_antisense, -c(n_types, n_features)),
+    ARS_etc_plus,
+    ARS_etc_minus
+) %>%
+    dplyr::arrange(seqnames, start, end, strand) %>%
+    dplyr::filter(seqnames != "2-micron" & seqnames != "Mito")
+
+#  AS features/TE_PG with dual-strand ARS, telomeres, and centromeres
+#+ 6972 + 348 + (385*2)
+z_antisense <- dplyr::bind_rows(
+    features_etc_antisense,
+    dplyr::select(TE_PG_antisense, -c(n_types, n_features)),
+    ARS_etc_plus,
+    ARS_etc_minus
+) %>%
+    dplyr::arrange(seqnames, start, end, strand) %>%
+    dplyr::filter(seqnames != "2-micron" & seqnames != "Mito")
+
+#  Row-bind above three dataframes with intergenic-annotation dataframe
 z_sense_intergenic <-
     dplyr::bind_rows(z_sense, intergenic) %>%
     dplyr::arrange(seqnames, start, end, strand)
@@ -1201,45 +1217,167 @@ z_antisense_intergenic <-
 
 
 #  Write gtf files ------------------------------------------------------------
+#  Set up outdirectory
 p_out <- "outfiles_gtf-gff3/comprehensive/S288C_reference_genome_R64-1-1_20110203/"
-write_gtf(
-    format_SGD_tibble(z_antisense),
-    paste(p_out, "processed_antisense.gtf", sep = "/")
-)
-write_gtf(
-    format_SGD_tibble(z_antisense_intergenic),
-    paste(p_out, "processed_antisense_intergenic.gtf", sep = "/")
-)
-write_gtf(
-    format_SGD_tibble(intergenic),
-    paste(p_out, "processed_intergenic.gtf", sep = "/")
-)
-write_gtf(
-    format_SGD_tibble(z_sense),
-    paste(p_out, "processed_sense.gtf", sep = "/")
-)
-write_gtf(
-    format_SGD_tibble(z_sense_antisense),
-    paste(p_out, "processed_sense_antisense.gtf", sep = "/")
-)
-write_gtf(
-    format_SGD_tibble(z_sense_antisense_intergenic),
-    paste(p_out, "processed_sense_antisense_intergenic.gtf", sep = "/")
-)
-write_gtf(
-    format_SGD_tibble(z_sense_intergenic),
-    paste(p_out, "processed_sense_intergenic.gtf", sep = "/")
-)
-write_gtf(
-    format_SGD_tibble(dplyr::select(TEs, -c(n_types, n_features))),
-    paste(p_out, "processed_sense_TEs.gtf", sep = "/")
-)
-write_gtf(
-    format_SGD_tibble(dplyr::select(TEs_antisense, -c(n_types, n_features))),
-    paste(p_out, "processed_antisense_TEs.gtf", sep = "/")
-)
+
+#  Antisense features_etc
+z_antisense %>%
+    format_SGD_tibble() %>%
+    write_gtf(., paste(p_out, "processed_features_antisense.gtf", sep = "/"))
+
+#  Antisense features_etc together with intergenic regions
+z_antisense_intergenic %>%
+    format_SGD_tibble() %>%
+    write_gtf(., paste(p_out, "processed_features-intergenic_antisense.gtf", sep = "/"))
+
+#  Sense features_etc
+z_sense %>%
+    format_SGD_tibble() %>%
+    write_gtf(., paste(p_out, "processed_features_sense.gtf", sep = "/"))
+
+#  Sense and antisense features_etc
+z_sense_antisense %>%
+    format_SGD_tibble() %>%
+    write_gtf(., paste(p_out, "processed_features_sense-antisense.gtf", sep = "/"))
+
+#  Sense and antisense features_etc together with intergenic regions
+z_sense_antisense_intergenic %>%
+    format_SGD_tibble() %>%
+    write_gtf(., paste(p_out, "processed_features-intergenic_sense-antisense.gtf", sep = "/"))
+
+#  Sense features_etc along with intergenic regions
+z_sense_intergenic %>%
+    format_SGD_tibble() %>%
+    write_gtf(., paste(p_out, "processed_features-intergenic_sense.gtf", sep = "/"))
+
+#  Sense TE
+z_sense %>%
+    dplyr::filter(type == "TE") %>%
+    format_SGD_tibble() %>%
+    # View()
+    write_gtf(., paste(p_out, "processed_TE_sense.gtf", sep = "/"))
+
+#  Sense PG
+z_sense %>%
+    dplyr::filter(type == "PG") %>%
+    format_SGD_tibble() %>%
+    # View()
+    write_gtf(., paste(p_out, "processed_PG_sense.gtf", sep = "/"))
+
+#  Sense ncRNA
+z_sense %>%
+    dplyr::filter(type == "ncRNA") %>%
+    format_SGD_tibble() %>%
+    # View()
+    write_gtf(., paste(p_out, "processed_ncRNA_sense.gtf", sep = "/"))
+
+#  Sense gene
+z_sense %>%
+    dplyr::filter(type == "gene") %>%
+    format_SGD_tibble() %>%
+    # View()
+    write_gtf(., paste(p_out, "processed_gene_sense.gtf", sep = "/"))
+
+#  Dual-strand ARS
+z_sense %>%
+    dplyr::filter(type == "ARS") %>%
+    format_SGD_tibble() %>%
+    # View()
+    write_gtf(., paste(p_out, "processed_ARS_dual-strand.gtf", sep = "/"))
+
+#  Sense tRNA
+z_sense %>%
+    dplyr::filter(type == "tRNA") %>%
+    format_SGD_tibble() %>%
+    # View()
+    write_gtf(., paste(p_out, "processed_tRNA_sense.gtf", sep = "/"))
+
+#  Sense snoRNA
+z_sense %>%
+    dplyr::filter(type == "snoRNA") %>%
+    format_SGD_tibble() %>%
+    # View()
+    write_gtf(., paste(p_out, "processed_snoRNA_sense.gtf", sep = "/"))
+
+#  Dual-strand telomere
+z_sense %>%
+    dplyr::filter(type == "telomere") %>%
+    format_SGD_tibble() %>%
+    # View()
+    write_gtf(., paste(p_out, "processed_telomere_dual-strand.gtf", sep = "/"))
+
+#  Dual-strand centromere
+z_sense %>%
+    dplyr::filter(type == "centromere") %>%
+    format_SGD_tibble() %>%
+    # View()
+    write_gtf(., paste(p_out, "processed_centromere_dual-strand.gtf", sep = "/"))
+
+#  Sense rRNA
+z_sense %>%
+    dplyr::filter(type == "rRNA") %>%
+    format_SGD_tibble() %>%
+    # View()
+    write_gtf(., paste(p_out, "processed_rRNA_sense.gtf", sep = "/"))
+
+#  Sense snRNA
+z_sense %>%
+    dplyr::filter(type == "snRNA") %>%
+    format_SGD_tibble() %>%
+    # View()
+    write_gtf(., paste(p_out, "processed_snRNA_sense.gtf", sep = "/"))
+
+#  Dual-strand intergenic
+z_sense_intergenic %>%
+    dplyr::filter(type == "intergenic") %>%
+    format_SGD_tibble() %>%
+    # View()
+    write_gtf(., paste(p_out, "processed_intergenic_dual-strand.gtf", sep = "/"))
+
+#  Sense RNA species
+z_sense %>%
+    dplyr::filter(
+        type == "tRNA" | 
+        type == "snoRNA" | 
+        type == "rRNA" | 
+        type == "ncRNA" | 
+        type == "snRNA"
+    ) %>%
+    format_SGD_tibble() %>%
+    # View()
+    write_gtf(., paste(p_out, "processed_RNA-species_sense.gtf", sep = "/"))
+
 
 #  Scraps ---------------------------------------------------------------------
+z_sense_intergenic %>%
+    dplyr::group_by(type) %>%
+    dplyr::summarize(n = dplyr::n()) %>%
+    dplyr::arrange(desc(n)) %>%
+    View()
+
+z_sense %>%
+    dplyr::filter(type == "gene") %>%
+    dplyr::arrange(orf_classification, seqnames, start) %>%
+    View()
+
+z_sense %>%
+    dplyr::filter(type == "gene") %>%
+    dplyr::group_by(orf_classification) %>%
+    dplyr::summarize(n = dplyr::n()) %>%
+    dplyr::arrange(desc(n)) %>%
+    View()
+
+z_sense %>%
+    dplyr::filter(type == "gene") %>%
+    dplyr::filter(is.na(orf_classification)) %>%
+    View()
+
+z_sense_antisense_intergenic %>%
+    dplyr::group_by(type) %>%
+    dplyr::summarize(n = dplyr::n()) %>%
+    dplyr::arrange(desc(n)) %>%
+    View()
+
 # all(colnames(test) == colnames(features_etc))  # [1] TRUE
 #
 # gff3_SGD %>%
@@ -1248,130 +1386,239 @@ write_gtf(
 #     dplyr::summarize(n = dplyr::n())
 ```
 
+## ...
+### ...
 ```{r}
-write_gtf <- function(x, y) {
-    # :param x: tibble
-    # :param y: outfile
-    # :return: NA
-    readr::write_tsv(
-        x,
-        y,
-        col_names = FALSE,
-        quote = "none",
-        escape = "none"
-    )
-}
+p_Q <- "outfiles_gtf-gff3/Trinity-GG/Q_N/filtered/locus"
+f_Q <- "Q_mkc-4_gte-pctl-25.corrected.gtf"
+gtf_Q <- rtracklayer::import(paste(p_Q, f_Q, sep = "/")) %>%
+    tibble::as_tibble() %>%
+    dplyr::select(-c(Parent, phase, score)) %>%
+    dplyr::arrange(seqnames, start, strand)
 
+p_G <- "outfiles_gtf-gff3/Trinity-GG/G_N/filtered/locus"
+f_G <- "G1_mkc-4_gte-pctl-25.corrected.gtf"
+gtf_G1 <- rtracklayer::import(paste(p_G, f_G, sep = "/")) %>%
+    tibble::as_tibble() %>%
+    dplyr::select(-c(Parent, phase, score)) %>%
+    dplyr::arrange(seqnames, start, strand)
 
-format_NotFeature_tibble <- function(x) {
-    y <- x %>%
-        dplyr::arrange(chr, start) %>%
-        dplyr::mutate(
-            source = "SGD (KA)",
-            feature = "feature",
-            score = ".",
-            frame = ".",
-            type = "intergenic"
-        ) %>%
-        dplyr::mutate(
-            attribute = paste(
-                paste0("gene_id \"", coord_pre_n, "\""),
-                paste0("transcript_id \"", coord_pre_n, "\""),
-                paste0("type \"", category, "\""),
-                paste0("note \"", stringr::str_replace_all(notes, " ", "-"), "\""),
-                sep = "; "
-            )
-        ) %>%
-        dplyr::relocate(
-            c(chr, source, feature, start, end, score, strand, frame, attribute),
-            .before = coord_written
-        ) %>%
-        dplyr::select(-c(
-            coord_written, strand_written, category, notes, coord_pre_y,
-            coord_pre_n, chr_pre_y
-        ))
-    return(y)
-}
+rm(p_Q, f_Q)
+rm(p_G, f_G)
 
+gtf_Q$geneIDs <- gtf_Q$geneIDs %>%
+    gsub("c\\(", "", .) %>%
+    gsub("\\)", "", .) %>%
+    gsub("\"", "", .)
+gtf_Q$transcripts <- gtf_Q$transcripts %>%
+    gsub("c\\(", "", .) %>%
+    gsub("\\)", "", .) %>%
+    gsub("\"", "", .)
 
-to_check <- readr::read_tsv(
-    "infiles_gtf-gff3/comprehensive/S288C_reference_genome_R64-1-1_20110203/NotFeature_R64-1-1_20110203.dataframe.tsv",
-    show_col_types = FALSE
+gtf_G1$geneIDs <- gtf_G1$geneIDs %>%
+    gsub("c\\(", "", .) %>%
+    gsub("\\)", "", .) %>%
+    gsub("\"", "", .)
+gtf_G1$transcripts <- gtf_G1$transcripts %>%
+    gsub("c\\(", "", .) %>%
+    gsub("\\)", "", .) %>%
+    gsub("\"", "", .)
+```
+
+## ...
+### ...
+```{r}
+gtf_all <- z_sense_antisense_intergenic
+
+g_Q <- makeGRangesFromDataFrame(
+    gtf_Q, keep.extra.columns = TRUE
+)
+g_G1 <- makeGRangesFromDataFrame(
+    gtf_G1, keep.extra.columns = TRUE
+)
+g_all <- makeGRangesFromDataFrame(
+    gtf_all, keep.extra.columns = TRUE
+)
+
+o_Q_v_all <- IRanges::findOverlaps(g_Q, g_all)
+o_G1_v_all <- IRanges::findOverlaps(g_G1, g_all)
+
+gtf_Q[queryHits(o_Q_v_all), ]
+gtf_all[subjectHits(o_Q_v_all), ]
+
+wrt_Q_all <- dplyr::bind_cols(
+    gtf_Q[queryHits(o_Q_v_all), ],
+    gtf_all[subjectHits(o_Q_v_all), ]
 ) %>%
-    dplyr::select(-"...1")
-to_check$chr <- to_check$chr %>% utils::as.roman()
-
-
-write_gtf(
-    format_NotFeature_tibble(to_check),
-    "outfiles_gtf-gff3/comprehensive/S288C_reference_genome_R64-1-1_20110203/NotFeature_R64-1-1_20110203.gtf"
-)
-```
-
-
-## Generate a sn/snoRNA-specific `gtf` from "R64"
-### Code
-<details>
-<summary><i>Code: Generate a sn/snoRNA-specific `gtf` from "R64"</i></summary>
-```{r}
-write_gtf <- function(x, y) {
-    # :param x: tibble
-    # :param y: outfile
-    # :return: NA
-    readr::write_tsv(
-        x,
-        y,
-        col_names = FALSE,
-        quote = "none",
-        escape = "none"
+    dplyr::rename(
+        seqnames = seqnames...1,
+        start = start...2,
+        end = end...3,
+        width = width...4,
+        strand = strand...5,
+        source = source...6,
+        type = type...7,
+        ID = ID...8,
+        seqnames_all = seqnames...11,
+        start_all = start...12,
+        end_all = end...13,
+        width_all = width...14,
+        strand_all = strand...15,
+        source_all = source...16,
+        type_all = type...17,
+        ID_all = ID...18
     )
-}
 
-
-format_SGD_tibble <- function(x) {
-    # x <- to_include
-    # x %>% 
-    y <- x %>%
-        dplyr::arrange(seqnames, start) %>%
-        dplyr::rename(seqname =  seqnames) %>%
-        dplyr::filter(seqname != "2-micron") %>%
-        dplyr::mutate(feature = "feature", score = ".", frame = ".") %>%
-        dplyr::relocate(c(source, feature), .after = seqname) %>%
-        dplyr::relocate(c(score, strand, frame), .after = end) %>%
-        dplyr::mutate(
-            attribute = paste(
-                paste0("gene_id \"", ID, "\""),
-                paste0("transcript_id \"", ID, "\""),
-                # paste0("aliases \"", gsub(" ", "+", Alias), "\""),
-                # paste0("aliases \"", Alias, "\""),
-                paste0("type \"", type, "\""),
-                paste0("orf_classification \"", orf_classification, "\""),
-                paste0("source_id \"", gsub("SGD:", "", dbxref), "\""),
-                # paste0("go_id \"", gsub(" ", "+", Ontology_term), "\""),
-                # paste0("go_id \"", Ontology_term, "\""),
-                # paste0("width \"", width, "\""),
-                # paste0("note \"", unlist(Note), "\""),
-                # paste0(
-                #     "note \"",
-                #     #+ running htseq-count
-                #     gsub(" ", "+", gsub("'", "", unlist(Note))),
-                #     "\""
-                # ),
-                sep = "; "
-            )
-        ) %>%
-        dplyr::select(-c(
-            phase, orf_classification, Parent, gene, ID, Name, Alias, type,
-            dbxref, width, Ontology_term, width, Note
-        ))
-    
-    return(y)
-}
-
-write_gtf(
-    format_SGD_tibble(to_include),
-    "outfiles_gtf-gff3/comprehensive/S288C_reference_genome_R64-1-1_20110203/test_filtered.gtf"
+#  If they overlap, and after stratifying for 'chr' and 'strand', then organize
+#+ rows into groups  
+wrt_Q_all_group_chr_strand <- plyr::ddply(
+    wrt_Q_all,
+    c("seqnames", "strand"),
+    function(x) { 
+        #  Check if a record should be linked with the previous record
+        y <- c(NA, x$end[-nrow(x)])
+        z <- ifelse(is.na(y), 0, y)
+        z <- cummax(z)
+        z[is.na(y)] <- NA
+        x$previous_end <- z
+        
+        return(x)
+    }
 )
+wrt_Q_all_group_chr_strand <- wrt_Q_all_group_chr_strand %>%
+    dplyr::relocate(c(start_all, end_all), .after = end)
+wrt_Q_all_group_chr_strand$new_group <- is.na(wrt_Q_all_group_chr_strand$previous_end) | 
+    (wrt_Q_all_group_chr_strand$start >= wrt_Q_all_group_chr_strand$previous_end)
+wrt_Q_all_group_chr_strand$group <- cumsum(wrt_Q_all_group_chr_strand$new_group)
+wrt_Q_all_group_chr_strand <- wrt_Q_all_group_chr_strand %>%
+    dplyr::mutate(type_ID = paste0(type_all, ": ", ID_all))
+
+#  Testing out row-wise overlap logic
+percent_overlap <- function(x_start, x_end, y_start, y_end){
+    # x_start <- test[1, 2]
+    # x_end <- test[1, 3]
+    # y_start <- test[1, 4]
+    # y_end <- test[1, 5]
+    
+    x_length <- abs(x_end - x_start)
+    max_start <- max(c(x_start, y_start))  # Largest start
+    min_end <- min(c(x_end, y_end))  # Smallest end
+    overlap <- min_end - max_start
+    overlap <- ifelse(overlap <= 0, 0, overlap)
+    percent_overlap <- ((overlap / x_length) * 100)
+    return(percent_overlap)
+}
+
+
+test <- wrt_Q_all_group_chr_strand
+test$pct_Q_over_all <- mapply(
+    percent_overlap, test$start, test$end, test$start_all, test$end_all
+)
+test$pct_all_over_Q <- mapply(
+    percent_overlap, test$start_all, test$end_all, test$start, test$end
+)
+test <- test %>%
+    dplyr::relocate(
+        c(pct_Q_over_all, pct_all_over_Q, type_ID, group), .after = end_all
+    )
+
+test_overlaps <- percent_overlap(test$start, test$end, test$start_all, test$end_all)
+test_overlaps %>% table()
+
+(test$start <= test$end_all) %>% table()
+(test$end >= test$start_all) %>% table()
+test_olap <- (test$start <= test$end_all) & (test$end >= test$start_all)
+
+#  Aggregate the data
+wrt_Q_all_agg_chr_strand <- plyr::ddply(
+    wrt_Q_all_group_chr_strand,
+    .(seqnames, strand, group),
+    plyr::summarize, 
+    start = min(start),
+    end = max(end),
+    width = (end - start) + 1,
+    ID = paste0(ID, collapse = "; "),
+    dbxref = paste0(dbxref, collapse = "; "),
+    Name = paste0(type_ID, collapse = "; "),
+    Note = paste0(Note, collapse = "; "),
+    Ontology_term = paste0(Ontology_term, collapse = "; "),
+    Alias = paste0(type, collapse = "; ")
+) %>%
+    dplyr::mutate(
+        strand = strand,
+        source = "SGD (KA)",
+        type = ifelse(
+            Alias == "pseudogene" | Alias == "pseudogene; pseudogene",
+            "PG",
+            "TE"
+        ),
+        orf_classification = NA_character_,
+        gene = NA_character_
+    ) %>%
+    dplyr::select(-group) %>% 
+    dplyr::arrange(seqnames, start, strand) %>%
+    dplyr::relocate(c(
+        seqnames, start, end, width, strand, source, type, ID, dbxref, Name,
+        Note, Ontology_term, orf_classification, Alias, gene
+    ))
+
+details_Alias <- wrt_Q_all_agg_chr_strand$Alias %>%
+    stringr::str_remove_all("s") %>%
+    stringr::str_split("; ") %>%
+    purrr::map(sort) %>%
+    purrr::map(unique)
+details_Alias <- sapply(
+    details_Alias[!sapply(details_Alias, purrr::is_empty)],
+    paste,
+    collapse = " "
+) %>%
+    gsub("long_terminal_repeat", "LTR", .) %>%
+    gsub("LTR_retrotranpoon", "RT", .) %>%
+    gsub("tranpoable_element_gene", "TE", .) %>%
+    gsub("peudogene", "PG", .)
+
+details_Name <- wrt_Q_all_agg_chr_strand$Name %>%
+    stringr::str_remove_all("s") %>%
+    stringr::str_split("; ") %>%
+    purrr::map(sort) %>%
+    purrr::map(unique)
+details_Name <- sapply(
+    details_Name[!sapply(details_Name, purrr::is_empty)],
+    paste,
+    collapse = "; "
+) %>%
+    gsub("long_terminal_repeat", "LTR", .) %>%
+    gsub("LTR_retrotranpoon", "RT", .) %>%
+    gsub("tranpoable_element_gene", "TE_gene", .) %>%
+    gsub("peudogene", "PG", .)
+
+wrt_Q_all_agg_chr_strand$Name <- details_Name
+wrt_Q_all_agg_chr_strand$Alias <- details_Alias
+wrt_Q_all_agg_chr_strand$n_types <- ifelse(
+    grepl(" ", wrt_Q_all_agg_chr_strand$Alias, fixed = TRUE),
+    stringr::str_count(wrt_Q_all_agg_chr_strand$Alias, " ") + 1,
+    1
+)
+wrt_Q_all_agg_chr_strand$n_features <- ifelse(
+    grepl(";", wrt_Q_all_agg_chr_strand$ID, fixed = TRUE),
+    stringr::str_count(wrt_Q_all_agg_chr_strand$ID, ";") + 1,
+    1
+)
+
+wrt_Q_all <- wrt_Q_all_agg_chr_strand
+wrt_Q_all$ID <- gsub("; ", "_", wrt_Q_all$ID)
+wrt_Q_all$Ontology_term <- wrt_Q_all$Ontology_term %>%
+    gsub("; ", "_", .) %>%
+    gsub(", ", "-", .)
+wrt_Q_all$Name <- wrt_Q_all$Name %>%
+    gsub(": ", "-", .) %>%
+    gsub("; ", "_", .) %>%
+    gsub("TE_gene", "TE", .)
+# wrt_Q_all %>%
+#     dplyr::group_by(strand) %>%
+#     dplyr::summarize(n = dplyr::n())
+
+rm(wrt_Q_all_agg_chr_strand, wrt_Q_all_group_chr_strand, details_Alias, details_Name)
+
 ```
-</details>
-<br />
+
