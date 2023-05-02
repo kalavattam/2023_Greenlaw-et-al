@@ -1430,25 +1430,20 @@ gtf_G1$transcripts <- gtf_G1$transcripts %>%
 ```{r}
 gtf_all <- z_sense_antisense_intergenic
 
-g_Q <- makeGRangesFromDataFrame(
-    gtf_Q, keep.extra.columns = TRUE
-)
-g_G1 <- makeGRangesFromDataFrame(
-    gtf_G1, keep.extra.columns = TRUE
-)
-g_all <- makeGRangesFromDataFrame(
-    gtf_all, keep.extra.columns = TRUE
-)
+g_Q <- makeGRangesFromDataFrame(gtf_Q, keep.extra.columns = TRUE)
+g_G1 <- makeGRangesFromDataFrame(gtf_G1, keep.extra.columns = TRUE)
+g_all <- makeGRangesFromDataFrame(gtf_all, keep.extra.columns = TRUE)
 
-o_Q_v_all <- IRanges::findOverlaps(g_Q, g_all)
-o_G1_v_all <- IRanges::findOverlaps(g_G1, g_all)
+overlap_Q_v_all <- IRanges::findOverlaps(g_Q, g_all)
+overlap_G1_v_all <- IRanges::findOverlaps(g_G1, g_all)
 
-gtf_Q[queryHits(o_Q_v_all), ]
-gtf_all[subjectHits(o_Q_v_all), ]
+gtf_Q[queryHits(overlap_Q_v_all), ]
+gtf_all[subjectHits(overlap_Q_v_all), ]
 
+#  Create rows for feature in "Q" overlapping feature in "all"
 wrt_Q_all <- dplyr::bind_cols(
-    gtf_Q[queryHits(o_Q_v_all), ],
-    gtf_all[subjectHits(o_Q_v_all), ]
+    gtf_Q[queryHits(overlap_Q_v_all), ],
+    gtf_all[subjectHits(overlap_Q_v_all), ]
 ) %>%
     dplyr::rename(
         seqnames = seqnames...1,
@@ -1466,11 +1461,18 @@ wrt_Q_all <- dplyr::bind_cols(
         strand_all = strand...15,
         source_all = source...16,
         type_all = type...17,
-        ID_all = ID...18
+        ID_all = ID...18,
+        dbxref_all = dbxref,
+        Name_all = Name,
+        Note_all = Note,
+        Ontology_term_all = Ontology_term,
+        orf_classification_all = orf_classification,
+        Alias_all = Alias,
+        gene_all = gene
     )
 
-#  If they overlap, and after stratifying for 'chr' and 'strand', then organize
-#+ rows into groups  
+#  If they overlap after stratifying for 'chr' and 'strand', then organize rows
+#+ into groups  
 wrt_Q_all_group_chr_strand <- plyr::ddply(
     wrt_Q_all,
     c("seqnames", "strand"),
@@ -1487,22 +1489,32 @@ wrt_Q_all_group_chr_strand <- plyr::ddply(
 )
 wrt_Q_all_group_chr_strand <- wrt_Q_all_group_chr_strand %>%
     dplyr::relocate(c(start_all, end_all), .after = end)
-wrt_Q_all_group_chr_strand$new_group <- is.na(wrt_Q_all_group_chr_strand$previous_end) | 
-    (wrt_Q_all_group_chr_strand$start >= wrt_Q_all_group_chr_strand$previous_end)
+wrt_Q_all_group_chr_strand$new_group <-
+    is.na(wrt_Q_all_group_chr_strand$previous_end) | 
+        (
+            wrt_Q_all_group_chr_strand$start >=
+            wrt_Q_all_group_chr_strand$previous_end
+        )
 wrt_Q_all_group_chr_strand$group <- cumsum(wrt_Q_all_group_chr_strand$new_group)
 wrt_Q_all_group_chr_strand <- wrt_Q_all_group_chr_strand %>%
-    dplyr::mutate(type_ID = paste0(type_all, ": ", ID_all))
+    dplyr::mutate(type_ID_all = paste0(type_all, ": ", ID_all))
 
-#  Testing out row-wise overlap logic
+#  Calculate percent overlaps between "Q" and "all" features and vice versa
 percent_overlap <- function(x_start, x_end, y_start, y_end){
-    # x_start <- test[1, 2]
-    # x_end <- test[1, 3]
-    # y_start <- test[1, 4]
-    # y_end <- test[1, 5]
+    # x_length <- abs((x_end + 1) - x_start)
+    # min_end <- min(c(x_end, (y_end + 1)))  # Smallest end
     
-    x_length <- abs(x_end - x_start)
-    max_start <- max(c(x_start, y_start))  # Largest start
-    min_end <- min(c(x_end, y_end))  # Smallest end
+    # x_length <- abs(x_end - x_start)
+    # max_start <- max(c(x_start, y_start))  # Largest start
+    # min_end <- min(c(x_end, y_end))  # Smallest end
+    # overlap <- min_end - max_start
+    # overlap <- ifelse(overlap <= 0, 0, overlap)
+    # percent_overlap <- ((overlap / x_length) * 100)
+    # return(percent_overlap)
+    
+    x_length <- abs((x_end + 1) - (x_start - 1))
+    max_start <- max(c((x_start - 1), (y_start - 1)))  # Largest start
+    min_end <- min(c((x_end + 1), (y_end + 1)))  # Smallest end
     overlap <- min_end - max_start
     overlap <- ifelse(overlap <= 0, 0, overlap)
     percent_overlap <- ((overlap / x_length) * 100)
@@ -1519,15 +1531,17 @@ test$pct_all_over_Q <- mapply(
 )
 test <- test %>%
     dplyr::relocate(
-        c(pct_Q_over_all, pct_all_over_Q, type_ID, group), .after = end_all
+        c(pct_Q_over_all, pct_all_over_Q, type_ID_all, group), .after = end_all
     )
 
-test_overlaps <- percent_overlap(test$start, test$end, test$start_all, test$end_all)
-test_overlaps %>% table()
-
-(test$start <= test$end_all) %>% table()
-(test$end >= test$start_all) %>% table()
-test_olap <- (test$start <= test$end_all) & (test$end >= test$start_all)
+# test_overlaps <- percent_overlap(
+#     test$start, test$end, test$start_all, test$end_all
+# )
+# test_overlaps %>% table()
+# 
+# (test$start <= test$end_all) %>% table()
+# (test$end >= test$start_all) %>% table()
+# test_olap <- (test$start <= test$end_all) & (test$end >= test$start_all)
 
 #  Aggregate the data
 wrt_Q_all_agg_chr_strand <- plyr::ddply(
