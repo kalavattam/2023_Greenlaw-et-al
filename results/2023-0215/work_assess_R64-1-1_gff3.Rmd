@@ -1501,16 +1501,24 @@ wrt_Q_all_group_chr_strand <- wrt_Q_all_group_chr_strand %>%
 
 #  Calculate percent overlaps between "Q" and "all" features and vice versa
 percent_overlap <- function(x_start, x_end, y_start, y_end){
-    # x_length <- abs(x_end - x_start)
-    # min_end <- min(c(x_end, y_end))  # Smallest end
-    # overlap <- (min_end + 1) - max_start
-    
     x_length <- abs((x_end + 1) - x_start)
-    max_start <- max(c(x_start, y_start))  # Largest start
-    min_end <- min(c((x_end + 1), (y_end + 1)))  # Smallest end
-    overlap <- min_end - max_start
-    overlap <- ifelse(overlap <= 0, 0, overlap)
+    
+    #  Determine "largest" start
+    max_start <- max(c(
+        x_start, y_start
+    ))
+    
+    #  Determine "smallest" end
+    min_end <- min(c(
+        (x_end + 1), (y_end + 1)
+    ))
+    
+    overlap <- ifelse(
+        (min_end - max_start) <= 0, 0, (min_end - max_start)
+    )
+    
     percent_overlap <- ((overlap / x_length) * 100)
+    
     return(percent_overlap)
 }
 

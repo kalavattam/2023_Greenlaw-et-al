@@ -180,8 +180,8 @@ theme_slick_no_legend <- theme_slick + theme(legend.position = "none")
 
 ### Load in Excel spreadsheet of samples names and variables
 The spreadsheet includes Alison's original sample names; we can use this
-infomation to associate the new sample names, which are made up of `DESeq2` GLM
-variables, with the old names, which reflect Alison's wet-lab, library-prep,
+information to associate the new sample names, which are made up of `DESeq2`
+GLM variables, with the old names, which reflect Alison's wet-lab, library-prep,
 etc. work
 ```{r load spreadsheet, results='hide', message=FALSE}
 p_xl <- "notebook"  #INPATH
@@ -201,7 +201,6 @@ rm(p_xl, f_xl)
 ### Load in and process `featureCounts` table
 ```{r Process featureCounts table, results='hide', message=FALSE}
 #  Load in featureCounts table ------------------------------------------------
-p_fc <- "outfiles_featureCounts/combined_SC_KL/UT_prim_UMI"  #INPATH
 f_fc <- "UT_prim_UMI.featureCounts"  #INFILE
 #NOTE 1/2 Alison: you can adjust 'p_fc' (path for featureCounts file) and
 #NOTE 2/3 'f_fc' (featureCounts file) to point to wherever
@@ -294,7 +293,7 @@ rm(el_1, el_2)
 #  Limit the splitting/reorganization to S. cerevisiae features only; the above
 #+ splitting/reorganization work isn't appropriate for K. lactis 'feature_init'
 #+ information because the K. lactis naming/classification differs from the S.
-#+ cerevisiae naming/classification system)
+#+ cerevisiae naming/classification system
 t_fc$feature <- ifelse(
     t_fc$genome == "K_lactis", t_fc$feature_init, t_fc$feature
 )

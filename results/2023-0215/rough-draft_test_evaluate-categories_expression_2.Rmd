@@ -1,0 +1,212 @@
+---
+title: "rough-draft_test_evaluate-categories_expression_2.Rmd"
+output: html_notebookauthor: "KA"
+email: "kalavatt@fredhutch.org"
+output:
+    html_notebook:
+        toc: yes
+        toc_float: true
+---
+<br />
+
+## Get situated
+### Code
+<details>
+<summary><i>Code: Get situated</i></summary>
+```{r}
+#!/usr/bin/env Rscript
+
+# library(GenomicRanges)
+# library(IRanges)
+# library(plyr)
+# library(readxl)
+# library(rtracklayer)
+library(tidyverse)
+
+options(scipen = 999)
+options(ggrepel.max.overlaps = Inf)
+
+if(stringr::str_detect(getwd(), "kalavattam")) {
+    p_local <- "/Users/kalavattam/Dropbox/FHCC"
+} else {
+    p_local <- "/Users/kalavatt/projects-etc"
+}
+p_wd <- "2022_transcriptome-construction/results/2023-0215"
+
+setwd(paste(p_local, p_wd, sep = "/"))
+getwd()
+
+rm(p_local, p_wd)
+```
+</details>
+<br />
+<br />
+
+## Load "comprehensive" `gtf` files
+### Code
+<details>
+<summary><i>Code: Load "comprehensive" `gtf` files</i></summary>
+```{r Load "comprehensive" gtf files, results='hide', message=FALSE, warning=FALSE}
+p_gtf <- "./outfiles_gtf-gff3/comprehensive/S288C_reference_genome_R64-1-1_20110203"
+f_S <- "processed_features-intergenic_sense.gtf"
+f_SA <- "processed_features-intergenic_sense-antisense.gtf"
+
+comp_S <- paste(p_gtf, f_S, sep = "/") %>%
+    rtracklayer::import() %>%
+    tibble::as_tibble() %>%
+    dplyr::arrange(seqnames, start) %>%
+    dplyr::select(-c(score, phase)) %>% 
+    dplyr::rename(category = type.1)
+
+comp_SA <- paste(p_gtf, f_SA, sep = "/") %>%
+    rtracklayer::import() %>%
+    tibble::as_tibble() %>%
+    dplyr::arrange(seqnames, start) %>%
+    dplyr::select(-c(score, phase)) %>% 
+    dplyr::rename(category = type.1)
+
+rm(p_gtf, f_S, f_SA)
+```
+</details>
+<br />
+<br />
+
+## Load counts matrices against "comprehensive" `gtf`s
+### Code
+<details>
+<summary><i>Code: Load "comprehensive" `gtf` files</i></summary>
+```{r Load counts matrices against "comprehensive" `gtf`s, results='hide', message=FALSE, warning=FALSE}
+read_in_counts_matrix <- function(x) {
+    y <- readr::read_tsv(x, show_col_types = FALSE) %>% 
+        dplyr::rename(gene_id = ...1)
+    return(y)
+}
+
+
+p_cm <- "./outfiles_htseq-count/comprehensive/S288C_reference_genome_R64-1-1_20110203/UT_prim_UMI"
+
+# f_SA_all <- "processed_features-intergenic_sense-antisense.all-bams.hc-strd-eq.all.tsv"
+# f_SA_frac <- "processed_features-intergenic_sense-antisense.all-bams.hc-strd-eq.fraction.tsv"
+# f_SA_none <- "processed_features-intergenic_sense-antisense.all-bams.hc-strd-eq.none.tsv"
+# f_SA_rand <- "processed_features-intergenic_sense-antisense.all-bams.hc-strd-eq.random.tsv"
+# f_S_all <- "processed_features-intergenic_sense.all-bams.hc-strd-eq.all.tsv"
+# f_S_frac <- "processed_features-intergenic_sense.all-bams.hc-strd-eq.fraction.tsv"
+# f_S_none <- "processed_features-intergenic_sense.all-bams.hc-strd-eq.none.tsv"
+f_S_rand <- "processed_features-intergenic_sense.all-bams.hc-strd-eq.random.tsv"
+
+t_S_rand <- read_in_counts_matrix(paste(p_cm, f_S_rand, sep = "/"))
+```
+</details>
+<br />
+<br />
+
+```{r}
+#  Create the test dataframes -------------------------------------------------
+test <- t_S_rand[, 1:2] %>%
+    dplyr::rename(
+        `n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1` =
+        `bams_renamed/UT_prim_UMI/n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI.bam`
+    )
+
+underscore <- test %>%
+    dplyr::filter(stringr::str_detect(gene_id, "^__[a-zA-Z0-9_]*$"))
+
+counts <- test %>%
+    dplyr::filter(!stringr::str_detect(gene_id, "^__[a-zA-Z0-9_]*$"))
+
+
+#  Determine and compare various tallies --------------------------------------
+#  Tally the non-underscore-category counts (read pairs)
+counts$`n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1` %>% sum()  # [1] 8373074
+#IMPORTANT
+
+#  Tally the underscore-category counts (read pairs)
+underscore$`n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1`[1] +
+    underscore$`n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1`[2] +
+    underscore$`n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1`[4] +
+    underscore$`n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1`[5]
+# [1] 21827889
+# 14968733 + 1607213 + 0 + 5251943  # [1] 21827889
+
+#  Tally the number of reads (records) in the bam
+# ❯ samtools view -c n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI.bam
+# 57187500
+
+#  Tally the number of read pairs in the bam
+# ❯ echo $(( 57187500 / 2 ))
+# 28593750
+
+#  Bam read pairs minus underscore-category counts
+28593750 - 21827889  # [1] 6765861
+28593750 - sum(underscore$`n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1`)
+#NOTE 1/2 This is not equal to the tally of non-underscore-category counts above
+#NOTE 2/2 (it is for t_S_none, however)
+
+8373074 + 21827889  # [1] 30200963
+#NOTE This does not equal 28593750
+```
+
+## Load counts matrices against "comprehensive" `gtf`s
+### Code
+<details>
+<summary><i>Code: Load "comprehensive" `gtf` files</i></summary>
+```{r Load counts matrices against "comprehensive" `gtf`s, results='hide', message=FALSE, warning=FALSE}
+read_in_counts_matrix <- function(x) {
+    y <- readr::read_tsv(x, show_col_types = FALSE) %>% 
+        dplyr::rename(gene_id = ...1)
+    return(y)
+}
+
+
+p_cm <- "./outfiles_htseq-count/comprehensive/S288C_reference_genome_R64-1-1_20110203/UT_prim_UMI"
+f_S_frac <- "processed_features-intergenic_sense.all-bams.hc-strd-eq.fraction.tsv"
+t_S_frac <- read_in_counts_matrix(paste(p_cm, f_S_frac, sep = "/"))
+```
+</details>
+<br />
+<br />
+
+```{r}
+#  Create the test dataframes -------------------------------------------------
+test <- t_S_frac[, 1:2] %>%
+    dplyr::rename(
+        `n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1` =
+        `bams_renamed/UT_prim_UMI/n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI.bam`
+    )
+
+underscore <- test %>%
+    dplyr::filter(stringr::str_detect(gene_id, "^__[a-zA-Z0-9_]*$"))
+
+counts <- test %>%
+    dplyr::filter(!stringr::str_detect(gene_id, "^__[a-zA-Z0-9_]*$"))
+
+
+#  Determine and compare various tallies --------------------------------------
+#  Tally the non-underscore-category counts (read pairs)
+counts$`n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1` %>% sum()  # [1] 8373074
+#IMPORTANT
+
+#  Tally the underscore-category counts (read pairs)
+underscore$`n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1`[1] +
+    underscore$`n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1`[2] +
+    underscore$`n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1`[4] +
+    underscore$`n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1`[5]
+# [1] 21827889
+
+#  Tally the number of reads (records) in the bam
+# ❯ samtools view -c n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI.bam
+# 57187500
+
+#  Tally the number of read pairs in the bam
+# ❯ echo $(( 57187500 / 2 ))
+# 28593750
+
+#  Bam read pairs minus underscore-category counts
+28593750 - 21827889  # [1] 6765861
+#NOTE 1/2 This is not equal to the tally of non-underscore-category counts above
+#NOTE 2/2 (it is for t_S_none, however)
+
+8373074 + 21827889  # [1] 30200963
+#NOTE This does not equal 28593750
+```
+

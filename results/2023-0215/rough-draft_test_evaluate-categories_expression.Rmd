@@ -1,0 +1,616 @@
+---
+title: "rough-draft_test_evaluate-categories_expression.Rmd"
+output: html_notebookauthor: "KA"
+email: "kalavatt@fredhutch.org"
+output:
+    html_notebook:
+        toc: yes
+        toc_float: true
+---
+<br />
+
+## Get situated
+### Code
+<details>
+<summary><i>Code: Get situated</i></summary>
+```{r}
+#!/usr/bin/env Rscript
+
+# library(GenomicRanges)
+# library(IRanges)
+# library(plyr)
+# library(readxl)
+# library(rtracklayer)
+library(tidyverse)
+
+options(scipen = 999)
+options(ggrepel.max.overlaps = Inf)
+
+if(stringr::str_detect(getwd(), "kalavattam")) {
+    p_local <- "/Users/kalavattam/Dropbox/FHCC"
+} else {
+    p_local <- "/Users/kalavatt/projects-etc"
+}
+p_wd <- "2022_transcriptome-construction/results/2023-0215"
+
+setwd(paste(p_local, p_wd, sep = "/"))
+getwd()
+
+rm(p_local, p_wd)
+```
+</details>
+<br />
+<br />
+
+## Load "comprehensive" `gtf` files
+### Code
+<details>
+<summary><i>Code: Load "comprehensive" `gtf` files</i></summary>
+```{r Load "comprehensive" gtf files, results='hide', message=FALSE, warning=FALSE}
+p_gtf <- "./outfiles_gtf-gff3/comprehensive/S288C_reference_genome_R64-1-1_20110203"
+f_S <- "processed_features-intergenic_sense.gtf"
+f_SA <- "processed_features-intergenic_sense-antisense.gtf"
+
+comp_S <- paste(p_gtf, f_S, sep = "/") %>%
+    rtracklayer::import() %>%
+    tibble::as_tibble() %>%
+    dplyr::arrange(seqnames, start) %>%
+    dplyr::select(-c(score, phase)) %>% 
+    dplyr::rename(category = type.1)
+
+comp_SA <- paste(p_gtf, f_SA, sep = "/") %>%
+    rtracklayer::import() %>%
+    tibble::as_tibble() %>%
+    dplyr::arrange(seqnames, start) %>%
+    dplyr::select(-c(score, phase)) %>% 
+    dplyr::rename(category = type.1)
+
+rm(p_gtf, f_S, f_SA)
+```
+</details>
+<br />
+<br />
+
+## Load counts matrices against "comprehensive" `gtf`s
+### Code
+<details>
+<summary><i>Code: Load "comprehensive" `gtf` files</i></summary>
+```{r Load counts matrices against "comprehensive" `gtf`s, results='hide', message=FALSE, warning=FALSE}
+read_in_counts_matrix <- function(x) {
+    y <- readr::read_tsv(x, show_col_types = FALSE) %>% 
+        dplyr::rename(gene_id = ...1)
+    return(y)
+}
+
+
+p_cm <- "./outfiles_htseq-count/comprehensive/S288C_reference_genome_R64-1-1_20110203/UT_prim_UMI"
+
+f_SA_all <- "processed_features-intergenic_sense-antisense.all-bams.hc-strd-eq.all.tsv"
+f_SA_frac <- "processed_features-intergenic_sense-antisense.all-bams.hc-strd-eq.fraction.tsv"
+f_SA_none <- "processed_features-intergenic_sense-antisense.all-bams.hc-strd-eq.none.tsv"
+f_SA_rand <- "processed_features-intergenic_sense-antisense.all-bams.hc-strd-eq.random.tsv"
+f_S_all <- "processed_features-intergenic_sense.all-bams.hc-strd-eq.all.tsv"
+f_S_frac <- "processed_features-intergenic_sense.all-bams.hc-strd-eq.fraction.tsv"
+f_S_none <- "processed_features-intergenic_sense.all-bams.hc-strd-eq.none.tsv"
+f_S_rand <- "processed_features-intergenic_sense.all-bams.hc-strd-eq.random.tsv"
+
+t_S_frac <- read_in_counts_matrix(paste(p_cm, f_S_frac, sep = "/"))
+t_S_none <- read_in_counts_matrix(paste(p_cm, f_S_none, sep = "/"))
+
+t_SA_frac <- read_in_counts_matrix(paste(p_cm, f_SA_frac, sep = "/"))
+t_SA_none <- read_in_counts_matrix(paste(p_cm, f_SA_none, sep = "/"))
+
+```
+</details>
+<br />
+<br />
+
+```{r}
+#  Create the test dataframes -------------------------------------------------
+test <- t_S_none[, 1:2] %>%
+    dplyr::rename(
+        `n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1` =
+        `bams_renamed/UT_prim_UMI/n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI.bam`
+    )
+
+underscore <- test %>%
+    dplyr::filter(stringr::str_detect(gene_id, "^__[a-zA-Z0-9_]*$"))
+
+counts <- test %>%
+    dplyr::filter(!stringr::str_detect(gene_id, "^__[a-zA-Z0-9_]*$"))
+
+
+#  Determine and compare various tallies --------------------------------------
+#  Tally the non-underscore-category counts (read pairs)
+counts$`n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1` %>% sum()  # [1] 6765861
+#IMPORTANT
+
+#  Tally the underscore-category counts (read pairs)
+underscore$`n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1` %>% sum()  # [1] 21827889
+# 14968733 + 1607213 + 5251943  # [1] 21827889
+
+#  Tally the number of reads (records) in the bam
+# ❯ samtools view -c n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI.bam
+# 57187500
+
+#  Tally the number of read pairs in the bam
+# ❯ echo $(( 57187500 / 2 ))
+# 28593750
+
+#  Bam read pairs minus underscore-category counts
+28593750 - 21827889  # [1] 6765861
+#NOTE This is equal to the tally of non-underscore-category counts above
+
+#CONCLUSION  1/2 We seem to have counts that are consistent between the bam and
+#CONCLUSION  2/2 the counts matrix
+
+
+#  However, when taking tallies by chromosome, things don't add up ------------
+# ❯ samtools idxstats n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI.bam \
+# >    | cut -f 1,3
+# I	336170
+# II	1521414
+# III	441258
+# IV	2783970
+# V	1171866
+# VI	363990
+# VII	1740082
+# VIII	1004006
+# IX	717164
+# X	1166506
+# XI	1077022
+# XII	6732622
+# XIII	1546908
+# XIV	1419034
+# XV	1958054
+# XVI	1526702
+# Mito	1194374
+# A	1985430
+# B	2448104
+# C	2899742
+# D	7486496
+# E	4117310
+# F	5053594
+# 20S	6495682
+# *	0
+
+#  Sum of Mito, A-F, 20S
+sum(c(
+    1194374, 1985430, 2448104, 2899742, 7486496, 4117310, 5053594, 6495682
+))  # [1] 31680732
+31680732 / 2  # [1] 15840366
+#NOTE 1/2 It's higher than `__no_feature` in dataframe `underscore`, which is
+#NOTE 2/2 14968733
+#NOTE 3/3 15840366 - 14968733 = 871633 (a number that keeps popping up)
+#IMPORTANT
+
+#  Sum of I-XVI
+sum(c(
+    336170, 1521414, 441258, 2783970, 1171866, 363990, 1740082, 1004006,
+    717164, 1166506, 1077022, 6732622, 1546908, 1419034, 1958054, 1526702
+))  # [1] 25506768
+25506768 / 2  # [1] 12753384
+#NOTE 1/2 It's more than the number of "valid" counts, 6,765,861, by this much:
+#NOTE 2/2 5,987,523
+
+#  Sum of I-XVI, Mito, A-F, 20S
+sum(c(
+    336170, 1521414, 441258, 2783970, 1171866, 363990, 1740082, 1004006,
+    717164, 1166506, 1077022, 6732622, 1546908, 1419034, 1958054, 1526702,
+    1194374, 1985430, 2448104, 2899742, 7486496, 4117310, 5053594, 6495682
+))  # [1] 57187500
+57187500 / 2  # [1] 28593750
+#NOTE 1/3 It's equal to the number of records in the bam and the number of
+#NOTE 2/3 counts in dataframes `counts` and `underscore` (when multiplied by 2
+#NOTE 3/3 to convert from read pairs to reads)
+# sum(
+#     sum(counts$`n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1`),
+#     sum(underscore$`n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1`)
+# ) * 2  # [1] 57187500
+
+#  __ambiguous + __alignment_not_unique + valid
+1607213 + 5251943 + 6765861  # [1] 27250034
+
+#  Reconstitute __no_feature by subtracting
+#+ (__ambiguous + __alignment_not_unique + valid) from the total (dividing by 2
+#+ to convert from reads to read pairs)
+(57187500 - 27250034)/2  # [1] 14968733
+
+
+#  On the "invalid" read pairs in the bam -------------------------------------
+#  Calculate (samtools I-XVI read pairs) minus (htseq-count valid read pairs)
+#+ (bam I-XVI) - (counts matrix valid)
+12753384 - 6765861  # [1] 5987523
+# 5987523 * 2  # [1] 11975046
+#NOTE 1/2 5,987,523 chromosomal read pairs (11,975,046 reads) in the bam are
+#NOTE 2/2 "invalid" according  to htseq-count. Why?
+
+# #  (samtools I-XVI minus htseq-count valid) - __alignment_not_unique
+# 5987523 - 5251943  # [1] 735580
+# #NOTE This doesn't answer the question
+
+# #  (samtools I-XVI minus htseq-count valid) - __ambiguous
+# 5987523 - 1607213  # [1] 4380310
+# #NOTE This also doesn't answer the question
+
+# 735580 + 4380310  # [1] 5115890
+# #NOTE Summing the above two calculations doesn't really mean anything
+
+
+#  (htseq-count ambiguous + not-unique + I-XVI) - (I-XVI bam read pairs) ------
+`reads_I-XVI` <- sum(c(
+    336170, 1521414, 441258, 2783970, 1171866, 363990, 1740082, 1004006,
+    717164, 1166506, 1077022, 6732622, 1546908, 1419034, 1958054, 1526702
+))  # [1] 25506768
+`pairs_I-XVI` <- (`reads_I-XVI` / 2)  # [1] 12753384
+
+`htseq-count_ambiguous_not-unique_valid` <-
+    1607213 + 5251943 + 6765861  # [1] 13625017
+
+`difference_aligned_htseq-count_samtools` <-
+    `htseq-count_ambiguous_not-unique_valid` - `pairs_I-XVI`  # [1] 871633
+#NOTE 1/3 The sum of htseq-count __ambiguous, htseq-count 
+#NOTE 2/3 __alignment_not_unique, and htseq-count "valid" (I-XVI) *minus*
+#NOTE 3/3 chromosome I-XVI bam read pairs leads to that number again: 871633
+
+
+#  (htseq-count not feature) - (non-I-XVI bam read pairs) ---------------------
+`reads_non-I-XVI` <- sum(c(
+    1194374, 1985430, 2448104, 2899742, 7486496, 4117310, 5053594, 6495682
+))  # [1] 31680732
+`pairs_non-I-XVI` <- (`reads_non-I-XVI` / 2)  # [1] 15840366
+
+`htseq-count_no-feature` <-
+    14968733  # [1] 14968733
+
+`difference_no-feature_htseq-count_samtools` <-
+    `htseq-count_no-feature` - `pairs_non-I-XVI`  # [1] -871633
+#NOTE 1/3 htseq-count __no_feature *minus* non-chromosome I-XVI bam read pairs 
+#NOTE 2/3 (i.e., all other "chromosomes" except I-XVI) leads to that number
+#NOTE 3/3 again: 871633
+
+
+#  ... ------------------------------------------------------------------------
+underscore_reformat <- tribble(
+    ~gene_id, ~`n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1`,
+    "__no_feature", 871633,
+    "__ambiguous", 1607213,
+    "__too_low_aQual", 0,
+    "__not_aligned", 0,
+    "__alignment_not_unique", 3135379
+)
+
+sum(underscore_reformat$`n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1`)  # 5614225
+sum(counts$`n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1`)  # 6765861
+5614225 + 6765861  # [1] 12380086
+12753384 - 12380086  # [1] 373298
+
+
+#  ... ------------------------------------------------------------------------
+# ❯ samtools view n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI.bam \
+# >    | gawk '$0 !~ /\<NH:i:1\>/' \
+# >    | wc -l
+# 10503886
+10503886 / 2  # [1] 5251943
+#  i.e., 5,251,943, the same as __alignment_not_unique in the htseq-count
+#+ counts matrix
+
+#NOTE 1/2 This means that, even though they're associated with K. lactis and
+#NOTE 2/3 20S chromosomes, they're included in this count; that's what's
+#NOTE 3/3 throwing things off...
+
+# ❯ samtools view n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI.bam \
+# >    | gawk '$0 ~ /\<NH:i:1\>/' \
+# >    | wc -l
+# 46683614
+46683614 / 2  # [1] 23341807
+#  i.e., 23,341,807, the result of 14,968,733 + 1,607,213 + 6,765,861, e.g.,
+#+ echo $(( 14968733 + 1607213 + 6765861 ))
+
+#NOTE 1/2 So, the numbers of NH:i:1-tagged reads/read pairs equal the sum of
+#NOTE 2/3 __no_feature, __ambiguous, and "valid" (e.g., from
+#NOTE 3/3 )
+
+# ❯ echo $(( 46683614 + 10503886 ))
+# 57187500
+57187500 / 2  # [1] 28593750  # i.e., 28,593,750
+
+
+#  ... ------------------------------------------------------------------------
+#  Number of bam read pairs (samtools) minus number of ambiguous (htseq-count)
+28593750 - 1607213  # [1] 26986537
+26986537 * 2  # [1] 53973074
+```
+
+Per the sum of counts (read pairs) in dataframe `underscore`, there are 21,827,889 invalid counts in the bam.
+
+After calling `samtools view -c n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI.bam`, we see that there are <u>28,593,750</u> read pairs (<u>57,187,500 alignments without respect to pairs</u>) in the file.
+
+Looking at dataframe `t_S_none` and the results from calls to `samtools`, we see that...
+- 14,968,733 are classified `__no_feature` (read pairs that could not be assigned to any feature),
+- 1,607,213 are `__ambiguous` (read pairs that could have been assigned to more than one feature and thus are not counted for any of them),
+- 0 are `__to_low_aQual` (read pairs that were skipped due to the `-a` option),
+- 0 are `__not_aligned` (read pairs in the `bam` file without alignment),
+- 5,251,943 are `__alignment_not_unique` (read pairs that align to more than one location in the reference as indicated by the `NH` tag), and
+- 6,765,861 are valid counts (from `counts$n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1 %>% sum()`).
+
+(<i>Quick check</i>: Does the sum of `__no_feature`, `__ambiguous`, `__alignment_not_unique` equal 21,827,889 as described above? Yes: `14968733 + 1607213 + 5251943  # [1] 21827889`)
+
+So, apparently, there are an extra 871,633 read pairs in the `htseq-count`-derived counts matrix versus the tallies from `samtools view -c ...` and `samtools idxstats ... | cut -f 1,3`. Put another way, we have an extra 871,633 in the counts matrix that is missing from `htseq-count_no-feature`. Why?
+
+```{r}
+test_joined <- dplyr::full_join(test, comp_S, by = "gene_id") %>%
+    dplyr::select(c(
+        gene_id, `n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1`, seqnames,
+        start, end, width, strand, source, category, orf_classification
+    ))
+# test_joined %>%
+#     dplyr::group_by(seqnames) %>%
+#     dplyr::summarize(n = dplyr::n())
+
+`test_joined_sum-by-seqnames` <- test_joined %>%
+    dplyr::group_by(seqnames) %>%
+    dplyr::summarize(
+        `sum-of-counts` = sum(`n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1`),
+        `number-of-features` = dplyr::n()
+    )
+# seqnames sum-of-counts number-of-features
+# <fctr>   <dbl>         <int>
+# I	       114509	     387
+# II	   540531	     1433
+# III	   144565	     649
+# IV	   918454	     2617
+# V	       396056	     1083
+# VI	   124511	     485
+# VII	   581405	     1939
+# VIII	   268683	     1020
+# IX	   236196	     782
+# X	       371552	     1297
+# XI	   383392	     1153
+# XII	   528894	     1838		
+# XIII	   517916	     1648
+# XIV	   478974	     1372
+# XV	   662740	     1909
+# XVI	   497483	     1640
+# NA	   21827889      5
+
+sum(c(
+    114509, 540531, 144565, 918454, 396056, 124511, 581405, 268683, 236196,
+    371552, 383392, 528894, 517916, 478974, 662740, 497483
+))  # [1] 6765861
+#NOTE 1/2 This is equal to the number of non-underscore-category counts (read
+#NOTE 2/2 pairs), i.e., the number of "valid" read pairs from above:
+#NOTE 3/3 counts$`n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1` %>% sum()
+
+# ❯ samtools idxstats n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI.bam \
+# >    | cut -f 1,3
+# I	    336170
+# II	1521414
+# III	441258
+# IV	2783970
+# V	    1171866
+# VI	363990
+# VII	1740082
+# VIII	1004006
+# IX	717164
+# X	    1166506
+# XI	1077022
+# XII	6732622
+# XIII	1546908
+# XIV	1419034
+# XV	1958054
+# XVI	1526702
+# Mito	1194374
+# A	    1985430
+# B	    2448104
+# C	    2899742
+# D	    7486496
+# E	    4117310
+# F	    5053594
+# 20S	6495682
+# *	    0
+
+#  Comparing the samtools idxstats read pairs per chromosome (left) versus the
+#+ htseq-count read pairs per chromosome (right)
+ 336170 / 2  # I     168085 samtools  -- versus --  114509 htseq-count
+1521414 / 2  # II    760707 samtools  -- versus --  540531 htseq-count
+ 441258 / 2  # III   220629 samtools  -- versus --  144565 htseq-count
+2783970 / 2  # IV   1391985 samtools  -- versus --  918454 htseq-count
+1171866 / 2  # V     585933 samtools  -- versus --  396056 htseq-count
+ 363990 / 2  # VI    181995 samtools  -- versus --  124511 htseq-count
+1740082 / 2  # VII   870041 samtools  -- versus --  581405 htseq-count
+1004006 / 2  # VIII  502003 samtools  -- versus --  268683 htseq-count
+ 717164 / 2  # IX    358582 samtools  -- versus --  236196 htseq-count
+1166506 / 2  # X     583253 samtools  -- versus --  371552 htseq-count
+1077022 / 2  # XI    538511 samtools  -- versus --  383392 htseq-count
+6732622 / 2  # XII  3366311 samtools  -- versus --  528894 htseq-count
+1546908 / 2  # XIII  773454 samtools  -- versus --  517916 htseq-count
+1419034 / 2  # XIV   709517 samtools  -- versus --  478974 htseq-count
+1958054 / 2  # XV    979027 samtools  -- versus --  662740 htseq-count
+1526702 / 2  # XVI   763351 samtools  -- versus --  497483 htseq-count
+
+sum(c(
+    168085, 760707, 220629, 1391985, 585933, 181995, 870041, 502003, 358582,
+    583253, 538511, 3366311, 773454, 709517, 979027, 763351
+))  # [1] 12753384
+#NOTE This is the sum of bam I-XVI read pairs
+
+12753384 - 6765861  # [1] 5987523
+#NOTE 1/2 This is the number of bam I-XVI read pairs that are not valid in the
+#NOTE 2/2 counts matrix
+
+#  __ambiguous + __alignment_not_unique
+1607213 + 5251943
+
+#  __ambiguous + __alignment_not_unique - no. invalid bam I-XVI read pairs
+(1607213 + 5251943) - 5987523  # [1] 871633
+
+#  So, taking it all together, this value of 871,633 is the number of non-Mito,
+#+ non-K. lactis, non-20S __no_feature counts that would otherwise be
+#+ associated with S. cerevisiae I-XVI
+#+ 
+#+ One way to test this is to analyze t_SA_none
+
+
+#  samtools chr read pairs minus htseq-count chr read pairs
+ 168085 - 114509  # [1] 53576
+ 760707 - 540531  # [1] 220176
+ 220629 - 144565  # [1] 76064
+1391985 - 918454  # [1] 473531
+ 585933 - 396056  # [1] 189877
+ 181995 - 124511  # [1] 57484
+ 870041 - 581405  # [1] 288636
+ 502003 - 268683  # [1] 233320
+ 358582 - 236196  # [1] 122386
+ 583253 - 371552  # [1] 211701
+ 538511 - 383392  # [1] 155119
+3366311 - 528894  # [1] 2837417
+ 773454 - 517916  # [1] 255538
+ 709517 - 478974  # [1] 230543
+ 979027 - 662740  # [1] 316287
+ 763351 - 497483  # [1] 265868
+
+sum(c(
+    53576, 220176, 76064, 473531, 189877, 57484, 288636, 233320, 122386,
+    211701, 155119, 2837417, 255538, 230543, 316287, 265868
+))  # [1] 5987523
+#NOTE 1/2 This is the number of read pairs in the bam that are not valid per
+#NOTE 2/2 htseq-count
+
+#  __ambiguous + __alignment_not_unique
+1607213 + 5251943  # [1] 6859156
+
+#  (__ambiguous + __alignment_not_unique) - invalid bam read pairs
+(1607213 + 5251943) - 5987523  # [1] 871633
+
+
+#  ... ------------------------------------------------------------------------
+# samtools view n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI.bam I \
+#     | gawk '$0 !~ /\<NH:i:1\>/' \
+#     | wc -l
+# 37696
+#
+# samtools view n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI.bam II \
+#     | gawk '$0 !~ /\<NH:i:1\>/' \
+#     | wc -l
+# 56096
+#
+# samtools view n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI.bam III \
+#     | gawk '$0 !~ /\<NH:i:1\>/' \
+#     | wc -l
+# 14416
+#
+# samtools view n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI.bam IV \
+#     | gawk '$0 !~ /\<NH:i:1\>/' \
+#     | wc -l
+# 170770
+#
+# samtools view n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI.bam V \
+#     | gawk '$0 !~ /\<NH:i:1\>/' \
+#     | wc -l
+# 43776
+#
+# samtools view n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI.bam VI \
+#     | gawk '$0 !~ /\<NH:i:1\>/' \
+#     | wc -l
+# 18890
+#
+# samtools view n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI.bam VII \
+#     | gawk '$0 !~ /\<NH:i:1\>/' \
+#     | wc -l
+# 69816
+#
+# samtools view n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI.bam VIII \
+#     | gawk '$0 !~ /\<NH:i:1\>/' \
+#     | wc -l
+# 211352
+#
+# samtools view n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI.bam IX \
+#     | gawk '$0 !~ /\<NH:i:1\>/' \
+#     | wc -l
+# 44396
+#
+# samtools view n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI.bam X \
+#     | gawk '$0 !~ /\<NH:i:1\>/' \
+#     | wc -l
+# 90298
+#
+# samtools view n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI.bam XI \
+#     | gawk '$0 !~ /\<NH:i:1\>/' \
+#     | wc -l
+# 5988
+#
+# samtools view n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI.bam XII \
+#     | gawk '$0 !~ /\<NH:i:1\>/' \
+#     | wc -l
+# 5186716
+#
+# samtools view n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI.bam XIII \
+#     | gawk '$0 !~ /\<NH:i:1\>/' \
+#     | wc -l
+# 80478
+#
+# samtools view n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI.bam XIV \
+#     | gawk '$0 !~ /\<NH:i:1\>/' \
+#     | wc -l
+# 91558
+#
+# samtools view n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI.bam XV \
+#     | gawk '$0 !~ /\<NH:i:1\>/' \
+#     | wc -l
+# 71796
+#
+# samtools view n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI.bam XVI \
+#     | gawk '$0 !~ /\<NH:i:1\>/' \
+#     | wc -l
+# 76716
+
+sum(c(
+    37696, 56096, 14416, 170770, 43776, 18890, 69816, 211352, 44396, 90298,
+    5988, 5186716, 80478, 91558, 71796, 76716
+))
+# [1] 6270758
+#NOTE This is the number of non-NH:i:1 reads in the bam
+
+6270758 / 2  # [1] 3135379
+#NOTE This is the number of non-NH:i:1 read pairs in the bam
+
+#  samtools chr read pairs minus
+#+ htseq-count chr read pairs minus
+#+ read pairs without NH:i:1 tags
+#+ 
+#+ (The thinking was that these should sum to be the number of `__ambiguous` in
+#+ dataframe `underscore`; however, the sums do not equal)
+ 168085 - 114509 - (37696 / 2)    # [1] 34728
+ 760707 - 540531 - (56096 / 2)    # [1] 192128
+ 220629 - 144565 - (14416 / 2)    # [1] 68856
+1391985 - 918454 - (170770 / 2)   # [1] 388146
+ 585933 - 396056 - (43776 / 2)    # [1] 167989
+ 181995 - 124511 - (18890 / 2)    # [1] 48039
+ 870041 - 581405 - (69816 / 2)    # [1] 253728
+ 502003 - 268683 - (211352 / 2)   # [1] 127644
+ 358582 - 236196 - (44396 / 2)    # [1] 100188
+ 583253 - 371552 - (90298 / 2)    # [1] 166552
+ 538511 - 383392 - (5988 / 2)     # [1] 152125
+3366311 - 528894 - (5186716 / 2)  # [1] 244059
+ 773454 - 517916 - (80478 / 2)    # [1] 215299
+ 709517 - 478974 - (91558 / 2)    # [1] 184764
+ 979027 - 662740 - (71796 / 2)    # [1] 280389
+ 763351 - 497483 - (76716 / 2)    # [1] 227510
+
+sum(c(
+    34728, 192128, 68856, 388146, 167989, 48039, 253728, 127644, 100188,
+    166552, 152125, 244059, 215299, 184764, 280389, 227510
+))  # [1] 2852144
+
+#  Sum of bam per-chromosome non-NH:i:1
+2852144 - (underscore[2, 2] %>% as.numeric())
+
+
+# samtools view n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI.bam \
+# >    I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI \
+# >        | gawk '$0 !~ /\<NH:i:1\>/' \
+# >        | wc -l
+# 6270758
+
+```
