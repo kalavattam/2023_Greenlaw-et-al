@@ -85,21 +85,20 @@ read_in_counts_matrix <- function(x) {
 
 p_cm <- "./outfiles_htseq-count/comprehensive/S288C_reference_genome_R64-1-1_20110203/UT_prim_UMI"
 
-f_SA_all <- "processed_features-intergenic_sense-antisense.all-bams.hc-strd-eq.all.tsv"
+# f_SA_all <- "processed_features-intergenic_sense-antisense.all-bams.hc-strd-eq.all.tsv"
 f_SA_frac <- "processed_features-intergenic_sense-antisense.all-bams.hc-strd-eq.fraction.tsv"
 f_SA_none <- "processed_features-intergenic_sense-antisense.all-bams.hc-strd-eq.none.tsv"
-f_SA_rand <- "processed_features-intergenic_sense-antisense.all-bams.hc-strd-eq.random.tsv"
-f_S_all <- "processed_features-intergenic_sense.all-bams.hc-strd-eq.all.tsv"
+# f_SA_rand <- "processed_features-intergenic_sense-antisense.all-bams.hc-strd-eq.random.tsv"
+# f_S_all <- "processed_features-intergenic_sense.all-bams.hc-strd-eq.all.tsv"
 f_S_frac <- "processed_features-intergenic_sense.all-bams.hc-strd-eq.fraction.tsv"
 f_S_none <- "processed_features-intergenic_sense.all-bams.hc-strd-eq.none.tsv"
-f_S_rand <- "processed_features-intergenic_sense.all-bams.hc-strd-eq.random.tsv"
+# f_S_rand <- "processed_features-intergenic_sense.all-bams.hc-strd-eq.random.tsv"
 
 t_S_frac <- read_in_counts_matrix(paste(p_cm, f_S_frac, sep = "/"))
 t_S_none <- read_in_counts_matrix(paste(p_cm, f_S_none, sep = "/"))
 
 t_SA_frac <- read_in_counts_matrix(paste(p_cm, f_SA_frac, sep = "/"))
 t_SA_none <- read_in_counts_matrix(paste(p_cm, f_SA_none, sep = "/"))
-
 ```
 </details>
 <br />
@@ -115,6 +114,7 @@ test <- t_S_none[, 1:2] %>%
 
 underscore <- test %>%
     dplyr::filter(stringr::str_detect(gene_id, "^__[a-zA-Z0-9_]*$"))
+View(underscore)
 
 counts <- test %>%
     dplyr::filter(!stringr::str_detect(gene_id, "^__[a-zA-Z0-9_]*$"))
