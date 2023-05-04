@@ -39,7 +39,7 @@ rm(p_local, p_wd)
 - Use normal numbers instead of default scientific numbers in plots
 - Do not limit number of overlaps when including labels in plots
 ```{r Set options, results='hide', message=FALSE, warning=FALSE}
-options(scipen=999)
+options(scipen = 999)
 options(ggrepel.max.overlaps = Inf)
 ```
 <br />

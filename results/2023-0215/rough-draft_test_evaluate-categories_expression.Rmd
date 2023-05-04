@@ -13,6 +13,7 @@ output:
 ### Code
 <details>
 <summary><i>Code: Get situated</i></summary>
+
 ```{r}
 #!/usr/bin/env Rscript
 
@@ -21,7 +22,11 @@ output:
 # library(plyr)
 # library(readxl)
 # library(rtracklayer)
+
+library(ggplot2)
+library(PCAtools)
 library(tidyverse)
+library(treemap)
 
 options(scipen = 999)
 options(ggrepel.max.overlaps = Inf)
@@ -46,11 +51,13 @@ rm(p_local, p_wd)
 ### Code
 <details>
 <summary><i>Code: Load "comprehensive" `gtf` files</i></summary>
-```{r Load "comprehensive" gtf files, results='hide', message=FALSE, warning=FALSE}
-p_gtf <- "./outfiles_gtf-gff3/comprehensive/S288C_reference_genome_R64-1-1_20110203"
-f_S <- "processed_features-intergenic_sense.gtf"
-f_SA <- "processed_features-intergenic_sense-antisense.gtf"
 
+```{r Load "comprehensive" gtf files, results='hide', message=FALSE, warning=FALSE}
+#!/usr/bin/env Rscript
+
+p_gtf <- "./outfiles_gtf-gff3/comprehensive/S288C_reference_genome_R64-1-1_20110203"
+
+f_S <- "processed_features-intergenic_sense.gtf"
 comp_S <- paste(p_gtf, f_S, sep = "/") %>%
     rtracklayer::import() %>%
     tibble::as_tibble() %>%
@@ -58,6 +65,7 @@ comp_S <- paste(p_gtf, f_S, sep = "/") %>%
     dplyr::select(-c(score, phase)) %>% 
     dplyr::rename(category = type.1)
 
+f_SA <- "processed_features-intergenic_sense-antisense.gtf"
 comp_SA <- paste(p_gtf, f_SA, sep = "/") %>%
     rtracklayer::import() %>%
     tibble::as_tibble() %>%
@@ -75,8 +83,14 @@ rm(p_gtf, f_S, f_SA)
 ### Code
 <details>
 <summary><i>Code: Load "comprehensive" `gtf` files</i></summary>
-```{r Load counts matrices against "comprehensive" `gtf`s, results='hide', message=FALSE, warning=FALSE}
+
+```{r Load counts matrices against "comprehensive" gtfs, results='hide', message=FALSE, warning=FALSE}
+#!/usr/bin/env Rscript
+
 read_in_counts_matrix <- function(x) {
+    # ...
+    # :param x: counts matrix from htseq-count
+    # :return y: counts matrix as tibble
     y <- readr::read_tsv(x, show_col_types = FALSE) %>% 
         dplyr::rename(gene_id = ...1)
     return(y)
@@ -85,39 +99,62 @@ read_in_counts_matrix <- function(x) {
 
 p_cm <- "./outfiles_htseq-count/comprehensive/S288C_reference_genome_R64-1-1_20110203/UT_prim_UMI"
 
-# f_SA_all <- "processed_features-intergenic_sense-antisense.all-bams.hc-strd-eq.all.tsv"
+f_SA_all <- "processed_features-intergenic_sense-antisense.all-bams.hc-strd-eq.all.tsv"
+f_S_all <- "processed_features-intergenic_sense.all-bams.hc-strd-eq.all.tsv"
+f_SA_rand <- "processed_features-intergenic_sense-antisense.all-bams.hc-strd-eq.random.tsv"
+f_S_rand <- "processed_features-intergenic_sense.all-bams.hc-strd-eq.random.tsv"
 f_SA_frac <- "processed_features-intergenic_sense-antisense.all-bams.hc-strd-eq.fraction.tsv"
-f_SA_none <- "processed_features-intergenic_sense-antisense.all-bams.hc-strd-eq.none.tsv"
-# f_SA_rand <- "processed_features-intergenic_sense-antisense.all-bams.hc-strd-eq.random.tsv"
-# f_S_all <- "processed_features-intergenic_sense.all-bams.hc-strd-eq.all.tsv"
 f_S_frac <- "processed_features-intergenic_sense.all-bams.hc-strd-eq.fraction.tsv"
+f_SA_none <- "processed_features-intergenic_sense-antisense.all-bams.hc-strd-eq.none.tsv"
 f_S_none <- "processed_features-intergenic_sense.all-bams.hc-strd-eq.none.tsv"
-# f_S_rand <- "processed_features-intergenic_sense.all-bams.hc-strd-eq.random.tsv"
 
+t_SA_all <- read_in_counts_matrix(paste(p_cm, f_SA_all, sep = "/"))
+t_S_all <- read_in_counts_matrix(paste(p_cm, f_S_all, sep = "/"))
+t_SA_rand <- read_in_counts_matrix(paste(p_cm, f_SA_rand, sep = "/"))
+t_S_rand <- read_in_counts_matrix(paste(p_cm, f_S_rand, sep = "/"))
+t_SA_frac <- read_in_counts_matrix(paste(p_cm, f_SA_frac, sep = "/"))
 t_S_frac <- read_in_counts_matrix(paste(p_cm, f_S_frac, sep = "/"))
 t_S_none <- read_in_counts_matrix(paste(p_cm, f_S_none, sep = "/"))
-
-t_SA_frac <- read_in_counts_matrix(paste(p_cm, f_SA_frac, sep = "/"))
 t_SA_none <- read_in_counts_matrix(paste(p_cm, f_SA_none, sep = "/"))
+
+rm(
+    p_cm, f_SA_frac, f_S_frac, f_SA_none, f_S_none, f_SA_all, f_S_all,
+    f_SA_rand, f_S_rand
+)
 ```
 </details>
 <br />
 <br />
 
-```{r}
-#  Create the test dataframes -------------------------------------------------
-test <- t_S_none[, 1:2] %>%
-    dplyr::rename(
-        `n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1` =
-        `bams_renamed/UT_prim_UMI/n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI.bam`
-    )
+## Evaluate the assignments from `htseq-count`
+<b>Goal</b>: All counts/read pairs need to be accounted for; `htseq-count` counts should equal `samtools view` counts (after taking certain things&mdash;*see below*&mdash;into consideration) 
 
+### Perform and assess the foundational work
+#### Code
+<details>
+<summary><i>Code: Evaluate the assignments from `htseq-count`</i></summary>
+
+```{r Evaluate the assignments from htseq-count, results='hide', message=FALSE, warning=FALSE}
+#!/usr/bin/env Rscript
+
+#  Create "test" dataframes from t_S_none columns 1 and 2 ---------------------
+test <- t_S_none[, 1:2]
+
+#  Clean up column names
+colnames(test)[2] <- colnames(test)[2] %>%
+    gsub("bams_renamed/UT_prim_UMI/", "", .) %>%
+    gsub("\\.UT_prim_UMI\\.bam", "", .)
+
+#  Extract the five "summary values" calculated by htseq-count; they are at the
+#+ end of the matrices and have names that begin with two underscore characters
 underscore <- test %>%
     dplyr::filter(stringr::str_detect(gene_id, "^__[a-zA-Z0-9_]*$"))
-View(underscore)
+# View(underscore)
 
+#  Extract the per-feature counts scored by htseq-count
 counts <- test %>%
     dplyr::filter(!stringr::str_detect(gene_id, "^__[a-zA-Z0-9_]*$"))
+# View(counts)
 
 
 #  Determine and compare various tallies --------------------------------------
@@ -143,212 +180,233 @@ underscore$`n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1` %>% sum()  # [1] 21827889
 
 #CONCLUSION  1/2 We seem to have counts that are consistent between the bam and
 #CONCLUSION  2/2 the counts matrix
-
-
-#  However, when taking tallies by chromosome, things don't add up ------------
-# ❯ samtools idxstats n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI.bam \
-# >    | cut -f 1,3
-# I	336170
-# II	1521414
-# III	441258
-# IV	2783970
-# V	1171866
-# VI	363990
-# VII	1740082
-# VIII	1004006
-# IX	717164
-# X	1166506
-# XI	1077022
-# XII	6732622
-# XIII	1546908
-# XIV	1419034
-# XV	1958054
-# XVI	1526702
-# Mito	1194374
-# A	1985430
-# B	2448104
-# C	2899742
-# D	7486496
-# E	4117310
-# F	5053594
-# 20S	6495682
-# *	0
-
-#  Sum of Mito, A-F, 20S
-sum(c(
-    1194374, 1985430, 2448104, 2899742, 7486496, 4117310, 5053594, 6495682
-))  # [1] 31680732
-31680732 / 2  # [1] 15840366
-#NOTE 1/2 It's higher than `__no_feature` in dataframe `underscore`, which is
-#NOTE 2/2 14968733
-#NOTE 3/3 15840366 - 14968733 = 871633 (a number that keeps popping up)
-#IMPORTANT
-
-#  Sum of I-XVI
-sum(c(
-    336170, 1521414, 441258, 2783970, 1171866, 363990, 1740082, 1004006,
-    717164, 1166506, 1077022, 6732622, 1546908, 1419034, 1958054, 1526702
-))  # [1] 25506768
-25506768 / 2  # [1] 12753384
-#NOTE 1/2 It's more than the number of "valid" counts, 6,765,861, by this much:
-#NOTE 2/2 5,987,523
-
-#  Sum of I-XVI, Mito, A-F, 20S
-sum(c(
-    336170, 1521414, 441258, 2783970, 1171866, 363990, 1740082, 1004006,
-    717164, 1166506, 1077022, 6732622, 1546908, 1419034, 1958054, 1526702,
-    1194374, 1985430, 2448104, 2899742, 7486496, 4117310, 5053594, 6495682
-))  # [1] 57187500
-57187500 / 2  # [1] 28593750
-#NOTE 1/3 It's equal to the number of records in the bam and the number of
-#NOTE 2/3 counts in dataframes `counts` and `underscore` (when multiplied by 2
-#NOTE 3/3 to convert from read pairs to reads)
-# sum(
-#     sum(counts$`n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1`),
-#     sum(underscore$`n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1`)
-# ) * 2  # [1] 57187500
-
-#  __ambiguous + __alignment_not_unique + valid
-1607213 + 5251943 + 6765861  # [1] 27250034
-
-#  Reconstitute __no_feature by subtracting
-#+ (__ambiguous + __alignment_not_unique + valid) from the total (dividing by 2
-#+ to convert from reads to read pairs)
-(57187500 - 27250034)/2  # [1] 14968733
-
-
-#  On the "invalid" read pairs in the bam -------------------------------------
-#  Calculate (samtools I-XVI read pairs) minus (htseq-count valid read pairs)
-#+ (bam I-XVI) - (counts matrix valid)
-12753384 - 6765861  # [1] 5987523
-# 5987523 * 2  # [1] 11975046
-#NOTE 1/2 5,987,523 chromosomal read pairs (11,975,046 reads) in the bam are
-#NOTE 2/2 "invalid" according  to htseq-count. Why?
-
-# #  (samtools I-XVI minus htseq-count valid) - __alignment_not_unique
-# 5987523 - 5251943  # [1] 735580
-# #NOTE This doesn't answer the question
-
-# #  (samtools I-XVI minus htseq-count valid) - __ambiguous
-# 5987523 - 1607213  # [1] 4380310
-# #NOTE This also doesn't answer the question
-
-# 735580 + 4380310  # [1] 5115890
-# #NOTE Summing the above two calculations doesn't really mean anything
-
-
-#  (htseq-count ambiguous + not-unique + I-XVI) - (I-XVI bam read pairs) ------
-`reads_I-XVI` <- sum(c(
-    336170, 1521414, 441258, 2783970, 1171866, 363990, 1740082, 1004006,
-    717164, 1166506, 1077022, 6732622, 1546908, 1419034, 1958054, 1526702
-))  # [1] 25506768
-`pairs_I-XVI` <- (`reads_I-XVI` / 2)  # [1] 12753384
-
-`htseq-count_ambiguous_not-unique_valid` <-
-    1607213 + 5251943 + 6765861  # [1] 13625017
-
-`difference_aligned_htseq-count_samtools` <-
-    `htseq-count_ambiguous_not-unique_valid` - `pairs_I-XVI`  # [1] 871633
-#NOTE 1/3 The sum of htseq-count __ambiguous, htseq-count 
-#NOTE 2/3 __alignment_not_unique, and htseq-count "valid" (I-XVI) *minus*
-#NOTE 3/3 chromosome I-XVI bam read pairs leads to that number again: 871633
-
-
-#  (htseq-count not feature) - (non-I-XVI bam read pairs) ---------------------
-`reads_non-I-XVI` <- sum(c(
-    1194374, 1985430, 2448104, 2899742, 7486496, 4117310, 5053594, 6495682
-))  # [1] 31680732
-`pairs_non-I-XVI` <- (`reads_non-I-XVI` / 2)  # [1] 15840366
-
-`htseq-count_no-feature` <-
-    14968733  # [1] 14968733
-
-`difference_no-feature_htseq-count_samtools` <-
-    `htseq-count_no-feature` - `pairs_non-I-XVI`  # [1] -871633
-#NOTE 1/3 htseq-count __no_feature *minus* non-chromosome I-XVI bam read pairs 
-#NOTE 2/3 (i.e., all other "chromosomes" except I-XVI) leads to that number
-#NOTE 3/3 again: 871633
-
-
-#  ... ------------------------------------------------------------------------
-underscore_reformat <- tribble(
-    ~gene_id, ~`n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1`,
-    "__no_feature", 871633,
-    "__ambiguous", 1607213,
-    "__too_low_aQual", 0,
-    "__not_aligned", 0,
-    "__alignment_not_unique", 3135379
-)
-
-sum(underscore_reformat$`n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1`)  # 5614225
-sum(counts$`n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1`)  # 6765861
-5614225 + 6765861  # [1] 12380086
-12753384 - 12380086  # [1] 373298
-
-
-#  ... ------------------------------------------------------------------------
-# ❯ samtools view n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI.bam \
-# >    | gawk '$0 !~ /\<NH:i:1\>/' \
-# >    | wc -l
-# 10503886
-10503886 / 2  # [1] 5251943
-#  i.e., 5,251,943, the same as __alignment_not_unique in the htseq-count
-#+ counts matrix
-
-#NOTE 1/2 This means that, even though they're associated with K. lactis and
-#NOTE 2/3 20S chromosomes, they're included in this count; that's what's
-#NOTE 3/3 throwing things off...
-
-# ❯ samtools view n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI.bam \
-# >    | gawk '$0 ~ /\<NH:i:1\>/' \
-# >    | wc -l
-# 46683614
-46683614 / 2  # [1] 23341807
-#  i.e., 23,341,807, the result of 14,968,733 + 1,607,213 + 6,765,861, e.g.,
-#+ echo $(( 14968733 + 1607213 + 6765861 ))
-
-#NOTE 1/2 So, the numbers of NH:i:1-tagged reads/read pairs equal the sum of
-#NOTE 2/3 __no_feature, __ambiguous, and "valid" (e.g., from
-#NOTE 3/3 )
-
-# ❯ echo $(( 46683614 + 10503886 ))
-# 57187500
-57187500 / 2  # [1] 28593750  # i.e., 28,593,750
-
-
-#  ... ------------------------------------------------------------------------
-#  Number of bam read pairs (samtools) minus number of ambiguous (htseq-count)
-28593750 - 1607213  # [1] 26986537
-26986537 * 2  # [1] 53973074
 ```
 
-Per the sum of counts (read pairs) in dataframe `underscore`, there are 21,827,889 invalid counts in the bam.
+```{bash}
+#!/bin/bash
 
-After calling `samtools view -c n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI.bam`, we see that there are <u>28,593,750</u> read pairs (<u>57,187,500 alignments without respect to pairs</u>) in the file.
+#  Get situated
+grabnode  # 1 CPU, defaults
+ml SAMtools/1.16.1-GCC-11.2.0
 
-Looking at dataframe `t_S_none` and the results from calls to `samtools`, we see that...
-- 14,968,733 are classified `__no_feature` (read pairs that could not be assigned to any feature),
-- 1,607,213 are `__ambiguous` (read pairs that could have been assigned to more than one feature and thus are not counted for any of them),
-- 0 are `__to_low_aQual` (read pairs that were skipped due to the `-a` option),
-- 0 are `__not_aligned` (read pairs in the `bam` file without alignment),
-- 5,251,943 are `__alignment_not_unique` (read pairs that align to more than one location in the reference as indicated by the `NH` tag), and
-- 6,765,861 are valid counts (from `counts$n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1 %>% sum()`).
+cd /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction \
+    || echo "cd'ing failed; check on this"
 
-(<i>Quick check</i>: Does the sum of `__no_feature`, `__ambiguous`, `__alignment_not_unique` equal 21,827,889 as described above? Yes: `14968733 + 1607213 + 5251943  # [1] 21827889`)
+cd results/2023-0215/bams_renamed/UT_prim_UMI \
+    || echo "cd'ing failed; check on this"
 
-So, apparently, there are an extra 871,633 read pairs in the `htseq-count`-derived counts matrix versus the tallies from `samtools view -c ...` and `samtools idxstats ... | cut -f 1,3`. Put another way, we have an extra 871,633 in the counts matrix that is missing from `htseq-count_no-feature`. Why?
 
-```{r}
+#  Assess the total number of reads in the bam --------------------------------
+samtools view -c \
+    n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI.bam  # 57187500
+
+echo $(( 57187500 / 2 ))  # 28593750
+
+
+#  Assess S. cerevisiae mitochondiral and non-S. cerevisiae reads -------------
+#  Tally numbers of unimapping reads
+samtools view \
+    n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI.bam \
+    Mito A B C D E F 20S \
+        | awk '/\<NH:i:1\>/' \
+        | wc -l  # 27447604
+echo $(( 27447604 / 2 ))  # 13723802 unimapping read pairs
+
+#  Tally numbers multimapping reads
+samtools view \
+    n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI.bam \
+    Mito A B C D E F 20S \
+        | awk '!/\<NH:i:1\>/' \
+        | wc -l  # 4233128
+echo $(( 4233128 / 2 ))  # 2116564 multimapping read pairs
+
+
+#  Tally numbers of all reads
+samtools view -c \
+    n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI.bam \
+    Mito A B C D E F 20S  # 31680732
+echo $(( 31680732 / 2 ))  # 15840366 total read pairs
+
+if [[ $(( 4233128 + 27447604 )) -eq 31680732 ]]; then
+    echo "Tally of total reads equals sum of numbers of multimapping and" \
+        "unimapping reads"
+else
+    echo "Tally of total reads does not equal sum of numbers of multimapping" \
+        "and unimapping alignments"
+fi
+
+#  Assess S. cerevisiae I-XVI reads -------------------------------------------
+#  Tally numbers of unimapping reads
+samtools view \
+    n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI.bam \
+    I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI \
+        | awk '/\<NH:i:1\>/' \
+        | wc -l  # 19236010
+echo $(( 19236010 / 2 ))  # 9618005 unimapping read pairs
+
+#  Tally numbers multimapping reads
+samtools view \
+    n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI.bam \
+    I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI \
+        | awk '!/\<NH:i:1\>/' \
+        | wc -l  # 6270758
+echo $(( 6270758 / 2 ))  # 3135379 multimapping read pairs
+
+#  Tally numbers of all reads
+samtools view -c \
+    n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI.bam \
+    I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI  # 25506768
+echo $(( 25506768 / 2 ))  # 12753384 total read pairs
+
+if [[ $(( 6270758 + 19236010 )) -eq 25506768 ]]; then
+    echo "Tally of total reads equals sum of numbers of multimapping" \
+        "and unimapping reads"
+else
+    echo "Tally of total reads does not equal sum of numbers of multimapping" \
+        "and unimapping reads"
+fi
+
+
+#  Final assessments and conclusion -------------------------------------------
+echo $(( 9618005 + 13723802 ))  # 23341807 total unimapping read pairs
+echo $(( 3135379 + 2116564 ))  # 5251943 total multimapping read pairs
+
+# `underscore`
+# __no_feature           14968733
+# __ambiguous            1607213
+# __too_low_aQual        0
+# __not_aligned          0
+# __alignment_not_unique 5251943
+
+#  Steps for processing  (#CONCLUSION)
+#+ 1. From __alignment_not_unique, need to subtract multimappers against S.
+#+    cerevisiae Mito, K. lactis A-F, and 20S
+#+ 2. From __no_feature, need to subtract unimappers against S. cerevisiae
+#+    Mito, K. lactis A-F, and 20S
+
+#  In practice...
+hc_anu=$(( 5251943 - 2116564 ))  # 3135379: New value for __alignment_not_unique  # 1
+hc_nf=$(( 14968733 - 13723802 ))  # 1244931: New value for __no_feature  # 2
+hc_ambi=1607213
+hc_val=6765861  # sum(counts$`n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1`) / 2
+
+echo $(( hc_anu + hc_nf + hc_ambi ))  # 5987523 (sans "valid")
+echo $(( hc_val + hc_anu + hc_nf + hc_ambi ))  # 12753384
+#  It took all day, but I finally go this fucker reconciled. Nice.
+```
+</details>
+<br />
+
+#### Notes
+<details>
+<summary><i>Notes: Evaluate the assignments from `htseq-count`</i></summary>
+
+Per the sum of counts (read pairs) in dataframe `underscore`, there are <u>21,827,889 <b>invalid</b> counts</u> in the test bam.
+
+After calling `samtools view -c n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI.bam`, we see that there are <u>28,593,750</u> counts (<u>57,187,500</u> aligned reads) in the file.
+
+Looking at dataframe `t_S_none`&mdash;specifically, the five "summary values" calculated by `htseq-count`&mdash;and the results from calls to `samtools view`, we see that...
+- 14,968,733 are classified "`__no_feature`" (read pairs that could not be assigned to any feature),
+- 1,607,213 are "`__ambiguous`" (read pairs that could have been assigned to more than one feature and thus are not counted for any of them),
+- 0 are "`__to_low_aQual`" (read pairs that were skipped due to the `-a` option&mdash;<i>not applicable to us since we used `STAR` to align reads</i>),
+- 0 are "`__not_aligned`" (read pairs in the `bam` file without alignment),
+- 5,251,943 are "`__alignment_not_unique`" (read pairs that align to more than one location in the reference as indicated by the `NH` tag), and
+- 6,765,861 are "valid" counts (from `counts$n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1 %>% sum()`).
+
+(<i>Quick check</i>: Does the sum of `__no_feature`, `__ambiguous`, `__alignment_not_unique` equal 21,827,889 as described above? <i>Yes.</i> `14968733 + 1607213 + 5251943  # [1] 21827889`)
+
+<b>Goal</b>: We need to exclude counts associated with <u>*S. cerevisiae* chromosome Mito, *K. lactis* chromosomes A-F, and 20S</u> (<i>"Mito-KL-20S"</i> for short) from the five "summary values" calculated by `htseq-count`.
+
+We can achieve this goal by taking the following steps:
+1. Calculate and store the <mark>number of <b>multimappers</b> associated with <i>"Mito-KL-20S"</i></mark>: `multi_Mito-KL-20S`.
+2. Calculate and store the <mark>number of <b>unimappers</b> associated with <i>"Mito-KL-20S"</i></mark>: `uni_Mito-KL-20S`.
+3. Calculate and store the <mark>number of <b>unimappers</b> associated with <i>S. cerevisiae chromosomes I-XVI</i></mark>: `uni_I-XVI`.
+3. Subtract `multi_Mito-KL-20S` from "`__alignment_not_unique`"; store the new value: "`__alignment_not_unique_I-XVI`"
+4. Subtract `uni_Mito-KL-20S` from "`__no_feature`"; store the new value: "`__no_feature_I-XVI`".
+5. Calculate and store <mark>*(i)* the sum of "`__no_feature_I-XVI`", *(ii)* "`__ambiguous`", *(iii)* "`__alignment_not_unique_I-XVI`", and *(iv)* "valid" counts (e.g., from `sum(counts$n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1)`)</mark>: `summary-updated`.
+6. Calculate and store the <mark>number of all counts associated with <i>S. cerevisiae chromosomes I-XVI</i></mark>: `counts_I-XVI`.
+7. <mark>Check that the sum from step #5 equals the value from step #6</mark>. If `TRUE`, then everything is OK and we're good to proceed; if `FALSE`, then we need to troubleshoot why.
+</details>
+<br />
+
+### Perform the steps and update dataframe `underscore`
+#### Code
+<details>
+<summary><i>Code: Perform the steps and update dataframe `underscore`</i></summary>
+
+```{r Perform the steps and update dataframe underscore, results='hide', message=FALSE, warning=FALSE}
+#!/usr/bin/env Rscript
+
+#  Perform steps 1-7 as described ---------------------------------------------
+`uni_Mito-KL-20S` <- 13723802
+`multi_Mito-KL-20S` <- 2116564
+`uni_I-XVI` <- 9618005
+`multi_I-XVI` <- 3135379
+
+`__alignment_not_unique` <- as.numeric(underscore[5, 2])
+`__alignment_not_unique_I-XVI` <- `__alignment_not_unique` - `multi_Mito-KL-20S`
+`__no_feature` <- as.numeric(underscore[1, 2])
+`__no_feature_I-XVI` <- `__no_feature` - `uni_Mito-KL-20S`
+`__ambiguous` <- as.numeric(underscore[2, 2])
+`__valid_counts` <- sum(counts[, 2])
+
+`summary-updated` <- sum(
+    `__no_feature_I-XVI`,
+    `__ambiguous`,
+    `__alignment_not_unique_I-XVI`,
+    `__valid_counts`
+)
+`counts_I-XVI` <- 12753384
+
+`summary-updated` == `counts_I-XVI`  # [1] TRUE
+
+
+#  Update dataframe underscore ------------------------------------------------
+underscore <- underscore %>%
+    tibble::add_row(
+        gene_id = deparse(substitute(`__alignment_not_unique_I-XVI`)),
+        `n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1` = `__alignment_not_unique_I-XVI`,
+        .after = nrow(underscore)
+    ) %>%
+    tibble::add_row(
+        gene_id = deparse(substitute(`__no_feature_I-XVI`)),
+        `n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1` = `__no_feature_I-XVI`,
+        .after = 1
+    ) %>%
+    tibble::add_row(
+        gene_id = deparse(substitute(`__valid_counts`)),
+        `n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1` = `__valid_counts`,
+        .before = 1
+    )
+
+
+#  Clean up
+rm(
+    `uni_Mito-KL-20S`, `multi_Mito-KL-20S`, `uni_I-XVI`, `multi_I-XVI`,
+    `__alignment_not_unique`, `__alignment_not_unique_I-XVI`, `__no_feature`,
+    `__no_feature_I-XVI`, `__ambiguous`, `__valid_counts`
+)
+```
+</details>
+<br />
+<br />
+
+## Using the test dataframes, set up/flesh out the analysis
+### Code
+<details>
+<summary><i>Code: Using the test dataframes, set up/flesh out the analysis</i></summary>
+
+```{r Using the test dataframes, set up/flesh out the analysis, results='hide', message=FALSE, warning=FALSE}
+#!/usr/bin/env Rscript
+
 test_joined <- dplyr::full_join(test, comp_S, by = "gene_id") %>%
     dplyr::select(c(
         gene_id, `n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1`, seqnames,
         start, end, width, strand, source, category, orf_classification
     ))
-# test_joined %>%
-#     dplyr::group_by(seqnames) %>%
-#     dplyr::summarize(n = dplyr::n())
 
 `test_joined_sum-by-seqnames` <- test_joined %>%
+    dplyr::filter(!is.na(seqnames)) %>% 
     dplyr::group_by(seqnames) %>%
     dplyr::summarize(
         `sum-of-counts` = sum(`n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1`),
@@ -372,245 +430,708 @@ test_joined <- dplyr::full_join(test, comp_S, by = "gene_id") %>%
 # XIV	   478974	     1372
 # XV	   662740	     1909
 # XVI	   497483	     1640
-# NA	   21827889      5
 
-sum(c(
-    114509, 540531, 144565, 918454, 396056, 124511, 581405, 268683, 236196,
-    371552, 383392, 528894, 517916, 478974, 662740, 497483
-))  # [1] 6765861
-#NOTE 1/2 This is equal to the number of non-underscore-category counts (read
-#NOTE 2/2 pairs), i.e., the number of "valid" read pairs from above:
-#NOTE 3/3 counts$`n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1` %>% sum()
+df_tmp_1 <- test_joined %>%
+    dplyr::filter(!is.na(category)) %>% 
+    dplyr::group_by(category) %>%
+    dplyr::summarize(
+        `sum-of-counts` = sum(`n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1`),
+        `number-of-features` = dplyr::n()
+    )
+# category    sum-of-counts    number-of-features
+# <chr>       <dbl>            <int>
+# ARS	      21264            674
+# PG	      5142             14
+# TE          39744            334
+# centromere  0                32
+# gene        5154259          6575
+# intergenic  1210817          13162
+# ncRNA	      80248            14
+# rRNA	      3105             25
+# snRNA	      163506           6
+# snoRNA	  83096            77
+# tRNA        19               275	
+# telomere	  4661             64
 
-# ❯ samtools idxstats n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI.bam \
-# >    | cut -f 1,3
-# I	    336170
-# II	1521414
-# III	441258
-# IV	2783970
-# V	    1171866
-# VI	363990
-# VII	1740082
-# VIII	1004006
-# IX	717164
-# X	    1166506
-# XI	1077022
-# XII	6732622
-# XIII	1546908
-# XIV	1419034
-# XV	1958054
-# XVI	1526702
-# Mito	1194374
-# A	    1985430
-# B	    2448104
-# C	    2899742
-# D	    7486496
-# E	    4117310
-# F	    5053594
-# 20S	6495682
-# *	    0
+df_tmp_2 <- underscore %>%
+    dplyr::slice(c(3, 4, nrow(underscore))) %>%
+    dplyr::rename(c(
+        category = gene_id,
+        `sum-of-counts` = `n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1`
+    )) %>%
+    dplyr::mutate(`number-of-features` = NA_integer_)
+# category                        sum-of-counts    number-of-features
+# <chr>                           <dbl>            <int>
+# __no_feature_I-XVI	          1244931	       NA		
+# __ambiguous	                  1607213	       NA		
+# __alignment_not_unique_I-XVI    3135379	       NA
 
-#  Comparing the samtools idxstats read pairs per chromosome (left) versus the
-#+ htseq-count read pairs per chromosome (right)
- 336170 / 2  # I     168085 samtools  -- versus --  114509 htseq-count
-1521414 / 2  # II    760707 samtools  -- versus --  540531 htseq-count
- 441258 / 2  # III   220629 samtools  -- versus --  144565 htseq-count
-2783970 / 2  # IV   1391985 samtools  -- versus --  918454 htseq-count
-1171866 / 2  # V     585933 samtools  -- versus --  396056 htseq-count
- 363990 / 2  # VI    181995 samtools  -- versus --  124511 htseq-count
-1740082 / 2  # VII   870041 samtools  -- versus --  581405 htseq-count
-1004006 / 2  # VIII  502003 samtools  -- versus --  268683 htseq-count
- 717164 / 2  # IX    358582 samtools  -- versus --  236196 htseq-count
-1166506 / 2  # X     583253 samtools  -- versus --  371552 htseq-count
-1077022 / 2  # XI    538511 samtools  -- versus --  383392 htseq-count
-6732622 / 2  # XII  3366311 samtools  -- versus --  528894 htseq-count
-1546908 / 2  # XIII  773454 samtools  -- versus --  517916 htseq-count
-1419034 / 2  # XIV   709517 samtools  -- versus --  478974 htseq-count
-1958054 / 2  # XV    979027 samtools  -- versus --  662740 htseq-count
-1526702 / 2  # XVI   763351 samtools  -- versus --  497483 htseq-count
+`test_joined_sum-by-category` <- dplyr::bind_rows(df_tmp_1, df_tmp_2)
+rm(df_tmp_1, df_tmp_2)
 
-sum(c(
-    168085, 760707, 220629, 1391985, 585933, 181995, 870041, 502003, 358582,
-    583253, 538511, 3366311, 773454, 709517, 979027, 763351
-))  # [1] 12753384
-#NOTE This is the sum of bam I-XVI read pairs
+# category                        sum-of-counts    number-of-features
+# <chr>                           <dbl>            <int>
+# ARS	                          21264	           674
+# PG	                          5142	           14
+# TE	                          39744	           334
+# centromere	                  0	               32
+# gene	                          5154259	       6575
+# intergenic	                  1210817	       13162
+# ncRNA	                          80248	           14
+# rRNA	                          3105	           25
+# snRNA	                          163506	       6
+# snoRNA	                      83096	           77
+# tRNA	                          19	           275
+# telomere	                      4661	           64
+# __no_feature_I-XVI	          1244931	       NA
+# __ambiguous	                  1607213	       NA
+# __alignment_not_unique_I-XVI	  3135379	       NA	
 
-12753384 - 6765861  # [1] 5987523
-#NOTE 1/2 This is the number of bam I-XVI read pairs that are not valid in the
-#NOTE 2/2 counts matrix
+#  Check that total counts are correct
+sum(`test_joined_sum-by-category`[, 2]) == `counts_I-XVI`  # [1] TRUE
+sum(`test_joined_sum-by-category`[, 2]) == `summary-updated`  # [1] TRUE
+```
+</details>
+<br />
 
-#  __ambiguous + __alignment_not_unique
-1607213 + 5251943
+```{r}
+#  Refresher: Make stacked bar charts with test data --------------------------
+specie <- c(
+    rep("sorgho", 3), rep("poacee", 3), rep("banana", 3), rep("triticum", 3)
+)
+condition <- rep(c("normal", "stress", "Nitrogen"), 4)
+value <- abs(rnorm(12, 0, 15))
+data <- data.frame(specie, condition, value)
 
-#  __ambiguous + __alignment_not_unique - no. invalid bam I-XVI read pairs
-(1607213 + 5251943) - 5987523  # [1] 871633
+rm(specie, condition, value)
 
-#  So, taking it all together, this value of 871,633 is the number of non-Mito,
-#+ non-K. lactis, non-20S __no_feature counts that would otherwise be
-#+ associated with S. cerevisiae I-XVI
-#+ 
-#+ One way to test this is to analyze t_SA_none
+#  Grouped
+ggplot(data, aes(fill = condition, y = value, x = specie)) + 
+    geom_bar(position = "dodge", stat = "identity")
 
+#  Stacked
+ggplot(data, aes(fill = condition, y = value, x = specie)) + 
+    geom_bar(position = "stack", stat = "identity")
 
-#  samtools chr read pairs minus htseq-count chr read pairs
- 168085 - 114509  # [1] 53576
- 760707 - 540531  # [1] 220176
- 220629 - 144565  # [1] 76064
-1391985 - 918454  # [1] 473531
- 585933 - 396056  # [1] 189877
- 181995 - 124511  # [1] 57484
- 870041 - 581405  # [1] 288636
- 502003 - 268683  # [1] 233320
- 358582 - 236196  # [1] 122386
- 583253 - 371552  # [1] 211701
- 538511 - 383392  # [1] 155119
-3366311 - 528894  # [1] 2837417
- 773454 - 517916  # [1] 255538
- 709517 - 478974  # [1] 230543
- 979027 - 662740  # [1] 316287
- 763351 - 497483  # [1] 265868
+#  Stacked and percent
+ggplot(data, aes(fill = condition, y = value, x = specie)) + 
+    geom_bar(position = "fill", stat = "identity")
 
-sum(c(
-    53576, 220176, 76064, 473531, 189877, 57484, 288636, 233320, 122386,
-    211701, 155119, 2837417, 255538, 230543, 316287, 265868
-))  # [1] 5987523
-#NOTE 1/2 This is the number of read pairs in the bam that are not valid per
-#NOTE 2/2 htseq-count
+treemap::treemap(
+    data,
+    index = c("specie", "condition"),
+    vSize = "value",
+    type = "index"
+)
 
-#  __ambiguous + __alignment_not_unique
-1607213 + 5251943  # [1] 6859156
-
-#  (__ambiguous + __alignment_not_unique) - invalid bam read pairs
-(1607213 + 5251943) - 5987523  # [1] 871633
+rm(data)
 
 
-#  ... ------------------------------------------------------------------------
-# samtools view n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI.bam I \
-#     | gawk '$0 !~ /\<NH:i:1\>/' \
-#     | wc -l
-# 37696
-#
-# samtools view n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI.bam II \
-#     | gawk '$0 !~ /\<NH:i:1\>/' \
-#     | wc -l
-# 56096
-#
-# samtools view n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI.bam III \
-#     | gawk '$0 !~ /\<NH:i:1\>/' \
-#     | wc -l
-# 14416
-#
-# samtools view n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI.bam IV \
-#     | gawk '$0 !~ /\<NH:i:1\>/' \
-#     | wc -l
-# 170770
-#
-# samtools view n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI.bam V \
-#     | gawk '$0 !~ /\<NH:i:1\>/' \
-#     | wc -l
-# 43776
-#
-# samtools view n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI.bam VI \
-#     | gawk '$0 !~ /\<NH:i:1\>/' \
-#     | wc -l
-# 18890
-#
-# samtools view n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI.bam VII \
-#     | gawk '$0 !~ /\<NH:i:1\>/' \
-#     | wc -l
-# 69816
-#
-# samtools view n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI.bam VIII \
-#     | gawk '$0 !~ /\<NH:i:1\>/' \
-#     | wc -l
-# 211352
-#
-# samtools view n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI.bam IX \
-#     | gawk '$0 !~ /\<NH:i:1\>/' \
-#     | wc -l
-# 44396
-#
-# samtools view n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI.bam X \
-#     | gawk '$0 !~ /\<NH:i:1\>/' \
-#     | wc -l
-# 90298
-#
-# samtools view n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI.bam XI \
-#     | gawk '$0 !~ /\<NH:i:1\>/' \
-#     | wc -l
-# 5988
-#
-# samtools view n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI.bam XII \
-#     | gawk '$0 !~ /\<NH:i:1\>/' \
-#     | wc -l
-# 5186716
-#
-# samtools view n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI.bam XIII \
-#     | gawk '$0 !~ /\<NH:i:1\>/' \
-#     | wc -l
-# 80478
-#
-# samtools view n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI.bam XIV \
-#     | gawk '$0 !~ /\<NH:i:1\>/' \
-#     | wc -l
-# 91558
-#
-# samtools view n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI.bam XV \
-#     | gawk '$0 !~ /\<NH:i:1\>/' \
-#     | wc -l
-# 71796
-#
-# samtools view n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI.bam XVI \
-#     | gawk '$0 !~ /\<NH:i:1\>/' \
-#     | wc -l
-# 76716
+#  Apply above to `test_joined_sum-by-category` -------------------------------
+df <- `test_joined_sum-by-category` %>%
+    dplyr::mutate(sample = "n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1") %>%
+    dplyr::relocate(sample, .before = category) %>%
+    dplyr::filter(!stringr::str_detect(
+        category, "__alignment_not_unique_I-XVI"
+    ))
+df$category <- df$category %>%
+    gsub("__", "", .) %>%
+    gsub("_I-XVI", "", .) %>%
+    gsub("PG", "pseudogene", .)
 
-sum(c(
-    37696, 56096, 14416, 170770, 43776, 18890, 69816, 211352, 44396, 90298,
-    5988, 5186716, 80478, 91558, 71796, 76716
-))
-# [1] 6270758
-#NOTE This is the number of non-NH:i:1 reads in the bam
+df %>%
+    ggplot(aes(fill = category, y = `sum-of-counts`, x = sample)) +
+    geom_bar(position = "dodge", stat = "identity") +
+    scale_fill_manual(values = length(df$category) %>% viridisLite::viridis())
 
-6270758 / 2  # [1] 3135379
-#NOTE This is the number of non-NH:i:1 read pairs in the bam
+df %>%
+    ggplot(aes(fill = category, y = `sum-of-counts`, x = sample)) +
+    geom_bar(position = "stack", stat = "identity") +
+    scale_fill_manual(values = length(df$category) %>% viridisLite::viridis())
 
-#  samtools chr read pairs minus
-#+ htseq-count chr read pairs minus
-#+ read pairs without NH:i:1 tags
-#+ 
-#+ (The thinking was that these should sum to be the number of `__ambiguous` in
-#+ dataframe `underscore`; however, the sums do not equal)
- 168085 - 114509 - (37696 / 2)    # [1] 34728
- 760707 - 540531 - (56096 / 2)    # [1] 192128
- 220629 - 144565 - (14416 / 2)    # [1] 68856
-1391985 - 918454 - (170770 / 2)   # [1] 388146
- 585933 - 396056 - (43776 / 2)    # [1] 167989
- 181995 - 124511 - (18890 / 2)    # [1] 48039
- 870041 - 581405 - (69816 / 2)    # [1] 253728
- 502003 - 268683 - (211352 / 2)   # [1] 127644
- 358582 - 236196 - (44396 / 2)    # [1] 100188
- 583253 - 371552 - (90298 / 2)    # [1] 166552
- 538511 - 383392 - (5988 / 2)     # [1] 152125
-3366311 - 528894 - (5186716 / 2)  # [1] 244059
- 773454 - 517916 - (80478 / 2)    # [1] 215299
- 709517 - 478974 - (91558 / 2)    # [1] 184764
- 979027 - 662740 - (71796 / 2)    # [1] 280389
- 763351 - 497483 - (76716 / 2)    # [1] 227510
+df %>%
+    ggplot(aes(fill = category, y = `sum-of-counts`, x = sample)) +
+    geom_bar(position = "fill", stat = "identity") +
+    scale_fill_manual(values = length(df$category) %>% viridisLite::viridis())
 
-sum(c(
-    34728, 192128, 68856, 388146, 167989, 48039, 253728, 127644, 100188,
-    166552, 152125, 244059, 215299, 184764, 280389, 227510
-))  # [1] 2852144
+treemap::treemap(
+    df,
+    index = "category",
+    vSize = "sum-of-counts",
+    type = "index",
+    position.legend = "right",
+    palette = length(df$category) %>% viridisLite::viridis(),
+    title = ""
+)
 
-#  Sum of bam per-chromosome non-NH:i:1
-2852144 - (underscore[2, 2] %>% as.numeric())
+set.seed(24)
+treemap::treemap(
+    df,
+    index = "category",
+    vSize = "sum-of-counts",
+    type = "index",
+    position.legend = "right",
+    palette = length(df$category) %>% viridisLite::viridis() %>% sample(),
+    title = ""
+)
+```
+</details>
+<br />
+<br />
+
+## How do non-normalized counts for...
+### Initialize necessary function
+#### Code
+
+```{r}
+get_name_of_var <- function(v) {
+    #TODO Write a description of this function
+    #
+    # :param v: ...
+    # :return v: ...
+    return(deparse(substitute(v)))
+}
+#TODO Add return description
 
 
-# samtools view n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI.bam \
-# >    I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI \
-# >        | gawk '$0 !~ /\<NH:i:1\>/' \
-# >        | wc -l
-# 6270758
+get_top_loadings <- function(x, y, z, a) {
+    #TODO Write a description of this function
+    #
+    # :param x: dataframe of PC loadings <data.frame>
+    # :param y: character element for column in dataframe x <chr>
+    # :param z: whether to select all loadings sorted from largest to smallest
+    #           absolute value ('all'), positive loadings sorted from largest
+    #           to smallest value ('pos'), or negative loadings sorted from
+    #           largest to smallest absolute value ('neg') <str>
+    # :param a: whether or not to keep 'sign' and 'abs' columns added in the
+    #           course of processing the dataframe <logical>
+    # :return b: ...
+    b <- as.data.frame(x[[y]])
+    rownames(b) <- rownames(x)
+    colnames(b) <- y
+    
+    b[["sign"]] <- ifelse(
+        b[[y]] > 0,
+        "pos",
+        ifelse(
+            b[[y]] == 0,
+            "zero",
+            "neg"
+        )
+    )
+    
+    b[["abs"]] <- abs(b[[y]])
+    
+    if(z == "all") {
+        b <- dplyr::arrange(b, by = desc(abs))
+    } else if(z == "pos") {
+        b <- b[b[[y]] > 0, ] %>% dplyr::arrange(., by = desc(abs))
+    } else if(z == "neg") {
+        b <- b[b[[y]] < 0, ] %>% dplyr::arrange(., by = desc(abs))
+    } else {
+        stop(paste0("Stopping: param z must be either 'all', 'pos', or 'neg'"))
+    }
+    
+    if(isTRUE(a)) {
+        paste0("Retaining 'sign' and 'abs' columns")
+    } else if(isFALSE(a)) {
+        b <- b %>% dplyr::select(-c(sign, abs))
+    } else {
+        stop(paste0("Stopping: param a must be either 'TRUE' or 'FALSE'"))
+    }
+    
+    return(b)
+}
+#TODO Add return description
 
+
+plot_biplot <- function(
+    pca, PC_x, PC_y,
+    loadings_show, loadings_n,
+    meta_color, meta_shape,
+    x_min, x_max, y_min, y_max
+) {
+    #TODO Write a description of this function
+    #
+    # :param pca: "pca" list object obtained by running PCAtools::pca()
+    # :param PC_x: PC to plot on the x axis <chr>
+    # :param PC_y: PC to plot on the y axis <chr>
+    # :param loadings_show: whether to overlay component loadings or not <lgl>
+    # :param loadings_n: number of top loadings to show <int >= 0>
+    # :param meta_color: column in "pca" list metadata to color by <chr>
+    # :param meta_shape: column in "pca" list metadata to shape by <chr>
+    # :param x_min: minimum value on x axis <dbl>
+    # :param x_max: maximum value on x axis <dbl>
+    # :param y_min: minimum value on y axis <dbl>
+    # :param y_max: maximum value on y axis <dbl>
+    # :param title: title of biplot <dbl>
+    # :return image: ...
+    image <- pca %>% 
+        PCAtools::biplot(
+            x = PC_x,
+            y = PC_y,
+            lab = NULL,
+            showLoadings = loadings_show,
+            ntopLoadings = loadings_n,
+            boxedLoadingsNames = TRUE,
+            colby = meta_color,
+            shape = meta_shape,
+            encircle = FALSE,
+            ellipse = FALSE,
+            max.overlaps = Inf,
+            xlim = c(x_min, x_max),
+            ylim = c(y_min, y_max)
+        ) +
+            theme_slick
+    
+    return(image)
+}
+#TODO Add return description
+
+
+plot_pos_neg_loadings_each_axis <- function(
+    df_all, df_pos, df_neg,
+    PC_x, PC_y,
+    row_start, row_end,
+    x_min, x_max, y_min, y_max,
+    x_nudge, y_nudge, x_label, y_label,
+    col_line_pos, col_line_neg, col_seg_pos, col_seg_neg
+) {
+    #TODO Write a description of this function
+    #
+    # :param df_all: dataframe: all loadings (from, e.g., PCAtools)
+    # :param df_pos: dataframe: positive loadings ordered largest to smallest
+    # :param df_neg: dataframe: negative loadings ordered smallest to largest
+    # :param PC_x: PC to plot on the x axis
+    # :param PC_y: PC to plot on the y axis
+    # :param row_start: row from which to begin subsetting the PCs on x and y
+    # :param row_end: row at which to end subsetting the PCs on x and y
+    # :param x_min: minimum value on x axis <dbl>
+    # :param x_max: maximum value on x axis <dbl>
+    # :param y_min: minimum value on y axis <dbl>
+    # :param y_max: maximum value on y axis <dbl>
+    # :param x_nudge: amount to nudge labels on the x axis <dbl>
+    # :param y_nudge: amount to nudge labels on the y axis <dbl>
+    # :param x_label: x axis label <chr>
+    # :param y_label: y axis label <chr>
+    # :param col_line_pos: color: lines, arrows for positive loadings <chr>
+    # :param col_line_neg: color: lines, arrows for negative loadings <chr>
+    # :param col_seg_pos: color: segments connecting arrowhead and text bubble
+    #                     for positive loadings <chr>
+    # :param col_seg_neg: color: segments connecting arrowhead and text bubble
+    #                     for negative loadings <chr>
+    # :return image: ...
+    filter_pos_1 <- rownames(df_pos[[PC_x]][row_start:row_end, ])
+    filter_pos_2 <- rownames(df_pos[[PC_y]][row_start:row_end, ])
+    filter_neg_1 <- rownames(df_neg[[PC_x]][row_start:row_end, ])
+    filter_neg_2 <- rownames(df_neg[[PC_y]][row_start:row_end, ])
+    
+    loadings_filter_pos_1 <- df_all[rownames(df_all) %in% filter_pos_1, ]
+    loadings_filter_pos_2 <- df_all[rownames(df_all) %in% filter_pos_2, ]
+    loadings_filter_neg_1 <- df_all[rownames(df_all) %in% filter_neg_1, ]
+    loadings_filter_neg_2 <- df_all[rownames(df_all) %in% filter_neg_2, ]
+    
+    images <- list()
+    images[["PC_x_pos"]] <- plot_loadings(
+        loadings_filter_pos_1,
+        loadings_filter_pos_1[[PC_x]],
+        loadings_filter_pos_1[[PC_y]],
+        x_min, x_max, y_min, y_max, x_nudge, y_nudge,
+        x_label, y_label, col_line_pos, col_seg_pos
+    )
+    images[["PC_y_pos"]] <- plot_loadings(
+        loadings_filter_pos_2,
+        loadings_filter_pos_2[[PC_x]],
+        loadings_filter_pos_2[[PC_y]],
+        x_min, x_max, y_min, y_max, x_nudge, y_nudge,
+        x_label, y_label, col_line_pos, col_seg_pos
+    )
+    images[["PC_x_neg"]] <- plot_loadings(
+        loadings_filter_neg_1,
+        loadings_filter_neg_1[[PC_x]],
+        loadings_filter_neg_1[[PC_y]],
+        x_min, x_max, y_min, y_max, -y_nudge, x_nudge,
+        x_label, y_label, col_line_neg, col_seg_neg
+    )
+    images[["PC_y_neg"]] <- plot_loadings(
+        loadings_filter_neg_2,
+        loadings_filter_neg_2[[PC_x]],
+        loadings_filter_neg_2[[PC_y]],
+        x_min, x_max, y_min, y_max, x_nudge, -y_nudge,
+        x_label, y_label, col_line_neg, col_seg_neg
+    )
+    return(images)
+}
+#TODO Add return description
+
+
+plot_loadings <- function(x, y, z, a, b, d, e, f, g, h, i, j, k) {
+    #TODO Write a description of this function
+    #
+    # :param x: dataframe of PC loadings w/gene names as rownames <data.frame>
+    # :param y: column in dataframe to plot on x axis <dbl>
+    # :param z: column in dataframe to plot on y axis <dbl>
+    # :param a: minimum value on x axis <dbl>
+    # :param b: maximum value on x axis <dbl>
+    # :param d: minimum value on y axis <dbl>
+    # :param e: maximum value on y axis <dbl>
+    # :param f: amount to nudge labels on the x axis <dbl>
+    # :param g: amount to nudge labels on the y axis <dbl>
+    # :param h: x axis label <chr>
+    # :param i: y axis label <chr>
+    # :param j: color of line and arrow <chr>
+    # :param k: color of segment connecting arrowhead and text bubble <chr>
+    # :return l: ...
+    l <- ggplot2::ggplot(x, ggplot2::aes(x = y, y = z)) +  #TODO #FUNCTION
+        ggplot2::coord_cartesian(xlim = c(a, b), ylim = c(d, e)) +
+        ggplot2::geom_segment(
+            aes(xend = 0, yend = 0, alpha = 0.5),
+            color = j, 
+            arrow = ggplot2::arrow(
+                ends = "first",
+                type = "open",
+                length = unit(0.125, "inches")
+            )
+        ) +
+        ggrepel::geom_label_repel(
+            mapping = ggplot2::aes(
+                fontface = 1, segment.color = k, segment.size = 0.25
+            ),
+            label = rownames(x),
+            label.size = 0.05,
+            direction = "both",
+            nudge_x = f,  # 0.02
+            nudge_y = g,  # 0.04
+            force = 4,
+            force_pull = 1,
+            hjust = 0
+        ) +
+        ggplot2::xlab(h) +
+        ggplot2::ylab(i) +
+        theme_slick_no_legend
+    
+    return(l)
+}
+#TODO Add return description
+
+
+draw_scree_plot <- function(pca, horn, elbow) {
+    #TODO Write a description of this function
+    #
+    # :param pca: "pca" list object obtained by running PCAtools::pca()
+    # :param horn: ...
+    # :param elbow: ...
+    # :return scree: ...
+    scree <- PCAtools::screeplot(
+        pca,
+        components = PCAtools::getComponents(pca),
+        vline = c(horn, elbow),
+        vlineWidth = 0.25,
+        sizeCumulativeSumLine = 0.5,
+        sizeCumulativeSumPoints = 1.5
+    ) +
+        geom_text(aes(horn + 1, 50, label = "Horn's", vjust = 2)) +
+        geom_text(aes(elbow + 1, 50, label = "Elbow", vjust = -2)) +
+        theme_slick +
+        ggplot2::theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+    return(scree)
+}
+#TODO Add return description
+
+
+#  Set up custom ggplot2 plot themes ------------------------------------------
+theme_slick <- theme_classic() +
+    theme(
+        panel.grid.major = ggplot2::element_line(linewidth = 0.4),
+        panel.grid.minor = ggplot2::element_line(linewidth = 0.2),
+        axis.line = ggplot2::element_line(linewidth = 0.2),
+        axis.ticks = ggplot2::element_line(linewidth = 0.4),
+        axis.text = ggplot2::element_text(color = "black"),
+        axis.title.x = ggplot2::element_text(),
+        axis.title.y = ggplot2::element_text(),
+        plot.title = ggplot2::element_text(),
+        text = element_text(family = "")
+    )
+
+theme_slick_no_legend <- theme_slick + theme(legend.position = "none")
+```
+
+### ...
+#### Code
+
+```{r}
+#  Isolation relevant WT G1 and Q datasets ("Ovation" datasets) ---------------
+relevant <- colnames(t_S_none)[stringr::str_detect(colnames(t_S_none), "ovn")]
+
+t_S_none_rel <- t_S_none[, c("gene_id", relevant)] %>%
+    dplyr::filter(!stringr::str_detect(gene_id, "^__"))
+# tail(t_S_none_rel)
+
+colnames(t_S_none_rel) <- colnames(t_S_none_rel) %>%
+    gsub("bams_renamed/UT_prim_UMI/", "", .) %>%
+    gsub("\\.UT_prim_UMI\\.bam", "", .) %>%
+    gsub("*_day._ovn*", "", .) %>%
+    gsub("aux-F_tc-F_", "", .) %>%
+    gsub("_tech1", "", .)
+
+rm(relevant)
+
+
+#  Create a metadata matrix for performing PCA and related analyses -----------
+metadata <- t_S_none_rel[, 2:ncol(t_S_none_rel)] %>%
+    colnames() %>%
+    stringr::str_split("_") %>%
+    as.data.frame() %>%
+    t() %>%
+    as.data.frame()
+
+rownames(metadata) <- t_S_none_rel[, 2:ncol(t_S_none_rel)] %>% colnames()
+colnames(metadata) <- c("genotype", "state", "transcription", "replicate")
+
+
+#  Create a PCAtools "pca" S4 object for the raw counts -----------------------
+#+ Assign unique row names too
+obj_pca <- PCAtools::pca(
+    t_S_none_rel[, 2:ncol(t_S_none_rel)],
+    metadata = metadata
+)
+
+rownames(obj_pca$loadings) <- dplyr::pull(t_S_none_rel, gene_id)
+# colnames(obj_pca$loadings)
+
+
+#  Determine "significant" PCs with Horn's parallel analysis ------------------
+#+ See Horn, 1965
+horn <- PCAtools::parallelPCA(mat = t_S_none_rel[, 2:ncol(t_S_none_rel)])
+# horn$n
+
+
+#  Determine "significant" principle components with the elbow method ---------
+#+ See Buja and Eyuboglu, 1992
+elbow <- PCAtools::findElbowPoint(obj_pca$variance)
+# elbow
+
+
+#  Evaluate cumulative proportion of explained variance with a scree plot -----
+scree <- draw_scree_plot(obj_pca, horn = horn$n, elbow = elbow)
+scree
+```
+
+#### Part 2
+```{r}
+#  Save component loading vectors in their own data frame ---------------------
+loadings <- as.data.frame(obj_pca$loadings)
+
+#  Evaluate the component loading vectors for the number of significant PCs
+#+ identified via the elbow method plus two
+PCs <- paste0("PC", 1:(as.numeric(elbow) + 2))
+top_loadings_all <- lapply(
+    PCs, get_top_loadings, x = loadings, z = "all", a = TRUE
+)
+top_loadings_pos <- lapply(
+    PCs, get_top_loadings, x = loadings, z = "pos", a = TRUE
+)
+top_loadings_neg <- lapply(
+    PCs, get_top_loadings, x = loadings, z = "neg", a = TRUE
+)
+
+names(top_loadings_all) <-
+    names(top_loadings_pos) <-
+    names(top_loadings_neg) <-
+    PCs
+# rm(PCs)
+# top_loadings_all$PC1 %>% head(n = 20)
+# top_loadings_pos$PC1 %>% head(n = 20)
+# top_loadings_neg$PC1 %>% head(n = 20)
+
+
+#  Analyze positive, negative loadings on axes of biplots ---------------------
+#+ Look at the top 15 per axis
+images <- list()
+mat <- combn(PCs, 2)
+for(i in 1:ncol(mat)) {
+    # i <- 1
+    j <- mat[, i]
+    
+    PC_x <- x_label <- j[1]
+    PC_y <- y_label <- j[2]
+    
+    images[[paste0("PCAtools.", PC_x, ".v.", PC_y)]] <- plot_biplot(
+        pca = obj_pca,
+        PC_x = PC_x,
+        PC_y = PC_y,
+        loadings_show = FALSE,
+        loadings_n = 0,
+        meta_color = "state",
+        meta_shape = "transcription",
+        x_min = -350000,
+        x_max = 350000,
+        y_min = -350000,
+        y_max = 350000
+    )
+    
+    #HERE
+    images[[paste0("KA.", PC_x, ".v.", PC_y)]] <-
+        plot_pos_neg_loadings_each_axis(
+            df_all = loadings,
+            df_pos = top_loadings_pos,
+            df_neg = top_loadings_neg,
+            PC_x = PC_x,
+            PC_y = PC_y,
+            row_start = 1,
+            row_end = 15,  # 30
+            x_min = -0.5,  # -0.15,  # -1.0,
+            x_max = 0.5,  # 0.15,  # 1.0,
+            y_min = -0.5,  # -0.1,  # -0.5,
+            y_max = 0.5,  # 0.1,  # 0.5,
+            x_nudge = 0.02,  # 0.02,  # 0.04,
+            y_nudge = 0.04,  # 0.04,  # 0.02,
+            x_label = x_label,
+            y_label = y_label,
+            col_line_pos = "black",
+            col_line_neg = "red",
+            col_seg_pos = "grey",
+            col_seg_neg = "grey"
+        )
+    
+    images[[paste0("KA.", PC_x, ".v.", PC_y)]]
+}
+
+#  How do things look?
+images$PCAtools.PC1.v.PC2
+images$KA.PC1.v.PC2$PC_x_pos
+images$KA.PC1.v.PC2$PC_x_neg
+images$KA.PC1.v.PC2$PC_y_pos
+images$KA.PC1.v.PC2$PC_y_neg
+
+images$PCAtools.PC1.v.PC3
+images$KA.PC1.v.PC3$PC_x_pos
+images$KA.PC1.v.PC3$PC_x_neg
+images$KA.PC1.v.PC3$PC_y_pos
+images$KA.PC1.v.PC3$PC_y_neg
+
+images$PCAtools.PC1.v.PC4
+images$KA.PC1.v.PC4$PC_x_pos
+images$KA.PC1.v.PC4$PC_x_neg
+images$KA.PC1.v.PC4$PC_y_pos
+images$KA.PC1.v.PC4$PC_y_neg
+
+images$PCAtools.PC2.v.PC3
+images$KA.PC2.v.PC3$PC_x_pos
+images$KA.PC2.v.PC3$PC_x_neg
+images$KA.PC2.v.PC3$PC_y_pos
+images$KA.PC2.v.PC3$PC_y_neg
+
+images$PCAtools.PC2.v.PC4
+images$KA.PC2.v.PC4$PC_x_pos
+images$KA.PC2.v.PC4$PC_x_neg
+images$KA.PC2.v.PC4$PC_y_pos
+images$KA.PC2.v.PC4$PC_y_neg
+
+images$PCAtools.PC3.v.PC4
+images$KA.PC3.v.PC4$PC_x_pos
+images$KA.PC3.v.PC4$PC_x_neg
+images$KA.PC3.v.PC4$PC_y_pos
+images$KA.PC3.v.PC4$PC_y_neg
+
+# images$PCAtools.PC1.v.PC3
+# images$KA.PC1.v.PC3
+# images$PCAtools.PC1.v.PC4
+# images$KA.PC1.v.PC4
+# images$PCAtools.PC2.v.PC3
+# images$KA.PC2.v.PC3
+```
+
+#### Part 3
+```{r}
+#  Plot the top features on an axis of component loading range ----------------
+#+ ...to visualize the top variables (features) that drive variance among
+#+ principal components of interest
+p_loadings <- PCAtools::plotloadings(
+    obj_pca,
+    # components = getComponents(obj_pca, 1),
+    components = getComponents(obj_pca, 1:2),
+    rangeRetain = 0.1,
+    absolute = FALSE,
+    col = c("#785EF075", "#FFFFFF75", "#FE610075"),
+    title = "Loadings plot",
+    subtitle = "Top 5% of variables (i.e., features)",
+    # shapeSizeRange = c(4, 16),
+    borderColour = "#000000",
+    borderWidth = 0.2,
+    gridlines.major = TRUE,
+    gridlines.minor = TRUE,
+    axisLabSize = 10,
+    labSize = 3,  # label_size
+    drawConnectors = TRUE,
+    widthConnectors = 0.2,
+    typeConnectors = 'closed',
+    colConnectors = 'black'
+) +
+    # ggplot2::coord_flip() +
+    theme_slick_no_legend
+p_loadings
+#TODO Work up some logic for saving the plot
+
+
+#  Evaluate correlations between PCs and model variables ----------------------
+#+ Answer, "What is driving biologically significant variance in our data?"
+PC_cor <- PCAtools::eigencorplot(
+    obj_pca,
+    components = PCAtools::getComponents(obj_pca, 1:8),
+    metavars = c("state", "transcription", "replicate"),
+    # metavars = c("strain", "replicate", "sample_name"),
+    col = c("#785EF075", "#648FFF75", "#FFFFFF75", "#FFB00075", "#FE610075"),
+    scale = FALSE,
+    corFUN = "pearson",
+    corMultipleTestCorrection = "BH",
+    plotRsquared = TRUE,
+    colFrame = "#FFFFFF",
+    main = bquote(Pearson ~ r^2 ~ correlates),
+    # main = "PC Pearson r-squared correlates",
+    fontMain = 1,
+    titleX = "Principal components",
+    fontTitleX = 1,
+    fontLabX = 1,
+    titleY = "Model variables",
+    rotTitleY = 90,
+    fontTitleY = 1,
+    fontLabY = 1
+)
+PC_cor
+
+
+#  Get lists of top loadings for GO analyses ----------------------------------
+# for(i in c("PC1", "PC2", "PC3", "PC4")) {
+for(i in c("PC1", "PC2")) {
+    # i <- "PC1"
+    #  Positive
+    loadings_pos_PC <- rownames(top_loadings_pos[[i]])[1:500]
+    save_title_pos_PC <- paste0(
+        "top-500.",
+        stringr::str_replace_all(get_name_of_var(loadings_pos_PC), "_", "-"),
+        ".", i, ".txt"
+    )
+    # readr::write_tsv(
+    #     dplyr::as_tibble(loadings_pos_PC),
+    #     paste0(args$directory_out, "/", save_title_pos_PC),
+    #     col_names = FALSE
+    # )
+    #TODO Work up some logic for location(s) for outfiles
+    
+    #  Negative
+    loadings_neg_PC <- rownames(top_loadings_neg[[i]])[1:500]
+    save_title_neg_PC <- paste0(
+        "top-500.",
+        stringr::str_replace_all(get_name_of_var(loadings_neg_PC), "_", "-"),
+        ".", i, ".txt"
+    )
+    # readr::write_tsv(
+    #     dplyr::as_tibble(loadings_neg_PC),
+    #     paste0(args$directory_out, "/", save_title_neg_PC),
+    #     col_names = FALSE
+    # )
+    #TODO Work up some logic for location(s) for outfiles
+}
 ```
