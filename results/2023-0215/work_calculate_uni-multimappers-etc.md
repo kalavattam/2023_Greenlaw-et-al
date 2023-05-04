@@ -119,10 +119,9 @@ echo "${#UT_prim_UMI[@]}"
 for h in ./bams_renamed/UT_prim_UMI/*.bai; do
     if [[ ! -e "${h}" ]]; then
         for i in "${UT_prim_UMI[@]}"; do
-                echo "${i}"
+                echo "Indexing ${i}"
                 samtools index -@ "${SLURM_CPUS_ON_NODE}" "${i}"
-
-            module purge SAMtools/1.16.1-GCC-11.2.0
+                echo ""
         done
     else
         echo "Bam indices exist; skipping the running of samtools index"
@@ -166,7 +165,7 @@ for i in "${UT_prim_UMI[@]}"; do
     #  Calculate number of unimappers for non-I-XIV chromosomes
     unset tmp
     tmp="$(
-        samtools view -@ 4 \
+        samtools view -@ "${SLURM_CPUS_ON_NODE}" \
             "${i}" \
             Mito A B C D E F 20S \
                 | awk '/\<NH:i:1\>/' \
@@ -177,7 +176,7 @@ for i in "${UT_prim_UMI[@]}"; do
     #  Calculate number of multimappers for non-I-XIV chromosomes
     unset tmp
     tmp="$(
-        samtools view -@ 4 \
+        samtools view -@ "${SLURM_CPUS_ON_NODE}" \
             "${i}" \
             Mito A B C D E F 20S \
                 | awk '!/\<NH:i:1\>/' \
@@ -188,7 +187,7 @@ for i in "${UT_prim_UMI[@]}"; do
     #  Get (and check) the sum of non-I-XIV chromosome counts
     c_MK2_sum=$(( c_MK2_uni + c_MK2_multi ))  # echo "${c_MK2_sum}"
     c_MK2_sum_check="$(
-        samtools view -@ 4 -c \
+        samtools view -@ "${SLURM_CPUS_ON_NODE}" -c \
             "${i}" \
             Mito A B C D E F 20S
     )"  # echo "${c_MK2_sum_check}"
@@ -201,7 +200,7 @@ for i in "${UT_prim_UMI[@]}"; do
     #  Calculate number of unimappers for I-XIV chromosomes
     unset tmp
     tmp="$(
-        samtools view -@ 4 \
+        samtools view -@ "${SLURM_CPUS_ON_NODE}" \
             "${i}" \
             I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI \
                 | awk '/\<NH:i:1\>/' \
@@ -212,7 +211,7 @@ for i in "${UT_prim_UMI[@]}"; do
     #  Calculate number of multimappers for I-XIV chromosomes
     unset tmp
     tmp="$(
-        samtools view -@ 4 \
+        samtools view -@ "${SLURM_CPUS_ON_NODE}" \
             "${i}" \
             I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI \
                 | awk '!/\<NH:i:1\>/' \
@@ -223,7 +222,7 @@ for i in "${UT_prim_UMI[@]}"; do
     #  Get (and check) the sum of I-XIV chromosome counts
     c_chr_sum=$(( c_chr_uni + c_chr_multi ))  # echo "${c_chr_sum}"
     c_chr_sum_check="$(
-        samtools view -@ 4 -c \
+        samtools view -@ "${SLURM_CPUS_ON_NODE}" -c \
             "${i}" \
             I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI
         )"  # echo "${c_chr_sum_check}"
@@ -276,7 +275,7 @@ cat outfiles_htseq-count/calculate_uni-multimappers-etc.UT_prim_UMI.txt
 >     #  Calculate number of unimappers for non-I-XIV chromosomes
 >     unset tmp
 >     tmp="$(
->         samtools view -@ 4 \
+>         samtools view -@ "${SLURM_CPUS_ON_NODE}" \
 >             "${i}" \
 >             Mito A B C D E F 20S \
 >                 | awk '/\<NH:i:1\>/' \
@@ -287,7 +286,7 @@ cat outfiles_htseq-count/calculate_uni-multimappers-etc.UT_prim_UMI.txt
 >     #  Calculate number of multimappers for non-I-XIV chromosomes
 >     unset tmp
 >     tmp="$(
->         samtools view -@ 4 \
+>         samtools view -@ "${SLURM_CPUS_ON_NODE}" \
 >             "${i}" \
 >             Mito A B C D E F 20S \
 >                 | awk '!/\<NH:i:1\>/' \
@@ -298,7 +297,7 @@ cat outfiles_htseq-count/calculate_uni-multimappers-etc.UT_prim_UMI.txt
 >     #  Get (and check) the sum of non-I-XIV chromosome counts
 >     c_MK2_sum=$(( c_MK2_uni + c_MK2_multi ))  # echo "${c_MK2_sum}"
 >     c_MK2_sum_check="$(
->         samtools view -@ 4 -c \
+>         samtools view -@ "${SLURM_CPUS_ON_NODE}" -c \
 >             "${i}" \
 >             Mito A B C D E F 20S
 >     )"  # echo "${c_MK2_sum_check}"
@@ -311,7 +310,7 @@ cat outfiles_htseq-count/calculate_uni-multimappers-etc.UT_prim_UMI.txt
 >     #  Calculate number of unimappers for I-XIV chromosomes
 >     unset tmp
 >     tmp="$(
->         samtools view -@ 4 \
+>         samtools view -@ "${SLURM_CPUS_ON_NODE}" \
 >             "${i}" \
 >             I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI \
 >                 | awk '/\<NH:i:1\>/' \
@@ -322,7 +321,7 @@ cat outfiles_htseq-count/calculate_uni-multimappers-etc.UT_prim_UMI.txt
 >     #  Calculate number of multimappers for I-XIV chromosomes
 >     unset tmp
 >     tmp="$(
->         samtools view -@ 4 \
+>         samtools view -@ "${SLURM_CPUS_ON_NODE}" \
 >             "${i}" \
 >             I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI \
 >                 | awk '!/\<NH:i:1\>/' \
@@ -333,7 +332,7 @@ cat outfiles_htseq-count/calculate_uni-multimappers-etc.UT_prim_UMI.txt
 >     #  Get (and check) the sum of I-XIV chromosome counts
 >     c_chr_sum=$(( c_chr_uni + c_chr_multi ))  # echo "${c_chr_sum}"
 >     c_chr_sum_check="$(
->         samtools view -@ 4 -c \
+>         samtools view -@ "${SLURM_CPUS_ON_NODE}" -c \
 >             "${i}" \
 >             I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI
 >         )"  # echo "${c_chr_sum_check}"

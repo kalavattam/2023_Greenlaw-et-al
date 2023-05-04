@@ -1,5 +1,5 @@
 ---
-title: "rough-draft_test_evaluate-categories_expression.Rmd"
+title: "rough-draft_evaluate-categories_expression.Rmd"
 output: html_notebookauthor: "KA"
 email: "kalavatt@fredhutch.org"
 output:
@@ -182,7 +182,7 @@ underscore$`n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1` %>% sum()  # [1] 21827889
 #CONCLUSION  2/2 the counts matrix
 ```
 
-```{bash}
+```{bash, eval=FALSE}
 #!/bin/bash
 
 #  Get situated
@@ -321,11 +321,11 @@ We can achieve this goal by taking the following steps:
 1. Calculate and store the <mark>number of <b>multimappers</b> associated with <i>"Mito-KL-20S"</i></mark>: `multi_Mito-KL-20S`.
 2. Calculate and store the <mark>number of <b>unimappers</b> associated with <i>"Mito-KL-20S"</i></mark>: `uni_Mito-KL-20S`.
 3. Calculate and store the <mark>number of <b>unimappers</b> associated with <i>S. cerevisiae chromosomes I-XVI</i></mark>: `uni_I-XVI`.
-3. Subtract `multi_Mito-KL-20S` from "`__alignment_not_unique`"; store the new value: "`__alignment_not_unique_I-XVI`"
-4. Subtract `uni_Mito-KL-20S` from "`__no_feature`"; store the new value: "`__no_feature_I-XVI`".
-5. Calculate and store <mark>*(i)* the sum of "`__no_feature_I-XVI`", *(ii)* "`__ambiguous`", *(iii)* "`__alignment_not_unique_I-XVI`", and *(iv)* "valid" counts (e.g., from `sum(counts$n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1)`)</mark>: `summary-updated`.
-6. Calculate and store the <mark>number of all counts associated with <i>S. cerevisiae chromosomes I-XVI</i></mark>: `counts_I-XVI`.
-7. <mark>Check that the sum from step #5 equals the value from step #6</mark>. If `TRUE`, then everything is OK and we're good to proceed; if `FALSE`, then we need to troubleshoot why.
+4. Subtract `multi_Mito-KL-20S` from "`__alignment_not_unique`"; store the new value: "`__alignment_not_unique_I-XVI`"
+5. Subtract `uni_Mito-KL-20S` from "`__no_feature`"; store the new value: "`__no_feature_I-XVI`".
+6. Calculate and store <mark>*(i)* the sum of "`__no_feature_I-XVI`", *(ii)* "`__ambiguous`", *(iii)* "`__alignment_not_unique_I-XVI`", and *(iv)* "valid" counts (e.g., from `sum(counts$n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1)`)</mark>: `summary-updated`.
+7. Calculate and store the <mark>number of all counts associated with <i>S. cerevisiae chromosomes I-XVI</i></mark>: `counts_I-XVI`.
+8. <mark>Check that the sum from step #5 equals the value from step #6</mark>. If `TRUE`, then everything is OK and we're good to proceed; if `FALSE`, then we need to troubleshoot why.
 </details>
 <br />
 
@@ -380,7 +380,7 @@ underscore <- underscore %>%
     )
 
 
-#  Clean up
+#  Clean up -------------------------------------------------------------------
 rm(
     `uni_Mito-KL-20S`, `multi_Mito-KL-20S`, `uni_I-XVI`, `multi_I-XVI`,
     `__alignment_not_unique`, `__alignment_not_unique_I-XVI`, `__no_feature`,
@@ -491,40 +491,41 @@ rm(df_tmp_1, df_tmp_2)
 sum(`test_joined_sum-by-category`[, 2]) == `counts_I-XVI`  # [1] TRUE
 sum(`test_joined_sum-by-category`[, 2]) == `summary-updated`  # [1] TRUE
 ```
-</details>
 <br />
 
 ```{r}
-#  Refresher: Make stacked bar charts with test data --------------------------
-specie <- c(
-    rep("sorgho", 3), rep("poacee", 3), rep("banana", 3), rep("triticum", 3)
-)
-condition <- rep(c("normal", "stress", "Nitrogen"), 4)
-value <- abs(rnorm(12, 0, 15))
-data <- data.frame(specie, condition, value)
+#!/usr/bin/env Rscript
 
-rm(specie, condition, value)
-
-#  Grouped
-ggplot(data, aes(fill = condition, y = value, x = specie)) + 
-    geom_bar(position = "dodge", stat = "identity")
-
-#  Stacked
-ggplot(data, aes(fill = condition, y = value, x = specie)) + 
-    geom_bar(position = "stack", stat = "identity")
-
-#  Stacked and percent
-ggplot(data, aes(fill = condition, y = value, x = specie)) + 
-    geom_bar(position = "fill", stat = "identity")
-
-treemap::treemap(
-    data,
-    index = c("specie", "condition"),
-    vSize = "value",
-    type = "index"
-)
-
-rm(data)
+# #  Refresher: Make stacked bar charts with test data --------------------------
+# specie <- c(
+#     rep("sorgho", 3), rep("poacee", 3), rep("banana", 3), rep("triticum", 3)
+# )
+# condition <- rep(c("normal", "stress", "Nitrogen"), 4)
+# value <- abs(rnorm(12, 0, 15))
+# data <- data.frame(specie, condition, value)
+# 
+# rm(specie, condition, value)
+# 
+# #  Grouped
+# ggplot(data, aes(fill = condition, y = value, x = specie)) +
+#     geom_bar(position = "dodge", stat = "identity")
+# 
+# #  Stacked
+# ggplot(data, aes(fill = condition, y = value, x = specie)) +
+#     geom_bar(position = "stack", stat = "identity")
+# 
+# #  Stacked and percent
+# ggplot(data, aes(fill = condition, y = value, x = specie)) +
+#     geom_bar(position = "fill", stat = "identity")
+# 
+# treemap::treemap(
+#     data,
+#     index = c("specie", "condition"),
+#     vSize = "value",
+#     type = "index"
+# )
+# 
+# rm(data)
 
 
 #  Apply above to `test_joined_sum-by-category` -------------------------------
@@ -579,11 +580,74 @@ treemap::treemap(
 <br />
 <br />
 
-## How do non-normalized counts for...
-### Initialize necessary function
+## Isolate and preprocess relevant WT G1 and Q datasets
+### Isolate relevant WT G1 and Q datasets ("Ovation" datasets)
 #### Code
+<details>
+<summary><i>Code: Isolate relevant WT G1 and Q datasets ("Ovation" datasets)</i></summary>
 
 ```{r}
+#!/usr/bin/env Rscript
+
+relevant <- colnames(t_S_none)[stringr::str_detect(colnames(t_S_none), "ovn")]
+
+t_S_none_rel <- t_S_none[, c("gene_id", relevant)] %>%
+    dplyr::filter(!stringr::str_detect(gene_id, "^__"))
+# tail(t_S_none_rel)
+
+colnames(t_S_none_rel) <- colnames(t_S_none_rel) %>%
+    gsub("bams_renamed/UT_prim_UMI/", "", .) %>%
+    gsub("\\.UT_prim_UMI\\.bam", "", .) %>%
+    gsub("*_day._ovn*", "", .) %>%
+    gsub("aux-F_tc-F_", "", .) %>%
+    gsub("_tech1", "", .)
+
+`t_S_none_rel_htseq-count-summary` <- t_S_none[, c("gene_id", relevant)] %>%
+    dplyr::filter(stringr::str_detect(gene_id, "^__"))
+# `t_S_none_rel_htseq-count-summary`
+
+colnames(`t_S_none_rel_htseq-count-summary`) <-
+    colnames(`t_S_none_rel_htseq-count-summary`) %>%
+    gsub("bams_renamed/UT_prim_UMI/", "", .) %>%
+    gsub("\\.UT_prim_UMI\\.bam", "", .) %>%
+    gsub("*_day._ovn*", "", .) %>%
+    gsub("aux-F_tc-F_", "", .) %>%
+    gsub("_tech1", "", .)
+
+rm(relevant)
+```
+</details>
+<br />
+
+### Create a metadata matrix for WT G1 and Q datasets ("Ovation" datasets)
+#### Code
+<details>
+<summary><i>Code: Create a metadata matrix for WT G1 and Q datasets ("Ovation" datasets)</i></summary>
+
+```{r}
+metadata <- t_S_none_rel[, 2:ncol(t_S_none_rel)] %>%
+    colnames() %>%
+    stringr::str_split("_") %>%
+    as.data.frame() %>%
+    t() %>%
+    as.data.frame()
+
+rownames(metadata) <- t_S_none_rel[, 2:ncol(t_S_none_rel)] %>% colnames()
+colnames(metadata) <- c("genotype", "state", "transcription", "replicate")
+```
+</details>
+<br />
+<br />
+
+## Test replicate consistency via PCA of non-normalized counts
+### Initialize necessary functions
+#### Code
+<details>
+<summary><i>Code: Initialize necessary functions</i></summary>
+
+```{r}
+#!/usr/bin/env Rscript
+
 get_name_of_var <- function(v) {
     #TODO Write a description of this function
     #
@@ -856,39 +920,16 @@ theme_slick <- theme_classic() +
 
 theme_slick_no_legend <- theme_slick + theme(legend.position = "none")
 ```
+</details>
+<br />
 
-### ...
+### Create "`pca`" object and evaluate significant PCs
 #### Code
+<details>
+<summary><i>Code: Create "`pca`" object and evaluate significant PCs</i></summary>
 
 ```{r}
-#  Isolation relevant WT G1 and Q datasets ("Ovation" datasets) ---------------
-relevant <- colnames(t_S_none)[stringr::str_detect(colnames(t_S_none), "ovn")]
-
-t_S_none_rel <- t_S_none[, c("gene_id", relevant)] %>%
-    dplyr::filter(!stringr::str_detect(gene_id, "^__"))
-# tail(t_S_none_rel)
-
-colnames(t_S_none_rel) <- colnames(t_S_none_rel) %>%
-    gsub("bams_renamed/UT_prim_UMI/", "", .) %>%
-    gsub("\\.UT_prim_UMI\\.bam", "", .) %>%
-    gsub("*_day._ovn*", "", .) %>%
-    gsub("aux-F_tc-F_", "", .) %>%
-    gsub("_tech1", "", .)
-
-rm(relevant)
-
-
-#  Create a metadata matrix for performing PCA and related analyses -----------
-metadata <- t_S_none_rel[, 2:ncol(t_S_none_rel)] %>%
-    colnames() %>%
-    stringr::str_split("_") %>%
-    as.data.frame() %>%
-    t() %>%
-    as.data.frame()
-
-rownames(metadata) <- t_S_none_rel[, 2:ncol(t_S_none_rel)] %>% colnames()
-colnames(metadata) <- c("genotype", "state", "transcription", "replicate")
-
+#!/usr/bin/env Rscript
 
 #  Create a PCAtools "pca" S4 object for the raw counts -----------------------
 #+ Assign unique row names too
@@ -896,9 +937,7 @@ obj_pca <- PCAtools::pca(
     t_S_none_rel[, 2:ncol(t_S_none_rel)],
     metadata = metadata
 )
-
 rownames(obj_pca$loadings) <- dplyr::pull(t_S_none_rel, gene_id)
-# colnames(obj_pca$loadings)
 
 
 #  Determine "significant" PCs with Horn's parallel analysis ------------------
@@ -917,10 +956,18 @@ elbow <- PCAtools::findElbowPoint(obj_pca$variance)
 scree <- draw_scree_plot(obj_pca, horn = horn$n, elbow = elbow)
 scree
 ```
+</details>
+<br />
 
-#### Part 2
+### Evaluate positive, negative loadings on axes of biplots
+#### Code
+<details>
+<summary><i>Code: Evaluate positive, negative loadings on axes of biplots</i></summary>
+
 ```{r}
-#  Save component loading vectors in their own data frame ---------------------
+#!/usr/bin/env Rscript
+
+#  Save component loading vectors in their own dataframe ----------------------
 loadings <- as.data.frame(obj_pca$loadings)
 
 #  Evaluate the component loading vectors for the number of significant PCs
@@ -946,7 +993,7 @@ names(top_loadings_all) <-
 # top_loadings_neg$PC1 %>% head(n = 20)
 
 
-#  Analyze positive, negative loadings on axes of biplots ---------------------
+#  Evaluate positive, negative loadings on axes of biplots --------------------
 #+ Look at the top 15 per axis
 images <- list()
 mat <- combn(PCs, 2)
@@ -971,7 +1018,6 @@ for(i in 1:ncol(mat)) {
         y_max = 350000
     )
     
-    #HERE
     images[[paste0("KA.", PC_x, ".v.", PC_y)]] <-
         plot_pos_neg_loadings_each_axis(
             df_all = loadings,
@@ -1042,9 +1088,17 @@ images$KA.PC3.v.PC4$PC_y_neg
 # images$PCAtools.PC2.v.PC3
 # images$KA.PC2.v.PC3
 ```
+</details>
+<br />
 
-#### Part 3
+### Evaluate the top features and metadata-PC correlation
+#### Code
+<details>
+<summary><i>Code: Evaluate the top features and metadata-PC correlation</i></summary>
+
 ```{r}
+#!/usr/bin/env Rscript
+
 #  Plot the top features on an axis of component loading range ----------------
 #+ ...to visualize the top variables (features) that drive variance among
 #+ principal components of interest
@@ -1081,8 +1135,8 @@ PC_cor <- PCAtools::eigencorplot(
     obj_pca,
     components = PCAtools::getComponents(obj_pca, 1:8),
     metavars = c("state", "transcription", "replicate"),
-    # metavars = c("strain", "replicate", "sample_name"),
-    col = c("#785EF075", "#648FFF75", "#FFFFFF75", "#FFB00075", "#FE610075"),
+    # col = c("#785EF075", "#648FFF75", "#FFFFFF75", "#FFB00075", "#FE610075"),
+    col = viridisLite::viridis(n = 100) %>% rev(),
     scale = FALSE,
     corFUN = "pearson",
     corMultipleTestCorrection = "BH",
@@ -1100,9 +1154,18 @@ PC_cor <- PCAtools::eigencorplot(
     fontLabY = 1
 )
 PC_cor
+```
+</details>
+<br />
 
+### Get lists of top loadings for GO analyses
+#### Code
+<details>
+<summary><i>Code: Get lists of top loadings for GO analyses</i></summary>
 
-#  Get lists of top loadings for GO analyses ----------------------------------
+```{r, eval=FALSE}
+#!/usr/bin/env Rscript
+
 # for(i in c("PC1", "PC2", "PC3", "PC4")) {
 for(i in c("PC1", "PC2")) {
     # i <- "PC1"
@@ -1134,4 +1197,389 @@ for(i in c("PC1", "PC2")) {
     # )
     #TODO Work up some logic for location(s) for outfiles
 }
+```
+</details>
+<br />
+
+### Clean up
+#### Code
+<details>
+<summary><i>Code: Clean up</i></summary>
+
+```{r}
+#!/usr/bin/env Rscript
+
+rm(
+    horn, images, loadings, mat, obj_pca, p_loadings, PC_cor, scree,
+    top_loadings_all, top_loadings_neg, top_loadings_pos
+)
+
+rm(
+    elbow, i, j, loadings_neg_PC, loadings_pos_PC, PC_x, PC_y, PCs,
+    save_title_neg_PC, save_title_pos_PC, x_label, y_label
+)
+```
+
+</details>
+<br />
+
+### On the PCA results...
+#### Notes
+<details>
+<summary><i>Notes: On the PCA results...</i></summary>
+
+Even without normalization, the per-replicate counts facilitate the clustering of <u>like with like</u> and <u>unlike away from unlike</u>.
+
+PC1 is strongly associated and correlated with "`state`" (i.e., Q versus G1), while PC2 is associated/correlated with "`transcription`".
+
+`#CONCLUSION` I think it's valid to...
+1. take an approach in which we calculate chi-square statistics, examining whether or not sets of variables&mdash;where vector "`category`" is the set and the variables are the vector elements&mdash;are likely to be related to each other, or
+2. take an approach in which we compare the means of variables via t-tests&mdash;e.g., in this case, the elements in vector "`category`" are the variables, and the means of their between-replicate tallies are what we are comparing. I can see us doing "general" two-tailed t-tests or paired two-tailed t-tests.
+
+</details>
+<br />
+<br />
+
+## ...
+### ...
+Having written and run the code in `work_calculate_uni-multimappers-etc.md`...
+
+#### Code
+<details>
+<summary><i>Code: ...</i></summary>
+
+```{r}
+#!/usr/bin/env Rscript
+
+#  Read in the dataframe for `work_calculate_uni-multimappers-etc.md` metrics
+p_uni_multi_etc <- "outfiles_htseq-count"
+f_uni_multi_etc <- "calculate_uni-multimappers-etc.UT_prim_UMI.txt"
+uni_multi_etc <- readr::read_tsv(
+    paste(p_uni_multi_etc, f_uni_multi_etc, sep = "/"),
+    show_col_types = FALSE
+)
+
+rm(f_uni_multi_etc, p_uni_multi_etc)
+
+#  Isolate (and clean up the names of) relevant information ("Ovation" data)
+relevant <- colnames(t_S_none)[  #FIXME t_S_none needs to have been loaded
+    stringr::str_detect(colnames(t_S_none), "ovn")
+] %>%
+    gsub("bams_renamed/UT_prim_UMI/", "", .) %>%
+    gsub("\\.UT_prim_UMI\\.bam", "", .)
+uni_multi_etc_rel <- uni_multi_etc %>% dplyr::filter(sample %in% relevant)
+uni_multi_etc_rel$sample <- uni_multi_etc_rel$sample %>%
+   gsub("*_day._ovn*", "", .) %>%
+   gsub("aux-F_tc-F_", "", .) %>%
+   gsub("_tech1", "", .)
+
+#  Transpose the dataframe
+uni_multi_etc_rel <- uni_multi_etc_rel %>%
+    t() %>%
+    tibble::as_tibble(rownames = "category")
+
+#  Convert row 1 to column names
+colnames(uni_multi_etc_rel) <- uni_multi_etc_rel[1, ]
+uni_multi_etc_rel <- uni_multi_etc_rel[-1, ]
+colnames(uni_multi_etc_rel)[1] <- "gene_id"
+
+#  Convert number elements from type character to type numeric
+uni_multi_etc_rel[, 2:length(uni_multi_etc_rel)] <- sapply(
+    uni_multi_etc_rel[, 2:length(uni_multi_etc_rel)], as.numeric
+) %>%
+    tibble::as_tibble()
+
+#  Clean up
+rm(relevant)
+
+#  Row-bind t_S_none_rel, `t_S_none_rel_htseq-count-summary`, and
+#+ uni_multi_etc_rel
+ovation <- dplyr::bind_rows(
+    t_S_none_rel, `t_S_none_rel_htseq-count-summary`, uni_multi_etc_rel
+)
+
+
+#  Check on "important rows" --------------------------------------------------
+#  Check the column-wise sum of feature-assigned counts
+sapply(t_S_none_rel[, -1], sum)
+# WT_G1_N_rep1  WT_G1_N_rep2 WT_G1_SS_rep1 WT_G1_SS_rep2   WT_Q_N_rep1   WT_Q_N_rep2  WT_Q_SS_rep1  WT_Q_SS_rep2
+#      9832375       9778987       4386156       4569639       6418902       7202562       3069577       2228669
+
+#  Observe sample_total (all counts/read pairs in bam)
+uni_multi_etc_rel[1, -1]
+# WT_G1_N_rep1 WT_G1_N_rep2 WT_G1_SS_rep1 WT_G1_SS_rep2 WT_Q_N_rep1 WT_Q_N_rep2 WT_Q_SS_rep1 WT_Q_SS_rep2
+#     15634566	   15755143	     10723500	   10009120	   18858614	   17445726	     9515191	  8394823
+
+#  Observe SC-I-XVI_all (all counts/read pairs associated with S. cerevisiae
+#+ chromosomes I-XVI)
+uni_multi_etc_rel[5, -1]
+# WT_G1_N_rep1 WT_G1_N_rep2 WT_G1_SS_rep1 WT_G1_SS_rep2 WT_Q_N_rep1 WT_Q_N_rep2 WT_Q_SS_rep1 WT_Q_SS_rep2
+#     15219175	   15054009	      9398774	    8659383	    9532767	   10643767	     6350327	  5263914
+
+#  Observe SC-I-XVI_uni (unimapping counts/read pairs associated with S.
+#+ cerevisiae chromosomes I-XVI)
+uni_multi_etc_rel[6, -1]
+# WT_G1_N_rep1 WT_G1_N_rep2 WT_G1_SS_rep1 WT_G1_SS_rep2 WT_Q_N_rep1 WT_Q_N_rep2 WT_Q_SS_rep1 WT_Q_SS_rep2
+#     13188385	   12953728	      6619041	    6866366	    8502909	    9697530	     4374618	  3403427
+
+
+#  Run the processing steps detailed above ------------------------------------
+#  Step 1: Get multimappers associated with "Mito-KL-20S"
+`Mito-KL-20S_multi` <-
+    ovation[stringr::str_detect(ovation$gene_id, "Mito-KL-20S_multi"), ]
+
+#  Step 2: Get unimappers associated with "Mito-KL-20S"
+`Mito-KL-20S_uni` <-
+    ovation[stringr::str_detect(ovation$gene_id, "Mito-KL-20S_uni"), ]
+
+#  Step 3: Get unimappers associated with "SC-I-XVI"
+`SC-I-XVI_uni` <-
+    ovation[stringr::str_detect(ovation$gene_id, "SC-I-XVI_uni"), ]
+
+#  Step 4: Subtract `Mito-KL-20S_multi` from "`__alignment_not_unique`
+`__alignment_not_unique` <- ovation[
+    stringr::str_detect(ovation$gene_id, "__alignment_not_unique"), 2:9
+]
+
+`__alignment_not_unique_I-XVI` <-
+    `__alignment_not_unique` - `Mito-KL-20S_multi`[, 2:9]
+
+`__alignment_not_unique_I-XVI`$gene_id <- "__alignment_not_unique_I-XVI"
+`__alignment_not_unique_I-XVI` <- `__alignment_not_unique_I-XVI` %>%
+    dplyr::relocate(gene_id, .before = "WT_G1_N_rep1")
+# `__alignment_not_unique_I-XVI`
+
+#  Step 5: Subtract `Mito-KL-20S_uni` from "`__no_feature`"
+`__no_feature` <- ovation[
+    stringr::str_detect(ovation$gene_id, "__no_feature"), 2:9
+]
+
+`__no_feature_I-XVI` <-
+    `__no_feature` - `Mito-KL-20S_uni`[, 2:9]
+
+`__no_feature_I-XVI`$gene_id <- "__no_feature_I-XVI"
+`__no_feature_I-XVI` <- `__no_feature_I-XVI` %>%
+    dplyr::relocate(gene_id, .before = "WT_G1_N_rep1")
+# `__no_feature_I-XVI`
+
+#  Step 6: sum the following:
+#+    - "`__no_feature_I-XVI`"
+#+    - "`__ambiguous`"
+#+    - "`__alignment_not_unique_I-XVI`"
+#+    - "valid" counts
+`__ambiguous` <- ovation[stringr::str_detect(ovation$gene_id, "__ambiguous"), ]
+valid_counts <- sapply(t_S_none_rel[, -1], sum)
+
+`__sum_I-XVI` <- `__no_feature_I-XVI`[, 2:9] +
+    `__ambiguous`[, 2:9] +
+    `__alignment_not_unique_I-XVI`[, 2:9] +
+    valid_counts
+`__sum_I-XVI`$gene_id <- "__sum_I-XVI"
+`__sum_I-XVI` <- `__sum_I-XVI` %>%
+    dplyr::relocate(gene_id, .before = "WT_G1_N_rep1")
+# `__sum_I-XVI`
+
+#  Step 7: Get numbers of all counts associated for "SC-I-XVI"
+`SC-I-XVI_all` <- 
+    ovation[stringr::str_detect(ovation$gene_id, "SC-I-XVI_all"), ]
+# `SC-I-XVI_all`
+
+#  Step 8: Check that `__sum_I-XVI` and `SC-I-XVI_all` are equal
+identical(
+    as.numeric(`__sum_I-XVI`[, 2:9]),
+    as.numeric(`SC-I-XVI_all`[, 2:9])
+)  # [1] TRUE
+
+
+# ... -------------------------------------------------------------------------
+`%notin%` <- Negate(`%in%`)
+
+ovation <- dplyr::bind_rows(
+    ovation, `__alignment_not_unique_I-XVI`, `__no_feature_I-XVI`,
+    `__sum_I-XVI`
+)
+
+ovation %>% tail(n = 15) %>% dplyr::select(gene_id)
+
+exclude <- c(
+    "__no_feature", "__too_low_aQual", "__not_aligned",
+    "__alignment_not_unique", "sample_total", "Mito-KL-20S_all",
+    "Mito-KL-20S_uni", "Mito-KL-20S_multi", "SC-I-XVI_all", "SC-I-XVI_uni",
+    "SC-I-XVI_multi", "__sum_I-XVI"
+)
+ovation.pre <- ovation
+ovation <- ovation[ovation$gene_id %notin% exclude, ]
+
+df_tmp_1 <- dplyr::bind_cols(
+    ovation[1:(nrow(ovation) - 3), ],
+    comp_S,
+    by = "gene_id"
+) %>%
+    dplyr::select(-c(gene_id...17, by)) %>%
+    dplyr::rename(gene_id = gene_id...1)
+df_tmp_2 <- ovation[(nrow(ovation) - 2):nrow(ovation), ]
+
+test <- dplyr::bind_rows(df_tmp_1, df_tmp_2)
+test$category <- ifelse(is.na(test$category), test$gene_id, test$category)
+test_summarize <- test %>%
+    dplyr::group_by(category) %>%
+    dplyr::summarize(
+        sum_WT_G1_N_rep1 = sum(WT_G1_N_rep1),
+        sum_WT_G1_N_rep2 = sum(WT_G1_N_rep2),
+        sum_WT_G1_SS_rep1 = sum(WT_G1_SS_rep1),
+        sum_WT_G1_SS_rep2 = sum(WT_G1_SS_rep2),
+        sum_WT_Q_N_rep1 = sum(WT_Q_N_rep1),
+        sum_WT_Q_N_rep2 = sum(WT_Q_N_rep2),
+        sum_WT_Q_SS_rep1 = sum(WT_Q_SS_rep1),
+        sum_WT_Q_SS_rep2 = sum(WT_Q_SS_rep2),
+        number_of_features = dplyr::n()
+    )
+rm(df_tmp_1, df_tmp_2)
+
+test_summarize$category[stringr::str_detect(
+    test_summarize$category, "__alignment_not_unique_I-XVI"
+)] <- "multimapper (excluded)"
+test_summarize$category[stringr::str_detect(
+    test_summarize$category, "__ambiguous"
+)] <- "ambiguous"
+test_summarize$category[stringr::str_detect(
+    test_summarize$category, "__no_feature_I-XVI"
+)] <- "no feature"
+test_summarize$category[stringr::str_detect(
+    test_summarize$category, "PG"
+)] <- "pseudogene"
+
+test_summarize <- test_summarize %>%
+    dplyr::arrange(tolower(category)) %>%
+    dplyr::filter(!stringr::str_detect(
+        category, "^multimapper*"
+    ))
+test_summarize$number_of_features <- ifelse(
+    test_summarize$number_of_features == 1,
+    NA_integer_,
+    test_summarize$number_of_features
+)
+
+test_summarize_p <- test_summarize %>%
+    dplyr::select(-number_of_features) %>%
+    tidyr::pivot_longer(cols = c(
+        sum_WT_G1_N_rep1,
+        sum_WT_G1_N_rep2,
+        sum_WT_G1_SS_rep1,
+        sum_WT_G1_SS_rep2,
+        sum_WT_Q_N_rep1,
+        sum_WT_Q_N_rep2,
+        sum_WT_Q_SS_rep1,
+        sum_WT_Q_SS_rep2
+    )) %>%
+    dplyr::rename(sample = name, counts = value)
+test_summarize_p$sample <- stringr::str_remove(test_summarize_p$sample, "sum_WT_")
+
+# test_summarize_t <- test_summarize[, -ncol(test_summarize)] %>%
+#     t() %>%
+#     as.data.frame() %>%
+#     tibble::rownames_to_column()
+# colnames(test_summarize_t) <- test_summarize_t[1, ]
+# test_summarize_t <- test_summarize_t[-1, ]
+
+set.seed(24)
+test_summarize_p %>%
+    ggplot(aes(fill = category, y = counts, x = sample)) +
+    geom_bar(position = "fill", stat = "identity") +
+    scale_fill_manual(
+        values = length(test_summarize$category) %>%
+            viridisLite::viridis() %>%
+            sample()
+    ) +
+    theme_slick
+
+
+#  Try with means
+test_summarize$mean_WT_G1_N <- apply(test_summarize[, 2:3], 1, function(x) mean(x))
+test_summarize$mean_WT_G1_SS <- apply(test_summarize[, 4:5], 1, function(x) mean(x))
+test_summarize$mean_WT_Q_N <- apply(test_summarize[, 6:7], 1, function(x) mean(x))
+test_summarize$mean_WT_Q_SS <- apply(test_summarize[, 8:9], 1, function(x) mean(x))
+
+test_summarize$SEM_WT_G1_N <- apply(test_summarize[, 2:3], 1, function(x) sd(x)/sqrt(length(x)))
+test_summarize$SEM_WT_G1_SS <- apply(test_summarize[, 4:5], 1, function(x) sd(x)/sqrt(length(x)))
+test_summarize$SEM_WT_Q_N <- apply(test_summarize[, 6:7], 1, function(x) sd(x)/sqrt(length(x)))
+test_summarize$SEM_WT_Q_SS <- apply(test_summarize[, 8:9], 1, function(x) sd(x)/sqrt(length(x)))
+
+test_summarize_p <- test_summarize %>%
+    dplyr::select(-number_of_features) %>%
+    tidyr::pivot_longer(cols = c(
+        mean_WT_G1_N,
+        mean_WT_G1_SS,
+        mean_WT_Q_N,
+        mean_WT_Q_SS
+    )) %>%
+    dplyr::rename(sample = name, counts = value)
+test_summarize_p$sample <- stringr::str_remove(test_summarize_p$sample, "mean_WT_")
+
+test_summarize_p %>%
+    ggplot(aes(fill = category, y = counts, x = sample)) +
+    geom_bar(position = "fill", stat = "identity") +
+    scale_fill_manual(
+        values = length(test_summarize$category) %>%
+            viridisLite::viridis() %>%
+            sample()
+    ) +
+    theme_slick
+# rm(test, test_summarize)
+
+```
+</details>
+<br />
+
+~~So, what are the summary features we need to retain in dataframe `ovation`?~~ *Done.*
+
+
+```{r}
+#  Apply above to `test_joined_sum-by-category` -------------------------------
+df <- `test_joined_sum-by-category` %>%
+    dplyr::mutate(sample = "n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1") %>%
+    dplyr::relocate(sample, .before = category) %>%
+    dplyr::filter(!stringr::str_detect(
+        category, "__alignment_not_unique_I-XVI"
+    ))
+df$category <- df$category %>%
+    gsub("__", "", .) %>%
+    gsub("_I-XVI", "", .) %>%
+    gsub("PG", "pseudogene", .)
+
+df %>%
+    ggplot(aes(fill = category, y = `sum-of-counts`, x = sample)) +
+    geom_bar(position = "dodge", stat = "identity") +
+    scale_fill_manual(values = length(df$category) %>% viridisLite::viridis())
+
+df %>%
+    ggplot(aes(fill = category, y = `sum-of-counts`, x = sample)) +
+    geom_bar(position = "stack", stat = "identity") +
+    scale_fill_manual(values = length(df$category) %>% viridisLite::viridis())
+
+df %>%
+    ggplot(aes(fill = category, y = `sum-of-counts`, x = sample)) +
+    geom_bar(position = "fill", stat = "identity") +
+    scale_fill_manual(values = length(df$category) %>% viridisLite::viridis())
+
+treemap::treemap(
+    df,
+    index = "category",
+    vSize = "sum-of-counts",
+    type = "index",
+    position.legend = "right",
+    palette = length(df$category) %>% viridisLite::viridis(),
+    title = ""
+)
+
+set.seed(24)
+treemap::treemap(
+    df,
+    index = "category",
+    vSize = "sum-of-counts",
+    type = "index",
+    position.legend = "right",
+    palette = length(df$category) %>% viridisLite::viridis() %>% sample(),
+    title = ""
+)
 ```
