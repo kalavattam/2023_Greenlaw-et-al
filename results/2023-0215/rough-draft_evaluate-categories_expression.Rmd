@@ -689,6 +689,7 @@ t_S_none_rel_pos_info <- record_positional_info(t_S_none_rel_joined)
 ```
 </details>
 <br />
+<br />
 
 ## Test replicate consistency via PCA of non-normalized counts
 ### Initialize necessary functions
@@ -2040,7 +2041,321 @@ rm(
 <br />
 
 ## Perform extensive test analyses
-`#NOTE` Functions and themes `theme_slick`, `theme_slick_no_legend`, `%notin%`, `draw_scree_plot`, `get_name_of_var`, `get_top_loadings`, `plot_biplot`, `plot_loadings`, `plot_pos_neg_loadings_each_axis`, `read_in_counts_matrix`, and `record_positional_info` are already loaded into the environment. Chunk `Get situated` has been run as well.
+`#NOTE` Functions and themes that are already loaded into the environment:
+- `theme_slick`
+- `theme_slick_no_legend`
+- `%notin%`
+- `draw_scree_plot`
+- `get_name_of_var`
+- `get_top_loadings`
+- `plot_biplot`
+- `plot_loadings`
+- `plot_pos_neg_loadings_each_axis`
+- `read_in_counts_matrix`
+- `record_positional_info`
+
+Chunk `Get situated` has been run as well.
+<br />
+
+### Initialize additional functions
+#### Code
+<details>
+<summary><i>Code: Initialize additional functions</i></summary>
+
+```{r}
+#!/usr/bin/env Rscript
+
+read_in_counts_matrix <- function(x) {
+    # ...
+    # :param x: counts matrix from htseq-count
+    # :return y: counts matrix as tibble
+    y <- readr::read_tsv(x, show_col_types = FALSE) %>% 
+        dplyr::rename(gene_id = ...1)
+    return(y)
+}
+
+
+clean_column_names <- function(x) {
+    # ...
+    # :param x: tibble of counts for relevant datasets
+    # :return y: "cleaned," abbreviated column names for above tibble
+    y <- colnames(x) %>%
+        gsub("bams_renamed/UT_prim_UMI/", "", .) %>%
+        gsub("\\.UT_prim_UMI\\.bam", "", .) %>%
+        gsub("*_day._ovn*", "", .) %>%
+        gsub("aux-F_tc-F_", "", .) %>%
+        gsub("_tech1", "", .) %>%
+        gsub("WT_", "", .)  # Clean up column names
+    return(y)
+}
+
+
+run_PCA_pipeline <- function(counts, metadata, gene_id, transformed) {
+    # ...
+    # :param counts: ... <data.frame>
+    # :param metadata: ... <data.frame>
+    # :param gene_id: ... <character vector>
+    # :param transformed: FALSE for raw counts, TRUE for rlog counts <logical>
+    # :return results_list: ... <list>
+    stopifnot(is.logical(transformed))
+
+    #  Create a PCAtools "pca" S4 object
+    pca <- PCAtools::pca(counts, metadata = metadata)
+    rownames(pca$loadings) <- gene_id
+    
+    #  Determine "significant" PCs with Horn's parallel analysis (see
+    #+ Horn, 1965)
+    horn <- PCAtools::parallelPCA(counts[, 2:ncol(counts)])
+    
+    #  Determine "significant" principle components with the elbow
+    #+ method (see Buja and Eyuboglu, 1992)
+    elbow <- PCAtools::findElbowPoint(pca$variance)
+    
+    #  Evaluate cumulative proportion of explained variance with a
+    #+ scree plot
+    p_scree <- draw_scree_plot(pca, horn = horn$n, elbow = elbow)
+    
+    #  Save component loading vectors in their own dataframe
+    loadings <- as.data.frame(pca$loadings)
+    
+    #  Evaluate the component loading vectors for the number of
+    #+ "significant" PCs identified via the elbow method plus two
+    PCs <- paste0("PC", 1:(as.numeric(elbow) + 2))
+    top_loadings_all <- lapply(
+        PCs, get_top_loadings, x = loadings, z = "all", a = TRUE
+    )
+    top_loadings_pos <- lapply(
+        PCs, get_top_loadings, x = loadings, z = "pos", a = TRUE
+    )
+    top_loadings_neg <- lapply(
+        PCs, get_top_loadings, x = loadings, z = "neg", a = TRUE
+    )
+    names(top_loadings_all) <-
+        names(top_loadings_pos) <-
+        names(top_loadings_neg) <-
+        PCs
+    
+    #  Evaluate positive and negative loadings on axes of biplots; look at the
+    #+ top 15 per axis
+    p_images <- list()
+    mat <- combn(PCs, 2)
+    for(l in 1:ncol(mat)) {
+        # l <- 1
+        m<- mat[, l]
+        
+        PC_x <- x_label <- m[1]
+        PC_y <- y_label <- m[2]
+        
+        if(isFALSE(transformed)) {
+            x_min_biplot <- -350000
+            x_max_biplot <- 350000
+            y_min_biplot <- -350000
+            y_max_biplot <- 350000
+            x_min_loadings_plot = -0.5
+            x_max_loadings_plot = 0.5
+            y_min_loadings_plot = -0.5
+            y_max_loadings_plot = 0.5
+        } else if(isTRUE(transformed)) {
+            x_min_biplot <- -100
+            x_max_biplot <- 100
+            y_min_biplot <- -100
+            y_max_biplot <- 100
+            x_min_loadings_plot = -0.1
+            x_max_loadings_plot = 0.1
+            y_min_loadings_plot = -0.1
+            y_max_loadings_plot = 0.1
+        }
+        
+        p_images[[paste0("PCAtools.", PC_x, ".v.", PC_y)]] <-
+            plot_biplot(
+                pca = pca,
+                PC_x = PC_x,
+                PC_y = PC_y,
+                loadings_show = FALSE,
+                loadings_n = 0,
+                meta_color = "state",
+                meta_shape = "transcription",
+                x_min = x_min_biplot,
+                x_max = x_max_biplot,
+                y_min = y_min_biplot,
+                y_max = y_max_biplot
+            )
+        
+        p_images[[paste0("KA.", PC_x, ".v.", PC_y)]] <-
+            plot_pos_neg_loadings_each_axis(
+                df_all = loadings,
+                df_pos = top_loadings_pos,
+                df_neg = top_loadings_neg,
+                PC_x = PC_x,
+                PC_y = PC_y,
+                row_start = 1,
+                row_end = 15,  # 30
+                x_min = x_min_loadings_plot,
+                x_max = x_max_loadings_plot,
+                y_min = y_min_loadings_plot,
+                y_max = y_max_loadings_plot,
+                x_nudge = 0.02,  # 0.02,  # 0.04,
+                y_nudge = 0.04,  # 0.04,  # 0.02,
+                x_label = x_label,
+                y_label = y_label,
+                col_line_pos = "black",
+                col_line_neg = "red",
+                col_seg_pos = "grey",
+                col_seg_neg = "grey"
+            )
+        
+        p_images[[paste0("KA.", PC_x, ".v.", PC_y)]]
+    }
+    
+    
+    #  Plot the top features on an axis of "component loading range" to
+    #+ visualize the top variables (features) that drive variance among
+    #+ PCs of interest
+    p_loadings <- PCAtools::plotloadings(
+        pca,
+        components = PCAtools::getComponents(
+            pca, 1:length(PCs)
+        ),
+        rangeRetain = 0.025,
+        absolute = FALSE,
+        col = c("#785EF075", "#FFFFFF75", "#FE610075"),  #FIXME Colors
+        title = "Loadings plot",
+        subtitle = "Top 2.5% of variables (i.e., features)",
+        borderColour = "#000000",
+        borderWidth = 0.2,
+        gridlines.major = TRUE,
+        gridlines.minor = TRUE,
+        axisLabSize = 10,
+        labSize = 3,  # label_size
+        drawConnectors = TRUE,
+        widthConnectors = 0.2,
+        typeConnectors = "closed",
+        colConnectors = "black"
+    ) +
+        # ggplot2::coord_flip() +
+        theme_slick_no_legend
+    p_loadings
+    #TODO Work up some logic for saving the plot
+    
+    
+    #  Evaluate correlations between PCs and model variables; answer
+    #+ the question, "What is driving biologically significant variance
+    #+ in our data?"
+    p_cor <- PCAtools::eigencorplot(
+        pca,
+        components = PCAtools::getComponents(pca, 1:8),
+        metavars = c("state", "transcription", "replicate"),
+        # col = c("#785EF075", "#648FFF75", "#FFFFFF75", "#FFB00075", "#FE610075"),
+        col = viridisLite::viridis(n = 100) %>% rev(),
+        scale = FALSE,
+        corFUN = "pearson",
+        corMultipleTestCorrection = "BH",
+        plotRsquared = TRUE,
+        colFrame = "#FFFFFF",
+        main = bquote(Pearson ~ r^2 ~ correlates),
+        fontMain = 1,
+        titleX = "Principal components",
+        fontTitleX = 1,
+        fontLabX = 1,
+        titleY = "Model variables",
+        rotTitleY = 90,
+        fontTitleY = 1,
+        fontLabY = 1
+    )
+    p_cor
+    
+    results_list <- list()
+    results_list[["01_pca"]] <- pca
+    results_list[["02_horn"]]<- horn
+    results_list[["03_elbow"]]<- elbow
+    results_list[["04_p_scree"]]<- p_scree
+    results_list[["05_loadings"]]<- loadings
+    results_list[["06_PCs"]]<- PCs
+    results_list[["07_top_loadings_all"]]<- top_loadings_all
+    results_list[["08_top_loadings_pos"]]<- top_loadings_pos
+    results_list[["09_top_loadings_neg"]]<- top_loadings_neg
+    results_list[["10_p_images"]]<- p_images
+    results_list[["11_p_loadings"]]<- p_loadings
+    results_list[["12_p_cor"]]<- p_cor
+    
+    return(results_list)
+}
+
+
+#HERE
+`plot-rep-prop_by-sample_stacked` <- function(x) {
+    # ...
+    # :param x: Pivoted summary tibble
+    # :return y: ...
+    y <- x %>%
+        ggplot(aes(x = sample, y = counts, fill = category)) +
+            geom_bar(position = "fill", stat = "identity") +
+            theme_slick +
+            ggpubr::rotate_x_text(45) +
+            ggtitle(
+                "Sample-wise proportions of counts",
+                subtitle = "Stacked"
+            )
+    return(y)
+}
+
+
+`plot-rep-prop_by-category_stacked` <- function(x) {
+    # ...
+    # :param x: Pivoted summary tibble
+    # :return y: ...
+    y <- x %>%
+        ggplot(aes(x = category, y = counts, fill = sample)) +
+            geom_bar(position = "fill", stat = "identity") +
+            theme_slick +
+            ggpubr::rotate_x_text(45) +
+            ggtitle(
+                "Category-wise proportions of counts",
+                subtitle = "Stacked"
+            )
+    return(y)
+}
+
+
+`plot-rep-prop_by-category_dodged` <- function(x) {
+    # ...
+    # :param x: Pivoted summary tibble
+    # :return y: ...
+    y <- x %>%
+        ggplot(aes(
+            x = category, y = counts / sum(counts), fill = sample
+        )) +
+            geom_bar(position = "dodge", stat = "identity") +
+            theme_slick +
+            ggpubr::rotate_x_text(45) +
+            ggtitle(
+                "Category-wise proportions of counts",
+                subtitle = "Dodged"
+            )
+    return(y)
+}
+
+
+`plot-rep-prop_by-sample_dodged` <- function(x) {
+    # ...
+    # :param x: Pivoted summary tibble
+    # :return y: ...
+    y <- x %>%
+        ggplot(aes(
+            x = sample, y = counts / sum(counts), fill = category
+        )) +
+            geom_bar(position = "dodge", stat = "identity") +
+            theme_slick +
+            ggpubr::rotate_x_text(45) +
+            ggtitle(
+                "Sample-wise proportions of counts",
+                subtitle = "Dodged"
+            )
+    return(y)
+}
+```
+</details>
+<br />
 
 ### Load "comprehensive" `gtf` files
 #### Code
@@ -2081,24 +2396,12 @@ rm(p_gtf, f_FS, f_FIS, f_FIAS)
 </details>
 <br />
 
-### ...
+### Read in counts matrix information for relevant datasets ("Ovation" samples)
 #### Code
-
 <details>
-<summary><i>Code: ...</i></summary>
+<summary><i>Code: Read in counts matrix information for relevant datasets ("Ovation" samples)</i></summary>
 
 ```{r}
-#!/usr/bin/env Rscript
-
-read_in_counts_matrix <- function(x) {
-    # ...
-    # :param x: counts matrix from htseq-count
-    # :return y: counts matrix as tibble
-    y <- readr::read_tsv(x, show_col_types = FALSE) %>% 
-        dplyr::rename(gene_id = ...1)
-    return(y)
-}
-
 p_matrices <- "./outfiles_htseq-count/comprehensive/S288C_reference_genome_R64-1-1_20110203/UT_prim_UMI"
 
 f_part_1 <- "all-bams"
@@ -2110,26 +2413,83 @@ f_part_5 <- paste0(
     c("_sense", "-intergenic_sense", "-intergenic_sense-antisense"),
     ".tsv"
 )
+```
+</details>
+<br />
 
-relevant <- c(
-    "bams_renamed/UT_prim_UMI/WT_G1_day1_ovn_N_aux-F_tc-F_rep1_tech1.UT_prim_UMI.bam",
-    "bams_renamed/UT_prim_UMI/WT_G1_day1_ovn_N_aux-F_tc-F_rep2_tech1.UT_prim_UMI.bam",
-    "bams_renamed/UT_prim_UMI/WT_G1_day1_ovn_SS_aux-F_tc-F_rep1_tech1.UT_prim_UMI.bam",
-    "bams_renamed/UT_prim_UMI/WT_G1_day1_ovn_SS_aux-F_tc-F_rep2_tech1.UT_prim_UMI.bam",
-    "bams_renamed/UT_prim_UMI/WT_Q_day7_ovn_N_aux-F_tc-F_rep1_tech1.UT_prim_UMI.bam",
-    "bams_renamed/UT_prim_UMI/WT_Q_day7_ovn_N_aux-F_tc-F_rep2_tech1.UT_prim_UMI.bam",
-    "bams_renamed/UT_prim_UMI/WT_Q_day7_ovn_SS_aux-F_tc-F_rep1_tech1.UT_prim_UMI.bam",
-    "bams_renamed/UT_prim_UMI/WT_Q_day7_ovn_SS_aux-F_tc-F_rep2_tech1.UT_prim_UMI.bam"
+### Read in, process metrics from `work_calculate_uni-multimappers-etc.md`
+#### Code
+<details>
+<summary><i>Code: Read in, process metrics from `work_calculate_uni-multimappers-etc.md`</i></summary>
+
+```{r}
+#!/usr/bin/env Rscript
+
+#  Read in metrics table
+p_uni_multi_etc <- "outfiles_htseq-count"
+f_uni_multi_etc <- "calculate_uni-multimappers-etc.UT_prim_UMI.txt"
+uni_multi_etc <- readr::read_tsv(
+    paste(p_uni_multi_etc, f_uni_multi_etc, sep = "/"),
+    show_col_types = FALSE
 )
 
+rm(f_uni_multi_etc, p_uni_multi_etc)
+
+#  Isolate relevant dataset metrics ("Ovation samples)
+relevant <- c(
+    "WT_G1_day1_ovn_N_aux-F_tc-F_rep1_tech1",
+    "WT_G1_day1_ovn_N_aux-F_tc-F_rep2_tech1",
+    "WT_G1_day1_ovn_SS_aux-F_tc-F_rep1_tech1",
+    "WT_G1_day1_ovn_SS_aux-F_tc-F_rep2_tech1",
+    "WT_Q_day7_ovn_N_aux-F_tc-F_rep1_tech1",
+    "WT_Q_day7_ovn_N_aux-F_tc-F_rep2_tech1",
+    "WT_Q_day7_ovn_SS_aux-F_tc-F_rep1_tech1",
+    "WT_Q_day7_ovn_SS_aux-F_tc-F_rep2_tech1"
+)
+uni_multi_etc_rel <- uni_multi_etc %>% dplyr::filter(sample %in% relevant)
+uni_multi_etc_rel$sample <- uni_multi_etc_rel$sample %>%
+    gsub("*_day._ovn*", "", .) %>%
+    gsub("aux-F_tc-F_", "", .) %>%
+    gsub("_tech1", "", .) %>%
+    gsub("WT_", "", .)
+
+#  Transpose the dataframe
+uni_multi_etc_rel <- uni_multi_etc_rel %>%
+    t() %>%
+    tibble::as_tibble(rownames = "category")
+
+#  Convert row 1 to column names
+colnames(uni_multi_etc_rel) <- uni_multi_etc_rel[1, ]
+uni_multi_etc_rel <- uni_multi_etc_rel[-1, ]
+colnames(uni_multi_etc_rel)[1] <- "gene_id"
+
+#  Convert number elements from type character to type numeric
+uni_multi_etc_rel[, 2:length(uni_multi_etc_rel)] <- sapply(
+    uni_multi_etc_rel[, 2:length(uni_multi_etc_rel)], as.numeric
+) %>%
+    tibble::as_tibble()
+
+#  Clean up
+rm(relevant)
+```
+</details>
+<br />
+
+### Run the analysis pipeline
+#### Code
+<details>
+<summary><i>Code: Run the analysis pipeline</i></summary>
+
+```{r}
+#  Run the analysis pipeline
 h <- 0
 matrices <- list()
-for(i in f_part_3) {
-    for(j in f_part_4) {
-        for(k in f_part_5) {
-            # i <- f_part_3[1]  # print(i)
-            # j <- f_part_4[1]  # print(j)
-            # k <- f_part_5[1]  # print(k)
+# for(i in f_part_3) {
+#     for(j in f_part_4) {
+#         for(k in f_part_5) {
+            i <- f_part_3[1]  # print(i)
+            j <- f_part_4[1]  # print(j)
+            k <- f_part_5[1]  # print(k)
             
             h <- h + 1
             if(h < 10) {
@@ -2181,31 +2541,23 @@ for(i in f_part_3) {
             
             #  ----------------------------------------------------------------
             #  Isolate relevant WT G1 and Q data
-            relevant <- colnames(counts)[stringr::str_detect(colnames(counts), "ovn")]
+            relevant <- colnames(counts)[
+                stringr::str_detect(colnames(counts), "ovn")
+            ]
             
             #  ----------------------------------------------------------------
             #  Isolate relevant WT G1 and Q data: htseq-count counts
             counts_relevant <- counts[, c("gene_id", relevant)] %>%
                 dplyr::filter(!stringr::str_detect(gene_id, "^__"))
-            colnames(counts_relevant) <- colnames(counts_relevant) %>%
-                gsub("bams_renamed/UT_prim_UMI/", "", .) %>%
-                gsub("\\.UT_prim_UMI\\.bam", "", .) %>%
-                gsub("*_day._ovn*", "", .) %>%
-                gsub("aux-F_tc-F_", "", .) %>%
-                gsub("_tech1", "", .) %>%
-                gsub("WT_", "", .)
+            colnames(counts_relevant) <- counts_relevant %>%
+                clean_column_names()
             
             #  ----------------------------------------------------------------
             #  Isolate relevant WT G1 and Q data: htseq-count "summary values"
             summary_values <- counts[, c("gene_id", relevant)] %>%
                 dplyr::filter(stringr::str_detect(gene_id, "^__"))
-            colnames(summary_values) <- colnames(summary_values) %>%
-                gsub("bams_renamed/UT_prim_UMI/", "", .) %>%
-                gsub("\\.UT_prim_UMI\\.bam", "", .) %>%
-                gsub("*_day._ovn*", "", .) %>%
-                gsub("aux-F_tc-F_", "", .) %>%
-                gsub("_tech1", "", .) %>%
-                gsub("WT_", "", .)
+            colnames(summary_values) <- summary_values %>%
+                clean_column_names()
             
             #  ----------------------------------------------------------------
             #  Join relevant sample data with "positional" (etc.) information
@@ -2219,8 +2571,9 @@ for(i in f_part_3) {
                 as.data.frame() %>%
                 t() %>%
                 as.data.frame()
-            rownames(metadata) <- counts_relevant[, 2:ncol(counts_relevant)] %>%
-                colnames()
+            rownames(metadata) <- colnames(
+                counts_relevant[, 2:ncol(counts_relevant)]
+            )
             colnames(metadata) <- c("state", "transcription", "replicate")
             
             #  ----------------------------------------------------------------
@@ -2239,159 +2592,570 @@ for(i in f_part_3) {
             
             #  ----------------------------------------------------------------
             #  Test replicate consistency via PCA of non-normalized counts
-            #  Create a PCAtools "pca" S4 object for the raw counts
-            raw_pca <- PCAtools::pca(
+            pca_raw <- run_PCA_pipeline(
                 counts_relevant[, 2:ncol(counts_relevant)],
-                metadata = metadata
-            )
-            rownames(raw_pca$loadings) <- dplyr::pull(counts_relevant, gene_id)
-            
-            #  Determine "significant" PCs with Horn's parallel analysis (see
-            #+ Horn, 1965)
-            raw_horn <- PCAtools::parallelPCA(
-                counts_relevant[, 2:ncol(counts_relevant)]
+                metadata,
+                counts_relevant$gene_id,
+                transformed = FALSE
             )
             
-            #  Determine "significant" principle components with the elbow
-            #+ method (see Buja and Eyuboglu, 1992)
-            raw_elbow <- PCAtools::findElbowPoint(raw_pca$variance)
-            
-            #  Evaluate cumulative proportion of explained variance with a
-            #+ scree plot
-            raw_scree <- draw_scree_plot(
-                raw_pca, horn = raw_horn$n, elbow = raw_elbow
+            #  ----------------------------------------------------------------
+            #  Test replicate consistency via PCA of rlog-transformed counts
+            #+ (with no model, i.e., vary on intercept)
+            #  Create DESeq2 "dds" object
+            counts_relevant_dds <- DESeq2::DESeqDataSetFromMatrix(
+                countData = counts_relevant[, 2:ncol(counts_relevant)],
+                colData = metadata,
+                design = ~ 1,
+                rowRanges = pos_info
             )
             
-            #  Save component loading vectors in their own dataframe
-            raw_loadings <- as.data.frame(raw_pca$loadings)
+            #  Perform DESeq2 rlog transformation; since the model design is
+            #+ "~ 1", it makes no difference if rlog blind is TRUE or FALSE;
+            #+ go with the default, which is TRUE
+            counts_relevant_rlog <- DESeq2::rlog(counts_relevant_dds) %>%
+                SummarizedExperiment::assay() %>%
+                as.data.frame() %>%
+                dplyr::mutate(gene_id = counts_relevant$gene_id) %>%
+                dplyr::relocate(gene_id, .before = G1_N_rep1)
             
-            #  Evaluate the component loading vectors for the number of
-            #+ "significant" PCs identified via the elbow method plus two
-            raw_PCs <- paste0("PC", 1:(as.numeric(raw_elbow) + 2))
-            raw_top_loadings_all <- lapply(
-                raw_PCs, get_top_loadings, x = raw_loadings, z = "all", a = TRUE
+            #  Run PCA pipeline with rlog-tranformed counts
+            pca_rlog <- run_PCA_pipeline(
+                counts_relevant_rlog[, 2:ncol(counts_relevant_rlog)],
+                metadata,
+                counts_relevant_rlog$gene_id,
+                transformed = TRUE
             )
-            raw_top_loadings_pos <- lapply(
-                raw_PCs, get_top_loadings, x = raw_loadings, z = "pos", a = TRUE
+            
+            #  ----------------------------------------------------------------
+            #  Load in and process combined feature/summary counts
+            #  - Step 0: Combine feature counts with htseq-count-/samtools-
+            #+           derived summary values
+            combined_raw <- dplyr::bind_rows(
+                counts_relevant, summary_values, uni_multi_etc_rel
             )
-            raw_top_loadings_neg <- lapply(
-                raw_PCs, get_top_loadings, x = raw_loadings, z = "neg", a = TRUE
+            
+            #  Run processing steps for combined feature/summary counts
+            #  ------------------------
+            #  - Step 01: Get multimappers associated with "Mito-KL-20S"
+            `Mito-KL-20S_multi` <-
+                combined_raw[stringr::str_detect(
+                    combined_raw$gene_id, "Mito-KL-20S_multi"
+                ), ]
+            # `Mito-KL-20S_multi`
+            
+            #  ------------------------
+            #  - Step 02: Get unimappers associated with "Mito-KL-20S"
+            `Mito-KL-20S_uni` <-
+                combined_raw[stringr::str_detect(
+                    combined_raw$gene_id, "Mito-KL-20S_uni"
+                ), ]
+            # `Mito-KL-20S_uni`
+            
+            #  ------------------------
+            #  - Step 03: Get unimappers associated with "SC-I-XVI"
+            `SC-I-XVI_uni` <-
+                combined_raw[stringr::str_detect(
+                    combined_raw$gene_id, "SC-I-XVI_uni"
+                ), ]
+            # `SC-I-XVI_uni`
+            
+            #  ------------------------
+            #  - Step 04: Subtract `Mito-KL-20S_multi` from
+            #+           `__alignment_not_unique`
+            `__alignment_not_unique` <- combined_raw[stringr::str_detect(
+                combined_raw$gene_id, "__alignment_not_unique"
+            ), 2:9]
+            
+            `__alignment_not_unique_I-XVI` <-
+                `__alignment_not_unique` - `Mito-KL-20S_multi`[, 2:9]
+            
+            `__alignment_not_unique_I-XVI`$gene_id <-
+                "__alignment_not_unique_I-XVI"
+            `__alignment_not_unique_I-XVI` <-
+                `__alignment_not_unique_I-XVI` %>%
+                dplyr::relocate(gene_id, .before = "G1_N_rep1")
+            # `__alignment_not_unique_I-XVI`
+            
+            #  ------------------------
+            #  - Step 05: Subtract `Mito-KL-20S_uni` from `__no_feature`
+            `__no_feature` <- combined_raw[stringr::str_detect(
+                combined_raw$gene_id, "__no_feature"
+            ), 2:9]
+            
+            `__no_feature_I-XVI` <-
+                `__no_feature` - `Mito-KL-20S_uni`[, 2:9]
+            
+            `__no_feature_I-XVI`$gene_id <-
+                "__no_feature_I-XVI"
+            `__no_feature_I-XVI` <-
+                `__no_feature_I-XVI` %>%
+                dplyr::relocate(gene_id, .before = "G1_N_rep1")
+            # `__no_feature_I-XVI`
+            
+            #  ------------------------
+            #  - Step 06: Take the sum of the following
+            #+     - "`__no_feature_I-XVI`"
+            #+     - "`__ambiguous`"
+            #+     - "`__alignment_not_unique_I-XVI`"
+            #+     - "valid" counts
+            `__ambiguous` <- combined_raw[stringr::str_detect(
+                combined_raw$gene_id, "__ambiguous"), 
+            ]
+            valid_counts <- sapply(counts_relevant[, -1], sum)
+            
+            `__sum_I-XVI` <-
+                `__no_feature_I-XVI`[, 2:9] +
+                `__ambiguous`[, 2:9] +
+                `__alignment_not_unique_I-XVI`[, 2:9] +
+                valid_counts
+            `__sum_I-XVI`$gene_id <-
+                "__sum_I-XVI"
+            `__sum_I-XVI` <-
+                `__sum_I-XVI` %>%
+                dplyr::relocate(gene_id, .before = "G1_N_rep1")
+            # `__sum_I-XVI`
+            
+            #  ------------------------
+            #  - Step 07: Get numbers of all counts associated with "SC-I-XVI"
+            `SC-I-XVI_all` <- 
+                combined_raw[stringr::str_detect(
+                    combined_raw$gene_id, "SC-I-XVI_all"
+                ), ]
+            # `SC-I-XVI_all`
+            
+            #  ------------------------
+            #  - Step 08: Check that `__sum_I-XVI` and `SC-I-XVI_all` are equal
+            #+           (if not, then there is a problem and troubleshooting
+            #+           needs to occur)
+            identical(
+                as.numeric(`__sum_I-XVI`[, 2:9]),
+                as.numeric(`SC-I-XVI_all`[, 2:9])
+            )  # [1] TRUE
+            
+            #  ------------------------
+            #  - Step 09: Create a dataframe of only relevant feature counts and
+            #+           relevant summary values 
+            combined_raw_rel <- dplyr::bind_rows(
+                combined_raw,
+                `__alignment_not_unique_I-XVI`,
+                `__no_feature_I-XVI`,
+                `__sum_I-XVI`
+            )
+            # combined_raw_rel %>% tail(n = 20)
+            # combined_raw_rel %>% tail(n = 15) %>% dplyr::select(gene_id)
+            
+            combined_raw_rel.pre <- combined_raw_rel
+            # combined_raw_rel <- combined_raw_rel.pre
+            
+            #  Retain only relevant, appropriately calculated summary values
+            exclude <- c(
+                "__no_feature", "__too_low_aQual", "__not_aligned",
+                "__alignment_not_unique", "sample_total", "Mito-KL-20S_all",
+                "Mito-KL-20S_uni", "Mito-KL-20S_multi", "SC-I-XVI_all",
+                "SC-I-XVI_uni", "SC-I-XVI_multi", "__sum_I-XVI"
             )
             
-            names(raw_top_loadings_all) <-
-                names(raw_top_loadings_pos) <-
-                names(raw_top_loadings_neg) <-
-                raw_PCs
+            combined_raw_rel <- combined_raw_rel[
+                combined_raw_rel$gene_id %notin% exclude, 
+            ]
+            # combined_raw_rel %>% tail(n = 10)
             
-            #  Evaluate positive and negative loadings on axes of biplots
-            #+ Look at the top 15 per axis
-            raw_images <- list()
-            raw_mat <- combn(raw_PCs, 2)
-            for(l in 1:ncol(raw_mat)) {
-                # l <- 1
-                m<- raw_mat[, l]
-                
-                PC_x <- x_label <- m[1]
-                PC_y <- y_label <- m[2]
-                
-                raw_images[[paste0("PCAtools.", PC_x, ".v.", PC_y)]] <-
-                    plot_biplot(
-                        pca = raw_pca,
-                        PC_x = PC_x,
-                        PC_y = PC_y,
-                        loadings_show = FALSE,
-                        loadings_n = 0,
-                        meta_color = "state",
-                        meta_shape = "transcription",
-                        x_min = -350000,
-                        x_max = 350000,
-                        y_min = -350000,
-                        y_max = 350000
-                    )
-                
-                raw_images[[paste0("KA.", PC_x, ".v.", PC_y)]] <-
-                    plot_pos_neg_loadings_each_axis(
-                        df_all = raw_loadings,
-                        df_pos = raw_top_loadings_pos,
-                        df_neg = raw_top_loadings_neg,
-                        PC_x = PC_x,
-                        PC_y = PC_y,
-                        row_start = 1,
-                        row_end = 15,  # 30
-                        x_min = -0.5,  # -0.15,  # -1.0,
-                        x_max = 0.5,  # 0.15,  # 1.0,
-                        y_min = -0.5,  # -0.1,  # -0.5,
-                        y_max = 0.5,  # 0.1,  # 0.5,
-                        x_nudge = 0.02,  # 0.02,  # 0.04,
-                        y_nudge = 0.04,  # 0.04,  # 0.02,
-                        x_label = x_label,
-                        y_label = y_label,
-                        col_line_pos = "black",
-                        col_line_neg = "red",
-                        col_seg_pos = "grey",
-                        col_seg_neg = "grey"
-                    )
-                
-                raw_images[[paste0("KA.", PC_x, ".v.", PC_y)]]
-            }
-            
-            #FIXME #PICKUPHERE
-            #  Plot the top features on an axis of component loading range to
-            #+ visualize the top variables (features) that drive variance among
-            #+ principal components of interest
-            p_loadings <- PCAtools::plotloadings(
-                obj_pca,
-                # components = getComponents(obj_pca, 1),
-                components = getComponents(obj_pca, 1:3),
-                rangeRetain = 0.025,
-                absolute = FALSE,
-                col = c("#785EF075", "#FFFFFF75", "#FE610075"),
-                title = "Loadings plot",
-                subtitle = "Top 2.5% of variables (i.e., features)",
-                # shapeSizeRange = c(4, 16),
-                borderColour = "#000000",
-                borderWidth = 0.2,
-                gridlines.major = TRUE,
-                gridlines.minor = TRUE,
-                axisLabSize = 10,
-                labSize = 3,  # label_size
-                drawConnectors = TRUE,
-                widthConnectors = 0.2,
-                typeConnectors = 'closed',
-                colConnectors = 'black'
-            ) +
-                # ggplot2::coord_flip() +
-                theme_slick_no_legend
-            p_loadings
-            #TODO Work up some logic for saving the plot
-            
-            
-            #  Evaluate correlations between PCs and model variables; answer
-            #+ the question, "What is driving biologically significant variance
-            #+ in our data?"
-            PC_cor <- PCAtools::eigencorplot(
-                obj_pca,
-                components = PCAtools::getComponents(obj_pca, 1:8),
-                metavars = c("state", "transcription", "replicate"),
-                # col = c("#785EF075", "#648FFF75", "#FFFFFF75", "#FFB00075", "#FE610075"),
-                col = viridisLite::viridis(n = 100) %>% rev(),
-                scale = FALSE,
-                corFUN = "pearson",
-                corMultipleTestCorrection = "BH",
-                plotRsquared = TRUE,
-                colFrame = "#FFFFFF",
-                main = bquote(Pearson ~ r^2 ~ correlates),
-                # main = "PC Pearson r-squared correlates",
-                fontMain = 1,
-                titleX = "Principal components",
-                fontTitleX = 1,
-                fontLabX = 1,
-                titleY = "Model variables",
-                rotTitleY = 90,
-                fontTitleY = 1,
-                fontLabY = 1
+            #  ------------------------
+            #  - Step 10: Join the dataframe with feature meta- and positional 
+            #+            data in the gtf-derived dataframe
+            df_tmp_1 <- dplyr::full_join(
+                combined_raw_rel[1:(nrow(combined_raw_rel) - 3), ],
+                gtf,
+                by = "gene_id"
             )
-            PC_cor
+            df_tmp_2 <- combined_raw_rel[
+                (nrow(combined_raw_rel) - 2):nrow(combined_raw_rel), 
+            ]
+            combined_raw_rel <- dplyr::bind_rows(df_tmp_1, df_tmp_2)
+            
+            #  Be sure the summary values have non-NA values in metadata column
+            #+ "category"
+            combined_raw_rel$category <- ifelse(
+                is.na(combined_raw_rel$category),
+                combined_raw_rel$gene_id,
+                combined_raw_rel$category
+            )
+            
+            #  ------------------------
+            #  - Step 11: Clean up unnecessary variables
+            rm(
+                `__alignment_not_unique`, `__alignment_not_unique_I-XVI`,
+                `__ambiguous`, `__no_feature`, `__no_feature_I-XVI`,
+                `__sum_I-XVI`, combined_raw_rel.pre, df_tmp_1, df_tmp_2,
+                `Mito-KL-20S_uni`, `Mito-KL-20S_multi`, `SC-I-XVI_all`,
+                `SC-I-XVI_uni`
+            )
+            
+            #  ----------------------------------------------------------------
+            #  For plotting raw counts proportions, create a dataframe of
+            #+ counts grouped by category metadata
+            summary <- combined_raw_rel %>%
+                dplyr::group_by(category) %>%
+                dplyr::summarize(
+                    G1_N_rep1 = sum(G1_N_rep1),
+                    G1_N_rep2 = sum(G1_N_rep2),
+                    G1_SS_rep1 = sum(G1_SS_rep1),
+                    G1_SS_rep2 = sum(G1_SS_rep2),
+                    Q_N_rep1 = sum(Q_N_rep1),
+                    Q_N_rep2 = sum(Q_N_rep2),
+                    Q_SS_rep1 = sum(Q_SS_rep1),
+                    Q_SS_rep2 = sum(Q_SS_rep2),
+                    number_of_features = dplyr::n()
+                )
+            
+            #  Give the summarized categories clearer, better names
+            summary$category[stringr::str_detect(
+                summary$category, "__alignment_not_unique_I-XVI"
+            )] <- "multimapper (excluded)"
+            summary$category[stringr::str_detect(
+                summary$category, "__ambiguous"
+            )] <- "ambiguous"
+            summary$category[stringr::str_detect(
+                summary$category, "__no_feature_I-XVI"
+            )] <- "no feature"
+            summary$category[stringr::str_detect(
+                summary$category, "PG"
+            )] <- "pseudogene"
+            
+            #  Order the categories alphabetically without respect to case, and
+            #+ exclude the "multimapper (excluded)" category
+            summary <- summary %>%
+                dplyr::arrange(tolower(category)) %>%
+                dplyr::filter(!stringr::str_detect(
+                    category, "^multimapper*"
+                ))
+            
+            #  Assign NA to "number of features" for the summary-value
+            #+ categories
+            summary$number_of_features <- ifelse(
+                summary$number_of_features == 1,
+                NA_integer_,
+                summary$number_of_features
+            )
+            
+            #  Remove unnecessary string "sum_" from the column names
+            colnames(summary) <- colnames(summary)
+            
+            #  Create a version of dataframe summary for proportions
+            summary_prop <- summary[, 2:9] %>%
+                prop.table() %>%
+                dplyr::mutate(
+                    category = summary$category,
+                    number_of_features = summary$number_of_features
+                ) %>%
+                dplyr::relocate(category, .before = G1_N_rep1)
+            
+            #  ----------------------------------------------------------------
+            # #  Test the piping of the dataframe
+            # summary %>%
+            #     dplyr::select(-number_of_features) %>%
+            #     tidyr::pivot_longer(cols = c(
+            #         G1_N_rep1, G1_N_rep2, G1_SS_rep1, G1_SS_rep2,
+            #         Q_N_rep1, Q_N_rep2, Q_SS_rep1, Q_SS_rep2
+            #     )) %>%
+            #     dplyr::rename(sample = name, counts = value)
+            
+            #  ----------------------------------------------------------------
+            #  Plot per-replicate counts proportions
+            summary %>%
+                tidyr::pivot_longer(cols = c(
+                    G1_N_rep1, G1_N_rep2, G1_SS_rep1, G1_SS_rep2,
+                    Q_N_rep1, Q_N_rep2, Q_SS_rep1, Q_SS_rep2
+                )) %>%
+                dplyr::rename(sample = name, counts = value) %>%
+                `plot-rep-prop_by-sample_stacked`()
+            summary %>%
+                tidyr::pivot_longer(cols = c(
+                    G1_N_rep1, G1_N_rep2, G1_SS_rep1, G1_SS_rep2,
+                    Q_N_rep1, Q_N_rep2, Q_SS_rep1, Q_SS_rep2
+                )) %>%
+                dplyr::rename(sample = name, counts = value) %>%
+                `plot-rep-prop_by-sample_stacked`() +
+                scale_fill_manual(
+                    values = viridisLite::viridis(length(summary$category))
+                )
+
+            summary %>%
+                tidyr::pivot_longer(cols = c(
+                    G1_N_rep1, G1_N_rep2, G1_SS_rep1, G1_SS_rep2,
+                    Q_N_rep1, Q_N_rep2, Q_SS_rep1, Q_SS_rep2
+                )) %>%
+                dplyr::rename(sample = name, counts = value) %>%
+                `plot-rep-prop_by-category_stacked`()
+            summary %>%
+                tidyr::pivot_longer(cols = c(
+                    G1_N_rep1, G1_N_rep2, G1_SS_rep1, G1_SS_rep2,
+                    Q_N_rep1, Q_N_rep2, Q_SS_rep1, Q_SS_rep2
+                )) %>%
+                dplyr::rename(sample = name, counts = value) %>%
+                `plot-rep-prop_by-category_stacked`() +
+                scale_fill_manual(
+                    values = viridisLite::viridis(8)
+                )
+
+            summary %>%
+                tidyr::pivot_longer(cols = c(
+                    G1_N_rep1, G1_N_rep2, G1_SS_rep1, G1_SS_rep2,
+                    Q_N_rep1, Q_N_rep2, Q_SS_rep1, Q_SS_rep2
+                )) %>%
+                dplyr::rename(sample = name, counts = value) %>%
+                `plot-rep-prop_by-category_dodged`()
+            summary %>%
+                tidyr::pivot_longer(cols = c(
+                    G1_N_rep1, G1_N_rep2, G1_SS_rep1, G1_SS_rep2,
+                    Q_N_rep1, Q_N_rep2, Q_SS_rep1, Q_SS_rep2
+                )) %>%
+                dplyr::rename(sample = name, counts = value) %>%
+                `plot-rep-prop_by-category_dodged`() +
+                scale_fill_manual(
+                    values = viridisLite::viridis(8)
+                )
+            
+            summary %>%
+                tidyr::pivot_longer(cols = c(
+                    G1_N_rep1, G1_N_rep2, G1_SS_rep1, G1_SS_rep2,
+                    Q_N_rep1, Q_N_rep2, Q_SS_rep1, Q_SS_rep2
+                )) %>%
+                dplyr::rename(sample = name, counts = value) %>%
+                `plot-rep-prop_by-sample_dodged`()
+            summary %>%
+                tidyr::pivot_longer(cols = c(
+                    G1_N_rep1, G1_N_rep2, G1_SS_rep1, G1_SS_rep2,
+                    Q_N_rep1, Q_N_rep2, Q_SS_rep1, Q_SS_rep2
+                )) %>%
+                dplyr::rename(sample = name, counts = value) %>%
+                `plot-rep-prop_by-sample_dodged`() +
+                scale_fill_manual(
+                    values = viridisLite::viridis(length(summary$category))
+                )
+            
+            #HERE
+            #  ----------------------------------------------------------------
+            #  Calculate replicate means and SEMs
+            summary.pre <- summary
+            # summary <- summary.pre
+            
+            summary$mean_G1_N <- apply(
+                summary.pre[, 2:3], 1, function(x) mean(x)
+            )
+            summary$SEM_G1_N <- apply(
+                summary.pre[, 2:3], 1, function(x) sd(x) / sqrt(length(x))
+            )
+            summary$mean_G1_SS <- apply(
+                summary.pre[, 4:5], 1, function(x) mean(x)
+            )
+            summary$SEM_G1_SS <- apply(
+                summary.pre[, 4:5], 1, function(x) sd(x) / sqrt(length(x))
+            )
+            summary$mean_Q_N <- apply(
+                summary.pre[, 6:7], 1, function(x) mean(x)
+            )
+            summary$SEM_Q_N <- apply(
+                summary.pre[, 6:7], 1, function(x) sd(x) / sqrt(length(x))
+            )
+            summary$mean_Q_SS <- apply(
+                summary.pre[, 8:9], 1, function(x) mean(x)
+            )
+            summary$SEM_Q_SS <- apply(
+                summary.pre[, 8:9], 1, function(x) sd(x) / sqrt(length(x))
+            )
+            
+            summary_prop.pre <- summary_prop
+            # summary_prop <- summary_prop.pre
+            
+            summary_prop$mean_G1_N <- apply(
+                summary_prop.pre[, 2:3], 1, function(x) mean(x)
+            )
+            summary_prop$SEM_G1_N <- apply(
+                summary_prop.pre[, 2:3], 1, function(x) sd(x) / sqrt(length(x))
+            )
+            summary_prop$mean_G1_SS <- apply(
+                summary_prop.pre[, 4:5], 1, function(x) mean(x)
+            )
+            summary_prop$SEM_G1_SS <- apply(
+                summary_prop.pre[, 4:5], 1, function(x) sd(x) / sqrt(length(x))
+            )
+            summary_prop$mean_Q_N <- apply(
+                summary_prop.pre[, 6:7], 1, function(x) mean(x)
+            )
+            summary_prop$SEM_Q_N <- apply(
+                summary_prop.pre[, 6:7], 1, function(x) sd(x) / sqrt(length(x))
+            )
+            summary_prop$mean_Q_SS <- apply(
+                summary_prop.pre[, 8:9], 1, function(x) mean(x)
+            )
+            summary_prop$SEM_Q_SS <- apply(
+                summary_prop.pre[, 8:9], 1, function(x) sd(x) / sqrt(length(x))
+            )
+            
+            #  Prepare "pivoted" dataframe from summary mean, SEM, etc.
+            df_tmp_1 <- summary %>%
+                dplyr::select(-c(
+                    G1_N_rep1, G1_N_rep2, G1_SS_rep1, G1_SS_rep2,
+                    Q_N_rep1, Q_N_rep2, Q_SS_rep1, Q_SS_rep2,
+                    SEM_G1_N, SEM_G1_SS, SEM_Q_N, SEM_Q_SS,
+                    number_of_features
+                )) %>%
+                dplyr::group_by(category) %>%
+                tidyr::pivot_longer(cols = c(
+                    mean_G1_N, mean_G1_SS, mean_Q_N, mean_Q_SS
+                )) %>%
+                dplyr::rename(sample_mean = name, mean = value) %>%
+                dplyr::mutate(
+                    sample = stringr::str_remove(sample_mean, "mean_")
+                ) %>%
+                dplyr::select(-sample_mean)
+            
+            df_tmp_2 <- summary %>%
+                dplyr::select(-c(
+                    G1_N_rep1, G1_N_rep2, G1_SS_rep1, G1_SS_rep2,
+                    Q_N_rep1, Q_N_rep2, Q_SS_rep1, Q_SS_rep2,
+                    mean_G1_N, mean_G1_SS, mean_Q_N, mean_Q_SS,
+                    number_of_features
+                )) %>%
+                dplyr::group_by(category) %>%
+                tidyr::pivot_longer(cols = c(
+                    SEM_G1_N, SEM_G1_SS, SEM_Q_N, SEM_Q_SS
+                )) %>%
+                dplyr::rename(sample_SEM = name, SEM = value) %>%
+                dplyr::mutate(
+                    sample = stringr::str_remove(sample_SEM, "SEM_")
+                ) %>%
+                dplyr::select(-sample_SEM)
+            
+            df_tmp_3 <- dplyr::bind_cols(df_tmp_1, df_tmp_2)
+            
+            #  Save the pivoted dataframe to variable
+            summary_mean_SEM <- dplyr::bind_cols(
+                df_tmp_1[, 1:2], df_tmp_2[, 2:3]
+            )
+            
+            #  Clean up
+            rm(df_tmp_1, df_tmp_2, df_tmp_3)
+            
+            #  Prepare "pivoted" dataframe from summary_prop mean, SEM, etc.
+            df_tmp_1 <- summary_prop %>%
+                dplyr::select(-c(
+                    G1_N_rep1, G1_N_rep2, G1_SS_rep1, G1_SS_rep2,
+                    Q_N_rep1, Q_N_rep2, Q_SS_rep1, Q_SS_rep2,
+                    SEM_G1_N, SEM_G1_SS, SEM_Q_N, SEM_Q_SS,
+                    number_of_features
+                )) %>%
+                dplyr::group_by(category) %>%
+                tidyr::pivot_longer(cols = c(
+                    mean_G1_N, mean_G1_SS, mean_Q_N, mean_Q_SS
+                )) %>%
+                dplyr::rename(sample_mean = name, mean = value) %>%
+                dplyr::mutate(
+                    sample = stringr::str_remove(sample_mean, "mean_")
+                ) %>%
+                dplyr::select(-sample_mean)
+            
+            df_tmp_2 <- summary_prop %>%
+                dplyr::select(-c(
+                    G1_N_rep1, G1_N_rep2, G1_SS_rep1, G1_SS_rep2,
+                    Q_N_rep1, Q_N_rep2, Q_SS_rep1, Q_SS_rep2,
+                    mean_G1_N, mean_G1_SS, mean_Q_N, mean_Q_SS,
+                    number_of_features
+                )) %>%
+                dplyr::group_by(category) %>%
+                tidyr::pivot_longer(cols = c(
+                    SEM_G1_N, SEM_G1_SS, SEM_Q_N, SEM_Q_SS
+                )) %>%
+                dplyr::rename(sample_SEM = name, SEM = value) %>%
+                dplyr::mutate(
+                    sample = stringr::str_remove(sample_SEM, "SEM_")
+                ) %>%
+                dplyr::select(-sample_SEM)
+            
+            df_tmp_3 <- dplyr::bind_cols(df_tmp_1, df_tmp_2)
+            
+            #  Save the pivoted dataframe to variable
+            summary_prop_mean_SEM <- dplyr::bind_cols(
+                df_tmp_1[, 1:2], df_tmp_2[, 2:3]
+            )
+            
+            #  Clean up
+            rm(df_tmp_1, df_tmp_2, df_tmp_3)
+            
+            #  ----------------------------------------------------------------
+            #  Plot replicate-averaged counts proportions
+            summary_mean_SEM %>%
+                dplyr::select(category, mean, sample) %>%
+                dplyr::rename(counts = mean) %>%
+                `plot-rep-prop_by-sample_stacked`()
+            summary_mean_SEM %>%
+                dplyr::select(
+                    category, mean, sample
+                ) %>%
+                dplyr::rename(counts = mean) %>%
+                `plot-rep-prop_by-sample_stacked`() +
+                scale_fill_manual(
+                    values = viridisLite::viridis(length(summary$category))
+                )
+            
+            summary_mean_SEM %>%
+                dplyr::select(category, mean, sample) %>%
+                dplyr::rename(counts = mean) %>%
+                `plot-rep-prop_by-category_stacked`()
+            summary_mean_SEM %>%
+                dplyr::select(category, mean, sample) %>%
+                dplyr::rename(counts = mean) %>%
+                `plot-rep-prop_by-category_stacked`() +
+                scale_fill_manual(
+                    values = viridisLite::viridis(4)
+                )
+
+            summary_mean_SEM %>%
+                dplyr::select(category, mean, sample) %>%
+                dplyr::rename(counts = mean) %>%
+                `plot-rep-prop_by-category_dodged`()
+            summary_mean_SEM %>%
+                dplyr::select(category, mean, sample) %>%
+                dplyr::rename(counts = mean) %>%
+                `plot-rep-prop_by-category_dodged`() +
+                scale_fill_manual(
+                    values = viridisLite::viridis(4)
+                )
+            
+            summary_mean_SEM %>%
+                dplyr::select(category, mean, sample) %>%
+                dplyr::rename(counts = mean) %>%
+                `plot-rep-prop_by-sample_dodged`()
+            summary_mean_SEM %>%
+                dplyr::select(category, mean, sample) %>%
+                dplyr::rename(counts = mean) %>%
+                `plot-rep-prop_by-sample_dodged`() +
+                scale_fill_manual(
+                    values = viridisLite::viridis(length(summary$category))
+                )
+            
+            #HERE
+            summary_prop_mean_SEM %>%
+                group_by(category) %>%
+                ggplot(aes(x = sample, y = mean, fill = category)) +
+                geom_bar(position = "dodge", stat = "identity") +
+                geom_errorbar(
+                    aes(ymin = mean - SEM, ymax = mean + SEM),
+                    width = 0.66,
+                    position = position_dodge(0.9)
+                ) +
+                theme_slick
+            #TODO Functions
+
+            #TODO Per-sample-scaled, e.g., plot one sample "dodged", everything
+            #     summing to 1.0
+
+            #TODO Pairwise t-tests for the above
+            
+            #TODO For everything I wrote today, make it more efficient/less
+            #     copy-and-paste-styled coding
             
             #  ----------------------------------------------------------------
             #  Save data to list element
@@ -2402,21 +3166,13 @@ for(i in f_part_3) {
             matrices[[name]][["05_summary_values"]] <- summary_values
             matrices[[name]][["06_metadata"]] <- metadata
             matrices[[name]][["07_pos_info"]] <- pos_info
-            matrices[[name]][["08_raw_pca"]] <- raw_pca
-            matrices[[name]][["09_raw_horn"]] <- raw_horn
-            matrices[[name]][["10_raw_elbow"]] <- raw_elbow
-            matrices[[name]][["11_raw_scree"]] <- raw_scree
-            matrices[[name]][["12_raw_loadings"]] <- raw_loadings
-            matrices[[name]][["13_raw_PCs"]] <- raw_PCs
-            matrices[[name]][["14_raw_top_loadings_all"]] <- raw_top_loadings_all
-            matrices[[name]][["15_raw_top_loadings_pos"]] <- raw_top_loadings_pos
-            matrices[[name]][["16_raw_top_loadings_neg"]] <- raw_top_loadings_neg
-            matrices[[name]][["17_raw_images"]] <- raw_images
-            matrices[[name]][["18_raw_mat"]] <- raw_mat
+            matrices[[name]][["08_pca_raw"]] <- pca_raw
+            matrices[[name]][["09_pca_rlog"]] <- pca_rlog
             
-        }
-    }
-}
+            # matrices[["01.u.n.fs"]][["09_pca_rlog"]][["10_p_images"]]
+#         }
+#     }
+# }
 rm(gtf, h, h_n, i, i_r, j, k)
 
 matrices %>% names()
