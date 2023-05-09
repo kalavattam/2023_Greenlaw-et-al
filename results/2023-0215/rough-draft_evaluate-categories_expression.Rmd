@@ -17,7 +17,6 @@ output:
 ```{r Get situated, results='hide', message=FALSE, warning=FALSE}
 #!/usr/bin/env Rscript
 
-library(boot)
 library(ggplot2)
 library(PCAtools)
 library(tidyverse)
