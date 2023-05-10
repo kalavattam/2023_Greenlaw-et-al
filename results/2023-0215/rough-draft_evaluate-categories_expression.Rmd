@@ -3146,6 +3146,17 @@ matrices <- list()
                     position = position_dodge(0.9)
                 ) +
                 theme_slick
+            
+            summary_prop_mean_SEM %>%
+                group_by(category) %>%
+                ggplot(aes(x = category, y = mean, fill = sample)) +
+                geom_bar(position = "dodge", stat = "identity") +
+                geom_errorbar(
+                    aes(ymin = mean - SEM, ymax = mean + SEM),
+                    width = 0.66,
+                    position = position_dodge(0.9)
+                ) +
+                theme_slick
             #TODO Functions
 
             #TODO Per-sample-scaled, e.g., plot one sample "dodged", everything
