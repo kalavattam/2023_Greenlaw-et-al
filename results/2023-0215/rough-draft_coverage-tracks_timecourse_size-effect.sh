@@ -121,6 +121,7 @@ for i in "${!a_bam[@]}"; do
 done
 
 
+#  From RStudio: 
 # > #  Size factors calculated with respect to all 17 samples
 # > dds$sizeFactor %>% as.data.frame()
 #                              .
