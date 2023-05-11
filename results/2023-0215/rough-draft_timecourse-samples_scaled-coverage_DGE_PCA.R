@@ -1,12 +1,17 @@
 #!/usr/bin/Rscript
 
-#  rough-draft_scaled-coverage_timecourse-samples.R
+#  rough-draft_timecourse-samples_scaled-coverage_DGE_PCA.R
 #  KA
 
 library(DESeq2)
 library(GenomicRanges)
+library(limma)
+library(PCAtools)
 library(rtracklayer)
 library(tidyverse)
+
+options(scipen = 999)
+options(ggrepel.max.overlaps = Inf)
 
 
 #  Get situated, load counts matrix -------------------------------------------
@@ -200,7 +205,47 @@ t_meta <- colnames(t_tc)[11:ncol(t_tc)] %>%
         genotype = ...1, time = ...2, replicate = ...3, technical = ...4
     ) %>%
     dplyr::mutate(rownames = colnames(t_tc)[11:ncol(t_tc)]) %>%
-    tibble::column_to_rownames("rownames")  # DESeq2 requires rownames
+    tibble::column_to_rownames("rownames") %>%  # DESeq2 requires rownames
+    dplyr::mutate(
+        genotype = factor(genotype, level = c("WT", "r6n")),
+        no_genotype = sapply(
+            as.character(genotype),
+            switch,
+            "WT" = 1,
+            "r6n" = 2,
+            USE.NAMES = FALSE
+        ) %>%
+            as.factor(),
+        time = factor(time, levels = c("DSm2", "DSp2", "DSp24", "DSp48")),
+        no_time = sapply(
+            as.character(time),
+            switch,
+            "DSm2" = 1,
+            "DSp2" = 2,
+            "DSp24" = 3,
+            "DSp48" = 4,
+            USE.NAMES = FALSE
+        ) %>%
+            as.factor(),
+        replicate = factor(replicate, levels = c("rep1", "rep2")),
+        no_replicate = sapply(
+            as.character(replicate),
+            switch,
+            "rep1" = 1,
+            "rep2" = 2,
+            USE.NAMES = FALSE
+        ) %>%
+            as.factor(),
+        technical = factor(technical, levels = c("tech1", "tech2")),
+        no_technical = sapply(
+            as.character(technical),
+            switch,
+            "tech1" = 1,
+            "tech2" = 2,
+            USE.NAMES = FALSE
+        ) %>%
+            as.factor()
+    )
 
 #  Make a GRanges object for positional information for DESeq2, etc.
 g_pos <- GenomicRanges::GRanges(
@@ -546,16 +591,14 @@ call_DESeq2_results_plot_volcano <- function(
     
     model_info <- dds@design
     
-    title <- paste0(
-        "volcano plot | S. cerevisiae features |\n",
-        "size factors estimated with all K. lactis features"
-    )
+    title <- paste0("volcano plot")
     subtitle <- paste(
         "points: S. cerevisiae features",
-        "| left: up in WT",
-        "| right: up in rrp6-null",
+        "| size factors (RLE): K. lactis features",
         "\nsamples:", sample_info,
-        "| model: ~", paste(as.character(model_info)[-1], collapse = " + ")
+        "| model: ~", paste(as.character(model_info)[-1], collapse = " + "),
+        "\n| left: up in WT",
+        "| right: up in rrp6-null"
     )
     p <- plot_volcano(
         table = t_DGE,
@@ -566,7 +609,7 @@ call_DESeq2_results_plot_volcano <- function(
         FC_cutoff = 1,
         xlim = c(-14, 14),
         ylim = c(0, 310),
-        color = "#A020F0",
+        color = "#A020F0",  #ARGUMENT
         title = title,
         subtitle = subtitle
     )
@@ -595,10 +638,10 @@ results_DSp2 <- call_DESeq2_results_plot_volcano(dds_DSp2)
 results_DSp24 <- call_DESeq2_results_plot_volcano(dds_DSp24)
 results_DSp48 <- call_DESeq2_results_plot_volcano(dds_DSp48)
 
-results_DSm2[["11_p"]]
-results_DSp2[["11_p"]]
-results_DSp24[["11_p"]]
-results_DSp48[["11_p"]]
+# results_DSm2[["11_p"]]
+# results_DSp2[["11_p"]]
+# results_DSp24[["11_p"]]
+# results_DSp48[["11_p"]]
 
 
 #  Run PCA with non-normalized and rlog-normalized counts ---------------------
@@ -857,21 +900,27 @@ draw_scree_plot <- function(pca, horn, elbow) {
 }
 
 
-#FIXME #PICKUPHERE
-run_PCA_pipeline <- function(pca, transformed) {
+run_PCA_pipeline <- function(counts, metadata, gene_id, transformed) {
     # ...
-    # :param pca: ... <pca object>
+    # :param counts: ... <data.frame>
+    # :param metadata: ... <data.frame>
+    # :param gene_id: ... <character vector>
     # :param transformed: FALSE for raw counts, TRUE for rlog counts <logical>
     # :return results_list: ... <list>
+    #  Checks arguments
+    stopifnot(is.data.frame(counts))
+    stopifnot(is.data.frame(metadata))
+    stopifnot(isTRUE(tibble::has_rownames(metadata)))
+    stopifnot(is.character(gene_id))
     stopifnot(is.logical(transformed))
+
+    #  Create a PCAtools "pca" S4 object
+    pca <- PCAtools::pca(counts, metadata = metadata)
+    rownames(pca$loadings) <- gene_id
     
     #  Determine "significant" PCs with Horn's parallel analysis (see
     #+ Horn, 1965)
-    # horn <- PCAtools::parallelPCA(counts[, 2:ncol(counts)])
-    #FIXME
-    
-    pca <- pca
-    transformed <- transformed
+    horn <- PCAtools::parallelPCA(counts[, 2:ncol(counts)])
     
     #  Determine "significant" principle components with the elbow
     #+ method (see Buja and Eyuboglu, 1992)
@@ -879,9 +928,7 @@ run_PCA_pipeline <- function(pca, transformed) {
     
     #  Evaluate cumulative proportion of explained variance with a
     #+ scree plot
-    # p_scree <- draw_scree_plot(pca, horn = horn$n, elbow = elbow)
-    p_scree <- draw_scree_plot(pca, horn = elbow - 1, elbow = elbow)
-    #FIXME
+    p_scree <- draw_scree_plot(pca, horn = horn$n, elbow = elbow)
     
     #  Save component loading vectors in their own dataframe
     loadings <- as.data.frame(pca$loadings)
@@ -919,19 +966,19 @@ run_PCA_pipeline <- function(pca, transformed) {
             x_max_biplot <- 350000
             y_min_biplot <- -350000
             y_max_biplot <- 350000
-            x_min_loadings_plot = -0.5
-            x_max_loadings_plot = 0.5
-            y_min_loadings_plot = -0.5
-            y_max_loadings_plot = 0.5
+            x_min_loadings_plot <- -0.5
+            x_max_loadings_plot <- 0.5
+            y_min_loadings_plot <- -0.5
+            y_max_loadings_plot <- 0.5
         } else if(isTRUE(transformed)) {
-            x_min_biplot <- -100
-            x_max_biplot <- 100
-            y_min_biplot <- -100
-            y_max_biplot <- 100
-            x_min_loadings_plot = -0.1
-            x_max_loadings_plot = 0.1
-            y_min_loadings_plot = -0.1
-            y_max_loadings_plot = 0.1
+            x_min_biplot <- -100 # -200  #ARGUMENT?
+            x_max_biplot <- 100 # 200  #ARGUMENT?
+            y_min_biplot <- -100 # -200  #ARGUMENT?
+            y_max_biplot <- 100 # 200  #ARGUMENT?
+            x_min_loadings_plot <- -0.1
+            x_max_loadings_plot <- 0.1
+            y_min_loadings_plot <- -0.1
+            y_max_loadings_plot <- 0.1
         }
         
         p_images[[paste0("PCAtools.", PC_x, ".v.", PC_y)]] <-
@@ -941,8 +988,8 @@ run_PCA_pipeline <- function(pca, transformed) {
                 PC_y = PC_y,
                 loadings_show = FALSE,
                 loadings_n = 0,
-                meta_color = "state",
-                meta_shape = "transcription",
+                meta_color = "genotype",  #ARGUMENT
+                meta_shape = "time",  #ARGUMENT
                 x_min = x_min_biplot,
                 x_max = x_max_biplot,
                 y_min = y_min_biplot,
@@ -966,8 +1013,8 @@ run_PCA_pipeline <- function(pca, transformed) {
                 y_nudge = 0.04,  # 0.04,  # 0.02,
                 x_label = x_label,
                 y_label = y_label,
-                col_line_pos = "black",
-                col_line_neg = "red",
+                col_line_pos = "#229E37",
+                col_line_neg = "#113275",
                 col_seg_pos = "grey",
                 col_seg_neg = "grey"
             )
@@ -986,7 +1033,7 @@ run_PCA_pipeline <- function(pca, transformed) {
         ),
         rangeRetain = 0.025,
         absolute = FALSE,
-        col = c("#785EF075", "#FFFFFF75", "#FE610075"),  #FIXME Colors
+        col = c("#167C2875", "#FFFFFF75", "#7835AC75"),
         title = "Loadings plot",
         subtitle = "Top 2.5% of variables (i.e., features)",
         borderColour = "#000000",
@@ -1012,8 +1059,9 @@ run_PCA_pipeline <- function(pca, transformed) {
     p_cor <- PCAtools::eigencorplot(
         pca,
         components = PCAtools::getComponents(pca, 1:8),
-        metavars = c("genotype", "time", "replicate", "technical"),
-        col = c("#785EF075", "#648FFF75", "#FFFFFF75", "#FFB00075", "#FE610075"),
+        metavars = c("genotype", "time", "replicate", "technical"),  #ARGUMENT
+        # col = viridisLite::viridis(n = 100) %>% rev(),
+        col = c("#FFFFFF", "#7835AC"),
         scale = FALSE,
         corFUN = "pearson",
         corMultipleTestCorrection = "BH",
@@ -1033,7 +1081,7 @@ run_PCA_pipeline <- function(pca, transformed) {
     
     results_list <- list()
     results_list[["01_pca"]] <- pca
-    # results_list[["02_horn"]]<- horn
+    results_list[["02_horn"]]<- horn
     results_list[["03_elbow"]]<- elbow
     results_list[["04_p_scree"]]<- p_scree
     results_list[["05_loadings"]]<- loadings
@@ -1048,19 +1096,178 @@ run_PCA_pipeline <- function(pca, transformed) {
     return(results_list)
 }
 
-
-pca_obj_raw <- PCAtools::pca(
-    mat = sapply(t_tc[, 11:ncol(t_tc)], as.integer),
-    metadata = t_meta
-)
-rownames(pca_obj_raw$loadings) <- ifelse(
-    is.na(t_tc$names), t_tc$features, t_tc$names
-) %>%
+t_tc_SC <- t_tc %>%
+    dplyr::filter(genome == "S_cerevisiae")
+gene_id <- ifelse(is.na(t_tc_SC$names), t_tc_SC$features, t_tc_SC$names) %>%
     make.unique()
 
-
+counts_raw <- t_tc_SC %>%
+    dplyr::select(11:ncol(t_tc_SC)) %>%
+    dplyr::mutate_if(is.character, as.numeric)
 pca_exp_raw <- run_PCA_pipeline(
-    pca = pca_obj_raw,
+    counts = counts_raw,
+    metadata = t_meta,
+    gene_id = gene_id,
     transformed = FALSE
 )
+# pca_exp_raw[["02_horn"]]$n
+# pca_exp_raw[["03_elbow"]]
+# pca_exp_raw[["04_p_scree"]]
+# pca_exp_raw[["10_p_images"]][["PCAtools.PC1.v.PC2"]]
+# pca_exp_raw[["10_p_images"]][["KA.PC1.v.PC2"]]
+# pca_exp_raw[["10_p_images"]][["PCAtools.PC1.v.PC3"]]
+# pca_exp_raw[["10_p_images"]][["PCAtools.PC2.v.PC3"]]
+# pca_exp_raw[["12_p_cor"]]
 
+
+# #  TESTING --------------------------------------------------------------------
+# # SummarizedExperiment::colData(dds)[17, 4] <- "tech1"  #TEST To reproduce how I originally did this work
+# # t_meta[17, 4] <- "tech1"  #TEST To reproduce how I originally did this work
+# rld <- DESeq2::vst(
+#     dds[dds@rowRanges$genome == "S_cerevisiae", ],
+#     blind = FALSE
+# )
+# norm_r <- limma::removeBatchEffect(
+#     SummarizedExperiment::assay(rld),
+#     batch = rld$ntechnical,
+#     design = model.matrix(~genotype, SummarizedExperiment::colData(rld))
+# ) %>% 
+#     as.data.frame()
+# norm_r$features <- dds@rowRanges$features[
+#     dds@rowRanges$genome == "S_cerevisiae"
+# ]
+# norm_r <- dplyr::full_join(
+#     norm_r,
+#     t_tc_SC[, 1:9],
+#     by = "features"
+# ) %>%
+#     dplyr::as_tibble() %>%
+#     dplyr::relocate(18:26, .before = WT_DSm2_rep1_tech1)
+# 
+# counts_rlog <- norm_r %>%
+#     dplyr::select(10:ncol(norm_r)) %>%
+#     dplyr::mutate_if(is.character, as.numeric)
+# pca_exp_rlog <- run_PCA_pipeline(
+#     counts = counts_rlog,
+#     metadata = t_meta,
+#     gene_id = gene_id,
+#     transformed = TRUE
+# )
+# pca_exp_rlog[["02_horn"]]$n
+# pca_exp_rlog[["03_elbow"]]
+# pca_exp_rlog[["04_p_scree"]]
+# pca_exp_rlog[["10_p_images"]][["PCAtools.PC1.v.PC2"]]
+# pca_exp_rlog[["10_p_images"]][["KA.PC1.v.PC2"]]
+# pca_exp_rlog[["10_p_images"]][["PCAtools.PC1.v.PC3"]]
+# pca_exp_rlog[["10_p_images"]][["PCAtools.PC2.v.PC3"]]
+# pca_exp_rlog[["12_p_cor"]]
+
+#NOTE Not sure why, but it's not working
+
+
+#  TESTING: ~ technical + genotype --------------------------------------------
+dds_adj <- DESeq2::DESeqDataSetFromMatrix(
+    countData = t_counts,
+    colData = t_meta,
+    design = ~ technical + genotype,
+    rowRanges = g_pos
+)
+
+rld <- DESeq2::rlog(
+    dds_adj[dds_adj@rowRanges$genome == "S_cerevisiae", ],
+    blind = FALSE
+)
+norm_r <- SummarizedExperiment::assay(rld) %>%
+    as.data.frame()
+norm_r$features <- dds@rowRanges$features[
+    dds@rowRanges$genome == "S_cerevisiae"
+]
+norm_r <- dplyr::full_join(
+    norm_r,
+    t_tc_SC[, 1:9],
+    by = "features"
+) %>%
+    dplyr::as_tibble() %>%
+    dplyr::relocate(18:26, .before = WT_DSm2_rep1_tech1)
+
+counts_rlog <- norm_r %>%
+    dplyr::select(10:ncol(norm_r)) %>%
+    dplyr::mutate_if(is.character, as.numeric)
+pca_exp_rlog <- run_PCA_pipeline(
+    counts = counts_rlog,
+    metadata = t_meta,
+    gene_id = gene_id,
+    transformed = TRUE
+)
+pca_exp_rlog[["02_horn"]]$n
+pca_exp_rlog[["03_elbow"]]
+pca_exp_rlog[["04_p_scree"]]
+# pca_exp_rlog[["10_p_images"]][["KA.PC1.v.PC2"]]
+pca_exp_rlog[["10_p_images"]][["PCAtools.PC1.v.PC2"]]
+pca_exp_rlog[["10_p_images"]][["PCAtools.PC1.v.PC3"]]
+pca_exp_rlog[["10_p_images"]][["PCAtools.PC1.v.PC4"]]
+pca_exp_rlog[["10_p_images"]][["PCAtools.PC2.v.PC3"]]
+pca_exp_rlog[["10_p_images"]][["PCAtools.PC2.v.PC4"]]
+pca_exp_rlog[["10_p_images"]][["PCAtools.PC3.v.PC4"]]
+pca_exp_rlog[["12_p_cor"]]
+
+#NOTE
+#  We can nearly reproduce the PCA results in notebook/KA.2023-0324.presentation_QC with the following model supplied
+#+ to DESeq2::DESeqDataSetFromMatrix(): ~ technical + genotype
+#+
+#+ PC3 is significant and accounts for ~9.5% of variation; it's tightly correlated with genotype
+#+ 
+#+ We seem to sidestep problems when we include technical in the model when making dds, rather than correcting after
+#+ the fact as we do in the chunk immediately above this one
+
+# #  TESTING: ~ technical + time ----------------------------------------------
+# dds_adj <- DESeq2::DESeqDataSetFromMatrix(
+#     countData = t_counts,
+#     colData = t_meta,
+#     design = ~ technical + time,
+#     rowRanges = g_pos
+# )
+# 
+# rld <- DESeq2::rlog(
+#     dds_adj[dds_adj@rowRanges$genome == "S_cerevisiae", ],
+#     blind = FALSE
+# )
+# norm_r <- SummarizedExperiment::assay(rld) %>%
+#     as.data.frame()
+# norm_r$features <- dds@rowRanges$features[
+#     dds@rowRanges$genome == "S_cerevisiae"
+# ]
+# norm_r <- dplyr::full_join(
+#     norm_r,
+#     t_tc_SC[, 1:9],
+#     by = "features"
+# ) %>%
+#     dplyr::as_tibble() %>%
+#     dplyr::relocate(18:26, .before = WT_DSm2_rep1_tech1)
+# 
+# counts_rlog <- norm_r %>%
+#     dplyr::select(10:ncol(norm_r)) %>%
+#     dplyr::mutate_if(is.character, as.numeric)
+# pca_exp_rlog <- run_PCA_pipeline(
+#     counts = counts_rlog,
+#     metadata = t_meta,
+#     gene_id = gene_id,
+#     transformed = TRUE
+# )
+# pca_exp_rlog[["02_horn"]]$n
+# pca_exp_rlog[["03_elbow"]]
+# pca_exp_rlog[["04_p_scree"]]
+# # pca_exp_rlog[["10_p_images"]][["KA.PC1.v.PC2"]]
+# pca_exp_rlog[["10_p_images"]][["PCAtools.PC1.v.PC2"]]
+# pca_exp_rlog[["10_p_images"]][["PCAtools.PC1.v.PC3"]]
+# pca_exp_rlog[["10_p_images"]][["PCAtools.PC1.v.PC4"]]
+# pca_exp_rlog[["10_p_images"]][["PCAtools.PC2.v.PC3"]]
+# pca_exp_rlog[["10_p_images"]][["PCAtools.PC2.v.PC4"]]
+# pca_exp_rlog[["10_p_images"]][["PCAtools.PC3.v.PC4"]]
+# pca_exp_rlog[["12_p_cor"]]
+# 
+# #NOTE
+# #  We can more or less reproduce the PCA results in notebook/KA.2023-0324.presentation_QC with the following model
+# #+ supplied to DESeq2::DESeqDataSetFromMatrix(): ~ technical + time
+# #+ 
+# #+ PC3 is significant and accounts for ~7% of variation
