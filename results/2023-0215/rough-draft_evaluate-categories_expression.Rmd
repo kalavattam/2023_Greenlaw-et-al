@@ -18,7 +18,9 @@ output:
 #!/usr/bin/env Rscript
 
 library(ggplot2)
+library(ggpubr)
 library(PCAtools)
+library(rstatix)
 library(tidyverse)
 library(treemap)
 
@@ -3702,7 +3704,7 @@ matrices <- list()
 
 ```{r}
             #TODO Per-sample-scaled, e.g., plot one sample "dodged", everything
-            #     summing to 1.0
+            #     for that sample summing to 1.0
             
             #TODO Pairwise t-tests for the above
             calculate_p_prop_categories <- function(tbl, row) {
@@ -3815,3 +3817,62 @@ paste(f_part_1, f_part_2, f_part_3, f_part_4, f_part_5, sep = ".")
 </details>
 <br />
 <br />
+
+```{r}
+#  Test work ------------------------------------------------------------------
+#  Data preparation
+df <- ToothGrowth
+df$dose <- factor(df$dose)
+
+#  Statistical tests
+res.stats <- df %>%
+    dplyr::group_by(dose) %>%
+    rstatix::t_test(len ~ supp, alternative = "two.sided", var.equal = TRUE) %>%
+    rstatix::adjust_pvalue() %>%
+    rstatix::add_significance()
+res.stats
+
+#  Create a stacked bar plot, add "mean_se" error bars
+p <- ggpubr::ggbarplot(
+    df, x = "dose", y = "len", add = "mean_se",
+    color = "supp", palette = "jco"
+)
+
+#  Add p-values to the bar plot using ggpubr verbs
+p + ggpubr::stat_pvalue_manual(
+    res.stats, x = "dose", y.position = c(30, 45, 60), label = "p.adj.signif"
+)
+
+
+#  Trying the above with my data ----------------------------------------------
+df
+a <- columnwise_prop_summary_other[, 1:9] %>%
+    tidyr::pivot_longer(cols = c(
+        G1_N_rep1, G1_N_rep2, G1_SS_rep1, G1_SS_rep2,
+        Q_N_rep1, Q_N_rep2, Q_SS_rep1, Q_SS_rep2
+    ))
+a$name <- a$name %>% stringr::str_remove("_rep1|_rep2") %>% factor()
+
+a.res.stats <- a %>%
+    dplyr::group_by(category) %>%
+    rstatix::t_test(value ~ name, alternative = "two.sided", var.equal = TRUE) %>%
+    rstatix::add_significance()
+
+a.p <- ggpubr::ggbarplot(
+    a, x = "name", y = "value", color = "black", fill = "category", palette = viridisLite::viridis(7), label = FALSE, add = "mean_se"#, error.plot = "upper_errorbar"
+    # error.plot = "upper_errorbar", error.plot = "upper_errorbar",
+) +
+    theme_slick
+a.p
+
+# a.p + ggpubr::stat_pvalue_manual(
+#     a.res.stats, x = "category", y.position = c(30, 45, 60), label = "p.adj.signif"
+# )
+
+df %>%
+    dplyr::group_by(dose) %>%
+    rstatix::t_test(len ~ supp, alternative = "two.sided", var.equal = TRUE) %>%
+    # rstatix::adjust_pvalue() %>%
+    rstatix::add_significance()
+```
+
