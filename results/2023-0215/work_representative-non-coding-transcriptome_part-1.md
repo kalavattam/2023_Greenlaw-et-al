@@ -20,6 +20,9 @@
         1. [Code](#code-3)
     1. [Download SRATs](#download-srats)
         1. [Code](#code-4)
+    1. [Include SGD `R64-1-1` ncRNAs](#include-sgd-r64-1-1-ncrnas)
+        1. [Notes, code](#notes-code-1)
+1. [Next step](#next-step)
 
 <!-- /MarkdownTOC -->
 </details>
@@ -41,7 +44,7 @@ cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0
 source activate gff3_env
 
 if [[ ! -d infiles_gtf-gff3/representation ]]; then
-    mkdir -p infiles_gtf-gff3/representation/{NUTs,CUTs_SUTs,CUTs-HMM_CUTs-4X,XUTs,SRATs}
+    mkdir -p infiles_gtf-gff3/representation/{NUTs,CUTs_SUTs,CUTs-HMM_CUTs-4X,XUTs,SRATs,ncRNAs}
 fi
 ```
 </details>
@@ -54,7 +57,7 @@ fi
 <details>
 <summary><i>Notes, code: Download NUTs</i></summary>
 
-Download manually to `infiles_gtf-gff3/representation/NUTs` from [email](https://outlook.office.com/mail/inbox/id/AAQkAGQ2MWM4OTBhLWZjNTItNGFlZS05OTg3LTA2MTA2NjJkNzU3ZAAQADnQJ40sYUZHmZabCmVS4qQ%3D) from Michael Lidschreiber
+Download manually to `infiles_gtf-gff3/representation/NUTs` from email from Michael Lidschreiber.
 <details>
 <summary><i>Code: Download NUTs</i></summary>
 
@@ -196,6 +199,35 @@ cp \
 ```
 </details>
 <br />
+
+<a id="include-sgd-r64-1-1-ncrnas"></a>
+### Include SGD `R64-1-1` ncRNAs
+<a id="notes-code-1"></a>
+#### Notes, code
+<details>
+<summary><i>Notes, code: Include SGD R64-1-1 ncRNAs</i></summary>
+
+`gtf` of SGD `R64-1-1` ncRNAs were processed/isolated from [`saccharomyces_cerevisiae_R64-1-1_20110208.gff`](http://sgd-archive.yeastgenome.org/sequence/S288C_reference/genome_releases/S288C_reference_genome_R64-1-1_20110203.tgz) in [`work_assess-process_R64-1-1_gff3.Rmd`](./work_assess-process_R64-1-1_gff3.Rmd).
+```bash
+#!/bin/bash
+
+#  Copy ncRNAs to experiment directory
+cp \
+    outfiles_gtf-gff3/comprehensive/S288C_reference_genome_R64-1-1_20110203/processed_ncRNA_sense.gtf \
+    infiles_gtf-gff3/representation/ncRNAs/processed_ncRNA_sense.gtf
+
+#  Give file a shorter name
+cp \
+    infiles_gtf-gff3/representation/ncRNAs/processed_ncRNA_sense.gtf \
+    infiles_gtf-gff3/representation/ncRNAs/ncRNAs.gtf
+
+#NOTE Already in R64 coordinates
+```
+</details>
+<br />
 <br />
 
-
+<a id="next-step"></a>
+## Next step
+Go to [`work_representative-non-coding-transcriptome_part-2.Rmd`](./work_representative-non-coding-transcriptome_part-2.Rmd)
+<br />

@@ -1,5 +1,5 @@
 ---
-title: "work_assess_R64-1-1_gff3.Rmd"
+title: "work_assess-process_R64-1-1_gff3.Rmd"
 output: html_notebookauthor: "KA"
 email: "kalavatt@fredhutch.org"
 output:
@@ -9,14 +9,14 @@ output:
 ---
 <br />
 
-Want to see how this file from SGD differs from the Ensembl 108 file we have been using
-`#TODO` Include file names, more info
+Assess the differences between `saccharomyces_cerevisiae_R64-1-1_20110208.gff` [from SGD](http://sgd-archive.yeastgenome.org/sequence/S288C_reference/genome_releases/S288C_reference_genome_R64-1-1_20110203.tgz) and `Saccharomyces_cerevisiae.R64-1-1.108.gff3` [from Ensembl](https://ftp.ensembl.org/pub/release-108/gff3/saccharomyces_cerevisiae/), the file we have been using for generating counts matrices against 
 
 ## Get situated
 ### Code
 <details>
 <summary><i>Code: Get situated</i></summary>
-```{r}
+
+```{r Get situated, results='hide', message=FALSE, warning=FALSE}
 #!/usr/bin/env Rscript
 
 library(GenomicRanges)
@@ -48,8 +48,11 @@ rm(p_local, p_wd)
 ## Load `gtf`, `gff3` files
 ### Code
 <details>
-<summary><i>Code: Load "R64" (`saccharomyces_cerevisiae_R64-1-1_20110208.gff`)</i></summary>
-```{r Load "R64", results='hide', message=FALSE, warning=FALSE}
+<summary><i>Code: Load `gtf`, `gff3` files</i></summary>
+
+```{r Load gtf gff3 files, results='hide', message=FALSE, warning=FALSE}
+#!/usr/bin/env Rscript
+
 p_SGD <- "./infiles_gtf-gff3/comprehensive/S288C_reference_genome_R64-1-1_20110203"
 f_SGD <- "saccharomyces_cerevisiae_R64-1-1_20110208.gff"
 gff3_SGD <- paste(p_SGD, f_SGD, sep = "/") %>%
@@ -87,10 +90,24 @@ rm(p_Ens, f_Ens)
 #### Code
 <details>
 <summary><i>Code: Are the numbers of sn/snoRNA features per `gtf`/`gff3` the same?</i></summary>
+
 ```{r Are the numbers of sn/snoRNA features per gtf/gff3 the same?, results='hide', message=FALSE, warning=FALSE}
+#!/usr/bin/env Rscript
+
+cat("gff3_SGD colnames\n")
+cat("-----------------\n")
 gff3_SGD %>% colnames()
+cat("\n")
+
+cat("gff3_Ens colnames\n")
+cat("-----------------\n")
 gff3_Ens %>% colnames()
+cat("\n")
+
+cat("gtf_Ens colnames\n")
+cat("----------------\n")
 gtf_Ens %>% colnames()
+cat("\n")
 
 type_gff3_SGD <- gff3_SGD %>%
     dplyr::group_by(type) %>%
@@ -115,15 +132,25 @@ biotype_gff3_Ens <- gff3_Ens %>%
 biotype_gtf_Ens <- gtf_Ens %>%
     dplyr::group_by(gene_biotype) %>% 
     dplyr::summarize(n = dplyr::n())
+
+type_gff3_SGD
+type_gff3_Ens
+type_gtf_Ens
+biotype_gff3_SGD
+biotype_gff3_Ens
+biotype_gtf_Ens
 ```
 </details>
 <br />
 
-### ...
+### Find gene IDs in SGD not in Ensembl
 #### Code
 <details>
-<summary><i>Code: ... </i></summary>
-```{r}
+<summary><i>Code: Find gene IDs in SGD not in Ensembl</i></summary>
+
+```{r Find gene IDs in SGD not in Ensembl, results='hide', message=FALSE, warning=FALSE}
+#!/usr/bin/env Rscript
+
 #  Initialize function --------------------------------------------------------
 `%notin%` <- Negate(`%in%`)
 
@@ -196,23 +223,42 @@ gff3_Ens[apply(gff3_Ens, 1, function(x) any(x %like% "YER109C")), ]  # 0 rows
 gff3_Ens[apply(gff3_Ens, 1, function(x) any(x %like% "YFL057C")), ]  # 1 row (in row for "YFL056C")
 gff3_Ens[apply(gff3_Ens, 1, function(x) any(x %like% "YFL056C")), ]  # 3 rows
 gff3_Ens[apply(gff3_Ens, 1, function(x) any(x %like% "YOR031W")), ]  # 0 rows
+
+
+#  How many "gene" entries after filtering out "Mito" and "2-micron"? ---------
+# z_gff3_SGD_genes %>%
+#     dplyr::group_by(seqnames) %>%
+#     dplyr::summarize(n = n())
+# 
+# z_gff3_SGD_genes %>%
+#     nrow()  # [1] 6607
+# 
+# z_gff3_SGD_genes %>%
+#     dplyr::filter(seqnames %notin% c("Mito", "2-micron")) %>%
+#     nrow()  # [1] 6575
 ```
 </details>
 <br />
 
-"YER109C", "YFL057C", "YFL056C", and "YOR031W" are on, respectively, chromosomes V, VI, VI, and XV; "R0010W", "R0020C", "R0030W", and "R0040C" are on "2-micron". Thus, "YER109C", "YFL057C", "YFL056C", and "YOR031W" are apparently valid genes that we *may* care about that are not&mdash;for some reason&mdash;associated with IDs in the Ensembl annotation.
+#### Notes
+<details>
+<summary><i>Notes: Find gene IDs in SGD not in Ensembl</i></summary>
 
-"YER109C", "YFL057C", "YFL056C", and "YOR031W" are not associated with `protein_ID` assignments in `gff3_Ens`; however, in `gff3_Ens`, "YFL056C" appears to be associated with `type` "pseudogene" and "pseudogene_transcript", `biotype` "pseudogene", and corresponding `gene_id` and `transcript_id` entries; the other genes&mdash;"YER109C", "YFL057C", and "YOR031W"&mdash;are not.
+- "YER109C", "YFL057C", "YFL056C", and "YOR031W" are on, respectively, chromosomes V, VI, VI, and XV; "R0010W", "R0020C", "R0030W", and "R0040C" are on "2-micron". Thus, "YER109C", "YFL057C", "YFL056C", and "YOR031W" are apparently valid genes that we *may* care about that are not&mdash;for some reason&mdash;associated with IDs in the Ensembl annotation.
+- "YER109C", "YFL057C", "YFL056C", and "YOR031W" are not associated with `protein_ID` assignments in `gff3_Ens`; however, in `gff3_Ens`, "YFL056C" appears to be associated with `type` "pseudogene" and "pseudogene_transcript", `biotype` "pseudogene", and corresponding `gene_id` and `transcript_id` entries; the other genes&mdash;"YER109C", "YFL057C", and "YOR031W"&mdash;are not.
+- "YFL056C" is associated with three rows in `gff3_Ens`: `type`s "pseudogene", "pseudogenic_transcript", and "exon".
+- "YFL057C" is associated with the "YFL056C" `type` "pseudogene" row (it's in the `description` column)
+</details>
+<br />
 
-"YFL056C" is associated with three rows in `gff3_Ens`: `type`s "pseudogene", "pseudogenic_transcript", and "exon".
-
-"YFL057C" is associated with the "YFL056C" `type` "pseudogene" row (it's in the `description` column)
-
-### ...
+### Examine repeat regions, telomeres, centromeres
 #### Code
 <details>
-<summary><i>Code: ... </i></summary>
-```{r}
+<summary><i>Code: Examine repeat regions, telomeres, centromeres</i></summary>
+
+```{r Examine repeat regions telomeres centromeres, results='hide', message=FALSE, warning=FALSE}
+#!/usr/bin/env Rscript
+
 #  repeat region --------------------------------------------------------------
 z_gff3_SGD_repeat_region <- gff3_SGD %>%
     dplyr::filter(type == "repeat_region")
@@ -271,17 +317,24 @@ IRanges::countOverlaps(gr_cen, gr_rr_n_NA)
 </details>
 <br />
 
-For `type` "repeat_region", go with `!is.na()`, which encompasses the ranges in `is.na()`.
+#### Notes
+<details>
+<summary><i>Notes: Examine repeat regions, telomeres, centromeres</i></summary>
 
-All of the ranges in `z_rr_n_NA` overlap the ranges in `z_tel_n_NA`. There are no overlaps between `z_gff3_SGD_centromere` and `z_rr_n_NA` (which might be expected), nor are there overlaps between `z_gff3_SGD_centromere` and `z_tel_n_NA` (which are not expected).
+- For `type` "repeat_region", go with `!is.na()`, which encompasses the ranges in `is.na()`.
+- All of the ranges in `z_rr_n_NA` overlap the ranges in `z_tel_n_NA`. There are no overlaps between `z_gff3_SGD_centromere` and `z_rr_n_NA` (which might be expected), nor are there overlaps between `z_gff3_SGD_centromere` and `z_tel_n_NA` (which are not expected).
+- `#CONCLUSION` Thus, I think I should exclude `type` "repeat_region" in favor of `type` "telomere". "Centromere" can be included without any problems with any features, I think.
+</details>
+<br />
 
-`#CONCLUSION` Thus, I think I should exclude `type` "repeat_region" in favor of `type` "telomere". "Centromere" can be included without any problems with any features, I think.
-
-### ...
+### Examine ncRNA, noncoding_exon, tRNA, snoRNA, snRNA, rRNA
 #### Code
 <details>
-<summary><i>Code: ... </i></summary>
-```{r}
+<summary><i>Code: Examine ncRNA, noncoding_exon, tRNA, snoRNA, snRNA, rRNA</i></summary>
+
+```{r Examine ncRNA noncoding_exon tRNA snoRNA snRNA rRNA, results='hide', message=FALSE, warning=FALSE}
+#!/usr/bin/env Rscript
+
 z_gff3_SGD_ncRNA <- gff3_SGD %>%
     dplyr::filter(type == "ncRNA")
 z_gff3_SGD_noncoding_exon <- gff3_SGD %>%
@@ -345,22 +398,32 @@ rm(
 </details>
 <br />
 
-`#CONCLUSION` We can exclude `type` "noncoding exon"&mdash;these will be included in "ncRNA", "tRNA", "snoRNA", "snRNA", "rRNA". I think they will not be included with anything else.
-`#CONCLUSION` So, here's what to include (so far) for `type`:
-- "centromere"
-- "genes" (`#MAYBE` stratified by `orf_classification`)
-- "ncRNA"
-- "rRNA"
-- "snRNA"
-- "snoRNA"
-- "telomere"
-- "tRNA"
+#### Notes
+<details>
+<summary><i>Notes: Examine ncRNA, noncoding_exon, tRNA, snoRNA, snRNA, rRNA</i></summary>
 
-### ...
+- `#CONCLUSION` We can exclude `type` "noncoding exon"&mdash;these will be included in "ncRNA", "tRNA", "snoRNA", "snRNA", "rRNA". I think they will not be included with anything else.
+- `#CONCLUSION` So, here's what to include (so far) for `type`:
+    - "centromere"
+    - "genes" (`#MAYBE` stratified by `orf_classification`)
+    - "ncRNA"
+    - "rRNA"
+    - "snRNA"
+    - "snoRNA"
+    - "telomere"
+    - "tRNA"
+</details>
+<br />
+
+### Examine ARS, LTR, LTR retrotransposon, TE gene
 #### Code
 <details>
-<summary><i>Code: ... </i></summary>
-```{r}
+<summary><i>Code: Examine ARS, LTR, LTR retrotransposon, TE gene</i></summary>
+
+```{r Examine ARS LTR LTR-retrotransposon TE-gene, results='hide', message=FALSE, warning=FALSE}
+#!/usr/bin/env Rscript
+
+#  Initialize functions -------------------------------------------------------
 convert_character_0_NA <- function(x) {
     z <- lapply(
         x, function(y) if(identical(y, character(0))) NA_character_ else y
@@ -372,10 +435,10 @@ convert_character_0_NA <- function(x) {
 
 
 flatten_elements_to_one <- function(x) {
-    # For character list elements with two or more subelements, collapse the
-    # subelements into a single character element
+    # For character list elements with two or more subelements, collapse
+    # ("flatten") the subelements into a single character element
     # 
-    # :param x: list
+    # :param x: <list>
     # :return: character vector of collapsed list elements (list e)
     
     l_collapsed <- x[lengths(x) >= 2] %>% length()
@@ -397,14 +460,15 @@ flatten_elements_to_one <- function(x) {
 process_list_column <- function(x) {
     x[lengths(x) == 0] <- NA_character_
     if(length(x[lengths(x) >= 2]) != 0) {
-        x[lengths(x) >= 2] <- x[lengths(x) >= 2] %>% flatten_elements_to_one()
+        x[lengths(x) >= 2] <- x[lengths(x) >= 2] %>%
+            flatten_elements_to_one()
     }
     y <- x %>% unlist()
     return(y)
 }
 
 
-#  Load tibbles for features ----------
+#  Load and process tibbles for features --------------------------------------
 z_gff3_SGD_ARS <- gff3_SGD %>%
     dplyr::filter(type == "ARS")
 z_gff3_SGD_LTR <- gff3_SGD %>%
@@ -483,7 +547,9 @@ tmp_1 <- IRanges::findOverlaps(gr_LTR, gr_LTR_retrotransposon) %>%
 z_gff3_SGD_LTR[tmp_1$queryHits, ]
 z_gff3_SGD_LTR_retrotransposon[tmp_1$subjectHits, ]
 
-z_gff3_SGD_LTR_retrotransposon[seq(1, nrow(z_gff3_SGD_LTR_retrotransposon)) %notin% unique(tmp_1$subjectHits), ]
+z_gff3_SGD_LTR_retrotransposon[
+    seq(1, nrow(z_gff3_SGD_LTR_retrotransposon)) %notin% unique(tmp_1$subjectHits), 
+]
 
 #  2 -----
 z_gff3_SGD_LTR %>% dplyr::arrange(seqnames, start) # %>% nrow()
@@ -496,7 +562,10 @@ tmp_2 <- IRanges::findOverlaps(gr_LTR, gr_TE_gene) %>%
 z_gff3_SGD_LTR[tmp_2$queryHits, ]
 z_gff3_SGD_TE_gene[tmp_2$subjectHits, ]
 
-z_gff3_SGD_LTR[seq(1, nrow(z_gff3_SGD_LTR)) %notin% unique(tmp_2$subjectHits), ] %>% nrow()
+z_gff3_SGD_LTR[
+    seq(1, nrow(z_gff3_SGD_LTR)) %notin% unique(tmp_2$subjectHits), 
+] %>%
+    nrow()
 
 #  3 -----
 z_gff3_SGD_LTR_retrotransposon %>% dplyr::arrange(seqnames, start) # %>% nrow()
@@ -509,7 +578,9 @@ tmp_3 <- IRanges::findOverlaps(gr_LTR_retrotransposon, gr_TE_gene) %>%
 z_gff3_SGD_LTR_retrotransposon[tmp_3$queryHits, ]
 z_gff3_SGD_TE_gene[tmp_3$subjectHits, ]
 
-z_gff3_SGD_LTR_retrotransposon[seq(1, nrow(z_gff3_SGD_LTR_retrotransposon)) %notin% unique(tmp_3$subjectHits), ]
+z_gff3_SGD_LTR_retrotransposon[
+    seq(1, nrow(z_gff3_SGD_LTR_retrotransposon)) %notin% unique(tmp_3$subjectHits), 
+]
 
 #  4 -----
 z_gff3_SGD_LTR
@@ -522,7 +593,9 @@ tmp_4 <- IRanges::findOverlaps(gr_LTR, gr_ARS) %>%
 z_gff3_SGD_LTR[tmp_4$queryHits, ]
 z_gff3_SGD_ARS[tmp_4$subjectHits, ]
 
-z_gff3_SGD_LTR[seq(1, nrow(z_gff3_SGD_LTR)) %notin% unique(tmp_4$subjectHits), ]
+z_gff3_SGD_LTR[
+    seq(1, nrow(z_gff3_SGD_LTR)) %notin% unique(tmp_4$subjectHits), 
+]
 
 #  ------
 z_gff3_SGD_LTR[tmp_4$queryHits, ]
@@ -533,19 +606,26 @@ z_gff3_SGD_ARS[seq(1, nrow(z_gff3_SGD_ARS)) %notin% tmp_4$subjectHits, ]
 </details>
 <br />
 
-Almost all `z_gff3_SGD_LTR_retrotransposon` overlaps `z_gff3_SGD_LTR`&mdash;all except IV 878303 884220	5918 - SGD LTR_retrotransposon ... YDRCTy1-2 SGD:S000006860 YDRCTy1-2 ...
+#### Notes
+<details>
+<summary><i>Notes: Examine ARS, LTR, LTR retrotransposon, TE gene</i></summary>
 
-82 out of 89 TEs (`z_gff3_SGD_TE_gene`) at least partially overlap 301 out of 383 LTRs (`z_gff3_SGD_LTR`)
+- Almost all `z_gff3_SGD_LTR_retrotransposon` overlaps `z_gff3_SGD_LTR`&mdash;all except...
+    - `IV 878303 884220 5918 - SGD LTR_retrotransposon ... YDRCTy1-2 SGD:S000006860 YDRCTy1-2 ...`
+- 82 out of 89 TEs (`z_gff3_SGD_TE_gene`) at least partially overlap 301 out of 383 LTRs (`z_gff3_SGD_LTR`)
+- All 89 TEs (`z_gff3_SGD_TE_gene`) at least partially overlap all but one row in `z_gff3_SGD_LTR_retrotransposon`
+- 20 LTRs overlap ARSs
+</details>
+<br />
 
-All 89 TEs (`z_gff3_SGD_TE_gene`) at least partially overlap all but one row in `z_gff3_SGD_LTR_retrotransposon`
-
-20 LTRs overlap ARSs
-
-### ...
+### Examine "mystery" categories in SGD `gff3`
 #### Code
 <details>
-<summary><i>Code: ... </i></summary>
-```{r}
+<summary><i>Code: Examine "mystery" categories in SGD `gff3`</i></summary>
+
+```{r Examine "mystery" categories in SGD gff3, results='hide', message=FALSE, warning=FALSE}
+#!/usr/bin/env Rscript
+
 gff3_mystery <- gff3_SGD %>%
     dplyr::filter(
         type == "nucleotide_match" |
@@ -557,7 +637,6 @@ gff3_mystery <- gff3_SGD %>%
         type == "external_transcribed_spacer_region" |
         type == "internal_transcribed_spacer_region"
     )
-
 
 #  Unlist column Note
 gff3_mystery$Note <- process_list_column(gff3_mystery$Note)
@@ -577,64 +656,75 @@ gff3_SGD %>% dplyr::filter(ID == "HMR")
 gff3_SGD %>% dplyr::filter(Name == "YJR027W")
 gff3_SGD %>% dplyr::filter(Name == "YBL092W")
 
-# gff3_SGD %>% dplyr::filter(type == "intron")  # Yeah, let's exclude introns, which will be included along with gene or tRNA (or etc.) entries
+# gff3_SGD %>% dplyr::filter(type == "intron")
+#  Yeah, let's exclude introns, which will be included along with gene or tRNA
+#+ (or etc.) entries
 ```
 </details>
 <br />
 
-We can exclude `type` "nucleotide_match", which mostly seem to be parts of telomere and ARS features
+#### Notes
+<details>
+<summary><i>Notes: Examine "mystery" categories in SGD `gff3`</i></summary>
 
-We can exclude `type` "binding_site", which are all within telomere features
+- We can exclude `type` "nucleotide_match", which mostly seem to be parts of telomere and ARS features
+- We can exclude `type` "binding_site", which are all within telomere features
+- We can also exclude `type` "region", which seem to be encompassed in other features
+- Retain `type` "five_prime_UTR_intron"
+- ~~Retain `type` "gene_cassette"~~ *After discussion with Toshi, we realize that these features will be encompassed by other features (e.g., within `type` "gene"), so we can exclude `type` "gene_cassette"*
+- ~~Retain `type` "external_transcribed_spacer_region" and "internal_transcribed_spacer_region"~~ *Actually, don't b/c these are already covered by `type` "rRNA"*
+</details>
+<br />
+<br />
 
-We can also exclude `type` "region", which seem to be encompassed in other features
+## Survey notes taken so far, then make decisions
+### Notes
+<details>
+<summary><i>Notes: Survey notes taken so far, then make decisions</i></summary>
 
-Retain `type` "five_prime_UTR_intron"
+- Go with the SGD annotation for this work.
+- We should not remove any entries from `type` "gene" despite there being an extra four chromosomal genes in the SGD annotation versus the Ensembl R64-1-1 annotation.
+- We should exclude `type` "repeat_region" in favor of `type` "telomere". "Centromere" can be included without any problems with any features.
+- We can exclude `type` "noncoding exon" since these will be included in variously "ncRNA", "tRNA", "snoRNA", "snRNA", "rRNA".
+- `#DEKHO` `#IMPORTANT` So, here's what to include for `type`:
+    - "ARS" (both strands)
+    - "centromere" (both strands)
+    - "gene" (antisense too)
+    - "ncRNA" (antisense too)
+    - "pseudogene" (those that are not collapsed/merged into "transposable_element" below; antisense too)
+    - "rRNA" (antisense too)
+    - "snRNA" (antisense too)
+    - "snoRNA" (antisense too)
+    - "telomere" (both strands)
+    - "transposable_element" (made from collapsing/merging "long_terminal_repeat", "LTR_retrotransposon", "transposable_element_gene" and "pseudogene"; antisense too)
+    - "tRNA" (antisense too)
+- And here's what not to include for `type`:
+    - "binding_site"
+    - "CDS"
+    - "chromosome"
+    - "external_transcribed_spacer_region" (already in `type` "rRNA")
+    - "five_prime_UTR_intron" (already in `type` "gene" and `type` intergenic)
+    - "gene_cassette" (already in `type` "gene" and `type` "intergenic")
+    - "insertion"
+    - "internal_transcribed_spacer_region" (already in `type` "rRNA")
+    - "intron"
+    - "noncoding_exon"
+    - "nucleotide_match"
+    - "region"
+    - "repeat_region"
+</details>
+<br />
+<br />
 
-~~Retain `type` "gene_cassette"~~ After discussion with Toshi, we realize that these features will be encompassed by other features (e.g., within `type` "gene"), so we can exclude `type` "gene_cassette"
+## Execute the above decisions
+### Clean environment, initialize functions
+#### Code
+<details>
+<summary><i>Code: Clean environment, initialize functions</i></summary>
 
-~~Retain `type` "external_transcribed_spacer_region" and "internal_transcribed_spacer_region"~~ Actually, don't b/c these are already covered by `type` "rRNA"
+```{r Clean environment initialize functions, results='hide', message=FALSE, warning=FALSE}
+#!/usr/bin/env Rscript
 
-
-## Survey all of the notes I have taken so far and make decisions
-Go with the SGD annotation for this work.
-
-We should not remove any entries from `type` "gene" despite there being an extra four chromosomal genes in the SGD annotation versus the Ensembl R64-1-1 annotation.
-
-We should exclude `type` "repeat_region" in favor of `type` "telomere". "Centromere" can be included without any problems with any features.
-
-We can exclude `type` "noncoding exon" since these will be included in variously "ncRNA", "tRNA", "snoRNA", "snRNA", "rRNA".
-
-`#DEKHO` `#IMPORTANT`
-So, here's what to include for `type`:
-- "ARS" (both strands)
-- "centromere" (both strands)
-- "gene" (antisense too)
-- "ncRNA" (antisense too)
-- "pseudogene" (those that are not collapsed/merged into "transposable_element" below; antisense too)
-- "rRNA" (antisense too)
-- "snRNA" (antisense too)
-- "snoRNA" (antisense too)
-- "telomere" (both strands)
-- "transposable_element" (made from collapsing/merging "long_terminal_repeat", "LTR_retrotransposon", "transposable_element_gene" and "pseudogene"; antisense too)
-- "tRNA" (antisense too)
-
-
-And here's what not to include for `type`:
-- "binding_site"
-- "CDS"
-- "chromosome"
-- "external_transcribed_spacer_region" (already in `type` "rRNA")
-- "five_prime_UTR_intron" (already in `type` "gene" and `type` intergenic)
-- "gene_cassette" (already in `type` "gene" and `type` "intergenic")
-- "insertion"
-- "internal_transcribed_spacer_region" (already in `type` "rRNA")
-- "intron"
-- "noncoding_exon"
-- "nucleotide_match"
-- "region"
-- "repeat_region"
-
-```{r}
 # stackoverflow.com/questions/6190051/how-can-i-remove-all-objects-but-one-from-the-workspace-in-r
 rm(list = setdiff(ls(), "gff3_SGD"))
 
@@ -820,9 +910,18 @@ format_SGD_tibble <- function(x) {
     
     return(y)
 }
+```
+</details>
+<br />
 
+### Isolate the features that we (may) want to obtain antisense counts for
+#### Code
+<details>
+<summary><i>Code: Isolate the features that we (may) want to obtain antisense counts for</i></summary>
 
-#  Isolate the features that we (may) want to obtain antisense counts ---------
+```{r Isolate the features that we (may) want to obtain antisense counts, results='hide', message=FALSE, warning=FALSE}
+#!/usr/bin/env Rscript
+
 features_etc <- gff3_SGD %>%
     dplyr::filter(
         type == "gene" |
@@ -868,9 +967,18 @@ features_etc$ID <- features_etc$Name <- ifelse(
 #     dplyr::arrange(dplyr::desc(n))
 
 # all(features_etc$ID == features_etc$Name)
+```
+</details>
+<br />
 
+### Create a dataframe of features antisense to features in `features_etc`
+#### Code
+<details>
+<summary><i>Code: Create a dataframe of features antisense to features in `features_etc`</i></summary>
 
-#  Create a dataframe of features antisense to features in features_etc -------
+```{r Create a dataframe of features antisense to features in features_etc, results='hide', message=FALSE, warning=FALSE}
+#!/usr/bin/env Rscript
+
 features_etc_antisense <- features_etc
 features_etc_antisense$strand <- ifelse(
     features_etc_antisense$strand == "+", "-", "+"
@@ -886,21 +994,31 @@ features_etc_antisense$ID <-
 # features_etc_antisense %>%
 #     dplyr::group_by(strand) %>%
 #     dplyr::summarize(n = dplyr::n())
+```
+</details>
+<br />
 
+### Collapse and merge transposable element and related features
+#### Code
+<details>
+<summary><i>Code: Collapse and merge transposable element and related features</i></summary>
 
-#  Collapse and merge transposable-element and related features ---------------
-TE_PG <- gff3_SGD %>% dplyr::filter(        
-    type == "long_terminal_repeat" |
-    type == "LTR_retrotransposon" |
-    type == "transposable_element_gene" |
-    type == "pseudogene"
-) %>%
-    dplyr::filter(
-        seqnames != "2-micron" &
-        seqnames != "Mito"
+```{r Collapse and merge transposable element and related features, results='hide', message=FALSE, warning=FALSE}
+#!/usr/bin/env Rscript
+
+TE_PG <- gff3_SGD %>%
+    dplyr::filter(        
+        type == "long_terminal_repeat" |
+        type == "LTR_retrotransposon" |
+        type == "transposable_element_gene" |
+        type == "pseudogene"
     ) %>%
-    dplyr::select(-c(score, phase, Parent)) %>%
-    dplyr::arrange(seqnames, start, strand)
+        dplyr::filter(
+            seqnames != "2-micron" &
+            seqnames != "Mito"
+        ) %>%
+        dplyr::select(-c(score, phase, Parent)) %>%
+        dplyr::arrange(seqnames, start, strand)
 TE_PG$Note <- process_list_column(TE_PG$Note)
 TE_PG$Alias <- process_list_column(TE_PG$Alias)
 TE_PG$Ontology_term <- process_list_column(TE_PG$Ontology_term)
@@ -1034,9 +1152,18 @@ TE_PG$Name <- TE_PG$Name %>%
 #     dplyr::summarize(n = dplyr::n())
 
 rm(TE_PG_agg_chr_strand, TE_PG_group_chr_strand, details_Alias, details_Name)
+```
+</details>
+<br />
 
+### Create a dataframe of TE features antisense to features in features_etc
+#### Code
+<details>
+<summary><i>Code: Create a dataframe of TE features antisense to features in features_etc</i></summary>
 
-#  Create a dataframe of TE features antisense to features in features_etc ----
+```{r Create a dataframe of TE features antisense to features in features_etc, results='hide', message=FALSE, warning=FALSE}
+#!/usr/bin/env Rscript
+
 TE_PG_antisense <- TE_PG
 TE_PG_antisense$strand <- ifelse(TE_PG_antisense$strand == "+", "-", "+")
 TE_PG_antisense$source <- "SGD (KA)"
@@ -1047,9 +1174,18 @@ TE_PG_antisense$Name <- paste("AS", TE_PG_antisense$Name, sep = "_")
 # TE_PG_antisense %>%
 #     dplyr::group_by(strand) %>%
 #     dplyr::summarize(n = dplyr::n())
+```
+</details>
+<br />
 
+### Make ARS, telomere, and centromere entries for plus and minus strands
+#### Code
+<details>
+<summary><i>Code: Make ARS, telomere, and centromere entries for plus and minus strands</i></summary>
 
-#  Make ARS, telomere, and centromere entries for plus and minus strands ------
+```{r Make ARS telomere and centromere entries for plus and minus strands, results='hide', message=FALSE, warning=FALSE}
+#!/usr/bin/env Rscript
+
 ARS_etc_plus <- gff3_SGD %>%
     dplyr::filter(
         type == "ARS" | type == "telomere" | type == "centromere"
@@ -1085,9 +1221,18 @@ ARS_etc_plus$ID <-
 ARS_etc_minus$ID <-
     ARS_etc_minus$Name <-
     paste("minus", ARS_etc_minus$Name, sep = "_")
+```
+</details>
+<br />
 
+### Load dataframe of intergenic annotations
+#### Code
+<details>
+<summary><i>Code: Load dataframe of intergenic annotations</i></summary>
 
-#  Load dataframe of intergenic annotations -----------------------------------
+```{r Load dataframe of intergenic annotations, results='hide', message=FALSE, warning=FALSE}
+#!/usr/bin/env Rscript
+
 p_tsv <- "infiles_gtf-gff3/comprehensive/S288C_reference_genome_R64-1-1_20110203"
 f_tsv <- "NotFeature_R64-1-1_20110203.dataframe.tsv"
 intergenic_plus <- readr::read_tsv(
@@ -1158,15 +1303,24 @@ intergenic_plus$Alias <- paste("plus", intergenic_plus$Alias, sep = "_")
 intergenic_minus$Note <- intergenic_minus$Note %>% gsub("between", "Between", .)
 intergenic_plus$Note <- intergenic_plus$Note %>% gsub("between", "Between", .)
 
-#+ Row-bind the plus- and minus-strand dataframes
+#  Row-bind the plus- and minus-strand dataframes
 intergenic <- dplyr::bind_rows(intergenic_plus, intergenic_minus) %>%
     dplyr::arrange(seqnames, start, strand) %>%
     dplyr::filter(seqnames != "2-micron" & seqnames != "Mito")
 
 rm(intergenic_minus, intergenic_plus)
+```
+</details>
+<br />
 
+### Row-bind dataframes
+#### Code
+<details>
+<summary><i>Code: Row-bind dataframes</i></summary>
 
-#  Row-bind dataframes --------------------------------------------------------
+```{r Row-bind dataframes, results='hide', message=FALSE, warning=FALSE}
+#!/usr/bin/env Rscript
+
 #  S features/TE_PG with dual-strand ARS, telomeres, and centromeres
 #+ 6972 + 348 + (385*2)
 z_sense <- dplyr::bind_rows(
@@ -1214,125 +1368,171 @@ z_sense_antisense_intergenic <-
 z_antisense_intergenic <-
     dplyr::bind_rows(z_antisense, intergenic) %>%
     dplyr::arrange(seqnames, start, end, strand)
+```
+</details>
+<br />
+<br />
 
+## Write gtf files
+### Code
+<details>
+<summary><i>Code: Write gtf files</i></summary>
 
-#  Write gtf files ------------------------------------------------------------
+```{r Write gtf files, results='hide', message=FALSE, warning=FALSE}
+#!/usr/bin/env Rscript
+
 #  Set up outdirectory
 p_out <- "outfiles_gtf-gff3/comprehensive/S288C_reference_genome_R64-1-1_20110203/"
 
 #  Antisense features_etc
 z_antisense %>%
     format_SGD_tibble() %>%
-    write_gtf(., paste(p_out, "processed_features_antisense.gtf", sep = "/"))
+    write_gtf(
+        ., paste(p_out, "processed_features_antisense.gtf", sep = "/")
+    )
 
 #  Antisense features_etc together with intergenic regions
 z_antisense_intergenic %>%
     format_SGD_tibble() %>%
-    write_gtf(., paste(p_out, "processed_features-intergenic_antisense.gtf", sep = "/"))
+    write_gtf(
+        ., paste(p_out, "processed_features-intergenic_antisense.gtf", sep = "/")
+    )
 
 #  Sense features_etc
 z_sense %>%
     format_SGD_tibble() %>%
-    write_gtf(., paste(p_out, "processed_features_sense.gtf", sep = "/"))
+    write_gtf(
+        ., paste(p_out, "processed_features_sense.gtf", sep = "/")
+    )
 
 #  Sense and antisense features_etc
 z_sense_antisense %>%
     format_SGD_tibble() %>%
-    write_gtf(., paste(p_out, "processed_features_sense-antisense.gtf", sep = "/"))
+    write_gtf(
+        ., paste(p_out, "processed_features_sense-antisense.gtf", sep = "/")
+    )
 
 #  Sense and antisense features_etc together with intergenic regions
 z_sense_antisense_intergenic %>%
     format_SGD_tibble() %>%
-    write_gtf(., paste(p_out, "processed_features-intergenic_sense-antisense.gtf", sep = "/"))
+    write_gtf(
+        ., paste(p_out, "processed_features-intergenic_sense-antisense.gtf", sep = "/")
+    )
 
 #  Sense features_etc along with intergenic regions
 z_sense_intergenic %>%
     format_SGD_tibble() %>%
-    write_gtf(., paste(p_out, "processed_features-intergenic_sense.gtf", sep = "/"))
+    write_gtf(
+        ., paste(p_out, "processed_features-intergenic_sense.gtf", sep = "/")
+    )
 
 #  Sense TE
 z_sense %>%
     dplyr::filter(type == "TE") %>%
     format_SGD_tibble() %>%
     # View()
-    write_gtf(., paste(p_out, "processed_TE_sense.gtf", sep = "/"))
+    write_gtf(
+        ., paste(p_out, "processed_TE_sense.gtf", sep = "/")
+    )
 
 #  Sense PG
 z_sense %>%
     dplyr::filter(type == "PG") %>%
     format_SGD_tibble() %>%
     # View()
-    write_gtf(., paste(p_out, "processed_PG_sense.gtf", sep = "/"))
+    write_gtf(
+        ., paste(p_out, "processed_PG_sense.gtf", sep = "/")
+    )
 
 #  Sense ncRNA
 z_sense %>%
     dplyr::filter(type == "ncRNA") %>%
     format_SGD_tibble() %>%
     # View()
-    write_gtf(., paste(p_out, "processed_ncRNA_sense.gtf", sep = "/"))
+    write_gtf(
+        ., paste(p_out, "processed_ncRNA_sense.gtf", sep = "/")
+    )
 
 #  Sense gene
 z_sense %>%
     dplyr::filter(type == "gene") %>%
     format_SGD_tibble() %>%
     # View()
-    write_gtf(., paste(p_out, "processed_gene_sense.gtf", sep = "/"))
+    write_gtf(
+        ., paste(p_out, "processed_gene_sense.gtf", sep = "/")
+    )
 
 #  Dual-strand ARS
 z_sense %>%
     dplyr::filter(type == "ARS") %>%
     format_SGD_tibble() %>%
     # View()
-    write_gtf(., paste(p_out, "processed_ARS_dual-strand.gtf", sep = "/"))
+    write_gtf(
+        ., paste(p_out, "processed_ARS_dual-strand.gtf", sep = "/")
+    )
 
 #  Sense tRNA
 z_sense %>%
     dplyr::filter(type == "tRNA") %>%
     format_SGD_tibble() %>%
     # View()
-    write_gtf(., paste(p_out, "processed_tRNA_sense.gtf", sep = "/"))
+    write_gtf(
+        ., paste(p_out, "processed_tRNA_sense.gtf", sep = "/")
+    )
 
 #  Sense snoRNA
 z_sense %>%
     dplyr::filter(type == "snoRNA") %>%
     format_SGD_tibble() %>%
     # View()
-    write_gtf(., paste(p_out, "processed_snoRNA_sense.gtf", sep = "/"))
+    write_gtf(
+        ., paste(p_out, "processed_snoRNA_sense.gtf", sep = "/")
+    )
 
 #  Dual-strand telomere
 z_sense %>%
     dplyr::filter(type == "telomere") %>%
     format_SGD_tibble() %>%
     # View()
-    write_gtf(., paste(p_out, "processed_telomere_dual-strand.gtf", sep = "/"))
+    write_gtf(
+        ., paste(p_out, "processed_telomere_dual-strand.gtf", sep = "/")
+    )
 
 #  Dual-strand centromere
 z_sense %>%
     dplyr::filter(type == "centromere") %>%
     format_SGD_tibble() %>%
     # View()
-    write_gtf(., paste(p_out, "processed_centromere_dual-strand.gtf", sep = "/"))
+    write_gtf(
+        ., paste(p_out, "processed_centromere_dual-strand.gtf", sep = "/")
+    )
 
 #  Sense rRNA
 z_sense %>%
     dplyr::filter(type == "rRNA") %>%
     format_SGD_tibble() %>%
     # View()
-    write_gtf(., paste(p_out, "processed_rRNA_sense.gtf", sep = "/"))
+    write_gtf(
+        ., paste(p_out, "processed_rRNA_sense.gtf", sep = "/")
+    )
 
 #  Sense snRNA
 z_sense %>%
     dplyr::filter(type == "snRNA") %>%
     format_SGD_tibble() %>%
     # View()
-    write_gtf(., paste(p_out, "processed_snRNA_sense.gtf", sep = "/"))
+    write_gtf(
+        ., paste(p_out, "processed_snRNA_sense.gtf", sep = "/")
+    )
 
 #  Dual-strand intergenic
 z_sense_intergenic %>%
     dplyr::filter(type == "intergenic") %>%
     format_SGD_tibble() %>%
     # View()
-    write_gtf(., paste(p_out, "processed_intergenic_dual-strand.gtf", sep = "/"))
+    write_gtf(
+        ., paste(p_out, "processed_intergenic_dual-strand.gtf", sep = "/")
+    )
 
 #  Sense RNA species
 z_sense %>%
@@ -1345,39 +1545,50 @@ z_sense %>%
     ) %>%
     format_SGD_tibble() %>%
     # View()
-    write_gtf(., paste(p_out, "processed_RNA-species_sense.gtf", sep = "/"))
+    write_gtf(
+        ., paste(p_out, "processed_RNA-species_sense.gtf", sep = "/")
+    )
+```
+</details>
+<br />
 
+### Record scraps
+#### Code
+<details>
+<summary><i>Code: Record scraps</i></summary>
 
-#  Scraps ---------------------------------------------------------------------
-z_sense_intergenic %>%
-    dplyr::group_by(type) %>%
-    dplyr::summarize(n = dplyr::n()) %>%
-    dplyr::arrange(desc(n)) %>%
-    View()
+```{r Record scraps, results='hide', message=FALSE, warning=FALSE}
+#!/usr/bin/env Rscript
 
-z_sense %>%
-    dplyr::filter(type == "gene") %>%
-    dplyr::arrange(orf_classification, seqnames, start) %>%
-    View()
-
-z_sense %>%
-    dplyr::filter(type == "gene") %>%
-    dplyr::group_by(orf_classification) %>%
-    dplyr::summarize(n = dplyr::n()) %>%
-    dplyr::arrange(desc(n)) %>%
-    View()
-
-z_sense %>%
-    dplyr::filter(type == "gene") %>%
-    dplyr::filter(is.na(orf_classification)) %>%
-    View()
-
-z_sense_antisense_intergenic %>%
-    dplyr::group_by(type) %>%
-    dplyr::summarize(n = dplyr::n()) %>%
-    dplyr::arrange(desc(n)) %>%
-    View()
-
+# z_sense_intergenic %>%
+#     dplyr::group_by(type) %>%
+#     dplyr::summarize(n = dplyr::n()) %>%
+#     dplyr::arrange(desc(n)) %>%
+#     View()
+# 
+# z_sense %>%
+#     dplyr::filter(type == "gene") %>%
+#     dplyr::arrange(orf_classification, seqnames, start) %>%
+#     View()
+# 
+# z_sense %>%
+#     dplyr::filter(type == "gene") %>%
+#     dplyr::group_by(orf_classification) %>%
+#     dplyr::summarize(n = dplyr::n()) %>%
+#     dplyr::arrange(desc(n)) %>%
+#     View()
+# 
+# z_sense %>%
+#     dplyr::filter(type == "gene") %>%
+#     dplyr::filter(is.na(orf_classification)) %>%
+#     View()
+# 
+# z_sense_antisense_intergenic %>%
+#     dplyr::group_by(type) %>%
+#     dplyr::summarize(n = dplyr::n()) %>%
+#     dplyr::arrange(desc(n)) %>%
+#     View()
+#
 # all(colnames(test) == colnames(features_etc))  # [1] TRUE
 #
 # gff3_SGD %>%
@@ -1385,10 +1596,19 @@ z_sense_antisense_intergenic %>%
 #     dplyr::group_by(orf_classification) %>%
 #     dplyr::summarize(n = dplyr::n())
 ```
+</details>
+<br />
+<br />
 
 ## ...
-### ...
-```{r}
+### Code: ...
+`#TODO` *Change the below to use Trinity Q and G1 nascent transcriptome files written with bespoke code and not `rtracklayer::export()`*
+<details>
+<summary><i>Code: ...</i></summary>
+
+```{r ..., results='hide', message=FALSE, warning=FALSE}
+#!/usr/bin/env Rscript
+
 p_Q <- "outfiles_gtf-gff3/Trinity-GG/Q_N/filtered/locus"
 f_Q <- "Q_mkc-4_gte-pctl-25.corrected.gtf"
 gtf_Q <- rtracklayer::import(paste(p_Q, f_Q, sep = "/")) %>%
@@ -1424,10 +1644,18 @@ gtf_G1$transcripts <- gtf_G1$transcripts %>%
     gsub("\\)", "", .) %>%
     gsub("\"", "", .)
 ```
+</details>
+<br />
+<br />
 
 ## ...
-### ...
-```{r}
+### Code: ...
+<details>
+<summary><i>Code: ...</i></summary>
+
+```{r ..., results='hide', message=FALSE, warning=FALSE}
+#!/usr/bin/env Rscript
+
 gtf_all <- z_sense_antisense_intergenic
 
 g_Q <- makeGRangesFromDataFrame(gtf_Q, keep.extra.columns = TRUE)
@@ -1636,4 +1864,5 @@ wrt_Q_all$Name <- wrt_Q_all$Name %>%
 rm(wrt_Q_all_agg_chr_strand, wrt_Q_all_group_chr_strand, details_Alias, details_Name)
 
 ```
-
+</details>
+<br />

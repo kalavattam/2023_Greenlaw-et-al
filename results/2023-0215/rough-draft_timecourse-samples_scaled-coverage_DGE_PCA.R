@@ -743,7 +743,16 @@ plot_biplot <- function(
             xlim = c(x_min, x_max),
             ylim = c(y_min, y_max)
         ) +
-            theme_slick
+            # theme_slick
+            theme_bw() +
+            theme(
+                aspect.ratio = 1,
+                panel.grid.minor = element_line(size = 0.5),
+                panel.grid.major = element_line(size = 1),
+                axis.text = element_text(size = 20, face = "bold", color="black"),
+                axis.title = element_text(size =25, face = "bold")
+            ) # +
+            # coord_obs_pred()
     
     return(image)
 }
@@ -978,10 +987,10 @@ run_PCA_pipeline <- function(
             y_min_loadings_plot <- -0.5
             y_max_loadings_plot <- 0.5
         } else if(isTRUE(transformed)) {
-            x_min_biplot <- -100 # -200  #ARGUMENT?
-            x_max_biplot <- 100 # 200  #ARGUMENT?
-            y_min_biplot <- -100 # -200  #ARGUMENT?
-            y_max_biplot <- 100 # 200  #ARGUMENT?
+            x_min_biplot <- -75  # -100  # -200  #ARGUMENT?
+            x_max_biplot <- 75  # 100  # 200  #ARGUMENT?
+            y_min_biplot <- -75  # -100  # -200  #ARGUMENT?
+            y_max_biplot <- 75  # 100  # 200  #ARGUMENT?
             x_min_loadings_plot <- -0.1
             x_max_loadings_plot <- 0.1
             y_min_loadings_plot <- -0.1
@@ -1055,7 +1064,16 @@ run_PCA_pipeline <- function(
         colConnectors = "black"
     ) +
         # ggplot2::coord_flip() +
-        theme_slick_no_legend
+        # theme_slick_no_legend
+        theme_bw() +
+        theme(
+            aspect.ratio = 1,
+            panel.grid.minor = element_line(size = 0.5),
+            panel.grid.major = element_line(size = 1),
+            axis.text = element_text(size = 20, face = "bold", color="black"),
+            axis.title = element_text(size =25, face = "bold")
+        ) # +
+        # coord_obs_pred()
     p_loadings
     #TODO Work up some logic for saving the plot
     
@@ -1119,7 +1137,10 @@ pca_exp_raw <- run_PCA_pipeline(
     counts = counts_raw,
     metadata = t_meta,
     gene_id = gene_id,
-    transformed = FALSE
+    transformed = FALSE,
+    transcription = FALSE,
+    meta_color = "genotype",
+    meta_shape = "time"
 )
 # pca_exp_raw[["02_horn"]]$n
 # pca_exp_raw[["03_elbow"]]
@@ -1208,7 +1229,10 @@ pca_exp_rlog <- run_PCA_pipeline(
     counts = counts_rlog,
     metadata = t_meta,
     gene_id = gene_id,
-    transformed = TRUE
+    transformed = TRUE,
+    transcription = FALSE,
+    meta_color = "genotype",
+    meta_shape = "time"
 )
 # pca_exp_rlog[["02_horn"]]$n
 # pca_exp_rlog[["03_elbow"]]
@@ -1309,10 +1333,10 @@ keep <- c(
     "WT_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1",
     "r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1",
     "r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1",
-    "WT_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1",
-    "WT_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1",
-    "r6-n_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1",
-    "r6-n_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1",
+    # "WT_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1",
+    # "WT_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1",
+    # "r6-n_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1",
+    # "r6-n_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1",
     "WT_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1",
     "WT_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1",
     "r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1",
@@ -1342,8 +1366,8 @@ better_sample_names <- c(
 	"WT_DSp48_SS_rep2_tech1",
 	"WT_G1_SS_rep1_tech2",  # Was incorrectly labeled as "WT_G1_SS_rep1_tech1"
 	"WT_G1_SS_rep2_tech2",  # Was incorrectly labeled as "WT_G1_SS_rep2_tech1"
-	"WT_Q_N_rep1_tech1",
-	"WT_Q_N_rep2_tech1",
+	# "WT_Q_N_rep1_tech1",
+	# "WT_Q_N_rep2_tech1",
 	"WT_Q_SS_rep1_tech1",
 	"WT_Q_SS_rep2_tech1",
 	"r6n_DSm2_SS_rep1_tech1",
@@ -1356,8 +1380,8 @@ better_sample_names <- c(
 	"r6n_DSp48_SS_rep2_tech2",  # Was incorrectly labeled as "r6n_DSp48_SS_rep2_tech1"
 	"r6n_G1_SS_rep1_tech2",  # Was incorrectly labeled as "r6n_G1_SS_rep1_tech1"
 	"r6n_G1_SS_rep2_tech2",  # Was incorrectly labeled as "r6n_G1_SS_rep2_tech1"
-	"r6n_Q_N_rep1_tech1",
-	"r6n_Q_N_rep2_tech1",
+	# "r6n_Q_N_rep1_tech1",
+	# "r6n_Q_N_rep2_tech1",
 	"r6n_Q_SS_rep1_tech1",
 	"r6n_Q_SS_rep1_tech2",
 	"r6n_Q_SS_rep2_tech1"
@@ -1433,6 +1457,7 @@ t_meta_full <- colnames(t_tc_full)[11:ncol(t_tc_full)] %>%
         ) %>%
             as.factor()
     )
+t_meta_full
 
 #  Make a GRanges object for positional information for DESeq2, etc.
 g_pos_full <- GenomicRanges::GRanges(
@@ -1494,7 +1519,7 @@ pca_exp_rlog_full <- run_PCA_pipeline(
     metadata = t_meta_full,
     gene_id = gene_id_full,
     transformed = TRUE,
-    transcription = TRUE,
+    transcription = FALSE,
     meta_color = "genotype",
     meta_shape = "time"
 )
@@ -1502,29 +1527,28 @@ pca_exp_rlog_full[["02_horn"]]$n
 pca_exp_rlog_full[["03_elbow"]]
 pca_exp_rlog_full[["04_p_scree"]]
 pca_exp_rlog_full[["10_p_images"]][["KA.PC1.v.PC2"]]
+pca_exp_rlog_full[["10_p_images"]][["KA.PC1.v.PC3"]]
+pca_exp_rlog_full[["10_p_images"]][["KA.PC2.v.PC3"]]
 pca_exp_rlog_full[["10_p_images"]][["PCAtools.PC1.v.PC2"]]
 pca_exp_rlog_full[["10_p_images"]][["PCAtools.PC1.v.PC3"]]
-pca_exp_rlog_full[["10_p_images"]][["PCAtools.PC1.v.PC4"]]
 pca_exp_rlog_full[["10_p_images"]][["PCAtools.PC2.v.PC3"]]
-pca_exp_rlog_full[["10_p_images"]][["PCAtools.PC2.v.PC4"]]
-pca_exp_rlog_full[["10_p_images"]][["PCAtools.PC3.v.PC4"]]
 pca_exp_rlog_full[["12_p_cor"]]
 
-test <- run_PCA_pipeline(
-    counts = counts_rlog_full,
-    metadata = t_meta_full,
-    gene_id = gene_id_full,
-    transformed = TRUE,
-    transcription = TRUE,
-    meta_color = "transcription",
-    meta_shape = "time"
-)
-test[["10_p_images"]][["PCAtools.PC1.v.PC2"]]
-test[["10_p_images"]][["PCAtools.PC1.v.PC4"]]
-test[["10_p_images"]][["PCAtools.PC1.v.PC3"]]
-test[["10_p_images"]][["PCAtools.PC2.v.PC3"]]
-test[["10_p_images"]][["PCAtools.PC2.v.PC4"]]
-test[["10_p_images"]][["PCAtools.PC3.v.PC4"]]
-
-pca_exp_rlog_full[["10_p_images"]][["PCAtools.PC1.v.PC2"]]
-test[["10_p_images"]][["PCAtools.PC1.v.PC2"]]
+# test <- run_PCA_pipeline(
+#     counts = counts_rlog_full,
+#     metadata = t_meta_full,
+#     gene_id = gene_id_full,
+#     transformed = TRUE,
+#     transcription = TRUE,
+#     meta_color = "transcription",
+#     meta_shape = "time"
+# )
+# test[["10_p_images"]][["PCAtools.PC1.v.PC2"]]
+# test[["10_p_images"]][["PCAtools.PC1.v.PC4"]]
+# test[["10_p_images"]][["PCAtools.PC1.v.PC3"]]
+# test[["10_p_images"]][["PCAtools.PC2.v.PC3"]]
+# test[["10_p_images"]][["PCAtools.PC2.v.PC4"]]
+# test[["10_p_images"]][["PCAtools.PC3.v.PC4"]]
+# 
+# pca_exp_rlog_full[["10_p_images"]][["PCAtools.PC1.v.PC2"]]
+# test[["10_p_images"]][["PCAtools.PC1.v.PC2"]]

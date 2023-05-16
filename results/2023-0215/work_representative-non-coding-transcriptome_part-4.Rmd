@@ -66,7 +66,7 @@ load_xlsx_CUTs_4x <- function(x) {
 
 
 load_txt_CUTs_HMM <- function(x) {
-    y <- readr::read_tsv(in_CUTs_HMM, show_col_types = FALSE)
+    y <- readr::read_tsv(x, show_col_types = FALSE)
     colnames(y) <- c(
         "chr", "start", "end", "name_etc", "strand",
         "avg_covg_WT", "avg_covg_rrp6", "avg_fold"
@@ -77,8 +77,22 @@ load_txt_CUTs_HMM <- function(x) {
 }
 
 
+load_gtf_ncRNAs <- function(x) {
+    y <- rtracklayer::import(x) %>%
+        tibble::as_tibble() %>%
+        dplyr::select(-c("score", "phase"))
+    colnames(y) <- c(
+        "chr", "start", "end", "width", "strand",
+        "source", "type", "gene_id", "transcript_id",
+        "feature", "orf_classification", "source_id"
+    )
+    y <- y %>%
+        dplyr::arrange(chr, start)
+}
+
+
 load_gtf_NUTs <- function(x) {
-    y <- rtracklayer::import(in_NUTs) %>%
+    y <- rtracklayer::import(x) %>%
         tibble::as_tibble() %>%
         dplyr::select(-c("score", "phase"))
     colnames(y) <- c(
@@ -92,7 +106,7 @@ load_gtf_NUTs <- function(x) {
 
 
 load_csv_SRATs <- function(x) {
-    y <- readr::read_csv(in_SRATs, skip = 1, show_col_types = FALSE)
+    y <- readr::read_csv(x, skip = 1, show_col_types = FALSE)
     colnames(y) <- c("chr", "start", "end", "info_sense", "strand", "name_etc")
     y$chr <- gsub("chr", "", y$chr)
     y <- y %>% dplyr::arrange(chr, start)
@@ -106,6 +120,7 @@ p_base <- "./infiles_gtf-gff3/representation"
 # list.dirs(p_base)
 # list.files(paste(p_base, "CUTs_SUTs", sep = "/"))
 # list.files(paste(p_base, "CUTs-HMM_CUTs-4X", sep = "/"))
+# list.files(paste(p_base, "ncRNAs", sep = "/"))
 # list.files(paste(p_base, "NUTs", sep = "/"))
 # list.files(paste(p_base, "SRATs", sep = "/"))
 # list.files(paste(p_base, "XUTs", sep = "/"))
@@ -113,6 +128,7 @@ p_base <- "./infiles_gtf-gff3/representation"
 in_CUTs <- paste(p_base, "CUTs_SUTs/CUTs.coord-R64.bed", sep = "/")
 in_CUTs_4x <- paste(p_base, "CUTs-HMM_CUTs-4X/CUTs-4x.xlsx", sep = "/")
 in_CUTs_HMM <- paste(p_base, "CUTs-HMM_CUTs-4X/CUTs-HMM.txt.gz", sep = "/")
+in_ncRNAs <- paste(p_base, "ncRNAs/ncRNAs.gtf", sep = "/")
 in_NUTs <- paste(p_base, "NUTs/NUTs.gtf", sep = "/")
 in_SRATs <- paste(p_base, "SRATs/SRATs.csv", sep = "/")
 in_SUTs <- paste(p_base, "CUTs_SUTs/SUTs.coord-R64.bed", sep = "/")
@@ -123,6 +139,7 @@ in_XUTs <- paste(p_base, "XUTs/XUTs.coord-R64.bed", sep = "/")
 # file.exists(in_SUTs)
 # file.exists(in_CUTs_4x)
 # file.exists(in_CUTs_HMM)
+# file.exists(in_ncRNAs)
 # file.exists(in_NUTs)
 # file.exists(in_SRATs)
 # file.exists(in_XUTs)
@@ -130,6 +147,7 @@ in_XUTs <- paste(p_base, "XUTs/XUTs.coord-R64.bed", sep = "/")
 CUTs <- load_bed_CUTs_SUTs_XUTs(in_CUTs)
 CUTs_4x <- load_xlsx_CUTs_4x(in_CUTs_4x)
 CUTs_HMM <- load_txt_CUTs_HMM(in_CUTs_HMM)
+ncRNAs <- load_gtf_ncRNAs(in_ncRNAs)
 NUTs <- load_gtf_NUTs(in_NUTs)
 SRATs <- load_csv_SRATs(in_SRATs)
 SUTs <- load_bed_CUTs_SUTs_XUTs(in_SUTs)
@@ -177,6 +195,20 @@ CUTs_HMM <- CUTs_HMM %>%
     tidyr::unite(
         etc, c(avg_covg_WT, avg_covg_rrp6, avg_fold)
     ) %>%
+    dplyr::arrange(chr, start, strand)
+
+ncRNAs <- ncRNAs %>%
+    dplyr::mutate(
+                 id = gene_id,
+               type = feature,
+             source = "SGD R64-1-1",
+        coordinates = "R64 (no liftOver)",
+                etc = NA_character_
+    ) %>%
+    dplyr::select(-c(
+        "width", "gene_id", "transcript_id", "feature", "orf_classification",
+        "source_id"
+    )) %>%
     dplyr::arrange(chr, start, strand)
 
 NUTs <- NUTs %>%
@@ -231,8 +263,8 @@ XUTs <- XUTs %>%
 ```{r}
 #!/usr/bin/env Rscript
 
-ncRNAs <- dplyr::bind_rows(
-    CUTs, CUTs_4x, CUTs_HMM, NUTs, SRATs, SUTs, XUTs
+all_ncRNAs <- dplyr::bind_rows(
+    CUTs, CUTs_4x, CUTs_HMM, ncRNAs, NUTs, SRATs, SUTs, XUTs
 ) %>%
     dplyr::arrange(strand, chr, start)
 
@@ -240,6 +272,8 @@ ncRNAs <- dplyr::bind_rows(
 #+ dplyr::arrange(chr, start, strand)
 #+ ...which results in a small number of incorrectly non-collapsed/merged
 #+ features: Does the above call to dplyr::arrange() fix the problem?
+#+ 
+#+ Yes.
 ```
 </details>
 <br />
@@ -274,7 +308,7 @@ ncRNAs <- dplyr::bind_rows(
 
 #  Do the linking stratified by both 'chr' and 'strand'
 group_chr_strand <- plyr::ddply(
-    ncRNAs,
+    all_ncRNAs,
     c("chr", "strand"),
     function(x) { 
         #  Check if a record should be linked with the previous record
@@ -295,11 +329,9 @@ group_chr_strand$new_group <- is.na(group_chr_strand$previous_end) |
 group_chr_strand$group <- cumsum(group_chr_strand$new_group)
 
 # #  Check groups with and without grouping by strand
-# group_chr %>% dplyr::select(chr, start, end, strand, group)
 # group_chr_strand %>% dplyr::select(chr, start, end, strand, group)
 # 
 # #  Check numbers of groups with and without grouping by strand
-# group_chr$group %>% forcats::as_factor() %>% levels() %>% length()
 # group_chr_strand$group %>% forcats::as_factor() %>% levels() %>% length()
 ```
 </details>
@@ -468,7 +500,7 @@ details_all <- sapply(
 details_id <- agg_chr_strand$details_all %>%
     stringr::str_remove_all("s") %>%
     stringr::str_replace_all(
-        "(CUT|CUT_4x|CUT_HMM|NUT|SRAT|SUT|XUT):\\s", ""
+        "(CUT|CUT_4x|CUT_HMM|ncRNA|NUT|SRAT|SUT|XUT):\\s", ""
     ) %>%
     stringr::str_split("; ") %>%
     purrr::map(sort) %>%
@@ -542,26 +574,30 @@ rm(details_id, details_type, n_features, details_all)
 ```{r}
 #!/usr/bin/env Rscript
 
-agg_chr_strand <- agg_chr_strand %>% dplyr::mutate(
-    CUT = stringr::str_count(details_type_init, "$CUTs|CUTs$|CUTs;|CUTs$"),
-    CUT_4x = stringr::str_count(details_type_init, "CUTs_4x"),
-    CUT_HMM = stringr::str_count(details_type_init, "CUTs_HMM"),
-    NUT = stringr::str_count(details_type_init, "NUT"),
-    SRAT = stringr::str_count(details_type_init, "SRAT"),
-    SUT = stringr::str_count(details_type_init, "SUT"),
-    XUT = stringr::str_count(details_type_init, "XUT"),
-    
-    #  Create columns of Boolean values
-    b_CUT = as.logical(CUT),
-    b_CUT_4x = as.logical(CUT_4x),
-    b_CUT_HMM = as.logical(CUT_HMM),
-    b_NUT = as.logical(NUT),
-    b_SRAT = as.logical(SRAT),
-    b_SUT = as.logical(SUT),
-    b_XUT = as.logical(XUT),
-)
+agg_chr_strand <- agg_chr_strand %>%
+    dplyr::mutate(
+        CUT = stringr::str_count(details_type_init, "$CUTs|CUTs$|CUTs;|CUTs$"),
+        CUT_4x = stringr::str_count(details_type_init, "CUTs_4x"),
+        CUT_HMM = stringr::str_count(details_type_init, "CUTs_HMM"),
+        ncRNA = stringr::str_count(details_type_init, "ncRNA"),
+        NUT = stringr::str_count(details_type_init, "NUT"),
+        SRAT = stringr::str_count(details_type_init, "SRAT"),
+        SUT = stringr::str_count(details_type_init, "SUT"),
+        XUT = stringr::str_count(details_type_init, "XUT"),
+        
+        #  Create columns of Boolean values
+        b_CUT = as.logical(CUT),
+        b_CUT_4x = as.logical(CUT_4x),
+        b_CUT_HMM = as.logical(CUT_HMM),
+        b_ncRNA = as.logical(ncRNA),
+        b_NUT = as.logical(NUT),
+        b_SRAT = as.logical(SRAT),
+        b_SUT = as.logical(SUT),
+        b_XUT = as.logical(XUT),
+    )
 
 
+#TODO #PICKUPHERE #TOUPDATE Update b/c we now include R64-1-1 ncRNA
 evaluate_nos_types <- function(x) {
     y <- ifelse(rowSums(agg_chr_strand[, 19:25]) == x, TRUE, FALSE)
     return(y)

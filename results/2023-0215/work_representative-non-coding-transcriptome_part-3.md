@@ -7,35 +7,55 @@
 <summary><b><font size="+2"><i>Table of contents</i></font></b></summary>
 <!-- MarkdownTOC -->
 
+1. [Get situated](#get-situated)
+    1. [Code](#code)
 1. [Install liftOver, "lift" XUTs and CUTs/SUTs](#install-liftover-lift-xuts-and-cutssuts)
     1. [Install liftOver, etc.](#install-liftover-etc)
-        1. [Code](#code)
+        1. [Code](#code-1)
     1. ["Lift" XUTs, CUTs/SUTs to appropriate coordinate system](#lift-xuts-cutssuts-to-appropriate-coordinate-system)
         1. [Review how to use liftOver](#review-how-to-use-liftover)
-            1. [Code](#code-1)
+            1. [Code](#code-2)
             1. [Printed](#printed)
         1. [Check on the contents of the chain files](#check-on-the-contents-of-the-chain-files)
-            1. [Code](#code-2)
+            1. [Code](#code-3)
             1. [Printed](#printed-1)
         1. [Remove "chr" prefix from chain files](#remove-chr-prefix-from-chain-files)
-            1. [Code](#code-3)
+            1. [Code](#code-4)
         1. [Convert XUTs, CUTs/SUTs to bed](#convert-xuts-cutssuts-to-bed)
             1. [Next steps](#next-steps)
         1. [Perform the "lift overs"](#perform-the-lift-overs)
-            1. [Get situated](#get-situated)
-                1. [Code](#code-4)
-            1. [Run liftOver](#run-liftover)
+            1. [Get situated](#get-situated-1)
                 1. [Code](#code-5)
+            1. [Run liftOver](#run-liftover)
+                1. [Code](#code-6)
+1. [Next step](#next-step)
 
 <!-- /MarkdownTOC -->
 </details>
+<br />
+
+<a id="get-situated"></a>
+## Get situated
+<a id="code"></a>
+### Code
+<details>
+<summary><i>Code: Get situated</i></summary>
+
+```bash
+#!/bin/bash
+
+cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215"
+source activate gff3_env
+```
+</details>
+<br />
 <br />
 
 <a id="install-liftover-lift-xuts-and-cutssuts"></a>
 ## Install liftOver, "lift" XUTs and CUTs/SUTs
 <a id="install-liftover-etc"></a>
 ### Install liftOver, etc.
-<a id="code"></a>
+<a id="code-1"></a>
 #### Code
 <details>
 <summary><i>Code: Install liftOver, etc.</i></summary>
@@ -44,12 +64,15 @@
 #!/bin/bash
 
 #  Within gff3_env
-mamba install -c bioconda ucsc-liftover
+install=FALSE
+if [[ "${install}" == TRUE ]]; then
+    mamba install -c bioconda ucsc-liftover
 
-mamba install \
-    -c conda-forge \
-        r-complexupset \
-        bioconductor-rtracklayer==1.58.0
+    mamba install \
+        -c conda-forge \
+            r-complexupset \
+            bioconductor-rtracklayer==1.58.0
+fi
 ```
 </details>
 <br />
@@ -227,7 +250,7 @@ Executing transaction: done
 ### "Lift" XUTs, CUTs/SUTs to appropriate coordinate system
 <a id="review-how-to-use-liftover"></a>
 #### Review how to use liftOver
-<a id="code-1"></a>
+<a id="code-2"></a>
 ##### Code
 <details>
 <summary><i>Code: Review how to use liftOver</i></summary>
@@ -298,7 +321,7 @@ options:
 
 <a id="check-on-the-contents-of-the-chain-files"></a>
 #### Check on the contents of the chain files
-<a id="code-2"></a>
+<a id="code-3"></a>
 ##### Code
 <details>
 <summary><i>Code: Check on the contents of the chain files</i></summary>
@@ -348,7 +371,7 @@ chain 21724089 chrI 230208 + 0 230208 chrI 230218 + 0 230218 1
 
 <a id="remove-chr-prefix-from-chain-files"></a>
 #### Remove "chr" prefix from chain files
-<a id="code-3"></a>
+<a id="code-4"></a>
 ##### Code
 <details>
 <summary><i>Code: Remove "chr" prefix from chain files</i></summary>
@@ -429,9 +452,9 @@ chain 21724089 I 230208 + 0 230208 I 230218 + 0 230218 1
 #### Perform the "lift overs"
 Back from running code in [`work_representative-non-coding-transcriptome.Rmd`](./work_representative-non-coding-transcriptome.Rmd)
 
-<a id="get-situated"></a>
+<a id="get-situated-1"></a>
 ##### Get situated
-<a id="code-4"></a>
+<a id="code-5"></a>
 ###### Code
 <details>
 <summary><i>Code: Get situated</i></summary>
@@ -439,15 +462,18 @@ Back from running code in [`work_representative-non-coding-transcriptome.Rmd`](.
 ```bash
 #!/bin/bash
 
-cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215"
-source activate gff3_env
+perform=FALSE
+if [[ "${perform}" == TRUE ]]; then
+    cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215"
+    source activate gff3_env
+fi
 ```
 </details>
 <br />
 
 <a id="run-liftover"></a>
 ##### Run liftOver
-<a id="code-5"></a>
+<a id="code-6"></a>
 ###### Code
 <details>
 <summary><i>Code: Run liftOver</i></summary>
@@ -650,4 +676,10 @@ I   28985   29746   XUT_Morillon_1R-16  0   -
 I   30016   30860   XUT_Morillon_1F-15  0   +
 ```
 </details>
+<br />
+<br />
+
+<a id="next-step"></a>
+## Next step
+Go to [`work_representative-non-coding-transcriptome_part-4.Rmd`](./work_representative-non-coding-transcriptome_part-4.Rmd)
 <br />

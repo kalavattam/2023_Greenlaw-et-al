@@ -42,7 +42,7 @@ rm(p_local, p_wd)
 <br />
 
 ## Read in and process `gtf` files (as `data.frame`s)
-The [CUT](https://static-content.springer.com/esm/art%3A10.1038%2Fnature07728/MediaObjects/41586_2009_BFnature07728_MOESM276_ESM.xls), [SUT](https://static-content.springer.com/esm/art%3A10.1038%2Fnature07728/MediaObjects/41586_2009_BFnature07728_MOESM276_ESM.xls), and [XUT](http://vm-gb.curie.fr/XUT/XUTs_Van_Dijk_et_al_2011.gff) [[Xu et al. (Huber, Steinmetz), 2009](https://www.nature.com/articles/nature07728); [van Dijk et al. (Thermes, Morillon), 2011](https://www.nature.com/articles/nature10118)] annotations need to be converted from prior S288c coordinate systems to the modern coordinate system used for this study: [R64](http://sgd-archive.yeastgenome.org/sequence/S288C_reference/genome_releases/). The CUTs and SUTs need to be "lifted" from [R56](sgd-archive.yeastgenome.org/sequence/S288C_reference/genome_releases/liftover/V56_2007_04_06_V64_2011_02_03.over.chain) to R64, and the XUTs need to be "lifted" from [R63](sgd-archive.yeastgenome.org/sequence/S288C_reference/genome_releases/liftover/V63_2010_01_05_V64_2011_02_03.over.chain) to R64. More details in [`work_representative-non-coding-transcriptome.md`](./work_representative-non-coding-transcriptome.md).
+The [CUT](https://static-content.springer.com/esm/art%3A10.1038%2Fnature07728/MediaObjects/41586_2009_BFnature07728_MOESM276_ESM.xls), [SUT](https://static-content.springer.com/esm/art%3A10.1038%2Fnature07728/MediaObjects/41586_2009_BFnature07728_MOESM276_ESM.xls), and [XUT](http://vm-gb.curie.fr/XUT/XUTs_Van_Dijk_et_al_2011.gff) [[Xu et al. (Huber, Steinmetz), 2009](https://www.nature.com/articles/nature07728); [van Dijk et al. (Thermes, Morillon), 2011](https://www.nature.com/articles/nature10118)] annotations need to be converted from prior S288c coordinate systems to the modern coordinate system used for this study: [R64](http://sgd-archive.yeastgenome.org/sequence/S288C_reference/genome_releases/). The CUTs and SUTs need to be "lifted" from [R56](sgd-archive.yeastgenome.org/sequence/S288C_reference/genome_releases/liftover/V56_2007_04_06_V64_2011_02_03.over.chain) to R64, and the XUTs need to be "lifted" from [R63](sgd-archive.yeastgenome.org/sequence/S288C_reference/genome_releases/liftover/V63_2010_01_05_V64_2011_02_03.over.chain) to R64. More details in [`work_representative-non-coding-transcriptome_part-1.md`](./work_representative-non-coding-transcriptome_part-1.md).
 
 ### Code
 <details>
@@ -213,14 +213,14 @@ CUTs_f <- paste(p_rep, "CUTs_SUTs", "CUTs.coord-R56.bed", sep = "/")
 SUTs_f <- paste(p_rep, "CUTs_SUTs", "SUTs.coord-R56.bed", sep = "/")
 XUTs_f <- paste(p_rep, "XUTs", "XUTs.coord-R63.bed", sep = "/")
 
-export.bed(CUTs_r, con = CUTs_f)
-export.bed(SUTs_r, con = SUTs_f)
-export.bed(XUTs_r, con = XUTs_f)
+rtracklayer::export.bed(CUTs_r, con = CUTs_f)
+rtracklayer::export.bed(SUTs_r, con = SUTs_f)
+rtracklayer::export.bed(XUTs_r, con = XUTs_f)
 ```
 </details>
 <br />
 <br />
 
 ## Next step
-Go to `work_representative-non-coding-transcriptome_part-3.md`
+Go to [`work_representative-non-coding-transcriptome_part-3.md`](./work_representative-non-coding-transcriptome_part-3.md)
 <br />

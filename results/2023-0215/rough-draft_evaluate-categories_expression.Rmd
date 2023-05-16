@@ -3220,7 +3220,8 @@ matrices <- list()
         chisq_contrib <- 100 * (chisq$residuals^2 / chisq$statistic)
 
         #  Visualize the contribution, saving the results
-        #+ See github.com/taiyun/corrplot/issues/108
+        #+ - sthda.com/english/wiki/chi-square-test-of-independence-in-r
+        #+ - github.com/taiyun/corrplot/issues/108
         prepare_list_corrplot <- function(df) {
             plot <- function() {
                 #  Note: variables "df" and "p" are bound from within the
