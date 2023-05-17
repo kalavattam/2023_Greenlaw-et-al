@@ -574,6 +574,9 @@ rm(details_id, details_type, n_features, details_all)
 ```{r}
 #!/usr/bin/env Rscript
 
+agg_chr_strand.bak <- agg_chr_strand
+# agg_chr_strand <- agg_chr_strand.bak
+
 agg_chr_strand <- agg_chr_strand %>%
     dplyr::mutate(
         CUT = stringr::str_count(details_type_init, "$CUTs|CUTs$|CUTs;|CUTs$"),
@@ -597,20 +600,25 @@ agg_chr_strand <- agg_chr_strand %>%
     )
 
 
-#TODO #PICKUPHERE #TOUPDATE Update b/c we now include R64-1-1 ncRNA
 evaluate_nos_types <- function(x) {
-    y <- ifelse(rowSums(agg_chr_strand[, 19:25]) == x, TRUE, FALSE)
+    y <- ifelse(
+        rowSums(agg_chr_strand[, 20:27]) == x, TRUE, FALSE
+    )
     return(y)
 }
 
 
 evaluate_nos_features <- function(x) {
-    y <- ifelse(rowSums(agg_chr_strand[, 12:18]) == x, TRUE, FALSE)
+    y <- ifelse(
+        rowSums(agg_chr_strand[, 12:19]) == x, TRUE, FALSE
+    )
     return(y)
 }
 
 
 #  Tally row-wise numbers of types
+# rowSums(agg_chr_strand[, 20:27]) %>% min()  # [1] 1
+# rowSums(agg_chr_strand[, 20:27]) %>% max()  # [1] 7
 agg_chr_strand$types_1 <- evaluate_nos_types(1)
 agg_chr_strand$types_2 <- evaluate_nos_types(2)
 agg_chr_strand$types_3 <- evaluate_nos_types(3)
@@ -620,6 +628,8 @@ agg_chr_strand$types_6 <- evaluate_nos_types(6)
 agg_chr_strand$types_7 <- evaluate_nos_types(7)
 
 #  Tally row-wise numbers of features
+# rowSums(agg_chr_strand[, 12:19]) %>% min()  # [1] 1
+# rowSums(agg_chr_strand[, 12:19]) %>% max()  # [1] 12
 agg_chr_strand$features_1 <- evaluate_nos_features(1)
 agg_chr_strand$features_2 <- evaluate_nos_features(2)
 agg_chr_strand$features_3 <- evaluate_nos_features(3)
@@ -631,14 +641,17 @@ agg_chr_strand$features_8 <- evaluate_nos_features(8)
 agg_chr_strand$features_9 <- evaluate_nos_features(9)
 agg_chr_strand$features_10 <- evaluate_nos_features(10)
 agg_chr_strand$features_11 <- evaluate_nos_features(11)
+agg_chr_strand$features_12 <- evaluate_nos_features(12)
 
 # #  Check
-# rowSums(agg_chr_strand[19:25]) == agg_chr_strand$n_types %>% table()
+# rowSums(agg_chr_strand[20:27]) %>% table()
+# agg_chr_strand$n_types %>% table()
+# (rowSums(agg_chr_strand[20:27]) == agg_chr_strand$n_types) %>% table()
 
-ncRNAs_cats <- colnames(agg_chr_strand)[19:25]
+all_ncRNAs_cats <- colnames(agg_chr_strand)[20:27]
 
 # #  Check
-# agg_chr_strand[ncRNAs_cats] %>% head(15) %>% t()
+# agg_chr_strand[, all_ncRNAs_cats] %>% head(15) %>% t()
 
 agg_chr_strand$length <- agg_chr_strand$end - agg_chr_strand$start
 agg_chr_strand <- agg_chr_strand %>%
@@ -654,10 +667,10 @@ agg_chr_strand <- agg_chr_strand %>%
 ```{r}
 #!/usr/bin/env Rscript
 
-#  By intersection size
+#  Sort by intersection size
 ComplexUpset::upset(
     agg_chr_strand,
-    ncRNAs_cats,
+    all_ncRNAs_cats,
     annotations = list(
         "Length (bp)" = agg_chr_strand %>%
             ggplot2::ggplot(., aes(x = intersection, y = length)) +
@@ -681,12 +694,12 @@ ComplexUpset::upset(
     width_ratio = 0.1
 )
 
-#  By which intersections are larger than expected by chance (assuming equal
-#+ probabilities of belonging to multiple sets) via the intersection size/union
-#+ size ratio
+#  Sort by which intersections are larger than expected by chance (assuming
+#+ equal probabilities of belonging to multiple sets) via the intersection
+#+ size/union ratio
 ComplexUpset::upset(
     agg_chr_strand,
-    ncRNAs_cats,
+    all_ncRNAs_cats,
     annotations = list(
         "Length (bp)" = agg_chr_strand %>%
             ggplot2::ggplot(., aes(x = intersection, y = length)) +
@@ -710,10 +723,10 @@ ComplexUpset::upset(
     width_ratio = 0.1
 )
 
-#  By degree
+#  Sort by set degree
 ComplexUpset::upset(
     agg_chr_strand,
-    ncRNAs_cats,
+    all_ncRNAs_cats,
     annotations = list(
         "Length (bp)" = agg_chr_strand %>%
             ggplot2::ggplot(., aes(x = intersection, y = length)) +
@@ -865,6 +878,59 @@ handle_Schulz <- function(x) {
 }
 
 
+`handle_SGD_R64-1-1` <- function(x) {
+    y <- x %>%
+        dplyr::rename(seqname = chr) %>%
+        dplyr::mutate(feature = "feature") %>%
+        dplyr::relocate(c(source, feature), .after = seqname) %>%
+        dplyr::mutate(score = ".", frame = ".") %>%
+        dplyr::relocate(score, .after = end) %>%
+        dplyr::relocate(frame, .after = strand) %>%
+        dplyr::mutate(
+            attribute = paste(
+                paste0("gene_id \"", id, "\""),
+                paste0("transcript_id \"", id, "\""),
+                paste0("type \"", type, "\""),
+                paste0(
+                    "liftOver \"",
+                    stringr::str_replace_all(coordinates, " ", "-"),
+                    "\""
+                ),
+                sep = "; "
+            )
+        ) %>%
+        dplyr::select(-c(type, id, coordinates, etc))
+    return(y)
+}
+
+
+handle_van_Dijk <- function(x) {
+    y <- x %>%
+        dplyr::rename(seqname = chr) %>%
+        dplyr::mutate(feature = "feature") %>%
+        dplyr::relocate(c(source, feature), .after = seqname) %>%
+        dplyr::mutate(score = ".", frame = ".") %>%
+        dplyr::relocate(score, .after = end) %>%
+        dplyr::relocate(frame, .after = strand) %>%
+        dplyr::mutate(
+            attribute = paste(
+                paste0("gene_id \"", id, "\""),
+                paste0("transcript_id \"", id, "\""),
+                paste0("type \"", stringr::str_remove(type, "s"), "\""),
+                paste0(
+                    "liftOver \"",
+                    stringr::str_replace_all(coordinates, " ", "-"),
+                    "\""
+                ),
+                sep = "; "
+            )
+        ) %>%
+        dplyr::select(-c(id, type, etc, coordinates))
+    
+    return(y)
+}
+
+
 handle_Venkatesh <- function(x) {
     y <- x %>%
         dplyr::rename(seqname = chr) %>%
@@ -896,47 +962,47 @@ handle_Venkatesh <- function(x) {
 }
 
 
-handle_van_Dijk <- function(x) {
-    y <- x %>%
-        dplyr::rename(seqname = chr) %>%
-        dplyr::mutate(feature = "feature") %>%
-        dplyr::relocate(c(source, feature), .after = seqname) %>%
-        dplyr::mutate(score = ".", frame = ".") %>%
-        dplyr::relocate(score, .after = end) %>%
-        dplyr::relocate(frame, .after = strand) %>%
-        dplyr::mutate(
-            attribute = paste(
-                paste0("gene_id \"", id, "\""),
-                paste0("transcript_id \"", id, "\""),
-                paste0("type \"", stringr::str_remove(type, "s"), "\""),
-                paste0(
-                    "liftOver \"",
-                    stringr::str_replace_all(coordinates, " ", "-"),
-                    "\""
-                ),
-                sep = "; "
-            )
-        ) %>%
-        dplyr::select(-c(id, type, etc, coordinates))
-    
-    return(y)
-}
-
 gtf_CUTs <- handle_Xu(CUTs)
 gtf_CUTs_4x <- handle_Vera(CUTs_4x)
 gtf_CUTs_HMM <- handle_Vera(CUTs_HMM)
+gtf_ncRNAs <- `handle_SGD_R64-1-1`(ncRNAs)
 gtf_NUTs <- handle_Schulz(NUTs)
 gtf_SRATs <- handle_Venkatesh(SRATs)
 gtf_SUTs <- handle_Xu(SUTs)
 gtf_XUTs <- handle_van_Dijk(XUTs)
 
-write_gtf(gtf_CUTs, paste(representation, "Greenlaw-et-al_CUTs.gtf", sep = "/"))
-write_gtf(gtf_CUTs_4x, paste(representation, "Greenlaw-et-al_CUTs-4x.gtf", sep = "/"))
-write_gtf(gtf_CUTs_HMM, paste(representation, "Greenlaw-et-al_CUTs-HMM.gtf", sep = "/"))
-write_gtf(gtf_NUTs, paste(representation, "Greenlaw-et-al_NUTs.gtf", sep = "/"))
-write_gtf(gtf_SRATs, paste(representation, "Greenlaw-et-al_SRATs.gtf", sep = "/"))
-write_gtf(gtf_SUTs, paste(representation, "Greenlaw-et-al_SUTs.gtf", sep = "/"))
-write_gtf(gtf_XUTs, paste(representation, "Greenlaw-et-al_XUTs.gtf", sep = "/"))
+write_gtf(
+    gtf_CUTs,
+    paste(representation, "Greenlaw-et-al_CUTs.gtf", sep = "/")
+)
+write_gtf(
+    gtf_CUTs_4x,
+    paste(representation, "Greenlaw-et-al_CUTs-4x.gtf", sep = "/")
+)
+write_gtf(
+    gtf_CUTs_HMM,
+    paste(representation, "Greenlaw-et-al_CUTs-HMM.gtf", sep = "/")
+)
+write_gtf(
+    gtf_ncRNAs,
+    paste(representation, "Greenlaw-et-al_ncRNAs.gtf", sep = "/")
+)
+write_gtf(
+    gtf_NUTs,
+    paste(representation, "Greenlaw-et-al_NUTs.gtf", sep = "/")
+)
+write_gtf(
+    gtf_SRATs,
+    paste(representation, "Greenlaw-et-al_SRATs.gtf", sep = "/")
+)
+write_gtf(
+    gtf_SUTs,
+    paste(representation, "Greenlaw-et-al_SUTs.gtf", sep = "/")
+)
+write_gtf(
+    gtf_XUTs,
+    paste(representation, "Greenlaw-et-al_XUTs.gtf", sep = "/")
+)
 ```
 </details>
 <br />
@@ -952,6 +1018,7 @@ gtf_combined <- dplyr::bind_rows(
     gtf_CUTs,
     gtf_CUTs_4x,
     gtf_CUTs_HMM,
+    gtf_ncRNAs,
     gtf_NUTs,
     gtf_SRATs,
     gtf_SUTs,
@@ -1062,4 +1129,8 @@ agg_chr_strand[, 1:12] %>%
     )
 ```
 </details>
+<br />
+
+## Next step
+Go to [`work_representative-non-coding-transcriptome_part-5.md`](./work_representative-non-coding-transcriptome_part-5.md)
 <br />

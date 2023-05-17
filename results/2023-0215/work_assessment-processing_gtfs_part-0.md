@@ -45,6 +45,7 @@
             1. [Code](#code-15)
         1. [Use `sbatch` to run the '`submission`' and '`run`' scripts](#use-sbatch-to-run-the-submission-and-run-scripts)
             1. [Code](#code-16)
+1. [Next step](#next-step)
 
 <!-- /MarkdownTOC -->
 </details>
@@ -1552,4 +1553,10 @@ sbatch "${store_scripts_Q}/${script_submit}"
 </details>
 <br />
 </details>
+<br />
+<br />
+
+<a id="next-step"></a>
+## Next step
+Proceed to [work_assessment-processing_gtfs_part-1.Rmd](./work_assessment-processing_gtfs_part-1.Rmd)
 <br />
