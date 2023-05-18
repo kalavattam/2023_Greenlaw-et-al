@@ -1022,7 +1022,9 @@ dds$sizeFactor %>% as.data.frame()
 #  Run pairwise DGE analyses by timepoint =====================================
 #  DSm2 -----------------------------------------------------------------------
 #  Adjust counts and metadata matrices
-t_counts_DSm2 <- t_counts[, colnames(t_counts) %>% stringr::str_detect("DSm2_")]
+t_counts_DSm2 <- t_counts[
+    , colnames(t_counts) %>% stringr::str_detect("DSm2_")
+]
 t_meta_DSm2 <- t_meta[rownames(t_meta) %>% stringr::str_detect("DSm2_"), ] %>%
     dplyr::mutate(genotype = factor(genotype, levels = c("WT", "r6n")))
 
@@ -1265,9 +1267,111 @@ if(isTRUE(run)) {
         dplyr::mutate(gene_id = gene_id) %>%
         dplyr::relocate(gene_id, .after = names)
     
-    readr::write_tsv(counts_raw, "./data_G1-timecourse-Q_counts-raw.tsv")
-    readr::write_tsv(counts_rlog, "./data_G1-timecourse-Q_counts-rlog.tsv")
+    readr::write_tsv(counts_raw, "./data_timecourse_counts-raw.tsv")
+    readr::write_tsv(counts_rlog, "./data_timecourse_counts-rlog.tsv")
 }
+
+
+#  Create a clustered heatmap of rlog-normalized counts =======================
+run = FALSE
+if(isTRUE(run)) {
+    counts_rlog_full <- counts_rlog
+    counts_rlog_full$features <- t_tc_SC$features
+    counts_rlog_full <- dplyr::full_join(
+        counts_rlog_full, t_tc_SC[, 1:10], by = "features"
+    ) %>%
+        dplyr::relocate(
+            colnames(t_tc_SC[, 1:10]), .before = WT_DSm2_rep1_tech1
+        )
+    
+    table(rowSums(counts_rlog_full[, 11:ncol(counts_rlog_full)]) == 0)
+    crf_no_0 <- counts_rlog_full[!rowSums(counts_rlog_full[, 11:ncol(counts_rlog_full)]) == 0, ]
+    pheatmap::pheatmap(
+        crf_no_0[, 11:ncol(crf_no_0)],
+        scale = "row",
+        border = "white",
+        cluster_cols = TRUE,
+        show_rownames = FALSE
+    )
+    
+    colnames(crf_no_0[, 11:ncol(crf_no_0)])
+    # "WT_DSm2_rep1_tech1" "WT_DSm2_rep2_tech1" 
+    # "WT_DSp2_rep1_tech1" "WT_DSp2_rep2_tech1"
+    # "WT_DSp24_rep1_tech1" "WT_DSp24_rep2_tech1"
+    # "WT_DSp48_rep1_tech1" "WT_DSp48_rep1_tech2" "WT_DSp48_rep2_tech1"
+    # "r6n_DSm2_rep1_tech1" "r6n_DSm2_rep2_tech1"
+    # "r6n_DSp2_rep1_tech1" "r6n_DSp2_rep2_tech1"
+    # "r6n_DSp24_rep1_tech1" "r6n_DSp24_rep2_tech1"
+    # "r6n_DSp48_rep1_tech1" "r6n_DSp48_rep2_tech2"
+    
+    crf_no_0$mean_WT_DSm2 <- rowMeans(cbind(
+        crf_no_0$WT_DSm2_rep1_tech1,
+        crf_no_0$WT_DSm2_rep2_tech1
+    ))
+    crf_no_0$mean_WT_DSp2 <- rowMeans(cbind(
+        crf_no_0$WT_DSp2_rep1_tech1,
+        crf_no_0$WT_DSp2_rep2_tech1
+    ))
+    crf_no_0$mean_WT_DSp24 <- rowMeans(cbind(
+        crf_no_0$WT_DSp24_rep1_tech1,
+        crf_no_0$WT_DSp24_rep2_tech1
+    ))
+    crf_no_0$mean_WT_DSp48 <- rowMeans(cbind(
+        crf_no_0$WT_DSp48_rep1_tech1,
+        crf_no_0$WT_DSp48_rep2_tech1,
+        crf_no_0$WT_DSp48_rep1_tech2
+    ))
+    
+    crf_no_0$mean_r6n_DSm2 <- rowMeans(cbind(
+        crf_no_0$r6n_DSm2_rep1_tech1,
+        crf_no_0$r6n_DSm2_rep2_tech1
+    ))
+    crf_no_0$mean_r6n_DSp2 <- rowMeans(cbind(
+        crf_no_0$r6n_DSp2_rep1_tech1,
+        crf_no_0$r6n_DSp2_rep2_tech1
+    ))
+    crf_no_0$mean_r6n_DSp24 <- rowMeans(cbind(
+        crf_no_0$r6n_DSp24_rep1_tech1,
+        crf_no_0$r6n_DSp24_rep2_tech1
+    ))
+    crf_no_0$mean_r6n_DSp48 <- rowMeans(cbind(
+        crf_no_0$r6n_DSp48_rep1_tech1,
+        crf_no_0$r6n_DSp48_rep2_tech2
+    ))
+    
+    pheatmap::pheatmap(
+        crf_no_0[, 28:ncol(crf_no_0)],
+        scale = "row",
+        border = "white",
+        cluster_cols = TRUE,
+        show_rownames = FALSE
+    )
+    
+    crf_no_0$`r6n-over-WT_DSm2` <- crf_no_0$mean_r6n_DSm2 / crf_no_0$mean_WT_DSm2
+    crf_no_0$`r6n-over-WT_DSp2` <- crf_no_0$mean_r6n_DSp2 / crf_no_0$mean_WT_DSp2
+    crf_no_0$`r6n-over-WT_DSp24` <- crf_no_0$mean_r6n_DSp24 / crf_no_0$mean_WT_DSp24
+    crf_no_0$`r6n-over-WT_DSp48` <- crf_no_0$mean_r6n_DSp48 / crf_no_0$mean_WT_DSp48
+    
+    pheatmap::pheatmap(
+        crf_no_0[, 36:ncol(crf_no_0)],
+        scale = "row",
+        border = "white",
+        cluster_cols = FALSE,
+        show_rownames = FALSE
+    )
+    
+    pheatmap::pheatmap(
+        crf_no_0[, 36:ncol(crf_no_0)],
+        kmeans_k = 3,
+        scale = "row",
+        border = "white",
+        cluster_cols = FALSE,
+        show_rownames = FALSE
+    )
+}
+
+#NOTE 1/2 Put this work on hold; AG will try another approach: taking the mean
+#NOTE 1/2 of each sample cell, then clustering on that
 
 
 #  Perform PCA of DSm2 vs. DSp2 and DSp2 vs. DSp24 ============================
@@ -1356,22 +1460,25 @@ PC_DSm2_DSp2_rlog_PC2_neg <- dplyr::full_join(
     tidyr::drop_na("PC2") %>%
     dplyr::relocate("PC2", .before = "IDs")
 
-readr::write_tsv(
-    PC_DSm2_DSp2_rlog_PC1_pos,
-    "~/Desktop/DSm2-vs-DSp2.size-factor-KL.loadings-list.PC1-pos.tsv"
-)
-readr::write_tsv(
-    PC_DSm2_DSp2_rlog_PC1_neg,
-    "~/Desktop/DSm2-vs-DSp2.size-factor-KL.loadings-list.PC1-neg.tsv"
-)
-readr::write_tsv(
-    PC_DSm2_DSp2_rlog_PC2_pos,
-    "~/Desktop/DSm2-vs-DSp2.size-factor-KL.loadings-list.PC2-pos.tsv"
-)
-readr::write_tsv(
-    PC_DSm2_DSp2_rlog_PC2_neg,
-    "~/Desktop/DSm2-vs-DSp2.size-factor-KL.loadings-list.PC2-neg.tsv"
-)
+run <- FALSE
+if(isTRUE(run)) {
+    readr::write_tsv(
+        PC_DSm2_DSp2_rlog_PC1_pos,
+        "~/Desktop/DSm2-vs-DSp2.size-factor-KL.loadings-list.PC1-pos.tsv"
+    )
+    readr::write_tsv(
+        PC_DSm2_DSp2_rlog_PC1_neg,
+        "~/Desktop/DSm2-vs-DSp2.size-factor-KL.loadings-list.PC1-neg.tsv"
+    )
+    readr::write_tsv(
+        PC_DSm2_DSp2_rlog_PC2_pos,
+        "~/Desktop/DSm2-vs-DSp2.size-factor-KL.loadings-list.PC2-pos.tsv"
+    )
+    readr::write_tsv(
+        PC_DSm2_DSp2_rlog_PC2_neg,
+        "~/Desktop/DSm2-vs-DSp2.size-factor-KL.loadings-list.PC2-neg.tsv"
+    )
+}
 
 
 #  DSp2 vs. DSp24 -------------------------------------------------------------
@@ -1458,19 +1565,22 @@ PC_DSp2_DSp24_rlog_PC2_neg <- dplyr::full_join(
     tidyr::drop_na("PC2") %>%
     dplyr::relocate("PC2", .before = "IDs")
 
-readr::write_tsv(
-    PC_DSp2_DSp24_rlog_PC1_pos,
-    "~/Desktop/DSp2-vs-DSp24.size-factor-KL.loadings-list.PC1-pos.tsv"
-)
-readr::write_tsv(
-    PC_DSp2_DSp24_rlog_PC1_neg,
-    "~/Desktop/DSp2-vs-DSp24.size-factor-KL.loadings-list.PC1-neg.tsv"
-)
-readr::write_tsv(
-    PC_DSp2_DSp24_rlog_PC2_pos,
-    "~/Desktop/DSp2-vs-DSp24.size-factor-KL.loadings-list.PC2-pos.tsv"
-)
-readr::write_tsv(
-    PC_DSp2_DSp24_rlog_PC2_neg,
-    "~/Desktop/DSp2-vs-DSp24.size-factor-KL.loadings-list.PC2-neg.tsv"
-)
+run <- FALSE
+if(isTRUE(run)) {
+    readr::write_tsv(
+        PC_DSp2_DSp24_rlog_PC1_pos,
+        "~/Desktop/DSp2-vs-DSp24.size-factor-KL.loadings-list.PC1-pos.tsv"
+    )
+    readr::write_tsv(
+        PC_DSp2_DSp24_rlog_PC1_neg,
+        "~/Desktop/DSp2-vs-DSp24.size-factor-KL.loadings-list.PC1-neg.tsv"
+    )
+    readr::write_tsv(
+        PC_DSp2_DSp24_rlog_PC2_pos,
+        "~/Desktop/DSp2-vs-DSp24.size-factor-KL.loadings-list.PC2-pos.tsv"
+    )
+    readr::write_tsv(
+        PC_DSp2_DSp24_rlog_PC2_neg,
+        "~/Desktop/DSp2-vs-DSp24.size-factor-KL.loadings-list.PC2-neg.tsv"
+    )
+}

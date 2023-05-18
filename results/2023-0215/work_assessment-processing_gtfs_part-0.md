@@ -11,40 +11,21 @@
     1. [Code](#code)
 1. [0. Copy in files of interest](#0-copy-in-files-of-interest)
     1. [Code](#code-1)
-1. [1. Run AGAT](#1-run-agat)
-    1. [Make associated storage directories](#make-associated-storage-directories)
-        1. [Code](#code-2)
-    1. [Create arrays of relevant `gff3` and `bam` files](#create-arrays-of-relevant-gff3-and-bam-files)
-        1. [Code](#code-3)
-    1. [Loop through array elements with `agat_convert_sp_gff2gtf.pl` `#DONOTRUN`](#loop-through-array-elements-with-agat_convert_sp_gff2gtfpl-donotrun)
-        1. [Code](#code-4)
-1. [2. Run ~~GffCompare~~GffRead](#2-run-~~gffcompare~~gffread)
-    1. [Approach #1 \(previous, "Run GffCompare"\)](#approach-1-previous-run-gffcompare)
-        1. [Code](#code-5)
-            1. [Loop through array elements with `gffcompare`](#loop-through-array-elements-with-gffcompare)
-                1. [Code](#code-6)
-    1. [Approach #2 \(current, "Run GffRead"\)](#approach-2-current-run-gffread)
-        1. [Code](#code-7)
-1. [3. Strip string "chr" from collapsed gtf files `#DONOTRUN`](#3-strip-string-chr-from-collapsed-gtf-files-donotrun)
-    1. [Code](#code-8)
-1. [4. Run `htseq-count`](#4-run-htseq-count)
-    1. [~~Perform an "echo" run of~~Run `htseq-count` on bams in `bams_renamed/`](#~~perform-an-echo-run-of~~run-htseq-count-on-bams-in-bams_renamed)
-        1. [Code](#code-9)
-    1. [Correct tsv outfiles with formatting errors](#correct-tsv-outfiles-with-formatting-errors)
-        1. [Code](#code-10)
-    1. [Job-submission code for approach #1 `#DONOTRUN`](#job-submission-code-for-approach-1-donotrun)
-        1. [Set up necessary variables](#set-up-necessary-variables)
-            1. [Code](#code-11)
-        1. [Generate lists of arguments](#generate-lists-of-arguments)
-            1. [Code](#code-12)
-        1. [Break the full, multi-line lists into individual per-line lists](#break-the-full-multi-line-lists-into-individual-per-line-lists)
-            1. [Code](#code-13)
-        1. [Use a `HEREDOC` to write a '`run`' script](#use-a-heredoc-to-write-a-run-script)
-            1. [Code](#code-14)
-        1. [Use a `HEREDOC` to write '`submit`' scripts](#use-a-heredoc-to-write-submit-scripts)
-            1. [Code](#code-15)
-        1. [Use `sbatch` to run the '`submission`' and '`run`' scripts](#use-sbatch-to-run-the-submission-and-run-scripts)
-            1. [Code](#code-16)
+1. [0. Make associated storage directories](#0-make-associated-storage-directories)
+    1. [Code](#code-2)
+1. [0. Create arrays of relevant `gff3` and `bam` files](#0-create-arrays-of-relevant-gff3-and-bam-files)
+    1. [Code](#code-3)
+1. [1. Run GffRead](#1-run-gffread)
+    1. [Code](#code-4)
+1. [2. Run `htseq-count`](#2-run-htseq-count)
+    1. [Run `htseq-count` on bams in `bams_renamed/`](#run-htseq-count-on-bams-in-bams_renamed)
+        1. [Call `htseq-count` with respect to `--type` locus, mRNA, exon, and CDS](#call-htseq-count-with-respect-to---type-locus-mrna-exon-and-cds)
+            1. [Code](#code-5)
+        1. [Call `htseq-count` with respect to the intron-filtering-only `gffread` files](#call-htseq-count-with-respect-to-the-intron-filtering-only-gffread-files)
+            1. [Code](#code-6)
+1. [2.5. Correct tsv outfiles with formatting errors](#25-correct-tsv-outfiles-with-formatting-errors)
+    1. [Notes](#notes)
+    1. [Code](#code-7)
 1. [Next step](#next-step)
 
 <!-- /MarkdownTOC -->
@@ -66,8 +47,8 @@
 # tmux attach -t gff3
 grabnode  # 1, defaults
 
-run=TRUE  # echo "${run}"
-# run=FALSE  # echo "${run}"
+run=TRUE
+# run=FALSE
 [[ "${run}" == TRUE ]] &&
     {
         transcriptome && 
@@ -96,8 +77,8 @@ run=TRUE  # echo "${run}"
 ```bash
 #!/bin/bash
 
-# run=TRUE  # echo "${run}"
-run=FALSE  # echo "${run}"
+# run=TRUE  # Only need to run the first time
+run=FALSE
 [[ "${run}" == TRUE ]] &&
     {
         #  Already ----------------------------
@@ -166,20 +147,18 @@ run=FALSE  # echo "${run}"
 <br />
 <br />
 
-<a id="1-run-agat"></a>
-## 1. Run AGAT
-<a id="make-associated-storage-directories"></a>
-### Make associated storage directories
+<a id="0-make-associated-storage-directories"></a>
+## 0. Make associated storage directories
 <a id="code-2"></a>
-#### Code
+### Code
 <details>
 <summary><i>Code: Make associated storage directories</i></summary>
 
 ```bash
 #!/bin/bash
 
-run=TRUE  # echo "${run}"
-# run=FALSE  # echo "${run}"
+# run=TRUE  # Only need to run the first time
+run=FALSE
 [[ "${run}" == TRUE ]] &&
     {
         mkdir -p outfiles_gtf-gff3/{already,Trinity-GG}
@@ -191,19 +170,20 @@ run=TRUE  # echo "${run}"
 ```
 </details>
 <br />
+<br />
 
-<a id="create-arrays-of-relevant-gff3-and-bam-files"></a>
-### Create arrays of relevant `gff3` and `bam` files
+<a id="0-create-arrays-of-relevant-gff3-and-bam-files"></a>
+## 0. Create arrays of relevant `gff3` and `bam` files
 <a id="code-3"></a>
-#### Code
+### Code
 <details>
 <summary><i>Code: Create arrays of relevant gff3 and bam files</i></summary>
 
 ```bash
 #!/bin/bash
 
-run=TRUE  # echo "${run}"
-# run=FALSE  # echo "${run}"
+run=TRUE
+# run=FALSE
 [[ "${run}" == TRUE ]] &&
     {
         unset stems
@@ -237,133 +217,35 @@ run=TRUE  # echo "${run}"
 ```
 </details>
 <br />
+<br />
 
-<a id="loop-through-array-elements-with-agat_convert_sp_gff2gtfpl-donotrun"></a>
-### Loop through array elements with `agat_convert_sp_gff2gtf.pl` `#DONOTRUN`
+<a id="1-run-gffread"></a>
+## 1. Run GffRead
 <a id="code-4"></a>
-#### Code
+### Code
 <details>
-<summary><i>Code: Loop through array elements with agat_convert_sp_gff2gtf.pl</i></summary>
-
-*`#NOTE` Only need to run this for approach #1*
-```bash
-#!/bin/bash
-
-# run=TRUE  # Approach #1: echo "${run}"
-run=FALSE  # Approach #2: echo "${run}"
-[[ "${run}" == TRUE ]] &&
-    {
-        for h in ./outfiles_gtf-gff3/Trinity-GG/{G_N,Q_N}/trinity-gg_*.gtf; do
-            if [[ ! -e "${h}" ]]; then
-                for i in "${stems[@]}"; do
-                    in="${i}.gff3"
-                    out="$(echo "${i}" | sed 's/infiles/outfiles/g' - )"
-                    err_out="$(dirname "${out}")/err_out/01-agat.$(basename "${out}")"
-                    echo "Running agat_convert_sp_gff2gtf.pl"
-                    echo "        in   ${in}"
-                    echo "       out  ${out}.gtf"
-                    echo "    stdout  ${err_out}.stdout.txt"
-                    echo "    stderr  ${err_out}.stderr.txt"
-                    echo ""
-
-                    agat_convert_sp_gff2gtf.pl \
-                        --gff "${in}" \
-                        -o "${out}.gtf" \
-                             > >(tee -a "${err_out}.stdout.txt") \
-                            2> >(tee -a "${err_out}.stderr.txt")
-                done
-            else
-                echo "Files already exist; thus, skipping the running of AGAT"
-            fi
-            
-            break
-        done
-    }
-```
-</details>
-<br />
-
-<a id="2-run-~~gffcompare~~gffread"></a>
-## 2. Run ~~GffCompare~~GffRead
-<a id="approach-1-previous-run-gffcompare"></a>
-### Approach #1 (previous, "Run GffCompare")
-<a id="code-5"></a>
-#### Code
-<details>
-<summary><i>Code: Approach #1 (previous, "Run GffCompare")</i></summary>
-
-<a id="loop-through-array-elements-with-gffcompare"></a>
-##### Loop through array elements with `gffcompare`
-<a id="code-6"></a>
-###### Code
-<details>
-<summary><i>Code: Loop through array elements with gffcompare</i></summary>
+<summary><i>Code: Run GffRead</i></summary>
 
 ```bash
 #!/bin/bash
 
-# run=TRUE  # Approach #1: echo "${run}"
-run=FALSE  # Approach #2: echo "${run}"
+#  Echo test of GffRead -------------------------------------------------------
+run=TRUE
+# run=FALSE
 [[ "${run}" == TRUE ]] &&
     {
-        for h in ./outfiles_gtf-gff3/Trinity-GG/{G_N,Q_N}/trinity-gg_*.gffcompare; do
-            if [[ ! -e "${h}" ]]; then
-                for i in "${stems[@]}"; do
-                    in="$(echo "${i}" | sed 's/infiles/outfiles/g' -).gtf"
-                    out="${in%.gtf}"
-                    err_out="$(dirname "${out}")/err_out/02-gffcompare.$(basename "${out}")"
-                    echo "Running gffcompare"
-                    echo "        in  ${in}"
-                    echo "       out  ${out}"
-                    echo "    stdout  ${err_out}.stdout.txt"
-                    echo "    stderr  ${err_out}.stderr.txt"
-                    echo ""
-                    
-                    echo "\
-                    gffcompare -C \"${in}\" \\
-                        -o \"${out}\" \\
-                             > >(tee -a \"${err_out%.gtf}.stdout.txt\") \\
-                            2> >(tee -a \"${err_out%.gtf}.stderr.txt\")
-                    "
-
-                    gffcompare -C "${in}" \
-                        -o "${out}.gffcompare" \
-                         > >(tee -a "${err_out%.gtf}.stdout.txt") \
-                        2> >(tee -a "${err_out%.gtf}.stderr.txt")
-                done
-            else
-                echo "Files already exist; thus, skipping the running of GffCompare"
-            fi
-
-            break
-        done
-    }
-```
-</details>
-<br />
-</details>
-<br />
-
-<a id="approach-2-current-run-gffread"></a>
-### Approach #2 (current, "Run GffRead")
-<a id="code-7"></a>
-#### Code
-<details>
-<summary><i>Code: Approach #2 (current, "Run GffRead")</i></summary>
-
-```bash
-#!/bin/bash
-
-run=TRUE  # Approach #1: echo "${run}"
-# run=FALSE  # Approach #2: echo "${run}"
-[[ "${run}" == TRUE ]] &&
-    {
+        h=0
         for i in "${stems[@]}"; do
             # i="${stems[10]}"  # echo "${i}"
             in="${i}.gff3"  # echo "${in}"
             out="$(echo "${i}" | sed 's/infiles/outfiles/g;s/\\.gff3//g' -).gffread.gff3"  # echo "${out}"
             err_out="$(dirname "${out}")/err_out/02-gffread.$(basename "${out}" .gff3)"  # echo "${err_out}"
             fasta_g="${HOME}/genomes/combined_SC_KL_20S/fasta/fasta_individual/Saccharomyces_cerevisiae.R64-1-1.dna.toplevel.chr-rename.fasta"  # ., "${fasta_g}"
+            
+            let h++
+            echo "    #  ==============================================="
+            printf "    Iteration '%d'\n\n" "${h}"
+
             echo """
             ---------------
             Running gffread
@@ -373,22 +255,21 @@ run=TRUE  # Approach #1: echo "${run}"
                     stdout  ${err_out}.stdout.txt
                     stderr  ${err_out}.stderr.txt
             
-            # ---------------------
-            # Call to gffread: Base
-            # ---------------------
-            # gffread \\
-            #     -v \\
-            #     -g ${fasta} \\
-            #     -i 1000 \\
-            #     -Z \\
-            #     -M -K -Q \\
-            #     -F -N -P \\
-            #     --force-exons --gene2exon \\
-            #     -o ${out} \\
-            #     <(awk -F '\t' 'BEGIN {OFS = FS} { gsub(/chr/, \"\", \$1); gsub(/M/, \"Mito\", \$1); print }' "${in}") \\
-            #          > >(tee -a ${err_out%.}.stdout.txt) \\
-            #         2> >(tee -a ${err_out%.}.stderr.txt)
-            #
+            ---------------------
+            Call to gffread: Base
+            ---------------------
+            gffread \\
+                -v \\
+                -g ${fasta} \\
+                -i 1000 \\
+                -Z \\
+                -M -K -Q \\
+                -F -N -P \\
+                --force-exons --gene2exon \\
+                -o ${out} \\
+                <(awk -F '\t' 'BEGIN {OFS = FS} { gsub(/chr/, \"\", \$1); gsub(/M/, \"Mito\", \$1); print }' "${in}") \\
+                     > >(tee -a ${err_out%.}.stdout.txt) \\
+                    2> >(tee -a ${err_out%.}.stderr.txt)
 
             --------------------------------------
             Call to gffread: Intron-filtering only
@@ -401,53 +282,143 @@ run=TRUE  # Approach #1: echo "${run}"
                      > >(tee -a ${err_out%.}-intron-filtering-only.stdout.txt) \\
                     2> >(tee -a ${err_out%.}-intron-filtering-only.stderr.txt)
 
-            # ----------------------------
-            # Call to gffread: Coding only
-            # ----------------------------
-            # gffread \\
-            #     -v \\
-            #     -g ${fasta} \\
-            #     -C -i 1000 \\
-            #     -Z \\
-            #     -M -K -Q \\
-            #     -F -N -P \\
-            #     --force-exons --gene2exon \\
-            #     -o ${out/.gff3/-coding.gff3} \\
-            #     <(awk -F '\t' 'BEGIN {OFS = FS} { gsub(/chr/, \"\", \$1); gsub(/M/, \"Mito\", \$1); print }' "${in}") \\
-            #          > >(tee -a ${err_out%.}-coding.stdout.txt) \\
-            #         2> >(tee -a ${err_out%.}-coding.stderr.txt)
-            #
-            # --------------------------------
-            # Call to gffread: Non-coding only
-            # --------------------------------
-            # gffread \\
-            #     -v \\
-            #     -g ${fasta} \\
-            #     --nc -i 1000 \\
-            #     -Z \\
-            #     -M -K -Q \\
-            #     -F -N -P \\
-            #     --force-exons --gene2exon \\
-            #     -o ${out/.gff3/-non-coding.gff3} \\
-            #     <(awk -F '\t' 'BEGIN {OFS = FS} { gsub(/chr/, \"\", \$1); gsub(/M/, \"Mito\", \$1); print }' "${in}") \\
-            #          > >(tee -a ${err_out%.}-non-coding.stdout.txt) \\
-            #         2> >(tee -a ${err_out%.}-non-coding.stderr.txt)
+            ----------------------------
+            Call to gffread: Coding only
+            ----------------------------
+            gffread \\
+                -v \\
+                -g ${fasta} \\
+                -C -i 1000 \\
+                -Z \\
+                -M -K -Q \\
+                -F -N -P \\
+                --force-exons --gene2exon \\
+                -o ${out/.gff3/-coding.gff3} \\
+                <(awk -F '\t' 'BEGIN {OFS = FS} { gsub(/chr/, \"\", \$1); gsub(/M/, \"Mito\", \$1); print }' "${in}") \\
+                     > >(tee -a ${err_out%.}-coding.stdout.txt) \\
+                    2> >(tee -a ${err_out%.}-coding.stderr.txt)
+            
+            --------------------------------
+            Call to gffread: Non-coding only
+            --------------------------------
+            gffread \\
+                -v \\
+                -g ${fasta} \\
+                --nc -i 1000 \\
+                -Z \\
+                -M -K -Q \\
+                -F -N -P \\
+                --force-exons --gene2exon \\
+                -o ${out/.gff3/-non-coding.gff3} \\
+                <(awk -F '\t' 'BEGIN {OFS = FS} { gsub(/chr/, \"\", \$1); gsub(/M/, \"Mito\", \$1); print }' "${in}") \\
+                     > >(tee -a ${err_out%.}-non-coding.stdout.txt) \\
+                    2> >(tee -a ${err_out%.}-non-coding.stderr.txt)
+            
             """
-            echo ""
+        done
+    }
 
-            # #  Base
-            # gffread \
-            #     -v \
-            #     -g "${fasta_g}" \
-            #     -i 1000 \
-            #     -Z \
-            #     -M -K -Q \
-            #     -F -N -P \
-            #     --force-exons --gene2exon \
-            #     -o "${out}" \
-            #     <(awk -F '\t' 'BEGIN {OFS = FS} { gsub(/chr/, "", $1); gsub(/M/, "Mito", $1); print }' "${in}") \
-            #          > >(tee -a "${err_out%.}.stdout.txt") \
-            #         2> >(tee -a "${err_out%.}.stderr.txt")
+
+#  Running GffRead ------------------------------------------------------------
+# run=TRUE
+run=FALSE
+[[ "${run}" == TRUE ]] &&
+    {
+        h=0
+        for i in "${stems[@]}"; do
+            # i="${stems[10]}"  # echo "${i}"
+            in="${i}.gff3"  # echo "${in}"
+            out="$(echo "${i}" | sed 's/infiles/outfiles/g;s/\\.gff3//g' -).gffread.gff3"  # echo "${out}"
+            err_out="$(dirname "${out}")/err_out/02-gffread.$(basename "${out}" .gff3)"  # echo "${err_out}"
+            fasta_g="${HOME}/genomes/combined_SC_KL_20S/fasta/fasta_individual/Saccharomyces_cerevisiae.R64-1-1.dna.toplevel.chr-rename.fasta"  # ., "${fasta_g}"
+            
+            let h++
+            echo "    #  ==============================================="
+            printf "    Iteration '%d'\n\n" "${h}"
+
+            echo """
+            ---------------
+            Running gffread
+            ---------------
+                        in  ${in}
+                out (base)  ${out}
+                    stdout  ${err_out}.stdout.txt
+                    stderr  ${err_out}.stderr.txt
+            
+            ---------------------
+            Call to gffread: Base
+            ---------------------
+            gffread \\
+                -v \\
+                -g ${fasta} \\
+                -i 1000 \\
+                -Z \\
+                -M -K -Q \\
+                -F -N -P \\
+                --force-exons --gene2exon \\
+                -o ${out} \\
+                <(awk -F '\t' 'BEGIN {OFS = FS} { gsub(/chr/, \"\", \$1); gsub(/M/, \"Mito\", \$1); print }' "${in}") \\
+                     > >(tee -a ${err_out%.}.stdout.txt) \\
+                    2> >(tee -a ${err_out%.}.stderr.txt)
+
+            --------------------------------------
+            Call to gffread: Intron-filtering only
+            --------------------------------------
+            gffread \\
+                -v -O \\
+                -i 1000 \\
+                -o ${out/.gff3/-intron-filtering-only.gff3} \\
+                <(awk -F '\t' 'BEGIN {OFS = FS} { gsub(/chr/, \"\", \$1); gsub(/M/, \"Mito\", \$1); print }' "${in}") \\
+                     > >(tee -a ${err_out%.}-intron-filtering-only.stdout.txt) \\
+                    2> >(tee -a ${err_out%.}-intron-filtering-only.stderr.txt)
+
+            ----------------------------
+            Call to gffread: Coding only
+            ----------------------------
+            gffread \\
+                -v \\
+                -g ${fasta} \\
+                -C -i 1000 \\
+                -Z \\
+                -M -K -Q \\
+                -F -N -P \\
+                --force-exons --gene2exon \\
+                -o ${out/.gff3/-coding.gff3} \\
+                <(awk -F '\t' 'BEGIN {OFS = FS} { gsub(/chr/, \"\", \$1); gsub(/M/, \"Mito\", \$1); print }' "${in}") \\
+                     > >(tee -a ${err_out%.}-coding.stdout.txt) \\
+                    2> >(tee -a ${err_out%.}-coding.stderr.txt)
+            
+            --------------------------------
+            Call to gffread: Non-coding only
+            --------------------------------
+            gffread \\
+                -v \\
+                -g ${fasta} \\
+                --nc -i 1000 \\
+                -Z \\
+                -M -K -Q \\
+                -F -N -P \\
+                --force-exons --gene2exon \\
+                -o ${out/.gff3/-non-coding.gff3} \\
+                <(awk -F '\t' 'BEGIN {OFS = FS} { gsub(/chr/, \"\", \$1); gsub(/M/, \"Mito\", \$1); print }' "${in}") \\
+                     > >(tee -a ${err_out%.}-non-coding.stdout.txt) \\
+                    2> >(tee -a ${err_out%.}-non-coding.stderr.txt)
+            
+            """
+
+            #  Base
+            gffread \
+                -v \
+                -g "${fasta_g}" \
+                -i 1000 \
+                -Z \
+                -M -K -Q \
+                -F -N -P \
+                --force-exons --gene2exon \
+                -o "${out}" \
+                <(awk -F '\t' 'BEGIN {OFS = FS} { gsub(/chr/, "", $1); gsub(/M/, "Mito", $1); print }' "${in}") \
+                     > >(tee -a "${err_out%.}.stdout.txt") \
+                    2> >(tee -a "${err_out%.}.stderr.txt")
 
             #  Intron-filtering only
             gffread \
@@ -458,33 +429,33 @@ run=TRUE  # Approach #1: echo "${run}"
                      > >(tee -a "${err_out%.}-intron-filtering-only.stdout.txt") \
                     2> >(tee -a "${err_out%.}-intron-filtering-only.stderr.txt")
 
-            # #  Coding only
-            # gffread \
-            #     -v \
-            #     -g "${fasta_g}" \
-            #     -C -i 1000 \
-            #     -Z \
-            #     -M -K -Q \
-            #     -F -N -P \
-            #     --force-exons --gene2exon \
-            #     -o "${out/.gff3/-coding.gff3}" \
-            #     <(awk -F '\t' 'BEGIN {OFS = FS} { gsub(/chr/, "", $1); gsub(/M/, "Mito", $1); print }' "${in}") \
-            #          > >(tee -a "${err_out%.}-coding.stdout.txt") \
-            #         2> >(tee -a "${err_out%.}-coding.stderr.txt")
-            #
-            # #  Non-coding only
-            # gffread \
-            #     -v \
-            #     -g "${fasta_g}" \
-            #     --nc -i 1000 \
-            #     -Z \
-            #     -M -K -Q \
-            #     -F -N -P \
-            #     --force-exons --gene2exon \
-            #     -o "${out/.gff3/-non-coding.gff3}" \
-            #     <(awk -F '\t' 'BEGIN {OFS = FS} { gsub(/chr/, "", $1); gsub(/M/, "Mito", $1); print }' "${in}") \
-            #          > >(tee -a "${err_out%.}-non-coding.stdout.txt") \
-            #         2> >(tee -a "${err_out%.}-non-coding.stderr.txt")
+            #  Coding only
+            gffread \
+                -v \
+                -g "${fasta_g}" \
+                -C -i 1000 \
+                -Z \
+                -M -K -Q \
+                -F -N -P \
+                --force-exons --gene2exon \
+                -o "${out/.gff3/-coding.gff3}" \
+                <(awk -F '\t' 'BEGIN {OFS = FS} { gsub(/chr/, "", $1); gsub(/M/, "Mito", $1); print }' "${in}") \
+                     > >(tee -a "${err_out%.}-coding.stdout.txt") \
+                    2> >(tee -a "${err_out%.}-coding.stderr.txt")
+            
+            #  Non-coding only
+            gffread \
+                -v \
+                -g "${fasta_g}" \
+                --nc -i 1000 \
+                -Z \
+                -M -K -Q \
+                -F -N -P \
+                --force-exons --gene2exon \
+                -o "${out/.gff3/-non-coding.gff3}" \
+                <(awk -F '\t' 'BEGIN {OFS = FS} { gsub(/chr/, "", $1); gsub(/M/, "Mito", $1); print }' "${in}") \
+                     > >(tee -a "${err_out%.}-non-coding.stdout.txt") \
+                    2> >(tee -a "${err_out%.}-non-coding.stderr.txt")
         done
     }
 # find ./outfiles_gtf-gff3 -type f -name "*gffread*" -delete
@@ -492,438 +463,36 @@ run=TRUE  # Approach #1: echo "${run}"
 ```
 </details>
 <br />
-
-<a id="3-strip-string-chr-from-collapsed-gtf-files-donotrun"></a>
-## 3. Strip string "chr" from collapsed gtf files `#DONOTRUN`
-<a id="..."></a>
-<a id="code-8"></a>
-### Code
-<details>
-<summary><i>Code: Strip string "chr" from collapsed gtf files</i></summary>
-
-*`#NOTE` Only need to run this for approach #1*
-```bash
-#!/bin/bash
-
-# run=TRUE  # Approach #1: echo "${run}"
-run=FALSE  # Approach #2: echo "${run}"
-[[ "${run}" == TRUE ]] &&
-    {
-        for h in ./outfiles_gtf-gff3/Trinity-GG/{G_N,Q_N}/trinity-gg_*.gffcompare.combined.sans-chr.gtf; do
-            if [[ ! -e "${h}" ]]; then
-                for i in "${stems[@]}"; do
-                    in="$(echo "${i}" | sed 's/infiles/outfiles/g' - ).gffcompare.combined.gtf"
-                    out="${in%.gtf}.sans-chr.gtf"
-                    err_out="$(dirname "${out}")/err_out/03-chr-rename.$(basename "${out}" .gffcompare.combined.sans-chr.gtf)"
-                    echo "Running htseq-count"
-                    echo "        in                        ${in}"
-                    echo "       out                        ${out}"
-                    echo "    stdout  ${err_out}.stdout.txt"
-                    echo "    stderr  ${err_out}.stderr.txt"
-                    echo ""
-
-                    echo "awk -F '\t' 'BEGIN {OFS = FS} { gsub(/chr/, "", \$1); print }' ${in} > ${out}"
-
-                    awk -F '\t' 'BEGIN {OFS = FS} { gsub(/chr/, "", $1); print }' ${in} > ${out}
-                done
-            else
-                echo "Files already exist; thus, skipping the running of awk"
-            fi
-
-            break
-        done
-    }
-```
-</details>
 <br />
 
-<a id="4-run-htseq-count"></a>
-## 4. Run `htseq-count`
-<a id="~~perform-an-echo-run-of~~run-htseq-count-on-bams-in-bams_renamed"></a>
-### ~~Perform an "echo" run of~~Run `htseq-count` on bams in `bams_renamed/`
-<a id="code-9"></a>
-#### Code
+<a id="2-run-htseq-count"></a>
+## 2. Run `htseq-count`
+<a id="run-htseq-count-on-bams-in-bams_renamed"></a>
+### Run `htseq-count` on bams in `bams_renamed/`
+<a id="call-htseq-count-with-respect-to---type-locus-mrna-exon-and-cds"></a>
+#### Call `htseq-count` with respect to `--type` locus, mRNA, exon, and CDS
+*...from "base" calls to `gffread`*
+
+<a id="code-5"></a>
+##### Code
 <details>
-<summary><i>Code: Run htseq-count on bams in bams_renamed/</i></summary>
+<summary><i>Code: Call htseq-count with respect to --type locus, mRNA, exon, and CDS</i></summary>
 
 ```bash
 #!/bin/bash
 
-# run=TRUE  # Approach #1: echo "${run}"
-run=FALSE  # Approach #2: echo "${run}"
-[[ "${run}" == TRUE ]] &&
-    {
-        h=0
-        # for i in "strd-eq" "strd-rv"; do
-        for i in "strd-eq"; do
-            # for j in "all" "none"; do
-                for k in "${stems[@]}"; do
-                    # i="strd-eq"  # echo "${i}"
-                    # j="all"  # echo "${j}"
-                    # k="${stems[7]}"  # echo "${k}"
-                    # in="$(echo "${k}" | sed 's/infiles/outfiles/g' - ).gffcompare.combined.sans-chr.gtf"  # ., "${in}"  # Approach #1 #DONOTRUN
-                    in="$(echo "${k}" | sed 's/infiles/outfiles/g' - ).gffread.gff3"  # ., "${in}" # less "${in}" # Approach #2
-                    out="$(echo "${k}" | sed 's/infiles_gtf-gff3/outfiles_htseq-count/g' - ).hc-${i}.tsv"  # echo "${out}"
-                    err_out="$(dirname "${out}")/err_out/03-htseq-count-${i}.$(basename "${out}" .tsv)"  # echo "${err_out}"
-                    # echo """
-                    # -------------------
-                    # Running htseq-count
-                    # -------------------
-                    #         in                                    ${in}
-                    #        out                                 ${out}
-                    #     stdout  ${err_out}.stdout.txt
-                    #     stderr  ${err_out}.stderr.txt
-                    # """
-
-                    if [[ "${i}" == "strd-eq" ]]; then
-                        hc_strd="yes"
-                    elif [[ "${i}" == "strd-rv" ]]; then
-                        hc_strd="reverse"
-                    fi
-
-                    let h++
-                    printf "    Iteration '%d'\n\n" "${h}"
-
-                    #  Approach #1
-                    # start="$(date +%s.%N)"
-                    # htseq-count \
-                    #     --order "pos" \
-                    #     --stranded "${hc_strd}" \
-                    #     --nonunique "all" \
-                    #     --type "locus" \
-                    #     --idattr "ID" \
-                    #     --nprocesses "${SLURM_CPUS_ON_NODE}" \
-                    #     --counts_output "${out/.gff3/-locus.gff3}" \
-                    #     --with-header \
-                    #     ${bams[*]} \
-                    #     "${in}" \
-                    #          > >(tee -a "${err_out}-locus.stdout.txt") \
-                    #         2> >(tee -a "${err_out}-locus.stderr.txt")
-                    #
-                    # htseq-count \
-                    #     --order "pos" \
-                    #     --stranded "${hc_strd}" \
-                    #     --nonunique "all" \
-                    #     --type "mRNA" \
-                    #     --idattr "ID" \
-                    #     --nprocesses "${SLURM_CPUS_ON_NODE}" \
-                    #     --counts_output "${out/.gff3/-mRNA.gff3}" \
-                    #     --with-header \
-                    #     ${bams[*]} \
-                    #     "${in}" \
-                    #          > >(tee -a "${err_out}-mRNA.stdout.txt") \
-                    #         2> >(tee -a "${err_out}-mRNA.stderr.txt")
-                    # end="$(date +%s.%N)"
-                    # run_time="$( echo "$end - $start" | bc -l )"
-
-                    #  Approach #2
-                    echo """
-                    # --------------------------
-                    # Call to htseq-count: locus
-                    # --------------------------
-                    # sbatch \\
-                    #     --job-name=\"htseq-count-locus\" \\
-                    #     --nodes=1 \\
-                    #     --cpus-per-task=8 \\
-                    #     --error=\"${err_out}-locus.%A.stderr.txt\" \\
-                    #     --output=\"${err_out}-locus.%A.stdout.txt\" \\
-                    #     htseq-count \\
-                    #         --order \"pos\" \\
-                    #         --stranded \"${hc_strd}\" \\
-                    #         --nonunique \"all\" \\
-                    #         --type \"locus\" \\
-                    #         --idattr \"ID\" \\
-                    #         --nprocesses 8 \\
-                    #         --counts_output \"${out/.tsv/-locus.tsv}\" \\
-                    #         --with-header \\
-                    #         \${bams[*]} \\
-                    #         \"${in}\"
-
-                    # -------------------------
-                    # Call to htseq-count: mRNA
-                    # -------------------------
-                    # sbatch \\
-                    #     --job-name=\"htseq-count-mRNA\" \\
-                    #     --nodes=1 \\
-                    #     --cpus-per-task=8 \\
-                    #     --error=\"${err_out}-mRNA.%A.stderr.txt\" \\
-                    #     --output=\"${err_out}-mRNA.%A.stdout.txt\" \\
-                    #     htseq-count \\
-                    #         --order \"pos\" \\
-                    #         --stranded \"${hc_strd}\" \\
-                    #         --nonunique \"all\" \\
-                    #         --type \"mRNA\" \\
-                    #         --idattr \"ID\" \\
-                    #         --nprocesses 8 \\
-                    #         --counts_output \"${out/.tsv/-mRNA.tsv}\" \\
-                    #         --with-header \\
-                    #         \${bams[*]} \\
-                    #         \"${in}\"
-
-                    # -------------------------
-                    # Call to htseq-count: exon
-                    # -------------------------
-                    # sbatch \\
-                    #     --job-name=\"htseq-count-exon\" \\
-                    #     --nodes=1 \\
-                    #     --cpus-per-task=8 \\
-                    #     --error=\"${err_out}-exon.%A.stderr.txt\" \\
-                    #     --output=\"${err_out}-exon.%A.stdout.txt\" \\
-                    #     htseq-count \\
-                    #         --order \"pos\" \\
-                    #         --stranded \"${hc_strd}\" \\
-                    #         --nonunique \"all\" \\
-                    #         --type \"exon\" \\
-                    #         --idattr \"Parent\" \\
-                    #         --nprocesses 8 \\
-                    #         --counts_output \"${out/.tsv/-exon.tsv}\" \\
-                    #         --with-header \\
-                    #         \${bams[*]} \\
-                    #         \"${in}\"
-
-                    # ------------------------
-                    # Call to htseq-count: CDS
-                    # ------------------------
-                    # sbatch \\
-                    #     --job-name=\"htseq-count-CDS\" \\
-                    #     --nodes=1 \\
-                    #     --cpus-per-task=8 \\
-                    #     --error=\"${err_out}-CDS.%A.stderr.txt\" \\
-                    #     --output=\"${err_out}-CDS.%A.stdout.txt\" \\
-                    #     htseq-count \\
-                    #         --order \"pos\" \\
-                    #         --stranded \"${hc_strd}\" \\
-                    #         --nonunique \"all\" \\
-                    #         --type \"CDS\" \\
-                    #         --idattr \"Parent\" \\
-                    #         --nprocesses 8 \\
-                    #         --counts_output \"${out/.tsv/-CDS.tsv}\" \\
-                    #         --with-header \\
-                    #         \${bams[*]} \\
-                    #         \"${in}\"
-                    """
-                    
-                    # sbatch \
-                    #     --job-name="htseq-count-locus" \
-                    #     --nodes=1 \
-                    #     --cpus-per-task=8 \
-                    #     --error="${err_out}-locus.%A.stderr.txt" \
-                    #     --output="${err_out}-locus.%A.stdout.txt" \
-                    #     htseq-count \
-                    #         --order "pos" \
-                    #         --stranded "${hc_strd}" \
-                    #         --nonunique "all" \
-                    #         --type "locus" \
-                    #         --idattr "ID" \
-                    #         --nprocesses 8 \
-                    #         --counts_output "${out/.tsv/-locus.tsv}" \
-                    #         --with-header \
-                    #         ${bams[*]} \
-                    #         "${in}"
-                    # sleep 0.33
-                    
-                    # sbatch \
-                    #     --job-name="htseq-count-mRNA" \
-                    #     --nodes=1 \
-                    #     --cpus-per-task=8 \
-                    #     --error="${err_out}-mRNA.%A.stderr.txt" \
-                    #     --output="${err_out}-mRNA.%A.stdout.txt" \
-                    #     htseq-count \
-                    #         --order "pos" \
-                    #         --stranded "${hc_strd}" \
-                    #         --nonunique "all" \
-                    #         --type "mRNA" \
-                    #         --idattr "ID" \
-                    #         --nprocesses 8 \
-                    #         --counts_output "${out/.tsv/-mRNA.tsv}" \
-                    #         --with-header \
-                    #         ${bams[*]} \
-                    #         "${in}"
-                    # sleep 0.33
-
-                    # sbatch \
-                    #     --job-name="htseq-count-exon" \
-                    #     --nodes=1 \
-                    #     --cpus-per-task=8 \
-                    #     --error="${err_out}-exon.%A.stderr.txt" \
-                    #     --output="${err_out}-exon.%A.stdout.txt" \
-                    #     htseq-count \
-                    #         --order "pos" \
-                    #         --stranded "${hc_strd}" \
-                    #         --nonunique "all" \
-                    #         --type "exon" \
-                    #         --idattr "Parent" \
-                    #         --nprocesses 8 \
-                    #         --counts_output "${out/.tsv/-exon.tsv}" \
-                    #         --with-header \
-                    #         ${bams[*]} \
-                    #         "${in}"
-                    # sleep 0.33
-
-                    # sbatch \
-                    #     --job-name="htseq-count-CDS" \
-                    #     --nodes=1 \
-                    #     --cpus-per-task=8 \
-                    #     --error="${err_out}-CDS.%A.stderr.txt" \
-                    #     --output="${err_out}-CDS.%A.stdout.txt" \
-                    #     htseq-count \
-                    #         --order "pos" \
-                    #         --stranded "${hc_strd}" \
-                    #         --nonunique "all" \
-                    #         --type "CDS" \
-                    #         --idattr "Parent" \
-                    #         --nprocesses 8 \
-                    #         --counts_output "${out/.tsv/-CDS.tsv}" \
-                    #         --with-header \
-                    #         ${bams[*]} \
-                    #         "${in}"
-                    # sleep 0.33
-                done
-            # done
-        done
-    }
-
-#  For the intron-filtering-only gffread files
-run=TRUE  # Approach #1: echo "${run}"
-# run=FALSE  # Approach #2: echo "${run}"
-[[ "${run}" == TRUE ]] &&
-    {
-        h=0
-        # for i in "strd-eq" "strd-rv"; do
-        for i in "strd-eq"; do
-            # for j in "all" "none"; do
-                for k in "${stems[@]}"; do
-                    # i="strd-eq"  # echo "${i}"
-                    # j="all"  # echo "${j}"
-                    # k="${stems[7]}"  # echo "${k}"
-                    # in="$(echo "${k}" | sed 's/infiles/outfiles/g' - ).gffcompare.combined.sans-chr.gtf"  # ., "${in}"  # Approach #1 #DONOTRUN
-                    in="$(echo "${k}" | sed 's/infiles/outfiles/g' - ).gffread-intron-filtering-only.gff3"  # ., "${in}" # less "${in}" # Approach #2
-                    out="$(echo "${k}" | sed 's/infiles_gtf-gff3/outfiles_htseq-count/g' - ).gffread-intron-filtering-only.hc-${i}.tsv"  # echo "${out}"
-                    err_out="$(dirname "${out}")/err_out/03-htseq-count-${i}.$(basename "${out}" .tsv)"  # echo "${err_out}"
-                    # echo """
-                    # -------------------
-                    # Running htseq-count
-                    # -------------------
-                    #         in                                    ${in}
-                    #        out                                 ${out}
-                    #     stdout  ${err_out}.stdout.txt
-                    #     stderr  ${err_out}.stderr.txt
-                    # """
-
-                    if [[ "${i}" == "strd-eq" ]]; then
-                        hc_strd="yes"
-                    elif [[ "${i}" == "strd-rv" ]]; then
-                        hc_strd="reverse"
-                    fi
-
-                    let h++
-                    printf "    Iteration '%d'\n\n" "${h}"
-
-                    echo """
-                    -------------------------
-                    Call to htseq-count: gene
-                    -------------------------
-                    sbatch \\
-                        --job-name=\"htseq-count-gene\" \\
-                        --nodes=1 \\
-                        --cpus-per-task=8 \\
-                        --error=\"${err_out}-gene.%A.stderr.txt\" \\
-                        --output=\"${err_out}-gene.%A.stdout.txt\" \\
-                        htseq-count \\
-                            --order \"pos\" \\
-                            --stranded \"${hc_strd}\" \\
-                            --nonunique \"all\" \\
-                            --type \"gene\" \\
-                            --idattr \"ID\" \\
-                            --nprocesses 8 \\
-                            --counts_output \"${out/.tsv/-gene.tsv}\" \\
-                            --with-header \\
-                            \${bams[*]} \\
-                            \"${in}\"
-                    """
-
-                    sbatch \
-                        --job-name="htseq-count-gene" \
-                        --nodes=1 \
-                        --cpus-per-task=8 \
-                        --error="${err_out}-gene.%A.stderr.txt" \
-                        --output="${err_out}-gene.%A.stdout.txt" \
-                        htseq-count \
-                            --order "pos" \
-                            --stranded "${hc_strd}" \
-                            --nonunique "all" \
-                            --type "gene" \
-                            --idattr "ID" \
-                            --nprocesses 8 \
-                            --counts_output "${out/.tsv/-gene.tsv}" \
-                            --with-header \
-                            ${bams[*]} \
-                            "${in}"
-                    sleep 0.33
-                done
-            # done
-        done
-    }
-```
-</details>
-<br />
-
-<a id="correct-tsv-outfiles-with-formatting-errors"></a>
-### Correct tsv outfiles with formatting errors
-For some reason, these files had formatting errors, so rerunning the htseq-count jobs in the hopes that it solves the problems:
-
-mRNA
-- `G_N/trinity-gg_mkc-16_mir-0.05_mg-2_gf-0.05.hc-strd-eq-mRNA.tsv`
-- `Q_N/trinity-gg_mkc-2_mir-0.05_mg-2_gf-0.05.hc-strd-eq-mRNA.tsv`
-
-CDS
-- `Q_N/trinity-gg_mkc-16_mir-0.05_mg-2_gf-0.05.hc-strd-eq-CDS.tsv`
-
-exon
-- `Q_N/trinity-gg_mkc-16_mir-0.05_mg-2_gf-0.05.hc-strd-eq-exon.tsv`
-- `Q_N/trinity-gg_mkc-32_mir-0.05_mg-2_gf-0.05.hc-strd-eq-exon.tsv`
-
-<a id="code-10"></a>
-#### Code
-<details>
-<summary><i>Code: Correct tsv outfiles with formatting errors</i></summary>
-
-```bash
-#!/bin/bash
-
-cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/outfiles_htseq-count/Trinity-GG"
-cd G_N
-mv \
-    trinity-gg_mkc-16_mir-0.05_mg-2_gf-0.05.hc-strd-eq-mRNA.tsv \
-    problem.trinity-gg_mkc-16_mir-0.05_mg-2_gf-0.05.hc-strd-eq-mRNA.tsv
-
-cd ../Q_N
-mv \
-    trinity-gg_mkc-2_mir-0.05_mg-2_gf-0.05.hc-strd-eq-mRNA.tsv \
-    problem.trinity-gg_mkc-2_mir-0.05_mg-2_gf-0.05.hc-strd-eq-mRNA.tsv
-mv \
-    trinity-gg_mkc-16_mir-0.05_mg-2_gf-0.05.hc-strd-eq-CDS.tsv \
-    problem.trinity-gg_mkc-16_mir-0.05_mg-2_gf-0.05.hc-strd-eq-CDS.tsv
-mv \
-    trinity-gg_mkc-16_mir-0.05_mg-2_gf-0.05.hc-strd-eq-exon.tsv \
-    problem.trinity-gg_mkc-16_mir-0.05_mg-2_gf-0.05.hc-strd-eq-exon.tsv
-mv \
-    trinity-gg_mkc-32_mir-0.05_mg-2_gf-0.05.hc-strd-eq-exon.tsv \
-    problem.trinity-gg_mkc-32_mir-0.05_mg-2_gf-0.05.hc-strd-eq-exon.tsv
-
-#  mRNA
+#  Echo tests for calls to htseq-count ----------------------------------------
 run=TRUE
+# run=FALSE
 [[ "${run}" == TRUE ]] &&
     {
+        h=0
         for i in "strd-eq"; do
-            for k in \
-                "infiles_gtf-gff3/Trinity-GG/G_N/trinity-gg_mkc-16_mir-0.05_mg-2_gf-0.05" \
-                "infiles_gtf-gff3/Trinity-GG/Q_N/trinity-gg_mkc-2_mir-0.05_mg-2_gf-0.05"
-            do
+            for j in "${stems[@]}"; do
                 # i="strd-eq"  # echo "${i}"
-                # k="${stems[7]}"  # echo "${k}"
-                in="$(echo "${k}" | sed 's/infiles/outfiles/g' - ).gffread.gff3"  # ., "${in}" # less "${in}" # Approach #2
-                out="$(echo "${k}" | sed 's/infiles_gtf-gff3/outfiles_htseq-count/g' - ).hc-${i}.tsv"  # echo "${out}"
+                # j="${stems[7]}"  # echo "${j}"
+                in="$(echo "${j}" | sed 's/infiles/outfiles/g' - ).gffread.gff3"  # ., "${in}" # less "${in}" # Approach #2
+                out="$(echo "${j}" | sed 's/infiles_gtf-gff3/outfiles_htseq-count/g' - ).hc-${i}.tsv"  # echo "${out}"
                 err_out="$(dirname "${out}")/err_out/03-htseq-count-${i}.$(basename "${out}" .tsv)"  # echo "${err_out}"
 
                 if [[ "${i}" == "strd-eq" ]]; then
@@ -932,10 +501,35 @@ run=TRUE
                     hc_strd="reverse"
                 fi
 
+                let h++
+                echo "    #  ==============================================="
+                printf "    Iteration '%d'\n\n" "${h}"
+
                 echo """
-                # -------------------------
-                # Call to htseq-count: mRNA
-                # -------------------------
+                --------------------------
+                Call to htseq-count: locus
+                --------------------------
+                sbatch \\
+                    --job-name=\"htseq-count-locus\" \\
+                    --nodes=1 \\
+                    --cpus-per-task=8 \\
+                    --error=\"${err_out}-locus.%A.stderr.txt\" \\
+                    --output=\"${err_out}-locus.%A.stdout.txt\" \\
+                    htseq-count \\
+                        --order \"pos\" \\
+                        --stranded \"${hc_strd}\" \\
+                        --nonunique \"all\" \\
+                        --type \"locus\" \\
+                        --idattr \"ID\" \\
+                        --nprocesses 8 \\
+                        --counts_output \"${out/.tsv/-locus.tsv}\" \\
+                        --with-header \\
+                        \${bams[*]} \\
+                        \"${in}\"
+
+                -------------------------
+                Call to htseq-count: mRNA
+                -------------------------
                 sbatch \\
                     --job-name=\"htseq-count-mRNA\" \\
                     --nodes=1 \\
@@ -953,8 +547,185 @@ run=TRUE
                         --with-header \\
                         \${bams[*]} \\
                         \"${in}\"
-                """
 
+                -------------------------
+                Call to htseq-count: exon
+                -------------------------
+                sbatch \\
+                    --job-name=\"htseq-count-exon\" \\
+                    --nodes=1 \\
+                    --cpus-per-task=8 \\
+                    --error=\"${err_out}-exon.%A.stderr.txt\" \\
+                    --output=\"${err_out}-exon.%A.stdout.txt\" \\
+                    htseq-count \\
+                        --order \"pos\" \\
+                        --stranded \"${hc_strd}\" \\
+                        --nonunique \"all\" \\
+                        --type \"exon\" \\
+                        --idattr \"Parent\" \\
+                        --nprocesses 8 \\
+                        --counts_output \"${out/.tsv/-exon.tsv}\" \\
+                        --with-header \\
+                        \${bams[*]} \\
+                        \"${in}\"
+
+                ------------------------
+                Call to htseq-count: CDS
+                ------------------------
+                sbatch \\
+                    --job-name=\"htseq-count-CDS\" \\
+                    --nodes=1 \\
+                    --cpus-per-task=8 \\
+                    --error=\"${err_out}-CDS.%A.stderr.txt\" \\
+                    --output=\"${err_out}-CDS.%A.stdout.txt\" \\
+                    htseq-count \\
+                        --order \"pos\" \\
+                        --stranded \"${hc_strd}\" \\
+                        --nonunique \"all\" \\
+                        --type \"CDS\" \\
+                        --idattr \"Parent\" \\
+                        --nprocesses 8 \\
+                        --counts_output \"${out/.tsv/-CDS.tsv}\" \\
+                        --with-header \\
+                        \${bams[*]} \\
+                        \"${in}\"
+                
+                """
+            done
+        done
+    }
+
+
+#  Calls to htseq-count -------------------------------------------------------
+# run=TRUE
+run=FALSE
+[[ "${run}" == TRUE ]] &&
+    {
+        h=0
+        for i in "strd-eq"; do
+            for j in "${stems[@]}"; do
+                # i="strd-eq"  # echo "${i}"
+                # j="${stems[7]}"  # echo "${j}"
+                in="$(echo "${j}" | sed 's/infiles/outfiles/g' - ).gffread.gff3"  # ., "${in}" # less "${in}" # Approach #2
+                out="$(echo "${j}" | sed 's/infiles_gtf-gff3/outfiles_htseq-count/g' - ).hc-${i}.tsv"  # echo "${out}"
+                err_out="$(dirname "${out}")/err_out/03-htseq-count-${i}.$(basename "${out}" .tsv)"  # echo "${err_out}"
+
+                if [[ "${i}" == "strd-eq" ]]; then
+                    hc_strd="yes"
+                elif [[ "${i}" == "strd-rv" ]]; then
+                    hc_strd="reverse"
+                fi
+
+                let h++
+                echo "    #  ==============================================="
+                printf "    Iteration '%d'\n\n" "${h}"
+
+                echo """
+                --------------------------
+                Call to htseq-count: locus
+                --------------------------
+                sbatch \\
+                    --job-name=\"htseq-count-locus\" \\
+                    --nodes=1 \\
+                    --cpus-per-task=8 \\
+                    --error=\"${err_out}-locus.%A.stderr.txt\" \\
+                    --output=\"${err_out}-locus.%A.stdout.txt\" \\
+                    htseq-count \\
+                        --order \"pos\" \\
+                        --stranded \"${hc_strd}\" \\
+                        --nonunique \"all\" \\
+                        --type \"locus\" \\
+                        --idattr \"ID\" \\
+                        --nprocesses 8 \\
+                        --counts_output \"${out/.tsv/-locus.tsv}\" \\
+                        --with-header \\
+                        \${bams[*]} \\
+                        \"${in}\"
+
+                -------------------------
+                Call to htseq-count: mRNA
+                -------------------------
+                sbatch \\
+                    --job-name=\"htseq-count-mRNA\" \\
+                    --nodes=1 \\
+                    --cpus-per-task=8 \\
+                    --error=\"${err_out}-mRNA.%A.stderr.txt\" \\
+                    --output=\"${err_out}-mRNA.%A.stdout.txt\" \\
+                    htseq-count \\
+                        --order \"pos\" \\
+                        --stranded \"${hc_strd}\" \\
+                        --nonunique \"all\" \\
+                        --type \"mRNA\" \\
+                        --idattr \"ID\" \\
+                        --nprocesses 8 \\
+                        --counts_output \"${out/.tsv/-mRNA.tsv}\" \\
+                        --with-header \\
+                        \${bams[*]} \\
+                        \"${in}\"
+
+                -------------------------
+                Call to htseq-count: exon
+                -------------------------
+                sbatch \\
+                    --job-name=\"htseq-count-exon\" \\
+                    --nodes=1 \\
+                    --cpus-per-task=8 \\
+                    --error=\"${err_out}-exon.%A.stderr.txt\" \\
+                    --output=\"${err_out}-exon.%A.stdout.txt\" \\
+                    htseq-count \\
+                        --order \"pos\" \\
+                        --stranded \"${hc_strd}\" \\
+                        --nonunique \"all\" \\
+                        --type \"exon\" \\
+                        --idattr \"Parent\" \\
+                        --nprocesses 8 \\
+                        --counts_output \"${out/.tsv/-exon.tsv}\" \\
+                        --with-header \\
+                        \${bams[*]} \\
+                        \"${in}\"
+
+                ------------------------
+                Call to htseq-count: CDS
+                ------------------------
+                sbatch \\
+                    --job-name=\"htseq-count-CDS\" \\
+                    --nodes=1 \\
+                    --cpus-per-task=8 \\
+                    --error=\"${err_out}-CDS.%A.stderr.txt\" \\
+                    --output=\"${err_out}-CDS.%A.stdout.txt\" \\
+                    htseq-count \\
+                        --order \"pos\" \\
+                        --stranded \"${hc_strd}\" \\
+                        --nonunique \"all\" \\
+                        --type \"CDS\" \\
+                        --idattr \"Parent\" \\
+                        --nprocesses 8 \\
+                        --counts_output \"${out/.tsv/-CDS.tsv}\" \\
+                        --with-header \\
+                        \${bams[*]} \\
+                        \"${in}\"
+                
+                """
+                
+                sbatch \
+                    --job-name="htseq-count-locus" \
+                    --nodes=1 \
+                    --cpus-per-task=8 \
+                    --error="${err_out}-locus.%A.stderr.txt" \
+                    --output="${err_out}-locus.%A.stdout.txt" \
+                    htseq-count \
+                        --order "pos" \
+                        --stranded "${hc_strd}" \
+                        --nonunique "all" \
+                        --type "locus" \
+                        --idattr "ID" \
+                        --nprocesses 8 \
+                        --counts_output "${out/.tsv/-locus.tsv}" \
+                        --with-header \
+                        ${bams[*]} \
+                        "${in}"
+                sleep 0.33
+                
                 sbatch \
                     --job-name="htseq-count-mRNA" \
                     --nodes=1 \
@@ -973,50 +744,25 @@ run=TRUE
                         ${bams[*]} \
                         "${in}"
                 sleep 0.33
-            done
-        done
-    }
 
-#  CDS
-run=TRUE
-[[ "${run}" == TRUE ]] &&
-    {
-        for i in "strd-eq"; do
-            for k in "infiles_gtf-gff3/Trinity-GG/Q_N/trinity-gg_mkc-16_mir-0.05_mg-2_gf-0.05"; do
-                # i="strd-eq"  # echo "${i}"
-                # k="${stems[7]}"  # echo "${k}"
-                in="$(echo "${k}" | sed 's/infiles/outfiles/g' - ).gffread.gff3"  # ., "${in}" # less "${in}" # Approach #2
-                out="$(echo "${k}" | sed 's/infiles_gtf-gff3/outfiles_htseq-count/g' - ).hc-${i}.tsv"  # echo "${out}"
-                err_out="$(dirname "${out}")/err_out/03-htseq-count-${i}.$(basename "${out}" .tsv)"  # echo "${err_out}"
-
-                if [[ "${i}" == "strd-eq" ]]; then
-                    hc_strd="yes"
-                elif [[ "${i}" == "strd-rv" ]]; then
-                    hc_strd="reverse"
-                fi
-
-                echo """
-                # -------------------------
-                # Call to htseq-count: CDS
-                # -------------------------
-                sbatch \\
-                    --job-name=\"htseq-count-CDS\" \\
-                    --nodes=1 \\
-                    --cpus-per-task=8 \\
-                    --error=\"${err_out}-CDS.%A.stderr.txt\" \\
-                    --output=\"${err_out}-CDS.%A.stdout.txt\" \\
-                    htseq-count \\
-                        --order \"pos\" \\
-                        --stranded \"${hc_strd}\" \\
-                        --nonunique \"all\" \\
-                        --type \"CDS\" \\
-                        --idattr \"Parent\" \\
-                        --nprocesses 8 \\
-                        --counts_output \"${out/.tsv/-CDS.tsv}\" \\
-                        --with-header \\
-                        \${bams[*]} \\
-                        \"${in}\"
-                """
+                sbatch \
+                    --job-name="htseq-count-exon" \
+                    --nodes=1 \
+                    --cpus-per-task=8 \
+                    --error="${err_out}-exon.%A.stderr.txt" \
+                    --output="${err_out}-exon.%A.stdout.txt" \
+                    htseq-count \
+                        --order "pos" \
+                        --stranded "${hc_strd}" \
+                        --nonunique "all" \
+                        --type "exon" \
+                        --idattr "Parent" \
+                        --nprocesses 8 \
+                        --counts_output "${out/.tsv/-exon.tsv}" \
+                        --with-header \
+                        ${bams[*]} \
+                        "${in}"
+                sleep 0.33
 
                 sbatch \
                     --job-name="htseq-count-CDS" \
@@ -1039,20 +785,32 @@ run=TRUE
             done
         done
     }
+```
+</details>
+<br />
 
-#  exon
+<a id="call-htseq-count-with-respect-to-the-intron-filtering-only-gffread-files"></a>
+#### Call `htseq-count` with respect to the intron-filtering-only `gffread` files
+<a id="code-6"></a>
+##### Code
+<details>
+<summary><i>Code: Call htseq-count with respect to the intron-filtering-only gffread files</i></summary>
+
+```bash
+#!/bin/bash
+
+#  Echo tests for calls to htseq-count ----------------------------------------
 run=TRUE
+# run=FALSE
 [[ "${run}" == TRUE ]] &&
     {
+        h=0
         for i in "strd-eq"; do
-            for k in \
-                "infiles_gtf-gff3/Trinity-GG/Q_N/trinity-gg_mkc-16_mir-0.05_mg-2_gf-0.05" \
-                "infiles_gtf-gff3/Trinity-GG/Q_N/trinity-gg_mkc-32_mir-0.05_mg-2_gf-0.05"
-            do
+            for j in "${stems[@]}"; do
                 # i="strd-eq"  # echo "${i}"
-                # k="${stems[7]}"  # echo "${k}"
-                in="$(echo "${k}" | sed 's/infiles/outfiles/g' - ).gffread.gff3"  # ., "${in}" # less "${in}" # Approach #2
-                out="$(echo "${k}" | sed 's/infiles_gtf-gff3/outfiles_htseq-count/g' - ).hc-${i}.tsv"  # echo "${out}"
+                # j="${stems[7]}"  # echo "${j}"
+                in="$(echo "${j}" | sed 's/infiles/outfiles/g' - ).gffread-intron-filtering-only.gff3"  # ., "${in}" # less "${in}"
+                out="$(echo "${j}" | sed 's/infiles_gtf-gff3/outfiles_htseq-count/g' - ).gffread-intron-filtering-only.hc-${i}.tsv"  # echo "${out}"
                 err_out="$(dirname "${out}")/err_out/03-htseq-count-${i}.$(basename "${out}" .tsv)"  # echo "${err_out}"
 
                 if [[ "${i}" == "strd-eq" ]]; then
@@ -1061,43 +819,98 @@ run=TRUE
                     hc_strd="reverse"
                 fi
 
+                let h++
+                printf "    Iteration '%d'\n\n" "${h}"
+
                 echo """
-                # -------------------------
-                # Call to htseq-count: exon
-                # -------------------------
+                -------------------------
+                Call to htseq-count: gene
+                -------------------------
                 sbatch \\
-                    --job-name=\"htseq-count-exon\" \\
+                    --job-name=\"htseq-count-gene\" \\
                     --nodes=1 \\
                     --cpus-per-task=8 \\
-                    --error=\"${err_out}-exon.%A.stderr.txt\" \\
-                    --output=\"${err_out}-exon.%A.stdout.txt\" \\
+                    --error=\"${err_out}-gene.%A.stderr.txt\" \\
+                    --output=\"${err_out}-gene.%A.stdout.txt\" \\
                     htseq-count \\
                         --order \"pos\" \\
                         --stranded \"${hc_strd}\" \\
                         --nonunique \"all\" \\
-                        --type \"exon\" \\
-                        --idattr \"Parent\" \\
+                        --type \"gene\" \\
+                        --idattr \"ID\" \\
                         --nprocesses 8 \\
-                        --counts_output \"${out/.tsv/-exon.tsv}\" \\
+                        --counts_output \"${out/.tsv/-gene.tsv}\" \\
                         --with-header \\
                         \${bams[*]} \\
                         \"${in}\"
+
+                """
+            done
+        done
+    }
+
+
+#  Calls to htseq-count -------------------------------------------------------
+# run=TRUE
+run=FALSE
+[[ "${run}" == TRUE ]] &&
+    {
+        h=0
+        for i in "strd-eq"; do
+            for j in "${stems[@]}"; do
+                # i="strd-eq"  # echo "${i}"
+                # j="${stems[7]}"  # echo "${j}"
+                in="$(echo "${j}" | sed 's/infiles/outfiles/g' - ).gffread-intron-filtering-only.gff3"  # ., "${in}" # less "${in}"
+                out="$(echo "${j}" | sed 's/infiles_gtf-gff3/outfiles_htseq-count/g' - ).gffread-intron-filtering-only.hc-${i}.tsv"  # echo "${out}"
+                err_out="$(dirname "${out}")/err_out/03-htseq-count-${i}.$(basename "${out}" .tsv)"  # echo "${err_out}"
+
+                if [[ "${i}" == "strd-eq" ]]; then
+                    hc_strd="yes"
+                elif [[ "${i}" == "strd-rv" ]]; then
+                    hc_strd="reverse"
+                fi
+
+                let h++
+                printf "    Iteration '%d'\n\n" "${h}"
+
+                echo """
+                -------------------------
+                Call to htseq-count: gene
+                -------------------------
+                sbatch \\
+                    --job-name=\"htseq-count-gene\" \\
+                    --nodes=1 \\
+                    --cpus-per-task=8 \\
+                    --error=\"${err_out}-gene.%A.stderr.txt\" \\
+                    --output=\"${err_out}-gene.%A.stdout.txt\" \\
+                    htseq-count \\
+                        --order \"pos\" \\
+                        --stranded \"${hc_strd}\" \\
+                        --nonunique \"all\" \\
+                        --type \"gene\" \\
+                        --idattr \"ID\" \\
+                        --nprocesses 8 \\
+                        --counts_output \"${out/.tsv/-gene.tsv}\" \\
+                        --with-header \\
+                        \${bams[*]} \\
+                        \"${in}\"
+
                 """
 
                 sbatch \
-                    --job-name="htseq-count-exon" \
+                    --job-name="htseq-count-gene" \
                     --nodes=1 \
                     --cpus-per-task=8 \
-                    --error="${err_out}-exon.%A.stderr.txt" \
-                    --output="${err_out}-exon.%A.stdout.txt" \
+                    --error="${err_out}-gene.%A.stderr.txt" \
+                    --output="${err_out}-gene.%A.stdout.txt" \
                     htseq-count \
                         --order "pos" \
                         --stranded "${hc_strd}" \
                         --nonunique "all" \
-                        --type "exon" \
-                        --idattr "Parent" \
+                        --type "gene" \
+                        --idattr "ID" \
                         --nprocesses 8 \
-                        --counts_output "${out/.tsv/-exon.tsv}" \
+                        --counts_output "${out/.tsv/-gene.tsv}" \
                         --with-header \
                         ${bams[*]} \
                         "${in}"
@@ -1108,450 +921,257 @@ run=TRUE
 ```
 </details>
 <br />
+<br />
 
-
-<a id="job-submission-code-for-approach-1-donotrun"></a>
-### Job-submission code for approach #1 `#DONOTRUN`
+<a id="25-correct-tsv-outfiles-with-formatting-errors"></a>
+## 2.5. Correct tsv outfiles with formatting errors
+<a id="notes"></a>
+### Notes
 <details>
-<summary><i>Code: Job-submission code for approach #1</i></summary>
+<summary><i>Notes: Correct tsv outfiles with formatting errors</i></summary>
 
-<a id="set-up-necessary-variables"></a>
-#### Set up necessary variables
-<a id="code-11"></a>
-##### Code
-<details>
-<summary><i>Code: Set up necessary variables</i></summary>
+*For some reason, these files had formatting errors, so rerunning the `htseq-count` jobs in the hopes that it solves the problems:*
 
-```bash
-#!/bin/bash
+mRNA
+- `G_N/trinity-gg_mkc-16_mir-0.05_mg-2_gf-0.05.hc-strd-eq-mRNA.tsv`
+- `Q_N/trinity-gg_mkc-2_mir-0.05_mg-2_gf-0.05.hc-strd-eq-mRNA.tsv`
 
-script_run="run_htseq-count.sh"  # echo "${script_run}"
-script_submit="submit_run_htseq-count.sh"  # echo "${script_submit}"
-threads=16  # echo "${threads}"
+CDS
+- `Q_N/trinity-gg_mkc-16_mir-0.05_mg-2_gf-0.05.hc-strd-eq-CDS.tsv`
 
-store_scripts_G="outfiles_htseq-count/Trinity-GG/G_N/sh"  # echo "${store_scripts_G}"  # ., "${store_scripts_G}"
-store_scripts_Q="outfiles_htseq-count/Trinity-GG/Q_N/sh"  # echo "${store_scripts_Q}"  # ., "${store_scripts_Q}"
-
-store_err_out_G="outfiles_htseq-count/Trinity-GG/G_N/err_out"  # echo "${store_err_out_G}"  # ., "${store_err_out_G}"
-store_err_out_Q="outfiles_htseq-count/Trinity-GG/Q_N/err_out"  # echo "${store_err_out_Q}"  # ., "${store_err_out_Q}"
-
-store_lists_G="outfiles_htseq-count/Trinity-GG/G_N/list"  # echo "${store_lists_G}"  # ., "${store_lists_G}"
-store_lists_Q="outfiles_htseq-count/Trinity-GG/Q_N/list"  # echo "${store_lists_Q}"  # ., "${store_lists_Q}"
-
-list="Trinity-GG.htseq-count.txt"  # echo "${list}"
-max_id_job=24  # echo "${max_id_job}"
-max_id_task=48  # echo "${max_id_task}"
-```
+exon
+- `Q_N/trinity-gg_mkc-16_mir-0.05_mg-2_gf-0.05.hc-strd-eq-exon.tsv`
+- `Q_N/trinity-gg_mkc-32_mir-0.05_mg-2_gf-0.05.hc-strd-eq-exon.tsv`
 </details>
 <br />
 
-<a id="generate-lists-of-arguments"></a>
-#### Generate lists of arguments
-<a id="code-12"></a>
-##### Code
+<a id="code-7"></a>
+### Code
 <details>
-<summary><i>Code: Generate lists of arguments</i></summary>
+<summary><i>Code: Correct tsv outfiles with formatting errors</i></summary>
 
 ```bash
 #!/bin/bash
 
-unset stranded
-typeset -a stranded=("yes" "reverse")
-echo_test "${stranded[@]}"
-echo "${#stranded[@]}"
+run=FALSE
+[[ "${run}" == TRUE ]] &&
+{
+    cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/outfiles_htseq-count/Trinity-GG"
+    cd G_N/
+    mv \
+        trinity-gg_mkc-16_mir-0.05_mg-2_gf-0.05.hc-strd-eq-mRNA.tsv \
+        problem.trinity-gg_mkc-16_mir-0.05_mg-2_gf-0.05.hc-strd-eq-mRNA.tsv
 
-if [[ -f "${store_lists_G}/${list}" ]]; then
-    rm "${store_lists_G}/${list}"
-fi
+    cd ../Q_N/
+    mv \
+        trinity-gg_mkc-2_mir-0.05_mg-2_gf-0.05.hc-strd-eq-mRNA.tsv \
+        problem.trinity-gg_mkc-2_mir-0.05_mg-2_gf-0.05.hc-strd-eq-mRNA.tsv
+    mv \
+        trinity-gg_mkc-16_mir-0.05_mg-2_gf-0.05.hc-strd-eq-CDS.tsv \
+        problem.trinity-gg_mkc-16_mir-0.05_mg-2_gf-0.05.hc-strd-eq-CDS.tsv
+    mv \
+        trinity-gg_mkc-16_mir-0.05_mg-2_gf-0.05.hc-strd-eq-exon.tsv \
+        problem.trinity-gg_mkc-16_mir-0.05_mg-2_gf-0.05.hc-strd-eq-exon.tsv
+    mv \
+        trinity-gg_mkc-32_mir-0.05_mg-2_gf-0.05.hc-strd-eq-exon.tsv \
+        problem.trinity-gg_mkc-32_mir-0.05_mg-2_gf-0.05.hc-strd-eq-exon.tsv
 
-if [[ -f "${store_lists_Q}/${list}" ]]; then
-    rm "${store_lists_Q}/${list}"
-fi
-
-#  Header -----------------------------
-if [[ -f "${store_lists_G}/${list}" ]]; then
-    rm "${store_lists_G}/${list}"
-fi
-echo "stranded \
-infile \
-outfile \
-err_out" \
-    > "${store_lists_G}/${list}"
-#  ., "${store_lists_G}/${list}"
-#  vi "${store_lists_G}/${list}"
-# cat "${store_lists_G}/${list}"
-
-if [[ -f "${store_lists_Q}/${list}" ]]; then
-    rm "${store_lists_Q}/${list}"
-fi
-echo "stranded \
-infile \
-outfile \
-err_out" \
-    > "${store_lists_Q}/${list}"
-#  ., "${store_lists_Q}/${list}"
-#  vi "${store_lists_Q}/${list}"
-# cat "${store_lists_Q}/${list}"
-
-#  Body -------------------------------
-for i in "${stranded[@]}"; do
-    for j in "${stems[@]}"; do
-        st="${i}"
-        in="$(echo "${j}" | sed 's/infiles/outfiles/g' - ).gffcompare.combined.sans-chr.gtf"
-        ou="$(echo "${j}" | sed 's/infiles_gtf-gff3/outfiles_htseq-count/g' - ).htseq-count-${st}.tsv"
-        er="$(dirname "${ou}")/err_out/03-htseq-count-${st}.$(basename "${ou}" .tsv)"
-
-        echo "${st} ${in} ${ou} ${er}"
-        echo ""
-
-        if [[ "${j}" == *G_N* ]]; then
-            echo "${st} ${in} ${ou} ${er}" >> "${store_lists_G}/${list}"
-        elif [[ "${j}" == *Q_N* ]]; then
-            echo "${st} ${in} ${ou} ${er}" >> "${store_lists_Q}/${list}"
-        fi
-        #        ., "${store_lists_G}"
-        #        ., "${store_lists_G}/${list}"
-        #     wc -l "${store_lists_G}/${list}"
-        #  head -20 "${store_lists_G}/${list}"
-        #
-        #        ., "${store_lists_Q}"
-        #        ., "${store_lists_Q}/${list}"
-        #     wc -l "${store_lists_Q}/${list}"
-        #  head -20 "${store_lists_Q}/${list}"
-    done
-done
-```
-</details>
-<br />
-
-<a id="break-the-full-multi-line-lists-into-individual-per-line-lists"></a>
-#### Break the full, multi-line lists into individual per-line lists
-<a id="code-13"></a>
-##### Code
-<details>
-<summary><i>Code: Break the full, multi-line lists into individual per-line lists</i></summary>
-
-```bash
-#!/bin/bash
-
-if [[ -f "${store_lists_G}/${list%.txt}.4.txt" ]]; then
-    rm \
-        "${store_lists_G}/"${list%.txt}.?.txt \
-        "${store_lists_G}/"${list%.txt}.??.txt
-fi
-#  ., "${store_lists_G}"
-#  vi "${store_lists_G}/${list}"  # :q
-# cat "${store_lists_G}/${list}"  # :q
-
-typeset -i i=0
-sed 1d "${store_lists_G}/${list}" | while read -r line; do
-    #  Increment with each line
-    i=$(( i + 1 ))
-
-    #  File for job submission
-    individual="${list%.txt}.${i}.txt"  # echo "${individual}"
-
-    #  If present, remove infile with header and single-line body
-    [[ ! -e "${store_lists_G}/${individual}" ]] || rm "${store_lists_G}/${individual}"
-    # echo "${store_lists}/${individual}"
-
-    #  Generate infile with header and single-line body
-    # echo "$(head -n 1 ${list})" >> "${individual}"
-    head -n 1 "${store_lists_G}/${list}" >> "${store_lists_G}/${individual}"  # cat "${store_lists}/${individual}"
-    echo "${line}" >> "${store_lists_G}/${individual}"  # cat "${store_lists}/${individual}"
-
-    # echo "Created file: ${store_lists_G}/${individual}"
-done
-#  ., "${store_lists_G}"
-#  vi "${store_lists_G}/${list%.txt}.4.txt"  # :q
-# cat "${store_lists_G}/${list%.txt}.4.txt"
-
-if [[ -f "${store_lists_Q}/${list%.txt}.4.txt" ]]; then
-    # rm "${store_lists}/"${list%.txt}.{?,??,???}.txt
-    rm \
-        "${store_lists_Q}/"${list%.txt}.?.txt \
-        "${store_lists_Q}/"${list%.txt}.??.txt
-fi
-#  ., "${store_lists_Q}"
-#  vi "${store_lists_Q}/${list}"  # :q
-# cat "${store_lists_Q}/${list}"  # :q
-
-typeset -i i=0
-sed 1d "${store_lists_Q}/${list}" | while read -r line; do
-    #  Increment with each line
-    i=$(( i + 1 ))
-
-    #  File for job submission
-    individual="${list%.txt}.${i}.txt"  # echo "${individual}"
-
-    #  If present, remove infile with header and single-line body
-    [[ ! -e "${store_lists_Q}/${individual}" ]] || rm "${store_lists_Q}/${individual}"
-    # echo "${store_lists}/${individual}"
-
-    #  Generate infile with header and single-line body
-    # echo "$(head -n 1 ${list})" >> "${individual}"
-    head -n 1 "${store_lists_Q}/${list}" >> "${store_lists_Q}/${individual}"  # cat "${store_lists}/${individual}"
-    echo "${line}" >> "${store_lists_Q}/${individual}"  # cat "${store_lists}/${individual}"
-
-    # echo "Created file: ${store_lists_Q}/${individual}"
-done
-#  ., "${store_lists_Q}"
-#  vi "${store_lists_Q}/${list%.txt}.4.txt"  # :q
-# cat "${store_lists_Q}/${list%.txt}.4.txt"
-```
-</details>
-<br />
-
-<a id="use-a-heredoc-to-write-a-run-script"></a>
-#### Use a `HEREDOC` to write a '`run`' script
-<a id="code-14"></a>
-##### Code
-<details>
-<summary><i>Code: Use a HEREDOC to write a 'run' script</i></summary>
-
-```bash
-#!/bin/bash
-
-if [[ -f "${store_scripts_G}/${script_run}" ]]; then
-    rm "./${store_scripts_G}/${script_run}"
-fi
-
-if [[ -f "${store_scripts_Q}/${script_run}" ]]; then
-    rm "./${store_scripts_Q}/${script_run}"
-fi
-
-cat << script > "${script_run}"
-#!/bin/bash
-
-#  ${script_run}
-#  KA
-#  $(date '+%Y-%m%d')
-
-
-#  ------------------------------------
-print_message_exit() {
-    # Print a message and exit
-    #
-    # :param 1: message to be printed <chr>
-    echo "\${1}"
-    exit 1
-}
-
-
-check_file_exists() {
-    # Check that a file exists; exit if it does not
-    # 
-    # :param 1: file, including path <chr>
-    [[ -f "\${1}" ]] ||
+    #  mRNA ------------------------------------------
+    run=TRUE
+    [[ "${run}" == TRUE ]] &&
         {
-            echo -e "Exiting: File \${1} does not exist.\n"
-            exit 1
+            for i in "strd-eq"; do
+                for k in \
+                    "infiles_gtf-gff3/Trinity-GG/G_N/trinity-gg_mkc-16_mir-0.05_mg-2_gf-0.05" \
+                    "infiles_gtf-gff3/Trinity-GG/Q_N/trinity-gg_mkc-2_mir-0.05_mg-2_gf-0.05"
+                do
+                    # i="strd-eq"  # echo "${i}"
+                    # k="${stems[7]}"  # echo "${k}"
+                    in="$(echo "${k}" | sed 's/infiles/outfiles/g' - ).gffread.gff3"  # ., "${in}" # less "${in}" # Approach #2
+                    out="$(echo "${k}" | sed 's/infiles_gtf-gff3/outfiles_htseq-count/g' - ).hc-${i}.tsv"  # echo "${out}"
+                    err_out="$(dirname "${out}")/err_out/03-htseq-count-${i}.$(basename "${out}" .tsv)"  # echo "${err_out}"
+
+                    if [[ "${i}" == "strd-eq" ]]; then
+                        hc_strd="yes"
+                    elif [[ "${i}" == "strd-rv" ]]; then
+                        hc_strd="reverse"
+                    fi
+
+                    echo """
+                    # -------------------------
+                    # Call to htseq-count: mRNA
+                    # -------------------------
+                    sbatch \\
+                        --job-name=\"htseq-count-mRNA\" \\
+                        --nodes=1 \\
+                        --cpus-per-task=8 \\
+                        --error=\"${err_out}-mRNA.%A.stderr.txt\" \\
+                        --output=\"${err_out}-mRNA.%A.stdout.txt\" \\
+                        htseq-count \\
+                            --order \"pos\" \\
+                            --stranded \"${hc_strd}\" \\
+                            --nonunique \"all\" \\
+                            --type \"mRNA\" \\
+                            --idattr \"ID\" \\
+                            --nprocesses 8 \\
+                            --counts_output \"${out/.tsv/-mRNA.tsv}\" \\
+                            --with-header \\
+                            \${bams[*]} \\
+                            \"${in}\"
+                    """
+
+                    sbatch \
+                        --job-name="htseq-count-mRNA" \
+                        --nodes=1 \
+                        --cpus-per-task=8 \
+                        --error="${err_out}-mRNA.%A.stderr.txt" \
+                        --output="${err_out}-mRNA.%A.stdout.txt" \
+                        htseq-count \
+                            --order "pos" \
+                            --stranded "${hc_strd}" \
+                            --nonunique "all" \
+                            --type "mRNA" \
+                            --idattr "ID" \
+                            --nprocesses 8 \
+                            --counts_output "${out/.tsv/-mRNA.tsv}" \
+                            --with-header \
+                            ${bams[*]} \
+                            "${in}"
+                    sleep 0.33
+                done
+            done
+        }
+
+    #  CDS -------------------------------------------
+    run=TRUE
+    [[ "${run}" == TRUE ]] &&
+        {
+            for i in "strd-eq"; do
+                for k in "infiles_gtf-gff3/Trinity-GG/Q_N/trinity-gg_mkc-16_mir-0.05_mg-2_gf-0.05"; do
+                    # i="strd-eq"  # echo "${i}"
+                    # k="${stems[7]}"  # echo "${k}"
+                    in="$(echo "${k}" | sed 's/infiles/outfiles/g' - ).gffread.gff3"  # ., "${in}" # less "${in}" # Approach #2
+                    out="$(echo "${k}" | sed 's/infiles_gtf-gff3/outfiles_htseq-count/g' - ).hc-${i}.tsv"  # echo "${out}"
+                    err_out="$(dirname "${out}")/err_out/03-htseq-count-${i}.$(basename "${out}" .tsv)"  # echo "${err_out}"
+
+                    if [[ "${i}" == "strd-eq" ]]; then
+                        hc_strd="yes"
+                    elif [[ "${i}" == "strd-rv" ]]; then
+                        hc_strd="reverse"
+                    fi
+
+                    echo """
+                    # -------------------------
+                    # Call to htseq-count: CDS
+                    # -------------------------
+                    sbatch \\
+                        --job-name=\"htseq-count-CDS\" \\
+                        --nodes=1 \\
+                        --cpus-per-task=8 \\
+                        --error=\"${err_out}-CDS.%A.stderr.txt\" \\
+                        --output=\"${err_out}-CDS.%A.stdout.txt\" \\
+                        htseq-count \\
+                            --order \"pos\" \\
+                            --stranded \"${hc_strd}\" \\
+                            --nonunique \"all\" \\
+                            --type \"CDS\" \\
+                            --idattr \"Parent\" \\
+                            --nprocesses 8 \\
+                            --counts_output \"${out/.tsv/-CDS.tsv}\" \\
+                            --with-header \\
+                            \${bams[*]} \\
+                            \"${in}\"
+                    """
+
+                    sbatch \
+                        --job-name="htseq-count-CDS" \
+                        --nodes=1 \
+                        --cpus-per-task=8 \
+                        --error="${err_out}-CDS.%A.stderr.txt" \
+                        --output="${err_out}-CDS.%A.stdout.txt" \
+                        htseq-count \
+                            --order "pos" \
+                            --stranded "${hc_strd}" \
+                            --nonunique "all" \
+                            --type "CDS" \
+                            --idattr "Parent" \
+                            --nprocesses 8 \
+                            --counts_output "${out/.tsv/-CDS.tsv}" \
+                            --with-header \
+                            ${bams[*]} \
+                            "${in}"
+                    sleep 0.33
+                done
+            done
+        }
+
+    #  exon ------------------------------------------
+    run=TRUE
+    [[ "${run}" == TRUE ]] &&
+        {
+            for i in "strd-eq"; do
+                for k in \
+                    "infiles_gtf-gff3/Trinity-GG/Q_N/trinity-gg_mkc-16_mir-0.05_mg-2_gf-0.05" \
+                    "infiles_gtf-gff3/Trinity-GG/Q_N/trinity-gg_mkc-32_mir-0.05_mg-2_gf-0.05"
+                do
+                    # i="strd-eq"  # echo "${i}"
+                    # k="${stems[7]}"  # echo "${k}"
+                    in="$(echo "${k}" | sed 's/infiles/outfiles/g' - ).gffread.gff3"  # ., "${in}" # less "${in}" # Approach #2
+                    out="$(echo "${k}" | sed 's/infiles_gtf-gff3/outfiles_htseq-count/g' - ).hc-${i}.tsv"  # echo "${out}"
+                    err_out="$(dirname "${out}")/err_out/03-htseq-count-${i}.$(basename "${out}" .tsv)"  # echo "${err_out}"
+
+                    if [[ "${i}" == "strd-eq" ]]; then
+                        hc_strd="yes"
+                    elif [[ "${i}" == "strd-rv" ]]; then
+                        hc_strd="reverse"
+                    fi
+
+                    echo """
+                    # -------------------------
+                    # Call to htseq-count: exon
+                    # -------------------------
+                    sbatch \\
+                        --job-name=\"htseq-count-exon\" \\
+                        --nodes=1 \\
+                        --cpus-per-task=8 \\
+                        --error=\"${err_out}-exon.%A.stderr.txt\" \\
+                        --output=\"${err_out}-exon.%A.stdout.txt\" \\
+                        htseq-count \\
+                            --order \"pos\" \\
+                            --stranded \"${hc_strd}\" \\
+                            --nonunique \"all\" \\
+                            --type \"exon\" \\
+                            --idattr \"Parent\" \\
+                            --nprocesses 8 \\
+                            --counts_output \"${out/.tsv/-exon.tsv}\" \\
+                            --with-header \\
+                            \${bams[*]} \\
+                            \"${in}\"
+                    """
+
+                    sbatch \
+                        --job-name="htseq-count-exon" \
+                        --nodes=1 \
+                        --cpus-per-task=8 \
+                        --error="${err_out}-exon.%A.stderr.txt" \
+                        --output="${err_out}-exon.%A.stdout.txt" \
+                        htseq-count \
+                            --order "pos" \
+                            --stranded "${hc_strd}" \
+                            --nonunique "all" \
+                            --type "exon" \
+                            --idattr "Parent" \
+                            --nprocesses 8 \
+                            --counts_output "${out/.tsv/-exon.tsv}" \
+                            --with-header \
+                            ${bams[*]} \
+                            "${in}"
+                    sleep 0.33
+                done
+            done
         }
 }
-
-
-#  ------------------------------------
-#TODO Help message
-#  ...
-
-while getopts "a:" opt; do
-    case "\${opt}" in
-        a) arguments="\${OPTARG}" ;;
-        *) print_message_exit "\${help}" ;;
-    esac
-done
-
-[[ -z "\${arguments}" ]] && print_message_exit "\${help}"
-check_file_exists "\${arguments}"
-
-
-#  Echo -------------------------------
-parallel --header : --colsep " " -k -j 1 echo \\
-    'htseq-count \\
-        --order pos \\
-        --stranded {stranded} \\
-        --nonunique all \\
-        --type transcript \\
-        --idattr gene_id \\
-        --nprocesses ${threads} \\
-        --counts_output {outfile} \\
-        --with-header \\
-        ${bams[*]} \\
-        {infile} \\
-            > {err_out}.stdout.txt \\
-            2> {err_out}.stderr.txt' \\
-:::: "\${arguments}"
-
-
-#  Run --------------------------------
-parallel --header : --colsep " " -k -j 1 \\
-    'htseq-count \\
-        --order pos \\
-        --stranded {stranded} \\
-        --nonunique all \\
-        --type transcript \\
-        --idattr gene_id \\
-        --nprocesses ${threads} \\
-        --counts_output {outfile} \\
-        --with-header \\
-        ${bams[*]} \\
-        {infile} \\
-            > {err_out}.stdout.txt \\
-            2> {err_out}.stderr.txt' \\
-:::: "\${arguments}"
-script
-chmod +x "${script_run}"
-
-cp "${script_run}" "${store_scripts_G}/${script_run}"
-cp "${script_run}" "${store_scripts_Q}/${script_run}"
-
-if [[ -f "${store_scripts_G}/${script_run}" ]] &&
-   [[ -f "${store_scripts_Q}/${script_run}" ]]
-then
-    rm "./${script_run}"
-fi
-#  cd "./${store_scripts_G}"
-#  ., "./${store_scripts_G}/${script_run}"
-#  vi "./${store_scripts_G}/${script_run}"  # :q
-# cat "./${store_scripts_G}/${script_run}"
-#
-#  cd "./${store_scripts_Q}"
-#  ., "./${store_scripts_Q}/${script_run}"
-#  vi "./${store_scripts_Q}/${script_run}"  # :q
-# cat "./${store_scripts_Q}/${script_run}"
 ```
-</details>
-<br />
-
-<a id="use-a-heredoc-to-write-submit-scripts"></a>
-#### Use a `HEREDOC` to write '`submit`' scripts
-<a id="code-15"></a>
-##### Code
-<details>
-<summary><i>Code: Use a HEREDOC to write 'submit' scripts</i></summary>
-
-```bash
-#!/bin/bash
-
-if [[ -f "./${store_scripts_G}/${script_submit}" ]]; then
-    rm "./${store_scripts_G}/${script_submit}"
-fi
-cat << script > "${store_scripts_G}/${script_submit}"
-#!/bin/bash
-
-#SBATCH --job-name=${script_run}
-#SBATCH --nodes=1
-#SBATCH --cpus-per-task=${threads}
-#SBATCH --error=./${store_err_out_G}/${script_run%.sh}.%A-%a.err.txt
-#SBATCH --output=./${store_err_out_G}/${script_run%.sh}.%A-%a.out.txt
-#SBATCH --array=1-${max_id_job}%${max_id_task}
-
-#  ${script_submit}
-#  KA
-#  $(date '+%Y-%m%d')
-
-name="\$(
-    cat "./${store_lists_G}/${list%.txt}.\${SLURM_ARRAY_TASK_ID}.txt" \\
-        | awk -v OFS='\t' 'FNR == 2 { print \$3 }' \\
-        | sed 's:\./outfiles_htseq-count/Trinity-GG/::g' \\
-        | sed 's:\/:\.:g' \\
-        | sed 's:\.tsv::g'
-)"
-
-ln -f \\
-    ${store_err_out_G}/${script_run%.sh}.\${SLURM_ARRAY_JOB_ID}-\${SLURM_ARRAY_TASK_ID}.out.txt \\
-    ${store_err_out_G}/${script_run%.sh}.\${name}.\${SLURM_ARRAY_JOB_ID}-\${SLURM_ARRAY_TASK_ID}.out.txt
-
-ln -f \\
-    ${store_err_out_G}/${script_run%.sh}.\${SLURM_ARRAY_JOB_ID}-\${SLURM_ARRAY_TASK_ID}.err.txt \\
-    ${store_err_out_G}/${script_run%.sh}.\${name}.\${SLURM_ARRAY_JOB_ID}-\${SLURM_ARRAY_TASK_ID}.err.txt
-
-srun \\
-    "${store_scripts_G}/${script_run}" \\
-        -a "./${store_lists_G}/${list%.txt}.\${SLURM_ARRAY_TASK_ID}.txt"
-
-rm \\
-    ${store_err_out_G}/${script_run%.sh}.\${SLURM_ARRAY_JOB_ID}-\${SLURM_ARRAY_TASK_ID}.out.txt
-
-rm \\
-    ${store_err_out_G}/${script_run%.sh}.\${SLURM_ARRAY_JOB_ID}-\${SLURM_ARRAY_TASK_ID}.err.txt
-script
-#  ., "${store_scripts_G}"
-#  ., "${store_scripts_G}/${script_submit}"
-#  vi "${store_scripts_G}/${script_submit}"  # :q
-# cat -n "${store_scripts_G}/${script_submit}"
-
-if [[ -f "./${store_scripts_Q}/${script_submit}" ]]; then
-    rm "./${store_scripts_Q}/${script_submit}"
-fi
-cat << script > "${store_scripts_Q}/${script_submit}"
-#!/bin/bash
-
-#SBATCH --job-name=${script_run}
-#SBATCH --nodes=1
-#SBATCH --cpus-per-task=${threads}
-#SBATCH --error=./${store_err_out_Q}/${script_run%.sh}.%A-%a.err.txt
-#SBATCH --output=./${store_err_out_Q}/${script_run%.sh}.%A-%a.out.txt
-#SBATCH --array=1-${max_id_job}%${max_id_task}
-
-#  ${script_submit}
-#  KA
-#  $(date '+%Y-%m%d')
-
-name="\$(
-    cat "./${store_lists_Q}/${list%.txt}.\${SLURM_ARRAY_TASK_ID}.txt" \\
-        | awk -v OFS='\t' 'FNR == 2 { print \$3 }' \\
-        | sed 's:\./outfiles_htseq-count/Trinity-GG/::g' \\
-        | sed 's:\/:\.:g' \\
-        | sed 's:\.tsv::g'
-)"
-
-ln -f \\
-    ${store_err_out_Q}/${script_run%.sh}.\${SLURM_ARRAY_JOB_ID}-\${SLURM_ARRAY_TASK_ID}.out.txt \\
-    ${store_err_out_Q}/${script_run%.sh}.\${name}.\${SLURM_ARRAY_JOB_ID}-\${SLURM_ARRAY_TASK_ID}.out.txt
-
-ln -f \\
-    ${store_err_out_Q}/${script_run%.sh}.\${SLURM_ARRAY_JOB_ID}-\${SLURM_ARRAY_TASK_ID}.err.txt \\
-    ${store_err_out_Q}/${script_run%.sh}.\${name}.\${SLURM_ARRAY_JOB_ID}-\${SLURM_ARRAY_TASK_ID}.err.txt
-
-srun \\
-    "${store_scripts_Q}/${script_run}" \\
-        -a "./${store_lists_Q}/${list%.txt}.\${SLURM_ARRAY_TASK_ID}.txt"
-
-rm \\
-    ${store_err_out_Q}/${script_run%.sh}.\${SLURM_ARRAY_JOB_ID}-\${SLURM_ARRAY_TASK_ID}.out.txt
-
-rm \\
-    ${store_err_out_Q}/${script_run%.sh}.\${SLURM_ARRAY_JOB_ID}-\${SLURM_ARRAY_TASK_ID}.err.txt
-script
-#  ., "${store_scripts_Q}"
-#  ., "${store_scripts_Q}/${script_submit}"
-#  vi "${store_scripts_Q}/${script_submit}"  # :q
-# cat -n "${store_scripts_Q}/${script_submit}"
-```
-</details>
-<br />
-
-<a id="use-sbatch-to-run-the-submission-and-run-scripts"></a>
-#### Use `sbatch` to run the '`submission`' and '`run`' scripts
-<a id="code-16"></a>
-##### Code
-<details>
-<summary><i>Code: Use sbatch to run the 'submission' and 'run' scripts</i></summary>
-
-```bash
-#!/bin/bash
-
-if [[ "${CONDA_DEFAULT_ENV}" != "base" ]]; then 
-    conda deactivate
-fi
-source activate gff3_env
-
-sbatch "${store_scripts_G}/${script_submit}"
-sbatch "${store_scripts_Q}/${script_submit}"
-```
-</details>
-<br />
 </details>
 <br />
 <br />

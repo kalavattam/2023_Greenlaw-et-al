@@ -1,5 +1,5 @@
 ---
-title: "work_assessment-processing_gtfs.Rmd"
+title: "work_assessment-processing_gtfs_part-1.Rmd"
 author: "KA"
 email: "kalavatt@fredhutch.org"
 output:
@@ -8,346 +8,248 @@ output:
         toc_float: true
 ---
 <br />
+<br />
 
-## Get started
-### Get situated
-#### Code
+## Experiment gameplan
+### Text
 <details>
-<summary><i>Code: Get situated</i></summary>
-```{r}
-#!/usr/bin/env Rscript
+<summary><i>Text: Experiment gameplan</i></summary>
 
-library(GenomicRanges)
-library(IRanges)
-library(readxl)
-library(rtracklayer)
-library(tidyverse)
+1. Use `GffRead` to filter `Trinity`-derived `GMAP`-aligned `gff3` files.
+2. Use ~~`featureCounts`~~ `htseq-count` to perform feature counting with respect to `type`s "locus", "mRNA", "exon", and "CDS" features from "base" calls to `GffRead`, and with respect to `type` "gene" from "intron-filtering-only" calls to `GffRead`.
+3. Read in resulting counts matrices and `gtf` files using custom `R` code; perform processing as necessary using a mix of `bioconductor` and `tidyverse` programs.
+4. In terms of raw, non-normalized alignment-to-putative transcript/transcript fragment (transfrag) tallies, retain putative transcripts/transfrags with tallies greater than or equal to a given percentile; in this case, generate results for the 5th to 95th percentiles in iterations of five.
+6. Use ~~`rtracklayer`~~ *custom code* to write the converted, collapsed, counts-filtered data objects as `gtf` files.
+7. Send the processed `gtf` files to Alison Greenlaw for inspection.
 
-options(scipen = 999)
-options(ggrepel.max.overlaps = Inf)
+For both Q and G1, Alison asked me to filter the assemblies generated with `Trinity` parameter `mkc` = 1, 4, 8. However, for the sake of completeness, and to understand clearly what "incorrectness" looks like, I will filter `mkc` = 2, 16, 32 as well. Remember that the `Trinity` parameters `mir`, `mg`, and `gf` were held at default levels for the specific assemblies to surveyed by Alison.
+</details>
+<br />
+<br />
 
-if(stringr::str_detect(getwd(), "kalavattam")) {
-    p_local <- "/Users/kalavattam/Dropbox/FHCC"
-} else {
-    p_local <- "/Users/kalavatt/projects-etc"
-}
-p_wd <- "2022_transcriptome-construction/results/2023-0215"
+## Additional details
+### Text, code
+<details>
+<summary><i>Text, code: Additional details</i></summary>
 
-setwd(paste(p_local, p_wd, sep = "/"))
-getwd()
+#### I. On calling `gffread`
+```{bash}
+#!/bin/bash
 
-rm(p_local, p_wd)
+#  "Base" call to GffRead
+gffread \
+    -v \
+    -g "${fasta_g}" \
+    -i 1000 \
+    -Z \
+    -M -K -Q \
+    -F -N -P \
+    --force-exons --gene2exon \
+    -o "${out}" \
+    <(awk -F '\t' 'BEGIN {OFS = FS} { gsub(/chr/, "", $1); gsub(/M/, "Mito", $1); print }' "${in}") \
+         > >(tee -a "${err_out%.}.stdout.txt") \
+        2> >(tee -a "${err_out%.}.stderr.txt")
+
+#  "Intron-filtering-only" call to GffRead
+#+ 
+#+ No collapsing, merging with these files; only filtering to exclude exonic
+#+ features with introns greater than 1000 bp in length
+gffread \
+    -v -O \
+    -i 1000 \
+    -o "${out/.gff3/-intron-filtering-only.gff3}" \
+    <(awk -F '\t' 'BEGIN {OFS = FS} { gsub(/chr/, "", $1); gsub(/M/, "Mito", $1); print }' "${in}") \
+         > >(tee -a "${err_out%.}-intron-filtering-only.stdout.txt") \
+        2> >(tee -a "${err_out%.}-intron-filtering-only.stderr.txt")
 ```
-</details>
-<br />
-<br />
 
-## Assess the non-`Trinity`-GG `gtf`/`gff3` files
-### Describe the provenance of the files
-#### Text
-<details>
-<summary><i>Text: Describe the provenance of the files</i></summary>
+##### Meaning of parameters
+###### "Base" call to `GffRead`
+- `-v` expose (warn about) duplicate transcript IDs and other potential problems with the given GFF/GTF records
+- `-g` full path to a fasta file with the genomic sequences for all input mappings (one per genomic sequence, with file names matching sequence names) (#NOTE i.e., the fasta - file output from running Trinity in genome-guided mode)
+- `-i` discard transcripts having an intron larger than 1000 bp
+- `-Z` merge very close exons into a single exon (when intron size<4)
+- `-M` cluster the input transcripts into loci, discarding "redundant" transcripts (those with the same exact introns and fully contained or equal boundaries)
+- `-K` for the -M option, also discard as redundant the shorter, fully contained transcripts (intron chains matching a part of the container)
+- `-Q` for the -M option, no longer require boundary containment when assessing redundancy (can be combined with -K); only introns have to match for multi-exon transcripts, and >=80% overlap for single-exon transcripts
+- `-F` keep all GFF attributes (for non-exon features)
+- `-N` discard multi-exon mRNAs that have any intron with a non-canonical splice site consensus (i.e., not GT-AG, GC-AG or AT-AC)
+- `-P` add transcript level GFF attributes about the coding status of each transcript, including partialness or in-frame stop codons (requires -g)
+- `--force-exons` make sure that the lowest level GFF features are considered "exon" features (#NOTE This is standard in gff3 and gtf files)
+- `-o` write the output records into <outfile> instead of stdout
 
-In notebook `work_assessment-processing_gtfs_part-0.md`, copied the following files into the new directory `infiles_gtf-gff3/already` within `2022_transcriptome-construction/results/2023-0215`:
-
-- `combined_SC_KL_20S.gff3`
-- `combined_SC_KL.gff3`
-- `combined.gtf`
-- `Kluyveromyces_lactis_gca_000002515.ASM251v1.55.gff3`
-- `Saccharomyces_cerevisiae.R64-1-1.108.gtf`
-- `Saccharomyces_cerevisiae.R64-1-1.108.plus-chr-rename.gtf`
-
-For details regarding `combined_SC_KL.gff3`, including its creation, see `results/2022-1025/notebook.md` and `results/2022-1201/work-Trinity-1.md` (contains code for the creation of the `gff3` file).
-
-Regarding `combined_SC_KL_20S.gff3`, see the above two files as well as `work_gff3_include-20S.md` (which will likely be merged with the contents of this notebook `#TODO` `#MAYBE` `#LATER`).
-
-`combined.gtf` was created by someone who was in Christine Cuccinota's graduate laboratory&mdash;I don't really know if the material in `combined.gtf` is accurate (i.e., not missing anything, not containing errors from editing, etc.), let alone if it has been edited since its creation (the time of which I also don't know). But Alison Greenlaw seems fine using it. Certainly, the structure does not follow the WashU/UCSC data guidelines for `gtf` and related files...
-
-`Kluyveromyces_lactis_gca_000002515.ASM251v1.55.gff3`:
-
-- genome build: `Genolevures Consortium ASM251v1`
-- genome version: `ASM251v1`
-- genome build accession: `GCA_000002515.1`
-- gene build last updated: `2015-02`
-- *No editing/other changes*
-
-`Saccharomyces_cerevisiae.R64-1-1.108.gtf`:
-
-- genome build: `R64-1-1`
-- genome version: `R64-1-1`
-- genome date: `2011-09`
-- genome build accession: `GCA_000146045.2`
-- gene build last updated: `2018-10`
-- *No editing/other changes*
-
-`Saccharomyces_cerevisiae.R64-1-1.108.plus-chr-rename.gtf`:
-
-- *Same as above*
-- Editing performed/detailed in `results/2022-1101/work-TPM-calculation.md`
-
-`#TODO` *Write up details for the Trinity-GG `gff3` files*
-</details>
+###### "Intron-filtering-only" call to `GffRead`
+- `-v` expose (warn about) duplicate transcript IDs and other potential problems with the given GFF/GTF records
+- `-O` process other non-transcript GFF records (by default non-transcript records are ignored) (`#NOTE` This keeps 'gene' features (output by gmap) in the gff3/gtf, although "gene" is exactly the same as "mRNA" as output by gmap)
+- `-i` discard transcripts having an intron larger than 1000 bp
+- `-o` write the output records into <outfile> instead of stdout
 <br />
 
-### What are the non-`Trinity-GG` `gtf`s/`gff3`s to assess?
-#### Code
-<details>
-<summary><i>Code: What are the non-`Trinity-GG` `gtf`s/`gff3`s to assess?</i></summary>
-```{r}
-#!/usr/bin/env Rscript
-
-path_g <- "infiles_gtf-gff3/already"
-list.files(path_g)
-```
-</details>
-<br />
-
-### Examine data structures for read-in gtfs/gff3s
-#### Load `gtf`s/`gff3`s
-##### Code
-<details>
-<summary><i>Code: Load `gtf`s/`gff3`s</i></summary>
-
-```{r}
-#!/usr/bin/env Rscript
-
- g_sk2 <- rtracklayer::import(paste(path_g, list.files(path_g)[1], sep = "/"))
-  g_sk <- rtracklayer::import(paste(path_g, list.files(path_g)[2], sep = "/"))
-g_comb <- rtracklayer::import(paste(path_g, list.files(path_g)[3], sep = "/"))
-   g_k <- rtracklayer::import(paste(path_g, list.files(path_g)[4], sep = "/"))
-   g_s <- rtracklayer::import(paste(path_g, list.files(path_g)[5], sep = "/"))
- g_sre <- rtracklayer::import(paste(path_g, list.files(path_g)[6], sep = "/"))
-```
-</details>
-<br />
-
-#### Reviewing `GenomicRanges` accessor functions, etc.
-Building on the material [here](https://bioconductor.org/packages/devel/bioc/vignettes/GenomicRanges/inst/doc/GenomicRangesIntroduction.html).
-
-##### Code
-<details>
-<summary><i>Code: Reviewing `GenomicRanges` accessor functions, etc.</i></summary>
-
-```{r}
-#!/usr/bin/env Rscript
-
-cat("# =====================================\n")
-cat("# Review the GenomicRanges accessor functions by looking at Kluyveromyces_lactis_gca_000002515.ASM251v1.55.gff3")
-cat("\n\n")
-
-cat("# -------------------------------------\n")
-cat("# seqnames()\n")
-seqnames(g_k)
-cat("\n\n")
-
-cat("# -------------------------------------\n")
-cat("# ranges()\n")
-ranges(g_k)
-cat("\n\n")
-
-cat("# -------------------------------------\n")
-cat("# strand()\n")
-strand(g_k)
-cat("\n\n")
-
-cat("# -------------------------------------\n")
-cat("# granges()\n")
-granges(g_k)
-cat("\n\n")
-
-cat("# -------------------------------------\n")
-cat("# mcols()\n")
-mcols(g_k)
-cat("\n\n")
-
-cat("# -------------------------------------\n")
-cat("# mcols() %>% colnames()\n")
-#  Get all "columns" in GRanges object
-mcols(g_k) %>% colnames()
-cat("\n\n")
-
-cat("# -------------------------------------\n")
-cat("# seqlengths()\n")
-cat("# (Apparently, will need to add this info yourself...)\n")
-seqlengths(g_k)
-
-cat("\n\n")
-
-# g_s
-```
-</details>
-<br />
-
-#### Review the structure of a `GRanges` object
-##### Code
-<details>
-<summary><i>Code: Review the structure of a `GRanges` object</i></summary>
-
-```{r}
-#!/usr/bin/env Rscript
-
-cat("# =====================================\n")
-cat("# Review the structure of a GRanges object with Kluyveromyces_lactis_gca_000002515.ASM251v1.55.gff3")
-cat("\n\n")
-
-cat("# -------------------------------------\n")
-cat("# g_k %>% as.data.frame() %>% length()\n")
-g_k %>% as.data.frame() %>% length()
-cat("\n\n")
-
-cat("# -------------------------------------\n")
-cat("# mcols(g_k) %>% length()\n")
-mcols(g_k) %>% length()
-cat("\n\n")
-
-cat("# -------------------------------------\n")
-cat("#QUESTION Why the discrepancy?\n\n")
-
-cat("# -------------------------------------\n")
-cat("# g_k %>% as.data.frame() %>% colnames()\n")
-g_k %>% as.data.frame() %>% colnames()
-cat("\n\n")
-
-cat("# -------------------------------------\n")
-cat("# mcols(g_k) %>% colnames()\n")
-mcols(g_k) %>% colnames()
-cat("\n\n")
-
-cat("# -------------------------------------\n")
-cat("#ANSWER mcols() is returning the metadata columns, not all\n")
-```
-</details>
-<br />
-
-#### Explore/test a `GRanges`-to-`data.frame`-to-`GRanges` conversion
-Building on info [here](https://web.mit.edu/~r/current/arch/i386_linux26/lib/R/library/GenomicRanges/html/makeGRangesFromDataFrame.html).
-
-##### Code
-<details>
-<summary><i>Code: Explore/test a `GRanges`-to-`data.frame`-to-`GRanges` conversion</i></summary>
-
-```{r}
-#!/usr/bin/env Rscript
-
-cat("# -------------------------------------\n")
-cat("#QUESTION If I convert, say, g_k to a data.frame, can I successfully\n")
-cat("          convert it back to a GRanges object?\n\n")
-
-d_k <- g_k %>% as.data.frame()
-
-#  "Reconstitute" the GRanges object ("rg")
-rg_k <- GenomicRanges::makeGRangesFromDataFrame(
-    d_k, keep.extra.columns = TRUE
-)
-isTRUE(length(mcols(g_k)) == length(mcols(rg_k)))
-
-#  Eyeball the reconstituted files
-rtracklayer::export(rg_k, "test.gtf")
-rtracklayer::export(rg_k, "test.gff3")
-
-#  It works! Empty vector elements are now included in the metadata of
-#+ test.gff3 vs. Kluyveromyces_lactis_gca_000002515.ASM251v1.55.gff3; besides
-#+ that, they are the same. Now, can delete the above test files.
-unlink(c("test.gtf", "test.gff3"))
-# file.exists(c("test.gtf", "test.gff3"))
-
-cat("\n# -------------------------------------\n")
-cat("#ANSWER Yes")
-cat("\n\n")
-```
-</details>
-<br />
-
-## Describe details/game plan for the experiment
-### The contents of `infiles_gtf-gff3/Trinity-GG`
-#### Code
-<details>
-<summary><i>Code: The contents of `infiles_gtf-gff3/Trinity-GG`</i></summary>
+#### II. On calling `htseq-count`
+##### ...with respect to `type` "locus"
+As a result of calling gffread with the `-Z` `-M` `-K` and `-Q` arguments, a new feature is added to the gff3/gtf files: "locus". "locus" is a putative parent feature made from collapsing and joining "children" features (hierarchically, "mRNA" and "exon") as described for `-Z` `-M` `-K` and `-Q`. This is an extension of the kind of collapsing performed by `gffcompare -C`. Thus, counts matrices were created with respect to these "locus" features.
 
 ```{bash}
 #!/bin/bash
 
-cd infiles_gtf-gff3/Trinity-GG
-.,s 
+sbatch \
+    --job-name="htseq-count-locus" \
+    --nodes=1 \
+    --cpus-per-task=8 \
+    --error="${err_out}-locus.%A.stderr.txt" \
+    --output="${err_out}-locus.%A.stdout.txt" \
+    htseq-count \
+        --order "pos" \
+        --stranded "${hc_strd}" \
+        --nonunique "all" \
+        --type "locus" \
+        --idattr "ID" \
+        --nprocesses 8 \
+        --counts_output "${out/.tsv/-locus.tsv}" \
+        --with-header \
+        ${bams[*]} \
+        "${in}"
+```
+
+##### ...with respect to `type` "mRNA"
+Create the counts matrix by looking at children "mRNA" features rather than parent "locus" features. This is the kind of collapsing performed by `gffcompare -C`.
+
+```{bash}
+#!/bin/bash
+
+sbatch \
+    --job-name="htseq-count-mRNA" \
+    --nodes=1 \
+    --cpus-per-task=8 \
+    --error="${err_out}-mRNA.%A.stderr.txt" \
+    --output="${err_out}-mRNA.%A.stdout.txt" \
+    htseq-count \
+        --order "pos" \
+        --stranded "${hc_strd}" \
+        --nonunique "all" \
+        --type "mRNA" \
+        --idattr "ID" \
+        --nprocesses 8 \
+        --counts_output "${out/.tsv/-mRNA.tsv}" \
+        --with-header \
+        ${bams[*]} \
+        "${in}"
+```
+
+##### ...with respect to `type` "exon"
+Create the counts matrix by looking at children "exon" features.
+
+```{bash}
+#!/bin/bash
+
+sbatch \
+    --job-name="htseq-count-exon" \
+    --nodes=1 \
+    --cpus-per-task=8 \
+    --error="${err_out}-exon.%A.stderr.txt" \
+    --output="${err_out}-exon.%A.stdout.txt" \
+    htseq-count \
+        --order "pos" \
+        --stranded "${hc_strd}" \
+        --nonunique "all" \
+        --type "exon" \
+        --idattr "Parent" \
+        --nprocesses 8 \
+        --counts_output "${out/.tsv/-exon.tsv}" \
+        --with-header \
+        ${bams[*]} \
+        "${in}"
+```
+
+##### ...with respect to `type` "CDS"
+`gffread` scans the `fasta`s supplied `-g` and roughly estimates start and stop codons from the nt sequences; it then adds these CDS estimates to the `gff3`/`gtf` files. Create the counts matrix by looking at these estimated "CDS" features.
+
+```{bash}
+#!/bin/bash
+
+sbatch \
+    --job-name="htseq-count-CDS" \
+    --nodes=1 \
+    --cpus-per-task=8 \
+    --error="${err_out}-CDS.%A.stderr.txt" \
+    --output="${err_out}-CDS.%A.stdout.txt" \
+    htseq-count \
+        --order "pos" \
+        --stranded "${hc_strd}" \
+        --nonunique "all" \
+        --type "CDS" \
+        --idattr "Parent" \
+        --nprocesses 8 \
+        --counts_output "${out/.tsv/-CDS.tsv}" \
+        --with-header \
+        ${bams[*]} \
+        "${in}"
+```
+
+##### ...with respect to `type` "gene" ("intron-only-filtering" call to `GffRead`)
+Create the counts matrix by looking at parent "gene" features from the files output in section <b>"On calling `gffread`"</b> above.
+
+```{bash}
+#!/bin/bash
+sbatch \
+    --job-name="htseq-count-gene" \
+    --nodes=1 \
+    --cpus-per-task=8 \
+    --error="${err_out}-gene.%A.stderr.txt" \
+    --output="${err_out}-gene.%A.stdout.txt" \
+    htseq-count \
+        --order "pos" \
+        --stranded "${hc_strd}" \
+        --nonunique "all" \
+        --type "gene" \
+        --idattr "ID" \
+        --nprocesses 8 \
+        --counts_output "${out/.tsv/-gene.tsv}" \
+        --with-header \
+        ${bams[*]} \
+        "${in}"
+```
+<br />
+
+#### III. The general workflow for making the filtered gtfs
+1. Read in and process `gtf`/`gff3` files (as dataframes)
+2. Read in and process counts matrices: "locus", "mRNA", "exon", "CDS", and "gene" (intron-only-filtering)
+3. Categorize putative transcripts/transfrags by percentile: from percentile 5 to percentile 95 in steps of 5
+4. Subset dataframes to retain percentile-filtered IDs: "locus", "mRNA", "exon", "CDS", and "gene" (intron-only-filtering)
+5. Write out processed `gtf`s
+<br />
+
+#### IV. Copying over files to Alison
+```{bash}
+#!/bin/bash
+
+mkdir -p /home/kalavatt/tsukiyamalab/alisong/KA.gtfs_quantile-filtered_Trinity-GG_G1-Q_2023-0410/{gtf-gff3,tsv}
+# mkdir: created directory '/home/kalavatt/tsukiyamalab/alisong/KA.gtfs_quantile-filtered_Trinity-GG_G1-Q_2023-0410'
+# mkdir: created directory '/home/kalavatt/tsukiyamalab/alisong/KA.gtfs_quantile-filtered_Trinity-GG_G1-Q_2023-0410/gtf-gff3'
+# mkdir: created directory '/home/kalavatt/tsukiyamalab/alisong/KA.gtfs_quantile-filtered_Trinity-GG_G1-Q_2023-0410/tsv'
+
+cd /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215
+
+cp -r \
+    outfiles_gtf-gff3/Trinity-GG \
+    /home/kalavatt/tsukiyamalab/alisong/KA.gtfs_quantile-filtered_Trinity-GG_G1-Q_2023-0410/gtf-gff3
+
+cp -r \
+    outfiles_htseq-count/Trinity-GG \
+    /home/kalavatt/tsukiyamalab/alisong/KA.gtfs_quantile-filtered_Trinity-GG_G1-Q_2023-0410/tsv
+
+#  Manually copying in the 'filtered/' subdirectories from local to remote
 ```
 </details>
 <br />
-
-#### Printed
-<details>
-<summary><i>Printed: The contents of `infiles_gtf-gff3/Trinity-GG`</i></summary>
-
-```{txt}
-./G_N:
-total 43M
-drwx------ 8 kalavatt  256 Feb 24 15:16 ./
-drwx------ 4 kalavatt  128 Mar 27 11:08 ../
--rwx------ 1 kalavatt 6.8M Feb 24 15:07 trinity-gg_mkc-16_mir-0.05_mg-2_gf-0.05.gff3*
--rwx------ 1 kalavatt 8.2M Feb 24 15:10 trinity-gg_mkc-1_mir-0.05_mg-2_gf-0.05.gff3*
--rwx------ 1 kalavatt 7.6M Feb 24 15:09 trinity-gg_mkc-2_mir-0.05_mg-2_gf-0.05.gff3*
--rwx------ 1 kalavatt 6.5M Feb 24 15:07 trinity-gg_mkc-32_mir-0.05_mg-2_gf-0.05.gff3*
--rwx------ 1 kalavatt 7.0M Feb 24 15:09 trinity-gg_mkc-4_mir-0.05_mg-2_gf-0.05.gff3*
--rwx------ 1 kalavatt 6.8M Feb 24 15:08 trinity-gg_mkc-8_mir-0.05_mg-2_gf-0.05.gff3*
-
-./Q_N:
-total 52M
-drwx------ 8 kalavatt  256 Feb 24 15:16 ./
-drwx------ 4 kalavatt  128 Mar 27 11:08 ../
--rwx------ 1 kalavatt 8.3M Feb 24 14:44 trinity-gg_mkc-16_mir-0.05_mg-2_gf-0.05.gff3*
--rwx------ 1 kalavatt  11M Feb 24 14:47 trinity-gg_mkc-1_mir-0.05_mg-2_gf-0.05.gff3*
--rwx------ 1 kalavatt 9.5M Feb 24 14:46 trinity-gg_mkc-2_mir-0.05_mg-2_gf-0.05.gff3*
--rwx------ 1 kalavatt 6.9M Feb 24 14:44 trinity-gg_mkc-32_mir-0.05_mg-2_gf-0.05.gff3*
--rwx------ 1 kalavatt 8.7M Feb 24 14:46 trinity-gg_mkc-4_mir-0.05_mg-2_gf-0.05.gff3*
--rwx------ 1 kalavatt 8.3M Feb 24 14:45 trinity-gg_mkc-8_mir-0.05_mg-2_gf-0.05.gff3*
-```
-</details>
 <br />
 
-### Written descriptions
-#### Background
-##### Text
-<details>
-<summary><i>Text: Background</i></summary>
-
-Details for how these files were made are in the following notebooks:
-
-- The `fasta` files from running `Trinity` (genome-guided, or "GG," mode): `results/2023-0111/work_Trinity-GF-GG-optimization_submit-jobs.md`
-- Aligning the `fasta` sequences to generate `gff3` files: `results/2023-0111/work_GMAP_rough-draft.md`
-</details>
-<br />
-
-#### Experiment gameplan
-##### Text
-<details>
-<summary><i>Text: Experiment gameplan</i></summary>
-
-1. Use the `Perl` command-line program `AGAT` to convert the `gff3` files to `gtf` files (`agat_convert_sp_gff2gtf.pl`): e.g., `agat_convert_sp_gff2gtf.pl --gff "${stem}.gff" -o "${stem}.gtf"`
-2. Use `GffCompare` to discard "matching and 'contained' [putative transcripts/transcript fragments, a.k.a. 'transfrags'] ... (i.e., collapse intron-redundant transfrags across all query files):" e.g., `gffcompare -C "${stem}.gtf" -o "${stem}.collapsed.gtf"`)
-3. Use ~~`featureCounts`~~ `htseq-count` to perform feature counting with the converted, collapsed gtf files
-4. Load resulting counts matrices and `gtf` files into `R`/`RStudio`; perform processing as necessary (using mix of `bioconductor` and `tidyverse` programs)
-5. In terms of (raw, non-normalized) alignment-to-putative transcript/transcript fragment tallies, retain putative transcripts/transcript fragments (i.e., transfrags) with tallies greater than or equal to the...
-    i. 5th percentile
-    ii. 10th percentile
-    iii. 15th percentile
-    iv. 20th percentile
-    v. 25th percentile
-    vi. 30th percentile
-    vii. 35th percentile
-    viii. 40th percentile
-6. Use ~~`rtracklayer`~~ *custom code* to write the converted, collapsed, counts-filtered data objects as `gtf` files
-7. Send the processed `gtf` files to Alison Greenlaw for visual inspection with `IGV`
-
-For both Q and G1, Alison asked me to filter the assemblies generated with `Trinity` parameter `mkc` = 1, 4, 8. However, for the sake of completeness, and to understand clearly what "incorrectness" looks like, I will filter `mkc` = 2, 16, 32 as well. Remember that the `Trinity` parameters `mir`, `mg`, and `gf` were held at default levels for the specific assemblies to be eyeballed by Alison.
-</details>
+## 0&ndash;2. Command-line work
+See [`work_assessment-processing_gtfs_part-0.md`](./work_assessment-processing_gtfs_part-0.md), where *steps 0 through 3* are detailed. Below, we pick up with *step 4*.
 <br />
 <br />
 
-## 0&ndash;4. Command-line work
-See [`#work_assessment-processing_gtfs_part-0.md`](./work_assessment-processing_gtfs_part-0.md), where *steps 0 through 4* are detailed. Below, we pick up with *step 5*.
-<br />
-<br />
-
-## 5. Perform quantile filtering of putative transcripts/transcript fragments
+## 3. Perform quantile filtering of putative transcripts/transfrags
 ### Get situated
 #### Code
 <details>
@@ -389,6 +291,7 @@ rm(p_local, p_wd)
 ```{r}
 #!/usr/bin/env Rscript
 
+#  Initialize functions ---------------
 import_g <- function(file) {
     rtracklayer::import(file)
 }
@@ -416,13 +319,16 @@ read_in_gtfs <- function(vector_files) {
 #  G1 ---------------------------------
 path_gtf_G <- "outfiles_gtf-gff3/Trinity-GG/G_N"
 files_G <- list.files(
-    # path_gtf_G, pattern = "*.combined.sans-chr.gtf", full.names = TRUE  # Approach #1
-    path_gtf_G, pattern = "*.gffread.gff3", full.names = TRUE  # Approach #2
+    path_gtf_G,
+    pattern = "*.gffread.gff3",
+    full.names = TRUE
 )
 l_G_gtf <- read_in_gtfs(files_G)
 
 files_G_introns_filtered <- list.files(
-    path_gtf_G, pattern = "*.gffread-intron-filtering-only.gff3", full.names = TRUE
+    path_gtf_G,
+    pattern = "*.gffread-intron-filtering-only.gff3",
+    full.names = TRUE
 )
 l_G_gtf_introns_filtered <- read_in_gtfs(files_G_introns_filtered)
 
@@ -430,13 +336,16 @@ l_G_gtf_introns_filtered <- read_in_gtfs(files_G_introns_filtered)
 #  Q ----------------------------------
 path_gtf_Q <- "outfiles_gtf-gff3/Trinity-GG/Q_N"
 files_Q <- list.files(
-    # path_gtf_Q, pattern = "*.combined.sans-chr.gtf", full.names = TRUE  # Approach #1
-    path_gtf_Q, pattern = "*.gffread.gff3", full.names = TRUE  # Approach #2
+    path_gtf_Q,
+    pattern = "*.gffread.gff3",
+    full.names = TRUE
 )
 l_Q_gtf <- read_in_gtfs(files_Q)
 
 files_Q_introns_filtered <- list.files(
-    path_gtf_Q, pattern = "*.gffread-intron-filtering-only.gff3", full.names = TRUE
+    path_gtf_Q,
+    pattern = "*.gffread-intron-filtering-only.gff3",
+    full.names = TRUE
 )
 l_Q_gtf_introns_filtered <- read_in_gtfs(files_Q_introns_filtered)
 
@@ -462,6 +371,7 @@ l_Q_gtf_introns_filtered <- read_in_gtfs(files_Q_introns_filtered)
 ```{r}
 #!/usr/bin/env Rscript
 
+#  Initialize functions ---------------
 read_in_mat <- function(vector_of_files) {
     out_list <- sapply(
         vector_of_files,
@@ -475,97 +385,6 @@ read_in_mat <- function(vector_of_files) {
 }
 
 
-#  G1 ---------------------------------
-path_mat_G <- "outfiles_htseq-count/Trinity-GG/G_N"
-
-# files_G_sam <- list.files(  # Approach #1
-#     path_mat_G, pattern = "*.yes.tsv", full.names = TRUE
-# )
-# l_G_mat_sam <- read_in_mat(files_G_sam) %>% suppressMessages()
-# 
-# 
-# files_G_rev <- list.files(  # Approach #1
-#     path_mat_G, pattern = "*.reverse.tsv", full.names = TRUE
-# )
-# l_G_mat_rev <- read_in_mat(files_G_rev) %>% suppressMessages()
-
-files_G_locus <- list.files(  # Approach #2
-    path_mat_G, pattern = "*-locus.tsv", full.names = TRUE
-)
-l_G_mat_locus <- read_in_mat(files_G_locus) %>% suppressMessages()
-
-files_G_mRNA <- list.files(  # Approach #2
-    path_mat_G, pattern = "*-mRNA.tsv", full.names = TRUE
-)
-l_G_mat_mRNA <- read_in_mat(files_G_mRNA) %>% suppressMessages()
-
-files_G_exon <- list.files(  # Approach #2
-    path_mat_G, pattern = "*-exon.tsv", full.names = TRUE
-)
-l_G_mat_exon <- read_in_mat(files_G_exon) %>% suppressMessages()
-
-files_G_CDS <- list.files(  # Approach #2
-    path_mat_G, pattern = "*-CDS.tsv", full.names = TRUE
-)
-l_G_mat_CDS <- read_in_mat(files_G_CDS) %>% suppressMessages()
-
-files_G_introns_filtered <- list.files(
-    path_mat_G, pattern = "*.gffread-intron-filtering-only.hc-strd-eq-gene.tsv", full.names = TRUE
-)
-l_G_mat_introns_filtered <- read_in_mat(files_G_introns_filtered) %>% suppressMessages()
-
-
-
-#  Q ----------------------------------
-path_mat_Q <- "outfiles_htseq-count/Trinity-GG/Q_N"
-
-# files_Q_sam <- list.files(  # Approach #1
-#     path_mat_Q, pattern = "*.yes.tsv", full.names = TRUE
-# )
-# l_Q_mat_sam <- read_in_mat(files_Q_sam) %>% suppressMessages()
-# 
-# files_Q_rev <- list.files(  # Approach #1
-#     path_mat_Q, pattern = "*.reverse.tsv", full.names = TRUE
-# )
-# l_Q_mat_rev <- read_in_mat(files_Q_rev) %>% suppressMessages()
-
-files_Q_locus <- list.files(  # Approach #2
-    path_mat_Q, pattern = "*-locus.tsv", full.names = TRUE
-)
-l_Q_mat_locus <- read_in_mat(files_Q_locus) %>% suppressMessages()
-
-files_Q_mRNA <- list.files(  # Approach #2
-    path_mat_Q, pattern = "*-mRNA.tsv", full.names = TRUE
-)
-l_Q_mat_mRNA <- read_in_mat(files_Q_mRNA) %>% suppressMessages()
-
-files_Q_exon <- list.files(  # Approach #2
-    path_mat_Q, pattern = "*-exon.tsv", full.names = TRUE
-)
-l_Q_mat_exon <- read_in_mat(files_Q_exon) %>% suppressMessages()
-
-files_Q_CDS <- list.files(  # Approach #2
-    path_mat_Q, pattern = "*-CDS.tsv", full.names = TRUE
-)
-l_Q_mat_CDS <- read_in_mat(files_Q_CDS) %>% suppressMessages()
-
-files_Q_introns_filtered <- list.files(
-    path_mat_Q, pattern = "*.gffread-intron-filtering-only.hc-strd-eq-gene.tsv", full.names = TRUE
-)
-l_Q_mat_introns_filtered <- read_in_mat(files_Q_introns_filtered) %>% suppressMessages()
-
-
-
-#  Comparisons ------------------------
-# l_Q_mat_sam[["k1"]] %>% head()
-# l_Q_mat_sam[["k2"]] %>% head()
-# 
-# l_Q_mat_sam[["k1"]] %>% head()
-# l_Q_mat_rev[["k1"]] %>% head()
-
-
-#  Rename columns ---------------------
-#+ ...in each dataframe composing each list
 rename_columns <- function(list) {
     lapply(
         list,
@@ -582,25 +401,100 @@ rename_columns <- function(list) {
     )
 }
 
-# l_G_mat_sam <- rename_columns(l_G_mat_sam)  # Approach #1
-# l_G_mat_rev <- rename_columns(l_G_mat_rev)  # Approach #1
-# l_Q_mat_sam <- rename_columns(l_Q_mat_sam)  # Approach #1
-# l_Q_mat_rev <- rename_columns(l_Q_mat_rev)  # Approach #1
 
-l_G_mat_locus <- rename_columns(l_G_mat_locus)  # Approach #2
-l_G_mat_mRNA <- rename_columns(l_G_mat_mRNA)  # Approach #2
-l_G_mat_exon <- rename_columns(l_G_mat_exon)  # Approach #2
-l_G_mat_CDS <- rename_columns(l_G_mat_CDS)  # Approach #2
+#  G1 ---------------------------------
+path_mat_G <- "outfiles_htseq-count/Trinity-GG/G_N"
+
+files_G_locus <- list.files(
+    path_mat_G, pattern = "*-locus.tsv", full.names = TRUE
+)
+l_G_mat_locus <- read_in_mat(files_G_locus) %>%
+    suppressMessages()
+
+files_G_mRNA <- list.files(
+    path_mat_G, pattern = "*-mRNA.tsv", full.names = TRUE
+)
+l_G_mat_mRNA <- read_in_mat(files_G_mRNA) %>%
+    suppressMessages()
+
+files_G_exon <- list.files(
+    path_mat_G, pattern = "*-exon.tsv", full.names = TRUE
+)
+l_G_mat_exon <- read_in_mat(files_G_exon) %>%
+    suppressMessages()
+
+files_G_CDS <- list.files(
+    path_mat_G, pattern = "*-CDS.tsv", full.names = TRUE
+)
+l_G_mat_CDS <- read_in_mat(files_G_CDS) %>%
+    suppressMessages()
+
+files_G_introns_filtered <- list.files(
+    path_mat_G,
+    pattern = "*.gffread-intron-filtering-only.hc-strd-eq-gene.tsv",
+    full.names = TRUE
+)
+l_G_mat_introns_filtered <- read_in_mat(files_G_introns_filtered) %>%
+    suppressMessages()
+
+
+#  Q ----------------------------------
+path_mat_Q <- "outfiles_htseq-count/Trinity-GG/Q_N"
+
+files_Q_locus <- list.files(
+    path_mat_Q, pattern = "*-locus.tsv", full.names = TRUE
+)
+l_Q_mat_locus <- read_in_mat(files_Q_locus) %>%
+    suppressMessages()
+
+files_Q_mRNA <- list.files(
+    path_mat_Q, pattern = "*-mRNA.tsv", full.names = TRUE
+)
+l_Q_mat_mRNA <- read_in_mat(files_Q_mRNA) %>%
+    suppressMessages()
+
+files_Q_exon <- list.files(
+    path_mat_Q, pattern = "*-exon.tsv", full.names = TRUE
+)
+l_Q_mat_exon <- read_in_mat(files_Q_exon) %>%
+    suppressMessages()
+
+files_Q_CDS <- list.files(
+    path_mat_Q, pattern = "*-CDS.tsv", full.names = TRUE
+)
+l_Q_mat_CDS <- read_in_mat(files_Q_CDS) %>%
+    suppressMessages()
+
+files_Q_introns_filtered <- list.files(
+    path_mat_Q,
+    pattern = "*.gffread-intron-filtering-only.hc-strd-eq-gene.tsv",
+    full.names = TRUE
+)
+l_Q_mat_introns_filtered <- read_in_mat(files_Q_introns_filtered) %>%
+    suppressMessages()
+
+
+#  Comparisons ------------------------
+# l_Q_mat_sam[["k1"]] %>% head()
+# l_Q_mat_sam[["k2"]] %>% head()
+# 
+# l_Q_mat_sam[["k1"]] %>% head()
+# l_Q_mat_rev[["k1"]] %>% head()
+
+
+#  Rename columns ---------------------
+#+ ...in each dataframe composing each list
+l_G_mat_locus <- rename_columns(l_G_mat_locus)
+l_G_mat_mRNA <- rename_columns(l_G_mat_mRNA)
+l_G_mat_exon <- rename_columns(l_G_mat_exon)
+l_G_mat_CDS <- rename_columns(l_G_mat_CDS)
 l_G_mat_introns_filtered <- rename_columns(l_G_mat_introns_filtered)
 
-l_Q_mat_locus <- rename_columns(l_Q_mat_locus)  # Approach #2
-l_Q_mat_mRNA <- rename_columns(l_Q_mat_mRNA)  # Approach #2
-l_Q_mat_exon <- rename_columns(l_Q_mat_exon)  # Approach #2
-l_Q_mat_CDS <- rename_columns(l_Q_mat_CDS)  # Approach #2
+l_Q_mat_locus <- rename_columns(l_Q_mat_locus)
+l_Q_mat_mRNA <- rename_columns(l_Q_mat_mRNA)
+l_Q_mat_exon <- rename_columns(l_Q_mat_exon)
+l_Q_mat_CDS <- rename_columns(l_Q_mat_CDS)
 l_Q_mat_introns_filtered <- rename_columns(l_Q_mat_introns_filtered)
-
-#  Check ------------------------------
-# l_G_mat_sam$k32 %>% tail()
 ```
 </details>
 <br />
@@ -613,6 +507,7 @@ l_Q_mat_introns_filtered <- rename_columns(l_Q_mat_introns_filtered)
 ```{r}
 #!/usr/bin/env Rscript
 
+#  Initialize function ----------------
 filter_transfrags <- function(x, y) {
     df <- x
     
@@ -630,7 +525,8 @@ filter_transfrags <- function(x, y) {
     ids <- list()
 
     ids$percentiles <- quantile(
-        df$sum, probs = c(
+        df$sum,
+        probs = c(
             0.05, 0.10, 0.15, 0.20, 0.25, 0.30, 0.35, 0.40, 0.45, 0.50,
             0.55, 0.60, 0.65, 0.70, 0.75, 0.80, 0.85, 0.90, 0.95
         )
@@ -678,88 +574,39 @@ filter_transfrags <- function(x, y) {
     ids$below_95 <- df[df$below_95 == FALSE, ]$id
     
     return(ids)
-    
-    
-    #  Checks -------------------------
-    # df$below_05 %>% table()
-    # df$below_10 %>% table()
-    # df$below_15 %>% table()
-    # df$below_20 %>% table()
-    # df$below_25 %>% table()
-    # df$below_30 %>% table()
-    
-    
-    #  Scraps -----------------------------
-    # quantile(
-    #     test$G1_N_rep1, probs = c(0.05, 0.10, 0.15, 0.20, 0.25, 0.30)
-    # ) %>%
-    #     round()
-    # quantile(
-    #     test$G1_N_rep2, probs = c(0.05, 0.10, 0.15, 0.20, 0.25, 0.30)
-    # ) %>%
-    #     round()
 }
 
 
-# f_G_mat_sam <- sapply(  # Approach #1
-#     l_G_mat_sam,
-#     filter_transfrags,
-#     simplify = FALSE,
-#     USE.NAMES = TRUE,
-#     y = "G1"
-# )
-# f_G_mat_rev <- sapply(  # Approach #1
-#     l_G_mat_rev,
-#     filter_transfrags,
-#     simplify = FALSE,
-#     USE.NAMES = TRUE,
-#     y = "G1"
-# )
-# f_Q_mat_sam <- sapply(  # Approach #1
-#     l_Q_mat_sam,
-#     filter_transfrags,
-#     simplify = FALSE,
-#     USE.NAMES = TRUE,
-#     y = "Q"
-# )
-# f_Q_mat_rev <- sapply(  # Approach #1
-#     l_Q_mat_rev,
-#     filter_transfrags,
-#     simplify = FALSE,
-#     USE.NAMES = TRUE,
-#     y = "Q"
-# )
-
-#  G1
-f_G_mat_locus <- sapply(  # Approach #2
+#  G1 ---------------------------------
+f_G_mat_locus <- sapply(
     l_G_mat_locus,
     filter_transfrags,
     simplify = FALSE,
     USE.NAMES = TRUE,
     y = "G1"
 )
-f_G_mat_mRNA <- sapply(  # Approach #2
+f_G_mat_mRNA <- sapply(
     l_G_mat_mRNA,
     filter_transfrags,
     simplify = FALSE,
     USE.NAMES = TRUE,
     y = "G1"
 )
-f_G_mat_exon <- sapply(  # Approach #2
+f_G_mat_exon <- sapply(
     l_G_mat_exon,
     filter_transfrags,
     simplify = FALSE,
     USE.NAMES = TRUE,
     y = "G1"
 )
-f_G_mat_CDS <- sapply(  # Approach #2
+f_G_mat_CDS <- sapply(
     l_G_mat_CDS,
     filter_transfrags,
     simplify = FALSE,
     USE.NAMES = TRUE,
     y = "G1"
 )
-f_G_mat_introns_filtered <- sapply(  # Approach #2
+f_G_mat_introns_filtered <- sapply(
     l_G_mat_introns_filtered,
     filter_transfrags,
     simplify = FALSE,
@@ -767,78 +614,42 @@ f_G_mat_introns_filtered <- sapply(  # Approach #2
     y = "G1"
 )
 
-#  Q
-f_Q_mat_locus <- sapply(  # Approach #2
+#  Q ----------------------------------
+f_Q_mat_locus <- sapply(
     l_Q_mat_locus,
     filter_transfrags,
     simplify = FALSE,
     USE.NAMES = TRUE,
     y = "Q"
 )
-f_Q_mat_mRNA <- sapply(  # Approach #2
+f_Q_mat_mRNA <- sapply(
     l_Q_mat_mRNA,
     filter_transfrags,
     simplify = FALSE,
     USE.NAMES = TRUE,
     y = "Q"
 )
-f_Q_mat_exon <- sapply(  # Approach #2
+f_Q_mat_exon <- sapply(
     l_Q_mat_exon,
     filter_transfrags,
     simplify = FALSE,
     USE.NAMES = TRUE,
     y = "Q"
 )
-f_Q_mat_CDS <- sapply(  # Approach #2
+f_Q_mat_CDS <- sapply(
     l_Q_mat_CDS,
     filter_transfrags,
     simplify = FALSE,
     USE.NAMES = TRUE,
     y = "Q"
 )
-f_Q_mat_introns_filtered <- sapply(  # Approach #2
+f_Q_mat_introns_filtered <- sapply(
     l_Q_mat_introns_filtered,
     filter_transfrags,
     simplify = FALSE,
     USE.NAMES = TRUE,
     y = "Q"
 )
-
-
-#  Checks -------------------------
-# f_G_mat_sam$k4$below_05 %>% length()
-# f_G_mat_sam$k4$below_10 %>% length()
-# f_G_mat_sam$k4$below_15 %>% length()
-# f_G_mat_sam$k4$below_20 %>% length()
-# f_G_mat_sam$k4$below_25 %>% length()
-# f_G_mat_sam$k4$below_30 %>% length()
-# 
-# f_G_mat_rev$k4$below_05 %>% length()
-# f_G_mat_rev$k4$below_10 %>% length()
-# f_G_mat_rev$k4$below_15 %>% length()
-# f_G_mat_rev$k4$below_20 %>% length()
-# f_G_mat_rev$k4$below_25 %>% length()
-# f_G_mat_rev$k4$below_30 %>% length()
-# 
-# f_Q_mat_sam$k4$below_05 %>% length()
-# f_Q_mat_sam$k4$below_10 %>% length()
-# f_Q_mat_sam$k4$below_15 %>% length()
-# f_Q_mat_sam$k4$below_20 %>% length()
-# f_Q_mat_sam$k4$below_25 %>% length()
-# f_Q_mat_sam$k4$below_30 %>% length()
-# 
-# f_Q_mat_rev$k4$below_05 %>% length()
-# f_Q_mat_rev$k4$below_10 %>% length()
-# f_Q_mat_rev$k4$below_15 %>% length()
-# f_Q_mat_rev$k4$below_20 %>% length()
-# f_Q_mat_rev$k4$below_25 %>% length()
-# f_Q_mat_rev$k4$below_30 %>% length()
-# 
-# f_G_mat_sam$k16$percentiles
-# f_G_mat_rev$k16$percentiles
-# 
-# f_Q_mat_sam$k16$percentiles
-# f_Q_mat_rev$k16$percentiles
 ```
 </details>
 <br />
@@ -851,6 +662,7 @@ f_Q_mat_introns_filtered <- sapply(  # Approach #2
 ```{r}
 #!/usr/bin/env Rscript
 
+#  Initialize function ----------------
 subset_dataframes <- function(x, y) {
     df <- list()
     mat <- list()
@@ -859,29 +671,7 @@ subset_dataframes <- function(x, y) {
     for(i in names(x)) {
         df[[i]] <- x[[i]]
         mat[[i]] <- y[[i]]
-
-        #  Approach #1
-        # out[[i]]$below_05 <- df[[i]][df[[i]]$gene_id %in% mat[[i]]$below_05, ]
-        # out[[i]]$below_10 <- df[[i]][df[[i]]$gene_id %in% mat[[i]]$below_10, ]
-        # out[[i]]$below_15 <- df[[i]][df[[i]]$gene_id %in% mat[[i]]$below_15, ]
-        # out[[i]]$below_20 <- df[[i]][df[[i]]$gene_id %in% mat[[i]]$below_20, ]
-        # out[[i]]$below_25 <- df[[i]][df[[i]]$gene_id %in% mat[[i]]$below_25, ]
-        # out[[i]]$below_30 <- df[[i]][df[[i]]$gene_id %in% mat[[i]]$below_30, ]
-        # out[[i]]$below_35 <- df[[i]][df[[i]]$gene_id %in% mat[[i]]$below_35, ]
-        # out[[i]]$below_40 <- df[[i]][df[[i]]$gene_id %in% mat[[i]]$below_40, ]
-        # out[[i]]$below_45 <- df[[i]][df[[i]]$gene_id %in% mat[[i]]$below_45, ]
-        # out[[i]]$below_50 <- df[[i]][df[[i]]$gene_id %in% mat[[i]]$below_50, ]
-        # out[[i]]$below_55 <- df[[i]][df[[i]]$gene_id %in% mat[[i]]$below_55, ]
-        # out[[i]]$below_60 <- df[[i]][df[[i]]$gene_id %in% mat[[i]]$below_60, ]
-        # out[[i]]$below_65 <- df[[i]][df[[i]]$gene_id %in% mat[[i]]$below_65, ]
-        # out[[i]]$below_70 <- df[[i]][df[[i]]$gene_id %in% mat[[i]]$below_70, ]
-        # out[[i]]$below_75 <- df[[i]][df[[i]]$gene_id %in% mat[[i]]$below_75, ]
-        # out[[i]]$below_80 <- df[[i]][df[[i]]$gene_id %in% mat[[i]]$below_80, ]
-        # out[[i]]$below_85 <- df[[i]][df[[i]]$gene_id %in% mat[[i]]$below_85, ]
-        # out[[i]]$below_90 <- df[[i]][df[[i]]$gene_id %in% mat[[i]]$below_90, ]
-        # out[[i]]$below_95 <- df[[i]][df[[i]]$gene_id %in% mat[[i]]$below_95, ]
         
-        #  Approach #2
         out[[i]]$below_05 <- df[[i]][df[[i]]$ID %in% mat[[i]]$below_05, ]
         out[[i]]$below_10 <- df[[i]][df[[i]]$ID %in% mat[[i]]$below_10, ]
         out[[i]]$below_15 <- df[[i]][df[[i]]$ID %in% mat[[i]]$below_15, ]
@@ -907,22 +697,24 @@ subset_dataframes <- function(x, y) {
 }
 
 
-# out_G_gtf <- subset_dataframes(l_G_gtf, f_G_mat_sam)  # Approach #1
-# out_Q_gtf <- subset_dataframes(l_Q_gtf, f_Q_mat_sam)  # Approach #1
+#  G1 ---------------------------------
+out_G_gtf_locus <- subset_dataframes(l_G_gtf, f_G_mat_locus)
+out_G_gtf_mRNA <- subset_dataframes(l_G_gtf, f_G_mat_mRNA)
+out_G_gtf_exon <- subset_dataframes(l_G_gtf, f_G_mat_exon)
+out_G_gtf_CDS <- subset_dataframes(l_G_gtf, f_G_mat_CDS)
+out_G_gtf_introns_filtered <- subset_dataframes(
+    l_G_gtf_introns_filtered, f_G_mat_introns_filtered
+)
 
-#  G1
-out_G_gtf_locus <- subset_dataframes(l_G_gtf, f_G_mat_locus)  # Approach #2
-out_G_gtf_mRNA <- subset_dataframes(l_G_gtf, f_G_mat_mRNA)  # Approach #2
-out_G_gtf_exon <- subset_dataframes(l_G_gtf, f_G_mat_exon)  # Approach #2
-out_G_gtf_CDS <- subset_dataframes(l_G_gtf, f_G_mat_CDS)  # Approach #2
-out_G_gtf_introns_filtered <- subset_dataframes(l_G_gtf_introns_filtered, f_G_mat_introns_filtered)  # Approach #2
 
-#  Q
-out_Q_gtf_locus <- subset_dataframes(l_Q_gtf, f_Q_mat_locus)  # Approach #2
-out_Q_gtf_mRNA <- subset_dataframes(l_Q_gtf, f_Q_mat_mRNA)  # Approach #2
-out_Q_gtf_exon <- subset_dataframes(l_Q_gtf, f_Q_mat_exon)  # Approach #2
-out_Q_gtf_CDS <- subset_dataframes(l_Q_gtf, f_Q_mat_CDS)  # Approach #2
-out_Q_gtf_introns_filtered <- subset_dataframes(l_Q_gtf_introns_filtered, f_Q_mat_introns_filtered)  # Approach #2
+#  Q ----------------------------------
+out_Q_gtf_locus <- subset_dataframes(l_Q_gtf, f_Q_mat_locus)
+out_Q_gtf_mRNA <- subset_dataframes(l_Q_gtf, f_Q_mat_mRNA)
+out_Q_gtf_exon <- subset_dataframes(l_Q_gtf, f_Q_mat_exon)
+out_Q_gtf_CDS <- subset_dataframes(l_Q_gtf, f_Q_mat_CDS)
+out_Q_gtf_introns_filtered <- subset_dataframes(
+    l_Q_gtf_introns_filtered, f_Q_mat_introns_filtered
+)
 ```
 </details>
 <br />
@@ -935,96 +727,41 @@ out_Q_gtf_introns_filtered <- subset_dataframes(l_Q_gtf_introns_filtered, f_Q_ma
 ```{r}
 #!/usr/bin/env Rscript
 
-# path_G <- "outfiles_gtf-gff3/Trinity-GG/G_N/filtered"  # Approach #1
-# if(isFALSE(dir.exists(path_G))) dir.create(path_G)
-# 
-# path_Q <- "outfiles_gtf-gff3/Trinity-GG/Q_N/filtered"  # Approach #1
-# if(isFALSE(dir.exists(path_Q))) dir.create(path_Q)
-
-#  G
-path_G_locus <- "outfiles_gtf-gff3/Trinity-GG/G_N/filtered/locus"  # Approach #2
+#  Create outdirectories ------------------------------------------------------
+#  G1 ---------------------------------
+path_G_locus <- "outfiles_gtf-gff3/Trinity-GG/G_N/filtered/locus"
 if(isFALSE(dir.exists(path_G_locus))) dir.create(path_G_locus, recursive = TRUE)
 
-path_G_mRNA <- "outfiles_gtf-gff3/Trinity-GG/G_N/filtered/mRNA"  # Approach #2
+path_G_mRNA <- "outfiles_gtf-gff3/Trinity-GG/G_N/filtered/mRNA"
 if(isFALSE(dir.exists(path_G_mRNA))) dir.create(path_G_mRNA, recursive = TRUE)
 
-path_G_exon <- "outfiles_gtf-gff3/Trinity-GG/G_N/filtered/exon"  # Approach #2
+path_G_exon <- "outfiles_gtf-gff3/Trinity-GG/G_N/filtered/exon"
 if(isFALSE(dir.exists(path_G_exon))) dir.create(path_G_exon, recursive = TRUE)
 
-path_G_CDS <- "outfiles_gtf-gff3/Trinity-GG/G_N/filtered/CDS"  # Approach #2
+path_G_CDS <- "outfiles_gtf-gff3/Trinity-GG/G_N/filtered/CDS"
 if(isFALSE(dir.exists(path_G_CDS))) dir.create(path_G_CDS, recursive = TRUE)
 
-path_G_introns_filtered <- "outfiles_gtf-gff3/Trinity-GG/G_N/filtered/introns_filtered"  # Approach #2
+path_G_introns_filtered <- "outfiles_gtf-gff3/Trinity-GG/G_N/filtered/introns_filtered"
 if(isFALSE(dir.exists(path_G_introns_filtered))) dir.create(path_G_introns_filtered, recursive = TRUE)
 
-#  Q
-path_Q_locus <- "outfiles_gtf-gff3/Trinity-GG/Q_N/filtered/locus"  # Approach #2
+#  Q ----------------------------------
+path_Q_locus <- "outfiles_gtf-gff3/Trinity-GG/Q_N/filtered/locus"
 if(isFALSE(dir.exists(path_Q_locus))) dir.create(path_Q_locus, recursive = TRUE)
 
-path_Q_mRNA <- "outfiles_gtf-gff3/Trinity-GG/Q_N/filtered/mRNA"  # Approach #2
+path_Q_mRNA <- "outfiles_gtf-gff3/Trinity-GG/Q_N/filtered/mRNA"
 if(isFALSE(dir.exists(path_Q_mRNA))) dir.create(path_Q_mRNA, recursive = TRUE)
 
-path_Q_exon <- "outfiles_gtf-gff3/Trinity-GG/Q_N/filtered/exon"  # Approach #2
+path_Q_exon <- "outfiles_gtf-gff3/Trinity-GG/Q_N/filtered/exon"
 if(isFALSE(dir.exists(path_Q_exon))) dir.create(path_Q_exon, recursive = TRUE)
 
-path_Q_CDS <- "outfiles_gtf-gff3/Trinity-GG/Q_N/filtered/CDS"  # Approach #2
+path_Q_CDS <- "outfiles_gtf-gff3/Trinity-GG/Q_N/filtered/CDS"
 if(isFALSE(dir.exists(path_Q_CDS))) dir.create(path_Q_CDS, recursive = TRUE)
 
-path_Q_introns_filtered <- "outfiles_gtf-gff3/Trinity-GG/Q_N/filtered/introns_filtered"  # Approach #2
+path_Q_introns_filtered <- "outfiles_gtf-gff3/Trinity-GG/Q_N/filtered/introns_filtered"
 if(isFALSE(dir.exists(path_Q_introns_filtered))) dir.create(path_Q_introns_filtered, recursive = TRUE)
 
-#  Approach #1
-# for(i in names(out_G_gtf)) {
-#     for(j in c(paste0(
-#         "below_",
-#         c(
-#             "05", "10", "15", "20", "25", "30", "35", "40", "45", "50",
-#             "55", "60", "65", "70", "75", "80", "85", "90", "95"
-#         )
-#     ))) {
-#         # i <- "k2"
-#         # j <- "below_05"
-#         cat("Saving G1", i, j, "\n")
-#         cat(paste0(
-#             path_G, "/G1_mkc-", gsub("k", "", i), "_",
-#             gsub("below_", "gte-pctl-", j), ".gtf"
-#         ))
-#         cat("\n\n")
-#         
-#         out_G_conv <- GenomicRanges::makeGRangesFromDataFrame(
-#             out_G_gtf[[i]][[j]], keep.extra.columns = TRUE
-#         )
-# 
-#         rtracklayer::export(
-#             out_G_gtf[[i]][[j]],
-#             paste0(
-#                 path_G, "/G1_mkc-", gsub("k", "", i), "_",
-#                 gsub("below_", "gte-pctl-", j), ".gtf"
-#             )
-#         )
-#         
-#         cat("Saving Q", i, j, "\n")
-#         cat(paste0(
-#             path_Q, "/Q_mkc-", gsub("k", "", i), "_",
-#             gsub("below_", "gte-pctl-", j), ".gtf"
-#         ))
-#         cat("\n\n")
-#         
-#         out_Q_conv <- GenomicRanges::makeGRangesFromDataFrame(
-#             out_Q_gtf[[i]][[j]], keep.extra.columns = TRUE
-#         )
-# 
-#         rtracklayer::export(
-#             out_Q_gtf[[i]][[j]],
-#             paste0(
-#                 path_Q, "/Q_mkc-", gsub("k", "", i), "_",
-#                 gsub("below_", "gte-pctl-", j), ".gtf"
-#             )
-#         )
-#     }
-# }
 
-#  Approach #2
+#  Create outdirectories ------------------------------------------------------
 for(i in names(out_G_gtf_locus)) {
     for(j in c(paste0(
         "below_",
@@ -1034,13 +771,16 @@ for(i in names(out_G_gtf_locus)) {
         )
     ))) {
         for(k in c(
-            path_G_locus, path_G_mRNA, path_G_exon, path_G_CDS, path_G_introns_filtered,
-            path_Q_locus, path_Q_mRNA, path_Q_exon, path_Q_CDS, path_Q_introns_filtered
+            path_G_locus, path_G_mRNA, path_G_exon, path_G_CDS,
+            path_G_introns_filtered,
+            path_Q_locus, path_Q_mRNA, path_Q_exon, path_Q_CDS,
+            path_Q_introns_filtered
         )) {
             # i <- "k2"
             # j <- "below_05"
             # k <- path_Q_locus
             if(isTRUE(k == path_G_locus)) {
+                #PICKUPHERE
                 cat("Saving G1", i, j, "in", k, "\n")
                 cat(paste0(
                     path_G_locus, "/G1_mkc-", gsub("k", "", i), "_",
@@ -1048,17 +788,17 @@ for(i in names(out_G_gtf_locus)) {
                 ))
                 cat("\n\n")
                 
-                out_G_conv <- GenomicRanges::makeGRangesFromDataFrame(
-                    out_G_gtf_locus[[i]][[j]], keep.extra.columns = TRUE
-                )
-        
-                rtracklayer::export(
-                    out_G_gtf_locus[[i]][[j]],
-                    paste0(
-                        path_G_locus, "/G1_mkc-", gsub("k", "", i), "_",
-                        gsub("below_", "gte-pctl-", j), ".gtf"
-                    )
-                )
+                # out_G_conv <- GenomicRanges::makeGRangesFromDataFrame(
+                #     out_G_gtf_locus[[i]][[j]], keep.extra.columns = TRUE
+                # )
+                # 
+                # rtracklayer::export(
+                #     out_G_gtf_locus[[i]][[j]],
+                #     paste0(
+                #         path_G_locus, "/G1_mkc-", gsub("k", "", i), "_",
+                #         gsub("below_", "gte-pctl-", j), ".gtf"
+                #     )
+                # )
             } else if(isTRUE(k == path_G_mRNA)) {
                 cat("Saving G1", i, j, "in", k, "\n")
                 cat(paste0(
@@ -1231,25 +971,6 @@ for(i in names(out_G_gtf_locus)) {
                     )
                 )
             }
-            
-            # cat("Saving Q", i, j, "\n")
-            # cat(paste0(
-            #     path_Q_locus, "/Q_mkc-", gsub("k", "", i), "_",
-            #     gsub("below_", "gte-pctl-", j), ".gtf"
-            # ))
-            # cat("\n\n")
-            # 
-            # out_Q_conv <- GenomicRanges::makeGRangesFromDataFrame(
-            #     out_Q_gtf_locus[[i]][[j]], keep.extra.columns = TRUE
-            # )
-            # 
-            # rtracklayer::export(
-            #     out_Q_gtf_locus[[i]][[j]],
-            #     paste0(
-            #         path_Q_locus, "/Q_mkc-", gsub("k", "", i), "_",
-            #         gsub("below_", "gte-pctl-", j), ".gtf"
-            #     )
-            # )
         }
     }
 }

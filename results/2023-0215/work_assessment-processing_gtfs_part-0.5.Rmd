@@ -1,0 +1,317 @@
+---
+title: "work_assessment-processing_gtfs_part-0.5.Rmd"
+author: "KA"
+email: "kalavatt@fredhutch.org"
+output:
+    html_notebook:
+        toc: yes
+        toc_float: true
+---
+<br />
+
+## Get started
+### Get situated
+#### Code
+<details>
+<summary><i>Code: Get situated</i></summary>
+```{r}
+#!/usr/bin/env Rscript
+
+library(GenomicRanges)
+library(IRanges)
+library(readxl)
+library(rtracklayer)
+library(tidyverse)
+
+options(scipen = 999)
+options(ggrepel.max.overlaps = Inf)
+
+if(stringr::str_detect(getwd(), "kalavattam")) {
+    p_local <- "/Users/kalavattam/Dropbox/FHCC"
+} else {
+    p_local <- "/Users/kalavatt/projects-etc"
+}
+p_wd <- "2022_transcriptome-construction/results/2023-0215"
+
+setwd(paste(p_local, p_wd, sep = "/"))
+getwd()
+
+rm(p_local, p_wd)
+```
+</details>
+<br />
+<br />
+
+## Assess the non-`Trinity`-GG `gtf`/`gff3` files
+### Describe the provenance of the files
+#### Text
+<details>
+<summary><i>Text: Describe the provenance of the files</i></summary>
+
+In notebook `work_assessment-processing_gtfs_part-0.md`, copied the following files into the new directory `infiles_gtf-gff3/already` within `2022_transcriptome-construction/results/2023-0215`:
+
+- `combined_SC_KL_20S.gff3`
+- `combined_SC_KL.gff3`
+- `combined.gtf`
+- `Kluyveromyces_lactis_gca_000002515.ASM251v1.55.gff3`
+- `Saccharomyces_cerevisiae.R64-1-1.108.gtf`
+- `Saccharomyces_cerevisiae.R64-1-1.108.plus-chr-rename.gtf`
+
+For details regarding `combined_SC_KL.gff3`, including its creation, see `results/2022-1025/notebook.md` and `results/2022-1201/work-Trinity-1.md` (contains code for the creation of the `gff3` file).
+
+Regarding `combined_SC_KL_20S.gff3`, see the above two files as well as `work_gff3_include-20S.md` (which will likely be merged with the contents of this notebook `#TODO` `#MAYBE` `#LATER`).
+
+`combined.gtf` was created by someone who was in Christine Cuccinota's graduate laboratory&mdash;I don't really know if the material in `combined.gtf` is accurate (i.e., not missing anything, not containing errors from editing, etc.), let alone if it has been edited since its creation (the time of which I also don't know). But Alison Greenlaw seems fine using it. Certainly, the structure does not follow the WashU/UCSC data guidelines for `gtf` and related files...
+
+`Kluyveromyces_lactis_gca_000002515.ASM251v1.55.gff3`:
+
+- genome build: `Genolevures Consortium ASM251v1`
+- genome version: `ASM251v1`
+- genome build accession: `GCA_000002515.1`
+- gene build last updated: `2015-02`
+- *No editing/other changes*
+
+`Saccharomyces_cerevisiae.R64-1-1.108.gtf`:
+
+- genome build: `R64-1-1`
+- genome version: `R64-1-1`
+- genome date: `2011-09`
+- genome build accession: `GCA_000146045.2`
+- gene build last updated: `2018-10`
+- *No editing/other changes*
+
+`Saccharomyces_cerevisiae.R64-1-1.108.plus-chr-rename.gtf`:
+
+- *Same as above*
+- Editing performed/detailed in `results/2022-1101/work-TPM-calculation.md`
+
+`#TODO` *Write up details for the Trinity-GG `gff3` files*
+</details>
+<br />
+
+### What are the non-`Trinity-GG` `gtf`s/`gff3`s to assess?
+#### Code
+<details>
+<summary><i>Code: What are the non-`Trinity-GG` `gtf`s/`gff3`s to assess?</i></summary>
+```{r}
+#!/usr/bin/env Rscript
+
+path_g <- "infiles_gtf-gff3/already"
+list.files(path_g)
+```
+</details>
+<br />
+
+### Examine data structures for read-in gtfs/gff3s
+#### Load `gtf`s/`gff3`s
+##### Code
+<details>
+<summary><i>Code: Load `gtf`s/`gff3`s</i></summary>
+
+```{r}
+#!/usr/bin/env Rscript
+
+ g_sk2 <- rtracklayer::import(paste(path_g, list.files(path_g)[1], sep = "/"))
+  g_sk <- rtracklayer::import(paste(path_g, list.files(path_g)[2], sep = "/"))
+g_comb <- rtracklayer::import(paste(path_g, list.files(path_g)[3], sep = "/"))
+   g_k <- rtracklayer::import(paste(path_g, list.files(path_g)[4], sep = "/"))
+   g_s <- rtracklayer::import(paste(path_g, list.files(path_g)[5], sep = "/"))
+ g_sre <- rtracklayer::import(paste(path_g, list.files(path_g)[6], sep = "/"))
+```
+</details>
+<br />
+
+#### Reviewing `GenomicRanges` accessor functions, etc.
+Building on the material [here](https://bioconductor.org/packages/devel/bioc/vignettes/GenomicRanges/inst/doc/GenomicRangesIntroduction.html).
+
+##### Code
+<details>
+<summary><i>Code: Reviewing `GenomicRanges` accessor functions, etc.</i></summary>
+
+```{r}
+#!/usr/bin/env Rscript
+
+cat("# =====================================\n")
+cat("# Review the GenomicRanges accessor functions by looking at Kluyveromyces_lactis_gca_000002515.ASM251v1.55.gff3")
+cat("\n\n")
+
+cat("# -------------------------------------\n")
+cat("# seqnames()\n")
+seqnames(g_k)
+cat("\n\n")
+
+cat("# -------------------------------------\n")
+cat("# ranges()\n")
+ranges(g_k)
+cat("\n\n")
+
+cat("# -------------------------------------\n")
+cat("# strand()\n")
+strand(g_k)
+cat("\n\n")
+
+cat("# -------------------------------------\n")
+cat("# granges()\n")
+granges(g_k)
+cat("\n\n")
+
+cat("# -------------------------------------\n")
+cat("# mcols()\n")
+mcols(g_k)
+cat("\n\n")
+
+cat("# -------------------------------------\n")
+cat("# mcols() %>% colnames()\n")
+#  Get all "columns" in GRanges object
+mcols(g_k) %>% colnames()
+cat("\n\n")
+
+cat("# -------------------------------------\n")
+cat("# seqlengths()\n")
+cat("# (Apparently, will need to add this info yourself...)\n")
+seqlengths(g_k)
+
+cat("\n\n")
+
+# g_s
+```
+</details>
+<br />
+
+#### Review the structure of a `GRanges` object
+##### Code
+<details>
+<summary><i>Code: Review the structure of a `GRanges` object</i></summary>
+
+```{r}
+#!/usr/bin/env Rscript
+
+cat("# =====================================\n")
+cat("# Review the structure of a GRanges object with Kluyveromyces_lactis_gca_000002515.ASM251v1.55.gff3")
+cat("\n\n")
+
+cat("# -------------------------------------\n")
+cat("# g_k %>% as.data.frame() %>% length()\n")
+g_k %>% as.data.frame() %>% length()
+cat("\n\n")
+
+cat("# -------------------------------------\n")
+cat("# mcols(g_k) %>% length()\n")
+mcols(g_k) %>% length()
+cat("\n\n")
+
+cat("# -------------------------------------\n")
+cat("#QUESTION Why the discrepancy?\n\n")
+
+cat("# -------------------------------------\n")
+cat("# g_k %>% as.data.frame() %>% colnames()\n")
+g_k %>% as.data.frame() %>% colnames()
+cat("\n\n")
+
+cat("# -------------------------------------\n")
+cat("# mcols(g_k) %>% colnames()\n")
+mcols(g_k) %>% colnames()
+cat("\n\n")
+
+cat("# -------------------------------------\n")
+cat("#ANSWER mcols() is returning the metadata columns, not all\n")
+```
+</details>
+<br />
+
+#### Explore/test a `GRanges`-to-`data.frame`-to-`GRanges` conversion
+Building on info [here](https://web.mit.edu/~r/current/arch/i386_linux26/lib/R/library/GenomicRanges/html/makeGRangesFromDataFrame.html).
+
+##### Code
+<details>
+<summary><i>Code: Explore/test a `GRanges`-to-`data.frame`-to-`GRanges` conversion</i></summary>
+
+```{r}
+#!/usr/bin/env Rscript
+
+cat("# -------------------------------------\n")
+cat("#QUESTION If I convert, say, g_k to a data.frame, can I successfully\n")
+cat("          convert it back to a GRanges object?\n\n")
+
+d_k <- g_k %>% as.data.frame()
+
+#  "Reconstitute" the GRanges object ("rg")
+rg_k <- GenomicRanges::makeGRangesFromDataFrame(
+    d_k, keep.extra.columns = TRUE
+)
+isTRUE(length(mcols(g_k)) == length(mcols(rg_k)))
+
+#  Eyeball the reconstituted files
+rtracklayer::export(rg_k, "test.gtf")
+rtracklayer::export(rg_k, "test.gff3")
+
+#  It works! Empty vector elements are now included in the metadata of
+#+ test.gff3 vs. Kluyveromyces_lactis_gca_000002515.ASM251v1.55.gff3; besides
+#+ that, they are the same. Now, can delete the above test files.
+unlink(c("test.gtf", "test.gff3"))
+# file.exists(c("test.gtf", "test.gff3"))
+
+cat("\n# -------------------------------------\n")
+cat("#ANSWER Yes")
+cat("\n\n")
+```
+</details>
+<br />
+
+## Describe details/game plan for the experiment
+### The contents of `infiles_gtf-gff3/Trinity-GG`
+#### Code
+<details>
+<summary><i>Code: The contents of `infiles_gtf-gff3/Trinity-GG`</i></summary>
+
+```{bash}
+#!/bin/bash
+
+cd infiles_gtf-gff3/Trinity-GG
+.,s 
+```
+</details>
+<br />
+
+#### Printed
+<details>
+<summary><i>Printed: The contents of `infiles_gtf-gff3/Trinity-GG`</i></summary>
+
+```{txt}
+./G_N:
+total 43M
+drwx------ 8 kalavatt  256 Feb 24 15:16 ./
+drwx------ 4 kalavatt  128 Mar 27 11:08 ../
+-rwx------ 1 kalavatt 6.8M Feb 24 15:07 trinity-gg_mkc-16_mir-0.05_mg-2_gf-0.05.gff3*
+-rwx------ 1 kalavatt 8.2M Feb 24 15:10 trinity-gg_mkc-1_mir-0.05_mg-2_gf-0.05.gff3*
+-rwx------ 1 kalavatt 7.6M Feb 24 15:09 trinity-gg_mkc-2_mir-0.05_mg-2_gf-0.05.gff3*
+-rwx------ 1 kalavatt 6.5M Feb 24 15:07 trinity-gg_mkc-32_mir-0.05_mg-2_gf-0.05.gff3*
+-rwx------ 1 kalavatt 7.0M Feb 24 15:09 trinity-gg_mkc-4_mir-0.05_mg-2_gf-0.05.gff3*
+-rwx------ 1 kalavatt 6.8M Feb 24 15:08 trinity-gg_mkc-8_mir-0.05_mg-2_gf-0.05.gff3*
+
+./Q_N:
+total 52M
+drwx------ 8 kalavatt  256 Feb 24 15:16 ./
+drwx------ 4 kalavatt  128 Mar 27 11:08 ../
+-rwx------ 1 kalavatt 8.3M Feb 24 14:44 trinity-gg_mkc-16_mir-0.05_mg-2_gf-0.05.gff3*
+-rwx------ 1 kalavatt  11M Feb 24 14:47 trinity-gg_mkc-1_mir-0.05_mg-2_gf-0.05.gff3*
+-rwx------ 1 kalavatt 9.5M Feb 24 14:46 trinity-gg_mkc-2_mir-0.05_mg-2_gf-0.05.gff3*
+-rwx------ 1 kalavatt 6.9M Feb 24 14:44 trinity-gg_mkc-32_mir-0.05_mg-2_gf-0.05.gff3*
+-rwx------ 1 kalavatt 8.7M Feb 24 14:46 trinity-gg_mkc-4_mir-0.05_mg-2_gf-0.05.gff3*
+-rwx------ 1 kalavatt 8.3M Feb 24 14:45 trinity-gg_mkc-8_mir-0.05_mg-2_gf-0.05.gff3*
+```
+</details>
+<br />
+
+### Written descriptions
+#### Background
+##### Text
+<details>
+<summary><i>Text: Background</i></summary>
+
+Details for how these files were made are in the following notebooks:
+
+- The `fasta` files from running `Trinity` (genome-guided, or "GG," mode): `results/2023-0111/work_Trinity-GF-GG-optimization_submit-jobs.md`
+- Aligning the `fasta` sequences to generate `gff3` files: `results/2023-0111/work_GMAP_rough-draft.md`
+</details>
+<br />
