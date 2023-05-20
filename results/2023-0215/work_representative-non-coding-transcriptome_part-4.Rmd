@@ -341,7 +341,7 @@ group_chr_strand$group <- cumsum(group_chr_strand$new_group)
 ##### Code
 <details>
 <summary><i>Code: For overlaps by '`chr`', identify new groups on '`previous_end`'</i></summary>
-```{r}
+```{r, eval=FALSE}
 #!/usr/bin/env Rscript
 
 # #  Aggregate the data
