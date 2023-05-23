@@ -263,7 +263,7 @@ XUTs <- XUTs %>%
 ```{r}
 #!/usr/bin/env Rscript
 
-all_ncRNAs <- dplyr::bind_rows(
+all_pa_ncRNAs <- dplyr::bind_rows(
     CUTs, CUTs_4x, CUTs_HMM, ncRNAs, NUTs, SRATs, SUTs, XUTs
 ) %>%
     dplyr::arrange(strand, chr, start)
@@ -278,7 +278,7 @@ all_ncRNAs <- dplyr::bind_rows(
 </details>
 <br />
 
-### Determine, record, and format overlaps between ncRNA features
+### Determine, record, and format overlaps between previously annotated ncRNA (pa-ncRNA) features
 #### Links records by overlaps
 ##### Code
 <details>
@@ -308,7 +308,7 @@ all_ncRNAs <- dplyr::bind_rows(
 
 #  Do the linking stratified by both 'chr' and 'strand'
 group_chr_strand <- plyr::ddply(
-    all_ncRNAs,
+    all_pa_ncRNAs,
     c("chr", "strand"),
     function(x) { 
         #  Check if a record should be linked with the previous record
@@ -533,8 +533,8 @@ agg_chr_strand <- dplyr::bind_cols(
         "n_features" = "...11"
     )
 
-#  With the above logic, values with only one feature or type are counted as
-#+ two; fix that
+#  With the above logic, values with only one feature or type are erroneously
+#+ counted as two, so fix that
 agg_chr_strand$n_types <- ifelse(
     grepl(" ", agg_chr_strand$details_type, fixed = TRUE),
     agg_chr_strand$n_types,
@@ -552,12 +552,14 @@ rm(details_id, details_type, n_features, details_all)
 </details>
 <br />
 
-### Examine overlaps between collapsed/merged ncRNAs and SGD
+### Examine overlaps between collapsed/merged pa-ncRNAs and SGD
 #### Code
+`#NOTE` No longer doing this here  
+`#TODO` Link to where we are doing this
 <details>
 <summary><i>Code: Join `data.frame`s</i></summary>
 
-```{r}
+```{r, eval=FALSE}
 #!/usr/bin/env Rscript
 
 # in_SGD <- paste("./infiles_gtf-gff3/already/Saccharomyces_cerevisiae.R64-1-1.108.gtf")
@@ -648,10 +650,10 @@ agg_chr_strand$features_12 <- evaluate_nos_features(12)
 # agg_chr_strand$n_types %>% table()
 # (rowSums(agg_chr_strand[20:27]) == agg_chr_strand$n_types) %>% table()
 
-all_ncRNAs_cats <- colnames(agg_chr_strand)[20:27]
+all_pa_ncRNAs_cats <- colnames(agg_chr_strand)[20:27]
 
 # #  Check
-# agg_chr_strand[, all_ncRNAs_cats] %>% head(15) %>% t()
+# agg_chr_strand[, all_pa_ncRNAs_cats] %>% head(15) %>% t()
 
 agg_chr_strand$length <- agg_chr_strand$end - agg_chr_strand$start
 agg_chr_strand <- agg_chr_strand %>%
@@ -660,17 +662,17 @@ agg_chr_strand <- agg_chr_strand %>%
 </details>
 <br />
 
-## Try out `ComplexUpset`
+## Run `ComplexUpset`
 ### Code
 <details>
-<summary><i>Code: Try out `ComplexUpset`</i></summary>
+<summary><i>Code: Run `ComplexUpset`</i></summary>
 ```{r}
 #!/usr/bin/env Rscript
 
 #  Sort by intersection size
 ComplexUpset::upset(
     agg_chr_strand,
-    all_ncRNAs_cats,
+    all_pa_ncRNAs_cats,
     annotations = list(
         "Length (bp)" = agg_chr_strand %>%
             ggplot2::ggplot(., aes(x = intersection, y = length)) +
@@ -686,7 +688,7 @@ ComplexUpset::upset(
     #     "Intersection size" = intersection_size(),
     #     "Intersection ratio" = intersection_ratio()
     # ),
-    name = "Groups of ncRNA categories",
+    name = "Groups of pa-ncRNA categories",
     # sort_intersections_by = "ratio",
     n_intersection = 30,
     # n_intersection = 10,
@@ -699,7 +701,7 @@ ComplexUpset::upset(
 #+ size/union ratio
 ComplexUpset::upset(
     agg_chr_strand,
-    all_ncRNAs_cats,
+    all_pa_ncRNAs_cats,
     annotations = list(
         "Length (bp)" = agg_chr_strand %>%
             ggplot2::ggplot(., aes(x = intersection, y = length)) +
@@ -715,7 +717,7 @@ ComplexUpset::upset(
     #     "Intersection size" = intersection_size(),
     #     "Intersection ratio" = intersection_ratio()
     # ),
-    name = "Groups of ncRNA categories",
+    name = "Groups of pa-ncRNA categories",
     sort_intersections_by = "ratio",
     n_intersection = 30,
     # n_intersection = 10,
@@ -726,7 +728,7 @@ ComplexUpset::upset(
 #  Sort by set degree
 ComplexUpset::upset(
     agg_chr_strand,
-    all_ncRNAs_cats,
+    all_pa_ncRNAs_cats,
     annotations = list(
         "Length (bp)" = agg_chr_strand %>%
             ggplot2::ggplot(., aes(x = intersection, y = length)) +
@@ -742,7 +744,7 @@ ComplexUpset::upset(
     #     "Intersection size" = intersection_size(),
     #     "Intersection ratio" = intersection_ratio()
     # ),
-    name = "Groups of ncRNA categories",
+    name = "Groups of pa-ncRNA categories",
     sort_intersections_by = "degree",
     n_intersection = 35,
     # n_intersection = 10,
@@ -1007,10 +1009,10 @@ write_gtf(
 </details>
 <br />
 
-### Generate combined gtf for ncRNA feature types (not merged/collapsed)
+### Generate combined gtf for previously annotated ncRNA (pa-ncRNA) feature types (not merged/collapsed)
 #### Code
 <details>
-<summary><i>Generate combined gtf for ncRNA feature types (not merged/collapsed)</i></summary>
+<summary><i>Generate combined gtf for previously annotated ncRNA (pa-ncRNA) feature types (not merged/collapsed)</i></summary>
 ```{r}
 #!/usr/bin/env Rscript
 

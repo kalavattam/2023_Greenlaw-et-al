@@ -213,7 +213,7 @@ cp \
 
 #  Copy ncRNAs to experiment directory
 cp \
-    outfiles_gtf-gff3/comprehensive/S288C_reference_genome_R64-1-1_20110203/processed_ncRNA_sense.gtf \
+    outfiles_gtf-gff3/representation/Greenlaw-et-al_ncRNAs.gtf \
     infiles_gtf-gff3/representation/ncRNAs/processed_ncRNA_sense.gtf
 
 #  Give file a shorter name

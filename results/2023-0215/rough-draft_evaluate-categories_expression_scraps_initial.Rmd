@@ -1,0 +1,884 @@
+---
+title: "rough-draft_evaluate-categories_expression_initial_scraps.Rmd"
+author: "KA"
+email: "kalavatt@fredhutch.org"
+output:
+    html_notebook:
+        toc: yes
+        toc_float: true
+---
+<br />
+
+```{r}
+            #  ----------------------------------------------------------------
+            #  Plot per-replicate counts proportions
+            col_piv <- c(
+                "G1_N_rep1", "G1_N_rep2", "G1_SS_rep1", "G1_SS_rep2",
+                "Q_N_rep1", "Q_N_rep2", "Q_SS_rep1", "Q_SS_rep2"
+            )
+            
+            #  --------------------------------------------
+            #  ...stacked
+            
+            #  ------------------------
+            #  ...for summary 
+            # summary %>%
+            #     pivot_on_columns(col_piv) %>%
+            #     `plot-rep-prop_by-sample_stacked`()
+            # summary %>%
+            #     pivot_on_columns(col_piv) %>%
+            #     `plot-rep-prop_by-sample_stacked`() +
+            #     scale_fill_manual(values = viridisLite::viridis(11))
+
+            # summary %>%
+            #     pivot_on_columns(col_piv) %>%
+            #     `plot-rep-prop_by-category_stacked`()
+            # summary %>%
+            #     pivot_on_columns(col_piv) %>%
+            #     `plot-rep-prop_by-category_stacked`() +
+            #     scale_fill_manual(values = viridisLite::viridis(8))
+            
+            #  ------------------------
+            #  ...for summary_other
+            # summary_other %>%
+            #     pivot_on_columns(col_piv) %>%
+            #     `plot-rep-prop_by-sample_stacked`()
+            summary_other %>%
+                pivot_on_columns(col_piv) %>%
+                `plot-rep-prop_by-sample_stacked`() +
+                scale_fill_manual(values = viridisLite::viridis(7)) +
+                xlab("") +
+                ylab("proportion")
+            summary_other %>%
+                pivot_on_columns(col_piv) %>%
+                `plot-rep-prop_by-sample_stacked`() +
+                scale_fill_manual(values = viridisLite::viridis(7)) +
+                coord_cartesian(ylim = c(0, 0.35)) +
+                xlab("") +
+                ylab("proportion")
+
+            # summary_other %>%
+            #     pivot_on_columns(col_piv) %>%
+            #     `plot-rep-prop_by-category_stacked`()
+            # summary_other %>%
+            #     pivot_on_columns(col_piv) %>%
+            #     `plot-rep-prop_by-category_stacked`() +
+            #     scale_fill_manual(values = viridisLite::viridis(8))
+            
+            # #  --------------------------------------------
+            # #  ...dodged
+            # 
+            # #  ------------------------
+            # #  ...for summary
+            # summary %>%
+            #     pivot_on_columns(col_piv) %>%
+            #     `plot-rep-prop_by-category_dodged`()
+            # summary %>%
+            #     pivot_on_columns(col_piv) %>%
+            #     `plot-rep-prop_by-category_dodged`() +
+            #     scale_fill_manual(values = viridisLite::viridis(8))
+            # 
+            # summary %>%
+            #     pivot_on_columns(col_piv) %>%
+            #     `plot-rep-prop_by-sample_dodged`()
+            # summary %>%
+            #     pivot_on_columns(col_piv) %>%
+            #     `plot-rep-prop_by-sample_dodged`() +
+            #     scale_fill_manual(values = viridisLite::viridis(11))
+            # 
+            # #  ------------------------
+            # #  ...for summary_other
+            # summary_other %>%
+            #     pivot_on_columns(col_piv) %>%
+            #     `plot-rep-prop_by-category_dodged`()
+            # summary_other %>%
+            #     pivot_on_columns(col_piv) %>%
+            #     `plot-rep-prop_by-category_dodged`() +
+            #     scale_fill_manual(values = viridisLite::viridis(8))
+            # 
+            # summary_other %>%
+            #     pivot_on_columns(col_piv) %>%
+            #     `plot-rep-prop_by-sample_dodged`()
+            # summary_other %>%
+            #     pivot_on_columns(col_piv) %>%
+            #     `plot-rep-prop_by-sample_dodged`() +
+            #     scale_fill_manual(values = viridisLite::viridis(7))
+```
+
+```{r}
+            #  ----------------------------------------------------------------
+            #  Calculate replicate means and SEMs
+            
+            #  ------------------------
+            #  ...for summary, prop_summary
+            summary.pre <- summary
+            # summary <- summary.pre
+            
+            summary$mean_G1_N <- apply(
+                summary.pre[, 2:3], 1,
+                function(x) mean(x)
+            )
+            summary$SEM_G1_N <- apply(
+                summary.pre[, 2:3], 1,
+                function(x) sd(x) / sqrt(length(x))
+            )
+            summary$mean_G1_SS <- apply(
+                summary.pre[, 4:5], 1,
+                function(x) mean(x)
+            )
+            summary$SEM_G1_SS <- apply(
+                summary.pre[, 4:5], 1,
+                function(x) sd(x) / sqrt(length(x))
+            )
+            summary$mean_Q_N <- apply(
+                summary.pre[, 6:7], 1,
+                function(x) mean(x)
+            )
+            summary$SEM_Q_N <- apply(
+                summary.pre[, 6:7], 1,
+                function(x) sd(x) / sqrt(length(x))
+            )
+            summary$mean_Q_SS <- apply(
+                summary.pre[, 8:9], 1,
+                function(x) mean(x)
+            )
+            summary$SEM_Q_SS <- apply(
+                summary.pre[, 8:9], 1,
+                function(x) sd(x) / sqrt(length(x))
+            )
+            
+            prop_summary.pre <- prop_summary
+            # prop_summary <- prop_summary.pre
+            
+            prop_summary$mean_G1_N <- apply(
+                prop_summary.pre[, 2:3], 1,
+                function(x) mean(x)
+            )
+            prop_summary$SEM_G1_N <- apply(
+                prop_summary.pre[, 2:3], 1,
+                function(x) sd(x) / sqrt(length(x))
+            )
+            prop_summary$mean_G1_SS <- apply(
+                prop_summary.pre[, 4:5], 1,
+                function(x) mean(x)
+            )
+            prop_summary$SEM_G1_SS <- apply(
+                prop_summary.pre[, 4:5], 1,
+                function(x) sd(x) / sqrt(length(x))
+            )
+            prop_summary$mean_Q_N <- apply(
+                prop_summary.pre[, 6:7], 1,
+                function(x) mean(x)
+            )
+            prop_summary$SEM_Q_N <- apply(
+                prop_summary.pre[, 6:7], 1,
+                function(x) sd(x) / sqrt(length(x))
+            )
+            prop_summary$mean_Q_SS <- apply(
+                prop_summary.pre[, 8:9], 1,
+                function(x) mean(x)
+            )
+            prop_summary$SEM_Q_SS <- apply(
+                prop_summary.pre[, 8:9], 1,
+                function(x) sd(x) / sqrt(length(x))
+            )
+            
+            columnwise_prop_summary.pre <- columnwise_prop_summary
+            # columnwise_prop_summary <- columnwise_prop_summary.pre
+            
+            columnwise_prop_summary$mean_G1_N <- apply(
+                columnwise_prop_summary.pre[, 2:3], 1,
+                function(x) mean(x)
+            )
+            columnwise_prop_summary$SEM_G1_N <- apply(
+                columnwise_prop_summary.pre[, 2:3], 1,
+                function(x) sd(x) / sqrt(length(x))
+            )
+            columnwise_prop_summary$mean_G1_SS <- apply(
+                columnwise_prop_summary.pre[, 4:5], 1,
+                function(x) mean(x)
+            )
+            columnwise_prop_summary$SEM_G1_SS <- apply(
+                columnwise_prop_summary.pre[, 4:5], 1,
+                function(x) sd(x) / sqrt(length(x))
+            )
+            columnwise_prop_summary$mean_Q_N <- apply(
+                columnwise_prop_summary.pre[, 6:7], 1,
+                function(x) mean(x)
+            )
+            columnwise_prop_summary$SEM_Q_N <- apply(
+                columnwise_prop_summary.pre[, 6:7], 1,
+                function(x) sd(x) / sqrt(length(x))
+            )
+            columnwise_prop_summary$mean_Q_SS <- apply(
+                columnwise_prop_summary.pre[, 8:9], 1,
+                function(x) mean(x)
+            )
+            columnwise_prop_summary$SEM_Q_SS <- apply(
+                columnwise_prop_summary.pre[, 8:9], 1,
+                function(x) sd(x) / sqrt(length(x))
+            )
+            
+            #  ------------------------
+            #  ...for summary_other, prop_summary_other
+            summary_other.pre <- summary_other
+            # summary_other <- summary_other.pre
+            
+            summary_other$mean_G1_N <- apply(
+                summary_other.pre[, 2:3], 1,
+                function(x) mean(x)
+            )
+            summary_other$SEM_G1_N <- apply(
+                summary_other.pre[, 2:3], 1,
+                function(x) sd(x) / sqrt(length(x))
+            )
+            summary_other$mean_G1_SS <- apply(
+                summary_other.pre[, 4:5], 1,
+                function(x) mean(x)
+            )
+            summary_other$SEM_G1_SS <- apply(
+                summary_other.pre[, 4:5], 1,
+                function(x) sd(x) / sqrt(length(x))
+            )
+            summary_other$mean_Q_N <- apply(
+                summary_other.pre[, 6:7], 1,
+                function(x) mean(x)
+            )
+            summary_other$SEM_Q_N <- apply(
+                summary_other.pre[, 6:7], 1,
+                function(x) sd(x) / sqrt(length(x))
+            )
+            summary_other$mean_Q_SS <- apply(
+                summary_other.pre[, 8:9], 1,
+                function(x) mean(x)
+            )
+            summary_other$SEM_Q_SS <- apply(
+                summary_other.pre[, 8:9], 1,
+                function(x) sd(x) / sqrt(length(x))
+            )
+            
+            prop_summary_other.pre <- prop_summary_other
+            # prop_summary_other <- prop_summary_other.pre
+            
+            prop_summary_other$mean_G1_N <- apply(
+                prop_summary_other.pre[, 2:3], 1,
+                function(x) mean(x)
+            )
+            prop_summary_other$SEM_G1_N <- apply(
+                prop_summary_other.pre[, 2:3], 1,
+                function(x) sd(x) / sqrt(length(x))
+            )
+            prop_summary_other$mean_G1_SS <- apply(
+                prop_summary_other.pre[, 4:5], 1,
+                function(x) mean(x)
+            )
+            prop_summary_other$SEM_G1_SS <- apply(
+                prop_summary_other.pre[, 4:5], 1,
+                function(x) sd(x) / sqrt(length(x))
+            )
+            prop_summary_other$mean_Q_N <- apply(
+                prop_summary_other.pre[, 6:7], 1,
+                function(x) mean(x)
+            )
+            prop_summary_other$SEM_Q_N <- apply(
+                prop_summary_other.pre[, 6:7], 1,
+                function(x) sd(x) / sqrt(length(x))
+            )
+            prop_summary_other$mean_Q_SS <- apply(
+                prop_summary_other.pre[, 8:9], 1,
+                function(x) mean(x)
+            )
+            prop_summary_other$SEM_Q_SS <- apply(
+                prop_summary_other.pre[, 8:9], 1,
+                function(x) sd(x) / sqrt(length(x))
+            )
+
+            columnwise_prop_summary_other.pre <- columnwise_prop_summary_other
+            # columnwise_prop_summary_other <- columnwise_prop_summary_other.pre
+            
+            columnwise_prop_summary_other$mean_G1_N <- apply(
+                columnwise_prop_summary_other.pre[, 2:3], 1,
+                function(x) mean(x)
+            )
+            columnwise_prop_summary_other$SEM_G1_N <- apply(
+                columnwise_prop_summary_other.pre[, 2:3], 1,
+                function(x) sd(x) / sqrt(length(x))
+            )
+            columnwise_prop_summary_other$mean_G1_SS <- apply(
+                columnwise_prop_summary_other.pre[, 4:5], 1,
+                function(x) mean(x)
+            )
+            columnwise_prop_summary_other$SEM_G1_SS <- apply(
+                columnwise_prop_summary_other.pre[, 4:5], 1,
+                function(x) sd(x) / sqrt(length(x))
+            )
+            columnwise_prop_summary_other$mean_Q_N <- apply(
+                columnwise_prop_summary_other.pre[, 6:7], 1,
+                function(x) mean(x)
+            )
+            columnwise_prop_summary_other$SEM_Q_N <- apply(
+                columnwise_prop_summary_other.pre[, 6:7], 1,
+                function(x) sd(x) / sqrt(length(x))
+            )
+            columnwise_prop_summary_other$mean_Q_SS <- apply(
+                columnwise_prop_summary_other.pre[, 8:9], 1,
+                function(x) mean(x)
+            )
+            columnwise_prop_summary_other$SEM_Q_SS <- apply(
+                columnwise_prop_summary_other.pre[, 8:9], 1,
+                function(x) sd(x) / sqrt(length(x))
+            )
+            
+            #  Check
+            # summary
+            # summary_other
+            # prop_summary
+            # prop_summary_other
+            # columnwise_prop_summary
+            # columnwise_prop_summary_other
+```
+
+```{r}
+            #  ----------------------------------------------------------------
+            #  Prepare "pivoted" dataframe from summary mean, SEM, etc.
+
+            #  ------------------------
+            #  ...for summary
+            df_tmp_1 <- summary %>%
+                dplyr::select(-c(
+                    G1_N_rep1, G1_N_rep2, G1_SS_rep1, G1_SS_rep2,
+                    Q_N_rep1, Q_N_rep2, Q_SS_rep1, Q_SS_rep2,
+                    SEM_G1_N, SEM_G1_SS, SEM_Q_N, SEM_Q_SS,
+                    number_of_features
+                )) %>%
+                dplyr::group_by(category) %>%
+                tidyr::pivot_longer(cols = c(
+                    mean_G1_N, mean_G1_SS, mean_Q_N, mean_Q_SS
+                )) %>%
+                dplyr::rename(sample_mean = name, mean = value) %>%
+                dplyr::mutate(
+                    sample = stringr::str_remove(sample_mean, "mean_")
+                ) %>%
+                dplyr::select(-sample_mean)
+            
+            df_tmp_2 <- summary %>%
+                dplyr::select(-c(
+                    G1_N_rep1, G1_N_rep2, G1_SS_rep1, G1_SS_rep2,
+                    Q_N_rep1, Q_N_rep2, Q_SS_rep1, Q_SS_rep2,
+                    mean_G1_N, mean_G1_SS, mean_Q_N, mean_Q_SS,
+                    number_of_features
+                )) %>%
+                dplyr::group_by(category) %>%
+                tidyr::pivot_longer(cols = c(
+                    SEM_G1_N, SEM_G1_SS, SEM_Q_N, SEM_Q_SS
+                )) %>%
+                dplyr::rename(sample_SEM = name, SEM = value) %>%
+                dplyr::mutate(
+                    sample = stringr::str_remove(sample_SEM, "SEM_")
+                ) %>%
+                dplyr::select(-sample_SEM)
+            
+            df_tmp_3 <- dplyr::bind_cols(df_tmp_1, df_tmp_2)
+            
+            #  Save the pivoted dataframe to variable
+            summary_mean_SEM <- dplyr::bind_cols(
+                df_tmp_1[, 1:2], df_tmp_2[, 2:3]
+            )
+            
+            #  Clean up
+            rm(df_tmp_1, df_tmp_2, df_tmp_3)
+            
+            #  ------------------------
+            #  ...for prop_summary
+            df_tmp_1 <- prop_summary %>%
+                dplyr::select(-c(
+                    G1_N_rep1, G1_N_rep2, G1_SS_rep1, G1_SS_rep2,
+                    Q_N_rep1, Q_N_rep2, Q_SS_rep1, Q_SS_rep2,
+                    SEM_G1_N, SEM_G1_SS, SEM_Q_N, SEM_Q_SS,
+                    number_of_features
+                )) %>%
+                dplyr::group_by(category) %>%
+                tidyr::pivot_longer(cols = c(
+                    mean_G1_N, mean_G1_SS, mean_Q_N, mean_Q_SS
+                )) %>%
+                dplyr::rename(sample_mean = name, mean = value) %>%
+                dplyr::mutate(
+                    sample = stringr::str_remove(sample_mean, "mean_")
+                ) %>%
+                dplyr::select(-sample_mean)
+            
+            df_tmp_2 <- prop_summary %>%
+                dplyr::select(-c(
+                    G1_N_rep1, G1_N_rep2, G1_SS_rep1, G1_SS_rep2,
+                    Q_N_rep1, Q_N_rep2, Q_SS_rep1, Q_SS_rep2,
+                    mean_G1_N, mean_G1_SS, mean_Q_N, mean_Q_SS,
+                    number_of_features
+                )) %>%
+                dplyr::group_by(category) %>%
+                tidyr::pivot_longer(cols = c(
+                    SEM_G1_N, SEM_G1_SS, SEM_Q_N, SEM_Q_SS
+                )) %>%
+                dplyr::rename(sample_SEM = name, SEM = value) %>%
+                dplyr::mutate(
+                    sample = stringr::str_remove(sample_SEM, "SEM_")
+                ) %>%
+                dplyr::select(-sample_SEM)
+            
+            df_tmp_3 <- dplyr::bind_cols(df_tmp_1, df_tmp_2)
+            
+            #  Save the pivoted dataframe to variable
+            prop_summary_mean_SEM <- dplyr::bind_cols(
+                df_tmp_1[, 1:2], df_tmp_2[, 2:3]
+            )
+            
+            #  Clean up
+            rm(df_tmp_1, df_tmp_2, df_tmp_3)
+            
+            #  ------------------------
+            #  ...for columnwise_prop_summary
+            df_tmp_1 <- columnwise_prop_summary %>%
+                dplyr::select(-c(
+                    G1_N_rep1, G1_N_rep2, G1_SS_rep1, G1_SS_rep2,
+                    Q_N_rep1, Q_N_rep2, Q_SS_rep1, Q_SS_rep2,
+                    SEM_G1_N, SEM_G1_SS, SEM_Q_N, SEM_Q_SS,
+                    number_of_features
+                )) %>%
+                dplyr::group_by(category) %>%
+                tidyr::pivot_longer(cols = c(
+                    mean_G1_N, mean_G1_SS, mean_Q_N, mean_Q_SS
+                )) %>%
+                dplyr::rename(sample_mean = name, mean = value) %>%
+                dplyr::mutate(
+                    sample = stringr::str_remove(sample_mean, "mean_")
+                ) %>%
+                dplyr::select(-sample_mean)
+            
+            df_tmp_2 <- columnwise_prop_summary %>%
+                dplyr::select(-c(
+                    G1_N_rep1, G1_N_rep2, G1_SS_rep1, G1_SS_rep2,
+                    Q_N_rep1, Q_N_rep2, Q_SS_rep1, Q_SS_rep2,
+                    mean_G1_N, mean_G1_SS, mean_Q_N, mean_Q_SS,
+                    number_of_features
+                )) %>%
+                dplyr::group_by(category) %>%
+                tidyr::pivot_longer(cols = c(
+                    SEM_G1_N, SEM_G1_SS, SEM_Q_N, SEM_Q_SS
+                )) %>%
+                dplyr::rename(sample_SEM = name, SEM = value) %>%
+                dplyr::mutate(
+                    sample = stringr::str_remove(sample_SEM, "SEM_")
+                ) %>%
+                dplyr::select(-sample_SEM)
+            
+            df_tmp_3 <- dplyr::bind_cols(df_tmp_1, df_tmp_2)
+            
+            #  Save the pivoted dataframe to variable
+            columnwise_prop_summary_mean_SEM <- dplyr::bind_cols(
+                df_tmp_1[, 1:2], df_tmp_2[, 2:3]
+            )
+            
+            #  Clean up
+            rm(df_tmp_1, df_tmp_2, df_tmp_3)
+            
+            #  ------------------------
+            #  ...for summary_other
+            df_tmp_1 <- summary_other %>%
+                dplyr::select(-c(
+                    G1_N_rep1, G1_N_rep2, G1_SS_rep1, G1_SS_rep2,
+                    Q_N_rep1, Q_N_rep2, Q_SS_rep1, Q_SS_rep2,
+                    SEM_G1_N, SEM_G1_SS, SEM_Q_N, SEM_Q_SS,
+                    number_of_features
+                )) %>%
+                dplyr::group_by(category) %>%
+                tidyr::pivot_longer(cols = c(
+                    mean_G1_N, mean_G1_SS, mean_Q_N, mean_Q_SS
+                )) %>%
+                dplyr::rename(sample_mean = name, mean = value) %>%
+                dplyr::mutate(
+                    sample = stringr::str_remove(sample_mean, "mean_")
+                ) %>%
+                dplyr::select(-sample_mean)
+            
+            df_tmp_2 <- summary_other %>%
+                dplyr::select(-c(
+                    G1_N_rep1, G1_N_rep2, G1_SS_rep1, G1_SS_rep2,
+                    Q_N_rep1, Q_N_rep2, Q_SS_rep1, Q_SS_rep2,
+                    mean_G1_N, mean_G1_SS, mean_Q_N, mean_Q_SS,
+                    number_of_features
+                )) %>%
+                dplyr::group_by(category) %>%
+                tidyr::pivot_longer(cols = c(
+                    SEM_G1_N, SEM_G1_SS, SEM_Q_N, SEM_Q_SS
+                )) %>%
+                dplyr::rename(sample_SEM = name, SEM = value) %>%
+                dplyr::mutate(
+                    sample = stringr::str_remove(sample_SEM, "SEM_")
+                ) %>%
+                dplyr::select(-sample_SEM)
+            
+            df_tmp_3 <- dplyr::bind_cols(df_tmp_1, df_tmp_2)
+            
+            #  Save the pivoted dataframe to variable
+            summary_other_mean_SEM <- dplyr::bind_cols(
+                df_tmp_1[, 1:2], df_tmp_2[, 2:3]
+            )
+            
+            #  Clean up
+            rm(df_tmp_1, df_tmp_2, df_tmp_3)
+            
+            #  ------------------------
+            #  ...for prop_summary_other
+            df_tmp_1 <- prop_summary_other %>%
+                dplyr::select(-c(
+                    G1_N_rep1, G1_N_rep2, G1_SS_rep1, G1_SS_rep2,
+                    Q_N_rep1, Q_N_rep2, Q_SS_rep1, Q_SS_rep2,
+                    SEM_G1_N, SEM_G1_SS, SEM_Q_N, SEM_Q_SS,
+                    number_of_features
+                )) %>%
+                dplyr::group_by(category) %>%
+                tidyr::pivot_longer(cols = c(
+                    mean_G1_N, mean_G1_SS, mean_Q_N, mean_Q_SS
+                )) %>%
+                dplyr::rename(sample_mean = name, mean = value) %>%
+                dplyr::mutate(
+                    sample = stringr::str_remove(sample_mean, "mean_")
+                ) %>%
+                dplyr::select(-sample_mean)
+            
+            df_tmp_2 <- prop_summary_other %>%
+                dplyr::select(-c(
+                    G1_N_rep1, G1_N_rep2, G1_SS_rep1, G1_SS_rep2,
+                    Q_N_rep1, Q_N_rep2, Q_SS_rep1, Q_SS_rep2,
+                    mean_G1_N, mean_G1_SS, mean_Q_N, mean_Q_SS,
+                    number_of_features
+                )) %>%
+                dplyr::group_by(category) %>%
+                tidyr::pivot_longer(cols = c(
+                    SEM_G1_N, SEM_G1_SS, SEM_Q_N, SEM_Q_SS
+                )) %>%
+                dplyr::rename(sample_SEM = name, SEM = value) %>%
+                dplyr::mutate(
+                    sample = stringr::str_remove(sample_SEM, "SEM_")
+                ) %>%
+                dplyr::select(-sample_SEM)
+            
+            df_tmp_3 <- dplyr::bind_cols(df_tmp_1, df_tmp_2)
+            
+            #  Save the pivoted dataframe to variable
+            prop_summary_other_mean_SEM <- dplyr::bind_cols(
+                df_tmp_1[, 1:2], df_tmp_2[, 2:3]
+            )
+            
+            #  Clean up
+            rm(df_tmp_1, df_tmp_2, df_tmp_3)
+            
+            #  ------------------------
+            #  ...for columnwise_prop_summary_other
+            df_tmp_1 <- columnwise_prop_summary_other %>%
+                dplyr::select(-c(
+                    G1_N_rep1, G1_N_rep2, G1_SS_rep1, G1_SS_rep2,
+                    Q_N_rep1, Q_N_rep2, Q_SS_rep1, Q_SS_rep2,
+                    SEM_G1_N, SEM_G1_SS, SEM_Q_N, SEM_Q_SS,
+                    number_of_features
+                )) %>%
+                dplyr::group_by(category) %>%
+                tidyr::pivot_longer(cols = c(
+                    mean_G1_N, mean_G1_SS, mean_Q_N, mean_Q_SS
+                )) %>%
+                dplyr::rename(sample_mean = name, mean = value) %>%
+                dplyr::mutate(
+                    sample = stringr::str_remove(sample_mean, "mean_")
+                ) %>%
+                dplyr::select(-sample_mean)
+            
+            df_tmp_2 <- columnwise_prop_summary_other %>%
+                dplyr::select(-c(
+                    G1_N_rep1, G1_N_rep2, G1_SS_rep1, G1_SS_rep2,
+                    Q_N_rep1, Q_N_rep2, Q_SS_rep1, Q_SS_rep2,
+                    mean_G1_N, mean_G1_SS, mean_Q_N, mean_Q_SS,
+                    number_of_features
+                )) %>%
+                dplyr::group_by(category) %>%
+                tidyr::pivot_longer(cols = c(
+                    SEM_G1_N, SEM_G1_SS, SEM_Q_N, SEM_Q_SS
+                )) %>%
+                dplyr::rename(sample_SEM = name, SEM = value) %>%
+                dplyr::mutate(
+                    sample = stringr::str_remove(sample_SEM, "SEM_")
+                ) %>%
+                dplyr::select(-sample_SEM)
+            
+            df_tmp_3 <- dplyr::bind_cols(df_tmp_1, df_tmp_2)
+            
+            #  Save the pivoted dataframe to variable
+            columnwise_prop_summary_other_mean_SEM <- dplyr::bind_cols(
+                df_tmp_1[, 1:2], df_tmp_2[, 2:3]
+            )
+            
+            #  Clean up
+            rm(df_tmp_1, df_tmp_2, df_tmp_3)
+            
+            #  Check            
+            summary_mean_SEM
+            prop_summary_mean_SEM
+            columnwise_prop_summary_mean_SEM
+            summary_other_mean_SEM
+            prop_summary_other_mean_SEM
+            columnwise_prop_summary_other_mean_SEM
+```
+
+```{r}
+            #  ----------------------------------------------------------------
+            #  Plot replicate-averaged counts proportions
+            
+            #  --------------------------------------------
+            #  ...stacked
+            
+            #  ------------------------
+            #  ...for summary
+            summary_mean_SEM %>%
+                dplyr::select(category, mean, sample) %>%
+                dplyr::rename(counts = mean) %>%
+                `plot-rep-prop_by-sample_stacked`()
+            summary_mean_SEM %>%
+                dplyr::select(category, mean, sample) %>%
+                dplyr::rename(counts = mean) %>%
+                `plot-rep-prop_by-sample_stacked`() +
+                scale_fill_manual(values = viridisLite::viridis(11))
+            
+            summary_mean_SEM %>%
+                dplyr::select(category, mean, sample) %>%
+                dplyr::rename(counts = mean) %>%
+                `plot-rep-prop_by-category_stacked`()
+            summary_mean_SEM %>%
+                dplyr::select(category, mean, sample) %>%
+                dplyr::rename(counts = mean) %>%
+                `plot-rep-prop_by-category_stacked`() +
+                scale_fill_manual(values = viridisLite::viridis(4))
+            
+            #  ------------------------
+            #  ...for summary_other
+            summary_other_mean_SEM %>%
+                dplyr::select(category, mean, sample) %>%
+                dplyr::rename(counts = mean) %>%
+                `plot-rep-prop_by-sample_stacked`()
+            summary_other_mean_SEM %>%
+                dplyr::select(
+                    category, mean, sample
+                ) %>%
+                dplyr::rename(counts = mean) %>%
+                `plot-rep-prop_by-sample_stacked`() +
+                scale_fill_manual(values = viridisLite::viridis(7))
+            
+            summary_other_mean_SEM %>%
+                dplyr::select(category, mean, sample) %>%
+                dplyr::rename(counts = mean) %>%
+                `plot-rep-prop_by-category_stacked`()
+            summary_other_mean_SEM %>%
+                dplyr::select(category, mean, sample) %>%
+                dplyr::rename(counts = mean) %>%
+                `plot-rep-prop_by-category_stacked`() +
+                scale_fill_manual(values = viridisLite::viridis(4))
+            
+            #  --------------------------------------------
+            #  ...dodged
+            
+            #  ------------------------
+            #  ...for summary
+            summary_mean_SEM %>%
+                dplyr::select(category, mean, sample) %>%
+                dplyr::rename(counts = mean) %>%
+                `plot-rep-prop_by-category_dodged`()
+            summary_mean_SEM %>%
+                dplyr::select(category, mean, sample) %>%
+                dplyr::rename(counts = mean) %>%
+                `plot-rep-prop_by-category_dodged`() +
+                scale_fill_manual(values = viridisLite::viridis(4))
+            
+            summary_mean_SEM %>%
+                dplyr::select(category, mean, sample) %>%
+                dplyr::rename(counts = mean) %>%
+                `plot-rep-prop_by-sample_dodged`()
+            summary_mean_SEM %>%
+                dplyr::select(category, mean, sample) %>%
+                dplyr::rename(counts = mean) %>%
+                `plot-rep-prop_by-sample_dodged`() +
+                scale_fill_manual(values = viridisLite::viridis(11))
+```
+
+```{r}
+            #HERE
+            prop_summary_other_mean_SEM %>%
+                group_by(category) %>%
+                ggplot(aes(x = dataset, y = mean, fill = category)) +
+                geom_bar(position = "dodge", stat = "identity") +
+                geom_errorbar(
+                    aes(ymin = mean - SEM, ymax = mean + SEM),
+                    width = 0.66,
+                    position = position_dodge(0.9)
+                ) +
+                theme_slick
+            
+            prop_summary_other_mean_SEM %>%
+                group_by(category) %>%
+                ggplot(aes(x = category, y = mean, fill = samples)) +
+                geom_bar(position = "dodge", stat = "identity") +
+                geom_errorbar(
+                    aes(ymin = mean - SEM, ymax = mean + SEM),
+                    width = 0.66,
+                    position = position_dodge(0.9)
+                ) +
+                theme_slick
+            #TODO Functions
+```
+
+```{r}
+            #TODO Per-sample-scaled, e.g., plot one sample "dodged", everything
+            #     for that sample summing to 1.0
+            
+            #TODO Pairwise t-tests for the above
+            calculate_p_prop_categories <- function(tbl, row) {
+                # ...
+                # :param tbl: ...
+                # :param row: ...
+                # :return results_list: ...
+                G1_N <- as.numeric(tbl[row, 2:3])
+                G1_SS <- as.numeric(tbl[row, 4:5])
+                Q_N <- as.numeric(tbl[row, 6:7])
+                Q_SS <- as.numeric(tbl[row, 8:9])
+                
+                p_G1_N_vs_G1_SS <- t.test(
+                    G1_N, G1_SS, alternative = "two.sided", var.equal = TRUE
+                )
+                p_G1_N_vs_Q_N <- t.test(
+                    G1_N, Q_N, alternative = "two.sided", var.equal = TRUE
+                )
+                p_G1_N_vs_Q_SS <- t.test(
+                    G1_N, Q_SS, alternative = "two.sided", var.equal = TRUE
+                )
+                p_G1_SS_vs_Q_N <- t.test(
+                    G1_SS, Q_N, alternative = "two.sided", var.equal = TRUE
+                )
+                p_G1_SS_vs_Q_SS <- t.test(
+                    G1_SS, Q_SS, alternative = "two.sided", var.equal = TRUE
+                )
+                p_Q_N_vs_Q_SS <- t.test(
+                    Q_N, Q_SS, alternative = "two.sided", var.equal = TRUE
+                )
+                
+                p_G1_N_vs_G1_SS
+                p_G1_N_vs_Q_N
+                p_G1_N_vs_Q_SS
+                p_G1_SS_vs_Q_N
+                p_G1_SS_vs_Q_SS
+                p_Q_N_vs_Q_SS
+                
+                p_unadj <- c(
+                    p_G1_N_vs_G1_SS$p.value,
+                    p_G1_N_vs_Q_N$p.value,
+                    p_G1_N_vs_Q_SS$p.value,
+                    p_G1_SS_vs_Q_N$p.value,
+                    p_G1_SS_vs_Q_SS$p.value,
+                    p_Q_N_vs_Q_SS$p.value
+                )
+                p_adj_BH <- p.adjust(
+                    c(
+                        p_G1_N_vs_G1_SS$p.value,
+                        p_G1_N_vs_Q_N$p.value,
+                        p_G1_N_vs_Q_SS$p.value,
+                        p_G1_SS_vs_Q_N$p.value,
+                        p_G1_SS_vs_Q_SS$p.value,
+                        p_Q_N_vs_Q_SS$p.value
+                    ),
+                    method = "BH"
+                )
+                
+                results_list <- list()
+                results_list[["p_G1_N_vs_G1_SS"]] <- p_G1_N_vs_G1_SS
+                results_list[["p_G1_N_vs_Q_N"]] <- p_G1_N_vs_Q_N
+                results_list[["p_G1_N_vs_Q_SS"]] <- p_G1_N_vs_Q_SS
+                results_list[["p_G1_SS_vs_Q_N"]] <- p_G1_SS_vs_Q_N
+                results_list[["p_G1_SS_vs_Q_SS"]] <- p_G1_SS_vs_Q_SS
+                results_list[["p_Q_N_vs_Q_SS"]] <- p_Q_N_vs_Q_SS
+                results_list[["p_unadj"]] <- p_unadj
+                results_list[["p_adj_BH"]] <- p_adj_BH
+                
+                return(results_list)
+            }
+            
+            
+            p_cat_gene <- calculate_p_prop_categories(columnwise_prop_summary_other, 1)
+            p_cat_ambiguous <- calculate_p_prop_categories(columnwise_prop_summary_other, 2)
+            p_cat_no_feature <- calculate_p_prop_categories(columnwise_prop_summary_other, 3)
+            p_cat_other <- calculate_p_prop_categories(columnwise_prop_summary_other, 4)
+            p_cat_snoRNA <- calculate_p_prop_categories(columnwise_prop_summary_other, 5)
+            p_cat_snRNA <- calculate_p_prop_categories(columnwise_prop_summary_other, 6)
+            p_cat_TE <- calculate_p_prop_categories(columnwise_prop_summary_other, 7)
+            
+            
+            #TODO For everything I wrote today, make it more efficient/less
+            #     copy-and-paste-styled coding
+```
+
+```{r}
+# table(mtcars$carb, mtcars$cyl)
+# 
+# G1_N <- dplyr::bind_cols(
+#     summary_other$category, round(mean_G1_N)
+# ) %>%
+#     dplyr::rename(category = ...1, G1_N = ...2)
+# vec_G1_N <- c(
+#     rep(G1_N$category[1], G1_N$G1_N[1]),
+#     rep(G1_N$category[2], G1_N$G1_N[2]),
+#     rep(G1_N$category[3], G1_N$G1_N[3]),
+#     rep(G1_N$category[4], G1_N$G1_N[4]),
+#     rep(G1_N$category[5], G1_N$G1_N[5]),
+#     rep(G1_N$category[6], G1_N$G1_N[6]),
+#     rep(G1_N$category[7], G1_N$G1_N[7])
+# )
+# 
+# G1_SS <- dplyr::bind_cols(
+#     summary_other$category, round(mean_G1_SS)
+# ) %>%
+#     dplyr::rename(category = ...1, G1_SS = ...2)
+# vec_G1_SS <- c(
+#     rep(G1_SS$category[1], G1_SS$G1_SS[1]),
+#     rep(G1_SS$category[2], G1_SS$G1_SS[2]),
+#     rep(G1_SS$category[3], G1_SS$G1_SS[3]),
+#     rep(G1_SS$category[4], G1_SS$G1_SS[4]),
+#     rep(G1_SS$category[5], G1_SS$G1_SS[5]),
+#     rep(G1_SS$category[6], G1_SS$G1_SS[6]),
+#     rep(G1_SS$category[7], G1_SS$G1_SS[7])
+# )
+# 
+# Q_N <- dplyr::bind_cols(
+#     summary_other$category, round(mean_Q_N)
+# ) %>%
+#     dplyr::rename(category = ...1, Q_N = ...2)
+# vec_Q_N <- c(
+#     rep(Q_N$category[1], Q_N$Q_N[1]),
+#     rep(Q_N$category[2], Q_N$Q_N[2]),
+#     rep(Q_N$category[3], Q_N$Q_N[3]),
+#     rep(Q_N$category[4], Q_N$Q_N[4]),
+#     rep(Q_N$category[5], Q_N$Q_N[5]),
+#     rep(Q_N$category[6], Q_N$Q_N[6]),
+#     rep(Q_N$category[7], Q_N$Q_N[7])
+# )
+# 
+# Q_SS <- dplyr::bind_cols(
+#     summary_other$category, round(mean_G1_N)
+# ) %>%
+#     dplyr::rename(category = ...1, Q_SS = ...2)
+# vec_Q_SS <- c(
+#     rep(Q_SS$category[1], Q_SS$Q_SS[1]),
+#     rep(Q_SS$category[2], Q_SS$Q_SS[2]),
+#     rep(Q_SS$category[3], Q_SS$Q_SS[3]),
+#     rep(Q_SS$category[4], Q_SS$Q_SS[4]),
+#     rep(Q_SS$category[5], Q_SS$Q_SS[5]),
+#     rep(Q_SS$category[6], Q_SS$Q_SS[6]),
+#     rep(Q_SS$category[7], Q_SS$Q_SS[7])
+# )
+# 
+# table(G1_N, G1_SS)
+# chisq.test(vec_G1_N, vec_G1_SS)
+```

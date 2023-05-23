@@ -149,22 +149,21 @@ done
 p_gtf=outfiles_gtf-gff3/representation  # ls -1 "${p_gtf}"
 gtf=(
     "${p_gtf}/Greenlaw-et-al_CUTs-4x.gtf"
-    # "${p_gtf}/Greenlaw-et-al_CUTs.gtf"
+    "${p_gtf}/Greenlaw-et-al_CUTs.gtf"
     "${p_gtf}/Greenlaw-et-al_CUTs-HMM.gtf"
-    # "${p_gtf}/Greenlaw-et-al_non-collapsed-non-coding-transcriptome.gtf"
-    # "${p_gtf}/Greenlaw-et-al_NUTs.gtf"
-    # "${p_gtf}/Greenlaw-et-al_representative-non-coding-transcriptome.gtf"
-    # "${p_gtf}/Greenlaw-et-al_SRATs.gtf"
-    # "${p_gtf}/Greenlaw-et-al_SUTs.gtf"
-    # "${p_gtf}/Greenlaw-et-al_XUTs.gtf"
+    "${p_gtf}/Greenlaw-et-al_ncRNAs.gtf"
+    "${p_gtf}/Greenlaw-et-al_non-collapsed-non-coding-transcriptome.gtf"
+    "${p_gtf}/Greenlaw-et-al_NUTs.gtf"
+    "${p_gtf}/Greenlaw-et-al_representative-non-coding-transcriptome.gtf"
+    "${p_gtf}/Greenlaw-et-al_SRATs.gtf"
+    "${p_gtf}/Greenlaw-et-al_SUTs.gtf"
+    "${p_gtf}/Greenlaw-et-al_XUTs.gtf"
 )
 echo_test "${gtf[@]}"
 echo "${#gtf[@]}"
 
 job_name="run_htseq-count"  # echo "${job_name}"
-threads=8  # echo "${threads}"
-
-job_no_max=24  # echo "${job_no_max}"
+threads=12  # echo "${threads}"
 
 # echo_test "${UT_prim_UMI[@]}"
 # echo "${#UT_prim_UMI[@]}"
@@ -182,92 +181,171 @@ job_no_max=24  # echo "${job_no_max}"
 ```bash
 #!/bin/bash
 
-h=0
-for i in "strd-eq"; do
-    for j in "${gtf[@]}"; do
-        # i="strd-eq"  # echo "${i}"
-        # j="${gtf[3]}"  # echo "${j}"
+#  Run echo tests for calls to htseq-count ------------------------------------
+run=TRUE
+[[ ${run} == TRUE ]] &&
+    {
+        h=0
+        # for i in "strd-eq" "strd-rv"; do
+        for i in "strd-eq"; do
+            for j in "${gtf[@]}"; do
+                # i="strd-eq"  # echo "${i}"
+                # j="${gtf[3]}"  # echo "${j}"
 
-        #  -------------------------------------
-        count_against="${j}"  # echo "${count_against}"
-        out="outfiles_htseq-count/representation/UT_prim_UMI/$(
-            echo $(basename "${count_against}") \
-                | sed 's/Greenlaw-et-al_//g;s/.gtf//g'
-        ).hc-${i}.tsv"   # echo "${out}"  # ., "$(dirname "${out}")"
+                #  -------------------------------------
+                count_against="${j}"  # echo "${count_against}"
+                out="outfiles_htseq-count/representation/UT_prim_UMI/$(
+                    echo $(basename "${count_against}") \
+                        | sed 's/Greenlaw-et-al_//g;s/.gtf//g'
+                ).hc-${i}.tsv"   # echo "${out}"  # ., "$(dirname "${out}")"
 
-        err_out="$(
-            dirname "${out}"
-        )/err_out/$(
-            basename "${out}" .tsv
-        )"  # echo "${err_out}"  # ., "$(dirname "${err_out}")"
-
-
-        #  -------------------------------------
-        let h++
-        iter="${h}"
-        echo "        #  -------------------------------------"
-        printf "        Iteration '%d'\n" "${iter}"
-
-        echo """
-        Running htseq-count
-                    directory                                                file
-               out  $(dirname ${out})          $(basename ${out})
-            stdout  $(dirname ${err_out})  $(basename ${err_out}).stdout.txt
-            stderr  $(dirname ${err_out})  $(basename ${err_out}).stderr.txt
-        """
-
-        if [[ "${i}" == "strd-eq" ]]; then
-            hc_strd="yes"  # echo "${hc_strd}"
-        elif [[ "${i}" == "strd-op" ]]; then
-            hc_strd="reverse"  # echo "${hc_strd}"
-        fi
+                err_out="$(
+                    dirname "${out}"
+                )/err_out/$(
+                    basename "${out}" .tsv
+                )"  # echo "${err_out}"  # ., "$(dirname "${err_out}")"
 
 
-        #  -------------------------------------
-        echo """
-        sbatch \\
-            --job-name=${job_name} \\
-            --nodes=1 \\
-            --cpus-per-task=${threads} \\
-            --error=${err_out}.%A.stderr.txt \\
-            --output=${err_out}.%A.stdout.txt \\
-            htseq-count \\
-                --order \"pos\" \\
-                --stranded \"${hc_strd}\" \\
-                --nonunique \"none\" \\
-                --type \"feature\" \\
-                --idattr \"gene_id\" \\
-                --nprocesses ${threads} \\
-                --counts_output \"${out}\" \\
-                --with-header \\
-                ${UT_prim_UMI[*]} \\
-                \"${count_against}\" \\
-                     > >(tee -a \"${err_out}.stdout.txt\") \\
-                    2> >(tee -a \"${err_out}.stderr.txt\")
-        """
+                #  -------------------------------------
+                let h++
+                iter="${h}"
+                echo "        #  -------------------------------------"
+                printf "        Iteration '%d'\n" "${iter}"
 
-        sbatch \
-            --job-name=${job_name} \
-            --nodes=1 \
-            --cpus-per-task=${threads} \
-            --error=${err_out}.%A.stderr.txt \
-            --output=${err_out}.%A.stdout.txt \
-            htseq-count \
-                --order "pos" \
-                --stranded "${hc_strd}" \
-                --nonunique "none" \
-                --type "feature" \
-                --idattr "gene_id" \
-                --nprocesses ${threads} \
-                --counts_output "${out}" \
-                --with-header \
-                ${UT_prim_UMI[*]} \
-                "${count_against}"
+                echo """
+                Running htseq-count
+                            directory                                                file
+                       out  $(dirname ${out})          $(basename ${out})
+                    stdout  $(dirname ${err_out})  $(basename ${err_out}).stdout.txt
+                    stderr  $(dirname ${err_out})  $(basename ${err_out}).stderr.txt
+                """
 
-        sleep 0.5
-        echo ""
-    done
-done
+                if [[ "${i}" == "strd-eq" ]]; then
+                    hc_strd="yes"  # echo "${hc_strd}"
+                elif [[ "${i}" == "strd-op" ]]; then
+                    hc_strd="reverse"  # echo "${hc_strd}"
+                fi
+
+
+                #  -------------------------------------
+                echo """
+                sbatch \\
+                    --job-name=${job_name} \\
+                    --nodes=1 \\
+                    --cpus-per-task=${threads} \\
+                    --error=${err_out}.%A.stderr.txt \\
+                    --output=${err_out}.%A.stdout.txt \\
+                    htseq-count \\
+                        --order \"pos\" \\
+                        --stranded \"${hc_strd}\" \\
+                        --nonunique \"none\" \\
+                        --type \"feature\" \\
+                        --idattr \"gene_id\" \\
+                        --nprocesses ${threads} \\
+                        --counts_output \"${out}\" \\
+                        --with-header \\
+                        ${UT_prim_UMI[*]} \\
+                        \"${count_against}\" \\
+                             > >(tee -a \"${err_out}.stdout.txt\") \\
+                            2> >(tee -a \"${err_out}.stderr.txt\")
+                """
+            done
+        done
+    }
+
+
+#  Run actual calls to htseq-count --------------------------------------------
+run=FALSE
+[[ ${run} == TRUE ]] &&
+    {
+        h=0
+        # for i in "strd-eq" "strd-rv"; do
+        for i in "strd-eq"; do
+            for j in "${gtf[@]}"; do
+                # i="strd-eq"  # echo "${i}"
+                # j="${gtf[3]}"  # echo "${j}"
+
+                #  -------------------------------------
+                count_against="${j}"  # echo "${count_against}"
+                out="outfiles_htseq-count/representation/UT_prim_UMI/$(
+                    echo $(basename "${count_against}") \
+                        | sed 's/Greenlaw-et-al_//g;s/.gtf//g'
+                ).hc-${i}.tsv"   # echo "${out}"  # ., "$(dirname "${out}")"
+
+                err_out="$(
+                    dirname "${out}"
+                )/err_out/$(
+                    basename "${out}" .tsv
+                )"  # echo "${err_out}"  # ., "$(dirname "${err_out}")"
+
+
+                #  -------------------------------------
+                let h++
+                iter="${h}"
+                echo "        #  -------------------------------------"
+                printf "        Iteration '%d'\n" "${iter}"
+
+                echo """
+                Running htseq-count
+                            directory                                                file
+                       out  $(dirname ${out})          $(basename ${out})
+                    stdout  $(dirname ${err_out})  $(basename ${err_out}).stdout.txt
+                    stderr  $(dirname ${err_out})  $(basename ${err_out}).stderr.txt
+                """
+
+                if [[ "${i}" == "strd-eq" ]]; then
+                    hc_strd="yes"  # echo "${hc_strd}"
+                elif [[ "${i}" == "strd-op" ]]; then
+                    hc_strd="reverse"  # echo "${hc_strd}"
+                fi
+
+
+                #  -------------------------------------
+                echo """
+                sbatch \\
+                    --job-name=${job_name} \\
+                    --nodes=1 \\
+                    --cpus-per-task=${threads} \\
+                    --error=${err_out}.%A.stderr.txt \\
+                    --output=${err_out}.%A.stdout.txt \\
+                    htseq-count \\
+                        --order \"pos\" \\
+                        --stranded \"${hc_strd}\" \\
+                        --nonunique \"none\" \\
+                        --type \"feature\" \\
+                        --idattr \"gene_id\" \\
+                        --nprocesses ${threads} \\
+                        --counts_output \"${out}\" \\
+                        --with-header \\
+                        ${UT_prim_UMI[*]} \\
+                        \"${count_against}\" \\
+                             > >(tee -a \"${err_out}.stdout.txt\") \\
+                            2> >(tee -a \"${err_out}.stderr.txt\")
+                """
+
+                sbatch \
+                    --job-name=${job_name} \
+                    --nodes=1 \
+                    --cpus-per-task=${threads} \
+                    --error=${err_out}.%A.stderr.txt \
+                    --output=${err_out}.%A.stdout.txt \
+                    htseq-count \
+                        --order "pos" \
+                        --stranded "${hc_strd}" \
+                        --nonunique "none" \
+                        --type "feature" \
+                        --idattr "gene_id" \
+                        --nprocesses ${threads} \
+                        --counts_output "${out}" \
+                        --with-header \
+                        ${UT_prim_UMI[*]} \
+                        "${count_against}"
+
+                sleep 0.5
+                echo ""
+            done
+        done
+    }
 ```
 </details>
 <br />

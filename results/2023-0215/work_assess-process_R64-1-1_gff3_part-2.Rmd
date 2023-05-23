@@ -1,0 +1,280 @@
+---
+title: "work_assess-process_R64-1-1_gff3_part-2.Rmd"
+author: "KA"
+email: "kalavatt@fredhutch.org"
+output:
+    html_notebook:
+        toc: yes
+        toc_float: true
+---
+
+## Get situated
+<br />
+<br />
+
+## TBD 1
+### Code: TBD 1
+<details>
+<summary><i>Code: TBD 1</i></summary>
+
+```{r TBD 1, results='hide', message=FALSE, warning=FALSE}
+#!/usr/bin/env Rscript
+
+p_Q <- "outfiles_gtf-gff3/Trinity-GG/Q_N/filtered/locus"
+f_Q <- "Q_mkc-4_gte-pctl-25.gtf"
+gtf_Q <- rtracklayer::import(paste(p_Q, f_Q, sep = "/")) %>%
+    tibble::as_tibble() %>%
+    dplyr::select(-c(Parent, phase, score)) %>%
+    dplyr::arrange(seqnames, start, strand)
+
+p_G <- "outfiles_gtf-gff3/Trinity-GG/G_N/filtered/locus"
+f_G <- "G1_mkc-4_gte-pctl-25.gtf"
+gtf_G1 <- rtracklayer::import(paste(p_G, f_G, sep = "/")) %>%
+    tibble::as_tibble() %>%
+    dplyr::select(-c(Parent, phase, score)) %>%
+    dplyr::arrange(seqnames, start, strand)
+
+rm(p_Q, f_Q)
+rm(p_G, f_G)
+
+# gtf_Q$geneIDs <- gtf_Q$geneIDs %>%
+#     gsub("c\\(", "", .) %>%
+#     gsub("\\)", "", .) %>%
+#     gsub("\"", "", .)
+# gtf_Q$transcripts <- gtf_Q$transcripts %>%
+#     gsub("c\\(", "", .) %>%
+#     gsub("\\)", "", .) %>%
+#     gsub("\"", "", .)
+# 
+# gtf_G1$geneIDs <- gtf_G1$geneIDs %>%
+#     gsub("c\\(", "", .) %>%
+#     gsub("\\)", "", .) %>%
+#     gsub("\"", "", .)
+# gtf_G1$transcripts <- gtf_G1$transcripts %>%
+#     gsub("c\\(", "", .) %>%
+#     gsub("\\)", "", .) %>%
+#     gsub("\"", "", .)
+```
+</details>
+<br />
+<br />
+
+## TBD 2
+### Code: TBD 2
+<details>
+<summary><i>Code: TBD 2</i></summary>
+
+```{r TBD 2, results='hide', message=FALSE, warning=FALSE}
+#!/usr/bin/env Rscript
+
+gtf_all <- z_sense_antisense_intergenic
+
+g_Q <- makeGRangesFromDataFrame(gtf_Q, keep.extra.columns = TRUE)
+g_G1 <- makeGRangesFromDataFrame(gtf_G1, keep.extra.columns = TRUE)
+g_all <- makeGRangesFromDataFrame(gtf_all, keep.extra.columns = TRUE)
+
+overlap_Q_v_all <- IRanges::findOverlaps(g_Q, g_all)
+overlap_G1_v_all <- IRanges::findOverlaps(g_G1, g_all)
+
+gtf_Q[queryHits(overlap_Q_v_all), ]
+gtf_all[subjectHits(overlap_Q_v_all), ]
+
+#  Create rows for feature in "Q" overlapping feature in "all"
+#PICKUPHERE #LATER
+wrt_Q_all <- dplyr::bind_cols(
+    gtf_Q[queryHits(overlap_Q_v_all), ],
+    gtf_all[subjectHits(overlap_Q_v_all), ]
+) %>%
+    dplyr::rename(
+        seqnames = seqnames...1,
+        start = start...2,
+        end = end...3,
+        width = width...4,
+        strand = strand...5,
+        source = source...6,
+        type = type...7,
+        ID = ID...8,
+        seqnames_all = seqnames...11,
+        start_all = start...12,
+        end_all = end...13,
+        width_all = width...14,
+        strand_all = strand...15,
+        source_all = source...16,
+        type_all = type...17,
+        ID_all = ID...18,
+        dbxref_all = dbxref,
+        Name_all = Name,
+        Note_all = Note,
+        Ontology_term_all = Ontology_term,
+        orf_classification_all = orf_classification,
+        Alias_all = Alias,
+        gene_all = gene
+    )
+
+#  If they overlap after stratifying for 'chr' and 'strand', then organize rows
+#+ into groups  
+wrt_Q_all_group_chr_strand <- plyr::ddply(
+    wrt_Q_all,
+    c("seqnames", "strand"),
+    function(x) { 
+        #  Check if a record should be linked with the previous record
+        y <- c(NA, x$end[-nrow(x)])
+        z <- ifelse(is.na(y), 0, y)
+        z <- cummax(z)
+        z[is.na(y)] <- NA
+        x$previous_end <- z
+        
+        return(x)
+    }
+)
+wrt_Q_all_group_chr_strand <- wrt_Q_all_group_chr_strand %>%
+    dplyr::relocate(c(start_all, end_all), .after = end)
+wrt_Q_all_group_chr_strand$new_group <-
+    is.na(wrt_Q_all_group_chr_strand$previous_end) | 
+        (
+            wrt_Q_all_group_chr_strand$start >=
+            wrt_Q_all_group_chr_strand$previous_end
+        )
+wrt_Q_all_group_chr_strand$group <- cumsum(wrt_Q_all_group_chr_strand$new_group)
+wrt_Q_all_group_chr_strand <- wrt_Q_all_group_chr_strand %>%
+    dplyr::mutate(type_ID_all = paste0(type_all, ": ", ID_all))
+
+#  Calculate percent overlaps between "Q" and "all" features and vice versa
+percent_overlap <- function(x_start, x_end, y_start, y_end){
+    x_length <- abs((x_end + 1) - x_start)
+    
+    #  Determine "largest" start
+    max_start <- max(c(
+        x_start, y_start
+    ))
+    
+    #  Determine "smallest" end
+    min_end <- min(c(
+        (x_end + 1), (y_end + 1)
+    ))
+    
+    overlap <- ifelse(
+        (min_end - max_start) <= 0, 0, (min_end - max_start)
+    )
+    
+    percent_overlap <- ((overlap / x_length) * 100)
+    
+    return(percent_overlap)
+}
+
+
+test <- wrt_Q_all_group_chr_strand
+test$pct_Q_over_all <- mapply(
+    percent_overlap, test$start, test$end, test$start_all, test$end_all
+)
+test$pct_all_over_Q <- mapply(
+    percent_overlap, test$start_all, test$end_all, test$start, test$end
+)
+test <- test %>%
+    dplyr::relocate(
+        c(pct_Q_over_all, pct_all_over_Q, type_ID_all, group), .after = end_all
+    )
+
+# test_overlaps <- percent_overlap(
+#     test$start, test$end, test$start_all, test$end_all
+# )
+# test_overlaps %>% table()
+# 
+# (test$start <= test$end_all) %>% table()
+# (test$end >= test$start_all) %>% table()
+# test_olap <- (test$start <= test$end_all) & (test$end >= test$start_all)
+
+#  Aggregate the data
+wrt_Q_all_agg_chr_strand <- plyr::ddply(
+    wrt_Q_all_group_chr_strand,
+    .(seqnames, strand, group),
+    plyr::summarize, 
+    start = min(start),
+    end = max(end),
+    width = (end - start) + 1,
+    ID = paste0(ID, collapse = "; "),
+    dbxref = paste0(dbxref, collapse = "; "),
+    Name = paste0(type_ID, collapse = "; "),
+    Note = paste0(Note, collapse = "; "),
+    Ontology_term = paste0(Ontology_term, collapse = "; "),
+    Alias = paste0(type, collapse = "; ")
+) %>%
+    dplyr::mutate(
+        strand = strand,
+        source = "SGD (KA)",
+        type = ifelse(
+            Alias == "pseudogene" | Alias == "pseudogene; pseudogene",
+            "PG",
+            "TE"
+        ),
+        orf_classification = NA_character_,
+        gene = NA_character_
+    ) %>%
+    dplyr::select(-group) %>% 
+    dplyr::arrange(seqnames, start, strand) %>%
+    dplyr::relocate(c(
+        seqnames, start, end, width, strand, source, type, ID, dbxref, Name,
+        Note, Ontology_term, orf_classification, Alias, gene
+    ))
+
+details_Alias <- wrt_Q_all_agg_chr_strand$Alias %>%
+    stringr::str_remove_all("s") %>%
+    stringr::str_split("; ") %>%
+    purrr::map(sort) %>%
+    purrr::map(unique)
+details_Alias <- sapply(
+    details_Alias[!sapply(details_Alias, purrr::is_empty)],
+    paste,
+    collapse = " "
+) %>%
+    gsub("long_terminal_repeat", "LTR", .) %>%
+    gsub("LTR_retrotranpoon", "RT", .) %>%
+    gsub("tranpoable_element_gene", "TE", .) %>%
+    gsub("peudogene", "PG", .)
+
+details_Name <- wrt_Q_all_agg_chr_strand$Name %>%
+    stringr::str_remove_all("s") %>%
+    stringr::str_split("; ") %>%
+    purrr::map(sort) %>%
+    purrr::map(unique)
+details_Name <- sapply(
+    details_Name[!sapply(details_Name, purrr::is_empty)],
+    paste,
+    collapse = "; "
+) %>%
+    gsub("long_terminal_repeat", "LTR", .) %>%
+    gsub("LTR_retrotranpoon", "RT", .) %>%
+    gsub("tranpoable_element_gene", "TE_gene", .) %>%
+    gsub("peudogene", "PG", .)
+
+wrt_Q_all_agg_chr_strand$Name <- details_Name
+wrt_Q_all_agg_chr_strand$Alias <- details_Alias
+wrt_Q_all_agg_chr_strand$n_types <- ifelse(
+    grepl(" ", wrt_Q_all_agg_chr_strand$Alias, fixed = TRUE),
+    stringr::str_count(wrt_Q_all_agg_chr_strand$Alias, " ") + 1,
+    1
+)
+wrt_Q_all_agg_chr_strand$n_features <- ifelse(
+    grepl(";", wrt_Q_all_agg_chr_strand$ID, fixed = TRUE),
+    stringr::str_count(wrt_Q_all_agg_chr_strand$ID, ";") + 1,
+    1
+)
+
+wrt_Q_all <- wrt_Q_all_agg_chr_strand
+wrt_Q_all$ID <- gsub("; ", "_", wrt_Q_all$ID)
+wrt_Q_all$Ontology_term <- wrt_Q_all$Ontology_term %>%
+    gsub("; ", "_", .) %>%
+    gsub(", ", "-", .)
+wrt_Q_all$Name <- wrt_Q_all$Name %>%
+    gsub(": ", "-", .) %>%
+    gsub("; ", "_", .) %>%
+    gsub("TE_gene", "TE", .)
+# wrt_Q_all %>%
+#     dplyr::group_by(strand) %>%
+#     dplyr::summarize(n = dplyr::n())
+
+rm(wrt_Q_all_agg_chr_strand, wrt_Q_all_group_chr_strand, details_Alias, details_Name)
+
+```
+</details>
+<br />

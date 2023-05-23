@@ -8,19 +8,19 @@
 <!-- MarkdownTOC -->
 
 1. [Get situated](#get-situated)
-	1. [Code](#code)
+    1. [Code](#code)
 1. [Run `htseq-count` with `.gtf`](#run-htseq-count-with-gtf)
-	1. [Set up outfile directories](#set-up-outfile-directories)
-		1. [Code](#code-1)
-	1. [Set up arrays of bams](#set-up-arrays-of-bams)
-		1. [Code](#code-2)
-	1. [Index bams](#index-bams)
-		1. [Code](#code-3)
-	1. [Run `htseq-count` with `.gtf`](#run-htseq-count-with-gtf-1)
-		1. [Set up necessary arrays, variables](#set-up-necessary-arrays-variables)
-			1. [Code](#code-4)
-		1. [Set up and submit `htseq-count` jobs](#set-up-and-submit-htseq-count-jobs)
-			1. [Code](#code-5)
+    1. [Set up outfile directories](#set-up-outfile-directories)
+        1. [Code](#code-1)
+    1. [Set up arrays of bams](#set-up-arrays-of-bams)
+        1. [Code](#code-2)
+    1. [Index bams](#index-bams)
+        1. [Code](#code-3)
+    1. [Run `htseq-count` with `.gtf`](#run-htseq-count-with-gtf-1)
+        1. [Set up necessary arrays, variables](#set-up-necessary-arrays-variables)
+            1. [Code](#code-4)
+        1. [Set up and submit `htseq-count` jobs](#set-up-and-submit-htseq-count-jobs)
+            1. [Code](#code-5)
 
 <!-- /MarkdownTOC -->
 </details>
@@ -148,9 +148,7 @@ done
 #!/bin/bash
 
 p_gtf=outfiles_gtf-gff3/comprehensive/S288C_reference_genome_R64-1-1_20110203  # ls -1 "${p_gtf}"
-gtf=(
-    "${p_gtf}/saccharomyces_cerevisiae_R64-1-1_20110208.snRNA-snoRNA.gtf"
-)
+gtf=( "${p_gtf}/saccharomyces_cerevisiae_R64-1-1_20110208.snRNA-snoRNA.gtf" )
 echo_test "${gtf[@]}"
 echo "${#gtf[@]}"
 
