@@ -232,7 +232,7 @@ call_DESeq2_results_plot_volcano <- function(
             selection = selection_unshrunken,
             label_size = 2.5,
             p_cutoff = 0.05,
-            FC_cutoff = 2^threshold_lfc,
+            FC_cutoff = 2^threshold_lfc,  #FIXME Should be threshold_lfc, not 2^threshold_lfc
             xlim = c(-x_min_max, x_min_max),
             ylim = c(0, y_max),
             color = color,
@@ -556,7 +556,9 @@ rm(chr_20S, chr_KL, chr_SC, chr_order)
         "od_Q_N_rep2_tech1"
     )
 )
-`N-Q-nab3d_N-Q-parental` <- filter_process_counts_matrix(`N-Q-nab3d_N-Q-parental`)
+`N-Q-nab3d_N-Q-parental` <- filter_process_counts_matrix(
+    `N-Q-nab3d_N-Q-parental`
+)
 
 `N-SS-nab3d_N-SS-parental` <- setNames(
     c(
@@ -572,7 +574,9 @@ rm(chr_20S, chr_KL, chr_SC, chr_order)
         "od_Q_SS_rep2_tech1"
     )
 )
-`N-SS-nab3d_N-SS-parental` <- filter_process_counts_matrix(`N-SS-nab3d_N-SS-parental`)
+`N-SS-nab3d_N-SS-parental` <- filter_process_counts_matrix(
+    `N-SS-nab3d_N-SS-parental`
+)
 
 `SS-Q-rrp6∆_SS-Q-WT` <- setNames(
     c(
@@ -590,7 +594,9 @@ rm(chr_20S, chr_KL, chr_SC, chr_order)
         "WT_Q_SS_rep2_tech1"
     )
 )
-`SS-Q-rrp6∆_SS-Q-WT` <- filter_process_counts_matrix(`SS-Q-rrp6∆_SS-Q-WT`)
+`SS-Q-rrp6∆_SS-Q-WT` <- filter_process_counts_matrix(
+    `SS-Q-rrp6∆_SS-Q-WT`
+)
 
 `SS-G1-rrp6∆_SS-G1-WT` <- setNames(
     c(
@@ -606,7 +612,9 @@ rm(chr_20S, chr_KL, chr_SC, chr_order)
         "WT_G1_SS_rep2_tech2"
     )
 )
-`SS-G1-rrp6∆_SS-G1-WT` <- filter_process_counts_matrix(`SS-G1-rrp6∆_SS-G1-WT`)
+`SS-G1-rrp6∆_SS-G1-WT` <- filter_process_counts_matrix(
+    `SS-G1-rrp6∆_SS-G1-WT`
+)
 
 `N-Q-rrp6∆_N-Q-WT` <- setNames(
     c(
@@ -622,7 +630,9 @@ rm(chr_20S, chr_KL, chr_SC, chr_order)
         "WT_Q_N_rep2_tech1"
     )
 )
-`N-Q-rrp6∆_N-Q-WT` <- filter_process_counts_matrix(`N-Q-rrp6∆_N-Q-WT`)
+`N-Q-rrp6∆_N-Q-WT` <- filter_process_counts_matrix(
+    `N-Q-rrp6∆_N-Q-WT`
+)
 
 `SS-DSm2-rrp6∆_SS-DSm2-WT` <- setNames(
     c(
@@ -638,7 +648,9 @@ rm(chr_20S, chr_KL, chr_SC, chr_order)
         "WT_DSm2_SS_rep2_tech1"
     )
 )
-`SS-DSm2-rrp6∆_SS-DSm2-WT` <- filter_process_counts_matrix(`SS-DSm2-rrp6∆_SS-DSm2-WT`)
+`SS-DSm2-rrp6∆_SS-DSm2-WT` <- filter_process_counts_matrix(
+    `SS-DSm2-rrp6∆_SS-DSm2-WT`
+)
 
 `SS-DSp2-rrp6∆_SS-DSp2-WT` <- setNames(
     c(
@@ -654,7 +666,9 @@ rm(chr_20S, chr_KL, chr_SC, chr_order)
         "WT_DSp2_SS_rep2_tech1"
     )
 )
-`SS-DSp2-rrp6∆_SS-DSp2-WT` <- filter_process_counts_matrix(`SS-DSp2-rrp6∆_SS-DSp2-WT`)
+`SS-DSp2-rrp6∆_SS-DSp2-WT` <- filter_process_counts_matrix(
+    `SS-DSp2-rrp6∆_SS-DSp2-WT`
+)
 
 `SS-DSp24-rrp6∆_SS-DSp24-WT` <- setNames(
     c(
@@ -670,7 +684,9 @@ rm(chr_20S, chr_KL, chr_SC, chr_order)
         "WT_DSp24_SS_rep2_tech1"
     )
 )
-`SS-DSp24-rrp6∆_SS-DSp24-WT` <- filter_process_counts_matrix(`SS-DSp24-rrp6∆_SS-DSp24-WT`)
+`SS-DSp24-rrp6∆_SS-DSp24-WT` <- filter_process_counts_matrix(
+    `SS-DSp24-rrp6∆_SS-DSp24-WT`
+)
 
 `SS-DSp48-rrp6∆_SS-DSp48-WT` <- setNames(
     c(
@@ -688,103 +704,144 @@ rm(chr_20S, chr_KL, chr_SC, chr_order)
         "WT_DSp48_SS_rep2_tech1"
     )
 )
-`SS-DSp48-rrp6∆_SS-DSp48-WT` <- filter_process_counts_matrix(`SS-DSp48-rrp6∆_SS-DSp48-WT`)
+`SS-DSp48-rrp6∆_SS-DSp48-WT` <- filter_process_counts_matrix(
+    `SS-DSp48-rrp6∆_SS-DSp48-WT`
+)
 
 
-#  Create volcano plots for Nascent Q nab3-depletion vs. parental analyses ====
+#  Create volcano plots for datasets of interest ==============================
 #  Initialize a general "subset" variable -------------------------------------
 # t_sub <- `N-Q-nab3d_N-Q-parental`
-t_sub <- `N-SS-nab3d_N-SS-parental`
-
-#  Exclude 20S and htseq-count "summary values" from timecourse tibble
-t_sub <- t_sub %>% dplyr::slice(1:(n() - 6))
-
-
-#  Make a metadata matrix for DESeq2, etc. ------------------------------------
-t_meta <- colnames(t_sub)[12:ncol(t_sub)] %>%
-    stringr::str_split("_") %>%
-    as.data.frame() %>%
-    t() %>%
-    tibble::as_tibble(.name_repair = "unique") %>%
-    dplyr::rename(
-        genotype = ...1, state = ...2, transcription = ...3, replicate = ...4,
-        technical = ...5
-    ) %>%
-    dplyr::mutate(rownames = colnames(t_sub)[12:ncol(t_sub)]) %>%
-    tibble::column_to_rownames("rownames") %>%  # DESeq2 requires rownames
-    dplyr::mutate(
-        genotype = factor(genotype, level = c("od", "n3d")),
-        no_genotype = sapply(
-            as.character(genotype),
-            switch,
-            "od" = 0,
-            "n3d" = 1,
-            USE.NAMES = FALSE
-        ) %>%
-            as.factor(),
-        state = factor(state, levels = c("G1", "Q")),
-        no_time = sapply(
-            as.character(state),
-            switch,
-            "G1" = 0,
-            "Q" = 1,
-            USE.NAMES = FALSE
-        ) %>%
-            as.factor(),
-        transcription = factor(transcription, levels = c("SS", "N")),
-        no_transcription = sapply(
-            as.character(transcription),
-            switch,
-            "SS" = 0,
-            "N" = 1,
-            USE.NAMES = FALSE
-        ) %>%
-            as.factor(),
-        replicate = factor(replicate, levels = c("rep1", "rep2")),
-        no_replicate = sapply(
-            as.character(replicate),
-            switch,
-            "rep1" = 0,
-            "rep2" = 1,
-            USE.NAMES = FALSE
-        ) %>%
-            as.factor(),
-        technical = factor(technical, levels = c("tech1", "tech2")),
-        no_technical = sapply(
-            as.character(technical),
-            switch,
-            "tech1" = 0,
-            "tech2" = 1,
-            USE.NAMES = FALSE
-        ) %>%
-            as.factor()
-    ) %>%
-    droplevels()
+# t_sub <- `N-SS-nab3d_N-SS-parental`
+# t_sub <- `SS-Q-rrp6∆_SS-Q-WT`
+# t_sub <- `N-Q-rrp6∆_N-Q-WT`
 
 
-#  Filter t_sub to remove features with low counts across samples -------------
-filtering <- "min-10-cts-all-but-1-samps"
-if(filtering == "min-10-cts-all-but-1-samps") {
-    counts <- sapply(t_sub[, 12:ncol(t_sub)], as.numeric)
-    keep <- rowSums(counts >= 10) >= length(12:ncol(t_sub)) - 1
-    t_sub <- t_sub[keep, ]
-} else if(filtering == "min-10-cts-all-samps") {
-    counts <- sapply(t_sub[, 12:ncol(t_sub)], as.numeric)
-    keep <- rowSums(counts >= 10) >= length(12:ncol(t_sub))
-    t_sub <- t_sub[keep, ]
-} else if(filtering == "filterByExpr.default") {
-    `S-cerevisiae_only` <- FALSE
-    if(base::isTRUE(`S-cerevisiae_only`)) {
+process_data_perform_DGE_analyses <- function(
+    t_sub,
+    genotype_exp,
+    genotype_ctrl,
+    filtering = "min-10-cts-all-but-1-samps"
+) {
+    #  Check arguments --------------------------------------------------------
+    if(!filtering %in% c(
+        "none",
+        "filterByExpr.default",
+        "min-10-cts-3-samps",
+        "min-10-cts-all-but-1-samps",
+        "min-10-cts-all-samps"
+    )) {
+        stop(paste(
+            "Argument for 'filtering' must be \"none\",",
+            "\"filterByExpr.default\", \"min-10-cts-3-samps\",",
+            "\"min-10-cts-all-but-1-samps\", or \"min-10-cts-all-samps\""
+        ))
+    }
+    
+    
+    #  Make a metadata matrix for DESeq2, etc. --------------------------------
+    t_meta <- colnames(t_sub)[12:ncol(t_sub)] %>%
+        stringr::str_split("_") %>%
+        as.data.frame() %>%
+        t() %>%
+        tibble::as_tibble(.name_repair = "unique") %>%
+        dplyr::rename(
+            genotype = ...1, state = ...2, transcription = ...3,
+            replicate = ...4, technical = ...5
+        ) %>%
+        dplyr::mutate(rownames = colnames(t_sub)[12:ncol(t_sub)]) %>%
+        tibble::column_to_rownames("rownames") %>%  # DESeq2 requires rownames
+        dplyr::mutate(
+            genotype = factor(genotype, level = c(genotype_ctrl, genotype_exp)),
+            no_genotype = sapply(
+                as.character(genotype),
+                switch,
+                genotype_ctrl = 0,
+                genotype_exp = 1,
+                USE.NAMES = FALSE
+            ) %>%
+                as.factor(),
+            state = factor(state, levels = c("G1", "Q")),
+            no_time = sapply(
+                as.character(state),
+                switch,
+                "G1" = 0,
+                "Q" = 1,
+                USE.NAMES = FALSE
+            ) %>%
+                as.factor(),
+            transcription = factor(transcription, levels = c("SS", "N")),
+            no_transcription = sapply(
+                as.character(transcription),
+                switch,
+                "SS" = 0,
+                "N" = 1,
+                USE.NAMES = FALSE
+            ) %>%
+                as.factor(),
+            replicate = factor(replicate, levels = c("rep1", "rep2")),
+            no_replicate = sapply(
+                as.character(replicate),
+                switch,
+                "rep1" = 0,
+                "rep2" = 1,
+                USE.NAMES = FALSE
+            ) %>%
+                as.factor(),
+            technical = factor(technical, levels = c("tech1", "tech2")),
+            no_technical = sapply(
+                as.character(technical),
+                switch,
+                "tech1" = 0,
+                "tech2" = 1,
+                USE.NAMES = FALSE
+            ) %>%
+                as.factor()
+        ) %>%
+        droplevels()
+    
+    
+    #  Filter t_sub to remove features with low counts across samples ---------
+    t_sub.bak <- t_sub
+    # t_sub <- t_sub.bak
+    
+    if(filtering == "none"){
+        t_tmp <- t_sub[t_sub$genome == "S_cerevisiae", ]
+    } else if(filtering == "min-10-cts-3-samps") {
+        counts <- sapply(
+            t_sub[t_sub$genome == "S_cerevisiae", 12:ncol(t_sub)], as.numeric
+        )
+        keep <- rowSums(counts >= 10) >= length(12:ncol(t_sub)) - 1
+        t_tmp <- t_sub[t_sub$genome == "S_cerevisiae", ]
+        t_tmp <- t_tmp[keep, ]
+    } else if(filtering == "min-10-cts-all-but-1-samps") {
+        counts <- sapply(
+            t_sub[t_sub$genome == "S_cerevisiae", 12:ncol(t_sub)], as.numeric
+        )
+        keep <- rowSums(counts >= 10) >= length(12:ncol(t_sub)) - 1
+        t_tmp <- t_sub[t_sub$genome == "S_cerevisiae", ]
+        t_tmp <- t_tmp[keep, ]
+    } else if(filtering == "min-10-cts-all-samps") {
+        counts <- sapply(
+            t_sub[t_sub$genome == "S_cerevisiae", 12:ncol(t_sub)], as.numeric
+        )
+        keep <- rowSums(counts >= 10) >= length(12:ncol(t_sub)) - 1
+        t_tmp <- t_sub[t_sub$genome == "S_cerevisiae", ]
+        t_tmp <- t_tmp[keep, ]
+    } else if(filtering == "filterByExpr.default") {
+        #TODO Hasn't been tested since updates, refactoring
         t_edge <- t_sub[t_sub$genome == "S_cerevisiae", 12:ncol(t_sub)] %>%
             as.data.frame()
         t_edge <- sapply(t_edge, as.numeric)
-        rownames(t_edge) <- t_sub[t_sub$genome == "S_cerevisiae", ]$features
+        rownames(t_edge) <- t_sub[
+            t_sub$genome == "S_cerevisiae", 
+        ]$features
         
         group <- t_meta$genotype
         eds <- edgeR::DGEList(
             t_edge,
             group = group,
-            genes = t_sub[t_sub$genome == "S_cerevisiae", 1:11]
+            genes = t_sub[t_sub$genome == "S_cerevisiae", 1:12]
         )
     
         design <- model.matrix(~ 0 + group)
@@ -794,141 +851,201 @@ if(filtering == "min-10-cts-all-but-1-samps") {
         table(keep)
         
         dispose <- dplyr::bind_cols(eds[!keep, ]$genes, eds[!keep, ]$counts)
-    } else {
-        t_edge <- t_sub[, 12:ncol(t_sub)] %>%
-            as.data.frame()
-        t_edge <- sapply(t_edge, as.numeric)
-        rownames(t_edge) <- t_sub[, ]$features
         
-        group <- t_meta$genotype
-        eds <- edgeR::DGEList(
-            t_edge,
-            group = group,
-            genes = t_sub[, 1:11]
-        )
+        #  Remove low-counts features from t_sub
+        t_tmp <- t_sub[t_sub$genome == "S_cerevisiae", ]
+        t_tmp <- t_tmp[keep, ]
+        
+        #  Clean up variables
+        rm(t_edge, group, eds, design, t_tmp)
+        
+        # dispose[dispose$genome == "S_cerevisiae", ] %>% nrow()
+        # dispose[dispose$genome == "K_lactis", ] %>% nrow()
     
-        design <- model.matrix(~ 0 + group)
-        colnames(design) <- levels(group)
-        
-        keep <- edgeR::filterByExpr.default(eds, design)
-        table(keep)
-        
-        dispose <- dplyr::bind_cols(eds[!keep, ]$genes, eds[!keep, ]$counts)
     }
-    # dispose[dispose$genome == "S_cerevisiae", ] %>% nrow()
-    # dispose[dispose$genome == "K_lactis", ] %>% nrow()
     
-    #  Clean up variables
-    rm(t_edge, group, eds, design)
+    t_sub <- dplyr::bind_rows(t_tmp, t_sub[t_sub$genome != "S_cerevisiae", ])
+    rm(keep, t_tmp)
     
-    #  Remove low-counts features from t_sub
-    t_sub <- t_sub[keep, ]    
+    
+    #  Make a GRanges object for positional information for DESeq2, etc. ------
+    g_pos <- GenomicRanges::GRanges(
+        seqnames = t_sub$chr,
+        ranges = IRanges::IRanges(t_sub$start, t_sub$end),
+        strand = t_sub$strand,
+        length = t_sub$width,
+        type = t_sub$type,
+        features = t_sub$features,
+        biotype = t_sub$biotype,
+        names = t_sub$names,
+        thorough = t_sub$thorough,
+        genome = t_sub$genome
+    )
+    # g_pos
+    
+    #  Make a counts matrix for DESeq2, etc.
+    t_counts <- t_sub[, 12:ncol(t_sub)] %>%
+        sapply(., as.integer) %>%
+        as.data.frame()
+    
+    #  Make the dds object
+    if(length(unique(t_meta$technical)) > 1) {
+        dds <- DESeq2::DESeqDataSetFromMatrix(
+            countData = t_counts,
+            colData = t_meta,
+            design = ~ technical + genotype,
+            rowRanges = g_pos
+        )
+    } else {
+        dds <- DESeq2::DESeqDataSetFromMatrix(
+            countData = t_counts,
+            colData = t_meta,
+            design = ~ genotype,
+            rowRanges = g_pos
+        )
+    }
+
+    #  Do size-factor estimation using K. lactis control genes
+    dds <- BiocGenerics::estimateSizeFactors(
+        dds,
+        controlGenes = (dds@rowRanges$genome == "K_lactis")
+    )
+
+    #  Call DESeq2 using default parameters
+    dds <- DESeq2::DESeq(dds[dds@rowRanges$genome != "K_lactis", ])
+    
+    #  Record model information, etc.
+    size_factors <- dds$sizeFactor %>% as.data.frame()
+    size_factors_recip <- (1 / dds$sizeFactor) %>% as.data.frame()
+    design <- dds@design
+    col_data <- dds@colData
+    model_info <- DESeq2::resultsNames(dds)[length(DESeq2::resultsNames(dds))]
+    
+    
+    #  Call DESeq2 results() and plot volcano ---------------------------------
+    lfc_0 <- call_DESeq2_results_plot_volcano(
+        dds = dds,
+        shrink = TRUE,  #ARGUMENT
+        independent_filtering = TRUE,
+        threshold_p = 0.05,
+        threshold_lfc = 0,  # i.e., 2^0 = 1  #ARGUMENT
+        x_min_max = 10,
+        y_max = 100, # 40,  #ARGUMENT
+        # color = "#113275",
+        color = "#2E0C4A",  #ARGUMENT
+        selection = FALSE
+    )
+    
+    lfc_0.32 <- call_DESeq2_results_plot_volcano(
+        dds = dds,
+        shrink = TRUE,  #ARGUMENT
+        independent_filtering = TRUE,
+        threshold_p = 0.05,
+        threshold_lfc = 0.32,  # i.e., 2^0.32 ≈ 1.25  #ARGUMENT
+        x_min_max = 10,
+        y_max = 100, # 40,  #ARGUMENT
+        # color = "#113275",
+        color = "#2E0C4A",  #ARGUMENT
+        selection = FALSE
+    )
+    
+    lfc_0.58 <- call_DESeq2_results_plot_volcano(
+        dds = dds,
+        shrink = TRUE,  #ARGUMENT
+        independent_filtering = TRUE,
+        threshold_p = 0.05,
+        threshold_lfc = 0.58,  # i.e., 2^0.58 ≈ 1.5  #ARGUMENT
+        x_min_max = 10,
+        y_max = 100, # 40,  #ARGUMENT
+        # color = "#113275",
+        color = "#2E0C4A",  #ARGUMENT
+        selection = FALSE
+    )
+    
+    lfc_1 <- call_DESeq2_results_plot_volcano(
+        dds = dds,
+        shrink = TRUE,  #ARGUMENT
+        independent_filtering = TRUE,
+        threshold_p = 0.05,
+        threshold_lfc = 1,  # i.e., 2^1 = 2  #ARGUMENT
+        x_min_max = 10,
+        y_max = 100, # 40,  #ARGUMENT
+        # color = "#113275",
+        color = "#2E0C4A",  #ARGUMENT
+        selection = FALSE
+    )
+    
+    lfc_2 <- call_DESeq2_results_plot_volcano(
+        dds = dds,
+        shrink = TRUE,  #ARGUMENT
+        independent_filtering = TRUE,
+        threshold_p = 0.05,
+        threshold_lfc = 2,  # i.e., 2^2 = 4
+        x_min_max = 10,  #ARGUMENT
+        y_max = 100, # 40,  #ARGUMENT
+        # color = "#113275",
+        color = "#2E0C4A",  #ARGUMENT
+        selection = FALSE
+    )
+    
+    
+    #  Return results ---------------------------------------------------------
+    results_list <- list()
+    results_list[["01_t_init"]] <- t_sub.bak
+    results_list[["02_t_meta"]] <- t_meta
+    results_list[["03_filtering"]] <- filtering
+    if(filtering != "filterByExpr.default") {
+        results_list[["04_counts"]] <- counts
+        results_list[["04_keep"]] <- keep
+    }
+    if(filtering == "filterByExpr.default") {
+        results_list[["04_t_edge"]] <- t_edge
+        results_list[["04_group"]] <- group
+        results_list[["04_eds"]] <- eds
+        results_list[["04_design"]] <- design
+        results_list[["04_keep"]] <- keep
+        results_list[["04_dispose"]] <- dispose
+    }
+    results_list[["05_t_sub"]] <- t_sub
+    results_list[["06_g_pos"]] <- g_pos
+    results_list[["07_t_counts"]] <- t_counts
+    results_list[["08_dds"]] <- dds
+    results_list[["08_size_factors"]] <- size_factors
+    results_list[["08_size_factors_recip"]] <- size_factors_recip
+    results_list[["08_design"]] <- design
+    results_list[["08_col_data"]] <- col_data
+    results_list[["08_model_info"]] <- model_info
+    results_list[["09_lfc_0"]] <- lfc_0
+    results_list[["09_lfc_0.32"]] <- lfc_0.32
+    results_list[["09_lfc_0.58"]] <- lfc_0.58
+    results_list[["09_lfc_1"]] <- lfc_1
+    results_list[["09_lfc_2"]] <- lfc_2
+    
+    return(results_list)
 }
 
-rm(keep)
 
-
-#  Make a GRanges object for positional information for DESeq2, etc. ----------
-g_pos <- GenomicRanges::GRanges(
-    seqnames = t_sub$chr,
-    ranges = IRanges::IRanges(t_sub$start, t_sub$end),
-    strand = t_sub$strand,
-    length = t_sub$width,
-    type = t_sub$type,
-    features = t_sub$features,
-    biotype = t_sub$biotype,
-    names = t_sub$names,
-    thorough = t_sub$thorough,
-    genome = t_sub$genome
+#NOTE Need to exclude 20S and htseq-count "summary values" from tibble
+`DGE_analysis_N-SS_nab3d-parental` <- process_data_perform_DGE_analyses(
+    t_sub = `N-SS-nab3d_N-SS-parental` %>% dplyr::slice(1:(n() - 6)),
+    genotype_exp = "n3d",
+    genotype_ctrl = "od"
 )
-# g_pos
+`DGE_analysis_N-SS_nab3d-parental`
 
-#  Make a counts matrix for DESeq2, etc.
-t_counts <- t_sub[, 12:ncol(t_sub)] %>%
-    sapply(., as.integer) %>%
-    as.data.frame()
 
-#  Make the dds object
-if(length(unique(t_meta$technical)) > 1) {
-    dds <- DESeq2::DESeqDataSetFromMatrix(
-        countData = t_counts,
-        colData = t_meta,
-        design = ~ technical + genotype,
-        rowRanges = g_pos
-    )
-} else {
-    dds <- DESeq2::DESeqDataSetFromMatrix(
-        countData = t_counts,
-        colData = t_meta,
-        design = ~ genotype,
-        rowRanges = g_pos
-    )
-}
-# dds@colData
-# dds@design
-
-#  Do size-factor estimation using K. lactis control genes
-dds <- BiocGenerics::estimateSizeFactors(
-    dds,
-    controlGenes = (dds@rowRanges$genome == "K_lactis")
+`DGE_analysis_SS-G1-rrp6∆_SS-G1-WT` <- process_data_perform_DGE_analyses(
+    t_sub = `SS-G1-rrp6∆_SS-G1-WT` %>% dplyr::slice(1:(n() - 6)),
+    genotype_exp = "r6n",
+    genotype_ctrl = "WT"
 )
-# dds$sizeFactor %>% as.data.frame()
-# (1 / dds$sizeFactor) %>% as.data.frame()
-
-#  Call DESeq2 using default parameters
-dds <- DESeq2::DESeq(dds[dds@rowRanges$genome != "K_lactis", ])
-
-#  Check model information
-DESeq2::resultsNames(dds)[length(DESeq2::resultsNames(dds))]
+`DGE_analysis_SS-G1-rrp6∆_SS-G1-WT`
 
 
-#  Call DESeq2 results() and plot volcano -------------------------------------
-test_lfc_0 <- call_DESeq2_results_plot_volcano(
-    dds = dds,
-    shrink = TRUE,
-    independent_filtering = TRUE,
-    threshold_p = 0.05,
-    threshold_lfc = 0,  # i.e., 2^0 = 1
-    x_min_max = 10,
-    y_max = 100, # 40,
-    color = "#113275",
-    selection = FALSE
-)
 
+test <- test_lfc_0.32$`03_DGE_unshrunken_GR` %>% tibble::as_tibble()
+table(test$log2FoldChange > 0.58 & test$padj < 0.05)
 
-test_lfc_1 <- call_DESeq2_results_plot_volcano(
-    dds = dds,
-    shrink = TRUE,
-    independent_filtering = TRUE,
-    threshold_p = 0.05,
-    threshold_lfc = 1,  # i.e., 2^1 = 2
-    x_min_max = 10,
-    y_max = 100, # 40,
-    color = "#113275",
-    selection = FALSE
-)
-
-test_lfc_2 <- call_DESeq2_results_plot_volcano(
-    dds = dds,
-    shrink = TRUE,
-    independent_filtering = TRUE,
-    threshold_p = 0.05,
-    threshold_lfc = 2,  # i.e., 2^2 = 4
-    x_min_max = 10,
-    y_max = 100, # 40,
-    color = "#113275",
-    selection = FALSE
-)
-
-test_lfc_0$`14_p_unshrunken`
-test_lfc_0$`15_p_shrunken`
-test_lfc_1$`14_p_unshrunken`
-test_lfc_1$`15_p_shrunken`
-test_lfc_2$`14_p_unshrunken`
-test_lfc_2$`15_p_shrunken`
-
-test <- test_lfc_0$`03_DGE_unshrunken_GR` %>% tibble::as_tibble()
-table(test$log2FoldChange > 1 & test$padj < 0.05)
 
 #  Notes ======================================================================
 #  Volcano plots in paper so far (2023-0519) ----------------------------------

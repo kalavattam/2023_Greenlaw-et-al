@@ -1236,7 +1236,7 @@ pca_exp_rlog <- run_PCA_pipeline(
 
 
 #  Write out dataframes of raw and rlog-normalized counts =====================
-run = FALSE
+run <- FALSE
 if(isTRUE(run)) {
     counts_raw.bak <- counts_raw
     counts_rlog.bak <- counts_rlog
@@ -1272,7 +1272,7 @@ if(isTRUE(run)) {
 }
 
 
-#  Create a clustered heatmap of rlog-normalized counts =======================
+#  Create a clustered heatmap of rlog-normalized counts () =======================
 run = FALSE
 if(isTRUE(run)) {
     counts_rlog_full <- counts_rlog
