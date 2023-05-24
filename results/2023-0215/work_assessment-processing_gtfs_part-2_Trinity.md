@@ -8,19 +8,19 @@
 <!-- MarkdownTOC -->
 
 1. [Get situated](#get-situated)
-	1. [Code](#code)
+    1. [Code](#code)
 1. [Run `htseq-count` on bams in `bams_renamed/` with `.gtf`s in `outfiles_gtf-gff3/Trinity-GG`](#run-htseq-count-on-bams-in-bams_renamed-with-gtfs-in-outfiles_gtf-gff3trinity-gg)
-	1. [Set up outfile directories](#set-up-outfile-directories)
-		1. [Code](#code-1)
-	1. [Set up arrays of bams](#set-up-arrays-of-bams)
-		1. [Code](#code-2)
-	1. [Index bams](#index-bams)
-		1. [Code](#code-3)
-	1. [Run `htseq-count` with `.gtf`s in `outfiles_gtf-gff3/representation`](#run-htseq-count-with-gtfs-in-outfiles_gtf-gff3representation)
-		1. [Set up necessary arrays, variables](#set-up-necessary-arrays-variables)
-			1. [Code](#code-4)
-		1. [Set up and submit `htseq-count` jobs](#set-up-and-submit-htseq-count-jobs)
-			1. [Code](#code-5)
+    1. [Set up outfile directories](#set-up-outfile-directories)
+        1. [Code](#code-1)
+    1. [Set up arrays of bams](#set-up-arrays-of-bams)
+        1. [Code](#code-2)
+    1. [Index bams](#index-bams)
+        1. [Code](#code-3)
+    1. [Run `htseq-count` with `.gtf`s in `outfiles_gtf-gff3/representation`](#run-htseq-count-with-gtfs-in-outfiles_gtf-gff3representation)
+        1. [Set up necessary arrays, variables](#set-up-necessary-arrays-variables)
+            1. [Code](#code-4)
+        1. [Set up and submit `htseq-count` jobs](#set-up-and-submit-htseq-count-jobs)
+            1. [Code](#code-5)
 
 <!-- /MarkdownTOC -->
 </details>
@@ -328,28 +328,6 @@ for i in "strd-eq"; do
         sleep 0.5
     done
 done
-
-
-
-
-#         sbatch \
-#             --job-name=${job_name} \
-#             --nodes=1 \
-#             --cpus-per-task=${threads} \
-#             --error=${err_out}.%A.stderr.txt \
-#             --output=${err_out}.%A.stdout.txt \
-#             htseq-count \
-#                 --order "pos" \
-#                 --stranded "${hc_strd}" \
-#                 --nonunique "none" \
-#                 --type "feature" \
-#                 --idattr "gene_id" \
-#                 --nprocesses ${threads} \
-#                 --counts_output "${out}" \
-#                 --with-header \
-#                 ${UT_prim_UMI[*]} \
-#                 "${count_against}"
-
 ```
 </details>
 <br />

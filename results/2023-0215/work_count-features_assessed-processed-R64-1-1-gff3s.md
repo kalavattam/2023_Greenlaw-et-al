@@ -19,6 +19,8 @@
     1. [Run `htseq-count` with `processed_features-intergenic_sense-antisense.gtf`](#run-htseq-count-with-processed_features-intergenic_sense-antisensegtf)
         1. [Set up variables, etc., then submit `htseq-count` jobs](#set-up-variables-etc-then-submit-htseq-count-jobs)
             1. [Code](#code-4)
+        1. [Submit `htseq-count` jobs](#submit-htseq-count-jobs)
+            1. [Code](#code-5)
             1. [Printed](#printed)
 
 <!-- /MarkdownTOC -->
@@ -42,8 +44,6 @@ transcriptome &&
     }
 
 source activate gff3_env
-
-.,
 ```
 </details>
 <br />
@@ -145,21 +145,21 @@ done
 
 job_name="run_htseq-count"  # echo "${job_name}"
 threads=12  # echo "${threads}"
-# job_no_max=24  # echo "${job_no_max}"
 
 echo "Combination of infiles is..."
 echo "${UT_prim_UMI[*]}"  # in
 
 stranded="strd-eq"  # echo "${stranded}"
 
+p_gtfs="outfiles_gtf-gff3/comprehensive/S288C_reference_genome_R64-1-1_20110203"
 unset gtfs
 typeset -a gtfs=(
-    "outfiles_gtf-gff3/comprehensive/S288C_reference_genome_R64-1-1_20110203/processed_features-intergenic_sense-antisense.gtf"
-    "outfiles_gtf-gff3/comprehensive/S288C_reference_genome_R64-1-1_20110203/processed_features-intergenic_sense.gtf"
-    "outfiles_gtf-gff3/comprehensive/S288C_reference_genome_R64-1-1_20110203/processed_features-intergenic_antisense.gtf"
-    "outfiles_gtf-gff3/comprehensive/S288C_reference_genome_R64-1-1_20110203/processed_features_sense-antisense.gtf"
-    "outfiles_gtf-gff3/comprehensive/S288C_reference_genome_R64-1-1_20110203/processed_features_sense.gtf"
-    "outfiles_gtf-gff3/comprehensive/S288C_reference_genome_R64-1-1_20110203/processed_features_antisense.gtf"
+    "${p_gtfs}/processed_features-intergenic_sense-antisense.gtf"
+    "${p_gtfs}/processed_features-intergenic_sense.gtf"
+    "${p_gtfs}/processed_features-intergenic_antisense.gtf"
+    "${p_gtfs}/processed_features_sense-antisense.gtf"
+    "${p_gtfs}/processed_features_sense.gtf"
+    "${p_gtfs}/processed_features_antisense.gtf"
 )
 # echo_test "${gtfs[@]}"
 # echo "${#gtfs[@]}"
@@ -182,6 +182,17 @@ typeset -a nonunique_options=(
 )
 # echo_test "${nonunique_options[@]}"
 # echo "${#nonunique_options[@]}"
+```
+
+<a id="submit-htseq-count-jobs"></a>
+#### Submit `htseq-count` jobs
+<a id="code-5"></a>
+##### Code
+<details>
+<summary><i>Code: Submit htseq-count jobs</i></summary>
+
+```bash
+#!/bin/bash
 
 h=0
 for gtf in "${gtfs[@]}"; do

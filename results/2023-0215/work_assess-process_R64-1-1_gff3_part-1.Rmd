@@ -901,6 +901,7 @@ z_sense %>%
 <br />
 
 ## Next step
-Go to [`work_assess-process_R64-1-1_gff3_part-2.Rmd`](./work_assess-process_R64-1-1_gff3_part-2.Rmd)  
-*(This is the overlap/classification work for the Q and G1 nascent transcriptomes.)*
+- Go to [`work_combine-gtfs_processed-pa-ncRNA_part-0.Rmd`](./work_combine-gtfs_processed-pa-ncRNA_part-0.Rmd)
+- Go to [`work_assess-process_R64-1-1_gff3_part-2.Rmd`](./work_assess-process_R64-1-1_gff3_part-2.Rmd) *(This is the overlap/classification work for the Q and G1 nascent transcriptomes.)* `#TODO` *Rename this script to better reflect its function.*
+- Go to [`work_count-features_assessed-processed-R64-1-1-gff3s.md`](./work_count-features_assessed-processed-R64-1-1-gff3s.md) *(This is the notebook for submitting htseq-counts jobs to the cluster.)*
 <br />
