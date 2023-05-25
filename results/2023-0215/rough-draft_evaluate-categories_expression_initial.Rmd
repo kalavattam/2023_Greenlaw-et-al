@@ -1643,6 +1643,7 @@ After having written and run the code in [`work_calculate_uni-multimappers-etc.m
 ```{r}
 #!/usr/bin/env Rscript
 
+#HERE
 p_uni_multi_etc <- "outfiles_htseq-count"
 f_uni_multi_etc <- "calculate_uni-multimappers-etc.UT_prim_UMI.txt"
 uni_multi_etc <- readr::read_tsv(
@@ -2988,6 +2989,7 @@ matrices <- list()
                 ) %>%
                 dplyr::relocate(category, .before = G1_N_rep1)
             
+            #HERE
             #  Create version of "summary" and "summary_other" made up of
             #+ per-column (i.e., sample-wise or intra sample) proportions
             # (summary[, 2] / sum(summary[, 2])) * 100
@@ -3044,6 +3046,7 @@ matrices <- list()
 ```
 
 ```{r}
+            #HERE
             `sample-by-category_pivoted` <-
                 columnwise_prop_summary_other[, 1:9] %>%
                     pivot_on_columns(col_piv) %>%
@@ -3088,6 +3091,7 @@ matrices <- list()
 ```
 
 ```{r}
+            #HERE
             `prop-plot_w-error_full` <- `sample-by-category_pivoted` %>%
                 ggpubr::ggbarplot(
                     x = "samples",

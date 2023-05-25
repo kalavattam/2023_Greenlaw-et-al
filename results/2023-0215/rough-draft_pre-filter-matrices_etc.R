@@ -1068,14 +1068,14 @@ table(test$log2FoldChange > 0.58 & test$padj < 0.05)
 #  N Q nab3-d vs N Q parental: mRNA
 # "n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1"  #OK
 # "n3-d_Q_day7_tcn_N_aux-T_tc-F_rep2_tech1"  #OK
-# "n3-d_Q_day7_tcn_N_aux-T_tc-F_rep3_tech1"  #OK  #EXCLUDE from analyses, I think?
+# "n3-d_Q_day7_tcn_N_aux-T_tc-F_rep3_tech1"  #OK  #EXCLUDE from analyses
 # "o-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1"  #OK
 # "o-d_Q_day7_tcn_N_aux-T_tc-F_rep2_tech1"  #OK
 
 #  SS Q nab3-d vs SS Q parental: mRNA
 # "n3-d_Q_day7_tcn_SS_aux-T_tc-F_rep1_tech1"  #OK
 # "n3-d_Q_day7_tcn_SS_aux-T_tc-F_rep2_tech1"  #OK
-# "n3-d_Q_day7_tcn_SS_aux-T_tc-F_rep3_tech1"  #OK  #EXCLUDE from analyses, I think?
+# "n3-d_Q_day7_tcn_SS_aux-T_tc-F_rep3_tech1"  #OK  #EXCLUDE from analyses
 # "o-d_Q_day7_tcn_SS_aux-T_tc-F_rep1_tech1"  #OK
 # "o-d_Q_day7_tcn_SS_aux-T_tc-F_rep2_tech1"  #OK
 
