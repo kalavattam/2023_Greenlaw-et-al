@@ -230,7 +230,11 @@ theme_slick_no_legend <- theme_slick + theme(legend.position = "none")
 # Load gtf file of interest ---------------------------------------------------
 # ...which consists of collapsed/merged pa-ncRNAs and "processed" features
 p_gtf <- "outfiles_gtf-gff3/representation"
-f_gtf <- "Greenlaw-et-al_representative-coding-non-coding-etc-transcriptome.gtf"
+# f_gtf <- "Greenlaw-et-al_representative-coding-pa-ncRNA-transcriptome.gtf"
+# f_gtf <- "Greenlaw-et-al_representative-coding-non-pa-ncRNA-transcriptome.gtf"
+# f_gtf <- "Greenlaw-et-al_representative-coding-ncRNA-transcriptome.gtf"
+f_gtf <- "Greenlaw-et-al_non-collapsed-non-coding-transcriptome.gtf"
+
 # dir.exists(p_gtf)
 # file.exists(paste(p_gtf, f_gtf, sep = "/"))
 
@@ -243,13 +247,19 @@ t_gtf <- paste(p_gtf, f_gtf, sep = "/") %>%
 t_gtf[t_gtf == "NA"] <- NA_character_
 # t_gtf
 
-rm(p_gtf, f_gtf)
+rm(p_gtf)
+# rm(p_gtf, f_gtf)
 
 
 # Load counts matrix file of interest -----------------------------------------
 # ...which consists of collapsed/merged pa-ncRNAs and "processed" features
 p_cm <- "outfiles_htseq-count/representation/UT_prim_UMI"
-f_cm <- "representative-coding-non-coding-etc-transcriptome.hc-strd-eq.tsv"
+# f_cm <- "representative-coding-pa-ncRNA-transcriptome.hc-strd-eq.union-none.tsv"
+# f_cm <- "representative-coding-pa-ncRNA-transcriptome.hc-strd-eq.union-fraction.tsv"
+# f_cm <- "representative-coding-non-pa-ncRNA-transcriptome.hc-strd-eq.union-fraction.tsv"
+# f_cm <- "representative-coding-ncRNA-transcriptome.hc-strd-eq.union-none.tsv"
+f_cm <- "non-collapsed-non-coding-transcriptome.hc-strd-eq.tsv"
+
 # dir.exists(p_cm)
 # file.exists(paste(p_cm, f_cm, sep = "/"))
 
@@ -458,16 +468,23 @@ t_full <- dplyr::full_join(t_gtf[, c(1:4, 7, 9, 10)], t_cm, by = "gene_id")
 #  Row-bind tibbles t_full and summary_relevant -------------------------------
 t_full <- dplyr::bind_rows(t_full, summary_relevant)
 
-tail(t_full[, -c(1:7)])
+#  Checks
+# nrow(t_full)
+# tail(t_full)
+# tail(t_full[, -c(1:7)])
+# tail(t_full[-c((nrow(t_full) - 3):nrow(t_full)), -c(1:7)])
 
 
 #  Check: Do sample-wise tallies equal __valid_counts? ------------------------
 run <- FALSE
 if(base::isTRUE(run)) {
     test_1 <- 
-        sapply(t_full[-c((nrow(t_full) - 3):nrow(t_full)), -c(1:7)], sum) %>%
+        sapply(
+            t_full[-c((nrow(t_full) - 3):nrow(t_full)), -c(1:7)], sum
+        ) %>%
         t() %>%
         tibble::as_tibble() 
+
     test_2 <-
         summary_relevant[
             stringr::str_detect(summary_relevant$gene_id, "valid"), 
@@ -522,12 +539,25 @@ t_rel_summarize <- t_rel %>%
     )
 
 #  Order the categories alphabetically without respect to case, and exclude
-#+ the "multimapper (excluded)" category
+#+ the "multimapper (excluded)" and "pseudogene" categories
 t_rel_summarize <- t_rel_summarize %>%
     dplyr::arrange(tolower(category)) %>%
     dplyr::filter(!stringr::str_detect(
         category, "^multimapper*"
+    )) %>%
+    dplyr::filter(!stringr::str_detect(
+        category, "^pseudogene"
     ))
+
+#  For "Greenlaw-et-al_non-collapsed-non-coding-transcriptome.gtf" counts,
+#+ place "no feature" first
+if(base::isTRUE(
+    f_gtf == "Greenlaw-et-al_non-collapsed-non-coding-transcriptome.gtf"
+)) {
+    t_rel_summarize <- t_rel_summarize %>%
+        dplyr::arrange(category != "no feature")
+}
+
 
 #  Assign NA to "number of features" for the summary-value categories
 t_rel_summarize$number_of_features <- ifelse(
@@ -551,6 +581,9 @@ colnames(t_rel_summarize) <- colnames(t_rel_summarize) %>%
 
 
 #  Plot per-replicate counts proportions --------------------------------------
+# t_rel_summarize.bak <- t_rel_summarize
+t_rel_summarize$category <- t_rel_summarize$category %>% as_factor()
+
 t_rel_summarize %>%
     tidyr::pivot_longer(cols = c(
         G1_N_rep1, G1_N_rep2, G1_SS_rep1, G1_SS_rep2,
@@ -699,39 +732,39 @@ col_piv <- c(
     ) %>%
     dplyr::relocate(p.signif, .after = p)
 
-#  Check
-`sample-by-category_pivoted`
-`sample-by-category_stats`
+#  Checks
+# `sample-by-category_pivoted`
+# `sample-by-category_stats`
 
-`prop-plot_w-error_full` <- `sample-by-category_pivoted` %>%
-    ggpubr::ggbarplot(
-        x = "samples",
-        y = "counts",
-        color = "black",
-        fill = "category",
-        palette = viridisLite::viridis(8),
-        label = FALSE,
-        add = "mean_se"
-    ) +
-        # coord_cartesian(ylim = c(0, 0.35)) +
-        xlab("") +
-        ylab("proportion") +
-        theme_slick
-
-`prop-plot_w-error_zoom` <- `sample-by-category_pivoted` %>%
-    ggpubr::ggbarplot(
-        x = "samples",
-        y = "counts",
-        color = "black",
-        fill = "category",
-        palette = viridisLite::viridis(8),
-        label = FALSE,
-        add = "mean_se"
-    ) +
-        coord_cartesian(ylim = c(0, 0.20)) +
-        xlab("") +
-        ylab("proportion") +
-        theme_slick
+# `prop-plot_w-error_full` <- `sample-by-category_pivoted` %>%
+#     ggpubr::ggbarplot(
+#         x = "samples",
+#         y = "counts",
+#         color = "black",
+#         fill = "category",
+#         palette = viridisLite::viridis(nrow(t_rel_summarize)),
+#         label = FALSE,
+#         add = "mean_se"
+#     ) +
+#         # coord_cartesian(ylim = c(0, 0.35)) +
+#         xlab("") +
+#         ylab("proportion") +
+#         theme_slick
+# 
+# `prop-plot_w-error_zoom` <- `sample-by-category_pivoted` %>%
+#     ggpubr::ggbarplot(
+#         x = "samples",
+#         y = "counts",
+#         color = "black",
+#         fill = "category",
+#         palette = viridisLite::viridis(nrow(t_rel_summarize)),
+#         label = FALSE,
+#         add = "mean_se"
+#     ) +
+#         coord_cartesian(ylim = c(0, 0.30)) +
+#         xlab("") +
+#         ylab("proportion") +
+#         theme_slick
 
 `prop-plot_no-error_full` <- `sample-by-category_pivoted` %>%
     ggpubr::ggbarplot(
@@ -739,7 +772,7 @@ col_piv <- c(
         y = "counts",
         color = NA,
         fill = "category",
-        palette = viridisLite::viridis(8),
+        palette = viridisLite::viridis(nrow(t_rel_summarize)),
         label = FALSE,
         add = "mean_se"
     ) +
@@ -753,17 +786,17 @@ col_piv <- c(
         y = "counts",
         color = NA,
         fill = "category",
-        palette = viridisLite::viridis(8),
+        palette = viridisLite::viridis(nrow(t_rel_summarize)),
         label = FALSE,
         add = "mean_se"
     ) +
-        coord_cartesian(ylim = c(0, 0.20)) +
+        coord_cartesian(ylim = c(0, 0.30)) +
         xlab("") +
         ylab("proportion") +
         theme_slick
 
-#  Check
-`prop-plot_w-error_full`
-`prop-plot_w-error_zoom`
+#  Checks
+# `prop-plot_w-error_full`
+# `prop-plot_w-error_zoom`
 `prop-plot_no-error_full`
 `prop-plot_no-error_zoom`

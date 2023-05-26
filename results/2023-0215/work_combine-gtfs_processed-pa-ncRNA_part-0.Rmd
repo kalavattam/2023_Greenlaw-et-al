@@ -160,7 +160,7 @@ write_gtf <- function(x, y) {
 
 
 p_gtf <- "./outfiles_gtf-gff3/representation"
-f_gtf <- "Greenlaw-et-al_representative-coding-non-coding-etc-transcriptome.gtf"
+f_gtf <- "Greenlaw-et-al_representative-coding-pa-ncRNA-transcriptome.gtf"
 t_gtf <- t_bound %>%
     dplyr::mutate(score = ".", frame = ".") %>%
     dplyr::relocate(c("seqnames", "source", "type"), .before = "start") %>%

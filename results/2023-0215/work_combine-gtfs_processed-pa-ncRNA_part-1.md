@@ -9,7 +9,7 @@
 
 1. [Get situated](#get-situated)
     1. [Code](#code)
-1. [Run `htseq-count` `Greenlaw-et-al_representative-coding-non-coding-etc-transcriptome.gtf`s](#run-htseq-count-greenlaw-et-al_representative-coding-non-coding-etc-transcriptomegtfs)
+1. [Run `htseq-count` `Greenlaw-et-al_representative-coding-pa-ncRNA-transcriptome.gtf`s](#run-htseq-count-greenlaw-et-al_representative-coding-pa-ncrna-transcriptomegtfs)
     1. [Set up outfile directories](#set-up-outfile-directories)
         1. [Code](#code-1)
     1. [Set up arrays of bams](#set-up-arrays-of-bams)
@@ -51,8 +51,8 @@ source activate gff3_env
 <br />
 <br />
 
-<a id="run-htseq-count-greenlaw-et-al_representative-coding-non-coding-etc-transcriptomegtfs"></a>
-## Run `htseq-count` `Greenlaw-et-al_representative-coding-non-coding-etc-transcriptome.gtf`s
+<a id="run-htseq-count-greenlaw-et-al_representative-coding-pa-ncrna-transcriptomegtfs"></a>
+## Run `htseq-count` `Greenlaw-et-al_representative-coding-pa-ncRNA-transcriptome.gtf`s
 *...using bams in `bams_renamed/` with the `gtf` in `outfiles_gtf-gff3/representation`*
 
 <a id="set-up-outfile-directories"></a>
@@ -149,7 +149,11 @@ done
 #!/bin/bash
 
 p_gtf=outfiles_gtf-gff3/representation  # ls -1 "${p_gtf}"
-gtf="${p_gtf}/Greenlaw-et-al_representative-coding-non-coding-etc-transcriptome.gtf"  # echo "${gtf}"  # ., "${gtf}"
+gtf="${p_gtf}/Greenlaw-et-al_representative-coding-pa-ncRNA-transcriptome.gtf"  # echo "${gtf}"  # ., "${gtf}"
+
+unset nonunique
+typeset -a nonunique=( "none" "all" "fraction" "random" )
+# echo_test "${nonunique[@]}"
 
 job_name="run_htseq-count"  # echo "${job_name}"
 threads=12  # echo "${threads}"
@@ -179,73 +183,79 @@ run=TRUE
         for i in "strd-eq"; do
             # for j in "${gtf[@]}"; do
             for j in "${gtf}"; do
-                # i="strd-eq"  # echo "${i}"
-                # j="${gtf[3]}"  # echo "${j}"
+                for k in "${nonunique[@]}"; do
+                    # i="strd-eq"  # echo "${i}"
+                    # j="${gtf}"  # echo "${j}"
+                    # k="${nonunique[1]}"  # echo "${k}"
 
-                #  -------------------------------------
-                count_against="${j}"  # echo "${count_against}"
-                out="outfiles_htseq-count/representation/UT_prim_UMI/$(
-                    echo $(basename "${count_against}") \
-                        | sed 's/Greenlaw-et-al_//g;s/.gtf//g'
-                ).hc-${i}.tsv"   # echo "${out}"  # ., "$(dirname "${out}")"
+                    #  -------------------------------------
+                    count_against="${j}"  # echo "${count_against}"
+                    handle_gt_one="${k}"  # echo "${handle_gt_one}"
+                    out="outfiles_htseq-count/representation/UT_prim_UMI/$(
+                        echo $(basename "${count_against}") \
+                            | sed 's/Greenlaw-et-al_//g;s/.gtf//g'
+                    ).hc-${i}.union-${handle_gt_one}.tsv"
+                    # echo "${out}"  # ., "$(dirname "${out}")"
 
-                err_out="$(
-                    dirname "${out}"
-                )/err_out/$(
-                    basename "${out}" .tsv
-                )"  # echo "${err_out}"  # ., "$(dirname "${err_out}")"
-
-
-                #  -------------------------------------
-                let h++
-                iter="${h}"
-                echo "        #  -------------------------------------"
-                printf "        Iteration '%d'\n" "${iter}"
-
-                echo """
-                Running htseq-count
-                            directory                                                file
-                       out  $(dirname ${out})          $(basename ${out})
-                    stdout  $(dirname ${err_out})  $(basename ${err_out}).stdout.txt
-                    stderr  $(dirname ${err_out})  $(basename ${err_out}).stderr.txt
-                """
-
-                if [[ "${i}" == "strd-eq" ]]; then
-                    hc_strd="yes"  # echo "${hc_strd}"
-                elif [[ "${i}" == "strd-op" ]]; then
-                    hc_strd="reverse"  # echo "${hc_strd}"
-                fi
+                    err_out="$(
+                        dirname "${out}"
+                    )/err_out/$(
+                        basename "${out}" .tsv
+                    )"
+                    # echo "${err_out}"  # ., "$(dirname "${err_out}")"
 
 
-                #  -------------------------------------
-                echo """
-                sbatch \\
-                    --job-name=${job_name} \\
-                    --nodes=1 \\
-                    --cpus-per-task=${threads} \\
-                    --error=${err_out}.%A.stderr.txt \\
-                    --output=${err_out}.%A.stdout.txt \\
-                    htseq-count \\
-                        --order \"pos\" \\
-                        --stranded \"${hc_strd}\" \\
-                        --nonunique \"none\" \\
-                        --type \"feature\" \\
-                        --idattr \"gene_id\" \\
-                        --nprocesses ${threads} \\
-                        --counts_output \"${out}\" \\
-                        --with-header \\
-                        ${UT_prim_UMI[*]} \\
-                        \"${count_against}\" \\
-                             > >(tee -a \"${err_out}.stdout.txt\") \\
-                            2> >(tee -a \"${err_out}.stderr.txt\")
-                """
+                    #  -------------------------------------
+                    let h++
+                    iter="${h}"
+                    echo "        #  -------------------------------------"
+                    printf "        Iteration '%d'\n" "${iter}"
+
+                    echo """
+                    Running htseq-count
+                                directory                                                file
+                           out  $(dirname ${out})          $(basename ${out})
+                        stdout  $(dirname ${err_out})  $(basename ${err_out}).stdout.txt
+                        stderr  $(dirname ${err_out})  $(basename ${err_out}).stderr.txt
+                    """
+
+                    if [[ "${i}" == "strd-eq" ]]; then
+                        hc_strd="yes"  # echo "${hc_strd}"
+                    elif [[ "${i}" == "strd-op" ]]; then
+                        hc_strd="reverse"  # echo "${hc_strd}"
+                    fi
+
+
+                    #  -------------------------------------
+                    echo """
+                    sbatch \\
+                        --job-name=${job_name} \\
+                        --nodes=1 \\
+                        --cpus-per-task=${threads} \\
+                        --error=${err_out}.%A.stderr.txt \\
+                        --output=${err_out}.%A.stdout.txt \\
+                        htseq-count \\
+                            --order \"pos\" \\
+                            --stranded \"${hc_strd}\" \\
+                            --nonunique \"${handle_gt_one}\" \\
+                            --type \"feature\" \\
+                            --idattr \"gene_id\" \\
+                            --nprocesses ${threads} \\
+                            --counts_output \"${out}\" \\
+                            --with-header \\
+                            ${UT_prim_UMI[*]} \\
+                            \"${count_against}\" \\
+                                 > >(tee -a \"${err_out}.stdout.txt\") \\
+                                2> >(tee -a \"${err_out}.stderr.txt\")
+                    """
+                done
             done
         done
     }
 
 
 #  Run actual calls to htseq-count --------------------------------------------
-run=FALSE
+run=TRUE
 [[ ${run} == TRUE ]] &&
     {
         h=0
@@ -253,87 +263,93 @@ run=FALSE
         for i in "strd-eq"; do
             # for j in "${gtf[@]}"; do
             for j in "${gtf}"; do
-                # i="strd-eq"  # echo "${i}"
-                # j="${gtf[3]}"  # echo "${j}"
+                for k in "${nonunique[@]}"; do
+                    # i="strd-eq"  # echo "${i}"
+                    # j="${gtf}"  # echo "${j}"
+                    # k="${nonunique[1]}"  # echo "${k}"
 
-                #  -------------------------------------
-                count_against="${j}"  # echo "${count_against}"
-                out="outfiles_htseq-count/representation/UT_prim_UMI/$(
-                    echo $(basename "${count_against}") \
-                        | sed 's/Greenlaw-et-al_//g;s/.gtf//g'
-                ).hc-${i}.tsv"   # echo "${out}"  # ., "$(dirname "${out}")"
+                    #  -------------------------------------
+                    count_against="${j}"  # echo "${count_against}"
+                    handle_gt_one="${k}"  # echo "${handle_gt_one}"
+                    out="outfiles_htseq-count/representation/UT_prim_UMI/$(
+                        echo $(basename "${count_against}") \
+                            | sed 's/Greenlaw-et-al_//g;s/.gtf//g'
+                    ).hc-${i}.union-${handle_gt_one}.tsv"
+                    # echo "${out}"  # ., "$(dirname "${out}")"
 
-                err_out="$(
-                    dirname "${out}"
-                )/err_out/$(
-                    basename "${out}" .tsv
-                )"  # echo "${err_out}"  # ., "$(dirname "${err_out}")"
-
-
-                #  -------------------------------------
-                let h++
-                iter="${h}"
-                echo "        #  -------------------------------------"
-                printf "        Iteration '%d'\n" "${iter}"
-
-                echo """
-                Running htseq-count
-                            directory                                                file
-                       out  $(dirname ${out})          $(basename ${out})
-                    stdout  $(dirname ${err_out})  $(basename ${err_out}).stdout.txt
-                    stderr  $(dirname ${err_out})  $(basename ${err_out}).stderr.txt
-                """
-
-                if [[ "${i}" == "strd-eq" ]]; then
-                    hc_strd="yes"  # echo "${hc_strd}"
-                elif [[ "${i}" == "strd-op" ]]; then
-                    hc_strd="reverse"  # echo "${hc_strd}"
-                fi
+                    err_out="$(
+                        dirname "${out}"
+                    )/err_out/$(
+                        basename "${out}" .tsv
+                    )"
+                    # echo "${err_out}"  # ., "$(dirname "${err_out}")"
 
 
-                #  -------------------------------------
-                echo """
-                sbatch \\
-                    --job-name=${job_name} \\
-                    --nodes=1 \\
-                    --cpus-per-task=${threads} \\
-                    --error=${err_out}.%A.stderr.txt \\
-                    --output=${err_out}.%A.stdout.txt \\
-                    htseq-count \\
-                        --order \"pos\" \\
-                        --stranded \"${hc_strd}\" \\
-                        --nonunique \"none\" \\
-                        --type \"feature\" \\
-                        --idattr \"gene_id\" \\
-                        --nprocesses ${threads} \\
-                        --counts_output \"${out}\" \\
-                        --with-header \\
-                        ${UT_prim_UMI[*]} \\
-                        \"${count_against}\" \\
-                             > >(tee -a \"${err_out}.stdout.txt\") \\
-                            2> >(tee -a \"${err_out}.stderr.txt\")
-                """
+                    #  -------------------------------------
+                    let h++
+                    iter="${h}"
+                    echo "        #  -------------------------------------"
+                    printf "        Iteration '%d'\n" "${iter}"
 
-                sbatch \
-                    --job-name=${job_name} \
-                    --nodes=1 \
-                    --cpus-per-task=${threads} \
-                    --error=${err_out}.%A.stderr.txt \
-                    --output=${err_out}.%A.stdout.txt \
-                    htseq-count \
-                        --order "pos" \
-                        --stranded "${hc_strd}" \
-                        --nonunique "none" \
-                        --type "feature" \
-                        --idattr "gene_id" \
-                        --nprocesses ${threads} \
-                        --counts_output "${out}" \
-                        --with-header \
-                        ${UT_prim_UMI[*]} \
-                        "${count_against}"
+                    echo """
+                    Running htseq-count
+                                directory                                                file
+                           out  $(dirname ${out})          $(basename ${out})
+                        stdout  $(dirname ${err_out})  $(basename ${err_out}).stdout.txt
+                        stderr  $(dirname ${err_out})  $(basename ${err_out}).stderr.txt
+                    """
 
-                sleep 0.5
-                echo ""
+                    if [[ "${i}" == "strd-eq" ]]; then
+                        hc_strd="yes"  # echo "${hc_strd}"
+                    elif [[ "${i}" == "strd-op" ]]; then
+                        hc_strd="reverse"  # echo "${hc_strd}"
+                    fi
+
+
+                    #  -------------------------------------
+                    echo """
+                    sbatch \\
+                        --job-name=${job_name} \\
+                        --nodes=1 \\
+                        --cpus-per-task=${threads} \\
+                        --error=${err_out}.%A.stderr.txt \\
+                        --output=${err_out}.%A.stdout.txt \\
+                        htseq-count \\
+                            --order \"pos\" \\
+                            --stranded \"${hc_strd}\" \\
+                            --nonunique \"${handle_gt_one}\" \\
+                            --type \"feature\" \\
+                            --idattr \"gene_id\" \\
+                            --nprocesses ${threads} \\
+                            --counts_output \"${out}\" \\
+                            --with-header \\
+                            ${UT_prim_UMI[*]} \\
+                            \"${count_against}\" \\
+                                 > >(tee -a \"${err_out}.stdout.txt\") \\
+                                2> >(tee -a \"${err_out}.stderr.txt\")
+                    """
+
+                    sbatch \
+                        --job-name=${job_name} \
+                        --nodes=1 \
+                        --cpus-per-task=${threads} \
+                        --error=${err_out}.%A.stderr.txt \
+                        --output=${err_out}.%A.stdout.txt \
+                        htseq-count \
+                            --order "pos" \
+                            --stranded "${hc_strd}" \
+                            --nonunique "${handle_gt_one}" \
+                            --type "feature" \
+                            --idattr "gene_id" \
+                            --nprocesses ${threads} \
+                            --counts_output "${out}" \
+                            --with-header \
+                            ${UT_prim_UMI[*]} \
+                            "${count_against}"
+
+                    sleep 0.5
+                    echo ""
+                done
             done
         done
     }
