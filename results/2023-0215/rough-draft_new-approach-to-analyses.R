@@ -634,6 +634,7 @@ run_main <- function(
     genotype_exp,
     genotype_ctrl,
     filtering = "min-10-cts-all-but-1-samps",
+    threshold_p = 0.05,
     x_min = -14,
     x_max = 14,
     y_min = 0,
@@ -910,7 +911,7 @@ run_main <- function(
     lfc_0 <- call_DESeq2_results_run_analyses(
         dds = dds,
         independent_filtering = TRUE,
-        threshold_p = 0.05,
+        threshold_p = threshold_p,
         threshold_lfc = 0,  # i.e., 2^0 = 1
         x_min = x_min,
         x_max = x_max,
@@ -923,7 +924,7 @@ run_main <- function(
     lfc_0.32 <- call_DESeq2_results_run_analyses(
         dds = dds,
         independent_filtering = TRUE,
-        threshold_p = 0.05,
+        threshold_p = threshold_p,
         threshold_lfc = 0.32,  # i.e., 2^0.32 ≈ 1.25
         x_min = x_min,
         x_max = x_max,
@@ -936,7 +937,7 @@ run_main <- function(
     lfc_0.58 <- call_DESeq2_results_run_analyses(
         dds = dds,
         independent_filtering = TRUE,
-        threshold_p = 0.05,
+        threshold_p = threshold_p,
         threshold_lfc = 0.58,  # i.e., 2^0.58 ≈ 1.5
         x_min = x_min,
         x_max = x_max,
@@ -949,7 +950,7 @@ run_main <- function(
     # lfc_1 <- call_DESeq2_results_run_analyses(
     #     dds = dds,
     #     independent_filtering = TRUE,
-    #     threshold_p = 0.05,
+    #     threshold_p = threshold_p,
     #     threshold_lfc = 1,  # i.e., 2^1 = 2
     #     x_min = x_min,
     #     x_max = x_max,
@@ -962,7 +963,7 @@ run_main <- function(
     # lfc_1.32 <- call_DESeq2_results_run_analyses(
     #     dds = dds,
     #     independent_filtering = TRUE,
-    #     threshold_p = 0.05,
+    #     threshold_p = threshold_p,
     #     threshold_lfc = 1.32,  # i.e., 2^1.32 ≈ 2.5
     #     x_min = x_min,
     #     x_max = x_max,
@@ -975,7 +976,7 @@ run_main <- function(
     # lfc_1.58 <- call_DESeq2_results_run_analyses(
     #     dds = dds,
     #     independent_filtering = TRUE,
-    #     threshold_p = 0.05,
+    #     threshold_p = threshold_p,
     #     threshold_lfc = 1.58,  # i.e., 2^1.58 ≈ 3
     #     x_min = x_min,
     #     x_max = x_max,
@@ -988,7 +989,7 @@ run_main <- function(
     # lfc_2 <- call_DESeq2_results_run_analyses(
     #     dds = dds,
     #     independent_filtering = TRUE,
-    #     threshold_p = 0.05,
+    #     threshold_p = threshold_p,
     #     threshold_lfc = 2,  # i.e., 2^2 = 4
     #     x_min = x_min,
     #     x_max = x_max,
@@ -1001,7 +1002,7 @@ run_main <- function(
     # lfc_2.32 <- call_DESeq2_results_run_analyses(
     #     dds = dds,
     #     independent_filtering = TRUE,
-    #     threshold_p = 0.05,
+    #     threshold_p = threshold_p,
     #     threshold_lfc = 2.32,  # i.e., 2^2.32 ≈ 5
     #     x_min = x_min,
     #     x_max = x_max,
@@ -1014,7 +1015,7 @@ run_main <- function(
     # lfc_2.58 <- call_DESeq2_results_run_analyses(
     #     dds = dds,
     #     independent_filtering = TRUE,
-    #     threshold_p = 0.05,
+    #     threshold_p = threshold_p,
     #     threshold_lfc = 2.58,  # i.e., 2^2.58 ≈ 6
     #     x_min = x_min,
     #     x_max = x_max,
@@ -1027,7 +1028,7 @@ run_main <- function(
     # lfc_3 <- call_DESeq2_results_run_analyses(
     #     dds = dds,
     #     independent_filtering = TRUE,
-    #     threshold_p = 0.05,
+    #     threshold_p = threshold_p,
     #     threshold_lfc = 3,  # i.e., 2^3 = 8
     #     x_min = x_min,
     #     x_max = x_max,
@@ -1582,62 +1583,62 @@ if(base::isTRUE(run != "mRNA")) {
     `SS-Q-nab3d_SS-Q-parental`
 )
 
-# `SS-Q-rrp6∆_SS-Q-WT` <- setNames(
-#     c(
-#         "r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1",
-#         "r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech2",
-#         "r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1",
-#         "WT_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1",
-#         "WT_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1"
-#     ),
-#     c(
-#         "r6n_Q_SS_rep1_tech1",
-#         "r6n_Q_SS_rep1_tech2",
-#         "r6n_Q_SS_rep2_tech1",
-#         "WT_Q_SS_rep1_tech1",
-#         "WT_Q_SS_rep2_tech1"
-#     )
-# )
-# `SS-Q-rrp6∆_SS-Q-WT` <- filter_process_counts_matrix(
-#     `SS-Q-rrp6∆_SS-Q-WT`
-# )
-# 
-# `SS-G1-rrp6∆_SS-G1-WT` <- setNames(
-#     c(
-#         "r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1",
-#         "r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1",
-#         "WT_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1",
-#         "WT_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1"
-#     ),
-#     c(
-#         "r6n_G1_SS_rep1_tech2",
-#         "r6n_G1_SS_rep2_tech2",
-#         "WT_G1_SS_rep1_tech2",
-#         "WT_G1_SS_rep2_tech2"
-#     )
-# )
-# `SS-G1-rrp6∆_SS-G1-WT` <- filter_process_counts_matrix(
-#     `SS-G1-rrp6∆_SS-G1-WT`
-# )
-# 
-# `N-Q-rrp6∆_N-Q-WT` <- setNames(
-#     c(
-#         "r6-n_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1",
-#         "r6-n_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1",
-#         "WT_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1",
-#         "WT_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1"
-#     ),
-#     c(
-#         "r6n_Q_N_rep1_tech1",
-#         "r6n_Q_N_rep2_tech1",
-#         "WT_Q_N_rep1_tech1",
-#         "WT_Q_N_rep2_tech1"
-#     )
-# )
-# `N-Q-rrp6∆_N-Q-WT` <- filter_process_counts_matrix(
-#     `N-Q-rrp6∆_N-Q-WT`
-# )
-# 
+`SS-Q-rrp6∆_SS-Q-WT` <- setNames(
+    c(
+        "r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1",
+        "r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech2",
+        "r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1",
+        "WT_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1",
+        "WT_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1"
+    ),
+    c(
+        "r6n_Q_SS_rep1_tech1",
+        "r6n_Q_SS_rep1_tech2",
+        "r6n_Q_SS_rep2_tech1",
+        "WT_Q_SS_rep1_tech1",
+        "WT_Q_SS_rep2_tech1"
+    )
+)
+`SS-Q-rrp6∆_SS-Q-WT` <- filter_process_counts_matrix(
+    `SS-Q-rrp6∆_SS-Q-WT`
+)
+
+`SS-G1-rrp6∆_SS-G1-WT` <- setNames(
+    c(
+        "r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1",
+        "r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1",
+        "WT_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1",
+        "WT_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1"
+    ),
+    c(
+        "r6n_G1_SS_rep1_tech2",
+        "r6n_G1_SS_rep2_tech2",
+        "WT_G1_SS_rep1_tech2",
+        "WT_G1_SS_rep2_tech2"
+    )
+)
+`SS-G1-rrp6∆_SS-G1-WT` <- filter_process_counts_matrix(
+    `SS-G1-rrp6∆_SS-G1-WT`
+)
+
+`N-Q-rrp6∆_N-Q-WT` <- setNames(
+    c(
+        "r6-n_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1",
+        "r6-n_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1",
+        "WT_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1",
+        "WT_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1"
+    ),
+    c(
+        "r6n_Q_N_rep1_tech1",
+        "r6n_Q_N_rep2_tech1",
+        "WT_Q_N_rep1_tech1",
+        "WT_Q_N_rep2_tech1"
+    )
+)
+`N-Q-rrp6∆_N-Q-WT` <- filter_process_counts_matrix(
+    `N-Q-rrp6∆_N-Q-WT`
+)
+
 # `SS-DSm2-rrp6∆_SS-DSm2-WT` <- setNames(
 #     c(
 #         "r6-n_DSm2_day2_tcn_SS_aux-F_tc-T_rep1_tech1",
@@ -1714,407 +1715,37 @@ if(base::isTRUE(run != "mRNA")) {
 
 
 #  Analyze, graph datasets of interest ========================================
-#  Arguments for run_main()
-# t_sub,
-# genotype_exp,
-# genotype_ctrl,
-# filtering = "min-10-cts-all-but-1-samps",
-# x_min = -14,
-# x_max = 14,
-# y_min = 0,
-# y_max = 310,
-# color = "#113275"
-
-#NOTE Need to exclude 20S, "summary values", and Mito from tibble
-
-# `DGE-analysis_N-Q-nab3d_N-Q-parental` <- run_main(
-N_Q_none <- run_main(
-    t_sub = `N-Q-nab3d_N-Q-parental`,
-    genotype_exp = "n3d",
-    genotype_ctrl = "od",
-    filtering = ifelse(
-        run == "mRNA", "min-10-cts-all-but-1-samps", "none"
-    ),
-    x_min = -5,
-    x_max = ifelse(run == "mRNA", 10, 10),
-    y_min = 0,
-    y_max = ifelse(run == "mRNA", 40, 100),
-    color = "#113275"
-)
-
-N_Q_1samp <- run_main(
-    t_sub = `N-Q-nab3d_N-Q-parental`,
-    genotype_exp = "n3d",
-    genotype_ctrl = "od",
-    filtering = ifelse(
-        run == "mRNA", "min-10-cts-all-but-1-samps", "min-10-cts-1-samp"
-    ),
-    x_min = -5,
-    x_max = ifelse(run == "mRNA", 10, 10),
-    y_min = 0,
-    y_max = ifelse(run == "mRNA", 40, 100),
-    color = "#113275"
-)
-
-N_Q_2samp <- run_main(
-    t_sub = `N-Q-nab3d_N-Q-parental`,
-    genotype_exp = "n3d",
-    genotype_ctrl = "od",
-    filtering = ifelse(run == "mRNA", "min-10-cts-all-but-1-samps", "min-10-cts-2-samps"),
-    x_min = -5,
-    x_max = ifelse(run == "mRNA", 10, 10),
-    y_min = 0,
-    y_max = ifelse(run == "mRNA", 40, 100),
-    color = "#113275"
-)
-
-N_Q_3samp_1 <- run_main(
-    t_sub = `N-Q-nab3d_N-Q-parental`,
-    genotype_exp = "n3d",
-    genotype_ctrl = "od",
-    filtering = ifelse(run == "mRNA", "min-10-cts-all-but-1-samps", "min-1-ct-3-samps"),
-    x_min = -5,
-    x_max = ifelse(run == "mRNA", 10, 10),
-    y_min = 0,
-    y_max = ifelse(run == "mRNA", 40, 100),
-    color = "#113275"
-)
-
-N_Q_3samp_2 <- run_main(
-    t_sub = `N-Q-nab3d_N-Q-parental`,
-    genotype_exp = "n3d",
-    genotype_ctrl = "od",
-    filtering = ifelse(run == "mRNA", "min-10-cts-all-but-1-samps", "min-2-cts-3-samps"),
-    x_min = -5,
-    x_max = ifelse(run == "mRNA", 10, 10),
-    y_min = 0,
-    y_max = ifelse(run == "mRNA", 40, 100),
-    color = "#113275"
-)
-
-N_Q_3samp_3 <- run_main(
-    t_sub = `N-Q-nab3d_N-Q-parental`,
-    genotype_exp = "n3d",
-    genotype_ctrl = "od",
-    filtering = ifelse(run == "mRNA", "min-10-cts-all-but-1-samps", "min-3-cts-3-samps"),
-    x_min = -5,
-    x_max = ifelse(run == "mRNA", 10, 10),
-    y_min = 0,
-    y_max = ifelse(run == "mRNA", 40, 100),
-    color = "#113275"
-)
-
-N_Q_3samp_4 <- run_main(
-    t_sub = `N-Q-nab3d_N-Q-parental`,
-    genotype_exp = "n3d",
-    genotype_ctrl = "od",
-    filtering = ifelse(run == "mRNA", "min-10-cts-all-but-1-samps", "min-4-cts-3-samps"),
-    x_min = -5,
-    x_max = ifelse(run == "mRNA", 10, 10),
-    y_min = 0,
-    y_max = ifelse(run == "mRNA", 40, 100),
-    color = "#113275"
-)
-
-N_Q_3samp_5 <- run_main(
-    t_sub = `N-Q-nab3d_N-Q-parental`,
-    genotype_exp = "n3d",
-    genotype_ctrl = "od",
-    filtering = ifelse(
-        run == "mRNA", "min-10-cts-all-but-1-samps", "min-5-cts-3-samps"
-    ),
-    x_min = -5,
-    x_max = ifelse(run == "mRNA", 10, 10),
-    y_min = 0,
-    y_max = ifelse(run == "mRNA", 40, 100),
-    color = "#113275"
-)
-
-N_Q_3samp <- run_main(
-    t_sub = `N-Q-nab3d_N-Q-parental`,
-    genotype_exp = "n3d",
-    genotype_ctrl = "od",
-    filtering = ifelse(
-        run == "mRNA", "min-10-cts-all-but-1-samps", "min-10-cts-3-samps"
-    ),
-    x_min = -5,
-    x_max = ifelse(run == "mRNA", 10, 10),
-    y_min = 0,
-    y_max = ifelse(run == "mRNA", 40, 100),
-    color = "#113275"
-)
-
-N_Q_Asamp <- run_main(
-    t_sub = `N-Q-nab3d_N-Q-parental`,
-    genotype_exp = "n3d",
-    genotype_ctrl = "od",
-    filtering = ifelse(
-        run == "mRNA", "min-10-cts-all-but-1-samps", "min-10-cts-all-samps"
-    ),
-    x_min = -5,
-    x_max = ifelse(run == "mRNA", 10, 10),
-    y_min = 0,
-    y_max = ifelse(run == "mRNA", 40, 100),
-    color = "#113275"
-)
-
-# `DGE-analysis_SS-Q-nab3d_SS-Q-parental` <- run_main(
-SS_Q_none <- run_main(
-    t_sub = `SS-Q-nab3d_SS-Q-parental`,
-    genotype_exp = "n3d",
-    genotype_ctrl = "od",
-    filtering = ifelse(run == "mRNA", "min-10-cts-all-but-1-samps", "none"),
-    x_min = -5,
-    x_max = ifelse(run == "mRNA", 10, 10),
-    y_min = 0,
-    y_max = ifelse(run == "mRNA", 100, 100),
-    color = "#2E0C4A"
-)
-
-SS_Q_1samp <- run_main(
-    t_sub = `SS-Q-nab3d_SS-Q-parental`,
-    genotype_exp = "n3d",
-    genotype_ctrl = "od",
-    filtering = ifelse(run == "mRNA", "min-10-cts-all-but-1-samps", "min-10-cts-1-samp"),
-    x_min = -5,
-    x_max = ifelse(run == "mRNA", 10, 10),
-    y_min = 0,
-    y_max = ifelse(run == "mRNA", 100, 100),
-    color = "#2E0C4A"
-)
-
-SS_Q_2samp <- run_main(
-    t_sub = `SS-Q-nab3d_SS-Q-parental`,
-    genotype_exp = "n3d",
-    genotype_ctrl = "od",
-    filtering = ifelse(run == "mRNA", "min-10-cts-all-but-1-samps", "min-10-cts-2-samps"),
-    x_min = -5,
-    x_max = ifelse(run == "mRNA", 10, 10),
-    y_min = 0,
-    y_max = ifelse(run == "mRNA", 100, 100),
-    color = "#2E0C4A"
-)
-
-SS_Q_3samp_1 <- run_main(
-    t_sub = `SS-Q-nab3d_SS-Q-parental`,
-    genotype_exp = "n3d",
-    genotype_ctrl = "od",
-    filtering = ifelse(run == "mRNA", "min-10-cts-all-but-1-samps", "min-1-ct-3-samps"),
-    x_min = -5,
-    x_max = ifelse(run == "mRNA", 10, 10),
-    y_min = 0,
-    y_max = ifelse(run == "mRNA", 100, 100),
-    color = "#2E0C4A"
-)
-
-SS_Q_3samp_2 <- run_main(
-    t_sub = `SS-Q-nab3d_SS-Q-parental`,
-    genotype_exp = "n3d",
-    genotype_ctrl = "od",
-    filtering = ifelse(run == "mRNA", "min-10-cts-all-but-1-samps", "min-2-cts-3-samps"),
-    x_min = -5,
-    x_max = ifelse(run == "mRNA", 10, 10),
-    y_min = 0,
-    y_max = ifelse(run == "mRNA", 100, 100),
-    color = "#2E0C4A"
-)
-
-SS_Q_3samp_3 <- run_main(
-    t_sub = `SS-Q-nab3d_SS-Q-parental`,
-    genotype_exp = "n3d",
-    genotype_ctrl = "od",
-    filtering = ifelse(run == "mRNA", "min-10-cts-all-but-1-samps", "min-3-cts-3-samps"),
-    x_min = -5,
-    x_max = ifelse(run == "mRNA", 10, 10),
-    y_min = 0,
-    y_max = ifelse(run == "mRNA", 100, 100),
-    color = "#2E0C4A"
-)
-
-SS_Q_3samp_4 <- run_main(
-    t_sub = `SS-Q-nab3d_SS-Q-parental`,
-    genotype_exp = "n3d",
-    genotype_ctrl = "od",
-    filtering = ifelse(run == "mRNA", "min-10-cts-all-but-1-samps", "min-4-cts-3-samps"),
-    x_min = -5,
-    x_max = ifelse(run == "mRNA", 10, 10),
-    y_min = 0,
-    y_max = ifelse(run == "mRNA", 100, 100),
-    color = "#2E0C4A"
-)
-
-SS_Q_3samp_5 <- run_main(
-    t_sub = `SS-Q-nab3d_SS-Q-parental`,
-    genotype_exp = "n3d",
-    genotype_ctrl = "od",
-    filtering = ifelse(run == "mRNA", "min-10-cts-all-but-1-samps", "min-5-cts-3-samps"),
-    x_min = -5,
-    x_max = ifelse(run == "mRNA", 10, 10),
-    y_min = 0,
-    y_max = ifelse(run == "mRNA", 100, 100),
-    color = "#2E0C4A"
-)
-
-SS_Q_3samp <- run_main(
-    t_sub = `SS-Q-nab3d_SS-Q-parental`,
-    genotype_exp = "n3d",
-    genotype_ctrl = "od",
-    filtering = ifelse(run == "mRNA", "min-10-cts-all-but-1-samps", "min-10-cts-3-samps"),
-    x_min = -5,
-    x_max = ifelse(run == "mRNA", 10, 10),
-    y_min = 0,
-    y_max = ifelse(run == "mRNA", 100, 100),
-    color = "#2E0C4A"
-)
-
-SS_Q_Asamp <- run_main(
-    t_sub = `SS-Q-nab3d_SS-Q-parental`,
-    genotype_exp = "n3d",
-    genotype_ctrl = "od",
-    filtering = ifelse(run == "mRNA", "min-10-cts-all-but-1-samps", "min-10-cts-all-samps"),
-    x_min = -5,
-    x_max = ifelse(run == "mRNA", 10, 10),
-    y_min = 0,
-    y_max = ifelse(run == "mRNA", 100, 100),
-    color = "#2E0C4A"
-)
-
-# N_Q_none$`09_lfc_0_fc_1`$`10_n_feat_gt_lfc_lt_padj_unshrunken`
-# N_Q_none$`09_lfc_0_fc_1`$`10_n_feat_gt_lfc_lt_padj_unshrunken` %>% sum()
-N_Q_none$`09_lfc_0_fc_1`$`08_p_vol_unshrunken_KA`
-N_Q_1samp$`09_lfc_0_fc_1`$`08_p_vol_unshrunken_KA`
-N_Q_2samp$`09_lfc_0_fc_1`$`08_p_vol_unshrunken_KA`
-N_Q_3samp_1$`09_lfc_0_fc_1`$`08_p_vol_unshrunken_KA`
-N_Q_3samp_2$`09_lfc_0_fc_1`$`08_p_vol_unshrunken_KA`
-N_Q_3samp_3$`09_lfc_0_fc_1`$`08_p_vol_unshrunken_KA`
-N_Q_3samp_4$`09_lfc_0_fc_1`$`08_p_vol_unshrunken_KA`
-N_Q_3samp_5$`09_lfc_0_fc_1`$`08_p_vol_unshrunken_KA`
-N_Q_3samp$`09_lfc_0_fc_1`$`08_p_vol_unshrunken_KA`
-N_Q_Asamp$`09_lfc_0_fc_1`$`08_p_vol_unshrunken_KA`
-
-N_Q_none$`09_lfc_0_fc_1`$`10_n_feat_gt_lfc_lt_padj_unshrunken` # %>% sum()
-N_Q_1samp$`09_lfc_0_fc_1`$`10_n_feat_gt_lfc_lt_padj_unshrunken` # %>% sum()
-N_Q_2samp$`09_lfc_0_fc_1`$`10_n_feat_gt_lfc_lt_padj_unshrunken` # %>% sum()
-N_Q_3samp_1$`09_lfc_0_fc_1`$`10_n_feat_gt_lfc_lt_padj_unshrunken` # %>% sum()
-N_Q_3samp_2$`09_lfc_0_fc_1`$`10_n_feat_gt_lfc_lt_padj_unshrunken` # %>% sum()
-N_Q_3samp_3$`09_lfc_0_fc_1`$`10_n_feat_gt_lfc_lt_padj_unshrunken` # %>% sum()
-N_Q_3samp_4$`09_lfc_0_fc_1`$`10_n_feat_gt_lfc_lt_padj_unshrunken` # %>% sum()
-N_Q_3samp_5$`09_lfc_0_fc_1`$`10_n_feat_gt_lfc_lt_padj_unshrunken` # %>% sum()
-N_Q_3samp$`09_lfc_0_fc_1`$`10_n_feat_gt_lfc_lt_padj_unshrunken` # %>% sum()
-N_Q_Asamp$`09_lfc_0_fc_1`$`10_n_feat_gt_lfc_lt_padj_unshrunken` # %>% sum()
-
-N_Q_none$`09_lfc_0.58_fc_1.5`$`08_p_vol_unshrunken_KA`
-N_Q_1samp$`09_lfc_0.58_fc_1.5`$`08_p_vol_unshrunken_KA`
-N_Q_2samp$`09_lfc_0.58_fc_1.5`$`08_p_vol_unshrunken_KA`
-N_Q_3samp_1$`09_lfc_0.58_fc_1.5`$`08_p_vol_unshrunken_KA`
-N_Q_3samp_2$`09_lfc_0.58_fc_1.5`$`08_p_vol_unshrunken_KA`
-N_Q_3samp_3$`09_lfc_0.58_fc_1.5`$`08_p_vol_unshrunken_KA`
-N_Q_3samp_4$`09_lfc_0.58_fc_1.5`$`08_p_vol_unshrunken_KA`
-N_Q_3samp_5$`09_lfc_0.58_fc_1.5`$`08_p_vol_unshrunken_KA`
-N_Q_3samp$`09_lfc_0.58_fc_1.5`$`08_p_vol_unshrunken_KA`
-N_Q_Asamp$`09_lfc_0.58_fc_1.5`$`08_p_vol_unshrunken_KA`
-
-N_Q_none$`09_lfc_0.58_fc_1.5`$`10_n_feat_gt_lfc_lt_padj_unshrunken` # %>% sum()
-N_Q_1samp$`09_lfc_0.58_fc_1.5`$`10_n_feat_gt_lfc_lt_padj_unshrunken` # %>% sum()
-N_Q_2samp$`09_lfc_0.58_fc_1.5`$`10_n_feat_gt_lfc_lt_padj_unshrunken` # %>% sum()
-N_Q_3samp_1$`09_lfc_0.58_fc_1.5`$`10_n_feat_gt_lfc_lt_padj_unshrunken` # %>% sum()
-N_Q_3samp_2$`09_lfc_0.58_fc_1.5`$`10_n_feat_gt_lfc_lt_padj_unshrunken` # %>% sum()
-N_Q_3samp_3$`09_lfc_0.58_fc_1.5`$`10_n_feat_gt_lfc_lt_padj_unshrunken` # %>% sum()
-N_Q_3samp_4$`09_lfc_0.58_fc_1.5`$`10_n_feat_gt_lfc_lt_padj_unshrunken` # %>% sum()
-N_Q_3samp_5$`09_lfc_0.58_fc_1.5`$`10_n_feat_gt_lfc_lt_padj_unshrunken` # %>% sum()
-N_Q_3samp$`09_lfc_0.58_fc_1.5`$`10_n_feat_gt_lfc_lt_padj_unshrunken` # %>% sum()
-N_Q_Asamp$`09_lfc_0.58_fc_1.5`$`10_n_feat_gt_lfc_lt_padj_unshrunken` # %>% sum()
-
-N_Q_3samp_4$`09_lfc_0_fc_1`$`08_p_vol_unshrunken_KA`
-N_Q_3samp_4$`09_lfc_0.32_fc_1.25`$`08_p_vol_unshrunken_KA`
-N_Q_3samp_4$`09_lfc_0.58_fc_1.5`$`08_p_vol_unshrunken_KA`
-
-N_Q_3samp_4$`09_lfc_0_fc_1`$`10_n_feat_gt_lfc_lt_padj_unshrunken`
-N_Q_3samp_4$`09_lfc_0.32_fc_1.25`$`10_n_feat_gt_lfc_lt_padj_unshrunken`
-N_Q_3samp_4$`09_lfc_0.58_fc_1.5`$`10_n_feat_gt_lfc_lt_padj_unshrunken`
-
-N_Q_3samp_4$`09_lfc_0_fc_1`$`10_n_feat_gt_lfc_lt_padj_unshrunken` %>% sum()
-N_Q_3samp_4$`09_lfc_0.32_fc_1.25`$`10_n_feat_gt_lfc_lt_padj_unshrunken` %>% sum()
-N_Q_3samp_4$`09_lfc_0.58_fc_1.5`$`10_n_feat_gt_lfc_lt_padj_unshrunken` %>% sum()
-
-# SS_Q_none$`09_lfc_0_fc_1`$`10_n_feat_gt_lfc_lt_padj_unshrunken`
-# SS_Q_none$`09_lfc_0_fc_1`$`10_n_feat_gt_lfc_lt_padj_unshrunken` %>% sum()
-SS_Q_none$`09_lfc_0_fc_1`$`08_p_vol_unshrunken_KA`
-SS_Q_1samp$`09_lfc_0_fc_1`$`08_p_vol_unshrunken_KA`
-SS_Q_2samp$`09_lfc_0_fc_1`$`08_p_vol_unshrunken_KA`
-SS_Q_3samp_1$`09_lfc_0_fc_1`$`08_p_vol_unshrunken_KA`
-SS_Q_3samp_2$`09_lfc_0_fc_1`$`08_p_vol_unshrunken_KA`
-SS_Q_3samp_3$`09_lfc_0_fc_1`$`08_p_vol_unshrunken_KA`
-SS_Q_3samp_4$`09_lfc_0_fc_1`$`08_p_vol_unshrunken_KA`
-SS_Q_3samp_5$`09_lfc_0_fc_1`$`08_p_vol_unshrunken_KA`
-SS_Q_3samp$`09_lfc_0_fc_1`$`08_p_vol_unshrunken_KA`
-SS_Q_Asamp$`09_lfc_0_fc_1`$`08_p_vol_unshrunken_KA`
-
-SS_Q_none$`09_lfc_0_fc_1`$`10_n_feat_gt_lfc_lt_padj_unshrunken` # %>% sum()
-SS_Q_1samp$`09_lfc_0_fc_1`$`10_n_feat_gt_lfc_lt_padj_unshrunken` # %>% sum()
-SS_Q_2samp$`09_lfc_0_fc_1`$`10_n_feat_gt_lfc_lt_padj_unshrunken` # %>% sum()
-SS_Q_3samp_1$`09_lfc_0_fc_1`$`10_n_feat_gt_lfc_lt_padj_unshrunken` # %>% sum()
-SS_Q_3samp_2$`09_lfc_0_fc_1`$`10_n_feat_gt_lfc_lt_padj_unshrunken` # %>% sum()
-SS_Q_3samp_3$`09_lfc_0_fc_1`$`10_n_feat_gt_lfc_lt_padj_unshrunken` # %>% sum()
-SS_Q_3samp_4$`09_lfc_0_fc_1`$`10_n_feat_gt_lfc_lt_padj_unshrunken` # %>% sum()
-SS_Q_3samp_5$`09_lfc_0_fc_1`$`10_n_feat_gt_lfc_lt_padj_unshrunken` # %>% sum()
-SS_Q_3samp$`09_lfc_0_fc_1`$`10_n_feat_gt_lfc_lt_padj_unshrunken` # %>% sum()
-SS_Q_Asamp$`09_lfc_0_fc_1`$`10_n_feat_gt_lfc_lt_padj_unshrunken` # %>% sum()
-
-# SS_Q_3samp_1$`09_lfc_0_fc_1`$`08_p_vol_shrunken_KA`
-# SS_Q_3samp_2$`09_lfc_0_fc_1`$`08_p_vol_shrunken_KA`
-# SS_Q_3samp_3$`09_lfc_0_fc_1`$`08_p_vol_shrunken_KA`
-# SS_Q_3samp_4$`09_lfc_0_fc_1`$`08_p_vol_shrunken_KA`
-# SS_Q_3samp_5$`09_lfc_0_fc_1`$`08_p_vol_shrunken_KA`
-
-SS_Q_3samp_4$`09_lfc_0_fc_1`$`08_p_vol_unshrunken_KA`
-SS_Q_3samp_4$`09_lfc_0.32_fc_1.25`$`08_p_vol_unshrunken_KA`
-SS_Q_3samp_4$`09_lfc_0.58_fc_1.5`$`08_p_vol_unshrunken_KA`
-
-SS_Q_3samp_4$`09_lfc_0_fc_1`$`10_n_feat_gt_lfc_lt_padj_unshrunken`
-SS_Q_3samp_4$`09_lfc_0.32_fc_1.25`$`10_n_feat_gt_lfc_lt_padj_unshrunken`
-SS_Q_3samp_4$`09_lfc_0.58_fc_1.5`$`10_n_feat_gt_lfc_lt_padj_unshrunken`
-
-SS_Q_3samp_4$`09_lfc_0_fc_1`$`10_n_feat_gt_lfc_lt_padj_unshrunken` %>% sum()
-SS_Q_3samp_4$`09_lfc_0.32_fc_1.25`$`10_n_feat_gt_lfc_lt_padj_unshrunken` %>% sum()
-SS_Q_3samp_4$`09_lfc_0.58_fc_1.5`$`10_n_feat_gt_lfc_lt_padj_unshrunken` %>% sum()
-
 `DGE-analysis_N-Q-nab3d_N-Q-parental` <- run_main(
     t_sub = `N-Q-nab3d_N-Q-parental`,
     genotype_exp = "n3d",
     genotype_ctrl = "od",
-    filtering = ifelse(run == "mRNA", "min-10-cts-all-but-1-samps", "min-4-cts-3-samps"),
+    filtering = "min-4-cts-3-samps",
     x_min = -5,
     x_max = ifelse(run == "mRNA", 10, 10),
     y_min = 0,
-    y_max = ifelse(run == "mRNA", 40, 100),
+    # y_max = ifelse(run == "mRNA", 40, 100),
+    y_max = 60,
     color = "#113275"
 )
-print_volcano_unshrunken_AG(dataframe = `DGE-analysis_N-Q-nab3d_N-Q-parental`, lfc = "lfc-gt-0")
-print_volcano_unshrunken_AG(dataframe = `DGE-analysis_N-Q-nab3d_N-Q-parental`, lfc = "lfc-gt-0.32")
-print_volcano_unshrunken_AG(dataframe = `DGE-analysis_N-Q-nab3d_N-Q-parental`, lfc = "lfc-gt-0.58")
 
 `DGE-analysis_SS-Q-nab3d_SS-Q-parental` <- run_main(
     t_sub = `SS-Q-nab3d_SS-Q-parental`,
     genotype_exp = "n3d",
     genotype_ctrl = "od",
-    filtering = ifelse(run == "mRNA", "min-10-cts-all-but-1-samps", "min-4-cts-3-samps"),
+    filtering = "min-4-cts-3-samps",
     x_min = -5,
     x_max = ifelse(run == "mRNA", 10, 10),
     y_min = 0,
-    y_max = ifelse(run == "mRNA", 100, 100),
+    # y_max = ifelse(run == "mRNA", 100, 100),
+    y_max = 60,
     color = "#2E0C4A"
 )
-print_volcano_unshrunken_AG(dataframe = `DGE-analysis_SS-Q-nab3d_SS-Q-parental`, lfc = "lfc-gt-0")
-print_volcano_unshrunken_AG(dataframe = `DGE-analysis_SS-Q-nab3d_SS-Q-parental`, lfc = "lfc-gt-0.32")
-print_volcano_unshrunken_AG(dataframe = `DGE-analysis_SS-Q-nab3d_SS-Q-parental`, lfc = "lfc-gt-0.58")
 
 `DGE-analysis_SS-Q-rrp6∆_SS-Q-WT` <- run_main(
     t_sub = `SS-Q-rrp6∆_SS-Q-WT`,
     genotype_exp = "r6n",
     genotype_ctrl = "WT",
-    # filtering = "min-10-cts-all-but-1-samps",
-    filtering = "min-10-cts-all-but-1-samps",
+    filtering = "min-4-cts-3-samps",
     x_min = -5,
     x_max = 10,
     y_min = 0,
@@ -2126,8 +1757,7 @@ print_volcano_unshrunken_AG(dataframe = `DGE-analysis_SS-Q-nab3d_SS-Q-parental`,
     t_sub = `SS-G1-rrp6∆_SS-G1-WT`,
     genotype_exp = "r6n",
     genotype_ctrl = "WT",
-    # filtering = "min-10-cts-all-but-1-samps",
-    filtering = "min-10-cts-all-but-1-samps",
+    filtering = "min-4-cts-3-samps",
     x_min = -5,
     x_max = 10,
     y_min = 0,
@@ -2139,8 +1769,7 @@ print_volcano_unshrunken_AG(dataframe = `DGE-analysis_SS-Q-nab3d_SS-Q-parental`,
     t_sub = `N-Q-rrp6∆_N-Q-WT`,
     genotype_exp = "r6n",
     genotype_ctrl = "WT",
-    # filtering = "min-10-cts-all-but-1-samps",
-    filtering = "min-10-cts-all-but-1-samps",
+    filtering = "min-4-cts-3-samps",
     x_min = -5,
     x_max = 10,
     y_min = 0,
