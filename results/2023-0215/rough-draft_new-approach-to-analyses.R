@@ -15,9 +15,12 @@ options(ggrepel.max.overlaps = Inf)
 
 
 #  Initialize functions and themes ============================================
+`%notin%` <- base::Negate(`%in%`)
+
+
 filter_process_counts_matrix <- function(named_character_vector) {
     #  Test
-    # named_character_vector <- `N-SS-nab3d_N-SS-parental`
+    # named_character_vector <- `SS-Q-nab3d_SS-Q-parental`
     
     df <- dplyr::bind_cols(
         t_mat[, 1:11],
@@ -358,7 +361,7 @@ call_DESeq2_results_run_analyses <- function(
         selection = selection_unshrunken,
         x_min = x_min,
         x_max = x_max,
-        legend_header = "q ≤ 0.05",
+        legend_header = paste("q ≤", threshold_p),
         title = write_plot_info(colData(dds), dds@design, "MA plot", FALSE)[1],
         subtitle = write_plot_info(colData(dds), dds@design, "MA plot", FALSE)[2]
     )
@@ -376,9 +379,9 @@ call_DESeq2_results_run_analyses <- function(
     t_DGE_shrunken <- DGE_shrunken_GR %>% dplyr::as_tibble()
     if("svalue" %in% names(t_DGE_shrunken)) {
         names(t_DGE_shrunken)[9] <- "padj"
-        p_cutoff <- 0.005
+        p_cutoff <- as.double(threshold_p) * 0.01
     } else {
-        p_cutoff <- 0.05
+        p_cutoff <- threshold_p
     }
     
     #  Identify significant features
@@ -546,7 +549,7 @@ call_DESeq2_results_run_analyses <- function(
             selection = selection_lessAbs_unshrunken,
             x_min = x_min,
             x_max = x_max,
-            legend_header = "q ≤ 0.05",
+            legend_header = paste("q ≤", threshold_p),
             title = write_plot_info(colData(dds), "MA plot", FALSE[1]),
             subtitle = write_plot_info(colData(dds), "MA plot", FALSE)[2]
 
@@ -651,34 +654,36 @@ run_main <- function(
     # :return results_list: ...
     
     #  Test  #HERE
-    # t_sub <- `N-Q-nab3d_N-Q-parental` %>%
-    #     dplyr::slice(1:(nrow(.) - 6)) %>%  # Remove summary metrics
-    #     dplyr::filter(chr != "Mito")  # Exclude Mito rows
+    # t_sub <- filter_process_counts_matrix(`SS-Q-nab3d_SS-Q-parental`)
     # genotype_exp <- "n3d"
     # genotype_ctrl <- "od"
-    # filtering <- "min-10-cts-all-but-1-samps"
+    # filtering <- "none"
     # x_min <- -5
     # x_max <- 10
     # y_min <- 0
-    # y_max <- 40
-    # color <- "#113275"
+    # y_max <- 100
+    # color <- "#2E0C4A"
     
     
     #  Check arguments --------------------------------------------------------
-    if(!filtering %in% c(
-        "none",
-        "filterByExpr.default",
-        "min-10-cts-3-samps",
-        "min-10-cts-all-but-1-samps",
+    if(filtering %notin% c(
+        "none", "filterByExpr.default", "min-10-cts-1-samp",
+        "min-10-cts-2-samps", "min-1-ct-3-samps", "min-2-cts-3-samps",
+        "min-3-cts-3-samps", "min-4-cts-3-samps", "min-5-cts-3-samps",
+        "min-10-cts-3-samps", "min-10-cts-all-but-1-samps",
         "min-10-cts-all-samps"
     )) {
         stop(paste(
             "Argument for 'filtering' must be \"none\",",
-            "\"filterByExpr.default\", \"min-10-cts-3-samps\",",
-            "\"min-10-cts-all-but-1-samps\", or \"min-10-cts-all-samps\""
+            "\"filterByExpr.default\", \"min-10-cts-1-samp\",",
+            "\"min-10-cts-2-samps\", \"min-1-ct-3-samps\",",
+            "\"min-2-cts-3-samps\", \"min-3-cts-3-samps\",",
+            "\"min-4-cts-3-samps\", \"min-5-cts-3-samps\",",
+            "\"min-10-cts-3-samps\", \"min-10-cts-all-but-1-samps\",",
+             "or \"min-10-cts-all-samps\""
         ))
     }
-    
+
     
     #  Make a metadata matrix for DESeq2, etc. --------------------------------
     t_meta <- colnames(t_sub)[12:ncol(t_sub)] %>%
@@ -737,11 +742,60 @@ run_main <- function(
     
     if(filtering == "none"){
         t_tmp <- t_sub[t_sub$genome == "S_cerevisiae", ]
+    } else if(filtering == "min-10-cts-1-samp") {
+        counts <- sapply(
+            t_sub[t_sub$genome == "S_cerevisiae", 12:ncol(t_sub)], as.numeric
+        )
+        keep <- rowSums(counts >= 10) >= 1
+        t_tmp <- t_sub[t_sub$genome == "S_cerevisiae", ]
+        t_tmp <- t_tmp[keep, ]
+    } else if(filtering == "min-10-cts-2-samps") {
+        counts <- sapply(
+            t_sub[t_sub$genome == "S_cerevisiae", 12:ncol(t_sub)], as.numeric
+        )
+        keep <- rowSums(counts >= 10) >= 2
+        t_tmp <- t_sub[t_sub$genome == "S_cerevisiae", ]
+        t_tmp <- t_tmp[keep, ]
+    } else if(filtering == "min-1-ct-3-samps") {
+        counts <- sapply(
+            t_sub[t_sub$genome == "S_cerevisiae", 12:ncol(t_sub)], as.numeric
+        )
+        keep <- rowSums(counts >= 1) >= 3
+        t_tmp <- t_sub[t_sub$genome == "S_cerevisiae", ]
+        t_tmp <- t_tmp[keep, ]
+    } else if(filtering == "min-2-cts-3-samps") {
+        counts <- sapply(
+            t_sub[t_sub$genome == "S_cerevisiae", 12:ncol(t_sub)], as.numeric
+        )
+        keep <- rowSums(counts >= 2) >= 3
+        t_tmp <- t_sub[t_sub$genome == "S_cerevisiae", ]
+        t_tmp <- t_tmp[keep, ]
+    } else if(filtering == "min-3-cts-3-samps") {
+        counts <- sapply(
+            t_sub[t_sub$genome == "S_cerevisiae", 12:ncol(t_sub)], as.numeric
+        )
+        keep <- rowSums(counts >= 3) >= 3
+        t_tmp <- t_sub[t_sub$genome == "S_cerevisiae", ]
+        t_tmp <- t_tmp[keep, ]
+    } else if(filtering == "min-4-cts-3-samps") {
+        counts <- sapply(
+            t_sub[t_sub$genome == "S_cerevisiae", 12:ncol(t_sub)], as.numeric
+        )
+        keep <- rowSums(counts >= 4) >= 3
+        t_tmp <- t_sub[t_sub$genome == "S_cerevisiae", ]
+        t_tmp <- t_tmp[keep, ]
+    } else if(filtering == "min-5-cts-3-samps") {
+        counts <- sapply(
+            t_sub[t_sub$genome == "S_cerevisiae", 12:ncol(t_sub)], as.numeric
+        )
+        keep <- rowSums(counts >= 5) >= 3
+        t_tmp <- t_sub[t_sub$genome == "S_cerevisiae", ]
+        t_tmp <- t_tmp[keep, ]
     } else if(filtering == "min-10-cts-3-samps") {
         counts <- sapply(
             t_sub[t_sub$genome == "S_cerevisiae", 12:ncol(t_sub)], as.numeric
         )
-        keep <- rowSums(counts >= 10) >= length(12:ncol(t_sub)) - 1
+        keep <- rowSums(counts >= 10) >= 3
         t_tmp <- t_sub[t_sub$genome == "S_cerevisiae", ]
         t_tmp <- t_tmp[keep, ]
     } else if(filtering == "min-10-cts-all-but-1-samps") {
@@ -755,7 +809,7 @@ run_main <- function(
         counts <- sapply(
             t_sub[t_sub$genome == "S_cerevisiae", 12:ncol(t_sub)], as.numeric
         )
-        keep <- rowSums(counts >= 10) >= length(12:ncol(t_sub)) - 1
+        keep <- rowSums(counts >= 10) >= length(12:ncol(t_sub))
         t_tmp <- t_sub[t_sub$genome == "S_cerevisiae", ]
         t_tmp <- t_tmp[keep, ]
     } else if(filtering == "filterByExpr.default") {
@@ -891,97 +945,97 @@ run_main <- function(
         color = color,
         selection = FALSE
     )
-    
-    lfc_1 <- call_DESeq2_results_run_analyses(
-        dds = dds,
-        independent_filtering = TRUE,
-        threshold_p = 0.05,
-        threshold_lfc = 1,  # i.e., 2^1 = 2
-        x_min = x_min,
-        x_max = x_max,
-        y_min = y_min,
-        y_max = y_max,
-        color = color,
-        selection = FALSE
-    )
-    
-    lfc_1.32 <- call_DESeq2_results_run_analyses(
-        dds = dds,
-        independent_filtering = TRUE,
-        threshold_p = 0.05,
-        threshold_lfc = 1.32,  # i.e., 2^1.32 ≈ 2.5
-        x_min = x_min,
-        x_max = x_max,
-        y_min = y_min,
-        y_max = y_max,
-        color = color,
-        selection = FALSE
-    )
-    
-    lfc_1.58 <- call_DESeq2_results_run_analyses(
-        dds = dds,
-        independent_filtering = TRUE,
-        threshold_p = 0.05,
-        threshold_lfc = 1.58,  # i.e., 2^1.58 ≈ 3
-        x_min = x_min,
-        x_max = x_max,
-        y_min = y_min,
-        y_max = y_max,
-        color = color,
-        selection = FALSE
-    )
-    
-    lfc_2 <- call_DESeq2_results_run_analyses(
-        dds = dds,
-        independent_filtering = TRUE,
-        threshold_p = 0.05,
-        threshold_lfc = 2,  # i.e., 2^2 = 4
-        x_min = x_min,
-        x_max = x_max,
-        y_min = y_min,
-        y_max = y_max,
-        color = color,
-        selection = FALSE
-    )
-    
-    lfc_2.32 <- call_DESeq2_results_run_analyses(
-        dds = dds,
-        independent_filtering = TRUE,
-        threshold_p = 0.05,
-        threshold_lfc = 2.32,  # i.e., 2^2.32 ≈ 5
-        x_min = x_min,
-        x_max = x_max,
-        y_min = y_min,
-        y_max = y_max,
-        color = color,
-        selection = FALSE
-    )
-    
-    lfc_2.58 <- call_DESeq2_results_run_analyses(
-        dds = dds,
-        independent_filtering = TRUE,
-        threshold_p = 0.05,
-        threshold_lfc = 2.58,  # i.e., 2^2.58 ≈ 6
-        x_min = x_min,
-        x_max = x_max,
-        y_min = y_min,
-        y_max = y_max,
-        color = color,
-        selection = FALSE
-    )
-    
-    lfc_3 <- call_DESeq2_results_run_analyses(
-        dds = dds,
-        independent_filtering = TRUE,
-        threshold_p = 0.05,
-        threshold_lfc = 3,  # i.e., 2^3 = 8
-        x_min = x_min,
-        x_max = x_max,
-        y_min = y_min,
-        y_max = y_max,
-        color = color,
-        selection = FALSE
-    )
+     
+    # lfc_1 <- call_DESeq2_results_run_analyses(
+    #     dds = dds,
+    #     independent_filtering = TRUE,
+    #     threshold_p = 0.05,
+    #     threshold_lfc = 1,  # i.e., 2^1 = 2
+    #     x_min = x_min,
+    #     x_max = x_max,
+    #     y_min = y_min,
+    #     y_max = y_max,
+    #     color = color,
+    #     selection = FALSE
+    # )
+    # 
+    # lfc_1.32 <- call_DESeq2_results_run_analyses(
+    #     dds = dds,
+    #     independent_filtering = TRUE,
+    #     threshold_p = 0.05,
+    #     threshold_lfc = 1.32,  # i.e., 2^1.32 ≈ 2.5
+    #     x_min = x_min,
+    #     x_max = x_max,
+    #     y_min = y_min,
+    #     y_max = y_max,
+    #     color = color,
+    #     selection = FALSE
+    # )
+    # 
+    # lfc_1.58 <- call_DESeq2_results_run_analyses(
+    #     dds = dds,
+    #     independent_filtering = TRUE,
+    #     threshold_p = 0.05,
+    #     threshold_lfc = 1.58,  # i.e., 2^1.58 ≈ 3
+    #     x_min = x_min,
+    #     x_max = x_max,
+    #     y_min = y_min,
+    #     y_max = y_max,
+    #     color = color,
+    #     selection = FALSE
+    # )
+    # 
+    # lfc_2 <- call_DESeq2_results_run_analyses(
+    #     dds = dds,
+    #     independent_filtering = TRUE,
+    #     threshold_p = 0.05,
+    #     threshold_lfc = 2,  # i.e., 2^2 = 4
+    #     x_min = x_min,
+    #     x_max = x_max,
+    #     y_min = y_min,
+    #     y_max = y_max,
+    #     color = color,
+    #     selection = FALSE
+    # )
+    # 
+    # lfc_2.32 <- call_DESeq2_results_run_analyses(
+    #     dds = dds,
+    #     independent_filtering = TRUE,
+    #     threshold_p = 0.05,
+    #     threshold_lfc = 2.32,  # i.e., 2^2.32 ≈ 5
+    #     x_min = x_min,
+    #     x_max = x_max,
+    #     y_min = y_min,
+    #     y_max = y_max,
+    #     color = color,
+    #     selection = FALSE
+    # )
+    # 
+    # lfc_2.58 <- call_DESeq2_results_run_analyses(
+    #     dds = dds,
+    #     independent_filtering = TRUE,
+    #     threshold_p = 0.05,
+    #     threshold_lfc = 2.58,  # i.e., 2^2.58 ≈ 6
+    #     x_min = x_min,
+    #     x_max = x_max,
+    #     y_min = y_min,
+    #     y_max = y_max,
+    #     color = color,
+    #     selection = FALSE
+    # )
+    # 
+    # lfc_3 <- call_DESeq2_results_run_analyses(
+    #     dds = dds,
+    #     independent_filtering = TRUE,
+    #     threshold_p = 0.05,
+    #     threshold_lfc = 3,  # i.e., 2^3 = 8
+    #     x_min = x_min,
+    #     x_max = x_max,
+    #     y_min = y_min,
+    #     y_max = y_max,
+    #     color = color,
+    #     selection = FALSE
+    # )
 
     
     #  Return results ---------------------------------------------------------
@@ -1015,23 +1069,24 @@ run_main <- function(
     results_list[["09_lfc_0_fc_1"]] <- lfc_0
     results_list[["09_lfc_0.32_fc_1.25"]] <- lfc_0.32
     results_list[["09_lfc_0.58_fc_1.5"]] <- lfc_0.58
-    results_list[["09_lfc_1_fc_2"]] <- lfc_1
-    results_list[["09_lfc_1.32_fc_2.5"]] <- lfc_1.32
-    results_list[["09_lfc_1.58_fc_3"]] <- lfc_1.58
-    results_list[["09_lfc_2_fc_4"]] <- lfc_2
-    results_list[["09_lfc_2.32_fc_5"]] <- lfc_2.32
-    results_list[["09_lfc_2.58_fc_6"]] <- lfc_2.58
-    results_list[["09_lfc_3_fc_8"]] <- lfc_3
+    # results_list[["09_lfc_1_fc_2"]] <- lfc_1
+    # results_list[["09_lfc_1.32_fc_2.5"]] <- lfc_1.32
+    # results_list[["09_lfc_1.58_fc_3"]] <- lfc_1.58
+    # results_list[["09_lfc_2_fc_4"]] <- lfc_2
+    # results_list[["09_lfc_2.32_fc_5"]] <- lfc_2.32
+    # results_list[["09_lfc_2.58_fc_6"]] <- lfc_2.58
+    # results_list[["09_lfc_3_fc_8"]] <- lfc_3
     
     return(results_list)
 }
 
 
 print_volcano_unshrunken_AG <- function(
+    dataframe,
     outpath = "/Users/kalavatt/Desktop",
     type_plot = "volcano",
     type_feature = "mRNA",
-    dataframe,
+    lfc = "lfc-gt-0.58",
     width = 7,
     height = 7
 ) {
@@ -1046,7 +1101,7 @@ print_volcano_unshrunken_AG <- function(
     
     part_1 <- unlist(stringr::str_split(deparse(substitute(dataframe)), "_"))[2]
     part_2 <- unlist(stringr::str_split(deparse(substitute(dataframe)), "_"))[3]
-    part_3 <- "lfc-gt-0.58"
+    part_3 <- lfc
     part_4 <- type_feature
     part_5 <- type_plot
 
@@ -1061,8 +1116,14 @@ print_volcano_unshrunken_AG <- function(
         ".pdf"
     )
     pdf(file = outfile, width = width, height = height)
-    # print(dataframe[["09_lfc_0.58_fc_1.5"]][["08_p_vol_unshrunken_AG"]])
-    print(dataframe[["09_lfc_0_fc_1"]][["08_p_vol_unshrunken_AG"]])
+    if(base::isTRUE(lfc == "lfc-gt-0")) {
+        print(dataframe[["09_lfc_0_fc_1"]][["08_p_vol_unshrunken_AG"]])
+    } else if(base::isTRUE(lfc == "lfc-gt-0.32")) {
+        print(dataframe[["09_lfc_0.32_fc_1.25"]][["08_p_vol_unshrunken_AG"]])
+    } else if(base::isTRUE(lfc == "lfc-gt-0.58")) {
+        print(dataframe[["09_lfc_0.58_fc_1.5"]][["08_p_vol_unshrunken_AG"]])
+    }    
+    
     dev.off()
 }
 
@@ -1113,36 +1174,107 @@ theme_slick_no_legend <- theme_slick + theme(legend.position = "none")
 
 theme_AG_no_legend <- theme_AG + theme(legend.position = "none")
 
+
 #  Get situated, load counts matrix ===========================================
 p_base <- "/Users/kalavatt/projects-etc"
 p_exp <- "2022_transcriptome-construction/results/2023-0215"
-p_tsv <- "outfiles_htseq-count/already/combined-SC-KL-20S/UT_prim_UMI"
-f_tsv <- "all-samples.combined-SC-KL-20S.hc-strd-eq.mRNA.tsv"
-# paste(p_base, p_exp, p_tsv, f_tsv, sep = "/") %>%
-#     file.exists()  # [1] TRUE
 
 #  Set work dir
 paste(p_base, p_exp, sep = "/") %>% setwd()
 # getwd()
 
-#  Read in htseq-count counts matrix derived from combined_SC_KL_20S.gff3
-t_tsv <- paste(p_base, p_exp, p_tsv, f_tsv, sep = "/") %>%
-    readr::read_tsv(show_col_types = FALSE) %>%
-    dplyr::slice(-1)  # Slice out the first row, which contains file info
+#IMPORTANT
+#  Determine counts matrix to work with, then load it  #HERE
+# run <- "mRNA"  # Options: "mRNA" "pa-ncRNA-collapsed-merged" "pa-ncRNA-not-collapsed-merged"
+run <- "pa-ncRNA-collapsed-merged"  # Options: "mRNA" "pa-ncRNA-collapsed-merged" "pa-ncRNA-not-collapsed-merged"
+# run <- "pa-ncRNA-not-collapsed-merged"  # Options: "mRNA" "pa-ncRNA-collapsed-merged" "pa-ncRNA-not-collapsed-merged"
 
-#  "Clean up" counts matrix column names and "features" elements
-colnames(t_tsv) <- colnames(t_tsv) %>%
-    gsub(".UT_prim_UMI.hc-strd-eq.tsv", "", .)
+#  Check on "run" option
+if(base::isTRUE(run %notin% c("mRNA", "pa-ncRNA-collapsed-merged", "pa-ncRNA-not-collapsed-merged"))) {
+    stop("Variable \"run\" must be \"mRNA\", \"pa-ncRNA-collapsed-merged\", or \"pa-ncRNA-not-collapsed-merged\"")
+}
 
-t_tsv <- t_tsv %>%
-    dplyr::mutate(
-        features = features %>%
-            gsub("^transcript\\:", "", .) %>%
-            gsub("_mRNA", "", .)
-    )
+#  Load counts matrix or matrices
+if(base::isTRUE(run == "mRNA")) {
+    #  (for mRNA)
+    p_tsv <- "outfiles_htseq-count/already/combined-SC-KL-20S/UT_prim_UMI"
+    f_tsv <- "all-samples.combined-SC-KL-20S.hc-strd-eq.mRNA.tsv"
+    # paste(p_base, p_exp, p_tsv, f_tsv, sep = "/") %>%
+    #     file.exists()  # [1] TRUE
+    
+    #  Read in htseq-count counts matrix derived from combined_SC_KL_20S.gff3
+    t_tsv <- paste(p_base, p_exp, p_tsv, f_tsv, sep = "/") %>%
+        readr::read_tsv(show_col_types = FALSE) %>%
+        dplyr::slice(-1)  # Slice out the first row, which contains file info
+    
+    #  "Clean up" counts matrix column names and "features" elements
+    colnames(t_tsv) <- colnames(t_tsv) %>%
+        gsub(".UT_prim_UMI.hc-strd-eq.tsv", "", .)
+    
+    t_tsv <- t_tsv %>%
+        dplyr::mutate(
+            features = features %>%
+                gsub("^transcript\\:", "", .) %>%
+                gsub("_mRNA", "", .)
+        )
+} else if(base::isTRUE(run != "mRNA")) {
+    if(base::isTRUE(run == "pa-ncRNA-collapsed-merged")) {
+        #  Handle pa-ncRNA, collapsed and merged
+        p_tsv <- "outfiles_htseq-count/representation/UT_prim_UMI"
+        f_tsv <- "representative-non-coding-transcriptome.hc-strd-eq.tsv"  # (collapsed, merged)
+        # paste(p_base, p_exp, p_tsv, f_tsv, sep = "/") %>%
+        #     file.exists()  # [1] TRUE
+    } else if(base::isTRUE(run == "pa-ncRNA-not-collapsed-merged")) {
+        #  Handle pa-ncRNA, not collapsed and merged
+        p_tsv <- "outfiles_htseq-count/representation/UT_prim_UMI"
+        f_tsv <- "non-collapsed-non-coding-transcriptome.hc-strd-eq.tsv"  # (not collapsed, merged)
+        # paste(p_base, p_exp, p_tsv, f_tsv, sep = "/") %>%
+        #     file.exists()  # [1] TRUE
+    }
+    
+    t_tsv <- paste(p_base, p_exp, p_tsv, f_tsv, sep = "/") %>%
+        readr::read_tsv(show_col_types = FALSE)
+    
+    colnames(t_tsv) <- colnames(t_tsv) %>%
+        gsub("\\.\\.\\.1", "features", .) %>%
+        gsub("bams_renamed/UT_prim_UMI/", "", .) %>%
+        gsub(".UT_prim_UMI.bam", "", .)
+    
+    #  For size-effect estimation, load K. lactis counts
+    p_KL <- "outfiles_htseq-count/already/combined-SC-KL-20S/UT_prim_UMI"
+    f_KL <- "all-samples.combined-SC-KL-20S.hc-strd-eq.mRNA.tsv"
+    # paste(p_base, p_exp, p_KL, f_KL, sep = "/") %>%
+    #     file.exists()  # [1] TRUE
+    
+    t_KL <- paste(p_base, p_exp, p_KL, f_KL, sep = "/") %>%
+        readr::read_tsv(show_col_types = FALSE) %>%
+        dplyr::slice(-1)  # Slice out the first row, which contains file info
+    
+    #  "Clean up" t_KL column names and "features" elements
+    colnames(t_KL) <- colnames(t_KL) %>%
+        gsub(".UT_prim_UMI.hc-strd-eq.tsv", "", .)
+    
+    t_KL <- t_KL %>%
+        dplyr::mutate(
+            features = features %>%
+                gsub("^transcript\\:", "", .) %>%
+                gsub("_mRNA", "", .)
+        )
+    
+    rm(p_KL, f_KL)
+    
+    #  Convert t_KL counts columns from type <chr> to <double>
+    t_KL[, 2:ncol(t_KL)] <- sapply(t_KL[, 2:ncol(t_KL)], as.double) %>%
+        tibble::as_tibble()
+    
+    #  Row-bind dataframes t_tsv and t_KL
+    # colnames(t_tsv) %in% colnames(t_KL)
+    t_tsv <- dplyr::bind_rows(t_tsv, t_KL)
+    rm(t_KL)
+}
 
 
-#  Load Excel spreadsheet of samples names and variables ----------------------
+#  Load Excel spreadsheet of samples names and variables ======================
 p_xlsx <- "notebook"
 f_xlsx <- "variables.xlsx"
 # paste(p_base, p_exp, p_xlsx, f_xlsx, sep = "/") %>%
@@ -1154,54 +1286,197 @@ t_xslx <- paste(p_base, p_exp, p_xlsx, f_xlsx, sep = "/") %>%
 #             6125, 6126, 7718, and 7716 is incorrect
 
 
-#  To associate features (mRNA) with metadata, load combined_SC_KL_20S.gff3 ---
-p_gff3 <- "infiles_gtf-gff3/already"
-f_gff3 <- "combined_SC_KL_20S.gff3"
-# paste(p_base, p_exp, p_gff3, f_gff3, sep = "/") %>%
-#     file.exists()  # [1] TRUE
-
-#  Load in, subset, and "clean up" gff3
-t_gff3 <- paste(p_gff3, f_gff3, sep = "/") %>%
-    rtracklayer::import() %>%
-    as.data.frame() %>%
-    dplyr::as_tibble() %>%
-    dplyr::filter(type == "mRNA") %>%
-    dplyr::mutate(
-        ID = ID %>%
-            gsub("^transcript\\:", "", .) %>%
-            gsub("_mRNA", "", .)
-    ) %>%
-    dplyr::rename(
-        c(chr = seqnames, names = Name, features = ID)
+#  Associate features with metadata and format/munge dataframe(s) =============
+if(base::isTRUE(run == "mRNA")) {
+    #  Handle "mRNA"
+    p_gff3 <- "infiles_gtf-gff3/already"
+    f_gff3 <- "combined_SC_KL_20S.gff3"
+    # paste(p_base, p_exp, p_gff3, f_gff3, sep = "/") %>%
+    #     file.exists()  # [1] TRUE
+    
+    #  Load in, subset, and "clean up" gff3
+    t_gff3 <- paste(p_gff3, f_gff3, sep = "/") %>%
+        rtracklayer::import() %>%
+        as.data.frame() %>%
+        dplyr::as_tibble() %>%
+        dplyr::filter(type == "mRNA") %>%
+        dplyr::mutate(
+            ID = ID %>%
+                gsub("^transcript\\:", "", .) %>%
+                gsub("_mRNA", "", .)
+        ) %>%
+        dplyr::rename(
+            c(chr = seqnames, names = Name, features = ID)
+        )
+    rm(p_gff3, f_gff3)
+    
+    #  Subset gff3 tibble to keep only relevant columns
+    keep <- c(
+        "chr", "start", "end",
+        "width", "strand", "type",
+        "features", "biotype", "names"
     )
+    t_gff3 <- t_gff3[, colnames(t_gff3) %in% keep]
+    t_gff3 <- dplyr::relocate(
+        t_gff3[, colnames(t_gff3) %in% keep],
+        keep[-1],
+        .after = "chr"
+    )
+    rm(keep)
+    
+    #  Convert column "names" from a list (data structure) to a character vector,
+    #+ and replace empty fields with NA character values
+    t_gff3$names <- ifelse(
+        as.character(t_gff3$names) == "character(0)",
+        NA_character_,
+        as.character(t_gff3$names)
+    )
+    
+    #  Create a column of "thorough" names: use the Y* name if there is no
+    #+ "common"/"normal" name; otherwise, use the "common"/"normal" name
+    t_gff3$thorough <- ifelse(
+        is.na(t_gff3$names),
+        t_gff3$features,
+        t_gff3$names
+    )
+    
+    #  Create a column of "thorough" names: use the Y* name if there is no
+    #+ "common"/"normal" name; otherwise, use the "common"/"normal" name
+    t_gff3$thorough <- ifelse(
+        is.na(t_gff3$names),
+        t_gff3$features,
+        t_gff3$names
+    )
+} else if(base::isTRUE(run != "mRNA")) {
+    if(base::isTRUE(run == "pa-ncRNA-collapsed-merged")) {
+        #  Handle pa-ncRNA, collapsed and merged
+        p_gff3 <- "outfiles_gtf-gff3/representation"
+        f_gff3 <- "Greenlaw-et-al_representative-non-coding-transcriptome.gtf"
+        # paste(p_base, p_exp, p_gff3, f_gff3, sep = "/") %>%
+        #     file.exists()  # [1] TRUE
+        
+        #  Load, format gff3
+        t_gff3 <- paste(p_gff3, f_gff3, sep = "/") %>%
+            rtracklayer::import() %>%
+            as.data.frame() %>%
+            dplyr::as_tibble() %>%
+            dplyr::rename(c(
+                chr = seqnames,
+                features = gene_id,
+                biotype = details_type_alpha,
+                names = details_id
+            )) %>%
+            dplyr::mutate(thorough = features)
+        rm(p_gff3, f_gff3)
+        
+        #  Subset gff3 tibble to keep only relevant columns, and order columns
+        keep <- c(
+            "chr", "start", "end",
+            "width", "strand", "type",
+            "features", "biotype", "names", "thorough"
+        )
+        t_gff3 <- t_gff3[, colnames(t_gff3) %in% keep]
+        t_gff3 <- dplyr::relocate(
+            t_gff3[, colnames(t_gff3) %in% keep],
+            keep[-1],
+            .after = "chr"
+        )
+        rm(keep)
+    } else if(base::isTRUE(run == "pa-ncRNA-not-collapsed-merged")) {
+        #  Handle pa-ncRNA, not collapsed and merged
+        p_gff3 <- "outfiles_gtf-gff3/representation"
+        f_gff3 <- "Greenlaw-et-al_non-collapsed-non-coding-transcriptome.gtf"
+        # paste(p_base, p_exp, p_gff3, f_gff3, sep = "/") %>%
+        #     file.exists()  # [1] TRUE
+        
+        #  Load, format gff3
+        t_gff3 <- paste(p_gff3, f_gff3, sep = "/") %>%
+            rtracklayer::import() %>%
+            as.data.frame() %>%
+            dplyr::as_tibble() %>%
+            dplyr::rename(c(
+                chr = seqnames,
+                features = gene_id,
+                biotype = type.1
+            )) %>%
+            dplyr::mutate(
+                names = features,
+                thorough = paste0(biotype, "_", features)
+            )
+        rm(p_gff3, f_gff3)
+        
+        #  Subset gff3 tibble to keep only relevant columns, and order columns
+        keep <- c(
+            "chr", "start", "end",
+            "width", "strand", "type",
+            "features", "biotype", "names", "thorough"
+        )
+        t_gff3 <- t_gff3[, colnames(t_gff3) %in% keep]
+        t_gff3 <- dplyr::relocate(
+            t_gff3[, colnames(t_gff3) %in% keep],
+            keep[-1],
+            .after = "chr"
+        )
+        rm(keep)
+    }
+    
+    #  Load in, subset, and "clean up" gff3 for K. lactis information
+    p_gff3_KL <- "infiles_gtf-gff3/already"
+    f_gff3_KL <- "combined_SC_KL_20S.gff3"
+    # paste(p_base, p_exp, p_gff3_KL, f_gff3_KL, sep = "/") %>%
+    #     file.exists()  # [1] TRUE
+    
+    t_gff3_KL <- paste(p_gff3_KL, f_gff3_KL, sep = "/") %>%
+        rtracklayer::import() %>%
+        as.data.frame() %>%
+        dplyr::as_tibble() %>%
+        dplyr::filter(type == "mRNA") %>%
+        dplyr::mutate(
+            ID = ID %>%
+                gsub("^transcript\\:", "", .) %>%
+                gsub("_mRNA", "", .)
+        ) %>%
+        dplyr::rename(
+            c(chr = seqnames, names = Name, features = ID)
+        ) %>%
+        dplyr::mutate(thorough = ifelse(is.na(names), features, names))
+    rm(p_gff3_KL, f_gff3_KL)
+    
+    #  Subset K. lactis gff3 tibble to keep only relevant columns
+    keep <- c(
+        "chr", "start", "end",
+        "width", "strand", "type",
+        "features", "biotype", "names", "thorough"
+    )
+    t_gff3_KL <- t_gff3_KL[, colnames(t_gff3_KL) %in% keep]
+    t_gff3_KL <- dplyr::relocate(
+        t_gff3_KL[, colnames(t_gff3_KL) %in% keep],
+        keep[-1],
+        .after = "chr"
+    )
+    rm(keep)
+    
+    #  Convert columns "names" and "thorough" from lists (data structure) to 
+    #+ character vectors, and replace empty fields with NA character values
+    t_gff3_KL$names <- ifelse(
+        as.character(t_gff3_KL$names) == "character(0)",
+        NA_character_,
+        as.character(t_gff3_KL$names)
+    )
+    t_gff3_KL$thorough <- ifelse(
+        as.character(t_gff3_KL$thorough) == "character(0)",
+        NA_character_,
+        as.character(t_gff3_KL$thorough)
+    )
+    
+    #  Row-bind the two tibbles
+    t_gff3 <- dplyr::bind_rows(t_gff3, t_gff3_KL)
+    rm(t_gff3_KL)
+    
 
-#  Subset gff3 tibble to keep only relevant columns
-keep <- c(
-    "chr", "start", "end",
-    "width", "strand", "type",
-    "features", "biotype", "names"
-)
-t_gff3 <- t_gff3[, colnames(t_gff3) %in% keep]
-rm(keep)
+}
 
-#  Convert column "names" from a list (data structure) to a character vector,
-#+ and replace empty fields with NA character values
-t_gff3$names <- ifelse(
-    as.character(t_gff3$names) == "character(0)",
-    NA_character_,
-    as.character(t_gff3$names)
-)
-
-
-#  Combine "counts matrix tibble" and "gff3 tibble" ---------------------------
-t_mat <- dplyr::full_join(t_gff3, t_tsv, by = "features")
-
-#  Remove unneeded variables
-rm(f_gff3, f_tsv, f_xlsx, p_base, p_exp, p_gff3, p_tsv, p_xlsx, t_gff3, t_tsv)
-
-
-#  Order and categorize the combined counts matrix/gff3 tibble ----------------
-#  Order tibble by chromosome names and feature start positions
+#  Order t_gff3 by chromosome names and feature start positions
 chr_SC <- c(
     "I", "II", "III", "IV", "V", "VI",
     "VII", "VIII", "IX", "X", "XI", "XII",
@@ -1210,39 +1485,64 @@ chr_SC <- c(
 chr_KL <- c("A", "B", "C", "D", "E", "F")
 chr_20S <- "20S"
 chr_order <- c(chr_SC, chr_KL, chr_20S)
-t_mat$chr <- t_mat$chr %>% as.factor()
-t_mat$chr <- ordered(t_mat$chr, levels = chr_order)
-
-t_mat <- t_mat %>% dplyr::arrange(chr, start)
+t_gff3$chr <- t_gff3$chr %>% as.factor()
+t_gff3$chr <- ordered(t_gff3$chr, levels = chr_order)
+t_gff3 <- t_gff3 %>% dplyr::arrange(chr, start)
 
 #  Categorize chromosomes by genome of origin
-t_mat$genome <- ifelse(
-    t_mat$chr %in% chr_SC,
+t_gff3$genome <- ifelse(
+    t_gff3$chr %in% chr_SC,
     "S_cerevisiae",
     ifelse(
-        t_mat$chr %in% chr_KL,
+        t_gff3$chr %in% chr_KL,
         "K_lactis",
         ifelse(
-            t_mat$chr %in% chr_20S,
+            t_gff3$chr %in% chr_20S,
             "20S",
             NA
         )
     )
 ) %>%
     as.factor()
-t_mat <- t_mat %>% dplyr::relocate("genome", .before = "chr")
+t_gff3 <- t_gff3 %>% dplyr::relocate("genome", .before = "chr")
 
-#  Create a column of "thorough" names: use the Y* name if there is no
-#+ "common"/"normal" name; otherwise, use the "common"/"normal" name
-t_mat$thorough <- ifelse(is.na(t_mat$names), t_mat$features, t_mat$names)
-t_mat <- t_mat %>% dplyr::relocate(thorough, .after = names)
+rm(chr_20S, chr_KL, chr_SC, chr_order)
+
+
+#  Combine "counts matrix tibble" and "gff3 tibble" ===========================
+t_mat <- dplyr::full_join(t_gff3, t_tsv, by = "features")
+
+#  Remove all non-pa-ncRNA features except for K. lactis features
+if(base::isTRUE(run != "mRNA")) {
+    tmp_feature <- t_mat %>%
+        dplyr::filter(type == "feature")
+    tmp_KL <- t_mat %>%
+        dplyr::filter(genome == "K_lactis")
+    t_mat <- dplyr::bind_rows(tmp_feature, tmp_KL)
+    rm(tmp_feature, tmp_KL)
+}
+
+#  Remove unneeded variables
+rm(f_tsv, f_xlsx, p_base, p_exp, p_tsv, p_xlsx, t_gff3, t_tsv)
 
 #  Create a backup of t_mat
 t_mat.bak <- t_mat
 # t_mat <- t_mat.bak
 
-#  Remove unneeded variables
-rm(chr_20S, chr_KL, chr_SC, chr_order)
+#  For "mRNA" analyses, exclude htseq-count "summary metrics" (already excluded
+#+ for "pa-ncRNA" analyses) and "Mito" chromosome counts (rows)
+if(base::isTRUE(run == "mRNA")) {
+    t_mat <- t_mat %>%
+        dplyr::filter(genome %notin% c(NA, "20S")) %>%
+        dplyr::filter(chr != "Mito")
+}
+
+#HACK
+#  For non-"mRNA" analyses, change all column "type" assignments from "feature"
+#+ to "mRNA"
+if(base::isTRUE(run != "mRNA")) {
+    t_mat$type <- ifelse(t_mat$type == "feature", "mRNA", t_mat$type)
+}
 
 
 #  Filter counts matrix for samples of interest ===============================
@@ -1282,135 +1582,135 @@ rm(chr_20S, chr_KL, chr_SC, chr_order)
     `SS-Q-nab3d_SS-Q-parental`
 )
 
-`SS-Q-rrp6∆_SS-Q-WT` <- setNames(
-    c(
-        "r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1",
-        "r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech2",
-        "r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1",
-        "WT_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1",
-        "WT_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1"
-    ),
-    c(
-        "r6n_Q_SS_rep1_tech1",
-        "r6n_Q_SS_rep1_tech2",
-        "r6n_Q_SS_rep2_tech1",
-        "WT_Q_SS_rep1_tech1",
-        "WT_Q_SS_rep2_tech1"
-    )
-)
-`SS-Q-rrp6∆_SS-Q-WT` <- filter_process_counts_matrix(
-    `SS-Q-rrp6∆_SS-Q-WT`
-)
-
-`SS-G1-rrp6∆_SS-G1-WT` <- setNames(
-    c(
-        "r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1",
-        "r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1",
-        "WT_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1",
-        "WT_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1"
-    ),
-    c(
-        "r6n_G1_SS_rep1_tech2",
-        "r6n_G1_SS_rep2_tech2",
-        "WT_G1_SS_rep1_tech2",
-        "WT_G1_SS_rep2_tech2"
-    )
-)
-`SS-G1-rrp6∆_SS-G1-WT` <- filter_process_counts_matrix(
-    `SS-G1-rrp6∆_SS-G1-WT`
-)
-
-`N-Q-rrp6∆_N-Q-WT` <- setNames(
-    c(
-        "r6-n_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1",
-        "r6-n_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1",
-        "WT_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1",
-        "WT_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1"
-    ),
-    c(
-        "r6n_Q_N_rep1_tech1",
-        "r6n_Q_N_rep2_tech1",
-        "WT_Q_N_rep1_tech1",
-        "WT_Q_N_rep2_tech1"
-    )
-)
-`N-Q-rrp6∆_N-Q-WT` <- filter_process_counts_matrix(
-    `N-Q-rrp6∆_N-Q-WT`
-)
-
-`SS-DSm2-rrp6∆_SS-DSm2-WT` <- setNames(
-    c(
-        "r6-n_DSm2_day2_tcn_SS_aux-F_tc-T_rep1_tech1",
-        "r6-n_DSm2_day2_tcn_SS_aux-F_tc-T_rep2_tech1",
-        "WT_DSm2_day2_tcn_SS_aux-F_tc-T_rep1_tech1",
-        "WT_DSm2_day2_tcn_SS_aux-F_tc-T_rep2_tech1"
-    ),
-    c(
-        "r6n_DSm2_SS_rep1_tech1",
-        "r6n_DSm2_SS_rep2_tech1",
-        "WT_DSm2_SS_rep1_tech1",
-        "WT_DSm2_SS_rep2_tech1"
-    )
-)
-`SS-DSm2-rrp6∆_SS-DSm2-WT` <- filter_process_counts_matrix(
-    `SS-DSm2-rrp6∆_SS-DSm2-WT`
-)
-
-`SS-DSp2-rrp6∆_SS-DSp2-WT` <- setNames(
-    c(
-        "r6-n_DSp2_day2_tcn_SS_aux-F_tc-T_rep1_tech1",
-        "r6-n_DSp2_day2_tcn_SS_aux-F_tc-T_rep2_tech1",
-        "WT_DSp2_day2_tcn_SS_aux-F_tc-T_rep1_tech1",
-        "WT_DSp2_day2_tcn_SS_aux-F_tc-T_rep2_tech1"
-    ),
-    c(
-        "r6n_DSp2_SS_rep1_tech1",
-        "r6n_DSp2_SS_rep2_tech1",
-        "WT_DSp2_SS_rep1_tech1",
-        "WT_DSp2_SS_rep2_tech1"
-    )
-)
-`SS-DSp2-rrp6∆_SS-DSp2-WT` <- filter_process_counts_matrix(
-    `SS-DSp2-rrp6∆_SS-DSp2-WT`
-)
-
-`SS-DSp24-rrp6∆_SS-DSp24-WT` <- setNames(
-    c(
-        "r6-n_DSp24_day3_tcn_SS_aux-F_tc-T_rep1_tech1",
-        "r6-n_DSp24_day3_tcn_SS_aux-F_tc-T_rep2_tech1",
-        "WT_DSp24_day3_tcn_SS_aux-F_tc-T_rep1_tech1",
-        "WT_DSp24_day3_tcn_SS_aux-F_tc-T_rep2_tech1"
-    ),
-    c(
-        "r6n_DSp24_SS_rep1_tech1",
-        "r6n_DSp24_SS_rep2_tech1",
-        "WT_DSp24_SS_rep1_tech1",
-        "WT_DSp24_SS_rep2_tech1"
-    )
-)
-`SS-DSp24-rrp6∆_SS-DSp24-WT` <- filter_process_counts_matrix(
-    `SS-DSp24-rrp6∆_SS-DSp24-WT`
-)
-
-`SS-DSp48-rrp6∆_SS-DSp48-WT` <- setNames(
-    c(
-        "r6-n_DSp48_day4_tcn_SS_aux-F_tc-T_rep1_tech1",
-        "r6-n_DSp48_day4_tcn_SS_aux-F_tc-T_rep2_tech1",
-        "WT_DSp48_day4_tcn_SS_aux-F_tc-T_rep1_tech1",
-        "WT_DSp48_day4_tcn_SS_aux-F_tc-T_rep1_tech2",
-        "WT_DSp48_day4_tcn_SS_aux-F_tc-T_rep2_tech1"
-    ),
-    c(
-        "r6n_DSp48_SS_rep1_tech1",
-        "r6n_DSp48_SS_rep2_tech2",
-        "WT_DSp48_SS_rep1_tech1",
-        "WT_DSp48_SS_rep1_tech2",
-        "WT_DSp48_SS_rep2_tech1"
-    )
-)
-`SS-DSp48-rrp6∆_SS-DSp48-WT` <- filter_process_counts_matrix(
-    `SS-DSp48-rrp6∆_SS-DSp48-WT`
-)
+# `SS-Q-rrp6∆_SS-Q-WT` <- setNames(
+#     c(
+#         "r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1",
+#         "r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech2",
+#         "r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1",
+#         "WT_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1",
+#         "WT_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1"
+#     ),
+#     c(
+#         "r6n_Q_SS_rep1_tech1",
+#         "r6n_Q_SS_rep1_tech2",
+#         "r6n_Q_SS_rep2_tech1",
+#         "WT_Q_SS_rep1_tech1",
+#         "WT_Q_SS_rep2_tech1"
+#     )
+# )
+# `SS-Q-rrp6∆_SS-Q-WT` <- filter_process_counts_matrix(
+#     `SS-Q-rrp6∆_SS-Q-WT`
+# )
+# 
+# `SS-G1-rrp6∆_SS-G1-WT` <- setNames(
+#     c(
+#         "r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1",
+#         "r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1",
+#         "WT_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1",
+#         "WT_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1"
+#     ),
+#     c(
+#         "r6n_G1_SS_rep1_tech2",
+#         "r6n_G1_SS_rep2_tech2",
+#         "WT_G1_SS_rep1_tech2",
+#         "WT_G1_SS_rep2_tech2"
+#     )
+# )
+# `SS-G1-rrp6∆_SS-G1-WT` <- filter_process_counts_matrix(
+#     `SS-G1-rrp6∆_SS-G1-WT`
+# )
+# 
+# `N-Q-rrp6∆_N-Q-WT` <- setNames(
+#     c(
+#         "r6-n_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1",
+#         "r6-n_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1",
+#         "WT_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1",
+#         "WT_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1"
+#     ),
+#     c(
+#         "r6n_Q_N_rep1_tech1",
+#         "r6n_Q_N_rep2_tech1",
+#         "WT_Q_N_rep1_tech1",
+#         "WT_Q_N_rep2_tech1"
+#     )
+# )
+# `N-Q-rrp6∆_N-Q-WT` <- filter_process_counts_matrix(
+#     `N-Q-rrp6∆_N-Q-WT`
+# )
+# 
+# `SS-DSm2-rrp6∆_SS-DSm2-WT` <- setNames(
+#     c(
+#         "r6-n_DSm2_day2_tcn_SS_aux-F_tc-T_rep1_tech1",
+#         "r6-n_DSm2_day2_tcn_SS_aux-F_tc-T_rep2_tech1",
+#         "WT_DSm2_day2_tcn_SS_aux-F_tc-T_rep1_tech1",
+#         "WT_DSm2_day2_tcn_SS_aux-F_tc-T_rep2_tech1"
+#     ),
+#     c(
+#         "r6n_DSm2_SS_rep1_tech1",
+#         "r6n_DSm2_SS_rep2_tech1",
+#         "WT_DSm2_SS_rep1_tech1",
+#         "WT_DSm2_SS_rep2_tech1"
+#     )
+# )
+# `SS-DSm2-rrp6∆_SS-DSm2-WT` <- filter_process_counts_matrix(
+#     `SS-DSm2-rrp6∆_SS-DSm2-WT`
+# )
+# 
+# `SS-DSp2-rrp6∆_SS-DSp2-WT` <- setNames(
+#     c(
+#         "r6-n_DSp2_day2_tcn_SS_aux-F_tc-T_rep1_tech1",
+#         "r6-n_DSp2_day2_tcn_SS_aux-F_tc-T_rep2_tech1",
+#         "WT_DSp2_day2_tcn_SS_aux-F_tc-T_rep1_tech1",
+#         "WT_DSp2_day2_tcn_SS_aux-F_tc-T_rep2_tech1"
+#     ),
+#     c(
+#         "r6n_DSp2_SS_rep1_tech1",
+#         "r6n_DSp2_SS_rep2_tech1",
+#         "WT_DSp2_SS_rep1_tech1",
+#         "WT_DSp2_SS_rep2_tech1"
+#     )
+# )
+# `SS-DSp2-rrp6∆_SS-DSp2-WT` <- filter_process_counts_matrix(
+#     `SS-DSp2-rrp6∆_SS-DSp2-WT`
+# )
+# 
+# `SS-DSp24-rrp6∆_SS-DSp24-WT` <- setNames(
+#     c(
+#         "r6-n_DSp24_day3_tcn_SS_aux-F_tc-T_rep1_tech1",
+#         "r6-n_DSp24_day3_tcn_SS_aux-F_tc-T_rep2_tech1",
+#         "WT_DSp24_day3_tcn_SS_aux-F_tc-T_rep1_tech1",
+#         "WT_DSp24_day3_tcn_SS_aux-F_tc-T_rep2_tech1"
+#     ),
+#     c(
+#         "r6n_DSp24_SS_rep1_tech1",
+#         "r6n_DSp24_SS_rep2_tech1",
+#         "WT_DSp24_SS_rep1_tech1",
+#         "WT_DSp24_SS_rep2_tech1"
+#     )
+# )
+# `SS-DSp24-rrp6∆_SS-DSp24-WT` <- filter_process_counts_matrix(
+#     `SS-DSp24-rrp6∆_SS-DSp24-WT`
+# )
+# 
+# `SS-DSp48-rrp6∆_SS-DSp48-WT` <- setNames(
+#     c(
+#         "r6-n_DSp48_day4_tcn_SS_aux-F_tc-T_rep1_tech1",
+#         "r6-n_DSp48_day4_tcn_SS_aux-F_tc-T_rep2_tech1",
+#         "WT_DSp48_day4_tcn_SS_aux-F_tc-T_rep1_tech1",
+#         "WT_DSp48_day4_tcn_SS_aux-F_tc-T_rep1_tech2",
+#         "WT_DSp48_day4_tcn_SS_aux-F_tc-T_rep2_tech1"
+#     ),
+#     c(
+#         "r6n_DSp48_SS_rep1_tech1",
+#         "r6n_DSp48_SS_rep2_tech2",
+#         "WT_DSp48_SS_rep1_tech1",
+#         "WT_DSp48_SS_rep1_tech2",
+#         "WT_DSp48_SS_rep2_tech1"
+#     )
+# )
+# `SS-DSp48-rrp6∆_SS-DSp48-WT` <- filter_process_counts_matrix(
+#     `SS-DSp48-rrp6∆_SS-DSp48-WT`
+# )
 
 
 #  Analyze, graph datasets of interest ========================================
@@ -1427,40 +1727,393 @@ rm(chr_20S, chr_KL, chr_SC, chr_order)
 
 #NOTE Need to exclude 20S, "summary values", and Mito from tibble
 
-`DGE-analysis_N-Q-nab3d_N-Q-parental` <- run_main(
-    t_sub = `N-Q-nab3d_N-Q-parental` %>%
-        dplyr::slice(1:(nrow(.) - 6)) %>%  # Remove summary-metric rows
-        dplyr::filter(chr != "Mito"),  # Exclude Mito rows
+# `DGE-analysis_N-Q-nab3d_N-Q-parental` <- run_main(
+N_Q_none <- run_main(
+    t_sub = `N-Q-nab3d_N-Q-parental`,
     genotype_exp = "n3d",
     genotype_ctrl = "od",
-    filtering = "min-10-cts-all-but-1-samps",
+    filtering = ifelse(
+        run == "mRNA", "min-10-cts-all-but-1-samps", "none"
+    ),
     x_min = -5,
-    x_max = 10,
+    x_max = ifelse(run == "mRNA", 10, 10),
     y_min = 0,
-    y_max = 40,
+    y_max = ifelse(run == "mRNA", 40, 100),
     color = "#113275"
 )
 
-`DGE-analysis_SS-Q-nab3d_SS-Q-parental` <- run_main(
-    t_sub = `SS-Q-nab3d_SS-Q-parental` %>%
-        dplyr::slice(1:(nrow(.) - 6)) %>%  # Remove summary-metric rows
-        dplyr::filter(chr != "Mito"),  # Exclude Mito rows
+N_Q_1samp <- run_main(
+    t_sub = `N-Q-nab3d_N-Q-parental`,
     genotype_exp = "n3d",
     genotype_ctrl = "od",
-    filtering = "min-10-cts-all-but-1-samps",
+    filtering = ifelse(
+        run == "mRNA", "min-10-cts-all-but-1-samps", "min-10-cts-1-samp"
+    ),
     x_min = -5,
-    x_max = 10,
+    x_max = ifelse(run == "mRNA", 10, 10),
     y_min = 0,
-    y_max = 100,
+    y_max = ifelse(run == "mRNA", 40, 100),
+    color = "#113275"
+)
+
+N_Q_2samp <- run_main(
+    t_sub = `N-Q-nab3d_N-Q-parental`,
+    genotype_exp = "n3d",
+    genotype_ctrl = "od",
+    filtering = ifelse(run == "mRNA", "min-10-cts-all-but-1-samps", "min-10-cts-2-samps"),
+    x_min = -5,
+    x_max = ifelse(run == "mRNA", 10, 10),
+    y_min = 0,
+    y_max = ifelse(run == "mRNA", 40, 100),
+    color = "#113275"
+)
+
+N_Q_3samp_1 <- run_main(
+    t_sub = `N-Q-nab3d_N-Q-parental`,
+    genotype_exp = "n3d",
+    genotype_ctrl = "od",
+    filtering = ifelse(run == "mRNA", "min-10-cts-all-but-1-samps", "min-1-ct-3-samps"),
+    x_min = -5,
+    x_max = ifelse(run == "mRNA", 10, 10),
+    y_min = 0,
+    y_max = ifelse(run == "mRNA", 40, 100),
+    color = "#113275"
+)
+
+N_Q_3samp_2 <- run_main(
+    t_sub = `N-Q-nab3d_N-Q-parental`,
+    genotype_exp = "n3d",
+    genotype_ctrl = "od",
+    filtering = ifelse(run == "mRNA", "min-10-cts-all-but-1-samps", "min-2-cts-3-samps"),
+    x_min = -5,
+    x_max = ifelse(run == "mRNA", 10, 10),
+    y_min = 0,
+    y_max = ifelse(run == "mRNA", 40, 100),
+    color = "#113275"
+)
+
+N_Q_3samp_3 <- run_main(
+    t_sub = `N-Q-nab3d_N-Q-parental`,
+    genotype_exp = "n3d",
+    genotype_ctrl = "od",
+    filtering = ifelse(run == "mRNA", "min-10-cts-all-but-1-samps", "min-3-cts-3-samps"),
+    x_min = -5,
+    x_max = ifelse(run == "mRNA", 10, 10),
+    y_min = 0,
+    y_max = ifelse(run == "mRNA", 40, 100),
+    color = "#113275"
+)
+
+N_Q_3samp_4 <- run_main(
+    t_sub = `N-Q-nab3d_N-Q-parental`,
+    genotype_exp = "n3d",
+    genotype_ctrl = "od",
+    filtering = ifelse(run == "mRNA", "min-10-cts-all-but-1-samps", "min-4-cts-3-samps"),
+    x_min = -5,
+    x_max = ifelse(run == "mRNA", 10, 10),
+    y_min = 0,
+    y_max = ifelse(run == "mRNA", 40, 100),
+    color = "#113275"
+)
+
+N_Q_3samp_5 <- run_main(
+    t_sub = `N-Q-nab3d_N-Q-parental`,
+    genotype_exp = "n3d",
+    genotype_ctrl = "od",
+    filtering = ifelse(
+        run == "mRNA", "min-10-cts-all-but-1-samps", "min-5-cts-3-samps"
+    ),
+    x_min = -5,
+    x_max = ifelse(run == "mRNA", 10, 10),
+    y_min = 0,
+    y_max = ifelse(run == "mRNA", 40, 100),
+    color = "#113275"
+)
+
+N_Q_3samp <- run_main(
+    t_sub = `N-Q-nab3d_N-Q-parental`,
+    genotype_exp = "n3d",
+    genotype_ctrl = "od",
+    filtering = ifelse(
+        run == "mRNA", "min-10-cts-all-but-1-samps", "min-10-cts-3-samps"
+    ),
+    x_min = -5,
+    x_max = ifelse(run == "mRNA", 10, 10),
+    y_min = 0,
+    y_max = ifelse(run == "mRNA", 40, 100),
+    color = "#113275"
+)
+
+N_Q_Asamp <- run_main(
+    t_sub = `N-Q-nab3d_N-Q-parental`,
+    genotype_exp = "n3d",
+    genotype_ctrl = "od",
+    filtering = ifelse(
+        run == "mRNA", "min-10-cts-all-but-1-samps", "min-10-cts-all-samps"
+    ),
+    x_min = -5,
+    x_max = ifelse(run == "mRNA", 10, 10),
+    y_min = 0,
+    y_max = ifelse(run == "mRNA", 40, 100),
+    color = "#113275"
+)
+
+# `DGE-analysis_SS-Q-nab3d_SS-Q-parental` <- run_main(
+SS_Q_none <- run_main(
+    t_sub = `SS-Q-nab3d_SS-Q-parental`,
+    genotype_exp = "n3d",
+    genotype_ctrl = "od",
+    filtering = ifelse(run == "mRNA", "min-10-cts-all-but-1-samps", "none"),
+    x_min = -5,
+    x_max = ifelse(run == "mRNA", 10, 10),
+    y_min = 0,
+    y_max = ifelse(run == "mRNA", 100, 100),
     color = "#2E0C4A"
 )
 
+SS_Q_1samp <- run_main(
+    t_sub = `SS-Q-nab3d_SS-Q-parental`,
+    genotype_exp = "n3d",
+    genotype_ctrl = "od",
+    filtering = ifelse(run == "mRNA", "min-10-cts-all-but-1-samps", "min-10-cts-1-samp"),
+    x_min = -5,
+    x_max = ifelse(run == "mRNA", 10, 10),
+    y_min = 0,
+    y_max = ifelse(run == "mRNA", 100, 100),
+    color = "#2E0C4A"
+)
+
+SS_Q_2samp <- run_main(
+    t_sub = `SS-Q-nab3d_SS-Q-parental`,
+    genotype_exp = "n3d",
+    genotype_ctrl = "od",
+    filtering = ifelse(run == "mRNA", "min-10-cts-all-but-1-samps", "min-10-cts-2-samps"),
+    x_min = -5,
+    x_max = ifelse(run == "mRNA", 10, 10),
+    y_min = 0,
+    y_max = ifelse(run == "mRNA", 100, 100),
+    color = "#2E0C4A"
+)
+
+SS_Q_3samp_1 <- run_main(
+    t_sub = `SS-Q-nab3d_SS-Q-parental`,
+    genotype_exp = "n3d",
+    genotype_ctrl = "od",
+    filtering = ifelse(run == "mRNA", "min-10-cts-all-but-1-samps", "min-1-ct-3-samps"),
+    x_min = -5,
+    x_max = ifelse(run == "mRNA", 10, 10),
+    y_min = 0,
+    y_max = ifelse(run == "mRNA", 100, 100),
+    color = "#2E0C4A"
+)
+
+SS_Q_3samp_2 <- run_main(
+    t_sub = `SS-Q-nab3d_SS-Q-parental`,
+    genotype_exp = "n3d",
+    genotype_ctrl = "od",
+    filtering = ifelse(run == "mRNA", "min-10-cts-all-but-1-samps", "min-2-cts-3-samps"),
+    x_min = -5,
+    x_max = ifelse(run == "mRNA", 10, 10),
+    y_min = 0,
+    y_max = ifelse(run == "mRNA", 100, 100),
+    color = "#2E0C4A"
+)
+
+SS_Q_3samp_3 <- run_main(
+    t_sub = `SS-Q-nab3d_SS-Q-parental`,
+    genotype_exp = "n3d",
+    genotype_ctrl = "od",
+    filtering = ifelse(run == "mRNA", "min-10-cts-all-but-1-samps", "min-3-cts-3-samps"),
+    x_min = -5,
+    x_max = ifelse(run == "mRNA", 10, 10),
+    y_min = 0,
+    y_max = ifelse(run == "mRNA", 100, 100),
+    color = "#2E0C4A"
+)
+
+SS_Q_3samp_4 <- run_main(
+    t_sub = `SS-Q-nab3d_SS-Q-parental`,
+    genotype_exp = "n3d",
+    genotype_ctrl = "od",
+    filtering = ifelse(run == "mRNA", "min-10-cts-all-but-1-samps", "min-4-cts-3-samps"),
+    x_min = -5,
+    x_max = ifelse(run == "mRNA", 10, 10),
+    y_min = 0,
+    y_max = ifelse(run == "mRNA", 100, 100),
+    color = "#2E0C4A"
+)
+
+SS_Q_3samp_5 <- run_main(
+    t_sub = `SS-Q-nab3d_SS-Q-parental`,
+    genotype_exp = "n3d",
+    genotype_ctrl = "od",
+    filtering = ifelse(run == "mRNA", "min-10-cts-all-but-1-samps", "min-5-cts-3-samps"),
+    x_min = -5,
+    x_max = ifelse(run == "mRNA", 10, 10),
+    y_min = 0,
+    y_max = ifelse(run == "mRNA", 100, 100),
+    color = "#2E0C4A"
+)
+
+SS_Q_3samp <- run_main(
+    t_sub = `SS-Q-nab3d_SS-Q-parental`,
+    genotype_exp = "n3d",
+    genotype_ctrl = "od",
+    filtering = ifelse(run == "mRNA", "min-10-cts-all-but-1-samps", "min-10-cts-3-samps"),
+    x_min = -5,
+    x_max = ifelse(run == "mRNA", 10, 10),
+    y_min = 0,
+    y_max = ifelse(run == "mRNA", 100, 100),
+    color = "#2E0C4A"
+)
+
+SS_Q_Asamp <- run_main(
+    t_sub = `SS-Q-nab3d_SS-Q-parental`,
+    genotype_exp = "n3d",
+    genotype_ctrl = "od",
+    filtering = ifelse(run == "mRNA", "min-10-cts-all-but-1-samps", "min-10-cts-all-samps"),
+    x_min = -5,
+    x_max = ifelse(run == "mRNA", 10, 10),
+    y_min = 0,
+    y_max = ifelse(run == "mRNA", 100, 100),
+    color = "#2E0C4A"
+)
+
+# N_Q_none$`09_lfc_0_fc_1`$`10_n_feat_gt_lfc_lt_padj_unshrunken`
+# N_Q_none$`09_lfc_0_fc_1`$`10_n_feat_gt_lfc_lt_padj_unshrunken` %>% sum()
+N_Q_none$`09_lfc_0_fc_1`$`08_p_vol_unshrunken_KA`
+N_Q_1samp$`09_lfc_0_fc_1`$`08_p_vol_unshrunken_KA`
+N_Q_2samp$`09_lfc_0_fc_1`$`08_p_vol_unshrunken_KA`
+N_Q_3samp_1$`09_lfc_0_fc_1`$`08_p_vol_unshrunken_KA`
+N_Q_3samp_2$`09_lfc_0_fc_1`$`08_p_vol_unshrunken_KA`
+N_Q_3samp_3$`09_lfc_0_fc_1`$`08_p_vol_unshrunken_KA`
+N_Q_3samp_4$`09_lfc_0_fc_1`$`08_p_vol_unshrunken_KA`
+N_Q_3samp_5$`09_lfc_0_fc_1`$`08_p_vol_unshrunken_KA`
+N_Q_3samp$`09_lfc_0_fc_1`$`08_p_vol_unshrunken_KA`
+N_Q_Asamp$`09_lfc_0_fc_1`$`08_p_vol_unshrunken_KA`
+
+N_Q_none$`09_lfc_0_fc_1`$`10_n_feat_gt_lfc_lt_padj_unshrunken` # %>% sum()
+N_Q_1samp$`09_lfc_0_fc_1`$`10_n_feat_gt_lfc_lt_padj_unshrunken` # %>% sum()
+N_Q_2samp$`09_lfc_0_fc_1`$`10_n_feat_gt_lfc_lt_padj_unshrunken` # %>% sum()
+N_Q_3samp_1$`09_lfc_0_fc_1`$`10_n_feat_gt_lfc_lt_padj_unshrunken` # %>% sum()
+N_Q_3samp_2$`09_lfc_0_fc_1`$`10_n_feat_gt_lfc_lt_padj_unshrunken` # %>% sum()
+N_Q_3samp_3$`09_lfc_0_fc_1`$`10_n_feat_gt_lfc_lt_padj_unshrunken` # %>% sum()
+N_Q_3samp_4$`09_lfc_0_fc_1`$`10_n_feat_gt_lfc_lt_padj_unshrunken` # %>% sum()
+N_Q_3samp_5$`09_lfc_0_fc_1`$`10_n_feat_gt_lfc_lt_padj_unshrunken` # %>% sum()
+N_Q_3samp$`09_lfc_0_fc_1`$`10_n_feat_gt_lfc_lt_padj_unshrunken` # %>% sum()
+N_Q_Asamp$`09_lfc_0_fc_1`$`10_n_feat_gt_lfc_lt_padj_unshrunken` # %>% sum()
+
+N_Q_none$`09_lfc_0.58_fc_1.5`$`08_p_vol_unshrunken_KA`
+N_Q_1samp$`09_lfc_0.58_fc_1.5`$`08_p_vol_unshrunken_KA`
+N_Q_2samp$`09_lfc_0.58_fc_1.5`$`08_p_vol_unshrunken_KA`
+N_Q_3samp_1$`09_lfc_0.58_fc_1.5`$`08_p_vol_unshrunken_KA`
+N_Q_3samp_2$`09_lfc_0.58_fc_1.5`$`08_p_vol_unshrunken_KA`
+N_Q_3samp_3$`09_lfc_0.58_fc_1.5`$`08_p_vol_unshrunken_KA`
+N_Q_3samp_4$`09_lfc_0.58_fc_1.5`$`08_p_vol_unshrunken_KA`
+N_Q_3samp_5$`09_lfc_0.58_fc_1.5`$`08_p_vol_unshrunken_KA`
+N_Q_3samp$`09_lfc_0.58_fc_1.5`$`08_p_vol_unshrunken_KA`
+N_Q_Asamp$`09_lfc_0.58_fc_1.5`$`08_p_vol_unshrunken_KA`
+
+N_Q_none$`09_lfc_0.58_fc_1.5`$`10_n_feat_gt_lfc_lt_padj_unshrunken` # %>% sum()
+N_Q_1samp$`09_lfc_0.58_fc_1.5`$`10_n_feat_gt_lfc_lt_padj_unshrunken` # %>% sum()
+N_Q_2samp$`09_lfc_0.58_fc_1.5`$`10_n_feat_gt_lfc_lt_padj_unshrunken` # %>% sum()
+N_Q_3samp_1$`09_lfc_0.58_fc_1.5`$`10_n_feat_gt_lfc_lt_padj_unshrunken` # %>% sum()
+N_Q_3samp_2$`09_lfc_0.58_fc_1.5`$`10_n_feat_gt_lfc_lt_padj_unshrunken` # %>% sum()
+N_Q_3samp_3$`09_lfc_0.58_fc_1.5`$`10_n_feat_gt_lfc_lt_padj_unshrunken` # %>% sum()
+N_Q_3samp_4$`09_lfc_0.58_fc_1.5`$`10_n_feat_gt_lfc_lt_padj_unshrunken` # %>% sum()
+N_Q_3samp_5$`09_lfc_0.58_fc_1.5`$`10_n_feat_gt_lfc_lt_padj_unshrunken` # %>% sum()
+N_Q_3samp$`09_lfc_0.58_fc_1.5`$`10_n_feat_gt_lfc_lt_padj_unshrunken` # %>% sum()
+N_Q_Asamp$`09_lfc_0.58_fc_1.5`$`10_n_feat_gt_lfc_lt_padj_unshrunken` # %>% sum()
+
+N_Q_3samp_4$`09_lfc_0_fc_1`$`08_p_vol_unshrunken_KA`
+N_Q_3samp_4$`09_lfc_0.32_fc_1.25`$`08_p_vol_unshrunken_KA`
+N_Q_3samp_4$`09_lfc_0.58_fc_1.5`$`08_p_vol_unshrunken_KA`
+
+N_Q_3samp_4$`09_lfc_0_fc_1`$`10_n_feat_gt_lfc_lt_padj_unshrunken`
+N_Q_3samp_4$`09_lfc_0.32_fc_1.25`$`10_n_feat_gt_lfc_lt_padj_unshrunken`
+N_Q_3samp_4$`09_lfc_0.58_fc_1.5`$`10_n_feat_gt_lfc_lt_padj_unshrunken`
+
+N_Q_3samp_4$`09_lfc_0_fc_1`$`10_n_feat_gt_lfc_lt_padj_unshrunken` %>% sum()
+N_Q_3samp_4$`09_lfc_0.32_fc_1.25`$`10_n_feat_gt_lfc_lt_padj_unshrunken` %>% sum()
+N_Q_3samp_4$`09_lfc_0.58_fc_1.5`$`10_n_feat_gt_lfc_lt_padj_unshrunken` %>% sum()
+
+# SS_Q_none$`09_lfc_0_fc_1`$`10_n_feat_gt_lfc_lt_padj_unshrunken`
+# SS_Q_none$`09_lfc_0_fc_1`$`10_n_feat_gt_lfc_lt_padj_unshrunken` %>% sum()
+SS_Q_none$`09_lfc_0_fc_1`$`08_p_vol_unshrunken_KA`
+SS_Q_1samp$`09_lfc_0_fc_1`$`08_p_vol_unshrunken_KA`
+SS_Q_2samp$`09_lfc_0_fc_1`$`08_p_vol_unshrunken_KA`
+SS_Q_3samp_1$`09_lfc_0_fc_1`$`08_p_vol_unshrunken_KA`
+SS_Q_3samp_2$`09_lfc_0_fc_1`$`08_p_vol_unshrunken_KA`
+SS_Q_3samp_3$`09_lfc_0_fc_1`$`08_p_vol_unshrunken_KA`
+SS_Q_3samp_4$`09_lfc_0_fc_1`$`08_p_vol_unshrunken_KA`
+SS_Q_3samp_5$`09_lfc_0_fc_1`$`08_p_vol_unshrunken_KA`
+SS_Q_3samp$`09_lfc_0_fc_1`$`08_p_vol_unshrunken_KA`
+SS_Q_Asamp$`09_lfc_0_fc_1`$`08_p_vol_unshrunken_KA`
+
+SS_Q_none$`09_lfc_0_fc_1`$`10_n_feat_gt_lfc_lt_padj_unshrunken` # %>% sum()
+SS_Q_1samp$`09_lfc_0_fc_1`$`10_n_feat_gt_lfc_lt_padj_unshrunken` # %>% sum()
+SS_Q_2samp$`09_lfc_0_fc_1`$`10_n_feat_gt_lfc_lt_padj_unshrunken` # %>% sum()
+SS_Q_3samp_1$`09_lfc_0_fc_1`$`10_n_feat_gt_lfc_lt_padj_unshrunken` # %>% sum()
+SS_Q_3samp_2$`09_lfc_0_fc_1`$`10_n_feat_gt_lfc_lt_padj_unshrunken` # %>% sum()
+SS_Q_3samp_3$`09_lfc_0_fc_1`$`10_n_feat_gt_lfc_lt_padj_unshrunken` # %>% sum()
+SS_Q_3samp_4$`09_lfc_0_fc_1`$`10_n_feat_gt_lfc_lt_padj_unshrunken` # %>% sum()
+SS_Q_3samp_5$`09_lfc_0_fc_1`$`10_n_feat_gt_lfc_lt_padj_unshrunken` # %>% sum()
+SS_Q_3samp$`09_lfc_0_fc_1`$`10_n_feat_gt_lfc_lt_padj_unshrunken` # %>% sum()
+SS_Q_Asamp$`09_lfc_0_fc_1`$`10_n_feat_gt_lfc_lt_padj_unshrunken` # %>% sum()
+
+# SS_Q_3samp_1$`09_lfc_0_fc_1`$`08_p_vol_shrunken_KA`
+# SS_Q_3samp_2$`09_lfc_0_fc_1`$`08_p_vol_shrunken_KA`
+# SS_Q_3samp_3$`09_lfc_0_fc_1`$`08_p_vol_shrunken_KA`
+# SS_Q_3samp_4$`09_lfc_0_fc_1`$`08_p_vol_shrunken_KA`
+# SS_Q_3samp_5$`09_lfc_0_fc_1`$`08_p_vol_shrunken_KA`
+
+SS_Q_3samp_4$`09_lfc_0_fc_1`$`08_p_vol_unshrunken_KA`
+SS_Q_3samp_4$`09_lfc_0.32_fc_1.25`$`08_p_vol_unshrunken_KA`
+SS_Q_3samp_4$`09_lfc_0.58_fc_1.5`$`08_p_vol_unshrunken_KA`
+
+SS_Q_3samp_4$`09_lfc_0_fc_1`$`10_n_feat_gt_lfc_lt_padj_unshrunken`
+SS_Q_3samp_4$`09_lfc_0.32_fc_1.25`$`10_n_feat_gt_lfc_lt_padj_unshrunken`
+SS_Q_3samp_4$`09_lfc_0.58_fc_1.5`$`10_n_feat_gt_lfc_lt_padj_unshrunken`
+
+SS_Q_3samp_4$`09_lfc_0_fc_1`$`10_n_feat_gt_lfc_lt_padj_unshrunken` %>% sum()
+SS_Q_3samp_4$`09_lfc_0.32_fc_1.25`$`10_n_feat_gt_lfc_lt_padj_unshrunken` %>% sum()
+SS_Q_3samp_4$`09_lfc_0.58_fc_1.5`$`10_n_feat_gt_lfc_lt_padj_unshrunken` %>% sum()
+
+`DGE-analysis_N-Q-nab3d_N-Q-parental` <- run_main(
+    t_sub = `N-Q-nab3d_N-Q-parental`,
+    genotype_exp = "n3d",
+    genotype_ctrl = "od",
+    filtering = ifelse(run == "mRNA", "min-10-cts-all-but-1-samps", "min-4-cts-3-samps"),
+    x_min = -5,
+    x_max = ifelse(run == "mRNA", 10, 10),
+    y_min = 0,
+    y_max = ifelse(run == "mRNA", 40, 100),
+    color = "#113275"
+)
+print_volcano_unshrunken_AG(dataframe = `DGE-analysis_N-Q-nab3d_N-Q-parental`, lfc = "lfc-gt-0")
+print_volcano_unshrunken_AG(dataframe = `DGE-analysis_N-Q-nab3d_N-Q-parental`, lfc = "lfc-gt-0.32")
+print_volcano_unshrunken_AG(dataframe = `DGE-analysis_N-Q-nab3d_N-Q-parental`, lfc = "lfc-gt-0.58")
+
+`DGE-analysis_SS-Q-nab3d_SS-Q-parental` <- run_main(
+    t_sub = `SS-Q-nab3d_SS-Q-parental`,
+    genotype_exp = "n3d",
+    genotype_ctrl = "od",
+    filtering = ifelse(run == "mRNA", "min-10-cts-all-but-1-samps", "min-4-cts-3-samps"),
+    x_min = -5,
+    x_max = ifelse(run == "mRNA", 10, 10),
+    y_min = 0,
+    y_max = ifelse(run == "mRNA", 100, 100),
+    color = "#2E0C4A"
+)
+print_volcano_unshrunken_AG(dataframe = `DGE-analysis_SS-Q-nab3d_SS-Q-parental`, lfc = "lfc-gt-0")
+print_volcano_unshrunken_AG(dataframe = `DGE-analysis_SS-Q-nab3d_SS-Q-parental`, lfc = "lfc-gt-0.32")
+print_volcano_unshrunken_AG(dataframe = `DGE-analysis_SS-Q-nab3d_SS-Q-parental`, lfc = "lfc-gt-0.58")
+
 `DGE-analysis_SS-Q-rrp6∆_SS-Q-WT` <- run_main(
-    t_sub = `SS-Q-rrp6∆_SS-Q-WT` %>%
-        dplyr::slice(1:(nrow(.) - 6)) %>%  # Remove summary-metric rows
-        dplyr::filter(chr != "Mito"),  # Exclude Mito rows
+    t_sub = `SS-Q-rrp6∆_SS-Q-WT`,
     genotype_exp = "r6n",
     genotype_ctrl = "WT",
+    # filtering = "min-10-cts-all-but-1-samps",
     filtering = "min-10-cts-all-but-1-samps",
     x_min = -5,
     x_max = 10,
@@ -1470,11 +2123,10 @@ rm(chr_20S, chr_KL, chr_SC, chr_order)
 )
 
 `DGE-analysis_SS-G1-rrp6∆_SS-G1-WT` <- run_main(
-    t_sub = `SS-G1-rrp6∆_SS-G1-WT` %>%
-        dplyr::slice(1:(nrow(.) - 6)) %>%  # Remove summary-metric rows
-        dplyr::filter(chr != "Mito"),  # Exclude Mito rows
+    t_sub = `SS-G1-rrp6∆_SS-G1-WT`,
     genotype_exp = "r6n",
     genotype_ctrl = "WT",
+    # filtering = "min-10-cts-all-but-1-samps",
     filtering = "min-10-cts-all-but-1-samps",
     x_min = -5,
     x_max = 10,
@@ -1484,11 +2136,10 @@ rm(chr_20S, chr_KL, chr_SC, chr_order)
 )
 
 `DGE-analysis_N-Q-rrp6∆_N-Q-WT` <- run_main(
-    t_sub = `N-Q-rrp6∆_N-Q-WT` %>%
-        dplyr::slice(1:(nrow(.) - 6)) %>%  # Remove summary-metric rows
-        dplyr::filter(chr != "Mito"),  # Exclude Mito rows
+    t_sub = `N-Q-rrp6∆_N-Q-WT`,
     genotype_exp = "r6n",
     genotype_ctrl = "WT",
+    # filtering = "min-10-cts-all-but-1-samps",
     filtering = "min-10-cts-all-but-1-samps",
     x_min = -5,
     x_max = 10,
