@@ -62,8 +62,16 @@ write_plot_info <- function(
         sort() %>%
         stringr::str_split("_") %>%
         as.data.frame()
-    name_exp <- sample_info[1, 1]
-    name_ctrl <- sample_info[1, ncol(sample_info)]
+    name_exp <- ifelse(
+        title == "volcano plot",
+        sample_info[1, 1],
+        sample_info[1, ncol(sample_info)]
+    )
+    name_ctrl <- ifelse(
+        title == "volcano plot",
+        sample_info[1, ncol(sample_info)],
+        sample_info[1, 1]
+    )
     sample_info <- paste(
         sample_info[1, c(1, 4)],
         sample_info[3, 1],
@@ -403,8 +411,8 @@ call_DESeq2_results_run_analyses <- function(
         dds@design,
         "MA plot",
         FALSE,
-        n_DE_up = as.character(n_feat_gt_lfc_lt_padj_unshrunken[2]),
-        n_DE_down = as.character(n_feat_lt_lfc_lt_padj_unshrunken[2])
+        n_DE_up = as.character(n_feat_lt_lfc_lt_padj_unshrunken[2]),
+        n_DE_down = as.character(n_feat_gt_lfc_lt_padj_unshrunken[2])
     )
     
     p_MA_unshrunken <- plot_MA(
@@ -866,8 +874,8 @@ run_main <- function(
         "none", "filterByExpr.default", "min-10-cts-1-samp",
         "min-10-cts-2-samps", "min-1-ct-3-samps", "min-2-cts-3-samps",
         "min-3-cts-3-samps", "min-4-cts-3-samps", "min-5-cts-3-samps",
-        "min-10-cts-3-samps", "min-10-cts-all-but-1-samps",
-        "min-10-cts-all-samps"
+        "min-10-cts-3-samps", "min-4-cts-all-but-1-samps",
+        "min-10-cts-all-but-1-samps", "min-10-cts-all-samps"
     )) {
         stop(paste(
             "Argument for 'filtering' must be \"none\",",
@@ -992,6 +1000,8 @@ run_main <- function(
             keep <- rowSums(counts >= 5) >= 3
         } else if(filtering == "min-10-cts-3-samps") {
             keep <- rowSums(counts >= 10) >= 3
+        } else if(filtering == "min-4-cts-all-but-1-samps") {
+            keep <- rowSums(counts >= 4) >= length(12:ncol(t_sub)) - 1
         } else if(filtering == "min-10-cts-all-but-1-samps") {
             keep <- rowSums(counts >= 10) >= length(12:ncol(t_sub)) - 1
         } else if(filtering == "min-10-cts-all-samps") {
@@ -1089,6 +1099,20 @@ run_main <- function(
         selection = FALSE
     )
     
+    lfc_0.415 <- call_DESeq2_results_run_analyses(
+        dds = dds,
+        independent_filtering = TRUE,
+        threshold_p = threshold_p,
+        threshold_p_lessAbs = threshold_p_lessAbs,
+        threshold_lfc = 0.415,  # i.e., 2^0.415 ≈ 1.33
+        x_min = x_min,
+        x_max = x_max,
+        y_min = y_min,
+        y_max = y_max,
+        color = color,
+        selection = FALSE
+    )
+    
     lfc_0.58 <- call_DESeq2_results_run_analyses(
         dds = dds,
         independent_filtering = TRUE,
@@ -1102,7 +1126,35 @@ run_main <- function(
         color = color,
         selection = FALSE
     )
-     
+    
+    lfc_0.737 <- call_DESeq2_results_run_analyses(
+        dds = dds,
+        independent_filtering = TRUE,
+        threshold_p = threshold_p,
+        threshold_p_lessAbs = threshold_p_lessAbs,
+        threshold_lfc = 0.737,  # i.e., 2^0.737 ≈ 1.67
+        x_min = x_min,
+        x_max = x_max,
+        y_min = y_min,
+        y_max = y_max,
+        color = color,
+        selection = FALSE
+    )
+    
+    lfc_0.807 <- call_DESeq2_results_run_analyses(
+        dds = dds,
+        independent_filtering = TRUE,
+        threshold_p = threshold_p,
+        threshold_p_lessAbs = threshold_p_lessAbs,
+        threshold_lfc = 0.807,  # i.e., 2^0.807 ≈ 1.75
+        x_min = x_min,
+        x_max = x_max,
+        y_min = y_min,
+        y_max = y_max,
+        color = color,
+        selection = FALSE
+    )
+    
     lfc_1 <- call_DESeq2_results_run_analyses(
         dds = dds,
         independent_filtering = TRUE,
@@ -1232,7 +1284,10 @@ run_main <- function(
     results_list[["08_model_info"]] <- model_info
     results_list[["09_lfc_0_fc_1"]] <- lfc_0
     results_list[["09_lfc_0.32_fc_1.25"]] <- lfc_0.32
+    results_list[["09_lfc_0.415_fc_1.33"]] <- lfc_0.415
     results_list[["09_lfc_0.58_fc_1.5"]] <- lfc_0.58
+    results_list[["09_lfc_0.737_fc_1.67"]] <- lfc_0.737
+    results_list[["09_lfc_0.807_fc_1.75"]] <- lfc_0.807
     results_list[["09_lfc_1_fc_2"]] <- lfc_1
     # results_list[["09_lfc_1.32_fc_2.5"]] <- lfc_1.32
     # results_list[["09_lfc_1.58_fc_3"]] <- lfc_1.58
@@ -1284,10 +1339,17 @@ print_volcano_unshrunken_AG <- function(
         print(dataframe[["09_lfc_0_fc_1"]][["08_p_vol_unshrunken_AG"]])
     } else if(base::isTRUE(lfc == "lfc-gt-0.32")) {
         print(dataframe[["09_lfc_0.32_fc_1.25"]][["08_p_vol_unshrunken_AG"]])
+    } else if(base::isTRUE(lfc == "lfc-gt-0.415")) {
+        print(dataframe[["09_lfc_0.415_fc_1.33"]][["08_p_vol_unshrunken_AG"]])
     } else if(base::isTRUE(lfc == "lfc-gt-0.58")) {
         print(dataframe[["09_lfc_0.58_fc_1.5"]][["08_p_vol_unshrunken_AG"]])
-    }    
-    
+    } else if(base::isTRUE(lfc == "lfc-gt-0.737")) {
+        print(dataframe[["09_lfc_0.737_fc_1.67"]][["08_p_vol_unshrunken_AG"]])
+    } else if(base::isTRUE(lfc == "lfc_0.807")) {
+        print(dataframe[["09_lfc_0.807_fc_1.75"]][["08_p_vol_unshrunken_AG"]])
+    } else if(base::isTRUE(lfc == "lfc_1")) {
+        print(dataframe[["09_lfc_1_fc_2"]][["08_p_vol_unshrunken_AG"]])
+    }
     dev.off()
 }
 
@@ -1481,9 +1543,8 @@ if(base::isTRUE(run == "mRNA")) {
     
     #  Subset gff3 tibble to keep only relevant columns
     keep <- c(
-        "chr", "start", "end",
-        "width", "strand", "type",
-        "features", "biotype", "names"
+        "chr", "start", "end", "width", "strand", "type", "features",
+        "biotype", "names"
     )
     t_gff3 <- t_gff3[, colnames(t_gff3) %in% keep]
     t_gff3 <- dplyr::relocate(
@@ -1540,9 +1601,8 @@ if(base::isTRUE(run == "mRNA")) {
         
         #  Subset gff3 tibble to keep only relevant columns, and order columns
         keep <- c(
-            "chr", "start", "end",
-            "width", "strand", "type",
-            "features", "biotype", "names", "thorough"
+            "chr", "start", "end", "width", "strand", "type", "features",
+            "biotype", "names", "thorough"
         )
         t_gff3 <- t_gff3[, colnames(t_gff3) %in% keep]
         t_gff3 <- dplyr::relocate(
@@ -1576,9 +1636,8 @@ if(base::isTRUE(run == "mRNA")) {
         
         #  Subset gff3 tibble to keep only relevant columns, and order columns
         keep <- c(
-            "chr", "start", "end",
-            "width", "strand", "type",
-            "features", "biotype", "names", "thorough"
+            "chr", "start", "end", "width", "strand", "type", "features",
+            "biotype", "names", "thorough"
         )
         t_gff3 <- t_gff3[, colnames(t_gff3) %in% keep]
         t_gff3 <- dplyr::relocate(
@@ -1887,7 +1946,8 @@ if(base::isTRUE(run != "mRNA")) {
     t_sub = `N-Q-nab3d_N-Q-parental`,
     genotype_exp = "n3d",
     genotype_ctrl = "od",
-    filtering = "min-4-cts-3-samps",
+    # filtering = "min-4-cts-3-samps",
+    filtering = "min-4-cts-all-but-1-samps",
     threshold_p = 0.05,
     threshold_p_lessAbs = 0.99,
     x_min = -5,
@@ -1896,18 +1956,14 @@ if(base::isTRUE(run != "mRNA")) {
     y_max = ifelse(run == "mRNA", 40, 100),
     color = "#3A538B"
 )
-test <- `DGE-analysis_N-Q-nab3d_N-Q-parental`
-test$`09_lfc_0.58_fc_1.5`$`08_p_vol_unshrunken_KA`
-test$`09_lfc_0.58_fc_1.5`$`08_p_vol_shrunken_KA`
-test$`09_lfc_0_fc_1`$`09_p_MA_unshrunken`  #FIXME Numbers not matching vol above
-test$`09_lfc_0_fc_1`$`09_p_MA_shrunken`  #FIXME Numbers not matching vol above, looking at s ≤ 0.05 and not s ≤ 0.005
 
 `DGE-analysis_SS-Q-nab3d_SS-Q-parental` <- run_main(
     #  See 230517_lab_meeting.pptx, slide 15
     t_sub = `SS-Q-nab3d_SS-Q-parental`,
     genotype_exp = "n3d",
     genotype_ctrl = "od",
-    filtering = "min-4-cts-3-samps",
+    # filtering = "min-4-cts-3-samps",
+    filtering = "min-4-cts-all-but-1-samps",
     x_min = -5,
     x_max = 10,
     y_min = 0,
@@ -1920,7 +1976,8 @@ test$`09_lfc_0_fc_1`$`09_p_MA_shrunken`  #FIXME Numbers not matching vol above, 
     t_sub = `SS-Q-rrp6∆_SS-Q-WT`,
     genotype_exp = "r6n",
     genotype_ctrl = "WT",
-    filtering = "min-4-cts-3-samps",
+    # filtering = "min-4-cts-3-samps",
+    filtering = "min-4-cts-all-but-1-samps",
     x_min = -5,
     x_max = 10,
     y_min = 0,
@@ -1933,7 +1990,8 @@ test$`09_lfc_0_fc_1`$`09_p_MA_shrunken`  #FIXME Numbers not matching vol above, 
     t_sub = `SS-G1-rrp6∆_SS-G1-WT`,
     genotype_exp = "r6n",
     genotype_ctrl = "WT",
-    filtering = "min-4-cts-3-samps",
+    # filtering = "min-4-cts-3-samps",
+    filtering = "min-4-cts-all-but-1-samps",
     x_min = -5,
     x_max = 10,
     y_min = 0,
@@ -1946,7 +2004,8 @@ test$`09_lfc_0_fc_1`$`09_p_MA_shrunken`  #FIXME Numbers not matching vol above, 
     t_sub = `N-Q-rrp6∆_N-Q-WT`,
     genotype_exp = "r6n",
     genotype_ctrl = "WT",
-    filtering = "min-4-cts-3-samps",
+    # filtering = "min-4-cts-3-samps",
+    filtering = "min-4-cts-all-but-1-samps",
     x_min = -5,
     x_max = 10,
     y_min = 0,
@@ -1954,13 +2013,139 @@ test$`09_lfc_0_fc_1`$`09_p_MA_shrunken`  #FIXME Numbers not matching vol above, 
     color = "#3A538B"
 )
 
+#  Run tests/check things
+# test <- `DGE-analysis_N-Q-nab3d_N-Q-parental`
+# test <- `DGE-analysis_SS-Q-nab3d_SS-Q-parental`
+# test <- `DGE-analysis_SS-Q-rrp6∆_SS-Q-WT`
+# test <- `DGE-analysis_SS-G1-rrp6∆_SS-G1-WT`
+# test <- `DGE-analysis_N-Q-rrp6∆_N-Q-WT`
+#
+# test$`01_t_init`
+# test$`02_t_meta`
+# test$`03_filtering`
+# test$`04_t_tmp`
+# test$`05_t_sub`
+# test$`06_g_pos` %>% tibble::as_tibble()
+# test$`07_t_counts` %>% tibble::as_tibble()
+# test$`08_size_factors`
+# test$`08_size_factors_recip`
+# test$`08_col_data`
+# test$`08_dds`@rowRanges %>% tibble::as_tibble()
+# test$`08_dds`@colData
+#
+# test$`09_lfc_0.415_fc_1.33`$`01_dds`
+# test$`09_lfc_0.415_fc_1.33`$`02_DGE_unshrunken_DF` %>% tibble::as_tibble()
+# test$`09_lfc_0.415_fc_1.33`$`02_DGE_shrunken_DF` %>% tibble::as_tibble()
+# test$`09_lfc_0.415_fc_1.33`$`02_DGE_lessAbs_unshrunken_DF` %>% tibble::as_tibble()
+# test$`09_lfc_0.415_fc_1.33`$`03_DGE_unshrunken_GR` %>% tibble::as_tibble()
+# test$`09_lfc_0.415_fc_1.33`$`03_DGE_shrunken_GR` %>% tibble::as_tibble()
+# test$`09_lfc_0.415_fc_1.33`$`03_DGE_lessAbs_unshrunken_GR` %>% tibble::as_tibble()
+# test$`09_lfc_0.415_fc_1.33`$`04_t_DGE_unshrunken`
+# test$`09_lfc_0.415_fc_1.33`$`04_t_DGE_lessAbs_unshrunken`
+# as.numeric(table(test$`09_lfc_0.415_fc_1.33`$`04_t_DGE_lessAbs_unshrunken`$padj < 0.99)[2])
+# test$`09_lfc_0.415_fc_1.33`$`04_t_DGE_shrunken`
+# test$`09_lfc_0.415_fc_1.33`$`08_p_vol_unshrunken_KA`
+# test$`09_lfc_0.415_fc_1.33`$`08_p_vol_shrunken_KA`
+# test$`09_lfc_0.415_fc_1.33`$`08_p_vol_lessAbs_unshrunken_KA`
+# test$`09_lfc_0.415_fc_1.33`$`09_p_MA_unshrunken`
+# test$`09_lfc_0.415_fc_1.33`$`09_p_MA_shrunken`
+# test$`09_lfc_0.415_fc_1.33`$`09_p_MA_lessAbs_unshrunken`
+# test$`09_lfc_0.415_fc_1.33`$`10_hist_unshrunken_p`
+# test$`09_lfc_0.415_fc_1.33`$`10_hist_unshrunken_q`
+# test$`09_lfc_0.415_fc_1.33`$`10_hist_shrunken_s`
+# test$`09_lfc_0.415_fc_1.33`$`10_hist_lessAbs_unshrunken_p`
+# test$`09_lfc_0.415_fc_1.33`$`10_hist_lessAbs_unshrunken_q`
+# 
+# test$`09_lfc_0.58_fc_1.5`$`01_dds`
+# test$`09_lfc_0.58_fc_1.5`$`02_DGE_unshrunken_DF` %>% tibble::as_tibble()
+# test$`09_lfc_0.58_fc_1.5`$`02_DGE_shrunken_DF` %>% tibble::as_tibble()
+# test$`09_lfc_0.58_fc_1.5`$`02_DGE_lessAbs_unshrunken_DF` %>% tibble::as_tibble()
+# test$`09_lfc_0.58_fc_1.5`$`03_DGE_unshrunken_GR` %>% tibble::as_tibble()
+# test$`09_lfc_0.58_fc_1.5`$`03_DGE_shrunken_GR` %>% tibble::as_tibble()
+# test$`09_lfc_0.58_fc_1.5`$`03_DGE_lessAbs_unshrunken_GR` %>% tibble::as_tibble()
+# test$`09_lfc_0.58_fc_1.5`$`04_t_DGE_unshrunken`
+# test$`09_lfc_0.58_fc_1.5`$`04_t_DGE_lessAbs_unshrunken`
+# as.numeric(table(test$`09_lfc_0.58_fc_1.5`$`04_t_DGE_lessAbs_unshrunken`$padj < 0.99)[2])
+# test$`09_lfc_0.58_fc_1.5`$`04_t_DGE_shrunken`
+# test$`09_lfc_0.58_fc_1.5`$`08_p_vol_unshrunken_KA`
+# test$`09_lfc_0.58_fc_1.5`$`08_p_vol_shrunken_KA`
+# test$`09_lfc_0.58_fc_1.5`$`08_p_vol_lessAbs_unshrunken_KA`
+# test$`09_lfc_0.58_fc_1.5`$`09_p_MA_unshrunken`
+# test$`09_lfc_0.58_fc_1.5`$`09_p_MA_shrunken`
+# test$`09_lfc_0.58_fc_1.5`$`09_p_MA_lessAbs_unshrunken`
+# test$`09_lfc_0.58_fc_1.5`$`10_hist_unshrunken_p`
+# test$`09_lfc_0.58_fc_1.5`$`10_hist_unshrunken_q`
+# test$`09_lfc_0.58_fc_1.5`$`10_hist_shrunken_s`
+# test$`09_lfc_0.58_fc_1.5`$`10_hist_lessAbs_unshrunken_p`
+# test$`09_lfc_0.58_fc_1.5`$`10_hist_lessAbs_unshrunken_q`
+#
+# test$`09_lfc_0.807_fc_1.75`$`01_dds`
+# test$`09_lfc_0.807_fc_1.75`$`02_DGE_unshrunken_DF` %>% tibble::as_tibble()
+# test$`09_lfc_0.807_fc_1.75`$`02_DGE_shrunken_DF` %>% tibble::as_tibble()
+# test$`09_lfc_0.807_fc_1.75`$`02_DGE_lessAbs_unshrunken_DF` %>% tibble::as_tibble()
+# test$`09_lfc_0.807_fc_1.75`$`03_DGE_unshrunken_GR` %>% tibble::as_tibble()
+# test$`09_lfc_0.807_fc_1.75`$`03_DGE_shrunken_GR` %>% tibble::as_tibble()
+# test$`09_lfc_0.807_fc_1.75`$`03_DGE_lessAbs_unshrunken_GR` %>% tibble::as_tibble()
+# test$`09_lfc_0.807_fc_1.75`$`04_t_DGE_unshrunken`
+# test$`09_lfc_0.807_fc_1.75`$`04_t_DGE_lessAbs_unshrunken`
+# as.numeric(table(test$`09_lfc_0.807_fc_1.75`$`04_t_DGE_lessAbs_unshrunken`$padj < 0.99)[2])
+# test$`09_lfc_0.807_fc_1.75`$`04_t_DGE_shrunken`
+# test$`09_lfc_0.807_fc_1.75`$`08_p_vol_unshrunken_KA`
+# test$`09_lfc_0.807_fc_1.75`$`08_p_vol_shrunken_KA`
+# test$`09_lfc_0.807_fc_1.75`$`08_p_vol_lessAbs_unshrunken_KA`
+# test$`09_lfc_0.807_fc_1.75`$`09_p_MA_unshrunken`
+# test$`09_lfc_0.807_fc_1.75`$`09_p_MA_shrunken`
+# test$`09_lfc_0.807_fc_1.75`$`09_p_MA_lessAbs_unshrunken`
+# test$`09_lfc_0.807_fc_1.75`$`10_hist_unshrunken_p`
+# test$`09_lfc_0.807_fc_1.75`$`10_hist_unshrunken_q`
+# test$`09_lfc_0.807_fc_1.75`$`10_hist_shrunken_s`
+# test$`09_lfc_0.807_fc_1.75`$`10_hist_lessAbs_unshrunken_p`
+# test$`09_lfc_0.807_fc_1.75`$`10_hist_lessAbs_unshrunken_q`
 
-print_volcano_unshrunken_AG(dataframe = `DGE-analysis_N-Q-nab3d_N-Q-parental`)
-print_volcano_unshrunken_AG(dataframe = `DGE-analysis_SS-Q-nab3d_SS-Q-parental`)
 
-print_volcano_unshrunken_AG(dataframe = `DGE-analysis_SS-Q-rrp6∆_SS-Q-WT`)
-print_volcano_unshrunken_AG(dataframe = `DGE-analysis_SS-G1-rrp6∆_SS-G1-WT`)
-print_volcano_unshrunken_AG(dataframe = `DGE-analysis_N-Q-rrp6∆_N-Q-WT`)
+print_volcano_unshrunken_AG(
+    dataframe = `DGE-analysis_N-Q-nab3d_N-Q-parental`,
+    lfc = "lfc-gt-0"
+)
+print_volcano_unshrunken_AG(
+    dataframe = `DGE-analysis_SS-Q-nab3d_SS-Q-parental`,
+    lfc = "lfc-gt-0"
+)
+
+print_volcano_unshrunken_AG(
+    dataframe = `DGE-analysis_SS-Q-rrp6∆_SS-Q-WT`,
+    lfc = "lfc-gt-0"
+)
+print_volcano_unshrunken_AG(
+    dataframe = `DGE-analysis_SS-G1-rrp6∆_SS-G1-WT`,
+    lfc = "lfc-gt-0"
+)
+print_volcano_unshrunken_AG(
+    dataframe = `DGE-analysis_N-Q-rrp6∆_N-Q-WT`,
+    lfc = "lfc-gt-0"
+)
+
+print_volcano_unshrunken_AG(
+    dataframe = `DGE-analysis_N-Q-nab3d_N-Q-parental`,
+    lfc = "lfc-gt-0.58"
+)
+print_volcano_unshrunken_AG(
+    dataframe = `DGE-analysis_SS-Q-nab3d_SS-Q-parental`,
+    lfc = "lfc-gt-0.58"
+)
+
+print_volcano_unshrunken_AG(
+    dataframe = `DGE-analysis_SS-Q-rrp6∆_SS-Q-WT`,
+    lfc = "lfc-gt-0.58"
+)
+print_volcano_unshrunken_AG(
+    dataframe = `DGE-analysis_SS-G1-rrp6∆_SS-G1-WT`,
+    lfc = "lfc-gt-0.58"
+)
+print_volcano_unshrunken_AG(
+    dataframe = `DGE-analysis_N-Q-rrp6∆_N-Q-WT`,
+    lfc = "lfc-gt-0.58"
+)
 
 output_rds(`DGE-analysis_N-Q-nab3d_N-Q-parental`)
 output_rds(`DGE-analysis_SS-Q-nab3d_SS-Q-parental`)
@@ -1971,17 +2156,16 @@ output_rds(`DGE-analysis_N-Q-rrp6∆_N-Q-WT`)
 
 
 #  Sketch work ================================================================
+#  Draw panels related to N Q rrp6∆ and SS Q rrp6∆ ============================
 #  Load rds files -------------------------------------------------------------
 N_Q_r6n <- readRDS(
-    "/Users/kalavatt/Desktop/DGE-analysis_N-Q-rrp6∆_N-Q-WT.rds"
+    "/Users/kalavatt/Desktop/DGE-analysis_mRNA_N-Q-rrp6∆_N-Q-WT.rds"
 )
 N_SS_r6n <- readRDS(
-    "/Users/kalavatt/Desktop/DGE-analysis_SS-Q-rrp6∆_SS-Q-WT.rds"
+    "/Users/kalavatt/Desktop/DGE-analysis_mRNA_SS-Q-rrp6∆_SS-Q-WT.rds"
 )
 
-
-#  ...with lfc_0.58_fc_1.5 ----------------------------------------------------
-#  Draw volcano: N Q rrp6∆
+#  Draw volcano: N Q rrp6∆ ----------------------------------------------------
 dge_N_Q_r6n <- N_Q_r6n$`09_lfc_0.58_fc_1.5`$`04_t_DGE_unshrunken`
 plot_volcano(
     table = dge_N_Q_r6n,
@@ -1990,15 +2174,15 @@ plot_volcano(
     label_size = 2.5,
     p_cutoff = 0.05,
     FC_cutoff = 1.5,
-    xlim = c(-6, 11),
+    xlim = c(-5, 10),
     ylim = c(0, 60),
-    color = "#481A6C",
+    color = c("#DFDFDF", "#DFDFDF", "#DFDFDF", "#3A538B"),
     pointSize = 2.5,
     title = "",
     subtitle = ""
 )
 
-#  Draw volcano: SS Q rrp6∆
+#  Draw volcano: SS Q rrp6∆ ----------------------------------------------------
 dge_SS_Q_r6n <- N_SS_r6n$`09_lfc_0.58_fc_1.5`$`04_t_DGE_unshrunken`
 plot_volcano(
     table = dge_SS_Q_r6n,
@@ -2007,15 +2191,15 @@ plot_volcano(
     label_size = 2.5,
     p_cutoff = 0.05,
     FC_cutoff = 1.5,
-    xlim = c(-6, 11),
+    xlim = c(-5, 10),
     ylim = c(0, 60),
-    color = "#481A6C",
+    color = c("#DFDFDF", "#DFDFDF", "#DFDFDF", "#481A6C"),
     pointSize = 2.5,
     title = "",
     subtitle = ""
 )
 
-#  Draw scatterplot: N Q rrp6∆ vs SS Q rrp6∆
+#  Draw scatterplot: N Q rrp6∆ vs SS Q rrp6∆ ----------------------------------
 dge_N_Q_r6n <- N_Q_r6n$`09_lfc_0.58_fc_1.5`$`04_t_DGE_unshrunken`
 dge_SS_Q_r6n <- N_SS_r6n$`09_lfc_0.58_fc_1.5`$`04_t_DGE_unshrunken`
 tmp <- tibble::tibble(
@@ -2029,142 +2213,158 @@ tmp <- tibble::tibble(
         ]$log2FoldChange
 )
 
-#  Model nascent varying on steady state
-ggplot(tmp, aes(x = `log2(FC) steady state`, y = `log2(FC) nascent`)) +
-    geom_point(size = 2.5, color = "#0E737933") +
-    # geom_density_2d(color = "#FFFFFF") +
-    stat_smooth(
-        method = lm,
-        se = FALSE,
-        fullrange = TRUE,
-        color = "red",
-        linetype = "dashed"
-    ) +
-    xlim(-5, 5) +
-    ylim(-5, 5) +
-    theme_AG_no_legend
-rho <- cor(  # (I think it's better to go with Spearman here)
-    tmp$`log2(FC) nascent`,
-    tmp$`log2(FC) steady state`,
-    method = "spearman"
-)  # [1] 0.3273192
-m <- lm(tmp$`log2(FC) nascent` ~ tmp$`log2(FC) steady state`)
-m$coefficients[["tmp$`log2(FC) steady state`"]]  # [1] 0.2837524
+#  Model nascent transcription (y) varying on steady state transcription (x)
+# m <- lm(tmp$`log2(FC) nascent` ~ tmp$`log2(FC) steady state`)
+# m$coefficients[["tmp$`log2(FC) steady state`"]]  # [1] 0.2837524
 
-#  Model steady state varying on nascent
-ggplot(tmp, aes(x = `log2(FC) nascent`, y = `log2(FC) steady state`)) +
-    geom_point(size = 2.5, color = "#0E737933") +
-    # geom_density_2d(color = "#FFFFFF") +
-    stat_smooth(
-        method = lm,
-        se = FALSE,
-        fullrange = TRUE,
-        color = "red",
-        linetype = "dashed"
-    ) +
-    xlim(-5, 5) +
-    ylim(-5, 5) +
-    theme_AG_no_legend
-rho <- cor(  # (I think it's better to go with Spearman here)
-    tmp$`log2(FC) steady state`,
-    tmp$`log2(FC) nascent`,
-    method = "spearman"
-)  # [1] 0.3273192
+#  Model steady state transcription (y) varying on nascent transcription (x)
 m <- lm(tmp$`log2(FC) steady state` ~ tmp$`log2(FC) nascent`)
-m$coefficients[["tmp$`log2(FC) nascent`"]]  # [1] 0.5947096
+m$coefficients[["tmp$`log2(FC) nascent`"]]  # [1] 0.6371144
+
+rho <- cor(
+    tmp$`log2(FC) nascent`,
+    tmp$`log2(FC) steady state`,
+    method = "spearman"
+)  # [1] 0.3273192
+
+r <- cor(
+    tmp$`log2(FC) nascent`,
+    tmp$`log2(FC) steady state`,
+    method = "pearson"
+)  # [1] 0.4264494
+
+ggplot(
+    tmp,
+    # aes(x = `log2(FC) steady state`, y = `log2(FC) nascent`)
+    aes(x = `log2(FC) nascent`, y = `log2(FC) steady state`)
+) +
+    geom_point(size = 2.5, color = "#0E737933") +
+    # geom_density_2d(color = "#FFFFFF") +
+    # stat_smooth(  # (Another way to calculate and plot m)
+    #     method = lm,
+    #     se = FALSE,
+    #     fullrange = TRUE,
+    #     color = "red",
+    #     linetype = "dashed"
+    # ) +
+    geom_abline(  # x = y (example of 1-to-1 linear relationship)
+        slope = 1,
+        linetype = "solid",
+        color = "#00000050",
+        size = 0.5
+    ) +
+    geom_abline(  # linear regression (m) slope
+        slope = coefficients(m)[2],
+        intercept = coefficients(m)[1],
+        linetype = "dashed",
+        color = "red",
+        size = 1
+    ) +
+    xlim(-5, 6.5) +
+    ylim(-5, 6.5) +
+    # xlab("log2(FC) steady state rrp6n/WT ") +
+    # ylab("log2(FC) nascent rrp6n/WT ") +
+    xlab("log2(FC) nascent rrp6n/WT ") +
+    ylab("log2(FC) steady state rrp6n/WT ") +
+    ggtitle(
+        "Figure 2D | Slide 13",
+        subtitle = paste(
+            "Altered gene expression in rrp6∆ is largely",
+            # "\npost-transcriptional | red: m (0.28) |",
+            "\npost-transcriptional | red: m (0.64) |",
+            "\nblue: Spearman (0.33) | orange: Pearson (0.43)"
+        )
+    ) +
+    theme_slick_no_legend
 
 
-#  ...with lfc_0_fc_1 ----------------------------------------------------
-#  Draw volcano: N Q rrp6∆
-dge_N_Q_r6n <- N_Q_r6n$`09_lfc_0_fc_1`$`04_t_DGE_unshrunken`
-plot_volcano(
-    table = dge_N_Q_r6n,
-    label = NA,
-    selection = "",
-    label_size = 2.5,
-    p_cutoff = 0.05,
-    FC_cutoff = 0,
-    xlim = c(-6, 11),
-    ylim = c(0, 60),
-    color = "#481A6C",
-    pointSize = 2.5,
-    title = "",
-    subtitle = ""
+#  Draw panels related to N Q rrp6∆ and SS Q rrp6∆ ============================
+#  Load rds files -------------------------------------------------------------
+N_Q_n3d <- readRDS(
+    "/Users/kalavatt/Desktop/DGE-analysis_mRNA_N-Q-nab3d_N-Q-parental.rds"
+)
+N_SS_r6n <- readRDS(
+    "/Users/kalavatt/Desktop/DGE-analysis_mRNA_SS-Q-rrp6∆_SS-Q-WT.rds"
 )
 
-#  Draw volcano: SS Q rrp6∆
-dge_SS_Q_r6n <- N_SS_r6n$`09_lfc_0_fc_1`$`04_t_DGE_unshrunken`
-plot_volcano(
-    table = dge_SS_Q_r6n,
-    label = NA,
-    selection = "",
-    label_size = 2.5,
-    p_cutoff = 0.05,
-    FC_cutoff = 0,
-    xlim = c(-6, 11),
-    ylim = c(0, 60),
-    color = "#481A6C",
-    pointSize = 2.5,
-    title = "",
-    subtitle = ""
-)
-
-dge_N_Q_r6n <- N_Q_r6n$`09_lfc_0_fc_1`$`04_t_DGE_unshrunken`
-dge_SS_Q_r6n <- N_SS_r6n$`09_lfc_0_fc_1`$`04_t_DGE_unshrunken`
+#  Draw scatterplot: N Q rrp6∆ vs SS Q rrp6∆ ----------------------------------
+dge_N_Q_n3d <- N_Q_n3d$`09_lfc_0.58_fc_1.5`$`04_t_DGE_unshrunken`
+dge_SS_Q_r6n <- N_SS_r6n$`09_lfc_0.58_fc_1.5`$`04_t_DGE_unshrunken`
 tmp <- tibble::tibble(
     "log2(FC) nascent" = 
-        dge_N_Q_r6n[
-            dge_N_Q_r6n$features %in% dge_SS_Q_r6n$features, 
+        dge_N_Q_n3d[
+            dge_N_Q_n3d$features %in% dge_SS_Q_r6n$features, 
         ]$log2FoldChange,
     "log2(FC) steady state" = 
         dge_SS_Q_r6n[
-            dge_SS_Q_r6n$features %in% dge_N_Q_r6n$features, 
+            dge_SS_Q_r6n$features %in% dge_N_Q_n3d$features, 
         ]$log2FoldChange
 )
 
-#  Model nascent varying on steady state
-ggplot(tmp, aes(x = `log2(FC) steady state`, y = `log2(FC) nascent`)) +
-    geom_point(size = 2.5, color = "#0E737933") +
-    # geom_density_2d(color = "#FFFFFF") +
-    stat_smooth(
-        method = lm,
-        se = FALSE,
-        fullrange = TRUE,
-        color = "red",
-        linetype = "dashed"
-    ) +
-    xlim(-5, 5) +
-    ylim(-5, 5) +
-    theme_AG_no_legend
-rho <- cor(  # (I think it's better to go with Spearman here)
-    tmp$`log2(FC) nascent`,
-    tmp$`log2(FC) steady state`,
-    method = "spearman"
-)  # [1] 0.3273192
-m <- lm(tmp$`log2(FC) nascent` ~ tmp$`log2(FC) steady state`)
-m$coefficients[["tmp$`log2(FC) steady state`"]]  # [1] 0.2837524
+#  Model nascent transcription (y) varying on steady state transcription (x) --
+#  ...when nascent nab3d/WT is y
+# m <- lm(tmp$`log2(FC) nascent` ~ tmp$`log2(FC) steady state`)
+# m$coefficients[["tmp$`log2(FC) steady state`"]]  # [1] 0.6843438
 
-#  Model steady state varying on nascent
-ggplot(tmp, aes(x = `log2(FC) nascent`, y = `log2(FC) steady state`)) +
+#  ...when nascent rrp6∆/WT is y
+m <- lm(tmp$`log2(FC) steady state` ~ tmp$`log2(FC) nascent`)
+m$coefficients[["tmp$`log2(FC) nascent`"]]  # [1] 0.22436
+
+rho <- cor(
+    x = tmp$`log2(FC) steady state`,
+    y = tmp$`log2(FC) nascent`,
+    method = "spearman"
+)  # [1] 0.3907205
+
+r <- cor(
+    x = tmp$`log2(FC) steady state`,
+    y = tmp$`log2(FC) nascent`,
+    method = "pearson"
+)  # [1] 0.391841
+
+ggplot(
+    tmp,
+    # aes(x = `log2(FC) steady state`, y = `log2(FC) nascent`)
+    aes(x = `log2(FC) nascent`, y = `log2(FC) steady state`)
+) +
     geom_point(size = 2.5, color = "#0E737933") +
     # geom_density_2d(color = "#FFFFFF") +
-    stat_smooth(
-        method = lm,
-        se = FALSE,
-        fullrange = TRUE,
-        color = "red",
-        linetype = "dashed"
+    # stat_smooth(  # (Another way to calculate and plot m)
+    #     method = lm,
+    #     se = FALSE,
+    #     fullrange = TRUE,
+    #     color = "red",
+    #     linetype = "dashed"
+    # ) +
+    geom_abline(  # x = y (example of 1-to-1 linear relationship)
+        slope = 1,
+        linetype = "solid",
+        color = "#00000050",
+        size = 0.5
     ) +
-    xlim(-5, 5) +
-    ylim(-5, 5) +
-    theme_AG_no_legend
-rho <- cor(  # (I think it's better to go with Spearman here)
-    tmp$`log2(FC) steady state`,
-    tmp$`log2(FC) nascent`,
-    method = "spearman"
-)  # [1] 0.3273192
-m <- lm(tmp$`log2(FC) steady state` ~ tmp$`log2(FC) nascent`)
-m$coefficients[["tmp$`log2(FC) nascent`"]]  # [1] 0.5947096
+    geom_abline(  # linear regression (m) slope
+        slope = coefficients(m)[2],
+        intercept = coefficients(m)[1],
+        linetype = "dashed",
+        color = "red",
+        size = 1
+    ) +
+    xlim(-5, 8.5) +
+    ylim(-5, 8.5) +
+    # xlab("log2(FC) steady state rrp6n/WT ") +
+    # ylab("log2(FC) nascent nab3d/WT") +
+    xlab("log2(FC) nascent nab3d/WT") +
+    ylab("log2(FC) steady state rrp6n/WT ") +
+    ggtitle(
+        "Figure 3C | Slide 16",
+        subtitle = paste(
+            "Change in Nab3 targets can at least partially explain",
+            # "\nchange in RRP6 targets | red: m (0.68) |",
+            "\nchange in RRP6 targets | red: m (0.22) |",
+            "\nblue: Spearman (0.39) | orange: Pearson (0.39)"
+        )
+    ) +
+    theme_slick_no_legend
 
 
 #  Notes ======================================================================

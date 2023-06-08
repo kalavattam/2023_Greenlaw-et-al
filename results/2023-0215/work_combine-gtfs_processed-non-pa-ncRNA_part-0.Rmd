@@ -1,0 +1,136 @@
+---
+title: "work_combine-gtfs_processed-non-pa-ncRNA_part-0.Rmd"
+author: "KA"
+email: "kalavatt@fredhutch.org"
+output:
+    html_notebook:
+        toc: yes
+        toc_float: true
+---
+
+## Get situated
+### Code
+<details>
+<summary><i>Code: Get situated</i></summary>
+
+```{r Get situated, results='hide', message=FALSE, warning=FALSE}
+#!/usr/bin/env Rscript
+
+library(GenomicRanges)
+library(IRanges)
+library(plyr)
+library(readxl)
+library(rtracklayer)
+library(tidyverse)
+
+options(scipen = 999)
+options(ggrepel.max.overlaps = Inf)
+
+if(base::isTRUE(stringr::str_detect(getwd(), "kalavattam"))) {
+    p_local <- "/Users/kalavattam/Dropbox/FHCC"
+} else {
+    p_local <- "/Users/kalavatt/projects-etc"
+}
+p_wd <- "2022_transcriptome-construction/results/2023-0215"
+
+setwd(paste(p_local, p_wd, sep = "/"))
+getwd()
+
+rm(p_local, p_wd)
+```
+</details>
+<br />
+<br />
+
+## Load and combine `gtf`s
+### Load `gtf` files [derived/"processed" from R64-1-1](./work_assess-process_R64-1-1_gff3_part-1.Rmd)
+#### Code
+<details>
+<summary><i>Code: Load `gtf` files derived/"processed" from R64-1-1</i></summary>
+
+```{r Load gtf files derived/processed from R64-1-1, results='hide', message=FALSE, warning=FALSE}
+#!/usr/bin/env Rscript
+
+read_processed_gtf <- function(file) {
+    tbl <- file %>%
+        rtracklayer::import() %>%
+        tibble::as_tibble() %>%
+        dplyr::select(-c(width, score, phase)) %>%
+        dplyr::rename(feature =  type.1) %>%
+        dplyr::arrange(seqnames, start)
+    tbl[tbl == "NA"] <- NA_character_
+    
+    return(tbl)
+}
+
+
+p_processed <- "./outfiles_gtf-gff3/comprehensive/S288C_reference_genome_R64-1-1_20110203"
+f_gene <- "processed_gene_sense.gtf"
+f_PG <- "processed_PG_sense.gtf"
+f_snRNA <- "processed_snRNA_sense.gtf"
+f_snoRNA <- "processed_snoRNA_sense.gtf"
+f_TE <- "processed_TE_sense.gtf"
+
+t_gene <- paste(p_processed, f_gene, sep = "/") %>% read_processed_gtf()
+t_PG <- paste(p_processed, f_PG, sep = "/") %>% read_processed_gtf()
+t_snRNA <- paste(p_processed, f_snRNA, sep = "/") %>% read_processed_gtf()
+t_snoRNA <- paste(p_processed, f_snoRNA, sep = "/") %>% read_processed_gtf()
+t_TE <- paste(p_processed, f_TE, sep = "/") %>% read_processed_gtf()
+
+t_processed <- dplyr::bind_rows(t_gene, t_PG, t_snRNA, t_snoRNA, t_TE) %>%
+    dplyr::arrange(seqnames, start)
+
+rm(p_processed, f_gene, f_PG, f_snRNA, f_snoRNA, f_TE)
+rm(t_gene, t_PG, t_snRNA, t_snoRNA, t_TE)
+```
+</details>
+<br />
+<br />
+
+## Write out combined "processed" `gtf`
+### Code
+<details>
+<summary><i>Code: Row-bind the "processed" `gtf`s</i></summary>
+
+```{r}
+#!/usr/bin/env Rscript
+
+write_gtf <- function(x, y) {
+    # ...
+    # :param x: tibble
+    # :param y: outfile
+    # :return: NA
+    readr::write_tsv(
+        x,
+        y,
+        col_names = FALSE,
+        quote = "none",
+        escape = "none"
+    )
+}
+
+
+p_gtf <- "./outfiles_gtf-gff3/representation"
+f_gtf <- "Greenlaw-et-al_representative-coding-non-pa-ncRNA-transcriptome.gtf"
+t_gtf <- t_processed %>%
+    dplyr::mutate(score = ".", frame = ".") %>%
+    dplyr::relocate(c("seqnames", "source", "type"), .before = "start") %>%
+    dplyr::relocate(c("score", "strand", "frame"), .after = "end") %>%
+    dplyr::mutate(
+        attribute = paste(
+            paste0("gene_id \"", gene_id, "\""),
+            paste0("transcript_id \"", transcript_id, "\""),
+            paste0("type \"", feature, "\""),
+            paste0("orf_classification \"", orf_classification, "\""),
+            paste0("source_id \"", source_id, "\""),
+            sep = "; "
+        )
+    ) %>%
+    dplyr::select(
+        -c(gene_id, transcript_id, feature, orf_classification, source_id)
+    )
+
+write_gtf(t_gtf, paste(p_gtf, f_gtf, sep = "/"))
+```
+</details>
+<br />
