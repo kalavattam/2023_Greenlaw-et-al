@@ -37,7 +37,7 @@ filter_process_counts_matrix <- function(named_character_vector) {
 
 
 write_plot_info <- function(
-    dds_colData, dds_design, title, is_apeglm = FALSE
+    dds_colData, dds_design, title, is_apeglm = FALSE, n_DE_up, n_DE_down
 ) {
     # ...
     #
@@ -45,9 +45,16 @@ write_plot_info <- function(
     # :param dds_design: ...
     # :param title: ...
     # :param is_apeglm: ...
+    # :param n_DE_up: ...
+    # :param n_DE_down: ...
     # :return title_list: ...
+    if(base::isFALSE(title %in% c("volcano plot", "MA plot"))) {
+        stop(
+            "Argument \"title\" must be \"volcano plot\" or \"MA plot\" <chr>"
+        )
+    }
     if(base::isFALSE(is.logical(is_apeglm))) {
-        stop("Argument \"is_logical\" must be TRUE or FALSE <lgl>")
+        stop("Argument \"is_apeglm\" must be TRUE or FALSE <lgl>")
     }
     
     sample_info <- dds_colData %>%
@@ -65,28 +72,31 @@ write_plot_info <- function(
         paste(., collapse = " vs. ")
     model_info <- dds_design
     title <- title
+    orient_ctrl <- ifelse(title == "volcano plot", "right", "top")
+    orient_exp <- ifelse(title == "volcano plot", "left", "bottom")
+    
     if(base::isFALSE(is_apeglm)) {
-        subtitle <- paste(
-            "points: S. cerevisiae features",
-            "| size factors: K. lactis features",
-            "\nsamples:", sample_info,
-            "| model: ~", paste(
+        subtitle <- paste0(
+            "points: S. cerevisiae features ",
+            "| size factors: K. lactis features ",
+            "\nsamples: ", sample_info,
+            " | model: ~ ", paste(
                 as.character(model_info)[-1], collapse = " + "
             ),
-            "\nleft: up in", name_ctrl,
-            "| right: up in", name_exp
+            "\n", orient_ctrl, ": up in ", name_ctrl, " (", n_DE_down, ") ",
+            "| ", orient_exp, ": up in ", name_exp, " (", n_DE_up, ")"
         )
     } else {
-        subtitle <- paste(
-            "points: S. cerevisiae features",
-            "| size factors: K. lactis features",
-            "\nsamples:", sample_info,
-            "| model: ~", paste(
+        subtitle <- paste0(
+            "points: S. cerevisiae features ",
+            "| size factors: K. lactis features ",
+            "\nsamples: ", sample_info,
+            " | model: ~ ", paste(
                 as.character(model_info)[-1], collapse = " + "
             ),
             "| apeglm",
-            "\nleft: up in", name_ctrl,
-            "| right: up in", name_exp
+            "\n", orient_ctrl, ": up in ", name_ctrl, " (", n_DE_down, ") ",
+            "| ", orient_exp, ": up in ", name_exp, " (", n_DE_up, ")"
         )
     }
     
@@ -101,7 +111,9 @@ write_plot_info <- function(
 plot_volcano <- function(
     table, label, selection, label_size, p_cutoff, FC_cutoff,
     point_size = 1, cutoff_line_width = 0.2,
-    xlim, ylim, color, title, subtitle, ...
+    xlim, ylim,
+    color = c("#D3D3D3", "#D3D3D3", "#D3D3D3", "#A020F0"),  #TODO More control,
+    title, subtitle, ...
 ) {
     # ...
     #
@@ -119,7 +131,7 @@ plot_volcano <- function(
     #                  <float>
     # :param xlim: limits of the x-axis <float>
     # :param ylim: limits of the y-axis <float>
-    # :param color: color of DEGs, e.g., '#52BE9B' <hex>
+    # :param color: character vector of four hexcode colors <chr>
     # :param title: plot title <chr>
     # :param subtitle: plot subtitle <chr>
     # :return volcano: ...
@@ -141,7 +153,7 @@ plot_volcano <- function(
         pointSize = point_size,
         shape = 16,
         colAlpha = 0.25,
-        col = c("#D3D3D3", "#D3D3D3", "#D3D3D3", color),  #TODO More control
+        col = color,
         title = NULL,
         subtitle = NULL,
         caption = NULL,
@@ -167,6 +179,7 @@ plot_volcano <- function(
 
 plot_MA <- function(
     table,
+    alpha = 0.05,
     selection,
     label_size = 0.25,
     x_min,
@@ -181,7 +194,7 @@ plot_MA <- function(
         aes(
             x = ifelse(is.infinite(log10(baseMean)), NA, log10(baseMean)),
             y = log2FoldChange,
-            colour = as.factor(padj <= 0.05)
+            colour = as.factor(padj <= alpha)
         )
     ) +
         geom_point(alpha = 0.25, size = 0.5) +
@@ -207,6 +220,7 @@ call_DESeq2_results_run_analyses <- function(
     dds,
     independent_filtering = TRUE,
     threshold_p = 0.05,
+    threshold_p_lessAbs = 0.99,
     threshold_lfc = 0.58,
     x_min = -14,
     x_max = 14,
@@ -228,25 +242,27 @@ call_DESeq2_results_run_analyses <- function(
     # :param color: ...
     # :param selection: ...
     # :return results_list: ...
-    if(base::isFALSE(is.logical(selection))) {
-        stop("Argument \"selection\" must be TRUE or FALSE <lgl>")
-    }
     
     #  Test  #HERE
     # dds <- dds
     # independent_filtering <- TRUE
     # threshold_p <- 0.05
+    # threshold_p_lessAbs <- 0.99
     # threshold_lfc <- 0.58
-    # x_min <- -6
-    # x_max <- 11
+    # x_min <- -5
+    # x_max <- 10
     # y_min <- 0
-    # y_max <- 40
-    # color <- "#113275"
+    # y_max <- 100
+    # color <- "#481A6C"
     # selection <- FALSE
     
+    if(base::isFALSE(is.logical(selection))) {
+        stop("Argument \"selection\" must be TRUE or FALSE <lgl>")
+    }
     
-    #  Standard tests of LFC difference ("greaterAbs") ========================
-    #  Initialize a DESeq2 DataFrame object
+    #  Perform standard tests of LFC difference (default "greaterAbs") ========
+    #  Initialize a DESeq2 DataFrame object, which is necessary for some down-
+    #+ stream functions
     DGE_unshrunken_DF <- DESeq2::results(
         dds,
         name = DESeq2::resultsNames(dds)[length(DESeq2::resultsNames(dds))],
@@ -267,7 +283,7 @@ call_DESeq2_results_run_analyses <- function(
     )
     
     #  Initialize a GRanges object, which we can easily add to and convert to
-    #+ other formats (such as a tibble)
+    #+ other formats
     DGE_unshrunken_GR <- DESeq2::results(
         dds,
         name = DESeq2::resultsNames(dds)[length(DESeq2::resultsNames(dds))],
@@ -298,7 +314,7 @@ call_DESeq2_results_run_analyses <- function(
     DGE_shrunken_GR$genome <- MatrixGenerics::rowRanges(dds)$genome
     
     
-    #  Without LFC shrinkage --------------------------------------------------
+    #  Making plots *without* LFC shrinkage values ----------------------------
     #  Coerce GRanges object to tibble
     t_DGE_unshrunken <- DGE_unshrunken_GR %>% dplyr::as_tibble()
     
@@ -321,19 +337,45 @@ call_DESeq2_results_run_analyses <- function(
         selection_unshrunken <- ""
     }
     
+    #  Tally number of features greater than LFC threshold and less than
+    #+ padj threshold
+    `n_feat_gte_abs-lfc_lt_padj_unshrunken` <- table(
+        abs(t_DGE_unshrunken$log2FoldChange) >= threshold_lfc &
+        t_DGE_unshrunken$padj < threshold_p
+    )
+    
+    n_feat_gt_lfc_lt_padj_unshrunken <- table(
+        t_DGE_unshrunken$log2FoldChange > threshold_lfc &
+        t_DGE_unshrunken$padj < threshold_p
+    )
+    
+    n_feat_lt_lfc_lt_padj_unshrunken <- table(
+        t_DGE_unshrunken$log2FoldChange < threshold_lfc &
+        t_DGE_unshrunken$padj < threshold_p
+    )
+    
     #  Make volcano plots
+    info_volcano <- write_plot_info(
+        dds_colData = colData(dds),
+        dds_design = dds@design,
+        title = "volcano plot",
+        is_apeglm = FALSE,
+        n_DE_up = as.character(n_feat_gt_lfc_lt_padj_unshrunken[2]),
+        n_DE_down = as.character(n_feat_lt_lfc_lt_padj_unshrunken[2])
+    )
+    
     p_vol_unshrunken_KA <- plot_volcano(
         table = t_DGE_unshrunken,
         label = all_unshrunken,
         selection = selection_unshrunken,
         label_size = 2.5,
-        p_cutoff = 0.05,
+        p_cutoff = as.numeric(threshold_p),
         FC_cutoff = threshold_lfc,
         xlim = c(x_min, x_max),
         ylim = c(y_min, y_max),
-        color = color,
-        title = write_plot_info(colData(dds), dds@design, "volcano plot", FALSE)[1],
-        subtitle = write_plot_info(colData(dds), dds@design, "volcano plot", FALSE)[2]
+        color = c("#D3D3D3", "#D3D3D3", "#D3D3D3", color),
+        title = info_volcano[1],
+        subtitle = info_volcano[2]
     ) + 
         ylab("-log10(q)")
     
@@ -342,11 +384,11 @@ call_DESeq2_results_run_analyses <- function(
         label = all_unshrunken,
         selection = selection_unshrunken,
         label_size = 2.5,
-        p_cutoff = 0.05,
+        p_cutoff = as.numeric(threshold_p),
         FC_cutoff = threshold_lfc,
         xlim = c(x_min, x_max),
         ylim = c(y_min, y_max),
-        color = color,
+        color = c("#D3D3D3", "#D3D3D3", "#D3D3D3", color),
         cutoff_line_width = 3,
         point_size = 2.5,
         title = "",
@@ -356,30 +398,70 @@ call_DESeq2_results_run_analyses <- function(
         theme_AG_no_legend
     
     #  Make an MA plot
+    info_MA <- write_plot_info(
+        colData(dds),
+        dds@design,
+        "MA plot",
+        FALSE,
+        n_DE_up = as.character(n_feat_gt_lfc_lt_padj_unshrunken[2]),
+        n_DE_down = as.character(n_feat_lt_lfc_lt_padj_unshrunken[2])
+    )
+    
     p_MA_unshrunken <- plot_MA(
         table = t_DGE_unshrunken,
+        alpha =  threshold_p,
         selection = selection_unshrunken,
         x_min = x_min,
         x_max = x_max,
         legend_header = paste("q ≤", threshold_p),
-        title = write_plot_info(colData(dds), dds@design, "MA plot", FALSE)[1],
-        subtitle = write_plot_info(colData(dds), dds@design, "MA plot", FALSE)[2]
+        title = info_MA[1],
+        subtitle = info_MA[2]
     )
     
-    #  Tally number of features greater than LFC threshold and less than
-    #+ padj threshold
-    n_feat_gt_lfc_lt_padj_unshrunken <- table(
-        abs(t_DGE_unshrunken$log2FoldChange) > threshold_lfc &
-        t_DGE_unshrunken$padj < threshold_p
-    )
+    #  Plot p- and q-value distributions
+    hist_unshrunken_p <- t_DGE_unshrunken %>%
+    # hist_unshrunken_p <- t_DGE_unshrunken[
+    #     t_DGE_unshrunken$pvalue != 1,
+    # ] %>%
+        ggplot(aes(x = pvalue)) +
+        geom_histogram(
+            binwidth = 0.025,
+            fill = "steelblue",
+            color = "white"
+        ) +
+        labs(
+            x = "p-value",
+            y = "frequency",
+            title = "p-value distribution"
+        ) +
+        theme_slick
     
+    hist_unshrunken_q <- t_DGE_unshrunken[
+        !is.na(t_DGE_unshrunken$padj), 
+    ] %>%
+    # hist_unshrunken_q <- t_DGE_unshrunken[
+    #     t_DGE_unshrunken$pvalue != 1 &
+    #     !is.na(t_DGE_unshrunken$padj), 
+    # ] %>%
+        ggplot(aes(x = padj)) +
+        geom_histogram(
+            binwidth = 0.025,
+            fill = "steelblue",
+            color = "white"
+        ) +
+        labs(
+            x = "q-value",
+            y = "frequency",
+            title = "q-value distribution"
+        ) +
+        theme_slick
     
-    #  With LFC shrinkage (apeglm) --------------------------------------------
+    #  Making plots *with* LFC shrinkage values (apeglm) ----------------------
     #  Coerce GRanges object to tibble
     t_DGE_shrunken <- DGE_shrunken_GR %>% dplyr::as_tibble()
     if("svalue" %in% names(t_DGE_shrunken)) {
-        names(t_DGE_shrunken)[9] <- "padj"
-        p_cutoff <- as.double(threshold_p) * 0.01
+        names(t_DGE_shrunken)[9] <- "padj"  #HACK
+        p_cutoff <- as.double(threshold_p) * 0.1
     } else {
         p_cutoff <- threshold_p
     }
@@ -403,7 +485,33 @@ call_DESeq2_results_run_analyses <- function(
         selection_shrunken <- ""
     }
     
+    #  Tally number of features greater than LFC threshold and less than
+    #+ svalue threshold
+    `n_feat_gte_abs-lfc_lt_s_shrunken` <- table(
+        abs(t_DGE_shrunken$log2FoldChange) >= threshold_lfc &
+        t_DGE_shrunken$padj < p_cutoff
+    )
+    
+    n_feat_gt_lfc_lt_s_shrunken <- table(
+        t_DGE_shrunken$log2FoldChange > threshold_lfc &
+        t_DGE_shrunken$padj < p_cutoff
+    )
+    
+    n_feat_lt_lfc_lt_s_shrunken <- table(
+        t_DGE_shrunken$log2FoldChange < threshold_lfc &
+        t_DGE_shrunken$padj < p_cutoff
+    )
+    
     #  Make volcano plots
+    info_volcano <- write_plot_info(
+        dds_colData = colData(dds),
+        dds_design = dds@design,
+        title = "volcano plot",
+        is_apeglm = FALSE,
+        n_DE_up = as.character(n_feat_gt_lfc_lt_s_shrunken[2]),
+        n_DE_down = as.character(n_feat_lt_lfc_lt_s_shrunken[2])
+    )
+    
     p_vol_shrunken_KA <- plot_volcano(
         table = t_DGE_shrunken,
         label = all_shrunken,
@@ -413,9 +521,9 @@ call_DESeq2_results_run_analyses <- function(
         FC_cutoff = threshold_lfc,
         xlim = c(x_min, x_max),
         ylim = c(y_min, y_max),
-        color = color,
-        title = write_plot_info(colData(dds), dds@design, "volcano plot", TRUE)[1],
-        subtitle = write_plot_info(colData(dds), dds@design, "volcano plot", TRUE)[2]
+        color = c("#D3D3D3", "#D3D3D3", "#D3D3D3", color),
+        title = info_volcano[1],
+        subtitle = info_volcano[2]
     ) + 
         ylab("-log10(s)")
     
@@ -428,7 +536,7 @@ call_DESeq2_results_run_analyses <- function(
         FC_cutoff = threshold_lfc,
         xlim = c(x_min, x_max),
         ylim = c(y_min, y_max),
-        color = color,
+        color = c("#D3D3D3", "#D3D3D3", "#D3D3D3", color),
         cutoff_line_width = 3,
         point_size = 2.5,
         title = "",
@@ -438,32 +546,51 @@ call_DESeq2_results_run_analyses <- function(
         theme_AG_no_legend
     
     #  Make an MA plot
+    info_MA <- write_plot_info(
+        dds_colData = colData(dds),
+        dds_design = dds@design,
+        title = "MA plot",
+        is_apeglm = FALSE,
+        n_DE_up = as.character(n_feat_lt_lfc_lt_s_shrunken[2]),
+        n_DE_down = as.character(n_feat_gt_lfc_lt_s_shrunken[2])
+    )
+    
     p_MA_shrunken <- plot_MA(
         table = t_DGE_shrunken,
+        alpha = p_cutoff,
         selection = selection_shrunken,
         x_min = x_min,
         x_max = x_max,
         legend_header = paste("s ≤", p_cutoff),
-        title = write_plot_info(colData(dds), dds@design, "MA plot", TRUE)[1],
-        subtitle = write_plot_info(colData(dds), dds@design, "MA plot", TRUE)[2]
+        title = info_MA[1],
+        subtitle = info_MA[2]
     )
     
-    #  Tally number of features greater than LFC threshold and less than
-    #+ svalue threshold
-    n_feat_gt_lfc_lt_s_shrunken <- table(
-        t_DGE_shrunken$log2FoldChange > threshold_lfc &
-        t_DGE_shrunken$padj < (threshold_p * 0.1)
-    )
+    #  Plot s-value histogram
+    hist_shrunken_s <- t_DGE_shrunken %>%
+        ggplot(aes(x = padj)) +
+        geom_histogram(
+            binwidth = 0.0033,
+            fill = "steelblue",
+            color = "white"
+        ) +
+        labs(
+            x = "s-value",
+            y = "frequency",
+            title = "s-value distribution"
+        ) +
+        theme_slick
     
     
-    #  LFC tests in which p are the max of upper, lower tests ("lessAbs") =====
+    #  Perform LFC tests in which p are the max of upper, lower tests =========
+    #+ (i.e., "lessAbs" tests)
     if(base::isTRUE(as.numeric(threshold_lfc) > 0)) {
         #  Initialize a DESeq2 DataFrame object
         DGE_lessAbs_unshrunken_DF <- DESeq2::results(
             dds,
             name = DESeq2::resultsNames(dds)[length(DESeq2::resultsNames(dds))],
             independentFiltering = independent_filtering,
-            alpha = threshold_p,
+            alpha = threshold_p_lessAbs,
             lfcThreshold = threshold_lfc,
             altHypothesis = "lessAbs",
             format = "DataFrame"
@@ -475,7 +602,7 @@ call_DESeq2_results_run_analyses <- function(
             dds,
             name = DESeq2::resultsNames(dds)[length(DESeq2::resultsNames(dds))],
             independentFiltering = independent_filtering,
-            alpha = threshold_p,
+            alpha = threshold_p_lessAbs,
             lfcThreshold = threshold_lfc,
             altHypothesis = "lessAbs",
             format = "GRanges"
@@ -509,19 +636,37 @@ call_DESeq2_results_run_analyses <- function(
             selection_lessAbs_unshrunken <- ""
         }
         
+        #  Tally number of features greater than LFC threshold and less than
+        #+ pvalue threshold
+        `n_feat_lt_abs-lfc_lt_padj_lessAbs_unshrunken` <- table(
+            abs(t_DGE_lessAbs_unshrunken$log2FoldChange) <= threshold_lfc &
+            t_DGE_lessAbs_unshrunken$padj < threshold_p_lessAbs
+        )
+        # table(abs(t_DGE_lessAbs_unshrunken$log2FoldChange) <= threshold_lfc)
+        # table(t_DGE_lessAbs_unshrunken$padj < threshold_p_lessAbs)
+
         #  Make volcano plots
+        info_volcano <- write_plot_info(
+            dds_colData = colData(dds),
+            dds_design = dds@design,
+            title = "volcano plot",
+            is_apeglm = FALSE,
+            n_DE_up = 0,
+            n_DE_down = 0
+        )
+        
         p_vol_lessAbs_unshrunken_KA <- plot_volcano(
             table = t_DGE_lessAbs_unshrunken,
             label = all_lessAbs_unshrunken,
             selection = selection_lessAbs_unshrunken,
             label_size = 2.5,
-            p_cutoff = 0.05,
+            p_cutoff = threshold_p_lessAbs,
             FC_cutoff = threshold_lfc,
-            xlim = c(x_min, x_max),
-            ylim = c(y_min, y_max),
-            color = color,
-            title = write_plot_info(colData(dds), "volcano plot", FALSE[1]),
-            subtitle = write_plot_info(colData(dds), "volcano plot", FALSE)[2]
+            xlim = c(-2, 2),
+            ylim = c(0, 5),
+            color = c("#D3D3D3", "#D3D3D3", color, "#D3D3D3"),
+            title = info_volcano[1],
+            subtitle = info_volcano[2]
         ) + 
             ylab("-log10(q)")
         
@@ -530,11 +675,11 @@ call_DESeq2_results_run_analyses <- function(
             label = all_lessAbs_unshrunken,
             selection = selection_lessAbs_unshrunken,
             label_size = 2.5,
-            p_cutoff = 0.05,
+            p_cutoff = threshold_p_lessAbs,
             FC_cutoff = threshold_lfc,
-            xlim = c(x_min, x_max),
-            ylim = c(y_min, y_max),
-            color = color,
+            xlim = c(-2, 2),
+            ylim = c(0, 5),
+            color = c("#D3D3D3", "#D3D3D3", color, "#D3D3D3"),
             cutoff_line_width = 3,
             point_size = 2.5,
             title = "",
@@ -544,23 +689,56 @@ call_DESeq2_results_run_analyses <- function(
             theme_AG_no_legend
         
         #  Make an MA plot
+        info_MA <- write_plot_info(
+            dds_colData = colData(dds),
+            dds_design = dds@design,
+            title = "MA plot",
+            is_apeglm = FALSE,
+            n_DE_up = 0,
+            n_DE_down = 0
+        )
+        
         p_MA_lessAbs_unshrunken <- plot_MA(
             table = t_DGE_lessAbs_unshrunken,
+            alpha = threshold_p_lessAbs,
             selection = selection_lessAbs_unshrunken,
             x_min = x_min,
             x_max = x_max,
-            legend_header = paste("q ≤", threshold_p),
-            title = write_plot_info(colData(dds), "MA plot", FALSE[1]),
-            subtitle = write_plot_info(colData(dds), "MA plot", FALSE)[2]
-
+            legend_header = paste("q ≤", threshold_p_lessAbs),
+            title = info_MA[1],
+            subtitle = info_MA[2]
         )
         
-        #  Tally number of features greater than LFC threshold and less than
-        #+ padj threshold
-        n_feat_lt_lfc_lt_padj_lessAbs_unshrunken <- table(
-            t_DGE_lessAbs_unshrunken$log2FoldChange < threshold_lfc &
-            t_DGE_lessAbs_unshrunken$padj < threshold_p
-        )
+        #  Plot lessAbs p- and q-value histogram
+        hist_lessAbs_unshrunken_p <- t_DGE_lessAbs_unshrunken %>%
+            ggplot(aes(x = pvalue)) +
+            geom_histogram(
+                binwidth = 0.025,
+                fill = "steelblue",
+                color = "white"
+            ) +
+            labs(
+                x = "p-value",
+                y = "frequency",
+                title = "p-value distribution"
+            ) +
+            theme_slick
+        
+        hist_lessAbs_unshrunken_q <- t_DGE_lessAbs_unshrunken[
+            !is.na(t_DGE_lessAbs_unshrunken$padj),
+        ] %>%
+            ggplot(aes(x = padj)) +
+            geom_histogram(
+                binwidth = 0.025,
+                fill = "steelblue",
+                color = "white"
+            ) +
+            labs(
+                x = "q-value",
+                y = "frequency",
+                title = "q-value distribution"
+            ) +
+            theme_slick
     }
 
     results_list <- list()
@@ -619,10 +797,24 @@ call_DESeq2_results_run_analyses <- function(
         results_list[["09_p_MA_lessAbs_unshrunken"]] <- p_MA_lessAbs_unshrunken
     }
     
-    results_list[["10_n_feat_gt_lfc_lt_padj_unshrunken"]] <- n_feat_gt_lfc_lt_padj_unshrunken
-    results_list[["10_n_feat_gt_lfc_lt_s_shrunken"]] <- n_feat_gt_lfc_lt_s_shrunken
+    results_list[["10_hist_unshrunken_p"]] <- hist_unshrunken_p
+    results_list[["10_hist_unshrunken_q"]] <- hist_unshrunken_q
+    results_list[["10_hist_shrunken_s"]] <- hist_shrunken_s
     if(as.numeric(threshold_lfc) > 0) {
-        results_list[["10_n_feat_lt_lfc_lt_padj_lessAbs_unshrunken"]] <- n_feat_lt_lfc_lt_padj_lessAbs_unshrunken
+        results_list[["10_hist_lessAbs_unshrunken_p"]] <- hist_lessAbs_unshrunken_p
+        results_list[["10_hist_lessAbs_unshrunken_q"]] <- hist_lessAbs_unshrunken_q
+    }
+    
+    results_list[["11.1_n_feat_gte_abs-lfc_lt_padj_unshrunken"]] <- `n_feat_gte_abs-lfc_lt_padj_unshrunken`
+    results_list[["11.1_n_feat_gt_lfc_lt_padj_unshrunken"]] <- n_feat_gt_lfc_lt_padj_unshrunken
+    results_list[["11.1_n_feat_lt_lfc_lt_padj_unshrunken"]] <- n_feat_lt_lfc_lt_padj_unshrunken
+    
+    results_list[["11.2_n_feat_gte_abs-lfc_lt_s_shrunken"]] <- `n_feat_gte_abs-lfc_lt_s_shrunken`
+    results_list[["11.2_n_feat_gt_lfc_lt_s_shrunken"]] <- n_feat_gt_lfc_lt_s_shrunken
+    results_list[["11.2_n_feat_lt_lfc_lt_s_shrunken"]] <- n_feat_lt_lfc_lt_s_shrunken
+    
+    if(as.numeric(threshold_lfc) > 0) {
+        results_list[["11.3_n_feat_lt_abs-lfc_lt_padj_lessAbs_unshrunken"]] <- `n_feat_lt_abs-lfc_lt_padj_lessAbs_unshrunken`
     }
     
     return(results_list)
@@ -635,11 +827,12 @@ run_main <- function(
     genotype_ctrl,
     filtering = "min-10-cts-all-but-1-samps",
     threshold_p = 0.05,
+    threshold_p_lessAbs = 0.99,
     x_min = -14,
     x_max = 14,
     y_min = 0,
     y_max = 310,
-    color = "#113275"
+    color = "#3A538B"
 ) {
     # ...
     #
@@ -655,15 +848,17 @@ run_main <- function(
     # :return results_list: ...
     
     #  Test  #HERE
-    # t_sub <- filter_process_counts_matrix(`SS-Q-nab3d_SS-Q-parental`)
+    # t_sub <- `SS-Q-nab3d_SS-Q-parental`
     # genotype_exp <- "n3d"
     # genotype_ctrl <- "od"
-    # filtering <- "none"
+    # filtering <- "min-4-cts-3-samps"
+    # threshold_p <- 0.05
+    # threshold_p_lessAbs <- 0.99
     # x_min <- -5
     # x_max <- 10
     # y_min <- 0
     # y_max <- 100
-    # color <- "#2E0C4A"
+    # color <- "#481A6C"
     
     
     #  Check arguments --------------------------------------------------------
@@ -743,76 +938,6 @@ run_main <- function(
     
     if(filtering == "none"){
         t_tmp <- t_sub[t_sub$genome == "S_cerevisiae", ]
-    } else if(filtering == "min-10-cts-1-samp") {
-        counts <- sapply(
-            t_sub[t_sub$genome == "S_cerevisiae", 12:ncol(t_sub)], as.numeric
-        )
-        keep <- rowSums(counts >= 10) >= 1
-        t_tmp <- t_sub[t_sub$genome == "S_cerevisiae", ]
-        t_tmp <- t_tmp[keep, ]
-    } else if(filtering == "min-10-cts-2-samps") {
-        counts <- sapply(
-            t_sub[t_sub$genome == "S_cerevisiae", 12:ncol(t_sub)], as.numeric
-        )
-        keep <- rowSums(counts >= 10) >= 2
-        t_tmp <- t_sub[t_sub$genome == "S_cerevisiae", ]
-        t_tmp <- t_tmp[keep, ]
-    } else if(filtering == "min-1-ct-3-samps") {
-        counts <- sapply(
-            t_sub[t_sub$genome == "S_cerevisiae", 12:ncol(t_sub)], as.numeric
-        )
-        keep <- rowSums(counts >= 1) >= 3
-        t_tmp <- t_sub[t_sub$genome == "S_cerevisiae", ]
-        t_tmp <- t_tmp[keep, ]
-    } else if(filtering == "min-2-cts-3-samps") {
-        counts <- sapply(
-            t_sub[t_sub$genome == "S_cerevisiae", 12:ncol(t_sub)], as.numeric
-        )
-        keep <- rowSums(counts >= 2) >= 3
-        t_tmp <- t_sub[t_sub$genome == "S_cerevisiae", ]
-        t_tmp <- t_tmp[keep, ]
-    } else if(filtering == "min-3-cts-3-samps") {
-        counts <- sapply(
-            t_sub[t_sub$genome == "S_cerevisiae", 12:ncol(t_sub)], as.numeric
-        )
-        keep <- rowSums(counts >= 3) >= 3
-        t_tmp <- t_sub[t_sub$genome == "S_cerevisiae", ]
-        t_tmp <- t_tmp[keep, ]
-    } else if(filtering == "min-4-cts-3-samps") {
-        counts <- sapply(
-            t_sub[t_sub$genome == "S_cerevisiae", 12:ncol(t_sub)], as.numeric
-        )
-        keep <- rowSums(counts >= 4) >= 3
-        t_tmp <- t_sub[t_sub$genome == "S_cerevisiae", ]
-        t_tmp <- t_tmp[keep, ]
-    } else if(filtering == "min-5-cts-3-samps") {
-        counts <- sapply(
-            t_sub[t_sub$genome == "S_cerevisiae", 12:ncol(t_sub)], as.numeric
-        )
-        keep <- rowSums(counts >= 5) >= 3
-        t_tmp <- t_sub[t_sub$genome == "S_cerevisiae", ]
-        t_tmp <- t_tmp[keep, ]
-    } else if(filtering == "min-10-cts-3-samps") {
-        counts <- sapply(
-            t_sub[t_sub$genome == "S_cerevisiae", 12:ncol(t_sub)], as.numeric
-        )
-        keep <- rowSums(counts >= 10) >= 3
-        t_tmp <- t_sub[t_sub$genome == "S_cerevisiae", ]
-        t_tmp <- t_tmp[keep, ]
-    } else if(filtering == "min-10-cts-all-but-1-samps") {
-        counts <- sapply(
-            t_sub[t_sub$genome == "S_cerevisiae", 12:ncol(t_sub)], as.numeric
-        )
-        keep <- rowSums(counts >= 10) >= length(12:ncol(t_sub)) - 1
-        t_tmp <- t_sub[t_sub$genome == "S_cerevisiae", ]
-        t_tmp <- t_tmp[keep, ]
-    } else if(filtering == "min-10-cts-all-samps") {
-        counts <- sapply(
-            t_sub[t_sub$genome == "S_cerevisiae", 12:ncol(t_sub)], as.numeric
-        )
-        keep <- rowSums(counts >= 10) >= length(12:ncol(t_sub))
-        t_tmp <- t_sub[t_sub$genome == "S_cerevisiae", ]
-        t_tmp <- t_tmp[keep, ]
     } else if(filtering == "filterByExpr.default") {
         #TODO Hasn't been tested since updates, refactoring
         t_edge <- t_sub[t_sub$genome == "S_cerevisiae", 12:ncol(t_sub)] %>%
@@ -846,7 +971,35 @@ run_main <- function(
         
         # dispose[dispose$genome == "S_cerevisiae", ] %>% nrow()
         # dispose[dispose$genome == "K_lactis", ] %>% nrow()
-    
+    } else {
+        counts <- sapply(
+            t_sub[t_sub$genome == "S_cerevisiae", 12:ncol(t_sub)], as.numeric
+        )
+        
+        if(filtering == "min-10-cts-1-samp") {
+            keep <- rowSums(counts >= 10) >= 1
+        } else if(filtering == "min-10-cts-2-samps") {
+            keep <- rowSums(counts >= 10) >= 2
+        } else if(filtering == "min-1-ct-3-samps") {
+            keep <- rowSums(counts >= 1) >= 3
+        } else if(filtering == "min-2-cts-3-samps") {
+            keep <- rowSums(counts >= 2) >= 3
+        } else if(filtering == "min-3-cts-3-samps") {
+            keep <- rowSums(counts >= 3) >= 3
+        } else if(filtering == "min-4-cts-3-samps") {
+            keep <- rowSums(counts >= 4) >= 3
+        } else if(filtering == "min-5-cts-3-samps") {
+            keep <- rowSums(counts >= 5) >= 3
+        } else if(filtering == "min-10-cts-3-samps") {
+            keep <- rowSums(counts >= 10) >= 3
+        } else if(filtering == "min-10-cts-all-but-1-samps") {
+            keep <- rowSums(counts >= 10) >= length(12:ncol(t_sub)) - 1
+        } else if(filtering == "min-10-cts-all-samps") {
+            keep <- rowSums(counts >= 10) >= length(12:ncol(t_sub))
+        }
+        
+        t_tmp <- t_sub[t_sub$genome == "S_cerevisiae", ]
+        t_tmp <- t_tmp[keep, ]
     }
     
     t_sub <- dplyr::bind_rows(t_tmp, t_sub[t_sub$genome != "S_cerevisiae", ])
@@ -865,7 +1018,7 @@ run_main <- function(
         thorough = t_sub$thorough,
         genome = t_sub$genome
     )
-    # g_pos
+    # g_pos %>% tibble::as_tibble()
     
     #  Make a counts matrix for DESeq2, etc.
     t_counts <- t_sub[, 12:ncol(t_sub)] %>%
@@ -912,6 +1065,7 @@ run_main <- function(
         dds = dds,
         independent_filtering = TRUE,
         threshold_p = threshold_p,
+        threshold_p_lessAbs = threshold_p_lessAbs,
         threshold_lfc = 0,  # i.e., 2^0 = 1
         x_min = x_min,
         x_max = x_max,
@@ -925,6 +1079,7 @@ run_main <- function(
         dds = dds,
         independent_filtering = TRUE,
         threshold_p = threshold_p,
+        threshold_p_lessAbs = threshold_p_lessAbs,
         threshold_lfc = 0.32,  # i.e., 2^0.32 ≈ 1.25
         x_min = x_min,
         x_max = x_max,
@@ -938,6 +1093,7 @@ run_main <- function(
         dds = dds,
         independent_filtering = TRUE,
         threshold_p = threshold_p,
+        threshold_p_lessAbs = threshold_p_lessAbs,
         threshold_lfc = 0.58,  # i.e., 2^0.58 ≈ 1.5
         x_min = x_min,
         x_max = x_max,
@@ -947,23 +1103,25 @@ run_main <- function(
         selection = FALSE
     )
      
-    # lfc_1 <- call_DESeq2_results_run_analyses(
-    #     dds = dds,
-    #     independent_filtering = TRUE,
-    #     threshold_p = threshold_p,
-    #     threshold_lfc = 1,  # i.e., 2^1 = 2
-    #     x_min = x_min,
-    #     x_max = x_max,
-    #     y_min = y_min,
-    #     y_max = y_max,
-    #     color = color,
-    #     selection = FALSE
-    # )
-    # 
+    lfc_1 <- call_DESeq2_results_run_analyses(
+        dds = dds,
+        independent_filtering = TRUE,
+        threshold_p = threshold_p,
+        threshold_p_lessAbs = threshold_p_lessAbs,
+        threshold_lfc = 1,  # i.e., 2^1 = 2
+        x_min = x_min,
+        x_max = x_max,
+        y_min = y_min,
+        y_max = y_max,
+        color = color,
+        selection = FALSE
+    )
+
     # lfc_1.32 <- call_DESeq2_results_run_analyses(
     #     dds = dds,
     #     independent_filtering = TRUE,
     #     threshold_p = threshold_p,
+    #     threshold_p_lessAbs = threshold_p_lessAbs,
     #     threshold_lfc = 1.32,  # i.e., 2^1.32 ≈ 2.5
     #     x_min = x_min,
     #     x_max = x_max,
@@ -977,6 +1135,7 @@ run_main <- function(
     #     dds = dds,
     #     independent_filtering = TRUE,
     #     threshold_p = threshold_p,
+    #     threshold_p_lessAbs = threshold_p_lessAbs,
     #     threshold_lfc = 1.58,  # i.e., 2^1.58 ≈ 3
     #     x_min = x_min,
     #     x_max = x_max,
@@ -990,6 +1149,7 @@ run_main <- function(
     #     dds = dds,
     #     independent_filtering = TRUE,
     #     threshold_p = threshold_p,
+    #     threshold_p_lessAbs = threshold_p_lessAbs,
     #     threshold_lfc = 2,  # i.e., 2^2 = 4
     #     x_min = x_min,
     #     x_max = x_max,
@@ -1003,6 +1163,7 @@ run_main <- function(
     #     dds = dds,
     #     independent_filtering = TRUE,
     #     threshold_p = threshold_p,
+    #     threshold_p_lessAbs = threshold_p_lessAbs,
     #     threshold_lfc = 2.32,  # i.e., 2^2.32 ≈ 5
     #     x_min = x_min,
     #     x_max = x_max,
@@ -1016,6 +1177,7 @@ run_main <- function(
     #     dds = dds,
     #     independent_filtering = TRUE,
     #     threshold_p = threshold_p,
+    #     threshold_p_lessAbs = threshold_p_lessAbs,
     #     threshold_lfc = 2.58,  # i.e., 2^2.58 ≈ 6
     #     x_min = x_min,
     #     x_max = x_max,
@@ -1029,6 +1191,7 @@ run_main <- function(
     #     dds = dds,
     #     independent_filtering = TRUE,
     #     threshold_p = threshold_p,
+    #     threshold_p_lessAbs = threshold_p_lessAbs,
     #     threshold_lfc = 3,  # i.e., 2^3 = 8
     #     x_min = x_min,
     #     x_max = x_max,
@@ -1070,7 +1233,7 @@ run_main <- function(
     results_list[["09_lfc_0_fc_1"]] <- lfc_0
     results_list[["09_lfc_0.32_fc_1.25"]] <- lfc_0.32
     results_list[["09_lfc_0.58_fc_1.5"]] <- lfc_0.58
-    # results_list[["09_lfc_1_fc_2"]] <- lfc_1
+    results_list[["09_lfc_1_fc_2"]] <- lfc_1
     # results_list[["09_lfc_1.32_fc_2.5"]] <- lfc_1.32
     # results_list[["09_lfc_1.58_fc_3"]] <- lfc_1.58
     # results_list[["09_lfc_2_fc_4"]] <- lfc_2
@@ -1191,8 +1354,13 @@ run <- "pa-ncRNA-collapsed-merged"  # Options: "mRNA" "pa-ncRNA-collapsed-merged
 # run <- "pa-ncRNA-not-collapsed-merged"  # Options: "mRNA" "pa-ncRNA-collapsed-merged" "pa-ncRNA-not-collapsed-merged"
 
 #  Check on "run" option
-if(base::isTRUE(run %notin% c("mRNA", "pa-ncRNA-collapsed-merged", "pa-ncRNA-not-collapsed-merged"))) {
-    stop("Variable \"run\" must be \"mRNA\", \"pa-ncRNA-collapsed-merged\", or \"pa-ncRNA-not-collapsed-merged\"")
+if(base::isTRUE(run %notin% c(
+    "mRNA", "pa-ncRNA-collapsed-merged", "pa-ncRNA-not-collapsed-merged"
+))) {
+    stop(paste(
+        "Variable \"run\" must be \"mRNA\", \"pa-ncRNA-collapsed-merged\", or",
+        "\"pa-ncRNA-not-collapsed-merged\""
+    ))
 }
 
 #  Load counts matrix or matrices
@@ -1479,8 +1647,7 @@ if(base::isTRUE(run == "mRNA")) {
 
 #  Order t_gff3 by chromosome names and feature start positions
 chr_SC <- c(
-    "I", "II", "III", "IV", "V", "VI",
-    "VII", "VIII", "IX", "X", "XI", "XII",
+    "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII",
     "XIII", "XIV", "XV", "XVI", "Mito"
 )
 chr_KL <- c("A", "B", "C", "D", "E", "F")
@@ -1716,32 +1883,40 @@ if(base::isTRUE(run != "mRNA")) {
 
 #  Analyze, graph datasets of interest ========================================
 `DGE-analysis_N-Q-nab3d_N-Q-parental` <- run_main(
+    #  See 230517_lab_meeting.pptx, slide 15
     t_sub = `N-Q-nab3d_N-Q-parental`,
     genotype_exp = "n3d",
     genotype_ctrl = "od",
     filtering = "min-4-cts-3-samps",
+    threshold_p = 0.05,
+    threshold_p_lessAbs = 0.99,
     x_min = -5,
-    x_max = ifelse(run == "mRNA", 10, 10),
+    x_max = 10,
     y_min = 0,
-    # y_max = ifelse(run == "mRNA", 40, 100),
-    y_max = 60,
-    color = "#113275"
+    y_max = ifelse(run == "mRNA", 40, 100),
+    color = "#3A538B"
 )
+test <- `DGE-analysis_N-Q-nab3d_N-Q-parental`
+test$`09_lfc_0.58_fc_1.5`$`08_p_vol_unshrunken_KA`
+test$`09_lfc_0.58_fc_1.5`$`08_p_vol_shrunken_KA`
+test$`09_lfc_0_fc_1`$`09_p_MA_unshrunken`  #FIXME Numbers not matching vol above
+test$`09_lfc_0_fc_1`$`09_p_MA_shrunken`  #FIXME Numbers not matching vol above, looking at s ≤ 0.05 and not s ≤ 0.005
 
 `DGE-analysis_SS-Q-nab3d_SS-Q-parental` <- run_main(
+    #  See 230517_lab_meeting.pptx, slide 15
     t_sub = `SS-Q-nab3d_SS-Q-parental`,
     genotype_exp = "n3d",
     genotype_ctrl = "od",
     filtering = "min-4-cts-3-samps",
     x_min = -5,
-    x_max = ifelse(run == "mRNA", 10, 10),
+    x_max = 10,
     y_min = 0,
-    # y_max = ifelse(run == "mRNA", 100, 100),
-    y_max = 60,
-    color = "#2E0C4A"
+    y_max = 100,
+    color = "#481A6C"
 )
 
 `DGE-analysis_SS-Q-rrp6∆_SS-Q-WT` <- run_main(
+    #  See 230517_lab_meeting.pptx, slide 12
     t_sub = `SS-Q-rrp6∆_SS-Q-WT`,
     genotype_exp = "r6n",
     genotype_ctrl = "WT",
@@ -1750,10 +1925,11 @@ if(base::isTRUE(run != "mRNA")) {
     x_max = 10,
     y_min = 0,
     y_max = 60,
-    color = "#2E0C4A"
+    color = "#481A6C"
 )
 
 `DGE-analysis_SS-G1-rrp6∆_SS-G1-WT` <- run_main(
+    #  See 230517_lab_meeting.pptx, slide 12
     t_sub = `SS-G1-rrp6∆_SS-G1-WT`,
     genotype_exp = "r6n",
     genotype_ctrl = "WT",
@@ -1761,11 +1937,12 @@ if(base::isTRUE(run != "mRNA")) {
     x_min = -5,
     x_max = 10,
     y_min = 0,
-    y_max = 180,
-    color = "#2E0C4A"
+    y_max = 170,
+    color = "#481A6C"
 )
 
 `DGE-analysis_N-Q-rrp6∆_N-Q-WT` <- run_main(
+    #  See 230517_lab_meeting.pptx, slide 13
     t_sub = `N-Q-rrp6∆_N-Q-WT`,
     genotype_exp = "r6n",
     genotype_ctrl = "WT",
@@ -1774,7 +1951,7 @@ if(base::isTRUE(run != "mRNA")) {
     x_max = 10,
     y_min = 0,
     y_max = 60,
-    color = "#113275"
+    color = "#3A538B"
 )
 
 
