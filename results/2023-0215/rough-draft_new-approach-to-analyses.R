@@ -1395,10 +1395,17 @@ theme_AG <- theme_classic() +
         text = element_text(family = "")
     )
 
+theme_AG_boxed <- theme_AG +
+    theme(
+        axis.line = ggplot2::element_line(linewidth = 0),
+        panel.border = element_rect(colour = "black", fill = NA, size = 2)
+    )
 
 theme_slick_no_legend <- theme_slick + theme(legend.position = "none")
 
 theme_AG_no_legend <- theme_AG + theme(legend.position = "none")
+
+theme_AG_boxed_no_legend <- theme_AG_boxed + theme(legend.position = "none")
 
 
 #  Get situated, load counts matrix ===========================================
@@ -2155,216 +2162,368 @@ output_rds(`DGE-analysis_SS-G1-rrp6∆_SS-G1-WT`)
 output_rds(`DGE-analysis_N-Q-rrp6∆_N-Q-WT`)
 
 
-#  Sketch work ================================================================
-#  Draw panels related to N Q rrp6∆ and SS Q rrp6∆ ============================
+#TODO Move this "Section TBD" into its own script (but not the "Notes" section)
+#  Section TBD ================================================================
 #  Load rds files -------------------------------------------------------------
-N_Q_r6n <- readRDS(
+mRNA_N_Q_r6n <- readRDS(
     "/Users/kalavatt/Desktop/DGE-analysis_mRNA_N-Q-rrp6∆_N-Q-WT.rds"
 )
-N_SS_r6n <- readRDS(
+mRNA_SS_Q_r6n <- readRDS(
     "/Users/kalavatt/Desktop/DGE-analysis_mRNA_SS-Q-rrp6∆_SS-Q-WT.rds"
 )
-
-#  Draw volcano: N Q rrp6∆ ----------------------------------------------------
-dge_N_Q_r6n <- N_Q_r6n$`09_lfc_0.58_fc_1.5`$`04_t_DGE_unshrunken`
-plot_volcano(
-    table = dge_N_Q_r6n,
-    label = NA,
-    selection = "",
-    label_size = 2.5,
-    p_cutoff = 0.05,
-    FC_cutoff = 1.5,
-    xlim = c(-5, 10),
-    ylim = c(0, 60),
-    color = c("#DFDFDF", "#DFDFDF", "#DFDFDF", "#3A538B"),
-    pointSize = 2.5,
-    title = "",
-    subtitle = ""
+mRNA_SS_G1_r6n <- readRDS(
+    "/Users/kalavatt/Desktop/DGE-analysis_mRNA_SS-G1-rrp6∆_SS-G1-WT.rds"
 )
-
-#  Draw volcano: SS Q rrp6∆ ----------------------------------------------------
-dge_SS_Q_r6n <- N_SS_r6n$`09_lfc_0.58_fc_1.5`$`04_t_DGE_unshrunken`
-plot_volcano(
-    table = dge_SS_Q_r6n,
-    label = NA,
-    selection = "",
-    label_size = 2.5,
-    p_cutoff = 0.05,
-    FC_cutoff = 1.5,
-    xlim = c(-5, 10),
-    ylim = c(0, 60),
-    color = c("#DFDFDF", "#DFDFDF", "#DFDFDF", "#481A6C"),
-    pointSize = 2.5,
-    title = "",
-    subtitle = ""
-)
-
-#  Draw scatterplot: N Q rrp6∆ vs SS Q rrp6∆ ----------------------------------
-dge_N_Q_r6n <- N_Q_r6n$`09_lfc_0.58_fc_1.5`$`04_t_DGE_unshrunken`
-dge_SS_Q_r6n <- N_SS_r6n$`09_lfc_0.58_fc_1.5`$`04_t_DGE_unshrunken`
-tmp <- tibble::tibble(
-    "log2(FC) nascent" = 
-        dge_N_Q_r6n[
-            dge_N_Q_r6n$features %in% dge_SS_Q_r6n$features, 
-        ]$log2FoldChange,
-    "log2(FC) steady state" = 
-        dge_SS_Q_r6n[
-            dge_SS_Q_r6n$features %in% dge_N_Q_r6n$features, 
-        ]$log2FoldChange
-)
-
-#  Model nascent transcription (y) varying on steady state transcription (x)
-# m <- lm(tmp$`log2(FC) nascent` ~ tmp$`log2(FC) steady state`)
-# m$coefficients[["tmp$`log2(FC) steady state`"]]  # [1] 0.2837524
-
-#  Model steady state transcription (y) varying on nascent transcription (x)
-m <- lm(tmp$`log2(FC) steady state` ~ tmp$`log2(FC) nascent`)
-m$coefficients[["tmp$`log2(FC) nascent`"]]  # [1] 0.6371144
-
-rho <- cor(
-    tmp$`log2(FC) nascent`,
-    tmp$`log2(FC) steady state`,
-    method = "spearman"
-)  # [1] 0.3273192
-
-r <- cor(
-    tmp$`log2(FC) nascent`,
-    tmp$`log2(FC) steady state`,
-    method = "pearson"
-)  # [1] 0.4264494
-
-ggplot(
-    tmp,
-    # aes(x = `log2(FC) steady state`, y = `log2(FC) nascent`)
-    aes(x = `log2(FC) nascent`, y = `log2(FC) steady state`)
-) +
-    geom_point(size = 2.5, color = "#0E737933") +
-    # geom_density_2d(color = "#FFFFFF") +
-    # stat_smooth(  # (Another way to calculate and plot m)
-    #     method = lm,
-    #     se = FALSE,
-    #     fullrange = TRUE,
-    #     color = "red",
-    #     linetype = "dashed"
-    # ) +
-    geom_abline(  # x = y (example of 1-to-1 linear relationship)
-        slope = 1,
-        linetype = "solid",
-        color = "#00000050",
-        size = 0.5
-    ) +
-    geom_abline(  # linear regression (m) slope
-        slope = coefficients(m)[2],
-        intercept = coefficients(m)[1],
-        linetype = "dashed",
-        color = "red",
-        size = 1
-    ) +
-    xlim(-5, 6.5) +
-    ylim(-5, 6.5) +
-    # xlab("log2(FC) steady state rrp6n/WT ") +
-    # ylab("log2(FC) nascent rrp6n/WT ") +
-    xlab("log2(FC) nascent rrp6n/WT ") +
-    ylab("log2(FC) steady state rrp6n/WT ") +
-    ggtitle(
-        "Figure 2D | Slide 13",
-        subtitle = paste(
-            "Altered gene expression in rrp6∆ is largely",
-            # "\npost-transcriptional | red: m (0.28) |",
-            "\npost-transcriptional | red: m (0.64) |",
-            "\nblue: Spearman (0.33) | orange: Pearson (0.43)"
-        )
-    ) +
-    theme_slick_no_legend
-
-
-#  Draw panels related to N Q rrp6∆ and SS Q rrp6∆ ============================
-#  Load rds files -------------------------------------------------------------
-N_Q_n3d <- readRDS(
+mRNA_N_Q_n3d <- readRDS(
     "/Users/kalavatt/Desktop/DGE-analysis_mRNA_N-Q-nab3d_N-Q-parental.rds"
 )
-N_SS_r6n <- readRDS(
-    "/Users/kalavatt/Desktop/DGE-analysis_mRNA_SS-Q-rrp6∆_SS-Q-WT.rds"
+
+ncRNAcm_N_Q_r6n <- readRDS(
+    "/Users/kalavatt/Desktop/DGE-analysis_pa-ncRNA-collapsed-merged_N-Q-rrp6∆_N-Q-WT.rds"
+)
+ncRNAcm_SS_Q_r6n <- readRDS(
+    "/Users/kalavatt/Desktop/DGE-analysis_pa-ncRNA-collapsed-merged_SS-Q-rrp6∆_SS-Q-WT.rds"
+)
+ncRNAcm_SS_G1_r6n <- readRDS(
+    "/Users/kalavatt/Desktop/DGE-analysis_pa-ncRNA-collapsed-merged_SS-G1-rrp6∆_SS-G1-WT.rds"
+)
+ncRNAcm_N_Q_n3d <- readRDS(
+    "/Users/kalavatt/Desktop/DGE-analysis_pa-ncRNA-collapsed-merged_N-Q-nab3d_N-Q-parental.rds"
 )
 
-#  Draw scatterplot: N Q rrp6∆ vs SS Q rrp6∆ ----------------------------------
-dge_N_Q_n3d <- N_Q_n3d$`09_lfc_0.58_fc_1.5`$`04_t_DGE_unshrunken`
-dge_SS_Q_r6n <- N_SS_r6n$`09_lfc_0.58_fc_1.5`$`04_t_DGE_unshrunken`
+
+#TODO Plot/assess the following comparisons ===================================
+#+ 1 - SS_G1_r6n ~ SS_Q_r6n (y ~ x): mRNA_SS_G1_r6n, mRNA_SS_Q_r6n; ncRNAcm_SS_G1_r6n, ncRNAcm_SS_Q_r6n
+#+ 2 -  SS_Q_r6n ~  N_Q_r6n (y ~ x):  mRNA_SS_Q_r6n,  mRNA_N_Q_r6n; ncRNAcm_SS_G1_r6n,  ncRNAcm_N_Q_r6n
+#+ 3 -  SS_Q_r6n ~  N_Q_n3d (y ~ x):  mRNA_SS_Q_r6n,  mRNA_N_Q_n3d; ncRNAcm_SS_G1_r6n,  ncRNAcm_N_Q_n3d
+
+#  Color rules: "If all Steady State use purple 481A6C, and if all Nascent than
+#+ use blue 3A5388."
+
+run <- FALSE
+if(base::isTRUE(run)) {
+    #  Draw volcano: N Q rrp6∆ ----------------------------------------------------
+    dge_N_Q_r6n <- N_Q_r6n$`09_lfc_0.58_fc_1.5`$`04_t_DGE_unshrunken`
+    plot_volcano(
+        table = dge_N_Q_r6n,
+        label = NA,
+        selection = "",
+        label_size = 2.5,
+        p_cutoff = 0.05,
+        FC_cutoff = 1.5,
+        xlim = c(-5, 10),
+        ylim = c(0, 60),
+        color = c("#DFDFDF", "#DFDFDF", "#DFDFDF", "#3A538B"),
+        pointSize = 2.5,
+        title = "",
+        subtitle = ""
+    )
+    
+    #  Draw volcano: SS Q rrp6∆ ----------------------------------------------------
+    dge_SS_Q_r6n <- N_SS_r6n$`09_lfc_0.58_fc_1.5`$`04_t_DGE_unshrunken`
+    plot_volcano(
+        table = dge_SS_Q_r6n,
+        label = NA,
+        selection = "",
+        label_size = 2.5,
+        p_cutoff = 0.05,
+        FC_cutoff = 1.5,
+        xlim = c(-5, 10),
+        ylim = c(0, 60),
+        color = c("#DFDFDF", "#DFDFDF", "#DFDFDF", "#481A6C"),
+        pointSize = 2.5,
+        title = "",
+        subtitle = ""
+    )
+}
+
+
+#  Draw scatter plots and do linear modeling ==================================
+plot_scatter <- function(
+    x = x,
+    y = y,
+    lm = linear_model,
+    r = r,
+    m = m,
+    color = "#06636833",
+    xlab = "log2(FC) nascent",
+    ylab = "log2(FC) steady state",
+    x_low = -5,
+    x_high = 7,
+    y_low = -5,
+    y_high = 7
+) {
+    z <- ggplot(tmp, aes(x = x, y = y)) +
+        geom_abline(  # x = y (example of one-to-one linear relationship)
+            slope = 1,
+            linetype = "solid",
+            color = "#00000050",
+            size = 1
+        ) +
+        geom_hline(  # y = 0
+            yintercept = 0,
+            linetype = "solid",
+            color = "#000000",
+            size = 1
+        ) +
+        geom_vline(  # x = 0
+            xintercept = 0,
+            linetype = "solid",
+            color = "#000000",
+            size = 1
+        ) +
+        geom_point(size = 2.5, color = color) +
+        # geom_density_2d(color = "#FFFFFF") +
+        geom_abline(  # linear regression (linear_model) slope and intercept
+            slope = coefficients(lm)[2],
+            intercept = coefficients(lm)[1],
+            linetype = "dotdash",
+            color = "#B40400",
+            alpha = 0.8,
+            size = 6
+        ) +
+        annotate(  # label the Pearson correlation
+            "text",
+            hjust = 0,
+            x = x_low,
+            y = y_high * 0.9,
+            size = 7,
+            label = paste("Pearson =", r),
+            fontface = "bold"
+        ) +
+        annotate(  # label the regression coefficient
+            "text",
+            hjust = 0,
+            x = x_low,
+            y = y_high * 0.8,
+            size = 7,
+            label = paste("m =", m),
+            fontface = "bold"
+        ) +
+        xlim(x_low, x_high) +
+        ylim(y_low, y_high) +
+        xlab(xlab) +
+        ylab(ylab) +
+        theme_AG_boxed_no_legend
+    
+    return(z)
+}
+
+
+#TODO Function-ize the following code
+#TODO Save metrics, plot objects to list object that is output as rds
+#  Look at SS Q rrp6∆ ~ N Q rrp6∆ (SS_Q_r6n ~ N_Q_r6n) ------------------------
+#  ...for mRNA
+dge_mRNA_N_Q_r6n <- mRNA_N_Q_r6n$`09_lfc_0.58_fc_1.5`$`04_t_DGE_unshrunken`
+dge_mRNA_SS_Q_r6n <- mRNA_SS_Q_r6n$`09_lfc_0.58_fc_1.5`$`04_t_DGE_unshrunken`
 tmp <- tibble::tibble(
-    "log2(FC) nascent" = 
-        dge_N_Q_n3d[
-            dge_N_Q_n3d$features %in% dge_SS_Q_r6n$features, 
+    "y" = dge_mRNA_SS_Q_r6n[
+        dge_mRNA_SS_Q_r6n$features %in% dge_mRNA_N_Q_r6n$features, 
+    ]$log2FoldChange,
+    "x" = dge_mRNA_N_Q_r6n[
+        dge_mRNA_N_Q_r6n$features %in% dge_mRNA_SS_Q_r6n$features, 
+    ]$log2FoldChange
+)
+
+linear_model <- lm(tmp$y ~ tmp$x)
+lm_summary <- summary(linear_model)
+m <- linear_model$coefficients[["tmp$x"]]
+r_sq <- lm_summary$adj.r.squared
+rho <- cor(tmp$y, tmp$x, method = "spearman")
+r <- cor(tmp$y, tmp$x, method = "pearson")
+
+plot_scatter(
+    x = x,
+    y = y,
+    lm = linear_model,
+    r = round(r, 2),
+    m = round(m, 2),
+    color = "#06636833",
+    xlab = "log2(FC) nascent",
+    ylab = "log2(FC) steady state",
+    x_low = -7,
+    x_high = 7,
+    y_low = -7,
+    y_high = 7
+)
+
+#  ...for pa-ncRNA
+dge_ncRNAcm_N_Q_r6n <- ncRNAcm_N_Q_r6n$`09_lfc_0.58_fc_1.5`$`04_t_DGE_unshrunken`
+dge_ncRNAcm_SS_Q_r6n <- ncRNAcm_SS_Q_r6n$`09_lfc_0.58_fc_1.5`$`04_t_DGE_unshrunken`
+tmp <- tibble::tibble(
+    "y" = dge_ncRNAcm_SS_Q_r6n[
+        dge_ncRNAcm_SS_Q_r6n$features %in% dge_ncRNAcm_N_Q_r6n$features, 
+    ]$log2FoldChange,
+    "x" = dge_ncRNAcm_N_Q_r6n[
+        dge_ncRNAcm_N_Q_r6n$features %in% dge_ncRNAcm_SS_Q_r6n$features, 
+    ]$log2FoldChange
+)
+
+linear_model <- lm(tmp$y ~ tmp$x)
+lm_summary <- summary(linear_model)
+m <- linear_model$coefficients[["tmp$x"]]
+r_sq <- lm_summary$adj.r.squared
+rho <- cor(tmp$y, tmp$x, method = "spearman")
+r <- cor(tmp$y, tmp$x, method = "pearson")
+
+plot_scatter(
+    x = x,
+    y = y,
+    lm = linear_model,
+    r = round(r, 2),
+    m = round(m, 2),
+    color = "#06636833",
+    xlab = "log2(FC) nascent",
+    ylab = "log2(FC) steady state",
+    x_low = -7,
+    x_high = 7,
+    y_low = -7,
+    y_high = 7
+)
+
+
+#  Look at SS Q rrp6∆ ~ N Q nab3d ---------------------------------------------
+#  ...for mRNA
+dge_mRNA_N_Q_n3d <- mRNA_N_Q_n3d$`09_lfc_0.58_fc_1.5`$`04_t_DGE_unshrunken`
+dge_mRNA_SS_Q_r6n <- mRNA_SS_Q_r6n$`09_lfc_0.58_fc_1.5`$`04_t_DGE_unshrunken`
+tmp <- tibble::tibble(
+    "x" = dge_mRNA_N_Q_n3d[
+        dge_mRNA_N_Q_n3d$features %in% dge_mRNA_SS_Q_r6n$features, 
+    ]$log2FoldChange,
+    "y" = dge_mRNA_SS_Q_r6n[
+        dge_mRNA_SS_Q_r6n$features %in% dge_mRNA_N_Q_n3d$features, 
+    ]$log2FoldChange
+)
+
+linear_model <- lm(tmp$y ~ tmp$x)
+lm_summary <- summary(linear_model)
+m <- linear_model$coefficients[["tmp$x"]]
+r_sq <- lm_summary$adj.r.squared
+rho <- cor(tmp$y, tmp$x, method = "spearman")
+r <- cor(tmp$y, tmp$x, method = "pearson")
+
+plot_scatter(
+    x = x,
+    y = y,
+    lm = linear_model,
+    r = round(r, 2),
+    m = round(m, 2),
+    color = "#06636833",
+    xlab = "log2(FC) nascent nab3d/WT",
+    ylab = "log2(FC) steady state rrp6n/WT",
+    x_low = -9,
+    x_high = 9,
+    y_low = -9,
+    y_high = 9
+)
+
+#  ...for pa-ncRNA
+dge_ncRNAcm_N_Q_n3d <- ncRNAcm_N_Q_n3d$`09_lfc_0.58_fc_1.5`$`04_t_DGE_unshrunken`
+dge_ncRNAcm_SS_Q_r6n <- ncRNAcm_SS_Q_r6n$`09_lfc_0.58_fc_1.5`$`04_t_DGE_unshrunken`
+tmp <- tibble::tibble(
+    "x" = dge_ncRNAcm_N_Q_n3d[
+        dge_ncRNAcm_N_Q_n3d$features %in% dge_ncRNAcm_SS_Q_r6n$features, 
+    ]$log2FoldChange,
+    "y" = dge_ncRNAcm_SS_Q_r6n[
+        dge_ncRNAcm_SS_Q_r6n$features %in% dge_ncRNAcm_N_Q_n3d$features, 
+    ]$log2FoldChange
+)
+
+linear_model <- lm(tmp$y ~ tmp$x)
+lm_summary <- summary(linear_model)
+m <- linear_model$coefficients[["tmp$x"]]
+r_sq <- lm_summary$adj.r.squared
+rho <- cor(tmp$y, tmp$x, method = "spearman")
+r <- cor(tmp$y, tmp$x, method = "pearson")
+
+plot_scatter(
+    x = x,
+    y = y,
+    lm = linear_model,
+    r = round(r, 2),
+    m = round(m, 2),
+    color = "#06636833",
+    xlab = "log2(FC) nascent nab3d/WT",
+    ylab = "log2(FC) steady state rrp6n/WT",
+    x_low = -9,
+    x_high = 9,
+    y_low = -9,
+    y_high = 9
+)
+
+
+#  Look at SS_G1_r6n ~ SS_Q_r6n -----------------------------------------------
+#  ...for mRNA
+dge_mRNA_SS_G1_r6n <- mRNA_SS_G1_r6n$`09_lfc_0.58_fc_1.5`$`04_t_DGE_unshrunken`
+dge_mRNA_SS_Q_r6n <- mRNA_SS_Q_r6n$`09_lfc_0.58_fc_1.5`$`04_t_DGE_unshrunken`
+tmp <- tibble::tibble(
+    "y" = 
+        dge_mRNA_SS_G1_r6n[
+            dge_mRNA_SS_G1_r6n$features %in% dge_mRNA_SS_Q_r6n$features, 
         ]$log2FoldChange,
-    "log2(FC) steady state" = 
-        dge_SS_Q_r6n[
-            dge_SS_Q_r6n$features %in% dge_N_Q_n3d$features, 
+    "x" = 
+        dge_mRNA_SS_Q_r6n[
+            dge_mRNA_SS_Q_r6n$features %in% dge_mRNA_SS_G1_r6n$features, 
         ]$log2FoldChange
 )
 
-#  Model nascent transcription (y) varying on steady state transcription (x) --
-#  ...when nascent nab3d/WT is y
-# m <- lm(tmp$`log2(FC) nascent` ~ tmp$`log2(FC) steady state`)
-# m$coefficients[["tmp$`log2(FC) steady state`"]]  # [1] 0.6843438
+linear_model <- lm(tmp$y ~ tmp$x)
+lm_summary <- summary(linear_model)
+m <- linear_model$coefficients[["tmp$x"]]
+r_sq <- lm_summary$adj.r.squared
+rho <- cor(tmp$y, tmp$x, method = "spearman")
+r <- cor(tmp$y, tmp$x, method = "pearson")
 
-#  ...when nascent rrp6∆/WT is y
-m <- lm(tmp$`log2(FC) steady state` ~ tmp$`log2(FC) nascent`)
-m$coefficients[["tmp$`log2(FC) nascent`"]]  # [1] 0.22436
+plot_scatter(
+    x = x,
+    y = y,
+    lm = linear_model,
+    r = round(r, 2),
+    m = round(m, 2),
+    color = "#481A6C33",
+    xlab = "Q log2(FC) steady state rrp6n/WT",
+    ylab = "G1 log2(FC) steady state rrp6n/WT",
+    x_low = -7,
+    x_high = 7,
+    y_low = -7,
+    y_high = 7
+)
 
-rho <- cor(
-    x = tmp$`log2(FC) steady state`,
-    y = tmp$`log2(FC) nascent`,
-    method = "spearman"
-)  # [1] 0.3907205
+#  ...for pa-ncRNA
+dge_ncRNAcm_SS_G1_r6n <- ncRNAcm_SS_G1_r6n$`09_lfc_0.58_fc_1.5`$`04_t_DGE_unshrunken`
+dge_ncRNAcm_SS_Q_r6n <- ncRNAcm_SS_Q_r6n$`09_lfc_0.58_fc_1.5`$`04_t_DGE_unshrunken`
+tmp <- tibble::tibble(
+    "y" = 
+        dge_ncRNAcm_SS_G1_r6n[
+            dge_ncRNAcm_SS_G1_r6n$features %in% dge_ncRNAcm_SS_Q_r6n$features, 
+        ]$log2FoldChange,
+    "x" = 
+        dge_ncRNAcm_SS_Q_r6n[
+            dge_ncRNAcm_SS_Q_r6n$features %in% dge_ncRNAcm_SS_G1_r6n$features, 
+        ]$log2FoldChange
+)
 
-r <- cor(
-    x = tmp$`log2(FC) steady state`,
-    y = tmp$`log2(FC) nascent`,
-    method = "pearson"
-)  # [1] 0.391841
+linear_model <- lm(tmp$y ~ tmp$x)
+lm_summary <- summary(linear_model)
+m <- linear_model$coefficients[["tmp$x"]]
+r_sq <- lm_summary$adj.r.squared
+rho <- cor(tmp$y, tmp$x, method = "spearman")
+r <- cor(tmp$y, tmp$x, method = "pearson")
 
-ggplot(
-    tmp,
-    # aes(x = `log2(FC) steady state`, y = `log2(FC) nascent`)
-    aes(x = `log2(FC) nascent`, y = `log2(FC) steady state`)
-) +
-    geom_point(size = 2.5, color = "#0E737933") +
-    # geom_density_2d(color = "#FFFFFF") +
-    # stat_smooth(  # (Another way to calculate and plot m)
-    #     method = lm,
-    #     se = FALSE,
-    #     fullrange = TRUE,
-    #     color = "red",
-    #     linetype = "dashed"
-    # ) +
-    geom_abline(  # x = y (example of 1-to-1 linear relationship)
-        slope = 1,
-        linetype = "solid",
-        color = "#00000050",
-        size = 0.5
-    ) +
-    geom_abline(  # linear regression (m) slope
-        slope = coefficients(m)[2],
-        intercept = coefficients(m)[1],
-        linetype = "dashed",
-        color = "red",
-        size = 1
-    ) +
-    xlim(-5, 8.5) +
-    ylim(-5, 8.5) +
-    # xlab("log2(FC) steady state rrp6n/WT ") +
-    # ylab("log2(FC) nascent nab3d/WT") +
-    xlab("log2(FC) nascent nab3d/WT") +
-    ylab("log2(FC) steady state rrp6n/WT ") +
-    ggtitle(
-        "Figure 3C | Slide 16",
-        subtitle = paste(
-            "Change in Nab3 targets can at least partially explain",
-            # "\nchange in RRP6 targets | red: m (0.68) |",
-            "\nchange in RRP6 targets | red: m (0.22) |",
-            "\nblue: Spearman (0.39) | orange: Pearson (0.39)"
-        )
-    ) +
-    theme_slick_no_legend
+plot_scatter(
+    x = x,
+    y = y,
+    lm = linear_model,
+    r = round(r, 2),
+    m = round(m, 2),
+    color = "#481A6C33",
+    xlab = "Q log2(FC) steady state rrp6n/WT",
+    ylab = "G1 log2(FC) steady state rrp6n/WT",
+    x_low = -7,
+    x_high = 7,
+    y_low = -7,
+    y_high = 7
+)
 
 
 #  Notes ======================================================================

@@ -5,12 +5,12 @@
 
 
 #  Get situated ===============================================================
-library(ggplot2)
-library(ggpubr)
-library(PCAtools)
-library(rstatix)
-library(tidyverse)
-library(treemap)
+suppressMessages(library(ggplot2))
+suppressMessages(library(ggpubr))
+suppressMessages(library(PCAtools))
+suppressMessages(library(rstatix))
+suppressMessages(library(tidyverse))
+suppressMessages(library(treemap))
 
 options(scipen = 999)
 options(ggrepel.max.overlaps = Inf)
@@ -49,6 +49,11 @@ filter_process_counts_matrix <- function(
     # :param counts_matrix: counts matrix from htseq-count
     # :param named_character_vector: ...
     # :return df: counts matrix as tibble
+    
+    #  Test
+    # counts_matrix <- t_cm
+    # named_character_vector <- col_cor
+    
     df <- dplyr::bind_cols(
         counts_matrix[, 1],
         counts_matrix[
@@ -94,7 +99,10 @@ derive_summary_metrics <- function(uni_multi, summary, counts) {
         2:ncol(uni_multi)
     ]
     
-    #  Step 4: Subtract `Mito-KL-20S_multi` from `__alignment_not_unique`
+    #  Step 4:
+    #+ - Isolate and define `__alignment_not_unique`
+    #+ - Define and calculate `__alignment_not_unique_I-XVI` by subtracting
+    #+   `Mito-KL-20S_multi` from `__alignment_not_unique`
     `__alignment_not_unique` <- summary[
         stringr::str_detect(summary[["gene_id"]], "__alignment_not_unique"),
         2:ncol(summary)
@@ -102,18 +110,22 @@ derive_summary_metrics <- function(uni_multi, summary, counts) {
         tibble::as_tibble()
     `__alignment_not_unique_I-XVI` <-
         `__alignment_not_unique` - `Mito-KL-20S_multi`
-    `__alignment_not_unique_I-XVI` <- tibble::as_tibble(
-        `__alignment_not_unique_I-XVI`
-    )
+    `__alignment_not_unique_I-XVI` <- `__alignment_not_unique_I-XVI` %>%
+        tibble::as_tibble()
     
-    #  Step 5: Subtract `Mito-KL-20S_uni` from "`__no_feature`"
+    #  Step 5:
+    #+ - Isolate and define `__no_feature`
+    #+ - Define and calculate `__no_feature_I-XVI` by subtracting
+    #+   `Mito-KL-20S_uni` from "`__no_feature`"
     `__no_feature` <- summary[
         stringr::str_detect(summary[["gene_id"]], "__no_feature"),
         2:ncol(summary)
     ]
     `__no_feature_I-XVI` <- `__no_feature` - `Mito-KL-20S_uni`
+    `__no_feature_I-XVI` <- `__no_feature_I-XVI` %>% tibble::as_tibble()
     
-    #  Step 6: Take the sum of the following
+    
+    #  Step 6: Define `__sum_I-XVI` by summing the following:
     #+    - "`__no_feature_I-XVI`"
     #+    - "`__ambiguous`"
     #+    - "`__alignment_not_unique_I-XVI`"
@@ -130,16 +142,18 @@ derive_summary_metrics <- function(uni_multi, summary, counts) {
         `__ambiguous` +
         `__alignment_not_unique_I-XVI` +
         `__valid_counts`
+    `__sum_I-XVI` <- `__sum_I-XVI` %>% tibble::as_tibble()
     
-    #  Step 7: Get numbers of all counts associated with "SC-I-XVI"
+    #  Step 7: Tally all counts associated with "SC-I-XVI" (`SC-I-XVI_all`)
     `SC-I-XVI_all` <- 
         uni_multi[
             stringr::str_detect(uni_multi[["sample"]], "SC-I-XVI_all"),
             2:ncol(uni_multi)
         ]
+    `SC-I-XVI_all` <- `SC-I-XVI_all` %>% tibble::as_tibble()
     
-    #  Step 8: Check that `__sum_I-XVI` and `SC-I-XVI_all` are equal
-    #+ If not, then there is a problem and troubleshooting needs to occur
+    #  Step 8: Check that `__sum_I-XVI` and `SC-I-XVI_all` are equal; if not,
+    #+ then there is a problem and troubleshooting needs to occur
     identical(
         as.numeric(`__sum_I-XVI`[, 2:ncol(`__sum_I-XVI`)]),
         as.numeric(`SC-I-XVI_all`[, 2:ncol(`SC-I-XVI_all`)])
@@ -230,10 +244,12 @@ theme_slick_no_legend <- theme_slick + theme(legend.position = "none")
 # Load gtf file of interest ---------------------------------------------------
 # ...which consists of collapsed/merged pa-ncRNAs and "processed" features
 p_gtf <- "outfiles_gtf-gff3/representation"
+
 # f_gtf <- "Greenlaw-et-al_representative-coding-pa-ncRNA-transcriptome.gtf"
 # f_gtf <- "Greenlaw-et-al_representative-coding-non-pa-ncRNA-transcriptome.gtf"
 # f_gtf <- "Greenlaw-et-al_representative-coding-ncRNA-transcriptome.gtf"
-f_gtf <- "Greenlaw-et-al_non-collapsed-non-coding-transcriptome.gtf"
+f_gtf <- "Greenlaw-et-al_non-collapsed-non-coding-transcriptome.gtf"  #TODO #IMPORTANT
+# f_gtf <- "Greenlaw-et-al_representative-non-coding-transcriptome.gtf"  #TODO #TOCOMPLETE
 
 # dir.exists(p_gtf)
 # file.exists(paste(p_gtf, f_gtf, sep = "/"))
@@ -242,8 +258,13 @@ t_gtf <- paste(p_gtf, f_gtf, sep = "/") %>%
     rtracklayer::import() %>%
     tibble::as_tibble() %>%
     dplyr::arrange(seqnames, start) %>%
-    dplyr::select(-c(width, score, phase)) %>% 
-    dplyr::rename(category = type.1)
+    dplyr::select(-c(width, score, phase))
+if(base::isFALSE(
+    f_gtf == "Greenlaw-et-al_representative-non-coding-transcriptome.gtf"
+)) {
+    t_gtf <- t_gtf %>% dplyr::rename(category = type.1)
+}
+    
 t_gtf[t_gtf == "NA"] <- NA_character_
 # t_gtf
 
@@ -254,16 +275,31 @@ rm(p_gtf)
 # Load counts matrix file of interest -----------------------------------------
 # ...which consists of collapsed/merged pa-ncRNAs and "processed" features
 p_cm <- "outfiles_htseq-count/representation/UT_prim_UMI"
-# f_cm <- "representative-coding-pa-ncRNA-transcriptome.hc-strd-eq.union-none.tsv"
-# f_cm <- "representative-coding-pa-ncRNA-transcriptome.hc-strd-eq.union-fraction.tsv"
-# f_cm <- "representative-coding-non-pa-ncRNA-transcriptome.hc-strd-eq.union-fraction.tsv"
-# f_cm <- "representative-coding-ncRNA-transcriptome.hc-strd-eq.union-none.tsv"
-f_cm <- "non-collapsed-non-coding-transcriptome.hc-strd-eq.tsv"
+
+if(f_gtf == "Greenlaw-et-al_representative-coding-pa-ncRNA-transcriptome.gtf") {
+    f_cm <- "representative-coding-pa-ncRNA-transcriptome.hc-strd-eq.union-none.tsv"
+    # f_cm <- "representative-coding-pa-ncRNA-transcriptome.hc-strd-eq.union-fraction.tsv"
+} else if(f_gtf == "Greenlaw-et-al_representative-coding-non-pa-ncRNA-transcriptome.gtf") {
+    f_cm <- "representative-coding-non-pa-ncRNA-transcriptome.hc-strd-eq.union-fraction.tsv"
+} else if(f_gtf == "Greenlaw-et-al_representative-coding-ncRNA-transcriptome.gtf") {
+    f_cm <- "representative-coding-ncRNA-transcriptome.hc-strd-eq.union-none.tsv"
+} else if(f_gtf == "Greenlaw-et-al_non-collapsed-non-coding-transcriptome.gtf") { #TODO #IMPORTANT
+    f_cm <- "non-collapsed-non-coding-transcriptome.hc-strd-eq.tsv"  #TODO #IMPORTANT
+} else if(f_gtf == "Greenlaw-et-al_representative-non-coding-transcriptome.gtf") {
+    f_cm <- "representative-non-coding-transcriptome.hc-strd-eq.tsv"
+}
 
 # dir.exists(p_cm)
 # file.exists(paste(p_cm, f_cm, sep = "/"))
 
 t_cm <- read_in_counts_matrix(paste(p_cm, f_cm, sep = "/"))
+if(base::isFALSE(nrow(unique(t_cm[1])) == nrow(t_cm))) {
+    stop(paste(
+        "There are non-unique elements in the \"gene_id\" column (i.e., the",
+        "feature name vector). This will result in complications when running",
+        "subsequent code/analyses. Stopping the script."
+    ))
+}
 
 rm(p_cm, f_cm)
 
@@ -406,7 +442,7 @@ col_cor <- setNames(  #DEKHO
     )
 )
 
-# t_cm.bak <- t_cm
+t_cm.bak <- t_cm
 # t_cm <- t_cm.bak
 t_cm <- filter_process_counts_matrix(t_cm, col_cor)
 
@@ -419,7 +455,7 @@ underscore <- t_cm[stringr::str_detect(t_cm$gene_id, "^__[a-zA-Z0-9_]*$"), ]
 
 #  Exclude htseq-count summary metrics from t_cm ------------------------------
 t_cm <- t_cm[!stringr::str_detect(t_cm$gene_id, "^__[a-zA-Z0-9_]*$"), ]
-
+t_cm %>% tail(10)
 
 #  Read in, process metrics from work_calculate_uni-multimappers-etc.md -------
 p_uni_multi_etc <- "outfiles_htseq-count"
@@ -434,7 +470,7 @@ rm(f_uni_multi_etc, p_uni_multi_etc)
 
 #  Clean up the tibble of uni_multi_etc counts --------------------------------
 #  Clean up, correct, and abbreviate sample names
-# uni_multi_etc.bak <- uni_multi_etc
+uni_multi_etc.bak <- uni_multi_etc
 # uni_multi_etc <- uni_multi_etc.bak
 uni_multi_etc$sample[match(col_cor, uni_multi_etc$sample)] <- names(col_cor)
 
@@ -462,7 +498,23 @@ rm(summaries)
 
 
 #  Associate the counts-matrix features with appropriate gtf metadata ---------
-t_full <- dplyr::full_join(t_gtf[, c(1:4, 7, 9, 10)], t_cm, by = "gene_id")
+if(base::isFALSE(f_gtf == "Greenlaw-et-al_non-collapsed-non-coding-transcriptome.gtf")) {
+    t_full <- dplyr::full_join(
+        t_gtf[, c(1:4, 7, 9, 10)],
+        t_cm,
+        by = "gene_id"
+    )  #DONE Adapt this to work with "Greenlaw-et-al_non-collapsed-non-coding-transcriptome.gtf", "non-collapsed-non-coding-transcriptome.hc-strd-eq.tsv"
+} else {
+    t_full <- dplyr::full_join(
+        t_gtf[, c(1:4, 14, 9, 7)] %>%
+            dplyr::rename(
+                "original" = "gene_id",
+                "gene_id" = "complete"
+            ),
+        t_cm,
+        by = "gene_id"
+    )
+}
 
 
 #  Row-bind tibbles t_full and summary_relevant -------------------------------
@@ -476,8 +528,9 @@ t_full <- dplyr::bind_rows(t_full, summary_relevant)
 
 
 #  Check: Do sample-wise tallies equal __valid_counts? ------------------------
-run <- FALSE
+run <- TRUE
 if(base::isTRUE(run)) {
+    # test_0 <- t_full[-c((nrow(t_full) - 3):nrow(t_full)), -c(1:7)]
     test_1 <- 
         sapply(
             t_full[-c((nrow(t_full) - 3):nrow(t_full)), -c(1:7)], sum
@@ -500,10 +553,10 @@ if(base::isTRUE(run)) {
 
 #  Plot category proportions for the Ovation samples ==========================
 #  Isolate categories and relevant samples, then process them -----------------
-tmp <- t_full[-nrow(t_full), -c(1:5, 7)]
+tmp <- t_full[-nrow(t_full), -c(1:5, 7)]  #TODO May need to be adapted for "Greenlaw-et-al_non-collapsed-non-coding-transcriptome.gtf", "non-collapsed-non-coding-transcriptome.hc-strd-eq.tsv"
 t_rel <- dplyr::bind_cols(
     tmp[, 1],
-    tmp[, stringr::str_detect(colnames(tmp), "ovn")]
+    tmp[, stringr::str_detect(colnames(tmp), "ovn")]  #TODO Will need to adapt this for different samples, e.g., n3d and od
 )
 
 rm(tmp)
@@ -511,9 +564,13 @@ rm(tmp)
 t_rel[(nrow(t_rel) - 2), 1] <- "multimapper"
 t_rel[(nrow(t_rel) - 1), 1] <- "no feature"
 t_rel[nrow(t_rel), 1] <- "ambiguous"
+if(base::isTRUE(colnames(t_rel)[1] != "category")) {
+    colnames(t_rel)[1] <- "category"
+}
 # tail(t_rel)
+# head(t_rel)
 
-#  Rename category "PG" to "pseudogene"
+#  Rename category "PG" to "pseudogene" (if applicable)
 t_rel$category[stringr::str_detect(t_rel$category, "PG")] <- "pseudogene"
 
 #  Exclude "not unique" alignments from plots
@@ -523,6 +580,7 @@ t_rel$category[stringr::str_detect(t_rel$category, "PG")] <- "pseudogene"
 colnames(t_rel) <- colnames(t_rel) %>%
     stringr::str_remove("ovn") %>%
     stringr::str_remove("_tech1")
+
 
 t_rel_summarize <- t_rel %>%
     dplyr::group_by(category) %>%
@@ -549,10 +607,12 @@ t_rel_summarize <- t_rel_summarize %>%
         category, "^pseudogene"
     ))
 
-#  For "Greenlaw-et-al_non-collapsed-non-coding-transcriptome.gtf" counts,
-#+ place "no feature" first
+#  For "Greenlaw-et-al_non-collapsed-non-coding-transcriptome.gtf" and
+#+ "Greenlaw-et-al_representative-non-coding-transcriptome.gtf" counts, place
+#+ "no feature" first
 if(base::isTRUE(
-    f_gtf == "Greenlaw-et-al_non-collapsed-non-coding-transcriptome.gtf"
+    f_gtf == "Greenlaw-et-al_non-collapsed-non-coding-transcriptome.gtf" |
+    f_gtf == "Greenlaw-et-al_representative-non-coding-transcriptome.gtf"
 )) {
     t_rel_summarize <- t_rel_summarize %>%
         dplyr::arrange(category != "no feature")
@@ -561,7 +621,7 @@ if(base::isTRUE(
 
 #  Assign NA to "number of features" for the summary-value categories
 t_rel_summarize$number_of_features <- ifelse(
-    t_rel_summarize$number_of_features == 1,
+    t_rel_summarize$category %in% c("no feature", "ambiguous"),
     NA_integer_,
     t_rel_summarize$number_of_features
 )
@@ -584,34 +644,34 @@ colnames(t_rel_summarize) <- colnames(t_rel_summarize) %>%
 # t_rel_summarize.bak <- t_rel_summarize
 t_rel_summarize$category <- t_rel_summarize$category %>% as_factor()
 
-t_rel_summarize %>%
-    tidyr::pivot_longer(cols = c(
-        G1_N_rep1, G1_N_rep2, G1_SS_rep1, G1_SS_rep2,
-        Q_N_rep1, Q_N_rep2, Q_SS_rep1, Q_SS_rep2
-    )) %>%
-    dplyr::rename(samples = name, counts = value) %>%
-    ggplot(aes(fill = category, y = counts, x = samples)) +
-    geom_bar(position = "fill", stat = "identity") +
-    scale_fill_manual(
-        values = length(t_rel_summarize$category) %>%
-            viridisLite::viridis()
-    ) +
-    theme_slick +
-    scale_x_discrete(guide = guide_axis(angle = 45))
+# t_rel_summarize %>%
+#     tidyr::pivot_longer(cols = c(
+#         G1_N_rep1, G1_N_rep2, G1_SS_rep1, G1_SS_rep2,
+#         Q_N_rep1, Q_N_rep2, Q_SS_rep1, Q_SS_rep2
+#     )) %>%
+#     dplyr::rename(samples = name, counts = value) %>%
+#     ggplot(aes(fill = category, y = counts, x = samples)) +
+#     geom_bar(position = "fill", stat = "identity") +
+#     scale_fill_manual(
+#         values = length(t_rel_summarize$category) %>%
+#             viridisLite::viridis()
+#     ) +
+#     theme_slick +
+#     # theme_slick_no_legend +
+#     scale_x_discrete(guide = guide_axis(angle = 45))
+# 
+# t_rel_summarize %>%
+#     tidyr::pivot_longer(cols = c(
+#         G1_N_rep1, G1_N_rep2, G1_SS_rep1, G1_SS_rep2,
+#         Q_N_rep1, Q_N_rep2, Q_SS_rep1, Q_SS_rep2
+#     )) %>%
+#     dplyr::rename(samples = name, counts = value) %>%
+#     ggplot(aes(fill = category, y = counts, x = samples)) +
+#     geom_bar(position = "fill", stat = "identity") +
+#     theme_slick +
+#     # theme_slick_no_legend +
+#     scale_x_discrete(guide = guide_axis(angle = 45))
 
-t_rel_summarize %>%
-    tidyr::pivot_longer(cols = c(
-        G1_N_rep1, G1_N_rep2, G1_SS_rep1, G1_SS_rep2,
-        Q_N_rep1, Q_N_rep2, Q_SS_rep1, Q_SS_rep2
-    )) %>%
-    dplyr::rename(samples = name, counts = value) %>%
-    ggplot(aes(fill = category, y = counts, x = samples)) +
-    geom_bar(position = "fill", stat = "identity") +
-    theme_slick +
-    scale_x_discrete(guide = guide_axis(angle = 45))
-
-
-#ROUGHDRAFT
 pivot_on_columns <- function(
     tbl,
     vec_col,
@@ -798,5 +858,25 @@ col_piv <- c(
 #  Checks
 # `prop-plot_w-error_full`
 # `prop-plot_w-error_zoom`
-`prop-plot_no-error_full`
-`prop-plot_no-error_zoom`
+`prop-plot_no-error_full` # + theme_slick_no_legend
+`prop-plot_no-error_zoom` # + theme_slick_no_legend
+
+#TODO Get these plots into a format that's good for AG's work with Affinity
+
+#INPROGRESS
+# #  Write out t_rel_summarize, prop_summarize as tsvs
+# readr::write_tsv(
+#     t_rel_summarize,
+#     file = "t_rel_summarize.tsv"
+# )
+# 
+# readr::write_tsv(
+#     prop_summarize,
+#     file = "prop_summarize.tsv"
+# )
+
+#TBD
+# #  For when f_gtf == "Greenlaw-et-al_representative-non-coding-transcriptome.gtf"
+# test <- t_gtf %>%
+#     dplyr::group_by(details_type_alpha) %>% 
+#     dplyr::summarize(n = dplyr::n())

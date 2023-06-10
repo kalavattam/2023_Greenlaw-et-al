@@ -176,5 +176,5 @@ Super helpful&mdash;thank you! No need to rename any of the files, and everythin
 7747: rtr1∆ rep1
 7748: rtr1∆ rep2
 
-*Work continued [here](./notebook/variables.xlsx)*
+*Work continued [here in variables.xlsx](./notebook/variables.xlsx)*
 <br />

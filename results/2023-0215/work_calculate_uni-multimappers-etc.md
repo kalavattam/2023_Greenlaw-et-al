@@ -38,15 +38,15 @@
 # tmux new -s htseq
 # tmux a -t htseq
 
+grabnode  # 4, defaults
+source activate gff3_env
+ml SAMtools/1.16.1-GCC-11.2.0
+
 transcriptome && 
     {
         cd "results/2023-0215/" \
             || echo "cd'ing failed; check on this..."
     }
-
-grabnode  # 4, defaults
-source activate gff3_env
-ml SAMtools/1.16.1-GCC-11.2.0
 
 .,
 ```

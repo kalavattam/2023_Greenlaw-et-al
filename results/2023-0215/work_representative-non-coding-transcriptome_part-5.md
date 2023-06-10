@@ -147,18 +147,27 @@ done
 #!/bin/bash
 
 p_gtf=outfiles_gtf-gff3/representation  # ls -1 "${p_gtf}"
-gtf=(
-    "${p_gtf}/Greenlaw-et-al_CUTs-4x.gtf"
-    "${p_gtf}/Greenlaw-et-al_CUTs.gtf"
-    "${p_gtf}/Greenlaw-et-al_CUTs-HMM.gtf"
-    "${p_gtf}/Greenlaw-et-al_ncRNAs.gtf"
-    "${p_gtf}/Greenlaw-et-al_non-collapsed-non-coding-transcriptome.gtf"
-    "${p_gtf}/Greenlaw-et-al_NUTs.gtf"
-    "${p_gtf}/Greenlaw-et-al_representative-non-coding-transcriptome.gtf"
-    "${p_gtf}/Greenlaw-et-al_SRATs.gtf"
-    "${p_gtf}/Greenlaw-et-al_SUTs.gtf"
-    "${p_gtf}/Greenlaw-et-al_XUTs.gtf"
-)
+
+full=FALSE  # echo "${full}"
+if [[ "${full}" == TRUE ]]; then
+    gtf=(
+        "${p_gtf}/Greenlaw-et-al_CUTs-4x.gtf"
+        "${p_gtf}/Greenlaw-et-al_CUTs.gtf"
+        "${p_gtf}/Greenlaw-et-al_CUTs-HMM.gtf"
+        "${p_gtf}/Greenlaw-et-al_ncRNAs.gtf"
+        "${p_gtf}/Greenlaw-et-al_non-collapsed-non-coding-transcriptome.gtf"
+        "${p_gtf}/Greenlaw-et-al_NUTs.gtf"
+        "${p_gtf}/Greenlaw-et-al_representative-non-coding-transcriptome.gtf"
+        "${p_gtf}/Greenlaw-et-al_SRATs.gtf"
+        "${p_gtf}/Greenlaw-et-al_SUTs.gtf"
+        "${p_gtf}/Greenlaw-et-al_XUTs.gtf"
+    )
+    idattr="gene_id"  # echo "${idattr}"
+else
+    gtf=( "${p_gtf}/Greenlaw-et-al_non-collapsed-non-coding-transcriptome.gtf" )
+    idattr="complete"  # echo "${idattr}"
+fi
+
 echo_test "${gtf[@]}"
 echo "${#gtf[@]}"
 
@@ -240,7 +249,7 @@ run=TRUE
                         --stranded \"${hc_strd}\" \\
                         --nonunique \"none\" \\
                         --type \"feature\" \\
-                        --idattr \"gene_id\" \\
+                        --idattr \"${idattr}\" \\
                         --nprocesses ${threads} \\
                         --counts_output \"${out}\" \\
                         --with-header \\
@@ -313,7 +322,7 @@ run=FALSE
                         --stranded \"${hc_strd}\" \\
                         --nonunique \"none\" \\
                         --type \"feature\" \\
-                        --idattr \"gene_id\" \\
+                        --idattr \"${idattr}\" \\
                         --nprocesses ${threads} \\
                         --counts_output \"${out}\" \\
                         --with-header \\
@@ -334,7 +343,7 @@ run=FALSE
                         --stranded "${hc_strd}" \
                         --nonunique "none" \
                         --type "feature" \
-                        --idattr "gene_id" \
+                        --idattr "${idattr}" \
                         --nprocesses ${threads} \
                         --counts_output "${out}" \
                         --with-header \

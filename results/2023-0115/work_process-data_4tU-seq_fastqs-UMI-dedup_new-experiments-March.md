@@ -228,7 +228,6 @@
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 transcriptome && 
     {
@@ -250,7 +249,6 @@ transcriptome &&
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 cd fastqs_UMI-dedup/symlinks \
     || echo "cd'ing failed; check on this..."
@@ -315,7 +313,6 @@ done
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 transcriptome && 
     {
@@ -340,7 +337,6 @@ module purge
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 #  Create the array
 unset fq_bases
@@ -395,7 +391,6 @@ echo $(( ${#fq_bases[@]} * 3 ))  # 21
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 unset UMIs
 
@@ -513,7 +508,6 @@ echo "${#prefix_UT[@]}"
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 transcriptome && 
     {
@@ -543,7 +537,6 @@ fi
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 script_run="run_umi-tools_extract.sh"  # echo "${script_run}"
 script_submit="submit_run_umi-tools_extract.sh"  # echo "${script_submit}"
@@ -571,7 +564,6 @@ max_id_task=8  # echo "${max_id_task}"
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 #  Header
 if [[ -f "${store_lists}/${list}" ]]; then
@@ -616,7 +608,6 @@ parallel --header : --colsep " " -k -j 1 echo \
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 if [[ -f "${store_lists}/${list%.txt}.4.txt" ]]; then
     # rm "${store_lists}/"${list%.txt}.{?,??,???}.txt
@@ -663,7 +654,6 @@ done
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 if [[ -f "./${store_scripts}/${script_run}" ]]; then
     rm "./${store_scripts}/${script_run}"
@@ -772,7 +762,6 @@ chmod +x "./${store_scripts}/${script_run}"
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 if [[ -f "./${store_scripts}/${script_submit}" ]]; then
     rm "./${store_scripts}/${script_submit}"
@@ -839,7 +828,6 @@ script
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 if [[ "${CONDA_DEFAULT_ENV}" != "base" ]]; then 
     conda deactivate
@@ -867,7 +855,6 @@ sbatch "${store_scripts}/${script_submit}"
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 transcriptome && 
     {
@@ -897,7 +884,6 @@ fi
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 script_run="run_atria_trim.sh"  # echo "${script_run}"
 script_submit="submit_run_atria_trim.sh"  # echo "${script_submit}"
@@ -925,7 +911,6 @@ max_id_task=8  # echo "${max_id_task}"
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 #  Header
 if [[ -f "${store_lists}/${list}" ]]; then
@@ -965,7 +950,6 @@ parallel --header : --colsep " " -k -j 1 echo \
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 if [[ -f "${store_lists}/${list%.txt}.4.txt" ]]; then
     # rm "${store_lists}/"${list%.txt}.{?,??,???}.txt
@@ -1012,7 +996,6 @@ done
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 if [[ -f "./${store_scripts}/${script_run}" ]]; then
     rm "./${store_scripts}/${script_run}"
@@ -1110,7 +1093,6 @@ chmod +x "./${store_scripts}/${script_run}"
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 if [[ -f "./${store_scripts}/${script_submit}" ]]; then
     rm "./${store_scripts}/${script_submit}"
@@ -1177,7 +1159,6 @@ script
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 if [[ "${CONDA_DEFAULT_ENV}" != "base" ]]; then 
     conda deactivate
@@ -1207,7 +1188,6 @@ sbatch "${store_scripts}/${script_submit}"
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 transcriptome && 
     {
@@ -1237,7 +1217,6 @@ fi
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 script_run="run_rcorrector.sh"  # echo "${script_run}"
 script_submit="submit_run_rcorrector.sh"  # echo "${script_submit}"
@@ -1265,7 +1244,6 @@ max_id_task=8  # echo "${max_id_task}"
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 #  Header
 if [[ -f "${store_lists}/${list}" ]]; then
@@ -1305,7 +1283,6 @@ parallel --header : --colsep " " -k -j 1 echo \
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 if [[ -f "${store_lists}/${list%.txt}.4.txt" ]]; then
     # rm "${store_lists}/"${list%.txt}.{?,??,???}.txt
@@ -1352,7 +1329,6 @@ done
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 if [[ -f "./${store_scripts}/${script_run}" ]]; then
     rm "./${store_scripts}/${script_run}"
@@ -1446,7 +1422,6 @@ chmod +x "./${store_scripts}/${script_run}"
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 #TODO Fix line 1307: Wrong directory!
 if [[ -f "./${store_scripts}/${script_submit}" ]]; then
@@ -1515,7 +1490,6 @@ script
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 if [[ "${CONDA_DEFAULT_ENV}" != "base" ]]; then 
     conda deactivate
@@ -1545,7 +1519,6 @@ sbatch "${store_scripts}/${script_submit}"
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 transcriptome && 
     {
@@ -1575,7 +1548,6 @@ fi
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 script_run="${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/bin/filter_rCorrector-treated-fastqs.py"  # echo "${script_run}"
 script_submit="submit_run_rcorrector_clean-up.sh"  # echo "${script_submit}"
@@ -1603,7 +1575,6 @@ max_id_task=8  # echo "${max_id_task}"
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 #  Header
 if [[ -f "${store_lists}/${list}" ]]; then
@@ -1646,7 +1617,6 @@ parallel --header : --colsep " " -k -j 1 echo \
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 if [[ -f "${store_lists}/${list%.txt}.4.txt" ]]; then
     # rm "${store_lists}/"${list%.txt}.{?,??,???}.txt
@@ -1693,7 +1663,6 @@ done
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 ., "${script_run}"
 cat -n "${script_run}"
@@ -1710,7 +1679,6 @@ cat -n "${script_run}"
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 #NOTE 1/3 Here, note how we're calling the Python script from it's absolute
 #NOTE 2/3 path starting from home and also sourcing the in- and outfiles
@@ -1793,7 +1761,6 @@ script
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 if [[ "${CONDA_DEFAULT_ENV}" != "base" ]]; then 
     conda deactivate
@@ -1822,7 +1789,6 @@ sbatch "${store_scripts}/${script_submit}"
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 transcriptome && 
     {
@@ -1857,7 +1823,6 @@ fi
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 find_relative_path() {
     realpath --relative-to="${1}" "${2}"
@@ -1875,7 +1840,6 @@ find_relative_path() {
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 p_kmer_cor_path="$(
     find_relative_path \
@@ -1896,7 +1860,6 @@ p_kmer_cor_path="$(
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 p_kmer_uncor_path="$(
     find_relative_path \
@@ -1917,7 +1880,6 @@ p_kmer_uncor_path="$(
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 typeset -a new_kmer_cor=(
     "./fastqs_UMI-dedup/rcorrector_clean-up/BM10_5781_DSp48_S26_R1.UMI.atria.cor.rm-unfx.fq.gz"
@@ -1970,7 +1932,6 @@ done < <( echo "${new_kmer_cor[@]}"$" " )
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 new_kmer_uncor=(
     "fastqs_UMI-dedup/atria_trim/BM10_5781_DSp48_S26_R1.UMI.atria.fq.gz"
@@ -2025,7 +1986,6 @@ done < <( echo "${new_kmer_uncor[@]}"$" " )
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 cd "./bams_UMI-dedup/to-align_umi-extracted_trimmed_kmer-corrected" ||
     echo "cd'ing failed; check on this..."
@@ -2049,7 +2009,6 @@ done
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 cd "../to-align_umi-extracted_trimmed" ||
     echo "cd'ing failed; check on this..."
@@ -2073,7 +2032,6 @@ done
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 transcriptome && 
     {
@@ -2093,7 +2051,6 @@ transcriptome &&
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 script_run="run_STAR.sh"  # echo "${script_run}"
 # threads=1  # echo "${threads}"  # For echo tests
@@ -2140,7 +2097,6 @@ list_UT="STAR_UT.new.txt"  # echo "${list_UT}"
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 #  Header
 if [[ -f "${store_list_UTK}/${list_UTK}" ]]; then
@@ -2180,7 +2136,6 @@ parallel --header : --colsep " " -k -j 1 echo \
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 #  Header
 if [[ -f "${store_list_UT}/${list_UT}" ]]; then
@@ -2222,7 +2177,6 @@ parallel --header : --colsep " " -k -j 1 echo \
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 if [[ -f "${store_list_UTK}/${list_UTK%.txt}.4.txt" ]]; then
     # rm "${store_list_UTK}/"${list_UTK%.txt}.{?,??,???}.txt
@@ -2269,7 +2223,6 @@ done
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 if [[ -f "${store_list_UT}/${list_UT%.txt}.4.txt" ]]; then
     # rm "${store_list_UT}/"${list_UT%.txt}.{?,??,???}.txt
@@ -2316,7 +2269,6 @@ done
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 if [[ -f "./${store_scripts}/${script_run}" ]]; then
     rm "./${store_scripts}/${script_run}"
@@ -2444,7 +2396,6 @@ chmod +x "./${store_scripts}/${script_run}"
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 if [[ -f "./${store_scripts}/${script_submit_UTK}" ]]; then
     rm "./${store_scripts}/${script_submit_UTK}"
@@ -2513,7 +2464,6 @@ script
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 if [[ -f "./${store_scripts}/${script_submit_UT}" ]]; then
     rm "./${store_scripts}/${script_submit_UT}"
@@ -2583,7 +2533,6 @@ script
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 transcriptome && 
     {
@@ -2618,7 +2567,6 @@ sbatch "${store_scripts}/${script_submit_UT}"
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 transcriptome && 
     {
@@ -2682,7 +2630,6 @@ rename 's/BM12_7079_DSp48/BM12_DSp48_7079/g' *
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 transcriptome && 
     {
@@ -2751,7 +2698,6 @@ rename 's/BM12_7079_DSp48/BM12_DSp48_7079/g' *
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 #  Get situated
 grabnode  # 16, etc.
@@ -2789,7 +2735,6 @@ mkdir -p "./bams_UMI-dedup/aligned_UTK_primary-unmapped"
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 unset bams_UT_prim
 typeset -a bams_UT_prim=(
@@ -2816,7 +2761,6 @@ echo "${#bams_UT_prim[@]}"
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 unset bams_UTK_prim
 typeset -a bams_UTK_prim=(
@@ -2847,9 +2791,41 @@ echo "${#bams_UTK_prim[@]}"
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 # bash ../../bin/separate_bam.sh
+#
+# #  ------------------------------------
+# #  separate_bams.sh
+# #  ------------------------------------
+# Filter out unmapped reads from a bam infile. Optionally, run samtools flagstat
+# on the filtered bam outfile. Name(s) of outfile(s) are derived from the infile.
+#
+# Dependencies:
+#     - samtools >= version #TBD
+#
+# Arguments:
+#     -u  safe_mode   use safe mode: TRUE or FALSE <lgl> [default: FALSE]
+#     -i  infile      bam infile, including path <chr>
+#     -o  outdir      outfile directory, including path; if not found, will be
+#                     mkdir'd <chr>
+#     -1  primary     output bam composed of 'proper' primary alignments <lgl>
+#                     [default: TRUE]
+#     -2  secondary   output bam composed of 'proper' secondary alignments <lgl>
+#                     [default: TRUE]
+#     -3  prim_sec    output bam composed of 'proper' primary and secondary
+#                     alignments <lgl> [default: TRUE]
+#     -4  unmapped    output bam composed of 'proper' unmapped reads <lgl>
+#                     [default: TRUE]
+#     -5  proper_etc  output bam composed of 'proper' primary alignments and
+#                     singletons, and 'proper' unmapped reads <lgl>
+#                     [default: FALSE]
+#     -6  improp_etc  output bam composed of 'proper' and 'improper' primary
+#                     and secondary alignments, and unmapped reads <lgl>
+#                     [default: FALSE]
+#     -f  flagstat    run samtools flagstat on bam outfiles <lgl> [default: TRUE]
+#     -l  list_tally  run list and tally flags in bam outfiles <lgl>
+#                     [default: TRUE]
+#     -t  threads     number of threads <int >= 1> [default: 1]
 
 outdir="bams_UMI-dedup/aligned_UT_primary"
 err_out="sh_err_out/err_out"
@@ -2886,7 +2862,6 @@ done
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 unset outbams
 typeset -a outbams=(
@@ -3394,7 +3369,6 @@ bams_UMI-dedup/aligned_UT_primary/DA4_7079_SS_G1_UT.primary.list-tally-flags.txt
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 # bash ../../bin/separate_bam.sh
 
@@ -3433,7 +3407,6 @@ done
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 unset outbams
 typeset -a outbams=(
@@ -3941,7 +3914,6 @@ bams_UMI-dedup/aligned_UTK_primary/DA4_7079_SS_G1_UTK.primary.list-tally-flags.t
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 unset bams
 typeset -a bams=(
@@ -3975,7 +3947,6 @@ echo "${#bams[@]}"
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 parallel \
     -k \
@@ -4003,7 +3974,6 @@ parallel \
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 #  Get situated
 grabnode  # 8, etc.
@@ -4041,7 +4011,6 @@ mkdir -p "./bams_UMI-dedup/aligned_UTK_primary_dedup-pos"
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 unset inbams
 typeset -a inbams=(
@@ -4085,7 +4054,6 @@ echo "${#outbams_pos[@]}"
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 parallel \
     -j "${SLURM_CPUS_ON_NODE}" \
@@ -4136,7 +4104,6 @@ parallel \
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 parallel \
     -j "${SLURM_CPUS_ON_NODE}" \
@@ -4189,7 +4156,6 @@ parallel \
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 unset inbams
 typeset -a inbams=(
@@ -4233,7 +4199,6 @@ echo "${#outbams_pos[@]}"
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 parallel \
     -j "${SLURM_CPUS_ON_NODE}" \
@@ -4285,7 +4250,6 @@ parallel \
 `#INPROGRESS`
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 parallel \
     -j "${SLURM_CPUS_ON_NODE}" \
@@ -4338,7 +4302,6 @@ parallel \
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 #  Get situated
 grabnode  # 32, etc.
@@ -4402,7 +4365,6 @@ echo "${#bams[@]}"
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 parallel \
     -k \
@@ -4434,7 +4396,6 @@ parallel \
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 #  Get situated
 grabnode  # 28, etc.
@@ -4468,7 +4429,6 @@ mkdir -p "./bams_UMI-dedup/aligned_UT_primary_dedup-UMI_sans-KL-20S"
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 #  *_UTK.primary.dedup-UMI.bam: exclude K. lactis and 20S alignments ----------
 unset inbams_utk
@@ -4519,7 +4479,6 @@ outdir_ut="./bams_UMI-dedup/aligned_UT_primary_dedup-UMI_sans-KL-20S"
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 #  *_UTK.primary.dedup-UMI.bam --------
 parallel \
@@ -4725,7 +4684,6 @@ samtools view -@ 2 -h ./bams_UMI-dedup/aligned_UT_primary_dedup-UMI/DA4_7079_SS_
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 #  Get situated
 grabnode  # 28, etc.
@@ -4829,7 +4787,6 @@ parallel \
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 list_tally_flags() {
     samtools view "${1}" \
@@ -5944,7 +5901,6 @@ bams_UMI-dedup/aligned_UT_primary_dedup-UMI_sans-KL-20S/DA4_7079_SS_G1_UT.primar
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-UMI_sans-KL-20S"
 
@@ -6099,5 +6055,4 @@ mkdir: created directory '/home/kalavatt/tsukiyamalab/alisong/bams_UT_prim_SC_20
 'DA4_7079_SS_G1_UT.primary.dedup-UMI.SC.bam.bai' -> '/home/kalavatt/tsukiyamalab/alisong/bams_UT_prim_SC_2023-0314/DA4_7079_SS_G1_UT.primary.dedup-UMI.SC.bam.bai'
 ```
 </details>
-<br />
 <br />

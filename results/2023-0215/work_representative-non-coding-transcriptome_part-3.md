@@ -383,8 +383,7 @@ cat infiles_gtf-gff3/representation/CUTs_SUTs/liftOver_R56-to-R64.chain \
     | sed 's/chr//g' \
         > infiles_gtf-gff3/representation/CUTs_SUTs/liftOver_R56-to-R64.no-chr.chain
 
-cat \
-    infiles_gtf-gff3/representation/XUTs/liftOver_R63-to-R64.chain \
+cat infiles_gtf-gff3/representation/XUTs/liftOver_R63-to-R64.chain \
     | sed 's/chr//g' \
         > infiles_gtf-gff3/representation/XUTs/liftOver_R63-to-R64.no-chr.chain
 
