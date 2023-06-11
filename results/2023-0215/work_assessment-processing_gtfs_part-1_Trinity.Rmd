@@ -17,12 +17,12 @@ output:
 
 1. Use `GffRead` to filter `Trinity`-derived `GMAP`-aligned `gff3` files.
 2. Use `htseq-count` to perform feature counting with respect to `type`s "locus", "mRNA", "exon", and "CDS" features from "base" calls to `GffRead`, and with respect to `type` "gene" from "intron-filtering-only" calls to `GffRead`.
-3. Read in resulting counts matrices and `gtf` files using custom `R` code; perform processing as necessary using a mix of `bioconductor` and `tidyverse` programs.
-4. In terms of raw, non-normalized alignment-to-putative transcript/transcript fragment (transfrag) tallies, retain putative transcripts/transfrags with tallies greater than or equal to a given percentile; in this case, generate results for the 5th to 95th percentiles in iterations of five.
-6. Use ~~`rtracklayer`~~ *custom code* to write the converted, collapsed, counts-filtered data objects as `gtf` files. *(Some files output by `rtracklayer` seem to have formatting errors that break downstream analyses.)*
+3. Read in resulting counts matrices and `gtf` files using custom `R` code; using a mix of `bioconductor` and `tidyverse` programs, perform processing as necessary.
+4. Regarding raw, non-normalized alignment-to-putative transcript/transcript fragment (transfrag), retain putative transcripts/transfrags with tallies greater than or equal to a given percentile; in this case, generate results for the 5th to 95th percentiles in iterations of five.
+6. Use ~~`rtracklayer`~~ *custom code* to write the converted, collapsed, counts-filtered data objects as `gtf` files. *(Custom code is necessary as some files output by `rtracklayer` have formatting errors that break downstream analyses.)*
 7. Send the processed `gtf` files to Alison for inspection, analyses.
 
-For both Q and G1, Alison asked me to filter the assemblies generated with `Trinity` parameter `mkc` = 1, 4, 8. However, for the sake of completeness, and to understand clearly what "incorrectness" looks like, I will filter `mkc` = 2, 16, 32 as well. Remember that the `Trinity` parameters `mir`, `mg`, and `gf` were held at default levels for the specific assemblies to surveyed by Alison.
+For both Q and G1 cell states, Alison asked me to filter the assemblies generated with `Trinity` parameter `mkc` = 1, 4, 8. However, for the sake of completeness, and to understand clearly what "incorrectness" looks like, I will filter `mkc` = 2, 16, 32 as well. Remember that the `Trinity` parameters `mir`, `mg`, and `gf` were held at default levels for the specific assemblies to surveyed by Alison.
 </details>
 <br />
 <br />

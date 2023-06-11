@@ -246,9 +246,9 @@ theme_slick_no_legend <- theme_slick + theme(legend.position = "none")
 p_gtf <- "outfiles_gtf-gff3/representation"
 
 # f_gtf <- "Greenlaw-et-al_representative-coding-pa-ncRNA-transcriptome.gtf"
-# f_gtf <- "Greenlaw-et-al_representative-coding-non-pa-ncRNA-transcriptome.gtf"
+f_gtf <- "Greenlaw-et-al_representative-coding-non-pa-ncRNA-transcriptome.gtf"
 # f_gtf <- "Greenlaw-et-al_representative-coding-ncRNA-transcriptome.gtf"
-f_gtf <- "Greenlaw-et-al_non-collapsed-non-coding-transcriptome.gtf"  #TODO #IMPORTANT
+# f_gtf <- "Greenlaw-et-al_non-collapsed-non-coding-transcriptome.gtf"  #DONE #IMPORTANT #FUTURE
 # f_gtf <- "Greenlaw-et-al_representative-non-coding-transcriptome.gtf"  #TODO #TOCOMPLETE
 
 # dir.exists(p_gtf)
@@ -259,9 +259,7 @@ t_gtf <- paste(p_gtf, f_gtf, sep = "/") %>%
     tibble::as_tibble() %>%
     dplyr::arrange(seqnames, start) %>%
     dplyr::select(-c(width, score, phase))
-if(base::isFALSE(
-    f_gtf == "Greenlaw-et-al_representative-non-coding-transcriptome.gtf"
-)) {
+if(base::isFALSE(f_gtf == "Greenlaw-et-al_representative-non-coding-transcriptome.gtf")) {
     t_gtf <- t_gtf %>% dplyr::rename(category = type.1)
 }
     
@@ -280,10 +278,11 @@ if(f_gtf == "Greenlaw-et-al_representative-coding-pa-ncRNA-transcriptome.gtf") {
     f_cm <- "representative-coding-pa-ncRNA-transcriptome.hc-strd-eq.union-none.tsv"
     # f_cm <- "representative-coding-pa-ncRNA-transcriptome.hc-strd-eq.union-fraction.tsv"
 } else if(f_gtf == "Greenlaw-et-al_representative-coding-non-pa-ncRNA-transcriptome.gtf") {
-    f_cm <- "representative-coding-non-pa-ncRNA-transcriptome.hc-strd-eq.union-fraction.tsv"
+    f_cm <- "representative-coding-non-pa-ncRNA-transcriptome.hc-strd-eq.union-none.tsv"
+    # f_cm <- "representative-coding-non-pa-ncRNA-transcriptome.hc-strd-eq.union-fraction.tsv"
 } else if(f_gtf == "Greenlaw-et-al_representative-coding-ncRNA-transcriptome.gtf") {
     f_cm <- "representative-coding-ncRNA-transcriptome.hc-strd-eq.union-none.tsv"
-} else if(f_gtf == "Greenlaw-et-al_non-collapsed-non-coding-transcriptome.gtf") { #TODO #IMPORTANT
+} else if(f_gtf == "Greenlaw-et-al_non-collapsed-non-coding-transcriptome.gtf") { #DONE
     f_cm <- "non-collapsed-non-coding-transcriptome.hc-strd-eq.tsv"  #TODO #IMPORTANT
 } else if(f_gtf == "Greenlaw-et-al_representative-non-coding-transcriptome.gtf") {
     f_cm <- "representative-non-coding-transcriptome.hc-strd-eq.tsv"
@@ -442,8 +441,11 @@ col_cor <- setNames(  #DEKHO
     )
 )
 
-t_cm.bak <- t_cm
-# t_cm <- t_cm.bak
+run <- FALSE
+if(base::isTRUE(run)) {
+    t_cm.bak <- t_cm
+    # t_cm <- t_cm.bak
+}
 t_cm <- filter_process_counts_matrix(t_cm, col_cor)
 
 
@@ -455,7 +457,12 @@ underscore <- t_cm[stringr::str_detect(t_cm$gene_id, "^__[a-zA-Z0-9_]*$"), ]
 
 #  Exclude htseq-count summary metrics from t_cm ------------------------------
 t_cm <- t_cm[!stringr::str_detect(t_cm$gene_id, "^__[a-zA-Z0-9_]*$"), ]
-t_cm %>% tail(10)
+
+run <- FALSE
+if(base::isTRUE(run)) {
+    t_cm %>% tail(10)
+}
+
 
 #  Read in, process metrics from work_calculate_uni-multimappers-etc.md -------
 p_uni_multi_etc <- "outfiles_htseq-count"
@@ -470,8 +477,11 @@ rm(f_uni_multi_etc, p_uni_multi_etc)
 
 #  Clean up the tibble of uni_multi_etc counts --------------------------------
 #  Clean up, correct, and abbreviate sample names
-uni_multi_etc.bak <- uni_multi_etc
-# uni_multi_etc <- uni_multi_etc.bak
+run <- FALSE
+if(base::isTRUE(run)) {
+    uni_multi_etc.bak <- uni_multi_etc
+    # uni_multi_etc <- uni_multi_etc.bak
+}
 uni_multi_etc$sample[match(col_cor, uni_multi_etc$sample)] <- names(col_cor)
 
 #  Transpose the dataframe, converting row #1 to column names
@@ -503,7 +513,7 @@ if(base::isFALSE(f_gtf == "Greenlaw-et-al_non-collapsed-non-coding-transcriptome
         t_gtf[, c(1:4, 7, 9, 10)],
         t_cm,
         by = "gene_id"
-    )  #DONE Adapt this to work with "Greenlaw-et-al_non-collapsed-non-coding-transcriptome.gtf", "non-collapsed-non-coding-transcriptome.hc-strd-eq.tsv"
+    )
 } else {
     t_full <- dplyr::full_join(
         t_gtf[, c(1:4, 14, 9, 7)] %>%
@@ -528,38 +538,45 @@ t_full <- dplyr::bind_rows(t_full, summary_relevant)
 
 
 #  Check: Do sample-wise tallies equal __valid_counts? ------------------------
-run <- TRUE
-if(base::isTRUE(run)) {
-    # test_0 <- t_full[-c((nrow(t_full) - 3):nrow(t_full)), -c(1:7)]
-    test_1 <- 
-        sapply(
-            t_full[-c((nrow(t_full) - 3):nrow(t_full)), -c(1:7)], sum
-        ) %>%
-        t() %>%
-        tibble::as_tibble() 
+test_1 <- 
+    sapply(
+        t_full[-c((nrow(t_full) - 3):nrow(t_full)), -c(1:7)], sum
+    ) %>%
+    t() %>%
+    tibble::as_tibble() 
 
-    test_2 <-
-        summary_relevant[
-            stringr::str_detect(summary_relevant$gene_id, "valid"), 
-        ][
-            , 2:ncol(summary_relevant)
-        ]
-    
-    identical(test_1, test_2)  # [1] TRUE
-    
-    rm(test_1, test_2)
-}
+test_2 <-
+    summary_relevant[
+        stringr::str_detect(summary_relevant$gene_id, "valid"), 
+    ][
+        , 2:ncol(summary_relevant)
+    ]
+
+if(base::isFALSE(identical(test_1, test_2))) {
+    stop(paste(
+        "Sample-wise tallies do not equal __valid_counts. Stopping the",
+        "script."
+    ))
+} 
+
+rm(test_1, test_2)
 
 
 #  Plot category proportions for the Ovation samples ==========================
 #  Isolate categories and relevant samples, then process them -----------------
 tmp <- t_full[-nrow(t_full), -c(1:5, 7)]  #TODO May need to be adapted for "Greenlaw-et-al_non-collapsed-non-coding-transcriptome.gtf", "non-collapsed-non-coding-transcriptome.hc-strd-eq.tsv"
-t_rel <- dplyr::bind_cols(
-    tmp[, 1],
-    tmp[, stringr::str_detect(colnames(tmp), "ovn")]  #TODO Will need to adapt this for different samples, e.g., n3d and od
-)
 
-rm(tmp)
+# samples <- "ovation"  #ARGUMENT
+samples <- "n3d_od"  #ARGUMENT
+if(samples == "ovation") {
+    tmp_samples <- tmp[, stringr::str_detect(colnames(tmp), "ovn")]
+} else if(samples == "n3d_od") {
+    tmp_samples <- tmp[, stringr::str_detect(colnames(tmp), "n3d|od")] %>%
+        dplyr::select(-dplyr::contains("rep3"))
+}
+t_rel <- dplyr::bind_cols(tmp[, 1], tmp_samples)
+
+rm(tmp, tmp_samples)
 
 t_rel[(nrow(t_rel) - 2), 1] <- "multimapper"
 t_rel[(nrow(t_rel) - 1), 1] <- "no feature"
@@ -577,35 +594,55 @@ t_rel$category[stringr::str_detect(t_rel$category, "PG")] <- "pseudogene"
 # t_rel <- t_rel %>% dplyr::slice(-(nrow(.) - 2))
 
 #  Further clean up the column names
-colnames(t_rel) <- colnames(t_rel) %>%
-    stringr::str_remove("ovn") %>%
-    stringr::str_remove("_tech1")
+if(samples %in% c("ovation", "n3d_od")) {
+    colnames(t_rel) <- colnames(t_rel) %>%
+        stringr::str_remove("ovn") %>%
+        stringr::str_remove("_tech1")
+}
 
+if(samples == "ovation") {
+    t_rel_summarize <- t_rel %>%
+        dplyr::group_by(category) %>%
+        dplyr::summarize(
+            sum_WT_G1_N_rep1 = sum(WT_G1_N_rep1),
+            sum_WT_G1_N_rep2 = sum(WT_G1_N_rep2),
+            sum_WT_G1_SS_rep1 = sum(WT_G1_SS_rep1),
+            sum_WT_G1_SS_rep2 = sum(WT_G1_SS_rep2),
+            sum_WT_Q_N_rep1 = sum(WT_Q_N_rep1),
+            sum_WT_Q_N_rep2 = sum(WT_Q_N_rep2),
+            sum_WT_Q_SS_rep1 = sum(WT_Q_SS_rep1),
+            sum_WT_Q_SS_rep2 = sum(WT_Q_SS_rep2),
+            number_of_features = dplyr::n()
+        )
+} else if(samples == "n3d_od") {
+    t_rel_summarize <- t_rel %>%
+        dplyr::group_by(category) %>%
+        dplyr::summarize(
+            sum_od_Q_N_rep1 = sum(od_Q_N_rep1),
+            sum_od_Q_N_rep2 = sum(od_Q_N_rep2),
+            sum_od_Q_SS_rep1 = sum(od_Q_SS_rep1),
+            sum_od_Q_SS_rep2 = sum(od_Q_SS_rep2),
+            sum_n3d_Q_N_rep1 = sum(n3d_Q_N_rep1),
+            sum_n3d_Q_N_rep2 = sum(n3d_Q_N_rep2),
+            sum_n3d_Q_SS_rep1 = sum(n3d_Q_SS_rep1),
+            sum_n3d_Q_SS_rep2 = sum(n3d_Q_SS_rep2),
+            number_of_features = dplyr::n()
+        )
+}
 
-t_rel_summarize <- t_rel %>%
-    dplyr::group_by(category) %>%
-    dplyr::summarize(
-        sum_WT_G1_N_rep1 = sum(WT_G1_N_rep1),
-        sum_WT_G1_N_rep2 = sum(WT_G1_N_rep2),
-        sum_WT_G1_SS_rep1 = sum(WT_G1_SS_rep1),
-        sum_WT_G1_SS_rep2 = sum(WT_G1_SS_rep2),
-        sum_WT_Q_N_rep1 = sum(WT_Q_N_rep1),
-        sum_WT_Q_N_rep2 = sum(WT_Q_N_rep2),
-        sum_WT_Q_SS_rep1 = sum(WT_Q_SS_rep1),
-        sum_WT_Q_SS_rep2 = sum(WT_Q_SS_rep2),
-        number_of_features = dplyr::n()
-    )
 
 #  Order the categories alphabetically without respect to case, and exclude
 #+ the "multimapper (excluded)" and "pseudogene" categories
-t_rel_summarize <- t_rel_summarize %>%
-    dplyr::arrange(tolower(category)) %>%
-    dplyr::filter(!stringr::str_detect(
-        category, "^multimapper*"
-    )) %>%
-    dplyr::filter(!stringr::str_detect(
-        category, "^pseudogene"
-    ))
+if(samples %in% c("ovation", "n3d_od")) {
+    t_rel_summarize <- t_rel_summarize %>%
+        dplyr::arrange(tolower(category)) %>%
+        dplyr::filter(!stringr::str_detect(
+            category, "^multimapper*"
+        )) %>%
+        dplyr::filter(!stringr::str_detect(
+            category, "^pseudogene"
+        ))
+}
 
 #  For "Greenlaw-et-al_non-collapsed-non-coding-transcriptome.gtf" and
 #+ "Greenlaw-et-al_representative-non-coding-transcriptome.gtf" counts, place
@@ -627,8 +664,13 @@ t_rel_summarize$number_of_features <- ifelse(
 )
 
 #  Remove unnecessary string "sum_WT_" from the column names
-colnames(t_rel_summarize) <- colnames(t_rel_summarize) %>%
-    stringr::str_remove("sum_WT_")
+if(samples == "ovation") {
+    colnames(t_rel_summarize) <- colnames(t_rel_summarize) %>%
+        stringr::str_remove("sum_WT_")
+} else if(samples == "n3d_od") {
+    colnames(t_rel_summarize) <- colnames(t_rel_summarize) %>%
+        stringr::str_remove("sum_")
+}
 
 #  Test the piping of the dataframe
 # t_rel_summarize %>%
@@ -751,12 +793,17 @@ dplyr::mutate(
     category = t_rel_summarize$category,
     number_of_features = t_rel_summarize$number_of_features
 ) %>%
-dplyr::relocate(category, .before = G1_N_rep1)
+dplyr::relocate(category)
 
-col_piv <- c(
-    "G1_N_rep1", "G1_N_rep2", "G1_SS_rep1", "G1_SS_rep2",
-    "Q_N_rep1", "Q_N_rep2", "Q_SS_rep1", "Q_SS_rep2"
-)
+if(samples == "ovation") {
+    col_piv <- c(
+        "G1_N_rep1", "G1_N_rep2", "G1_SS_rep1", "G1_SS_rep2",
+        "Q_N_rep1", "Q_N_rep2", "Q_SS_rep1", "Q_SS_rep2"
+    )
+} else if(samples == "n3d_od") {
+    col_piv <- colnames(t_rel_summarize)[-c(1, 10)]
+}
+
 `sample-by-category_pivoted` <- prop_summarize[, 1:9] %>%
     pivot_on_columns(col_piv) %>%
     dplyr::mutate(
@@ -796,70 +843,86 @@ col_piv <- c(
 # `sample-by-category_pivoted`
 # `sample-by-category_stats`
 
-# `prop-plot_w-error_full` <- `sample-by-category_pivoted` %>%
-#     ggpubr::ggbarplot(
-#         x = "samples",
-#         y = "counts",
-#         color = "black",
-#         fill = "category",
-#         palette = viridisLite::viridis(nrow(t_rel_summarize)),
-#         label = FALSE,
-#         add = "mean_se"
-#     ) +
-#         # coord_cartesian(ylim = c(0, 0.35)) +
-#         xlab("") +
-#         ylab("proportion") +
-#         theme_slick
-# 
-# `prop-plot_w-error_zoom` <- `sample-by-category_pivoted` %>%
-#     ggpubr::ggbarplot(
-#         x = "samples",
-#         y = "counts",
-#         color = "black",
-#         fill = "category",
-#         palette = viridisLite::viridis(nrow(t_rel_summarize)),
-#         label = FALSE,
-#         add = "mean_se"
-#     ) +
-#         coord_cartesian(ylim = c(0, 0.30)) +
-#         xlab("") +
-#         ylab("proportion") +
-#         theme_slick
+if(samples == "ovation") {
+    zoom <- 0.30
+} else if(samples == "n3d_od") {
+    zoom <- 0.55
+}
 
-`prop-plot_no-error_full` <- `sample-by-category_pivoted` %>%
-    ggpubr::ggbarplot(
-        x = "samples",
-        y = "counts",
-        color = NA,
-        fill = "category",
-        palette = viridisLite::viridis(nrow(t_rel_summarize)),
-        label = FALSE,
-        add = "mean_se"
-    ) +
-        xlab("") +
-        ylab("proportion") +
-        theme_slick
+#  Draw mean proportional bar plots with error bars
+run <- FALSE
+if(base::isTRUE(run)) {
+    `prop-plot_w-error_full` <- `sample-by-category_pivoted` %>%
+        ggpubr::ggbarplot(
+            x = "samples",
+            y = "counts",
+            color = "black",
+            fill = "category",
+            palette = viridisLite::viridis(nrow(t_rel_summarize)),
+            label = FALSE,
+            add = "mean_se"
+        ) +
+            xlab("") +
+            ylab("proportion") +
+            theme_slick
+    
+    `prop-plot_w-error_zoom` <- `sample-by-category_pivoted` %>%
+        ggpubr::ggbarplot(
+            x = "samples",
+            y = "counts",
+            color = "black",
+            fill = "category",
+            palette = viridisLite::viridis(nrow(t_rel_summarize)),
+            label = FALSE,
+            add = "mean_se"
+        ) +
+            coord_cartesian(ylim = c(0, zoom)) +
+            xlab("") +
+            ylab("proportion") +
+            theme_slick
+    
+    #  Checks
+    `prop-plot_w-error_full`
+    `prop-plot_w-error_zoom`
+}
 
-`prop-plot_no-error_zoom` <- `sample-by-category_pivoted` %>%
-    ggpubr::ggbarplot(
-        x = "samples",
-        y = "counts",
-        color = NA,
-        fill = "category",
-        palette = viridisLite::viridis(nrow(t_rel_summarize)),
-        label = FALSE,
-        add = "mean_se"
-    ) +
-        coord_cartesian(ylim = c(0, 0.30)) +
-        xlab("") +
-        ylab("proportion") +
-        theme_slick
+#  Draw mean proportional bar plots without error bars
+run <- TRUE
+if(base::isTRUE(run)) {
+    `prop-plot_no-error_full` <- `sample-by-category_pivoted` %>%
+        ggpubr::ggbarplot(
+            x = "samples",
+            y = "counts",
+            color = NA,
+            fill = "category",
+            palette = viridisLite::viridis(nrow(t_rel_summarize)),
+            label = FALSE,
+            add = "mean_se"
+        ) +
+            xlab("") +
+            ylab("proportion") +
+            theme_slick
+    
+    `prop-plot_no-error_zoom` <- `sample-by-category_pivoted` %>%
+        ggpubr::ggbarplot(
+            x = "samples",
+            y = "counts",
+            color = NA,
+            fill = "category",
+            palette = viridisLite::viridis(nrow(t_rel_summarize)),
+            label = FALSE,
+            add = "mean_se"
+        ) +
+            coord_cartesian(ylim = c(0, zoom)) +
+            xlab("") +
+            ylab("proportion") +
+            theme_slick
+    
+    #  Checks
+    `prop-plot_no-error_full` # + theme_slick_no_legend
+    `prop-plot_no-error_zoom` # + theme_slick_no_legend
+}
 
-#  Checks
-# `prop-plot_w-error_full`
-# `prop-plot_w-error_zoom`
-`prop-plot_no-error_full` # + theme_slick_no_legend
-`prop-plot_no-error_zoom` # + theme_slick_no_legend
 
 #TODO Get these plots into a format that's good for AG's work with Affinity
 

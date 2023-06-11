@@ -9,7 +9,7 @@ output:
 ---
 <br />
 
-Assess the differences between `saccharomyces_cerevisiae_R64-1-1_20110208.gff` [from SGD](http://sgd-archive.yeastgenome.org/sequence/S288C_reference/genome_releases/S288C_reference_genome_R64-1-1_20110203.tgz) and `Saccharomyces_cerevisiae.R64-1-1.108.gff3` [from Ensembl](https://ftp.ensembl.org/pub/release-108/gff3/saccharomyces_cerevisiae/), the file we have been using for generating counts matrices against 
+Assess the differences between `saccharomyces_cerevisiae_R64-1-1_20110208.gff` [from SGD](http://sgd-archive.yeastgenome.org/sequence/S288C_reference/genome_releases/S288C_reference_genome_R64-1-1_20110203.tgz) and `Saccharomyces_cerevisiae.R64-1-1.108.gff3` [from Ensembl](https://ftp.ensembl.org/pub/release-108/gff3/saccharomyces_cerevisiae/), the file we have been using to generate counts matrices against mRNA features.
 
 ## Get situated
 ### Code
@@ -244,7 +244,7 @@ gff3_Ens[apply(gff3_Ens, 1, function(x) any(x %like% "YOR031W")), ]  # 0 rows
 <details>
 <summary><i>Notes: Find gene IDs in SGD not in Ensembl</i></summary>
 
-- "YER109C", "YFL057C", "YFL056C", and "YOR031W" are on, respectively, chromosomes V, VI, VI, and XV; "R0010W", "R0020C", "R0030W", and "R0040C" are on "2-micron". Thus, "YER109C", "YFL057C", "YFL056C", and "YOR031W" are apparently valid genes that we *may* care about that are not&mdash;for some reason&mdash;associated with IDs in the Ensembl annotation.
+- "YER109C", "YFL057C", "YFL056C", and "YOR031W" are on, respectively, chromosomes V, VI, VI, and XV; "R0010W", "R0020C", "R0030W", and "R0040C" are on "2-micron". Thus, "YER109C", "YFL057C", "YFL056C", and "YOR031W" are apparently valid genes that we *may* care about that are not&mdash;*for some reason*&mdash;associated with IDs in the Ensembl annotation.
 - "YER109C", "YFL057C", "YFL056C", and "YOR031W" are not associated with `protein_ID` assignments in `gff3_Ens`; however, in `gff3_Ens`, "YFL056C" appears to be associated with `type` "pseudogene" and "pseudogene_transcript", `biotype` "pseudogene", and corresponding `gene_id` and `transcript_id` entries; the other genes&mdash;"YER109C", "YFL057C", and "YOR031W"&mdash;are not.
 - "YFL056C" is associated with three rows in `gff3_Ens`: `type`s "pseudogene", "pseudogenic_transcript", and "exon".
 - "YFL057C" is associated with the "YFL056C" `type` "pseudogene" row (it's in the `description` column)
