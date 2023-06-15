@@ -1168,102 +1168,176 @@ run_main <- function(
         color = color,
         selection = FALSE
     )
-
-    # lfc_1.32 <- call_DESeq2_results_run_analyses(
-    #     dds = dds,
-    #     independent_filtering = TRUE,
-    #     threshold_p = threshold_p,
-    #     threshold_p_lessAbs = threshold_p_lessAbs,
-    #     threshold_lfc = 1.32,  # i.e., 2^1.32 ≈ 2.5
-    #     x_min = x_min,
-    #     x_max = x_max,
-    #     y_min = y_min,
-    #     y_max = y_max,
-    #     color = color,
-    #     selection = FALSE
-    # )
-    # 
-    # lfc_1.58 <- call_DESeq2_results_run_analyses(
-    #     dds = dds,
-    #     independent_filtering = TRUE,
-    #     threshold_p = threshold_p,
-    #     threshold_p_lessAbs = threshold_p_lessAbs,
-    #     threshold_lfc = 1.58,  # i.e., 2^1.58 ≈ 3
-    #     x_min = x_min,
-    #     x_max = x_max,
-    #     y_min = y_min,
-    #     y_max = y_max,
-    #     color = color,
-    #     selection = FALSE
-    # )
-    # 
-    # lfc_2 <- call_DESeq2_results_run_analyses(
-    #     dds = dds,
-    #     independent_filtering = TRUE,
-    #     threshold_p = threshold_p,
-    #     threshold_p_lessAbs = threshold_p_lessAbs,
-    #     threshold_lfc = 2,  # i.e., 2^2 = 4
-    #     x_min = x_min,
-    #     x_max = x_max,
-    #     y_min = y_min,
-    #     y_max = y_max,
-    #     color = color,
-    #     selection = FALSE
-    # )
-    # 
-    # lfc_2.32 <- call_DESeq2_results_run_analyses(
-    #     dds = dds,
-    #     independent_filtering = TRUE,
-    #     threshold_p = threshold_p,
-    #     threshold_p_lessAbs = threshold_p_lessAbs,
-    #     threshold_lfc = 2.32,  # i.e., 2^2.32 ≈ 5
-    #     x_min = x_min,
-    #     x_max = x_max,
-    #     y_min = y_min,
-    #     y_max = y_max,
-    #     color = color,
-    #     selection = FALSE
-    # )
-    # 
-    # lfc_2.58 <- call_DESeq2_results_run_analyses(
-    #     dds = dds,
-    #     independent_filtering = TRUE,
-    #     threshold_p = threshold_p,
-    #     threshold_p_lessAbs = threshold_p_lessAbs,
-    #     threshold_lfc = 2.58,  # i.e., 2^2.58 ≈ 6
-    #     x_min = x_min,
-    #     x_max = x_max,
-    #     y_min = y_min,
-    #     y_max = y_max,
-    #     color = color,
-    #     selection = FALSE
-    # )
-    # 
-    # lfc_3 <- call_DESeq2_results_run_analyses(
-    #     dds = dds,
-    #     independent_filtering = TRUE,
-    #     threshold_p = threshold_p,
-    #     threshold_p_lessAbs = threshold_p_lessAbs,
-    #     threshold_lfc = 3,  # i.e., 2^3 = 8
-    #     x_min = x_min,
-    #     x_max = x_max,
-    #     y_min = y_min,
-    #     y_max = y_max,
-    #     color = color,
-    #     selection = FALSE
-    # )
-
+    
+    run <- TRUE
+    if(base::isTRUE(run)) {
+        lfc_1.32 <- call_DESeq2_results_run_analyses(
+            dds = dds,
+            independent_filtering = TRUE,
+            threshold_p = threshold_p,
+            threshold_p_lessAbs = threshold_p_lessAbs,
+            threshold_lfc = 1.32,  # i.e., 2^1.32 ≈ 2.5
+            x_min = x_min,
+            x_max = x_max,
+            y_min = y_min,
+            y_max = y_max,
+            color = color,
+            selection = FALSE
+        )
+    
+        lfc_1.58 <- call_DESeq2_results_run_analyses(
+            dds = dds,
+            independent_filtering = TRUE,
+            threshold_p = threshold_p,
+            threshold_p_lessAbs = threshold_p_lessAbs,
+            threshold_lfc = 1.58,  # i.e., 2^1.58 ≈ 3
+            x_min = x_min,
+            x_max = x_max,
+            y_min = y_min,
+            y_max = y_max,
+            color = color,
+            selection = FALSE
+        )
+    
+        lfc_2 <- call_DESeq2_results_run_analyses(
+            dds = dds,
+            independent_filtering = TRUE,
+            threshold_p = threshold_p,
+            threshold_p_lessAbs = threshold_p_lessAbs,
+            threshold_lfc = 2,  # i.e., 2^2 = 4
+            x_min = x_min,
+            x_max = x_max,
+            y_min = y_min,
+            y_max = y_max,
+            color = color,
+            selection = FALSE
+        )
+    
+        lfc_2.32 <- call_DESeq2_results_run_analyses(
+            dds = dds,
+            independent_filtering = TRUE,
+            threshold_p = threshold_p,
+            threshold_p_lessAbs = threshold_p_lessAbs,
+            threshold_lfc = 2.32,  # i.e., 2^2.32 ≈ 5
+            x_min = x_min,
+            x_max = x_max,
+            y_min = y_min,
+            y_max = y_max,
+            color = color,
+            selection = FALSE
+        )
+    
+        lfc_2.58 <- call_DESeq2_results_run_analyses(
+            dds = dds,
+            independent_filtering = TRUE,
+            threshold_p = threshold_p,
+            threshold_p_lessAbs = threshold_p_lessAbs,
+            threshold_lfc = 2.58,  # i.e., 2^2.58 ≈ 6
+            x_min = x_min,
+            x_max = x_max,
+            y_min = y_min,
+            y_max = y_max,
+            color = color,
+            selection = FALSE
+        )
+    
+        lfc_3 <- call_DESeq2_results_run_analyses(
+            dds = dds,
+            independent_filtering = TRUE,
+            threshold_p = threshold_p,
+            threshold_p_lessAbs = threshold_p_lessAbs,
+            threshold_lfc = 3,  # i.e., 2^3 = 8
+            x_min = x_min,
+            x_max = x_max,
+            y_min = y_min,
+            y_max = y_max,
+            color = color,
+            selection = FALSE
+        )
+        
+        lfc_4 <- call_DESeq2_results_run_analyses(
+            dds = dds,
+            independent_filtering = TRUE,
+            threshold_p = threshold_p,
+            threshold_p_lessAbs = threshold_p_lessAbs,
+            threshold_lfc = 4,  # i.e., 2^4 = 16
+            x_min = x_min,
+            x_max = x_max,
+            y_min = y_min,
+            y_max = y_max,
+            color = color,
+            selection = FALSE
+        )
+        
+        lfc_5 <- call_DESeq2_results_run_analyses(
+            dds = dds,
+            independent_filtering = TRUE,
+            threshold_p = threshold_p,
+            threshold_p_lessAbs = threshold_p_lessAbs,
+            threshold_lfc = 5,  # i.e., 2^5 = 32
+            x_min = x_min,
+            x_max = x_max,
+            y_min = y_min,
+            y_max = y_max,
+            color = color,
+            selection = FALSE
+        )
+        
+        lfc_6 <- call_DESeq2_results_run_analyses(
+            dds = dds,
+            independent_filtering = TRUE,
+            threshold_p = threshold_p,
+            threshold_p_lessAbs = threshold_p_lessAbs,
+            threshold_lfc = 6,  # i.e., 2^6 = 64
+            x_min = x_min,
+            x_max = x_max,
+            y_min = y_min,
+            y_max = y_max,
+            color = color,
+            selection = FALSE
+        )
+        
+        lfc_7 <- call_DESeq2_results_run_analyses(
+            dds = dds,
+            independent_filtering = TRUE,
+            threshold_p = threshold_p,
+            threshold_p_lessAbs = threshold_p_lessAbs,
+            threshold_lfc = 7,  # i.e., 2^7 = 128
+            x_min = x_min,
+            x_max = x_max,
+            y_min = y_min,
+            y_max = y_max,
+            color = color,
+            selection = FALSE
+        )
+        
+        lfc_8 <- call_DESeq2_results_run_analyses(
+            dds = dds,
+            independent_filtering = TRUE,
+            threshold_p = threshold_p,
+            threshold_p_lessAbs = threshold_p_lessAbs,
+            threshold_lfc = 8,  # i.e., 2^8 = 256
+            x_min = x_min,
+            x_max = x_max,
+            y_min = y_min,
+            y_max = y_max,
+            color = color,
+            selection = FALSE
+        )
+    }
     
     #  Return results ---------------------------------------------------------
     results_list <- list()
     results_list[["01_t_init"]] <- t_sub.bak
     results_list[["02_t_meta"]] <- t_meta
     results_list[["03_filtering"]] <- filtering
+    
     if(filtering != "filterByExpr.default") {
         results_list[["04_counts"]] <- counts
         results_list[["04_keep"]] <- keep
         results_list[["04_t_tmp"]] <- t_tmp
     }
+    
     if(filtering == "filterByExpr.default") {
         results_list[["04_t_edge"]] <- t_edge
         results_list[["04_group"]] <- group
@@ -1273,15 +1347,18 @@ run_main <- function(
         results_list[["04_t_tmp"]] <- t_tmp
         results_list[["04_dispose"]] <- dispose
     }
+    
     results_list[["05_t_sub"]] <- t_sub
     results_list[["06_g_pos"]] <- g_pos
     results_list[["07_t_counts"]] <- t_counts
+    
     results_list[["08_dds"]] <- dds
     results_list[["08_size_factors"]] <- size_factors
     results_list[["08_size_factors_recip"]] <- size_factors_recip
     results_list[["08_design"]] <- design
     results_list[["08_col_data"]] <- col_data
     results_list[["08_model_info"]] <- model_info
+    
     results_list[["09_lfc_0_fc_1"]] <- lfc_0
     results_list[["09_lfc_0.32_fc_1.25"]] <- lfc_0.32
     results_list[["09_lfc_0.415_fc_1.33"]] <- lfc_0.415
@@ -1289,25 +1366,34 @@ run_main <- function(
     results_list[["09_lfc_0.737_fc_1.67"]] <- lfc_0.737
     results_list[["09_lfc_0.807_fc_1.75"]] <- lfc_0.807
     results_list[["09_lfc_1_fc_2"]] <- lfc_1
-    # results_list[["09_lfc_1.32_fc_2.5"]] <- lfc_1.32
-    # results_list[["09_lfc_1.58_fc_3"]] <- lfc_1.58
-    # results_list[["09_lfc_2_fc_4"]] <- lfc_2
-    # results_list[["09_lfc_2.32_fc_5"]] <- lfc_2.32
-    # results_list[["09_lfc_2.58_fc_6"]] <- lfc_2.58
-    # results_list[["09_lfc_3_fc_8"]] <- lfc_3
+    
+    if(base::isTRUE(run)) {
+        results_list[["09_lfc_1.32_fc_2.5"]] <- lfc_1.32
+        results_list[["09_lfc_1.58_fc_3"]] <- lfc_1.58
+        results_list[["09_lfc_2_fc_4"]] <- lfc_2
+        results_list[["09_lfc_2.32_fc_5"]] <- lfc_2.32
+        results_list[["09_lfc_2.58_fc_6"]] <- lfc_2.58
+        results_list[["09_lfc_3_fc_8"]] <- lfc_3
+        results_list[["09_lfc_4_fc_16"]] <- lfc_4
+        results_list[["09_lfc_5_fc_32"]] <- lfc_5
+        results_list[["09_lfc_6_fc_64"]] <- lfc_6
+        results_list[["09_lfc_7_fc_128"]] <- lfc_7
+        results_list[["09_lfc_8_fc_256"]] <- lfc_8
+    }
     
     return(results_list)
 }
 
 
-print_volcano_unshrunken_AG <- function(
+print_volcano_unshrunken <- function(
     dataframe,
     outpath = "/Users/kalavatt/Desktop",
     type_plot = "volcano",
     type_feature = "mRNA",
     lfc = "lfc-gt-0.58",
     width = 7,
-    height = 7
+    height = 7,
+    style = "AG"
 ) {
     # ...
     #
@@ -1328,28 +1414,80 @@ print_volcano_unshrunken_AG <- function(
         part_1, "vs", part_2, part_3, part_4, part_5,
         sep = "_"
     )
+    
     outfile <- paste0(
         outpath, "/",
         file_prefix, ".",
         format(Sys.time(), format = "%F_%H.%M.%S"),
         ".pdf"
     )
+    
     pdf(file = outfile, width = width, height = height)
-    if(base::isTRUE(lfc == "lfc-gt-0")) {
-        print(dataframe[["09_lfc_0_fc_1"]][["08_p_vol_unshrunken_AG"]])
-    } else if(base::isTRUE(lfc == "lfc-gt-0.32")) {
-        print(dataframe[["09_lfc_0.32_fc_1.25"]][["08_p_vol_unshrunken_AG"]])
-    } else if(base::isTRUE(lfc == "lfc-gt-0.415")) {
-        print(dataframe[["09_lfc_0.415_fc_1.33"]][["08_p_vol_unshrunken_AG"]])
-    } else if(base::isTRUE(lfc == "lfc-gt-0.58")) {
-        print(dataframe[["09_lfc_0.58_fc_1.5"]][["08_p_vol_unshrunken_AG"]])
-    } else if(base::isTRUE(lfc == "lfc-gt-0.737")) {
-        print(dataframe[["09_lfc_0.737_fc_1.67"]][["08_p_vol_unshrunken_AG"]])
-    } else if(base::isTRUE(lfc == "lfc_0.807")) {
-        print(dataframe[["09_lfc_0.807_fc_1.75"]][["08_p_vol_unshrunken_AG"]])
-    } else if(base::isTRUE(lfc == "lfc_1")) {
-        print(dataframe[["09_lfc_1_fc_2"]][["08_p_vol_unshrunken_AG"]])
+    
+    if(style %notin% c("AG", "KA")) {
+        stop(paste("Argument \"lfc\" must be \"AG\" or \"KA\""))
     }
+    
+    if(style == "AG") {
+        style <- "08_p_vol_unshrunken_AG"
+    } else if(style == "KA") {
+        style <- "08_p_vol_unshrunken_KA"
+    }
+    
+    if(lfc %notin% c(
+        "lfc-gt-0", "lfc-gt-0.32", "lfc-gt-0.415", "lfc-gt-0.58",
+        "lfc-gt-0.737", "lfc-gt-0.807", "lfc-gt-1", "lfc-gt-1.32",
+        "lfc-gt-1.58", "lfc-gt-2", "lfc-gt-2.32", "lfc-gt-2.58", "lfc-gt-3",
+        "lfc-gt-4", "lfc-gt-5", "lfc-gt-6", "lfc-gt-7", "lfc-gt-8"
+    )) {
+        stop(paste0(
+            "Argument \"lfc\" must be one of the following:\n\t- lfc-gt-0\n\t",
+            "- lfc-gt-0.32\n\t- lfc-gt-0.415\n\t- lfc-gt-0.58\n\t",
+            "- lfc-gt-0.737\n\t- lfc-gt-0.807\n\t- lfc-gt-1\n\t",
+            "- lfc-gt-1.32\n\t- lfc-gt-1.58\n\t- lfc-gt-2\n\t",
+            "- lfc-gt-2.32\n\t- lfc-gt-2.58\n\t- lfc-gt-3\n\t- lfc-gt-4\n\t",
+            "- lfc-gt-5\n\t- lfc-gt-6\n\t- lfc-gt-7\n\t- lfc-gt-8"
+        ))
+    }
+    
+    if(base::isTRUE(lfc == "lfc-gt-0")) {
+        print(dataframe[["09_lfc_0_fc_1"]][[style]])
+    } else if(lfc == "lfc-gt-0.32") {
+        print(dataframe[["09_lfc_0.32_fc_1.25"]][[style]])
+    } else if(lfc == "lfc-gt-0.415") {
+        print(dataframe[["09_lfc_0.415_fc_1.33"]][[style]])
+    } else if(lfc == "lfc-gt-0.58") {
+        print(dataframe[["09_lfc_0.58_fc_1.5"]][[style]])
+    } else if(lfc == "lfc-gt-0.737") {
+        print(dataframe[["09_lfc_0.737_fc_1.67"]][[style]])
+    } else if(lfc == "lfc-gt-0.807") {
+        print(dataframe[["09_lfc_0.807_fc_1.75"]][[style]])
+    } else if(lfc == "lfc-gt-1") {
+        print(dataframe[["09_lfc_1_fc_2"]][[style]])
+    } else if(lfc == "lfc-gt-1.32") {
+        print(dataframe[["09_lfc_1.32_fc_2.5"]][[style]])
+    } else if(lfc == "lfc-gt-1.58") {
+        print(dataframe[["09_lfc_1.58_fc_3"]][[style]])
+    } else if(lfc == "lfc-gt-2") {
+        print(dataframe[["09_lfc_2_fc_4"]][[style]])
+    } else if(lfc == "lfc-gt-2.32") {
+        print(dataframe[["09_lfc_2.32_fc_5"]][[style]])
+    } else if(lfc == "lfc-gt-2.58") {
+        print(dataframe[["09_lfc_2.58_fc_6"]][[style]])
+    } else if(lfc == "lfc-gt-3") {
+        print(dataframe[["09_lfc_3_fc_8"]][[style]])
+    } else if(lfc == "lfc-gt-4") {
+        print(dataframe[["09_lfc_4_fc_16"]][[style]])
+    } else if(lfc == "lfc-gt-5") {
+        print(dataframe[["09_lfc_5_fc_32"]][[style]])
+    } else if(lfc == "lfc-gt-6") {
+        print(dataframe[["09_lfc_6_fc_64"]][[style]])
+    } else if(lfc == "lfc-gt-7") {
+        print(dataframe[["09_lfc_7_fc_128"]][[style]])
+    } else if(lfc == "lfc-gt-8") {
+        print(dataframe[["09_lfc_8_fc_256"]][[style]])
+    }
+    
     dev.off()
 }
 
@@ -1417,18 +1555,19 @@ paste(p_base, p_exp, sep = "/") %>% setwd()
 # getwd()
 
 #IMPORTANT
-#  Determine counts matrix to work with, then load it  #HERE
-# run <- "mRNA"  # Options: "mRNA" "pa-ncRNA-collapsed-merged" "pa-ncRNA-not-collapsed-merged"
-run <- "pa-ncRNA-collapsed-merged"  # Options: "mRNA" "pa-ncRNA-collapsed-merged" "pa-ncRNA-not-collapsed-merged"
-# run <- "pa-ncRNA-not-collapsed-merged"  # Options: "mRNA" "pa-ncRNA-collapsed-merged" "pa-ncRNA-not-collapsed-merged"
+#  Determine counts matrix to work with, then load it
+#+ Options: "mRNA" "ncRNA-collapsed" "ncRNA-non-collapsed"
+run <- "mRNA"  #ARGUMENT
+# run <- "ncRNA-collapsed"  #ARGUMENT
+# run <- "ncRNA-non-collapsed"  #ARGUMENT
 
 #  Check on "run" option
 if(base::isTRUE(run %notin% c(
-    "mRNA", "pa-ncRNA-collapsed-merged", "pa-ncRNA-not-collapsed-merged"
+    "mRNA", "ncRNA-collapsed", "ncRNA-non-collapsed"
 ))) {
     stop(paste(
-        "Variable \"run\" must be \"mRNA\", \"pa-ncRNA-collapsed-merged\", or",
-        "\"pa-ncRNA-not-collapsed-merged\""
+        "Variable \"run\" must be \"mRNA\", \"ncRNA-collapsed\", or",
+        "\"ncRNA-non-collapsed\""
     ))
 }
 
@@ -1456,13 +1595,13 @@ if(base::isTRUE(run == "mRNA")) {
                 gsub("_mRNA", "", .)
         )
 } else if(base::isTRUE(run != "mRNA")) {
-    if(base::isTRUE(run == "pa-ncRNA-collapsed-merged")) {
+    if(base::isTRUE(run == "ncRNA-collapsed")) {
         #  Handle pa-ncRNA, collapsed and merged
         p_tsv <- "outfiles_htseq-count/representation/UT_prim_UMI"
         f_tsv <- "representative-non-coding-transcriptome.hc-strd-eq.tsv"  # (collapsed, merged)
         # paste(p_base, p_exp, p_tsv, f_tsv, sep = "/") %>%
         #     file.exists()  # [1] TRUE
-    } else if(base::isTRUE(run == "pa-ncRNA-not-collapsed-merged")) {
+    } else if(base::isTRUE(run == "ncRNA-non-collapsed")) {
         #  Handle pa-ncRNA, not collapsed and merged
         p_tsv <- "outfiles_htseq-count/representation/UT_prim_UMI"
         f_tsv <- "non-collapsed-non-coding-transcriptome.hc-strd-eq.tsv"  # (not collapsed, merged)
@@ -1520,8 +1659,8 @@ f_xlsx <- "variables.xlsx"
 
 t_xslx <- paste(p_base, p_exp, p_xlsx, f_xlsx, sep = "/") %>%
     readxl::read_xlsx()  
-#FIXME #LATER In this file, replicate information for 5781, 5782, 7079, 7078,
-#             6125, 6126, 7718, and 7716 is incorrect
+#FIXME #LATER In this file, replicate information for 7079, 7078, 7747, 7748
+#             is incorrect
 
 
 #  Associate features with metadata and format/munge dataframe(s) =============
@@ -1585,7 +1724,7 @@ if(base::isTRUE(run == "mRNA")) {
         t_gff3$names
     )
 } else if(base::isTRUE(run != "mRNA")) {
-    if(base::isTRUE(run == "pa-ncRNA-collapsed-merged")) {
+    if(base::isTRUE(run == "ncRNA-collapsed")) {
         #  Handle pa-ncRNA, collapsed and merged
         p_gff3 <- "outfiles_gtf-gff3/representation"
         f_gff3 <- "Greenlaw-et-al_representative-non-coding-transcriptome.gtf"
@@ -1618,7 +1757,7 @@ if(base::isTRUE(run == "mRNA")) {
             .after = "chr"
         )
         rm(keep)
-    } else if(base::isTRUE(run == "pa-ncRNA-not-collapsed-merged")) {
+    } else if(base::isTRUE(run == "ncRNA-non-collapsed")) {
         #  Handle pa-ncRNA, not collapsed and merged
         p_gff3 <- "outfiles_gtf-gff3/representation"
         f_gff3 <- "Greenlaw-et-al_non-collapsed-non-coding-transcriptome.gtf"
@@ -2110,49 +2249,73 @@ if(base::isTRUE(run != "mRNA")) {
 # test$`09_lfc_0.807_fc_1.75`$`10_hist_lessAbs_unshrunken_q`
 
 
-print_volcano_unshrunken_AG(
+print_volcano_unshrunken(
     dataframe = `DGE-analysis_N-Q-nab3d_N-Q-parental`,
-    lfc = "lfc-gt-0"
+    lfc = "lfc-gt-0",
+    style = "AG"
 )
-print_volcano_unshrunken_AG(
+print_volcano_unshrunken(
     dataframe = `DGE-analysis_SS-Q-nab3d_SS-Q-parental`,
-    lfc = "lfc-gt-0"
+    lfc = "lfc-gt-0",
+    style = "AG"
 )
 
-print_volcano_unshrunken_AG(
+print_volcano_unshrunken(
     dataframe = `DGE-analysis_SS-Q-rrp6∆_SS-Q-WT`,
-    lfc = "lfc-gt-0"
+    lfc = "lfc-gt-0",
+    style = "AG"
 )
-print_volcano_unshrunken_AG(
+print_volcano_unshrunken(
     dataframe = `DGE-analysis_SS-G1-rrp6∆_SS-G1-WT`,
-    lfc = "lfc-gt-0"
+    lfc = "lfc-gt-0",
+    style = "AG"
 )
-print_volcano_unshrunken_AG(
+print_volcano_unshrunken(
     dataframe = `DGE-analysis_N-Q-rrp6∆_N-Q-WT`,
-    lfc = "lfc-gt-0"
+    lfc = "lfc-gt-0",
+    style = "AG"
 )
 
-print_volcano_unshrunken_AG(
+print_volcano_unshrunken(
     dataframe = `DGE-analysis_N-Q-nab3d_N-Q-parental`,
-    lfc = "lfc-gt-0.58"
+    lfc = "lfc-gt-0.58",
+    style = "AG"
 )
-print_volcano_unshrunken_AG(
+print_volcano_unshrunken(
     dataframe = `DGE-analysis_SS-Q-nab3d_SS-Q-parental`,
-    lfc = "lfc-gt-0.58"
+    lfc = "lfc-gt-0.58",
+    style = "AG"
 )
 
-print_volcano_unshrunken_AG(
+print_volcano_unshrunken(
     dataframe = `DGE-analysis_SS-Q-rrp6∆_SS-Q-WT`,
-    lfc = "lfc-gt-0.58"
+    lfc = "lfc-gt-0.58",
+    style = "AG"
 )
-print_volcano_unshrunken_AG(
+print_volcano_unshrunken(
     dataframe = `DGE-analysis_SS-G1-rrp6∆_SS-G1-WT`,
-    lfc = "lfc-gt-0.58"
+    lfc = "lfc-gt-0.58",
+    style = "AG"
 )
-print_volcano_unshrunken_AG(
+print_volcano_unshrunken(
     dataframe = `DGE-analysis_N-Q-rrp6∆_N-Q-WT`,
-    lfc = "lfc-gt-0.58"
+    lfc = "lfc-gt-0.58",
+    style = "AG"
 )
+
+run <- TRUE
+if(base::isTRUE(run)) {
+    print_volcano_unshrunken(
+        dataframe = `DGE-analysis_N-Q-nab3d_N-Q-parental`,
+        lfc = "lfc-gt-4",
+        style = "KA"
+    )
+    print_volcano_unshrunken(
+        dataframe = `DGE-analysis_SS-Q-nab3d_SS-Q-parental`,
+        lfc = "lfc-gt-4",
+        style = "KA"
+    )
+}
 
 output_rds(`DGE-analysis_N-Q-nab3d_N-Q-parental`)
 output_rds(`DGE-analysis_SS-Q-nab3d_SS-Q-parental`)
