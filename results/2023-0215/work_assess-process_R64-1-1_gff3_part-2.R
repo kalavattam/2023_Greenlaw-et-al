@@ -528,273 +528,276 @@ agg_G1 <- analyses_G1$wrt_Tr_all_agg
 
 
 #  View the numbers of overlap categories -------------------------------------
-run <- TRUE
-if(base::isTRUE(run)) {
-    analyze_w_pct <- FALSE
-    if(base::isTRUE(analyze_w_pct)) {
-        cols <- c("category_abbrev", "category_easy", "pct_Tr_over_all")
-    } else {
-        cols <- c("category_abbrev", "category_easy")
-    }
-    
-    feat_Q <- agg_Q %>%
-        dplyr::group_by(dplyr::across(dplyr::all_of(cols))) %>%
-        dplyr::summarize(tally = dplyr::n(), .groups = "keep") %>%
-        dplyr::arrange(dplyr::desc(tally))
-    
-    feat_G1 <- agg_G1 %>%
-        dplyr::group_by(dplyr::across(dplyr::all_of(cols))) %>%
-        dplyr::summarize(tally = dplyr::n()) %>%
-        dplyr::arrange(dplyr::desc(tally))
+analyze_w_pct <- FALSE
+if(base::isTRUE(analyze_w_pct)) {
+    cols <- c("category_abbrev", "category_easy", "pct_Tr_over_all")
+} else {
+    cols <- c("category_abbrev", "category_easy")
 }
 
-test <- TRUE
-if(base::isTRUE(test)) {
-    #  Tally number of "upstream expression" non-feature regions (associated
-    #+ with intergenic, antisense, ARS, or telomeric regions) in categories
-    feat_Q$up <- ifelse(
-        #  Select for categories with listed features in interior or at end
-        stringr::str_detect(
-            feat_Q$category_abbrev,
-            # " G | G$"
-            " G | G$| N |N$| P |P$| R |R$| S |S$| O |O$| M |M$| T |T$"
-        ) &
-        #  While excluding categories that begin with listed features
-        !stringr::str_detect(
-            feat_Q$category_abbrev,
-            "^G|^N|^P|^R|^S|^O|^M|^T"
-        ) &
-        #  And while excluding categories with string character counts less
-        #+ than or equal to two
-        nchar(feat_Q$category_abbrev) %notin% c(0, 1, 2),
-        stringr::str_count(
-            feat_Q$category_abbrev[
-                stringr::str_detect(
-                    #  Select for categories with listed features in interior
-                    #+ or at end
-                    feat_Q$category_abbrev,
-                    # " G | G$"
-                    " G | G$| N |N$| P |P$| R |R$| S |S$| O |O$| M |M$| T |T$"
-                ) &
-                !stringr::str_detect(
-                    #  While excluding categories that begin with listed
-                    #+ features
-                    feat_Q$category_abbrev,
-                    "^G|^N|^P|^R|^S|^O|^M|^T"
-                ) &
-                #  And while excluding categories with string character counts less
-                #+ than or equal to two
-                nchar(feat_Q$category_abbrev) %notin% c(0, 1, 2)
-            ],
-            "^I|^A|^&|^E"
-        ),
-        0
-    )
-    
-    feat_Q$up_what <- ifelse(
-        nchar(feat_Q$category_abbrev) >= 2,
-        stringr::str_extract(feat_Q$category_abbrev, "^.{2}"),
-        stringr::str_extract(feat_Q$category_abbrev, "^.{1}")
-    ) %>%
-        gsub(" ", "", .)
-    
-    #  Tally number of "downstream expression" non-feature regions (associated
-    #+ with intergenic, antisense, ARS, or telomeric regions) in categories
-    feat_Q$dn <- ifelse(
-        #  Select for categories ending with features &?, I, A, or E
-        stringr::str_detect(
-            feat_Q$category_abbrev,
-            "&.$|I$|A$|E$"
-        ) &
-        #  ...while excluding categories with string character counts less than or
-        #+ equal to two
-        nchar(feat_Q$category_abbrev) %notin% c(0, 1, 2),
-        stringr::str_count(
-            feat_Q$category_abbrev[
-                #  Select for categories ending with features &?, I, A, or E
-                stringr::str_detect(
-                    feat_Q$category_abbrev,
-                    "&.$|I$|A$|E$"
-                ) &
-                #  ...while excluding categories with string character counts less
-                #+ than or equal to two
-                nchar(feat_Q$category_abbrev) %notin% c(0, 1, 2)
-            ],
-            "&.$|I$|A$|E$"
-        ),
-        0
-    )
-    
-    feat_Q$dn_what <- feat_Q$category_abbrev %>%
-        stringr::str_sub(-2) %>%
-        stringr::str_remove(" ")
-    
-    #  Initialize and define up_dn; it is assigned 1 if both up and dn are 1,
-    #+ else it is assigned 0
-    feat_Q$up_dn <- ifelse(
-        feat_Q$up == 0 & (feat_Q$dn == 0 | feat_Q$dn == 1),
+feat_Q <- agg_Q %>%
+    dplyr::group_by(dplyr::across(dplyr::all_of(cols))) %>%
+    dplyr::summarize(tally = dplyr::n(), .groups = "keep") %>%
+    dplyr::arrange(dplyr::desc(tally))
+
+feat_G1 <- agg_G1 %>%
+    dplyr::group_by(dplyr::across(dplyr::all_of(cols))) %>%
+    dplyr::summarize(tally = dplyr::n()) %>%
+    dplyr::arrange(dplyr::desc(tally))
+
+
+#  Tally number of "upstream expression" non-feature regions (associated
+#+ with intergenic, antisense, ARS, or telomeric regions) in categories
+feat_Q$up <- ifelse(
+    #  Select for categories with listed features in interior or at end: G, N,
+    #+ P, R, S, O, M, T
+    stringr::str_detect(
+        feat_Q$category_abbrev,
+        " G | G$| N |N$| P |P$| R |R$| S |S$| O |O$| M |M$| T |T$"
+    ) &
+    #  ...while excluding categories that begin with listed features
+    !stringr::str_detect(
+        feat_Q$category_abbrev,
+        "^G|^N|^P|^R|^S|^O|^M|^T"
+    ) &
+    #  ...and while excluding categories with string character counts less
+    #+ than or equal to two
+    nchar(feat_Q$category_abbrev) %notin% c(0, 1, 2),
+    stringr::str_count(
+        feat_Q$category_abbrev[
+            stringr::str_detect(
+                #  Select for categories with listed features in interior or at
+                #+ end: G, N, P, R, S, O, M, T
+                feat_Q$category_abbrev,
+                " G | G$| N |N$| P |P$| R |R$| S |S$| O |O$| M |M$| T |T$"
+            ) &
+            !stringr::str_detect(
+                #  While excluding categories that begin with listed features
+                feat_Q$category_abbrev,
+                "^G|^N|^P|^R|^S|^O|^M|^T"
+            ) &
+            #  And while excluding categories with string character counts less
+            #+ than or equal to two
+            nchar(feat_Q$category_abbrev) %notin% c(0, 1, 2)
+        ],
+        "^I|^A|^&|^E"
+    ),
+    0
+)
+
+feat_Q$up_what <- ifelse(
+    nchar(feat_Q$category_abbrev) >= 2,
+    stringr::str_extract(feat_Q$category_abbrev, "^.{2}"),
+    stringr::str_extract(feat_Q$category_abbrev, "^.{1}")
+) %>%
+    gsub(" ", "", .)
+
+#  Tally number of "downstream expression" non-feature regions (associated
+#+ with intergenic, antisense, ARS, or telomeric regions) in categories
+feat_Q$dn <- ifelse(
+    #  Select for categories ending with features &?, I, A, or E
+    stringr::str_detect(
+        feat_Q$category_abbrev,
+        "&.$|I$|A$|E$"
+    ) &
+    #  ...while excluding categories with string character counts less than or
+    #+ equal to two
+    nchar(feat_Q$category_abbrev) %notin% c(0, 1, 2),
+    stringr::str_count(
+        feat_Q$category_abbrev[
+            #  Select for categories ending with features &?, I, A, or E
+            stringr::str_detect(
+                feat_Q$category_abbrev,
+                "&.$|I$|A$|E$"
+            ) &
+            #  ...while excluding categories with string character counts less
+            #+ than or equal to two
+            nchar(feat_Q$category_abbrev) %notin% c(0, 1, 2)
+        ],
+        "&.$|I$|A$|E$"
+    ),
+    0
+)
+
+feat_Q$dn_what <- feat_Q$category_abbrev %>%
+    stringr::str_sub(-2) %>%
+    stringr::str_remove(" ")
+
+#  Initialize and define up_dn; it is assigned 1 if both up and dn are 1,
+#+ else it is assigned 0
+feat_Q$up_dn <- ifelse(
+    feat_Q$up == 0 & (feat_Q$dn == 0 | feat_Q$dn == 1),
+    0,
+    ifelse(
+        feat_Q$up == 1 & feat_Q$dn == 0,
         0,
         ifelse(
-            feat_Q$up == 1 & feat_Q$dn == 0,
-            0,
+            feat_Q$up == 1 & feat_Q$dn == 1,
+            1,
+            NA_integer_
+        )
+    )
+)
+
+feat_Q$complete <- ifelse(
+    feat_Q$up_dn == 1,
+    "complete",
+    ifelse(
+        (feat_Q$up == 1 & feat_Q$dn == 0) | (feat_Q$up == 0 & feat_Q$dn == 1),  # Need to make it so that features that are I or &. alone have NA up, NA dn, NA up_dn
+        "partial",
+        ifelse(
+            nchar(feat_Q$category_abbrev) <= 2,
+            "partial_single",
             ifelse(
-                feat_Q$up == 1 & feat_Q$dn == 1,
-                1,
-                NA_integer_
+                feat_Q$category_abbrev %in%
+                c("I", "&G", "M", "&M", "&O", "&R", "A", "E"),
+                "single",
+                "partial_other"
             )
         )
     )
+)
+
+tmp <- ifelse(
     
-    feat_Q$complete <- ifelse(
-        feat_Q$up_dn == 1,
-        "complete",
-        ifelse(
-            (feat_Q$up == 1 & feat_Q$dn == 0) |
-            (feat_Q$up == 0 & feat_Q$dn == 1),
-            "partial",
-            "other"
-        )
-    )
     
     ifelse(
-        feat_Q$complete == "other" &
-        (nchar(feat_Q$category_abbrev) <= 2),
         
     )
-    #PICKUPHERE Struggling with thinking through the logic at time of stop-
-    #           ping
+)
+#PICKUPHERE Struggling with thinking through the logic at time of stop-
+#           ping
+ifelse(
+    nchar(feat_Q[feat_Q$complete == "other", ]$category_abbrev) <= 2,
+    "single",
+    
     ifelse(
-        nchar(feat_Q[feat_Q$complete == "other", ]$category_abbrev) <= 2,
-        "single",
-        
-        ifelse(
-            nchar(feat_Q[feat_Q$complete == "other", ]$category_abbrev) > 2,
-            "partial",
-            "XXXXXXXX"
-        )
+        nchar(feat_Q[feat_Q$complete == "other", ]$category_abbrev) > 2,
+        "partial",
+        "XXXXXXXX"
     )
+)
+
+tmp[nchar(feat_Q[feat_Q$complete == "other", ]$category_abbrev) > 2, ]
+
+
+#  Tally number of features in categories
+#  ARS
+feat_Q$no_A <- feat_Q$category_abbrev %>%
+    stringr::str_count("^A | A | A$")
+
+#  gene
+feat_Q$no_G <- feat_Q$category_abbrev %>%
+    stringr::str_count("^G | G | G$")
+
+#  intergenic
+feat_Q$no_I <- feat_Q$category_abbrev %>%
+    stringr::str_count("^I | I | I$")
+
+#  ncRNA
+feat_Q$no_N <- feat_Q$category_abbrev %>%
+    stringr::str_count("^N | N | N$")
+
+#  pseudogene
+feat_Q$no_P <- feat_Q$category_abbrev %>%
+    stringr::str_count("^P | P | P$")
+
+#  rRNA
+feat_Q$no_R <- feat_Q$category_abbrev %>%
+    stringr::str_count("^R | R | R$")
+
+#  snRNA
+feat_Q$no_S <- feat_Q$category_abbrev %>%
+    stringr::str_count("^S | S | S$")
+
+#  snoRNA
+feat_Q$no_O <- feat_Q$category_abbrev %>%
+    stringr::str_count("^O | O | O$")
+
+#  transposable element
+feat_Q$no_M <- feat_Q$category_abbrev %>%
+    stringr::str_count("^M | M | M$")
+
+#  telomere
+feat_Q$no_E <- feat_Q$category_abbrev %>%
+    stringr::str_count("^E | E | E$")
+
+#  tRNA
+feat_Q$no_T <- feat_Q$category_abbrev %>%
+    stringr::str_count("^T | T | T$")
+
+#  antisense (gene)
+feat_Q$no_aG <- feat_Q$category_abbrev %>%
+    stringr::str_count("^&G | &G | &G$")
+
+#  antisense (ncRNA)
+feat_Q$no_aN <- feat_Q$category_abbrev %>%
+    stringr::str_count("^&N | &N | &N$")
+
+#  antisense (pseudogene)
+feat_Q$no_aP <- feat_Q$category_abbrev %>%
+    stringr::str_count("^&P | &P | &P$")
+
+#  antisense (rRNA)
+feat_Q$no_aR <- feat_Q$category_abbrev %>%
+    stringr::str_count("^&R | &R | &R$")
+
+#  antisense (snoRNA)
+feat_Q$no_aO <- feat_Q$category_abbrev %>%
+    stringr::str_count("^&O | &O | &O$")
+
+#  antisense (transposable element)
+feat_Q$no_aM <- feat_Q$category_abbrev %>%
+    stringr::str_count("^&M | &M | &M$")
+
+#  antisense (tRNA)
+feat_Q$no_aT <- feat_Q$category_abbrev %>%
+    stringr::str_count("^&T | &T | &T$")
+
+feat_Q$lgl_G <- ifelse(feat_Q$no_G > 0, TRUE, FALSE)
+feat_Q$lgl_N <- ifelse(feat_Q$no_N > 0, TRUE, FALSE)
+feat_Q$lgl_P <- ifelse(feat_Q$no_P > 0, TRUE, FALSE)
+feat_Q$lgl_R <- ifelse(feat_Q$no_R > 0, TRUE, FALSE)
+feat_Q$lgl_S <- ifelse(feat_Q$no_S > 0, TRUE, FALSE)
+feat_Q$lgl_O <- ifelse(feat_Q$no_O > 0, TRUE, FALSE)
+feat_Q$lgl_M <- ifelse(feat_Q$no_M > 0, TRUE, FALSE)
+feat_Q$lgl_T <- ifelse(feat_Q$no_T > 0, TRUE, FALSE)
+
+feat_Q$mixed <- ifelse(
+    rowSums(feat_Q[, 27:ncol(feat_Q)]) > 1,
+    "mixed",
+    ifelse(
+        rowSums(feat_Q[, 27:ncol(feat_Q)]) == 0,
+        NA_character_,
+        "unmixed"
+    )
+) %>% 
+    forcats::as_factor()
+
+#PICKUPHERE Is the number of mixed really just 46?
+tmp <- feat_Q[rowSums(feat_Q[, 27:ncol(feat_Q)]) > 1, ]
+
+run <- TRUE
+if(base::isTRUE(run)) {
+    tmp <- feat_Q %>%
+        # dplyr::filter(dn == 1)
+        dplyr::filter(dn == 0)
     
-    tmp[nchar(feat_Q[feat_Q$complete == "other", ]$category_abbrev) > 2, ]
+    tmp <- tmp %>%
+        dplyr::relocate(v, .after = category_abbrev)
     
+    tmp_v <- tmp$v %>%
+        forcats::as_factor() %>%
+        table()
+    # dn == 1
+    # .
+    #   I  &G   A  &M  &O  &N  &T  &R  &P 
+    # 189  83  39  12   5   4   4   1   1
     
-    #  Tally number of features in categories
-    #  ARS
-    feat_Q$no_A <- feat_Q$category_abbrev %>%
-        stringr::str_count("^A | A | A$")
-    
-    #  gene
-    feat_Q$no_G <- feat_Q$category_abbrev %>%
-        stringr::str_count("^G | G | G$")
-    
-    #  intergenic
-    feat_Q$no_I <- feat_Q$category_abbrev %>%
-        stringr::str_count("^I | I | I$")
-    
-    #  ncRNA
-    feat_Q$no_N <- feat_Q$category_abbrev %>%
-        stringr::str_count("^N | N | N$")
-    
-    #  pseudogene
-    feat_Q$no_P <- feat_Q$category_abbrev %>%
-        stringr::str_count("^P | P | P$")
-    
-    #  rRNA
-    feat_Q$no_R <- feat_Q$category_abbrev %>%
-        stringr::str_count("^R | R | R$")
-    
-    #  snRNA
-    feat_Q$no_S <- feat_Q$category_abbrev %>%
-        stringr::str_count("^S | S | S$")
-    
-    #  snoRNA
-    feat_Q$no_O <- feat_Q$category_abbrev %>%
-        stringr::str_count("^O | O | O$")
-    
-    #  transposable element
-    feat_Q$no_M <- feat_Q$category_abbrev %>%
-        stringr::str_count("^M | M | M$")
-    
-    #  telomere
-    feat_Q$no_E <- feat_Q$category_abbrev %>%
-        stringr::str_count("^E | E | E$")
-    
-    #  tRNA
-    feat_Q$no_T <- feat_Q$category_abbrev %>%
-        stringr::str_count("^T | T | T$")
-    
-    #  antisense (gene)
-    feat_Q$no_aG <- feat_Q$category_abbrev %>%
-        stringr::str_count("^&G | &G | &G$")
-    
-    #  antisense (ncRNA)
-    feat_Q$no_aN <- feat_Q$category_abbrev %>%
-        stringr::str_count("^&N | &N | &N$")
-    
-    #  antisense (pseudogene)
-    feat_Q$no_aP <- feat_Q$category_abbrev %>%
-        stringr::str_count("^&P | &P | &P$")
-    
-    #  antisense (rRNA)
-    feat_Q$no_aR <- feat_Q$category_abbrev %>%
-        stringr::str_count("^&R | &R | &R$")
-    
-    #  antisense (snoRNA)
-    feat_Q$no_aO <- feat_Q$category_abbrev %>%
-        stringr::str_count("^&O | &O | &O$")
-    
-    #  antisense (transposable element)
-    feat_Q$no_aM <- feat_Q$category_abbrev %>%
-        stringr::str_count("^&M | &M | &M$")
-    
-    #  antisense (tRNA)
-    feat_Q$no_aT <- feat_Q$category_abbrev %>%
-        stringr::str_count("^&T | &T | &T$")
-    
-    feat_Q$lgl_G <- ifelse(feat_Q$no_G > 0, TRUE, FALSE)
-    feat_Q$lgl_N <- ifelse(feat_Q$no_N > 0, TRUE, FALSE)
-    feat_Q$lgl_P <- ifelse(feat_Q$no_P > 0, TRUE, FALSE)
-    feat_Q$lgl_R <- ifelse(feat_Q$no_R > 0, TRUE, FALSE)
-    feat_Q$lgl_S <- ifelse(feat_Q$no_S > 0, TRUE, FALSE)
-    feat_Q$lgl_O <- ifelse(feat_Q$no_O > 0, TRUE, FALSE)
-    feat_Q$lgl_M <- ifelse(feat_Q$no_M > 0, TRUE, FALSE)
-    feat_Q$lgl_T <- ifelse(feat_Q$no_T > 0, TRUE, FALSE)
-    
-    feat_Q$mixed <- ifelse(
-        rowSums(feat_Q[, 27:ncol(feat_Q)]) > 1,
-        "mixed",
-        ifelse(
-            rowSums(feat_Q[, 27:ncol(feat_Q)]) == 0,
-            NA_character_,
-            "unmixed"
-        )
-    ) %>% 
-        forcats::as_factor()
-    
-    #PICKUPHERE Is the number of mixed really just 46?
-    tmp <- feat_Q[rowSums(feat_Q[, 27:ncol(feat_Q)]) > 1, ]
-    
-    run <- TRUE
-    if(base::isTRUE(run)) {
-        tmp <- feat_Q %>%
-            # dplyr::filter(dn == 1)
-            dplyr::filter(dn == 0)
-        
-        tmp <- tmp %>%
-            dplyr::relocate(v, .after = category_abbrev)
-        
-        tmp_v <- tmp$v %>%
-            forcats::as_factor() %>%
-            table()
-        # dn == 1
-        # .
-        #   I  &G   A  &M  &O  &N  &T  &R  &P 
-        # 189  83  39  12   5   4   4   1   1
-        
-        # dn == 0
-        # .
-        #  G  I &G  M  O  T &M &O &R  A  E  N  S  P  R 
-        # 54  1  1 17  4  3  1  1  1  1  1  2  2  1  1
-    }
+    # dn == 0
+    # .
+    #  G  I &G  M  O  T &M &O &R  A  E  N  S  P  R 
+    # 54  1  1 17  4  3  1  1  1  1  1  2  2  1  1
 }
 
 run <- TRUE
