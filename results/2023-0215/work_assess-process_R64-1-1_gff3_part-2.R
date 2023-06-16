@@ -440,6 +440,51 @@ analyze_feature_intersections <- function(
 }
 
 
+#  Initialize functions -------------------------------------------------------
+convert_character_0_NA <- function(x) {
+    z <- lapply(
+        x, function(y) if(identical(y, character(0))) NA_character_ else y
+    ) %>%
+        unlist()
+    
+    return(z)
+}
+
+
+flatten_elements_to_one <- function(x) {
+    # For character list elements with two or more subelements, collapse
+    # ("flatten") the subelements into a single character element
+    # 
+    # :param x: <list>
+    # :return: character vector of collapsed list elements (list e)
+    
+    l_collapsed <- x[lengths(x) >= 2] %>% length()
+    collapsed <- vector(mode = "character", length = l_collapsed)
+    for(i in 1:l_collapsed) {
+        # i <- 1
+        # cat(i, "\n")
+        # cat(x[lengths(x) >= 2][[i]], "\n")
+        collapsed[i] <- stringr::str_c(
+            x[lengths(x) >= 2][[i]],
+            collapse = ", "
+        )
+    }
+    
+    return(collapsed)
+}
+
+
+process_list_column <- function(x) {
+    x[lengths(x) == 0] <- NA_character_
+    if(length(x[lengths(x) >= 2]) != 0) {
+        x[lengths(x) >= 2] <- x[lengths(x) >= 2] %>%
+            flatten_elements_to_one()
+    }
+    y <- x %>% unlist()
+    return(y)
+}
+
+
 #  Load gtfs as tibbles -------------------------------------------------------
 p_main <- "outfiles_gtf-gff3"
 
@@ -527,7 +572,11 @@ analyses_G1 <- analyze_feature_intersections(
 agg_G1 <- analyses_G1$wrt_Tr_all_agg
 
 
-#  View the numbers of overlap categories -------------------------------------
+#  Identify, survey, and process overlap categories ===========================
+#  Run checks associated with below logic <lgl>
+run_checks <- FALSE
+
+#  Initialize dataframes of rough categories 
 analyze_w_pct <- FALSE
 if(base::isTRUE(analyze_w_pct)) {
     cols <- c("category_abbrev", "category_easy", "pct_Tr_over_all")
@@ -545,8 +594,11 @@ feat_G1 <- agg_G1 %>%
     dplyr::summarize(tally = dplyr::n()) %>%
     dplyr::arrange(dplyr::desc(tally))
 
+rm(cols)
 
-#  Tally number of "upstream expression" non-feature regions (associated
+
+#  Initialize variable "up" -------------------------------
+#+ Tally number of "upstream expression" non-feature regions (associated
 #+ with intergenic, antisense, ARS, or telomeric regions) in categories
 feat_Q$up <- ifelse(
     #  Select for categories with listed features in interior or at end: G, N,
@@ -585,15 +637,20 @@ feat_Q$up <- ifelse(
     0
 )
 
-feat_Q$up_what <- ifelse(
-    nchar(feat_Q$category_abbrev) >= 2,
-    stringr::str_extract(feat_Q$category_abbrev, "^.{2}"),
-    stringr::str_extract(feat_Q$category_abbrev, "^.{1}")
-) %>%
-    gsub(" ", "", .)
+run_checks <- FALSE
+if(base::isTRUE(run_checks)) {
+    feat_Q$up_what <- ifelse(
+        nchar(feat_Q$category_abbrev) >= 2,
+        stringr::str_extract(feat_Q$category_abbrev, "^.{2}"),
+        stringr::str_extract(feat_Q$category_abbrev, "^.{1}")
+    ) %>%
+        gsub(" ", "", .)
+}
 
-#  Tally number of "downstream expression" non-feature regions (associated
-#+ with intergenic, antisense, ARS, or telomeric regions) in categories
+
+#  Initialize variable "dn" -------------------------------
+#+ Tally number of "downstream expression" non-feature regions (associated with
+#+ intergenic, antisense, ARS, or telomeric regions) in categories
 feat_Q$dn <- ifelse(
     #  Select for categories ending with features &?, I, A, or E
     stringr::str_detect(
@@ -619,12 +676,16 @@ feat_Q$dn <- ifelse(
     0
 )
 
-feat_Q$dn_what <- feat_Q$category_abbrev %>%
-    stringr::str_sub(-2) %>%
-    stringr::str_remove(" ")
+run_checks <- FALSE
+if(base::isTRUE(run_checks)) {
+    feat_Q$dn_what <- feat_Q$category_abbrev %>%
+        stringr::str_sub(-2) %>%
+        stringr::str_remove(" ")
+}
 
-#  Initialize and define up_dn; it is assigned 1 if both up and dn are 1,
-#+ else it is assigned 0
+
+#  Initialize and define "up_dn" --------------------------
+#+ "up_dn" is assigned 1 if both "up" and "dn" are 1, else it is assigned 0
 feat_Q$up_dn <- ifelse(
     feat_Q$up == 0 & (feat_Q$dn == 0 | feat_Q$dn == 1),
     0,
@@ -639,121 +700,116 @@ feat_Q$up_dn <- ifelse(
     )
 )
 
-feat_Q$complete <- ifelse(
+#  Begin to define completeness; logic:
+#+ - if "up_dn" is 1, then assign "complete"
+#+ - if ("up" is 1 and "dn" is 0) or ("up" is 0 and "dn" is 1), then "partial"
+feat_Q$completeness <- ifelse(
     feat_Q$up_dn == 1,
     "complete",
-    ifelse(
-        (feat_Q$up == 1 & feat_Q$dn == 0) | (feat_Q$up == 0 & feat_Q$dn == 1),  # Need to make it so that features that are I or &. alone have NA up, NA dn, NA up_dn
-        "partial",
-        ifelse(
-            nchar(feat_Q$category_abbrev) <= 2,
-            "partial_single",
-            ifelse(
-                feat_Q$category_abbrev %in%
-                c("I", "&G", "M", "&M", "&O", "&R", "A", "E"),
-                "single",
-                "partial_other"
-            )
-        )
-    )
+    "partial"
 )
 
-tmp <- ifelse(
-    
-    
-    ifelse(
-        
+run <- FALSE
+if(base::isTRUE(run)) {
+    #+ - if "up_dn" is 0 and feat. is "I", "&.", "M", "A", or "E", then "putative"
+    # feat_Q$completeness_etc <- 
+    feat_Q$completeness_etc <- ifelse(
+        feat_Q$up_dn == 0 &
+        feat_Q$category_abbrev %in%
+            c("A", "I", "E", "&G", "M", "&M", "&O", "&R"),
+        "putative",
+        NA_character_
     )
-)
-#PICKUPHERE Struggling with thinking through the logic at time of stop-
-#           ping
-ifelse(
-    nchar(feat_Q[feat_Q$complete == "other", ]$category_abbrev) <= 2,
-    "single",
-    
-    ifelse(
-        nchar(feat_Q[feat_Q$complete == "other", ]$category_abbrev) > 2,
-        "partial",
-        "XXXXXXXX"
-    )
-)
+}
 
-tmp[nchar(feat_Q[feat_Q$complete == "other", ]$category_abbrev) > 2, ]
+feat_Q <- feat_Q %>%
+    dplyr::relocate(completeness, .after = tally)
 
 
-#  Tally number of features in categories
+#  Tally numbers of features assoc. with categories -------
+#  Note: The regex pattern "(?<!&)G" uses a negative lookbehind assertion
+#+ ((?<!&)) to check that the character preceding the character of interest is 
+#+ not "&"; thus, it looks at each character in the string individually to
+#+ match any instances of the character of interest not preceded by "&"; it
+#+ does not involve a lookahead to scan the entire string
+
 #  ARS
 feat_Q$no_A <- feat_Q$category_abbrev %>%
-    stringr::str_count("^A | A | A$")
+    stringr::str_count("(?<!&)A")
 
 #  gene
 feat_Q$no_G <- feat_Q$category_abbrev %>%
-    stringr::str_count("^G | G | G$")
+    stringr::str_count("(?<!&)G")
 
 #  intergenic
 feat_Q$no_I <- feat_Q$category_abbrev %>%
-    stringr::str_count("^I | I | I$")
+    stringr::str_count("(?<!&)I")
 
 #  ncRNA
 feat_Q$no_N <- feat_Q$category_abbrev %>%
-    stringr::str_count("^N | N | N$")
+    stringr::str_count("(?<!&)N")
 
 #  pseudogene
 feat_Q$no_P <- feat_Q$category_abbrev %>%
-    stringr::str_count("^P | P | P$")
+    stringr::str_count("(?<!&)P")
 
 #  rRNA
 feat_Q$no_R <- feat_Q$category_abbrev %>%
-    stringr::str_count("^R | R | R$")
+    stringr::str_count("(?<!&)R")
 
 #  snRNA
 feat_Q$no_S <- feat_Q$category_abbrev %>%
-    stringr::str_count("^S | S | S$")
+    stringr::str_count("(?<!&)S")
 
 #  snoRNA
 feat_Q$no_O <- feat_Q$category_abbrev %>%
-    stringr::str_count("^O | O | O$")
+    stringr::str_count("(?<!&)O")
 
 #  transposable element
 feat_Q$no_M <- feat_Q$category_abbrev %>%
-    stringr::str_count("^M | M | M$")
+    stringr::str_count("(?<!&)M")
 
 #  telomere
 feat_Q$no_E <- feat_Q$category_abbrev %>%
-    stringr::str_count("^E | E | E$")
+    stringr::str_count("(?<!&)E")
 
 #  tRNA
 feat_Q$no_T <- feat_Q$category_abbrev %>%
-    stringr::str_count("^T | T | T$")
+    stringr::str_count("(?<!&)T")
 
 #  antisense (gene)
 feat_Q$no_aG <- feat_Q$category_abbrev %>%
-    stringr::str_count("^&G | &G | &G$")
+    stringr::str_count("&G\\b")
 
 #  antisense (ncRNA)
 feat_Q$no_aN <- feat_Q$category_abbrev %>%
-    stringr::str_count("^&N | &N | &N$")
+    stringr::str_count("&N\\b")
 
 #  antisense (pseudogene)
 feat_Q$no_aP <- feat_Q$category_abbrev %>%
-    stringr::str_count("^&P | &P | &P$")
+    stringr::str_count("&P\\b")
 
 #  antisense (rRNA)
 feat_Q$no_aR <- feat_Q$category_abbrev %>%
-    stringr::str_count("^&R | &R | &R$")
+    stringr::str_count("&R\\b")
 
 #  antisense (snoRNA)
 feat_Q$no_aO <- feat_Q$category_abbrev %>%
-    stringr::str_count("^&O | &O | &O$")
+    stringr::str_count("&O\\b")
 
 #  antisense (transposable element)
 feat_Q$no_aM <- feat_Q$category_abbrev %>%
-    stringr::str_count("^&M | &M | &M$")
+    stringr::str_count("&M\\b")
 
 #  antisense (tRNA)
 feat_Q$no_aT <- feat_Q$category_abbrev %>%
-    stringr::str_count("^&T | &T | &T$")
+    stringr::str_count("&T\\b")
 
+no_b <- grep("no_A", colnames(feat_Q))
+no_e <- grep("no_aT", colnames(feat_Q))
+feat_Q$no_sum <- rowSums(feat_Q[, no_b:no_e])
+
+#  R64
 feat_Q$lgl_G <- ifelse(feat_Q$no_G > 0, TRUE, FALSE)
 feat_Q$lgl_N <- ifelse(feat_Q$no_N > 0, TRUE, FALSE)
 feat_Q$lgl_P <- ifelse(feat_Q$no_P > 0, TRUE, FALSE)
@@ -763,42 +819,170 @@ feat_Q$lgl_O <- ifelse(feat_Q$no_O > 0, TRUE, FALSE)
 feat_Q$lgl_M <- ifelse(feat_Q$no_M > 0, TRUE, FALSE)
 feat_Q$lgl_T <- ifelse(feat_Q$no_T > 0, TRUE, FALSE)
 
-feat_Q$mixed <- ifelse(
-    rowSums(feat_Q[, 27:ncol(feat_Q)]) > 1,
+#  etc
+feat_Q$lgl_A <- ifelse(feat_Q$no_A > 0, TRUE, FALSE)
+feat_Q$lgl_I <- ifelse(feat_Q$no_I > 0, TRUE, FALSE)
+feat_Q$lgl_E <- ifelse(feat_Q$no_E > 0, TRUE, FALSE)
+feat_Q$lgl_aG <- ifelse(feat_Q$no_aG > 0, TRUE, FALSE)
+feat_Q$lgl_aN <- ifelse(feat_Q$no_aN > 0, TRUE, FALSE)
+feat_Q$lgl_aP <- ifelse(feat_Q$no_aP > 0, TRUE, FALSE)
+feat_Q$lgl_aR <- ifelse(feat_Q$no_aR > 0, TRUE, FALSE)
+feat_Q$lgl_aO <- ifelse(feat_Q$no_aO > 0, TRUE, FALSE)
+feat_Q$lgl_aM <- ifelse(feat_Q$no_aM > 0, TRUE, FALSE)
+feat_Q$lgl_aT <- ifelse(feat_Q$no_aT > 0, TRUE, FALSE)
+
+
+#  Determine "mixedness" of R64 and etc feature overlaps --
+lgl_b <- grep("lgl_G", colnames(feat_Q))
+lgl_e <- grep("lgl_T", colnames(feat_Q))
+feat_Q$mixedness_R64 <- ifelse(
+    rowSums(feat_Q[, lgl_b:lgl_e]) > 1,
     "mixed",
     ifelse(
-        rowSums(feat_Q[, 27:ncol(feat_Q)]) == 0,
+        rowSums(feat_Q[, lgl_b:lgl_e]) == 0,
         NA_character_,
         "unmixed"
     )
-) %>% 
-    forcats::as_factor()
+)
 
-#PICKUPHERE Is the number of mixed really just 46?
-tmp <- feat_Q[rowSums(feat_Q[, 27:ncol(feat_Q)]) > 1, ]
+lgl_b <- grep("lgl_A", colnames(feat_Q))
+lgl_e <- grep("lgl_aT", colnames(feat_Q))
+feat_Q$mixedness_etc <- ifelse(
+    rowSums(feat_Q[, lgl_b:lgl_e]) > 1,
+    "mixed",
+    ifelse(
+        rowSums(feat_Q[, lgl_b:lgl_e]) == 0,
+        NA_character_,
+        "unmixed"
+    )
+)
 
-run <- TRUE
-if(base::isTRUE(run)) {
-    tmp <- feat_Q %>%
-        # dplyr::filter(dn == 1)
-        dplyr::filter(dn == 0)
-    
-    tmp <- tmp %>%
-        dplyr::relocate(v, .after = category_abbrev)
-    
-    tmp_v <- tmp$v %>%
-        forcats::as_factor() %>%
-        table()
-    # dn == 1
-    # .
-    #   I  &G   A  &M  &O  &N  &T  &R  &P 
-    # 189  83  39  12   5   4   4   1   1
-    
-    # dn == 0
-    # .
-    #  G  I &G  M  O  T &M &O &R  A  E  N  S  P  R 
-    # 54  1  1 17  4  3  1  1  1  1  1  2  2  1  1
-}
+feat_Q <- feat_Q %>%
+    dplyr::relocate(
+        c(mixedness_R64, mixedness_etc),
+        .after = ifelse(
+            "completeness" %in% colnames(feat_Q),
+            "completeness",
+            "tally"
+        )
+    )
+
+
+#  Determine "repeatedness" of R64 and etc feature overlaps
+feat_Q$repeatedness_R64 <- ifelse(
+    feat_Q$no_G == 1 & feat_Q$no_sum == 1 |
+    feat_Q$no_N == 1 & feat_Q$no_sum == 1 |
+    feat_Q$no_P == 1 & feat_Q$no_sum == 1 |
+    feat_Q$no_R == 1 & feat_Q$no_sum == 1 |
+    feat_Q$no_O == 1 & feat_Q$no_sum == 1 |
+    feat_Q$no_M == 1 & feat_Q$no_sum == 1 |
+    feat_Q$no_T == 1 & feat_Q$no_sum == 1,
+    "single",
+    ifelse(
+        feat_Q$no_G > 1 |
+        feat_Q$no_N > 1 |
+        feat_Q$no_P > 1 |
+        feat_Q$no_R > 1 |
+        feat_Q$no_O > 1 |
+        feat_Q$no_M > 1 |
+        feat_Q$no_T > 1,
+        "repeated",
+        "nonrepetitive"
+    )
+)
+            
+feat_Q$repeatedness_etc <- ifelse(
+    feat_Q$no_A > 1 |
+    feat_Q$no_E > 1 |
+    feat_Q$no_I > 1 |
+    feat_Q$no_aG > 1 |
+    feat_Q$no_aN > 1 |
+    feat_Q$no_aP > 1 |
+    feat_Q$no_aR > 1 |
+    feat_Q$no_aO > 1 |
+    feat_Q$no_aM > 1 |
+    feat_Q$no_aT > 1,
+    "repeated",
+    ifelse(
+        feat_Q$no_A == 1 & feat_Q$no_sum == 1 |
+        feat_Q$no_E == 1 & feat_Q$no_sum == 1 |
+        feat_Q$no_I == 1  & feat_Q$no_sum == 1 |
+        feat_Q$no_aG == 1 & feat_Q$no_sum == 1 |
+        feat_Q$no_aN == 1 & feat_Q$no_sum == 1 |
+        feat_Q$no_aP == 1 & feat_Q$no_sum == 1 |
+        feat_Q$no_aR == 1 & feat_Q$no_sum == 1 |
+        feat_Q$no_aO == 1 & feat_Q$no_sum == 1 |
+        feat_Q$no_aM == 1 & feat_Q$no_sum == 1 |
+        feat_Q$no_aT == 1 & feat_Q$no_sum == 1 ,
+        "single",
+        "nonrepetitive"
+    )
+)
+
+feat_Q <- feat_Q %>%
+    dplyr::relocate(
+        c(repeatedness_R64, repeatedness_etc),
+        .after = "mixedness_etc"
+    )
+
+#  Rough assignments
+q <- feat_Q
+q$assignment <- ifelse(
+    stringr::str_detect(q$category_abbrev, "(?<!&)G") &
+    q$completeness == "complete" &
+    q$mixedness_R64 == "unmixed" &
+    q$repeatedness_R64 == "nonrepetitive",
+    "coding",
+    ifelse(
+        q$mixedness_R64 == "mixed",
+        "ambiguous",
+        ifelse(
+            stringr::str_detect(q$category_abbrev, "(?<!&)M"),
+            "TE",
+            ifelse(
+                stringr::str_detect(q$category_abbrev, "(?<!&)G") &
+                q$completeness == "complete" &
+                q$mixedness_R64 == "unmixed" &
+                q$repeatedness_R64 == "repeated",
+                "coding run-on",
+                ifelse(
+                    stringr::str_detect(q$category_abbrev, "(?<!&)G") &
+                    q$completeness == "partial" &
+                    q$mixedness_R64 == "unmixed" &
+                    q$repeatedness_R64 %in% c("nonrepetitive", "single"),
+                    "ambiguous*",
+                    ifelse(
+                        stringr::str_detect(q$category_abbrev, "(?<!&)G") &
+                        q$completeness == "partial" &
+                        q$mixedness_R64 == "unmixed" &
+                        q$repeatedness_R64 == "repeated",
+                        "ambiguous**",
+                        NA_character_
+                    )
+                )
+            )
+        )
+    )
+)
+
+q$assignment <- ifelse(
+    is.na(q$assignment) &
+    stringr::str_detect(q$category_abbrev, "(?<!&)[N|P|R|S|O|T]"),
+    "noncoding (R64)",
+    q$assignment
+)
+
+q$assignment <- ifelse(
+    is.na(q$assignment),
+    "noncoding (novel)",
+    q$assignment
+)
+
+q <- q %>% dplyr::relocate(assignment, .after = tally)
+
+table(q$assignment, useNA = "ifany")
+q[is.na(q$assignment), ]$tally %>% sum()
+
 
 run <- TRUE
 if(base::isTRUE(run)) rm(feat_Q)
@@ -865,8 +1049,12 @@ if(base::isTRUE(run)) {
     if(base::isTRUE(run)) rm(specie, condition, value, data)
 }
 
-tibble::tibble(
-    category = df_Q$rough,
-    value = df_Q$tally,
-    
+r <- tibble::tibble(
+    state = rep("Q", 429),
+    assignment = q$assignment,
+    tally = q$tally
 )
+
+ggplot2::ggplot(r, aes(fill =  assignment, x = state, y = tally)) +
+    geom_bar(position = "fill", stat = "identity") +
+    ylab("proportion")
