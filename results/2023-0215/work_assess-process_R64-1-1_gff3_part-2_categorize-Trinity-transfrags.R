@@ -1,0 +1,1573 @@
+
+#  work_assess-process_R64-1-1_gff3_part-2_categorize-Trinity-transfrags.R
+#  KA
+
+
+#  Get situated ---------------------------------------------------------------
+suppressMessages(library(GenomicRanges))
+suppressMessages(library(IRanges))
+suppressMessages(library(plyr))
+suppressMessages(library(readxl))
+suppressMessages(library(rtracklayer))
+suppressMessages(library(tidyverse))
+
+options(scipen = 999)
+options(ggrepel.max.overlaps = Inf)
+
+if(stringr::str_detect(getwd(), "kalavattam")) {
+    p_local <- "/Users/kalavattam/Dropbox/FHCC"
+} else {
+    p_local <- "/Users/kalavatt/projects-etc"
+}
+p_wd <- "2022_transcriptome-construction/results/2023-0215"
+
+setwd(paste(p_local, p_wd, sep = "/"))
+getwd()
+
+rm(p_local, p_wd)
+
+
+#  Initialize functions -------------------------------------------------------
+`%notin%` <- Negate(`%in%`)
+
+
+percent_overlap <- function(x_start, x_end, y_start, y_end) {
+    x_length <- abs((x_end + 1) - x_start)
+    
+    #  Determine "largest" start
+    max_start <- max(c(
+        x_start, y_start
+    ))
+    
+    #  Determine "smallest" end
+    min_end <- min(c(
+        (x_end + 1), (y_end + 1)
+    ))
+    
+    overlap <- ifelse(
+        (min_end - max_start) <= 0, 0, (min_end - max_start)
+    )
+    
+    percent_overlap <- ((overlap / x_length) * 100)
+    
+    return(percent_overlap)
+}
+
+
+analyze_feature_intersections <- function(
+    overlap_Tr_v_all = overlap_Q_v_all,
+    gtf_Tr = gtf_Q,
+    gtf_all = gtf_all
+) {
+    #  Test
+    run <- FALSE
+    if(base::isTRUE(run)) {
+        gtf_Tr <- gtf_Q
+        # gtf_Tr <- gtf_G1
+        # gtf_Tr <- gtf_all
+        overlap_Tr_v_all <- overlap_Q_v_all
+        # overlap_Tr_v_all <- overlap_G1_v_all
+    }
+    
+    #  Create a tibble of overlapping features --------------------------------
+    #+ ...in "gtf_Tr" overlapping features in "gtf_all"
+    wrt_Tr_all <- dplyr::bind_cols(
+        gtf_Tr[queryHits(overlap_Tr_v_all), ],
+        gtf_all[subjectHits(overlap_Tr_v_all), ]
+    ) %>% dplyr::rename(
+            seqnames = seqnames...1,
+            start = start...2,
+            end = end...3,
+            width = width...4,
+            strand = strand...5,
+            source = source...6,
+            type = type...7,
+            gene_id = gene_id...9,
+            transcript_id = transcript_id...10,
+            seqnames_all = seqnames...14,
+            start_all = start...15,
+            end_all = end...16,
+            width_all = width...17,
+            strand_all = strand...18,
+            source_all = source...19,
+            type_all = type...20,
+            gene_id_all = gene_id...21,
+            transcript_id_all = transcript_id...22,
+            category_all = type.1,
+            orf_classification_all = orf_classification,
+            source_id_all = source_id,
+        )
+    
+    #  Cast dataframe types and alter names of ORF classifications
+    wrt_Tr_all <- tibble::as_tibble(data.frame(
+        lapply(wrt_Tr_all, function(x) gsub("^NA", NA_character_, x))
+    ))
+    
+    wrt_Tr_all <- tibble::as_tibble(data.frame(lapply(
+        wrt_Tr_all,
+        function(x) gsub("Verified\\|silenced_gene", "verified", x)
+    )))
+    
+    wrt_Tr_all <- tibble::as_tibble(data.frame(lapply(
+        wrt_Tr_all,
+        function(x) gsub("Dubious", "dubious", x)
+    )))
+    
+    wrt_Tr_all <- tibble::as_tibble(data.frame(lapply(
+        wrt_Tr_all,
+        function(x) gsub("Verified", "verified", x)
+    )))
+    
+    wrt_Tr_all <- tibble::as_tibble(data.frame(lapply(
+        wrt_Tr_all,
+        function(x) gsub("Uncharacterized", "uncharacterized", x)
+    )))
+    
+    wrt_Tr_all$start <- as.numeric(wrt_Tr_all$start)
+    wrt_Tr_all$end <- as.numeric(wrt_Tr_all$end)
+    wrt_Tr_all$width <- as.numeric(wrt_Tr_all$width)
+    wrt_Tr_all$start_all <- as.numeric(wrt_Tr_all$start_all)
+    wrt_Tr_all$end_all <- as.numeric(wrt_Tr_all$end_all)
+    wrt_Tr_all$width_all <- as.numeric(wrt_Tr_all$width_all)
+    
+    run <- FALSE
+    if(base::isTRUE(run)) str(wrt_Tr_all)
+    
+    #  Clean up the names of ORF classifications
+    index <-
+        wrt_Tr_all$category_all == "antisense_gene" &
+        wrt_Tr_all$orf_classification_all == "dubious"
+    wrt_Tr_all[index, ]$orf_classification_all <- "antisense_dubious"
+    
+    index <-
+        wrt_Tr_all$category_all == "antisense_gene" &
+        wrt_Tr_all$orf_classification_all == "uncharacterized"
+    wrt_Tr_all[index, ]$orf_classification_all <- "antisense_uncharacterized"
+    
+    index <-
+        wrt_Tr_all$category_all == "antisense_gene" &
+        wrt_Tr_all$orf_classification_all == "verified"
+    wrt_Tr_all[index, ]$orf_classification_all <- "antisense_verified"
+    
+    rm(index)
+    
+    
+    #  Check that all gtf_Tr "id" elements are found in the wrt_Tr_all "id"
+    #+ elements
+    if(base::isFALSE(all(gtf_Tr$id %in% wrt_Tr_all$id))) {
+        stop(paste(
+            "Not all gtf_Tr$id %in% wrt_Tr_all$id. Stopping the script."
+        ))
+    }
+    if(base::isFALSE(all(wrt_Tr_all$id %in% gtf_Tr$id))) {
+        stop(paste(
+            "Not all wrt_Tr_all$id %in% gtf_Tr$id. Stopping the script."
+        ))
+    }
+    
+    #  Add an additional "category_all" column, "detailed_all", that subsets
+    #+ the "gene" category into ORF classifications
+    wrt_Tr_all$detailed_all <- ifelse(
+        wrt_Tr_all$category_all == "gene",
+        wrt_Tr_all$orf_classification_all,
+        ifelse(
+            wrt_Tr_all$category_all == "antisense_gene",
+            wrt_Tr_all$orf_classification_all,
+            wrt_Tr_all$category_all
+        )
+    )
+    wrt_Tr_all <- wrt_Tr_all %>%
+        dplyr::relocate(detailed_all, .after = category_all)
+    
+    #  Create columns of categories that are a bit easier to read
+    wrt_Tr_all$category_all_easy <- wrt_Tr_all$category_all %>%
+        gsub("^antisense_gene", "AS (gene)", .) %>%
+        gsub("^antisense_ncRNA", "AS (ncRNA)", .) %>%
+        gsub("^antisense_PG", "AS (PG)", .) %>%
+        gsub("^antisense_rRNA", "AS (rRNA)", .) %>%
+        gsub("^antisense_snoRNA", "AS (snoRNA)", .) %>%
+        gsub("^antisense_TE", "AS (TE)", .) %>%
+        gsub("^antisense_tRNA", "AS (tRNA)", .) %>%
+        gsub("^intergenic", "inter", .)
+    
+    wrt_Tr_all$detailed_all_easy <- wrt_Tr_all$detailed_all %>%
+        gsub("^antisense_verified", "AS (verified)", .) %>%
+        gsub("^antisense_dubious", "AS (dubious)", .) %>%
+        gsub("^antisense_uncharacterized", "AS (unchar)", .) %>%
+        gsub("^antisense_ncRNA", "AS (ncRNA)", .) %>%
+        gsub("^antisense_PG", "AS (PG)", .) %>%
+        gsub("^antisense_rRNA", "AS (rRNA)", .) %>%
+        gsub("^antisense_snoRNA", "AS (snoRNA)", .) %>%
+        gsub("^antisense_TE", "AS (TE)", .) %>%
+        gsub("^antisense_tRNA", "AS (tRNA)", .) %>%
+        gsub("^uncharacterized", "unchar", .) %>%
+        gsub("^intergenic", "inter", .)
+    
+    wrt_Tr_all <- wrt_Tr_all %>%
+        dplyr::relocate(category_all_easy, .after = category_all) %>%
+        dplyr::relocate(detailed_all_easy, .after = detailed_all)
+    
+    #  For any rows that overlap after stratifying for 'chr' and 'strand', then 
+    #+ organize said rows into groups
+    wrt_Tr_all_group <- plyr::ddply(
+        wrt_Tr_all,
+        c("seqnames", "strand"),
+        function(x) { 
+            #  Check if a record should be linked with the previous record
+            y <- c(NA, x$end[-nrow(x)])
+            z <- ifelse(is.na(y), 0, y)
+            z <- cummax(z)
+            z[is.na(y)] <- NA
+            x$previous_end <- z
+            
+            return(x)
+        }
+    )
+    wrt_Tr_all_group <- wrt_Tr_all_group %>%
+        dplyr::relocate(c(start_all, end_all), .after = end)
+    wrt_Tr_all_group$new_group <-
+        is.na(wrt_Tr_all_group$previous_end) | 
+            (
+                wrt_Tr_all_group$start >=
+                wrt_Tr_all_group$previous_end
+            )
+    wrt_Tr_all_group$group <- cumsum(wrt_Tr_all_group$new_group)
+    wrt_Tr_all_group <- wrt_Tr_all_group %>%
+        dplyr::mutate(type_id_all = paste0(category_all, ": ", gene_id_all))
+    
+    #  Create abbreviated categories
+    run <- FALSE
+    if(base::isTRUE(run)) {
+        #  Surveying our categories
+        wrt_Tr_all_group %>%
+            dplyr::group_by(category_all) %>%
+            summarize(dplyr::n())
+    }
+    # # A tibble: 18 × 2
+    #    category_all     `dplyr::n()`
+    #    <chr>                   <int>
+    #  1 ARS                       423
+    #  2 PG                          7
+    #  3 TE                        117
+    #  4 antisense_PG                6
+    #  5 antisense_TE               69
+    #  6 antisense_gene           2327
+    #  7 antisense_ncRNA             8
+    #  8 antisense_rRNA              3
+    #  9 antisense_snoRNA           22
+    # 10 antisense_tRNA             14
+    # 11 gene                     5901
+    # 12 intergenic              10806
+    # 13 ncRNA                       8
+    # 14 rRNA                        2
+    # 15 snRNA                       7
+    # 16 snoRNA                     75
+    # 17 tRNA                        5
+    # 18 telomere                   24
+    
+    wrt_Tr_all_group$abbrev_all <- wrt_Tr_all_group$category_all %>%
+        stringr::str_replace_all("^antisense_gene", "&G") %>%
+        stringr::str_replace_all("^antisense_ncRNA", "&N") %>%
+        stringr::str_replace_all("^antisense_PG", "&P") %>%
+        stringr::str_replace_all("^antisense_rRNA", "&R") %>%
+        stringr::str_replace_all("^antisense_snoRNA", "&O") %>%
+        stringr::str_replace_all("^antisense_TE", "&M") %>%
+        stringr::str_replace_all("^antisense_tRNA", "&T") %>%
+        stringr::str_replace_all("^ARS", "A") %>%
+        stringr::str_replace_all("^gene", "G") %>%
+        stringr::str_replace_all("^intergenic", "I") %>%
+        stringr::str_replace_all("^ncRNA", "N") %>%
+        stringr::str_replace_all("^PG", "P") %>%
+        stringr::str_replace_all("^rRNA", "R") %>%
+        stringr::str_replace_all("^snRNA", "S") %>%
+        stringr::str_replace_all("^snoRNA", "O") %>%
+        stringr::str_replace_all("^TE", "M") %>%
+        stringr::str_replace_all("^telomere", "E") %>%
+        stringr::str_replace_all("^tRNA", "T")
+    
+    wrt_Tr_all_group$abbrev_detailed_all <- wrt_Tr_all_group$detailed_all %>%
+        stringr::str_replace_all("^antisense_dubious", "&D") %>%
+        stringr::str_replace_all("^antisense_ncRNA", "&N") %>%
+        stringr::str_replace_all("^antisense_PG", "&P") %>%
+        stringr::str_replace_all("^antisense_rRNA", "&R") %>%
+        stringr::str_replace_all("^antisense_snoRNA", "&O") %>%
+        stringr::str_replace_all("^antisense_TE", "&M") %>%
+        stringr::str_replace_all("^antisense_tRNA", "&T") %>%
+        stringr::str_replace_all("^antisense_uncharacterized", "&U") %>%
+        stringr::str_replace_all("^antisense_verified", "&V") %>%
+        stringr::str_replace_all("^ARS", "A") %>%
+        stringr::str_replace_all("^dubious", "D") %>%
+        stringr::str_replace_all("^intergenic", "I") %>%
+        stringr::str_replace_all("^ncRNA", "N") %>%
+        stringr::str_replace_all("^PG", "P") %>%
+        stringr::str_replace_all("^rRNA", "R") %>%
+        stringr::str_replace_all("^snRNA", "S") %>%
+        stringr::str_replace_all("^snoRNA", "O") %>%
+        stringr::str_replace_all("^TE", "M") %>%
+        stringr::str_replace_all("^telomere", "E") %>%
+        stringr::str_replace_all("^tRNA", "T") %>%
+        stringr::str_replace_all("^uncharacterized", "U") %>%
+        stringr::str_replace_all("^verified", "V")
+
+    wrt_Tr_all_group <- wrt_Tr_all_group %>%
+        dplyr::relocate(abbrev_all, .before = category_all) %>%
+        dplyr::relocate(abbrev_detailed_all, .before = detailed_all)
+    
+    run <- TRUE
+    if(base::isTRUE(run)) {
+        wrt_Tr_all_group %>%
+            dplyr::group_by(abbrev_all) %>%
+            summarize(dplyr::n())
+        # A tibble: 18 × 2
+        # abbrev_all `dplyr::n()`
+        #     <chr>             <int>
+        #   1 &G                 2327
+        #   2 &M                   69
+        #   3 &N                    8
+        #   4 &O                   22
+        #   5 &P                    6
+        #   6 &R                    3
+        #   7 &T                   14
+        #   8 A                   423
+        #   9 E                    24
+        #  10 G                  5901
+        #  11 I                 10806
+        #  12 M                   117
+        #  13 N                     8
+        #  14 O                    75
+        #  15 P                     7
+        #  16 R                     2
+        #  17 S                     7
+        #  18 T                     5
+        
+        wrt_Tr_all_group %>%
+            dplyr::group_by(abbrev_detailed_all) %>%
+            summarize(dplyr::n()) %>%
+            print(n = 100)
+        # A tibble: 22 × 2
+        #    abbrev_detailed_all `dplyr::n()`
+        #    <chr>                      <int>
+        #  1 &D                           587
+        #  2 &M                            69
+        #  3 &N                             8
+        #  4 &O                            22
+        #  5 &P                             6
+        #  6 &R                             3
+        #  7 &T                            14
+        #  8 &U                           303
+        #  9 &V                          1437
+        # 10 A                            423
+        # 11 D                            287
+        # 12 E                             24
+        # 13 I                          10806
+        # 14 M                            117
+        # 15 N                              8
+        # 16 O                             75
+        # 17 P                              7
+        # 18 R                              2
+        # 19 S                              7
+        # 20 T                              5
+        # 21 U                            747
+        # 22 V                           4867
+    }
+    
+    #  Calculate pct. overlaps between "Q" and "all" features and vice versa --
+    wrt_Tr_all_group$pct_Tr_over_all <- mapply(
+        percent_overlap,
+        wrt_Tr_all_group$start,
+        wrt_Tr_all_group$end,
+        wrt_Tr_all_group$start_all,
+        wrt_Tr_all_group$end_all
+    )
+    wrt_Tr_all_group$pct_all_over_Tr <- mapply(
+        percent_overlap,
+        wrt_Tr_all_group$start_all,
+        wrt_Tr_all_group$end_all,
+        wrt_Tr_all_group$start,
+        wrt_Tr_all_group$end
+    )
+    wrt_Tr_all_group <- wrt_Tr_all_group %>%
+        dplyr::relocate(
+            c(pct_Tr_over_all, pct_all_over_Tr, type_id_all, group),
+            .after = end_all
+        )
+    
+    
+    #  Aggregate the data -----------------------------------------------------
+    wrt_Tr_all_agg <- plyr::ddply(
+        wrt_Tr_all_group,
+        .(seqnames, strand, group),
+        plyr::summarize, 
+        start = min(start),
+        end = max(end),
+        width = (end - start) + 1,
+        id = paste0(id, collapse = "; "),
+        trinity = paste0(gene_id, collapse = "; "),
+        category_abbrev = paste0(abbrev_all, collapse = " "),
+        detailed_abbrev = paste0(abbrev_detailed_all, collapse = " "),
+        category = paste0(category_all, collapse = "; "),
+        category_easy = paste0(category_all_easy, collapse = ", "),
+        detailed = paste0(detailed_all, collapse = "; "),
+        detailed_easy = paste0(detailed_all_easy, collapse = ", "),
+        complete = paste0(type_id_all, collapse = "; "),
+        pct_Tr_over_all = paste0(round(pct_Tr_over_all, 2), collapse = ", "),
+        pct_all_over_Tr = paste0(round(pct_all_over_Tr, 2), collapse = ", "),
+        orf_classification = paste0(orf_classification_all, collapse = "; "),
+        source_id = paste0(source_id_all, collapse = "; ")
+    ) %>%
+        dplyr::select(-group) %>%
+        dplyr::arrange(seqnames, start, strand) %>%
+        dplyr::relocate(
+            c(seqnames, start, end, width, strand), .before = id
+        ) %>%
+        dplyr::mutate(
+            n_features = stringr::str_count(complete, "\\:\ ")
+        ) %>%
+        tibble::as_tibble()
+    
+    #  Collapse redundant strings in cells of column "id"
+    wrt_Tr_all_agg$id <- vapply(
+        stringr::str_split(wrt_Tr_all_agg$id, "; "),
+        `[`,
+        1,
+        FUN.VALUE = character(1)
+    )
+    
+    
+    #  Return the various data objects ----------------------------------------
+    list_return <- list()
+    list_return[["wrt_Tr_all"]] <- wrt_Tr_all
+    list_return[["wrt_Tr_all_group"]] <- wrt_Tr_all_group
+    list_return[["wrt_Tr_all_agg"]] <- wrt_Tr_all_agg
+    
+    return(list_return)
+}
+
+
+convert_character_0_NA <- function(x) {
+    z <- lapply(
+        x, function(y) if(identical(y, character(0))) NA_character_ else y
+    ) %>%
+        unlist()
+    
+    return(z)
+}
+
+
+flatten_elements_to_one <- function(x) {
+    # For character list elements with two or more subelements, collapse
+    # ("flatten") the subelements into a single character element
+    # 
+    # :param x: <list>
+    # :return: character vector of collapsed list elements (list e)
+    
+    l_collapsed <- x[lengths(x) >= 2] %>% length()
+    collapsed <- vector(mode = "character", length = l_collapsed)
+    for(i in 1:l_collapsed) {
+        # i <- 1
+        # cat(i, "\n")
+        # cat(x[lengths(x) >= 2][[i]], "\n")
+        collapsed[i] <- stringr::str_c(
+            x[lengths(x) >= 2][[i]],
+            collapse = ", "
+        )
+    }
+    
+    return(collapsed)
+}
+
+
+process_list_column <- function(x) {
+    x[lengths(x) == 0] <- NA_character_
+    if(length(x[lengths(x) >= 2]) != 0) {
+        x[lengths(x) >= 2] <- x[lengths(x) >= 2] %>%
+            flatten_elements_to_one()
+    }
+    y <- x %>% unlist()
+    return(y)
+}
+
+
+run_assignment_logic <- function (feat_Tr) {
+    #  Initialize variable "up" -------------------------------
+    #+ Tally number of "upstream expression" non-feature regions (associated with
+    #+ intergenic, antisense, ARS, or telomeric regions) in categories
+    #+ 
+    #+ -----
+    #+ Logic
+    #+ -----
+    #+ IF string meets "R64_feat" condition:
+    #+     {
+    #+         (IN string interior | IN string end) AND
+    #+         NOT IN string start AND
+    #+         string nchar > 2
+    #+     }
+    #+ AND IF string meets "R64_etc" condition:
+    #+     {
+    #+         (NOT IN string interior & NOT IN string end) AND
+    #+         IN string start AND
+    #+         string nchar > 2
+    #+     } 
+    #+ THEN assign: 1
+    #+ ELSE assign: 0
+    #+ 
+    #+ -----
+    #+ Where
+    #+ -----
+    #+     - "R64_feat" is G, N, P, R, S, O, M, T
+    #+     - "R64_etc" is I, A, E, &.
+    #+ 
+    #+ ----
+    #+ Note
+    #+ ----
+    #+     - Condition of nchar > 2 excludes features without putative 5' or
+    #+       putative 3' UTRs (info that will be captured elsewhere)
+    feat_Tr$up <- ifelse(
+        #  Select for category strings associated with listed "R64_feat"
+        #+ features in interior or at end: G, N, P, R, S, O, M, T (use literal
+        #+ pattern matching)
+        stringr::str_detect(
+            feat_Tr$category_abbrev,
+            " G | G$| N |N$| P |P$| R |R$| S |S$| O |O$| M |M$| T |T$"
+        ) &
+        #  ...while excluding category strings that begin with listed features (use
+        #+ literal pattern mismatching)
+        !stringr::str_detect(  # 
+            feat_Tr$category_abbrev,
+            "^G|^N|^P|^R|^S|^O|^M|^T"
+        ) &
+        #  ...and while excluding category strings with string character counts
+        #+ less than or equal to two
+        nchar(feat_Tr$category_abbrev) %notin% c(0, 1, 2),
+        #  Assign value of 1 for matches to category strings beginning with listed
+        #+ "R64_etc" features: I, A, &, or E
+        stringr::str_count(
+            feat_Tr$category_abbrev[
+                stringr::str_detect(
+                    #  Select for categories with listed features in interior or at
+                    #+ end: G, N, P, R, S, O, M, T (use literal pattern matching)
+                    feat_Tr$category_abbrev,
+                    " G | G$| N |N$| P |P$| R |R$| S |S$| O |O$| M |M$| T |T$"
+                ) &
+                !stringr::str_detect(
+                    #  ...while excluding category strings that begin with listed
+                    #+ features (use literal pattern mismatching)
+                    feat_Tr$category_abbrev,
+                    "^G|^N|^P|^R|^S|^O|^M|^T"
+                ) &
+                #  ...and while excluding category strings with string character
+                #+ counts less than or equal to two
+                nchar(feat_Tr$category_abbrev) %notin% c(0, 1, 2)
+            ],
+            "^I|^A|^&|^E"  # (use literal pattern matching to start of string)
+        ),
+        #  Otherwise, assign value of 0
+        0
+    )
+    
+    run_checks <- FALSE
+    if(base::isTRUE(run_checks)) {
+        feat_Tr$up_what <- ifelse(
+            nchar(feat_Tr$category_abbrev) >= 2,
+            stringr::str_extract(feat_Tr$category_abbrev, "^.{2}"),
+            stringr::str_extract(feat_Tr$category_abbrev, "^.{1}")
+        ) %>%
+            gsub(" ", "", .)
+    }
+    
+    
+    #  Initialize variable "dn" -------------------------------
+    #+ Tally number of "downstream expression" non-feature regions (associated with
+    #+ intergenic, antisense, ARS, or telomeric regions) in categories
+    #+ 
+    #+ -----
+    #+ Logic
+    #+ -----
+    #+ IF string meets "R64_etc" condition:
+    #+     {
+    #+         IN string end AND
+    #+         string nchar > 2
+    #+     }
+    #+ THEN assign: 1
+    #+ ELSE assign: 0
+    #+ 
+    #+ -----
+    #+ Where
+    #+ -----
+    #+     - "R64_etc" is I, A, E, &.
+    #+ 
+    #+ ----
+    #+ Note
+    #+ ----
+    #+     - Condition of nchar > 2 excludes features without putative 5' or
+    #+       putative 3' UTRs (info that will be captured elsewhere)
+    feat_Tr$dn <- ifelse(
+        #  Select for category strings ending with features &?, I, A, or E
+        stringr::str_detect(
+            feat_Tr$category_abbrev,
+            "&.$|I$|A$|E$"
+        ) &
+        #  ...while excluding category strings with string character counts less
+        #+ than or equal to two
+        nchar(feat_Tr$category_abbrev) %notin% c(0, 1, 2),
+        stringr::str_count(
+            feat_Tr$category_abbrev[
+                #  Select for category strings ending with features &?, I, A, or E
+                stringr::str_detect(
+                    feat_Tr$category_abbrev,
+                    "&.$|I$|A$|E$"
+                ) &
+                #  ...while excluding category strings with string character counts
+                #+ less than or equal to two
+                nchar(feat_Tr$category_abbrev) %notin% c(0, 1, 2)
+            ],
+            "&.$|I$|A$|E$"
+        ),
+        0
+    )
+    
+    run_checks <- FALSE
+    if(base::isTRUE(run_checks)) {
+        feat_Tr$dn_what <- feat_Tr$category_abbrev %>%
+            stringr::str_sub(-2) %>%
+            stringr::str_remove(" ")
+    }
+    
+    
+    #  Initialize and define "up_dn" --------------------------
+    #+ "up_dn" is assigned 1 if both "up" and "dn" are 1, else it is assigned 0;
+    #+ if assigned 1, then this variable signifies that both a putative 5' and a
+    #+ putative 3' UTR is present for a feature
+    #+ 
+    #+ -----
+    #+ Logic
+    #+ -----
+    #+ IF variables "up" AND "dn" meet condition:
+    #+     {
+    #+         "up" IS 0 AND
+    #+         "dn" IS (0 OR 1)
+    #+     }
+    #+ THEN assign: 0
+    #+ ELSE IF variables "up" AND "dn" meet condition:
+    #+     {
+    #+         "up" IS 1 AND
+    #+         "dn" IS 0
+    #+     }
+    #+ THEN assign: 0
+    #+ ELSE IF variables "up" AND "dn" meet condition:
+    #+     {
+    #+         "up" IS 1 AND
+    #+         "dn" IS 1
+    #+     }
+    #+ THEN assign: 1
+    #+ 
+    #+ -----
+    #+ Where
+    #+ -----
+    #+     - "up" is putative 5' UTR
+    #+     - "dn" is putative 3' UTR
+    feat_Tr$up_dn <- ifelse(
+        feat_Tr$up == 0 & (feat_Tr$dn == 0 | feat_Tr$dn == 1),
+        0,
+        ifelse(
+            feat_Tr$up == 1 & feat_Tr$dn == 0,
+            0,
+            ifelse(
+                feat_Tr$up == 1 & feat_Tr$dn == 1,
+                1,
+                NA_integer_
+            )
+        )
+    )
+    
+    #  Begin to define variable "completeness"; here's the rough logic:
+    #+ - IF "up_dn" IS 1, THEN assign "complete"
+    #+ - IF ("up" IS 1 AND "dn" IS 0) OR ("up" IS 0 AND "dn" IS 1), THEN "partial"
+    #+ 
+    #+ -----
+    #+ Logic
+    #+ -----
+    #+ IF variables "up" AND "dn" meet condition:
+    #+     {
+    #+         "up" IS 0 AND
+    #+         "dn" IS (0 OR 1)
+    #+     }
+    #+ THEN assign: 0
+    #+ ELSE IF variables "up" AND "dn" meet condition:
+    #+     {
+    #+         "up" IS 1 AND
+    #+         "dn" IS 0
+    #+     }
+    #+ THEN assign: 0
+    #+ ELSE IF variables "up" AND "dn" meet condition:
+    #+     {
+    #+         "up" IS 1 AND
+    #+         "dn" IS 1
+    #+     }
+    #+ THEN assign: 1
+    #+ 
+    #+ -----
+    #+ Where
+    #+ -----
+    #+     - "up" is putative 5' UTR
+    #+     - "dn" is putative 3' UTR
+    feat_Tr$completeness <- ifelse(
+        feat_Tr$up_dn == 1,
+        "complete",
+        "partial"
+    )
+    
+    #NOTE Currently, not including the logic in this code chunk because we are
+    #+    defining the putative nature of transcripts with respect to 5' and 3'
+    #+    UTRs elsewhere using a combination of different variables and logic
+    run <- FALSE
+    if(base::isTRUE(run)) {
+        #+ - if "up_dn" is 0 and feat. is "I", "&.", "M", "A", or "E", then
+        #+ "putative"
+        feat_Tr$completeness_etc <- ifelse(
+            feat_Tr$up_dn == 0 &
+            feat_Tr$category_abbrev %in%
+                c("A", "I", "E", "&G", "M", "&M", "&O", "&R"),
+            "putative",
+            NA_character_
+        )
+    }
+    
+    #  For ease of checking the dataframe, move column "completeness" to just after
+    #+ column "tally"
+    feat_Tr <- feat_Tr %>%
+        dplyr::relocate(completeness, .after = tally)
+    
+    
+    #  Tally numbers of features assoc. with categories -------
+    #+ Features are anywhere in the category string: beginning, interior, or end
+    #+ 
+    #+ -----
+    #+ Logic
+    #+ -----
+    #+ FOR category string A, G, I, N, P, R, S, O, M, E, T:
+    #+     COUNT number of category strings in element that meets condition:
+    #+         NOT category string preceded by "&" (e.g., "(?<!&)G")
+    #+ assign to variable for specific category string: COUNT
+    #+ 
+    #+ FOR category string &G, &N, &P, &R, &O, &M, &T:
+    #+     COUNT number of category strings in element that meets condition:
+    #+         IS ONLY category string preceded by "&" (e.g., "&G\\b")
+    #+ 
+    #+ -----
+    #+ Where
+    #+ -----
+    #+     - "Trinity" category is transcript fragment overlap with R64 annotations
+    #+     - "dn" is putative 3' UTR
+    #+ 
+    #+ ----
+    #+ Note
+    #+ ----
+    #+     - The regex pattern "(?<!&)G" uses a negative lookbehind assertion
+    #+       ((?<!&)) to check that the character preceding the character of
+    #+       interest is not "&"; thus, it looks at each character in the string
+    #+       individually to match any instances of the character of interest not
+    #+       preceded by "&"; it does not involve a lookahead to scan the entire
+    #+       string
+    #+     - The regex pattern "&G\\b" is matching the literal string "&G" followed
+    #+       by a word boundary; "&" matches the ampersand character "&" literally,
+    #+       and "G" matches the letter "G" literally. "\\b" or represents a word
+    #+       boundary, meaning it matches the position between a word character (as
+    #+       defined by \w) and a non-word character; in other words, it matches
+    #+       the position at the start or end of a word
+    
+    #  ARS
+    feat_Tr$no_A <- feat_Tr$category_abbrev %>%
+        stringr::str_count("(?<!&)A")
+    
+    #  gene
+    feat_Tr$no_G <- feat_Tr$category_abbrev %>%
+        stringr::str_count("(?<!&)G")
+    
+    #  intergenic
+    feat_Tr$no_I <- feat_Tr$category_abbrev %>%
+        stringr::str_count("(?<!&)I")
+    
+    #  ncRNA
+    feat_Tr$no_N <- feat_Tr$category_abbrev %>%
+        stringr::str_count("(?<!&)N")
+    
+    #  pseudogene
+    feat_Tr$no_P <- feat_Tr$category_abbrev %>%
+        stringr::str_count("(?<!&)P")
+    
+    #  rRNA
+    feat_Tr$no_R <- feat_Tr$category_abbrev %>%
+        stringr::str_count("(?<!&)R")
+    
+    #  snRNA
+    feat_Tr$no_S <- feat_Tr$category_abbrev %>%
+        stringr::str_count("(?<!&)S")
+    
+    #  snoRNA
+    feat_Tr$no_O <- feat_Tr$category_abbrev %>%
+        stringr::str_count("(?<!&)O")
+    
+    #  transposable element
+    feat_Tr$no_M <- feat_Tr$category_abbrev %>%
+        stringr::str_count("(?<!&)M")
+    
+    #  telomere
+    feat_Tr$no_E <- feat_Tr$category_abbrev %>%
+        stringr::str_count("(?<!&)E")
+    
+    #  tRNA
+    feat_Tr$no_T <- feat_Tr$category_abbrev %>%
+        stringr::str_count("(?<!&)T")
+    
+    #  antisense (gene)
+    feat_Tr$no_aG <- feat_Tr$category_abbrev %>%
+        stringr::str_count("&G\\b")
+    
+    #  antisense (ncRNA)
+    feat_Tr$no_aN <- feat_Tr$category_abbrev %>%
+        stringr::str_count("&N\\b")
+    
+    #  antisense (pseudogene)
+    feat_Tr$no_aP <- feat_Tr$category_abbrev %>%
+        stringr::str_count("&P\\b")
+    
+    #  antisense (rRNA)
+    feat_Tr$no_aR <- feat_Tr$category_abbrev %>%
+        stringr::str_count("&R\\b")
+    
+    #  antisense (snoRNA)
+    feat_Tr$no_aO <- feat_Tr$category_abbrev %>%
+        stringr::str_count("&O\\b")
+    
+    #  antisense (transposable element)
+    feat_Tr$no_aM <- feat_Tr$category_abbrev %>%
+        stringr::str_count("&M\\b")
+    
+    #  antisense (tRNA)
+    feat_Tr$no_aT <- feat_Tr$category_abbrev %>%
+        stringr::str_count("&T\\b")
+    
+    #  Calculate row sums across the above-defined variables; this is used to,
+    #+ e.g., identify rows with only 1 feature or rows with >1 features; see the
+    #+ logic later in this script
+    no_b <- grep("no_A", colnames(feat_Tr))
+    no_e <- grep("no_aT", colnames(feat_Tr))
+    feat_Tr$no_sum <- rowSums(feat_Tr[, no_b:no_e])
+    
+    #  Create columns of Booleans for "R64_feat" elements
+    feat_Tr$lgl_G <- ifelse(feat_Tr$no_G > 0, TRUE, FALSE)
+    feat_Tr$lgl_N <- ifelse(feat_Tr$no_N > 0, TRUE, FALSE)
+    feat_Tr$lgl_P <- ifelse(feat_Tr$no_P > 0, TRUE, FALSE)
+    feat_Tr$lgl_R <- ifelse(feat_Tr$no_R > 0, TRUE, FALSE)
+    feat_Tr$lgl_S <- ifelse(feat_Tr$no_S > 0, TRUE, FALSE)
+    feat_Tr$lgl_O <- ifelse(feat_Tr$no_O > 0, TRUE, FALSE)
+    feat_Tr$lgl_M <- ifelse(feat_Tr$no_M > 0, TRUE, FALSE)
+    feat_Tr$lgl_T <- ifelse(feat_Tr$no_T > 0, TRUE, FALSE)
+    
+    #  Create columns of Booleans for "R64_etc" elements
+    feat_Tr$lgl_A <- ifelse(feat_Tr$no_A > 0, TRUE, FALSE)
+    feat_Tr$lgl_I <- ifelse(feat_Tr$no_I > 0, TRUE, FALSE)
+    feat_Tr$lgl_E <- ifelse(feat_Tr$no_E > 0, TRUE, FALSE)
+    feat_Tr$lgl_aG <- ifelse(feat_Tr$no_aG > 0, TRUE, FALSE)
+    feat_Tr$lgl_aN <- ifelse(feat_Tr$no_aN > 0, TRUE, FALSE)
+    feat_Tr$lgl_aP <- ifelse(feat_Tr$no_aP > 0, TRUE, FALSE)
+    feat_Tr$lgl_aR <- ifelse(feat_Tr$no_aR > 0, TRUE, FALSE)
+    feat_Tr$lgl_aO <- ifelse(feat_Tr$no_aO > 0, TRUE, FALSE)
+    feat_Tr$lgl_aM <- ifelse(feat_Tr$no_aM > 0, TRUE, FALSE)
+    feat_Tr$lgl_aT <- ifelse(feat_Tr$no_aT > 0, TRUE, FALSE)
+    
+    
+    #  Determine "mixedness" of "Trinity" categories ----------
+    #+ ...with respect to "R64_feat" and "R64_etc" elements
+    #  Specify "R64_feat" column start and stop indices
+    lgl_b <- grep("lgl_G", colnames(feat_Tr))
+    lgl_e <- grep("lgl_T", colnames(feat_Tr))
+    
+    #  Determine mixedness with respect to "R64_feat"
+    #+ 
+    #+ -----
+    #+ Logic
+    #+ -----
+    #+ IF row sums for "R64_feat" START and STOP indices meet condition:
+    #+     GREATER THAN: 1
+    #+ THEN assign: "mixed"
+    #+ ELSE IF row sums for "R64_feat" START and STOP indices meet condition:
+    #+     EQUALS: 0
+    #+ THEN assign: NA
+    #+ ELSE IF row sums for "R64_feat" START and STOP indices meet condition:
+    #+     EQUALS: 1
+    #+ THEN assign: "unmixed"
+    feat_Tr$mixedness_feat <- ifelse(
+        rowSums(feat_Tr[, lgl_b:lgl_e]) > 1,
+        "mixed",
+        ifelse(
+            rowSums(feat_Tr[, lgl_b:lgl_e]) == 0,
+            NA_character_,
+            "unmixed"
+        )
+    )
+    
+    #  Specify "R64_etc" column start and stop indices
+    lgl_b <- grep("lgl_A", colnames(feat_Tr))
+    lgl_e <- grep("lgl_aT", colnames(feat_Tr))
+    
+    #  Determine mixedness with respect to "R64_etc"
+    #+ 
+    #+ -----
+    #+ Logic
+    #+ -----
+    #+ IF row sums for "R64_etc" START and STOP indices meet condition:
+    #+     GREATER THAN: 1
+    #+ THEN assign: "mixed"
+    #+ ELSE IF row sums for "R64_etc" START and STOP indices meet condition:
+    #+     EQUALS: 0
+    #+ THEN assign: NA
+    #+ ELSE IF row sums for "R64_etc" START and STOP indices mee condition:
+    #+     EQUALS: 1
+    #+ THEN assign: "unmixed"
+    feat_Tr$mixedness_etc <- ifelse(
+        rowSums(feat_Tr[, lgl_b:lgl_e]) > 1,
+        "mixed",
+        ifelse(
+            rowSums(feat_Tr[, lgl_b:lgl_e]) == 0,
+            NA_character_,
+            "unmixed"
+        )
+    )
+    
+    #  For ease of checking the dataframe, move columns "mixedness_feat",
+    #+ "mixedness_etc" to just after column "completeness"
+    feat_Tr <- feat_Tr %>%
+        dplyr::relocate(
+            c(mixedness_feat, mixedness_etc),
+            .after = ifelse(
+                "completeness" %in% colnames(feat_Tr),
+                "completeness",
+                "tally"
+            )
+        )
+    
+    
+    #  Determine "repeatedness" -------------------------------
+    #+ ...of "R64_feat" and "R64_etc" feature overlaps
+    
+    #  Determine repeatedness of "R64_feat" elements in "Trinity" categories
+    #+ 
+    #+ -----
+    #+ Logic
+    #+ -----
+    #+ IF "R64_feat" tally and row sum meet condition:
+    #+     {
+    #+         tally EQUALS 1 AND
+    #+         row sum EQUALS 1
+    #+     }
+    #+ THEN assign: "single"
+    #+ ELSE IF "R64_feat" tally meets condition:
+    #+     tally GREATER THAN 1
+    #+ THEN assign: "repeated"
+    #+ ELSE assign: "nonrepetitive"
+    feat_Tr$repeatedness_feat <- ifelse(
+        feat_Tr$no_G == 1 & feat_Tr$no_sum == 1 |
+        feat_Tr$no_N == 1 & feat_Tr$no_sum == 1 |
+        feat_Tr$no_P == 1 & feat_Tr$no_sum == 1 |
+        feat_Tr$no_R == 1 & feat_Tr$no_sum == 1 |
+        feat_Tr$no_O == 1 & feat_Tr$no_sum == 1 |
+        feat_Tr$no_M == 1 & feat_Tr$no_sum == 1 |
+        feat_Tr$no_T == 1 & feat_Tr$no_sum == 1,
+        "single",
+        ifelse(
+            feat_Tr$no_G > 1 |
+            feat_Tr$no_N > 1 |
+            feat_Tr$no_P > 1 |
+            feat_Tr$no_R > 1 |
+            feat_Tr$no_O > 1 |
+            feat_Tr$no_M > 1 |
+            feat_Tr$no_T > 1,
+            "repeated",
+            "nonrepetitive"
+        )
+    )
+    
+    #  Determine repeatedness of "R64_etc" elements in "Trinity" categories
+    #+ 
+    #+ -----
+    #+ Logic
+    #+ -----
+    #+ IF "R64_etc" tally meets condition:
+    #+     tally GREATER THAN 1
+    #+ THEN assign: "repeated"
+    #+ IF "R64_etc" tally and row sum meet condition:
+    #+     {
+    #+         tally EQUALS 1 AND
+    #+         row sum EQUALS 1
+    #+     }
+    #+ THEN assign: "single"
+    #+ ELSE assign: "nonrepetitive"
+    feat_Tr$repeatedness_etc <- ifelse(
+        feat_Tr$no_A > 1 |
+        feat_Tr$no_E > 1 |
+        feat_Tr$no_I > 1 |
+        feat_Tr$no_aG > 1 |
+        feat_Tr$no_aN > 1 |
+        feat_Tr$no_aP > 1 |
+        feat_Tr$no_aR > 1 |
+        feat_Tr$no_aO > 1 |
+        feat_Tr$no_aM > 1 |
+        feat_Tr$no_aT > 1,
+        "repeated",
+        ifelse(
+            feat_Tr$no_A == 1 & feat_Tr$no_sum == 1 |
+            feat_Tr$no_E == 1 & feat_Tr$no_sum == 1 |
+            feat_Tr$no_I == 1  & feat_Tr$no_sum == 1 |
+            feat_Tr$no_aG == 1 & feat_Tr$no_sum == 1 |
+            feat_Tr$no_aN == 1 & feat_Tr$no_sum == 1 |
+            feat_Tr$no_aP == 1 & feat_Tr$no_sum == 1 |
+            feat_Tr$no_aR == 1 & feat_Tr$no_sum == 1 |
+            feat_Tr$no_aO == 1 & feat_Tr$no_sum == 1 |
+            feat_Tr$no_aM == 1 & feat_Tr$no_sum == 1 |
+            feat_Tr$no_aT == 1 & feat_Tr$no_sum == 1 ,
+            "single",
+            "nonrepetitive"
+        )
+    )
+    
+    #  For ease of checking the dataframe, move columns "repeatedness_feat",
+    #+ "repeatedness_etc" to just after column "mixedness_etc"
+    feat_Tr <- feat_Tr %>%
+        dplyr::relocate(
+            c(repeatedness_feat, repeatedness_etc),
+            .after = "mixedness_etc"
+        )
+    
+    
+    #  Assign formal categories to "Trinity" categories -------
+    #+ ...using the column of abbreviated categories assigned to Trinity
+    #+ transcripts and the new "completeness", "mixedness", and "repeatedness" columns
+    #+ assigned above
+    
+    #  Assign value "coding" to variable "assignment"
+    #+ 
+    #+ -----
+    #+ Logic
+    #+ -----
+    #+ IF conditions are met:
+    #+     {
+    #+         category_abbrev CONTAINS (G NOT &G) AND
+    #+         completeness IS "complete" AND
+    #+         mixedness_feat IS "unmixed" AND
+    #+         repeatedness_feat IS "nonrepetitive"
+    #+     }
+    #+ THEN assign: "coding"
+    #+ ELSE assign: NA
+    feat_Tr$assignment <- ifelse(
+        stringr::str_detect(feat_Tr$category_abbrev, "(?<!&)G") &
+        feat_Tr$completeness == "complete" &
+        feat_Tr$mixedness_feat == "unmixed" &
+        feat_Tr$repeatedness_feat == "nonrepetitive",
+        "coding",
+        NA_character_
+    )
+    
+    #  Assign value "TE" to variable "assignment"
+    #+ 
+    #+ -----
+    #+ Logic
+    #+ -----
+    #+ IF condition is met:
+    #+     category_abbrev CONTAINS (M NOT &M)
+    #+ THEN assign: "TE"
+    #+ ELSE no change to assignment
+    feat_Tr$assignment <- ifelse(
+        stringr::str_detect(feat_Tr$category_abbrev, "(?<!&)M"),
+        "TE",
+        feat_Tr$assignment
+    )
+    
+    #  Assign value "ambiguous" to variable "assignment"
+    #+ 
+    #+ -----
+    #+ Logic
+    #+ -----
+    #+ IF condition is met:
+    #+     mixedness_feat IS "mixed"
+    #+ THEN assign: "ambiguous"
+    #+ ELSE no change to assignment
+    #+ 
+    #+ ----
+    #+ Note
+    #+ ----
+    #+     It matter that this goes after assignment of "TE" above; if this comes
+    #+     first, then some "ambiguous" will be misassigned "TE"
+    feat_Tr$assignment <- ifelse(
+        feat_Tr$mixedness_feat == "mixed",
+        "ambiguous",
+        feat_Tr$assignment
+    )
+    
+    #  Assign value "coding: multiple" to variable "assignment"
+    #+ 
+    #+ -----
+    #+ Logic
+    #+ -----
+    #+ IF conditions are met:
+    #+     {
+    #+         category_abbrev CONTAINS (G NOT &G) AND
+    #+         completeness IS "complete" AND
+    #+         mixedness_feat IS "unmixed" AND
+    #+         repeatedness_feat IS "repeated"
+    #+     }
+    #+ THEN assign: "coding: multiple"
+    #+ ELSE no change to assignment
+    feat_Tr$assignment <- ifelse(
+        stringr::str_detect(feat_Tr$category_abbrev, "(?<!&)G") &
+        feat_Tr$completeness == "complete" &
+        feat_Tr$mixedness_feat == "unmixed" &
+        feat_Tr$repeatedness_feat == "repeated",
+        "coding: multiple",
+        feat_Tr$assignment
+    )
+    
+    #  Assign value "coding: partial" to variable "assignment"
+    #+ 
+    #+ -----
+    #+ Logic
+    #+ -----
+    #+ IF conditions are met:
+    #+     {
+    #+         category_abbrev CONTAINS (G NOT &G) AND
+    #+         completeness IS "partial" AND
+    #+         mixedness_feat IS "unmixed" AND
+    #+         repeatedness_feat IS ("nonrepetitive" OR "single")
+    #+     }
+    #+ THEN assign: "coding: partial"
+    #+ ELSE no change to assignment
+    feat_Tr$assignment <- ifelse(
+        stringr::str_detect(feat_Tr$category_abbrev, "(?<!&)G") &
+        feat_Tr$completeness == "partial" &
+        feat_Tr$mixedness_feat == "unmixed" &
+        feat_Tr$repeatedness_feat %in% c("nonrepetitive", "single"),
+        "coding: partial",
+        feat_Tr$assignment
+    )
+    
+    #  Assign value "coding: multiple, partial" to variable "assignment"
+    #+ 
+    #+ -----
+    #+ Logic
+    #+ -----
+    #+ IF conditions are met:
+    #+     {
+    #+         category_abbrev CONTAINS (G NOT &G) AND
+    #+         completeness IS "partial" AND
+    #+         mixedness_feat IS "unmixed" AND
+    #+         repeatedness_feat IS "repeated"
+    #+     }
+    #+ THEN assign: "coding: multiple, partial"
+    #+ ELSE no change to assignment
+    feat_Tr$assignment <- ifelse(
+        stringr::str_detect(feat_Tr$category_abbrev, "(?<!&)G") &
+        feat_Tr$completeness == "partial" &
+        feat_Tr$mixedness_feat == "unmixed" &
+        feat_Tr$repeatedness_feat == "repeated",
+        "coding: multiple, partial",
+        feat_Tr$assignment
+    )
+        
+    #  Assign value "noncoding: R64" to variable "assignment"
+    #+ 
+    #+ -----
+    #+ Logic
+    #+ -----
+    #+ IF conditions are met:
+    #+     {
+    #+         assignment IS NA AND
+    #+         category_abbrev CONTAINS (( N | P | R | S | O | T) NOT &.))
+    #+     }
+    #+ THEN assign: "noncoding: R64"
+    #+ ELSE no change to assignment
+    feat_Tr$assignment <- ifelse(
+        is.na(feat_Tr$assignment) &
+        stringr::str_detect(feat_Tr$category_abbrev, "(?<!&)[N|P|R|S|O|T]"),
+        "noncoding: R64",
+        feat_Tr$assignment
+    )
+    
+    #  Assign value "noncoding: novel" to variable "assignment"
+    #+ 
+    #+ -----
+    #+ Logic
+    #+ -----
+    #+ IF condition is met:
+    #+     assignment IS NA
+    #+ THEN assign: "noncoding, novel"
+    #+ ELSE no change to assignment
+    #+ ----
+    #+ Note
+    #+ ----
+    #+     After running the above logic, what you're left with is putative novel
+    #+     noncoding features
+    feat_Tr$assignment <- ifelse(
+        is.na(feat_Tr$assignment),
+        "noncoding: novel",
+        feat_Tr$assignment
+    )
+    
+    #  For ease of checking the dataframe, move column "assignment" to just after
+    #+ after column "tally"
+    feat_Tr <- feat_Tr %>%
+        dplyr::relocate(assignment, .after = tally)
+    
+    
+    #  Break down novel noncoding features --------------------
+    #+ ...determining intergenic and AS proportions
+    sub <- feat_Tr[feat_Tr$assignment == "noncoding: novel", ]
+    
+    sub$assignment_sub <- ifelse(
+        sub$no_sum == 1 & sub$no_I == 1,
+        "intergenic",
+        NA_character_
+    )
+    
+    sub$assignment_sub <- ifelse(
+        sub$no_sum == 1 & sub$no_A == 1,
+        "intergenic",
+        sub$assignment_sub
+    )
+    
+    sub$assignment_sub <- ifelse(
+        sub$no_sum == 1 & sub$no_E == 1,
+        "intergenic",
+        sub$assignment_sub
+    )
+    
+    sub$assignment_sub <- ifelse(
+        rowSums(sub[, grep("^no_a.*", colnames(sub))]) > 0,
+        "antisense",
+        sub$assignment_sub
+    )
+    
+    sub$assignment_sub <- ifelse(
+        is.na(sub$assignment_sub),
+        "intergenic",
+        sub$assignment_sub
+    )
+    
+    sub_simple <- tibble::tibble(
+        category_abbrev = sub$category_abbrev,
+        assignment_detailed = sub$assignment_sub
+    )
+    
+    feat_Tr <- dplyr::full_join(
+        feat_Tr, sub_simple, by = "category_abbrev"
+    ) %>%
+        dplyr::rename(tmp = assignment_detailed) %>%
+        dplyr::relocate(tmp, .after = assignment) %>%
+        dplyr::mutate(
+            assignment_detailed = ifelse(
+                is.na(tmp),
+                assignment,
+                paste0(assignment, ", ", tmp)
+            )
+        ) %>%
+        dplyr::relocate(assignment_detailed, .after = assignment) %>%
+        dplyr::select(-tmp)    
+    
+    rm(sub, sub_simple)
+    
+    
+    #  Return the dataframe -----------------------------------
+    return(feat_Tr)
+}
+
+
+#  Set up custom ggplot2 plot themes ------------------------------------------
+theme_slick <- theme_classic() +
+    theme(
+        panel.grid.major = ggplot2::element_line(linewidth = 0.4),
+        panel.grid.minor = ggplot2::element_line(linewidth = 0.2),
+        axis.line = ggplot2::element_line(linewidth = 0.2),
+        axis.ticks = ggplot2::element_line(linewidth = 0.4),
+        axis.text = ggplot2::element_text(color = "black"),
+        axis.title.x = ggplot2::element_text(),
+        axis.title.y = ggplot2::element_text(),
+        plot.title = ggplot2::element_text(),
+        text = element_text(family = "")
+    )
+
+theme_slick_no_legend <- theme_slick + theme(legend.position = "none")
+
+
+#  Load gtfs as tibbles -------------------------------------------------------
+p_main <- "outfiles_gtf-gff3"
+
+#  Load Trinity Q annotations
+p_Q <- paste(p_main, "Trinity-GG/Q_N/filtered/locus", sep = "/")
+f_Q <- "Q_mkc-4_gte-pctl-25.gtf"
+gtf_Q <- rtracklayer::import(paste(p_Q, f_Q, sep = "/")) %>%
+    tibble::as_tibble() %>%
+    dplyr::select(-c(phase, score)) %>%
+    dplyr::arrange(seqnames, start, strand) %>%
+    dplyr::filter(seqnames != "Mito")
+
+#  Load Trinity G1 annotations
+p_G <- paste(p_main, "Trinity-GG/G_N/filtered/locus", sep = "/")
+f_G <- "G1_mkc-4_gte-pctl-25.gtf"
+gtf_G1 <- rtracklayer::import(paste(p_G, f_G, sep = "/")) %>%
+    tibble::as_tibble() %>%
+    dplyr::select(-c(phase, score)) %>%
+    dplyr::arrange(seqnames, start, strand) %>%
+    dplyr::filter(seqnames != "Mito")
+
+#  Load "gtf_all" annotations
+p_gtf_all <- paste(
+    p_main,
+    "comprehensive/S288C_reference_genome_R64-1-1_20110203",
+    sep = "/"
+)
+f_gtf_all <- "processed_features-intergenic_sense-antisense.gtf"
+gtf_all <- rtracklayer::import(paste(p_gtf_all, f_gtf_all, sep = "/")) %>%
+    tibble::as_tibble() %>%
+    dplyr::select(-c(phase, score)) %>%
+    dplyr::arrange(seqnames, start, strand)
+
+#  Load R64-1-1 ncRNA annotations
+p_gtf_ncRNA_R64 <- paste(p_main, "representation", sep = "/")
+f_gtf_ncRNA_R64 <- "Greenlaw-et-al_ncRNAs.gtf"
+gtf_ncRNA <- rtracklayer::import(paste(p_gtf_ncRNA_R64, f_gtf_ncRNA_R64, sep = "/")) %>%
+    tibble::as_tibble() %>%
+    dplyr::select(-c(phase, score)) %>%
+    dplyr::arrange(seqnames, start, strand)
+gtf_ncRNA$source <- "SGD"
+gtf_ncRNA <- gtf_ncRNA %>%
+    dplyr::select(-c(liftOver)) %>%
+    dplyr::mutate(
+        orf_classification = "NA",
+        source_id = "NA"
+    )
+
+#  Generate R64-1-1 ncRNA antisense annotations
+gtf_ncRNA_AS <- gtf_ncRNA
+gtf_ncRNA_AS$strand <- ifelse(gtf_ncRNA$strand == "+", "-", "+")
+gtf_ncRNA_AS$source <- "SGD (KA)"
+gtf_ncRNA_AS$gene_id <- 
+    gtf_ncRNA_AS$transcript_id <-
+    paste0("AS_", gtf_ncRNA$gene_id)
+gtf_ncRNA_AS$type.1 <- paste0("antisense_", gtf_ncRNA$type.1)
+
+#  Combine sense and antisense ncRNA annotations with "gtf_all"
+gtf_all <- dplyr::bind_rows(gtf_all, gtf_ncRNA, gtf_ncRNA_AS) %>%
+    dplyr::arrange(seqnames, start)
+
+rm(
+    p_main, p_Q, f_Q, p_G, f_G, p_gtf_all, f_gtf_all, p_gtf_ncRNA_R64,
+    f_gtf_ncRNA_R64, gtf_ncRNA, gtf_ncRNA_AS
+)
+
+
+# Evaluate overlaps between newly documented and official features ------------
+#  Identify the overlaps after initializing necessary variables
+g_Q <- makeGRangesFromDataFrame(gtf_Q, keep.extra.columns = TRUE)
+g_G1 <- makeGRangesFromDataFrame(gtf_G1, keep.extra.columns = TRUE)
+g_all <- makeGRangesFromDataFrame(gtf_all, keep.extra.columns = TRUE)
+
+overlap_Q_v_all <- IRanges::findOverlaps(g_Q, g_all)
+overlap_G1_v_all <- IRanges::findOverlaps(g_G1, g_all)
+
+analyses_Q <- analyze_feature_intersections(
+    overlap_Tr_v_all = overlap_Q_v_all,
+    gtf_Tr = gtf_Q,
+    gtf_all = gtf_all
+)
+agg_Q <- analyses_Q$wrt_Tr_all_agg
+
+analyses_G1 <- analyze_feature_intersections(
+    overlap_Tr_v_all = overlap_G1_v_all,
+    gtf_Tr = gtf_G1,
+    gtf_all = gtf_all
+)
+agg_G1 <- analyses_G1$wrt_Tr_all_agg
+
+
+#  Identify, survey, and process overlap categories ===========================
+#  Run checks associated with below logic <lgl>
+run_checks <- FALSE
+
+#  Initialize dataframes of rough categories 
+analyze_w_pct <- FALSE
+if(base::isTRUE(analyze_w_pct)) {
+    cols <- c("category_abbrev", "category_easy", "pct_Tr_over_all")
+} else {
+    cols <- c("category_abbrev", "category_easy")
+}
+
+feat_Q <- agg_Q %>%
+    dplyr::group_by(dplyr::across(dplyr::all_of(cols))) %>%
+    dplyr::summarize(tally = dplyr::n(), .groups = "keep") %>%
+    dplyr::arrange(dplyr::desc(tally))
+
+feat_G1 <- agg_G1 %>%
+    dplyr::group_by(dplyr::across(dplyr::all_of(cols))) %>%
+    dplyr::summarize(tally = dplyr::n()) %>%
+    dplyr::arrange(dplyr::desc(tally))
+
+rm(cols)
+
+
+logic_Q <- run_assignment_logic(feat_Q)
+logic_G1 <- run_assignment_logic(feat_G1)
+
+
+#  Assign categories to feature dataframes (add_{G1,Q}) -----------------------
+logic_G1_simple <- tibble::tibble(
+    category_abbrev = logic_G1$category_abbrev,
+    assignment = logic_G1$assignment,
+    assignment_detailed = logic_G1$assignment_detailed
+)
+
+logic_Q_simple <- tibble::tibble(
+    category_abbrev = logic_Q$category_abbrev,
+    assignment = logic_Q$assignment,
+    assignment_detailed = logic_Q$assignment_detailed
+)
+
+complete_G1 <- dplyr::full_join(
+    agg_G1, logic_G1_simple, by = "category_abbrev"
+) %>%
+    dplyr::relocate(c(assignment, assignment_detailed), .after = trinity)
+
+complete_Q <- dplyr::full_join(
+    agg_Q, logic_Q_simple, by = "category_abbrev"
+) %>%
+    dplyr::relocate(c(assignment, assignment_detailed), .after = trinity)
+
+readr::write_tsv(
+    complete_G1,
+    "/Users/kalavatt/Desktop/Trinity-assignments.dataframe.2023-0616.G1.tsv"
+)
+
+readr::write_tsv(
+    complete_Q,
+    "/Users/kalavatt/Desktop/Trinity-assignments.dataframe.2023-0616.Q.tsv"
+)
+
+
+#  Check things ===============================================================
+table(logic_Q$assignment_detailed, useNA = "ifany")
+table(logic_G1$assignment_detailed, useNA = "ifany")
+
+run <- TRUE
+if(base::isTRUE(run)) {
+    # what <- "Q"
+    what <- "G1"
+    if(what == "Q") {
+        logic_Tr <- logic_Q
+    } else if(what == "G1") {
+        logic_Tr <- logic_G1
+    }
+    
+    z_1_ambig <- logic_Tr[logic_Tr$assignment == "ambiguous", ]
+    z_2_coding_part <- logic_Tr[logic_Tr$assignment == "coding: partial", ]
+    z_3_coding_mult_part <- logic_Tr[logic_Tr$assignment == "coding: multiple, partial", ]
+    z_4_coding <- logic_Tr[logic_Tr$assignment == "coding", ]
+    z_5_coding_mult <- logic_Tr[logic_Tr$assignment == "coding: multiple", ]
+    z_6_nc_novel <- logic_Tr[logic_Tr$assignment == "noncoding: novel", ]
+    z_7_nc_R64 <- logic_Tr[logic_Tr$assignment == "noncoding: R64", ]
+    z_8_TE <- logic_Tr[logic_Tr$assignment == "TE", ]
+}
+
+
+#  Section #TBD ===============================================================
+run <- TRUE
+if(base::isTRUE(run)) rm(feat_Q)
+
+#  Examine the feature categories in one state not in the other
+run <- FALSE
+if(base::isTRUE(run)) {
+    table(feat_Q$category_abbrev %notin% feat_G1$category_abbrev)
+    table(feat_G1$category_abbrev %notin% feat_Q$category_abbrev)
+}
+
+feat_Q_uniq <- feat_Q[
+    feat_Q$category_abbrev %notin% feat_G1$category_abbrev, 
+]
+
+feat_G1_uniq <- feat_G1[
+    feat_G1$category_abbrev %notin% feat_Q$category_abbrev, 
+]
+
+
+#  Write out dataframes =======================================================
+run <- FALSE
+if(base::isTRUE(run)) {
+    readr::write_tsv(feat_Q, "dataframe_Q_categories.tsv")
+    readr::write_tsv(feat_G1, "dataframe_G1_categories.tsv")
+}
+
+
+
+#  Make stacked bar charts ====================================================
+run <- TRUE
+if(base::isTRUE(run)) {
+    #  Create a dataset
+    specie <- c(
+        rep("sorgho" , 3),
+        rep("poacee" , 3),
+        rep("banana" , 3),
+        rep("triticum" , 3)
+    )
+    condition <- rep(c("normal", "stress", "Nitrogen"), 4)
+    value <- abs(rnorm(12 , 0 , 15))
+    data <- data.frame(specie, condition, value)
+    
+    run <- TRUE
+    if(base::isTRUE(run)) data
+    
+    # Stacked
+    ggplot(data, aes(fill = condition, y = value, x = specie)) + 
+        geom_bar(position = "stack", stat = "identity")
+    
+    run <- FALSE
+    if(base::isTRUE(run)) rm(specie, condition, value, data)
+}
+
+#  ----------------
+data <- tibble::tibble(
+    state = c(rep("Q", nrow(logic_Q)), rep("G1", nrow(logic_G1))),
+    assignment = c(logic_Q$assignment, logic_G1$assignment),
+    assignment_detailed = c(logic_Q$assignment_detailed, logic_G1$assignment_detailed),
+    tally = c(logic_Q$tally, logic_G1$tally)
+)
+
+# ggplot2::ggplot(data, aes(fill = assignment, x = state, y = tally)) +
+ggplot2::ggplot(data, aes(fill = assignment_detailed, x = state, y = tally)) +
+    geom_bar(position = "stack", stat = "identity") +  # Absolute
+    # geom_bar(position = "fill", stat = "identity") +  # Proportional
+    ylab("no. annotations") +
+    # ylab("proportion") +
+    scale_fill_manual(
+        # values = length(levels(forcats::as_factor(data$assignment))) %>%
+        values = length(levels(forcats::as_factor(data$assignment_detailed))) %>%
+            viridisLite::viridis()
+    ) +
+    theme_slick
+
+#  ----------------
+tmp_Q <- logic_Q[logic_Q$assignment == "noncoding: novel", ]
+tmp_G1 <- logic_G1[logic_G1$assignment == "noncoding: novel", ]
+data_sub <- tibble::tibble(
+    state = c(rep("Q", nrow(tmp_Q)), rep("G1", nrow(tmp_G1))),
+    assignment = c(tmp_Q$assignment, tmp_G1$assignment),
+    assignment_detailed = c(tmp_Q$assignment_detailed, tmp_G1$assignment_detailed),
+    tally = c(tmp_Q$tally, tmp_G1$tally)
+)
+
+ggplot2::ggplot(data_sub, aes(fill = assignment_detailed, x = state, y = tally)) +
+    # geom_bar(position = "stack", stat = "identity") +  # Absolute
+    geom_bar(position = "fill", stat = "identity") +  # Proportional
+    # ylab("no. annotations") +
+    ylab("proportion") +
+    scale_fill_manual(
+        values = c("#8F68AF", "#6DB8BC")
+    ) +
+    theme_slick
