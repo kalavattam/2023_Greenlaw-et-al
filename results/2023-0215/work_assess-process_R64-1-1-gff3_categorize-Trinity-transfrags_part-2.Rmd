@@ -31,7 +31,7 @@ rm(p_local, p_wd)
 `%notin%` <- Negate(`%in%`)
 
 
-percent_overlap <- function(x_start, x_end, y_start, y_end) {
+calculate_percent_overlap <- function(x_start, x_end, y_start, y_end) {
     x_length <- abs((x_end + 1) - x_start)
     
     #  Determine "largest" start
@@ -243,27 +243,6 @@ analyze_feature_intersections <- function(
             dplyr::group_by(category_all) %>%
             summarize(dplyr::n())
     }
-    # # A tibble: 18 × 2
-    #    category_all     `dplyr::n()`
-    #    <chr>                   <int>
-    #  1 ARS                       423
-    #  2 PG                          7
-    #  3 TE                        117
-    #  4 antisense_PG                6
-    #  5 antisense_TE               69
-    #  6 antisense_gene           2327
-    #  7 antisense_ncRNA             8
-    #  8 antisense_rRNA              3
-    #  9 antisense_snoRNA           22
-    # 10 antisense_tRNA             14
-    # 11 gene                     5901
-    # 12 intergenic              10806
-    # 13 ncRNA                       8
-    # 14 rRNA                        2
-    # 15 snRNA                       7
-    # 16 snoRNA                     75
-    # 17 tRNA                        5
-    # 18 telomere                   24
     
     wrt_Tr_all_group$abbrev_all <- wrt_Tr_all_group$category_all %>%
         stringr::str_replace_all("^antisense_gene", "&G") %>%
@@ -313,74 +292,28 @@ analyze_feature_intersections <- function(
         dplyr::relocate(abbrev_all, .before = category_all) %>%
         dplyr::relocate(abbrev_detailed_all, .before = detailed_all)
     
-    run <- TRUE
+    run <- FALSE
     if(base::isTRUE(run)) {
         wrt_Tr_all_group %>%
             dplyr::group_by(abbrev_all) %>%
             summarize(dplyr::n())
-        # A tibble: 18 × 2
-        # abbrev_all `dplyr::n()`
-        #     <chr>             <int>
-        #   1 &G                 2327
-        #   2 &M                   69
-        #   3 &N                    8
-        #   4 &O                   22
-        #   5 &P                    6
-        #   6 &R                    3
-        #   7 &T                   14
-        #   8 A                   423
-        #   9 E                    24
-        #  10 G                  5901
-        #  11 I                 10806
-        #  12 M                   117
-        #  13 N                     8
-        #  14 O                    75
-        #  15 P                     7
-        #  16 R                     2
-        #  17 S                     7
-        #  18 T                     5
         
         wrt_Tr_all_group %>%
             dplyr::group_by(abbrev_detailed_all) %>%
             summarize(dplyr::n()) %>%
             print(n = 100)
-        # A tibble: 22 × 2
-        #    abbrev_detailed_all `dplyr::n()`
-        #    <chr>                      <int>
-        #  1 &D                           587
-        #  2 &M                            69
-        #  3 &N                             8
-        #  4 &O                            22
-        #  5 &P                             6
-        #  6 &R                             3
-        #  7 &T                            14
-        #  8 &U                           303
-        #  9 &V                          1437
-        # 10 A                            423
-        # 11 D                            287
-        # 12 E                             24
-        # 13 I                          10806
-        # 14 M                            117
-        # 15 N                              8
-        # 16 O                             75
-        # 17 P                              7
-        # 18 R                              2
-        # 19 S                              7
-        # 20 T                              5
-        # 21 U                            747
-        # 22 V                           4867
     }
     
     #  Calculate pct. overlaps between "Q" and "all" features and vice versa --
     wrt_Tr_all_group$pct_Tr_over_all <- mapply(
-        percent_overlap,
+        calculate_percent_overlap,
         wrt_Tr_all_group$start,
         wrt_Tr_all_group$end,
         wrt_Tr_all_group$start_all,
         wrt_Tr_all_group$end_all
     )
     wrt_Tr_all_group$pct_all_over_Tr <- mapply(
-        percent_overlap,
+        calculate_percent_overlap,
         wrt_Tr_all_group$start_all,
         wrt_Tr_all_group$end_all,
         wrt_Tr_all_group$start,
@@ -490,8 +423,8 @@ process_list_column <- function(x) {
 
 run_assignment_logic <- function (feat_Tr) {
     #  Initialize variable "up" -------------------------------
-    #+ Tally number of "upstream expression" non-feature regions (associated with
-    #+ intergenic, antisense, ARS, or telomeric regions) in categories
+    #+ Tally number of "upstream expression" non-feature regions (associated
+    #+ with intergenic, antisense, ARS, or telomeric regions) in categories
     #+ 
     #+ -----
     #+ Logic
@@ -530,8 +463,8 @@ run_assignment_logic <- function (feat_Tr) {
             feat_Tr$category_abbrev,
             " G | G$| N |N$| P |P$| R |R$| S |S$| O |O$| M |M$| T |T$"
         ) &
-        #  ...while excluding category strings that begin with listed features (use
-        #+ literal pattern mismatching)
+        #  ...while excluding category strings that begin with listed features
+        #+ (use literal pattern mismatching)
         !stringr::str_detect(  # 
             feat_Tr$category_abbrev,
             "^G|^N|^P|^R|^S|^O|^M|^T"
@@ -539,24 +472,25 @@ run_assignment_logic <- function (feat_Tr) {
         #  ...and while excluding category strings with string character counts
         #+ less than or equal to two
         nchar(feat_Tr$category_abbrev) %notin% c(0, 1, 2),
-        #  Assign value of 1 for matches to category strings beginning with listed
-        #+ "R64_etc" features: I, A, &, or E
+        #  Assign value of 1 for matches to category strings beginning with
+        #+ listed "R64_etc" features: I, A, &, or E
         stringr::str_count(
             feat_Tr$category_abbrev[
                 stringr::str_detect(
-                    #  Select for categories with listed features in interior or at
-                    #+ end: G, N, P, R, S, O, M, T (use literal pattern matching)
+                    #  Select for categories with listed features in interior
+                    #+ or at end: G, N, P, R, S, O, M, T (use literal pattern
+                    #+ matching)
                     feat_Tr$category_abbrev,
                     " G | G$| N |N$| P |P$| R |R$| S |S$| O |O$| M |M$| T |T$"
                 ) &
                 !stringr::str_detect(
-                    #  ...while excluding category strings that begin with listed
-                    #+ features (use literal pattern mismatching)
+                    #  ...while excluding category strings that begin with
+                    #+ listed features (use literal pattern mismatching)
                     feat_Tr$category_abbrev,
                     "^G|^N|^P|^R|^S|^O|^M|^T"
                 ) &
-                #  ...and while excluding category strings with string character
-                #+ counts less than or equal to two
+                #  ...and while excluding category strings with string
+                #+ character counts less than or equal to two
                 nchar(feat_Tr$category_abbrev) %notin% c(0, 1, 2)
             ],
             "^I|^A|^&|^E"  # (use literal pattern matching to start of string)
@@ -577,8 +511,8 @@ run_assignment_logic <- function (feat_Tr) {
     
     
     #  Initialize variable "dn" -------------------------------
-    #+ Tally number of "downstream expression" non-feature regions (associated with
-    #+ intergenic, antisense, ARS, or telomeric regions) in categories
+    #+ Tally number of "downstream expression" non-feature regions (associated
+    #+ with intergenic, antisense, ARS, or telomeric regions) in categories
     #+ 
     #+ -----
     #+ Logic
@@ -607,22 +541,24 @@ run_assignment_logic <- function (feat_Tr) {
             feat_Tr$category_abbrev,
             "&.$|I$|A$|E$"
         ) &
-        #  ...while excluding category strings with string character counts less
-        #+ than or equal to two
+        #  ...while excluding category strings with string character counts
+        #+ less than or equal to two
         nchar(feat_Tr$category_abbrev) %notin% c(0, 1, 2),
         stringr::str_count(
             feat_Tr$category_abbrev[
-                #  Select for category strings ending with features &?, I, A, or E
+                #  Select for category strings ending with features &?, I, A,
+                #+ or E
                 stringr::str_detect(
                     feat_Tr$category_abbrev,
                     "&.$|I$|A$|E$"
                 ) &
-                #  ...while excluding category strings with string character counts
-                #+ less than or equal to two
+                #  ...while excluding category strings with string character
+                #+ counts less than or equal to two
                 nchar(feat_Tr$category_abbrev) %notin% c(0, 1, 2)
             ],
             "&.$|I$|A$|E$"
         ),
+        #  Otherwise, assign value of 0
         0
     )
     
@@ -635,9 +571,9 @@ run_assignment_logic <- function (feat_Tr) {
     
     
     #  Initialize and define "up_dn" --------------------------
-    #+ "up_dn" is assigned 1 if both "up" and "dn" are 1, else it is assigned 0;
-    #+ if assigned 1, then this variable signifies that both a putative 5' and a
-    #+ putative 3' UTR is present for a feature
+    #+ "up_dn" is assigned 1 if both "up" and "dn" are 1, else it is assigned
+    #+ 0; if assigned 1, then this variable signifies that both a putative 5'
+    #+ and a putative 3' UTR is present for a feature
     #+ 
     #+ -----
     #+ Logic
@@ -682,7 +618,8 @@ run_assignment_logic <- function (feat_Tr) {
     
     #  Begin to define variable "completeness"; here's the rough logic:
     #+ - IF "up_dn" IS 1, THEN assign "complete"
-    #+ - IF ("up" IS 1 AND "dn" IS 0) OR ("up" IS 0 AND "dn" IS 1), THEN "partial"
+    #+ - IF ("up" IS 1 AND "dn" IS 0) OR ("up" IS 0 AND "dn" IS 1), THEN
+    #+   "partial"
     #+ 
     #+ -----
     #+ Logic
@@ -733,14 +670,15 @@ run_assignment_logic <- function (feat_Tr) {
         )
     }
     
-    #  For ease of checking the dataframe, move column "completeness" to just after
-    #+ column "tally"
+    #  For ease of checking the dataframe, move column "completeness" to just
+    #+ after column "tally"
     feat_Tr <- feat_Tr %>%
         dplyr::relocate(completeness, .after = tally)
     
     
     #  Tally numbers of features assoc. with categories -------
-    #+ Features are anywhere in the category string: beginning, interior, or end
+    #+ Features are anywhere in the category string: beginning, interior, or
+    #+ end
     #+ 
     #+ -----
     #+ Logic
@@ -757,24 +695,26 @@ run_assignment_logic <- function (feat_Tr) {
     #+ -----
     #+ Where
     #+ -----
-    #+     - "Trinity" category is transcript fragment overlap with R64 annotations
+    #+     - "Trinity" category is transcript fragment overlap with R64
+    #+       annotations
     #+     - "dn" is putative 3' UTR
     #+ 
-    #+ ----
-    #+ Note
-    #+ ----
+    #+ -----
+    #+ Notes
+    #+ -----
     #+     - The regex pattern "(?<!&)G" uses a negative lookbehind assertion
     #+       ((?<!&)) to check that the character preceding the character of
-    #+       interest is not "&"; thus, it looks at each character in the string
-    #+       individually to match any instances of the character of interest not
-    #+       preceded by "&"; it does not involve a lookahead to scan the entire
-    #+       string
-    #+     - The regex pattern "&G\\b" is matching the literal string "&G" followed
-    #+       by a word boundary; "&" matches the ampersand character "&" literally,
-    #+       and "G" matches the letter "G" literally. "\\b" or represents a word
-    #+       boundary, meaning it matches the position between a word character (as
-    #+       defined by \w) and a non-word character; in other words, it matches
-    #+       the position at the start or end of a word
+    #+       interest is not "&"; thus, it looks at each character in the
+    #+       string individually to match any instances of the character of
+    #+       interest not preceded by "&"; it does not involve a lookahead to
+    #+       scan the entire string
+    #+     - The regex pattern "&G\\b" is matching the literal string "&G"
+    #+       followed by a word boundary; "&" matches the ampersand character
+    #+       "&" literally, and "G" matches the letter "G" literally. "\\b"
+    #+       represents a word boundary, meaning it matches the position
+    #+       between a word character (as defined by \w) and a non-word
+    #+       character; in other words, it matches the position at the start or
+    #+       end of a word
     
     #  ARS
     feat_Tr$no_A <- feat_Tr$category_abbrev %>%
@@ -849,8 +789,7 @@ run_assignment_logic <- function (feat_Tr) {
         stringr::str_count("&T\\b")
     
     #  Calculate row sums across the above-defined variables; this is used to,
-    #+ e.g., identify rows with only 1 feature or rows with >1 features; see the
-    #+ logic later in this script
+    #+ e.g., identify rows with only 1 feature or rows with >1 features
     no_b <- grep("no_A", colnames(feat_Tr))
     no_e <- grep("no_aT", colnames(feat_Tr))
     feat_Tr$no_sum <- rowSums(feat_Tr[, no_b:no_e])
@@ -1205,15 +1144,15 @@ run_assignment_logic <- function (feat_Tr) {
     #+ ----
     #+ Note
     #+ ----
-    #+     After running the above logic, what you're left with is putative novel
-    #+     noncoding features
+    #+     After running the above logic, what you're left with is putative
+    #+     novel noncoding features
     feat_Tr$assignment <- ifelse(
         is.na(feat_Tr$assignment),
         "noncoding: novel",
         feat_Tr$assignment
     )
     
-    #  For ease of checking the dataframe, move column "assignment" to just after
+    #  For ease of checking the dataframe, move column "assignment" to just
     #+ after column "tally"
     feat_Tr <- feat_Tr %>%
         dplyr::relocate(assignment, .after = tally)
@@ -1278,6 +1217,42 @@ run_assignment_logic <- function (feat_Tr) {
     
     #  Return the dataframe -----------------------------------
     return(feat_Tr)
+}
+
+
+draw_barplot <- function(tbl, fill, x, y, version = "absolute") {
+    if(version == "absolute") {
+        position <- "stack"
+        ylab <- "no. annotations"
+    } else if(version == "proportional") {
+        position <- "fill"
+        ylab <- "proportion"
+    } else {
+        stop(paste(
+            "Argument \"version\" must be \"absolute\" or \"proportional\".",
+            "Stopping the script."
+        ))
+    }
+    
+    if(fill == "assignment") {
+        color <- forcats::as_factor(tbl[[fill]]) %>%
+            levels() %>%
+            length() %>%
+            viridisLite::viridis()
+    } else if(fill == "assignment_detailed") {
+        color <- c("#8F68AF", "#6DB8BC")
+    } else {
+        stop(paste(
+            "Argument \"fill\" must be \"assignment\" or",
+            "\"assignment_detailed\". Stopping the script."
+        ))
+    }
+    
+    ggplot2::ggplot(tbl, aes(fill = get(fill), x = get(x), y = get(y))) +
+        geom_bar(position = position, stat = "identity") +
+        ylab(ylab) +
+        scale_fill_manual(values = color) +
+        theme_slick
 }
 
 
@@ -1365,7 +1340,7 @@ rm(
 )
 
 
-# Evaluate overlaps between newly documented and official features ------------
+# Evaluate overlaps between custom-detected and R64 features ------------------
 #  Identify the overlaps after initializing necessary variables
 g_Q <- makeGRangesFromDataFrame(gtf_Q, keep.extra.columns = TRUE)
 g_G1 <- makeGRangesFromDataFrame(gtf_G1, keep.extra.columns = TRUE)
@@ -1413,12 +1388,11 @@ feat_G1 <- agg_G1 %>%
 
 rm(cols)
 
-
 logic_Q <- run_assignment_logic(feat_Q)
 logic_G1 <- run_assignment_logic(feat_G1)
 
 
-#  Assign categories to feature dataframes (add_{G1,Q}) -----------------------
+#  Assign categories to feature dataframes (agg_{G1,Q}) -----------------------
 logic_G1_simple <- tibble::tibble(
     category_abbrev = logic_G1$category_abbrev,
     assignment = logic_G1$assignment,
@@ -1441,22 +1415,36 @@ complete_Q <- dplyr::full_join(
 ) %>%
     dplyr::relocate(c(assignment, assignment_detailed), .after = trinity)
 
-readr::write_tsv(
-    complete_G1,
-    "/Users/kalavatt/Desktop/Trinity-assignments.dataframe.2023-0616.G1.tsv"
-)
-
-readr::write_tsv(
-    complete_Q,
-    "/Users/kalavatt/Desktop/Trinity-assignments.dataframe.2023-0616.Q.tsv"
-)
+run <- FALSE  #ARGUMENT
+if(base::isTRUE(run)) {
+    #  Write out the dataframes
+    outpath <- "/Users/kalavatt/Desktop"  #ARGUMENT
+    
+    readr::write_tsv(
+        complete_G1,
+        paste(
+            outpath,
+            "Trinity-assignments.dataframe.2023-0616.G1.tsv",
+            sep = "/"
+        )
+    )
+    
+    readr::write_tsv(
+        complete_Q,
+        paste(
+            outpath,
+            "Trinity-assignments.dataframe.2023-0616.Q.tsv",
+            sep = "/"
+        )
+    )
+}
 
 
 #  Check things ===============================================================
 table(logic_Q$assignment_detailed, useNA = "ifany")
 table(logic_G1$assignment_detailed, useNA = "ifany")
 
-run <- TRUE
+run <- FALSE
 if(base::isTRUE(run)) {
     # what <- "Q"
     what <- "G1"
@@ -1474,64 +1462,13 @@ if(base::isTRUE(run)) {
     z_6_nc_novel <- logic_Tr[logic_Tr$assignment == "noncoding: novel", ]
     z_7_nc_R64 <- logic_Tr[logic_Tr$assignment == "noncoding: R64", ]
     z_8_TE <- logic_Tr[logic_Tr$assignment == "TE", ]
-}
-
-
-#  Section #TBD ===============================================================
-run <- TRUE
-if(base::isTRUE(run)) rm(feat_Q)
-
-#  Examine the feature categories in one state not in the other
-run <- FALSE
-if(base::isTRUE(run)) {
-    table(feat_Q$category_abbrev %notin% feat_G1$category_abbrev)
-    table(feat_G1$category_abbrev %notin% feat_Q$category_abbrev)
-}
-
-feat_Q_uniq <- feat_Q[
-    feat_Q$category_abbrev %notin% feat_G1$category_abbrev, 
-]
-
-feat_G1_uniq <- feat_G1[
-    feat_G1$category_abbrev %notin% feat_Q$category_abbrev, 
-]
-
-
-#  Write out dataframes =======================================================
-run <- FALSE
-if(base::isTRUE(run)) {
-    readr::write_tsv(feat_Q, "dataframe_Q_categories.tsv")
-    readr::write_tsv(feat_G1, "dataframe_G1_categories.tsv")
-}
-
-
-
-#  Make stacked bar charts ====================================================
-run <- TRUE
-if(base::isTRUE(run)) {
-    #  Create a dataset
-    specie <- c(
-        rep("sorgho" , 3),
-        rep("poacee" , 3),
-        rep("banana" , 3),
-        rep("triticum" , 3)
-    )
-    condition <- rep(c("normal", "stress", "Nitrogen"), 4)
-    value <- abs(rnorm(12 , 0 , 15))
-    data <- data.frame(specie, condition, value)
     
-    run <- TRUE
-    if(base::isTRUE(run)) data
-    
-    # Stacked
-    ggplot(data, aes(fill = condition, y = value, x = specie)) + 
-        geom_bar(position = "stack", stat = "identity")
-    
-    run <- FALSE
-    if(base::isTRUE(run)) rm(specie, condition, value, data)
+    rm(what, logic_Tr)
 }
 
-#  ----------------
+
+#  Draw stacked bar charts ====================================================
+#  Make abbreviated dataframe of all assignments
 data <- tibble::tibble(
     state = c(rep("Q", nrow(logic_Q)), rep("G1", nrow(logic_G1))),
     assignment = c(logic_Q$assignment, logic_G1$assignment),
@@ -1539,20 +1476,7 @@ data <- tibble::tibble(
     tally = c(logic_Q$tally, logic_G1$tally)
 )
 
-# ggplot2::ggplot(data, aes(fill = assignment, x = state, y = tally)) +
-ggplot2::ggplot(data, aes(fill = assignment_detailed, x = state, y = tally)) +
-    geom_bar(position = "stack", stat = "identity") +  # Absolute
-    # geom_bar(position = "fill", stat = "identity") +  # Proportional
-    ylab("no. annotations") +
-    # ylab("proportion") +
-    scale_fill_manual(
-        # values = length(levels(forcats::as_factor(data$assignment))) %>%
-        values = length(levels(forcats::as_factor(data$assignment_detailed))) %>%
-            viridisLite::viridis()
-    ) +
-    theme_slick
-
-#  ----------------
+#  Make abbreviated dataframe of only novel noncoding assignments
 tmp_Q <- logic_Q[logic_Q$assignment == "noncoding: novel", ]
 tmp_G1 <- logic_G1[logic_G1$assignment == "noncoding: novel", ]
 data_sub <- tibble::tibble(
@@ -1561,13 +1485,7 @@ data_sub <- tibble::tibble(
     assignment_detailed = c(tmp_Q$assignment_detailed, tmp_G1$assignment_detailed),
     tally = c(tmp_Q$tally, tmp_G1$tally)
 )
+rm(tmp_Q, tmp_G1)
 
-ggplot2::ggplot(data_sub, aes(fill = assignment_detailed, x = state, y = tally)) +
-    # geom_bar(position = "stack", stat = "identity") +  # Absolute
-    geom_bar(position = "fill", stat = "identity") +  # Proportional
-    # ylab("no. annotations") +
-    ylab("proportion") +
-    scale_fill_manual(
-        values = c("#8F68AF", "#6DB8BC")
-    ) +
-    theme_slick
+draw_barplot(data, fill = "assignment", x = "state", y = "tally")
+draw_barplot(data_sub, fill = "assignment_detailed", x = "state", y = "tally")
