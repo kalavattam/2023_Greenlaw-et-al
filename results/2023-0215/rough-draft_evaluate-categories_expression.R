@@ -29,6 +29,9 @@ rm(p_local, p_wd)
 
 
 #  Initialize functions -------------------------------------------------------
+`%notin%` <- Negate(`%in%`)
+
+
 read_in_counts_matrix <- function(x) {
     # ...
     #
@@ -76,10 +79,13 @@ filter_process_counts_matrix <- function(
 
 
 derive_summary_metrics <- function(uni_multi, summary, counts) {
-    #  Tests
-    # uni_multi <- uni_multi_etc
-    # summary <- underscore
-    # counts <- t_cm
+    #  Debug
+    run <- TRUE
+    if(base::isTRUE(run)) {
+        uni_multi <- uni_multi_etc
+        summary <- underscore
+        counts <- t_cm
+    }
     
     #  Step 1: Get multimappers associated with "Mito-KL-20S"
     `Mito-KL-20S_multi` <- uni_multi[
@@ -87,17 +93,23 @@ derive_summary_metrics <- function(uni_multi, summary, counts) {
         2:ncol(uni_multi)
     ]
     
+    if(base::isTRUE(run)) print(`Mito-KL-20S_multi`)
+    
     #  Step 2: Get unimappers associated with "Mito-KL-20S"
     `Mito-KL-20S_uni` <- uni_multi[
         stringr::str_detect(uni_multi[["sample"]], "Mito-KL-20S_uni"),
         2:ncol(uni_multi)
     ]
     
+    if(base::isTRUE(run)) print(`Mito-KL-20S_uni`)
+    
     #  Step 3: Get unimappers associated with "SC-I-XVI"
     `SC-I-XVI_uni` <- uni_multi[
         stringr::str_detect(uni_multi[["sample"]], "SC-I-XVI_uni"),
         2:ncol(uni_multi)
     ]
+    
+    if(base::isTRUE(run)) print(`SC-I-XVI_uni`)
     
     #  Step 4:
     #+ - Isolate and define `__alignment_not_unique`
@@ -113,6 +125,9 @@ derive_summary_metrics <- function(uni_multi, summary, counts) {
     `__alignment_not_unique_I-XVI` <- `__alignment_not_unique_I-XVI` %>%
         tibble::as_tibble()
     
+    if(base::isTRUE(run)) print(`__alignment_not_unique`)
+    if(base::isTRUE(run)) print(`__alignment_not_unique_I-XVI`)
+    
     #  Step 5:
     #+ - Isolate and define `__no_feature`
     #+ - Define and calculate `__no_feature_I-XVI` by subtracting
@@ -124,6 +139,8 @@ derive_summary_metrics <- function(uni_multi, summary, counts) {
     `__no_feature_I-XVI` <- `__no_feature` - `Mito-KL-20S_uni`
     `__no_feature_I-XVI` <- `__no_feature_I-XVI` %>% tibble::as_tibble()
     
+    if(base::isTRUE(run)) print(`__no_feature`)
+    if(base::isTRUE(run)) print(`__no_feature_I-XVI`)
     
     #  Step 6: Define `__sum_I-XVI` by summing the following:
     #+    - "`__no_feature_I-XVI`"
@@ -144,6 +161,10 @@ derive_summary_metrics <- function(uni_multi, summary, counts) {
         `__valid_counts`
     `__sum_I-XVI` <- `__sum_I-XVI` %>% tibble::as_tibble()
     
+    if(base::isTRUE(run)) print(`__ambiguous`)
+    if(base::isTRUE(run)) print(`__valid_counts`)
+    if(base::isTRUE(run)) print(`__sum_I-XVI`)
+    
     #  Step 7: Tally all counts associated with "SC-I-XVI" (`SC-I-XVI_all`)
     `SC-I-XVI_all` <- 
         uni_multi[
@@ -151,6 +172,8 @@ derive_summary_metrics <- function(uni_multi, summary, counts) {
             2:ncol(uni_multi)
         ]
     `SC-I-XVI_all` <- `SC-I-XVI_all` %>% tibble::as_tibble()
+    
+    if(base::isTRUE(run)) print(`SC-I-XVI_all`)
     
     #  Step 8: Check that `__sum_I-XVI` and `SC-I-XVI_all` are equal; if not,
     #+ then there is a problem and troubleshooting needs to occur
@@ -310,16 +333,21 @@ theme_slick <- theme_classic() +
 theme_slick_no_legend <- theme_slick + theme(legend.position = "none")
 
 
-# Load and process gtf, counts matrix, and summary metrics ====================
-# Load gtf file of interest ---------------------------------------------------
+#  Load and process gtf, counts matrix, and summary metrics ===================
+#  Load gtf file of interest --------------------------------------------------
 # ...which consists of collapsed/merged pa-ncRNAs and "processed" features
-p_gtf <- "outfiles_gtf-gff3/representation"
+    
 
 # tx <- "coding"  #ARGUMENT
 # tx <- "noncoding-non-collapsed"  #ARGUMENT
-tx <- "noncoding-collapsed"  #ARGUMENT
+# tx <- "noncoding-collapsed"  #ARGUMENT
+# tx <- "Trinity-G1"  #ARGUMENT
+tx <- "Trinity-Q"  #ARGUMENT
 if(base::isFALSE(
-    tx %in% c("coding", "noncoding-non-collapsed", "noncoding-collapsed")
+    tx %in% c(
+        "coding", "noncoding-non-collapsed", "noncoding-collapsed",
+        "Trinity-G1", "Trinity-Q"
+    )
 )) {
     stop(paste(
         "Argument \"tx\" must be one of either \"coding\",",
@@ -327,26 +355,38 @@ if(base::isFALSE(
     ))
 }
 if(tx == "coding") {
+    p_gtf <- "outfiles_gtf-gff3/representation"
     f_gtf <- "Greenlaw-et-al_representative-coding-non-pa-ncRNA-transcriptome.gtf"
 } else if(tx == "noncoding-non-collapsed") {
+    p_gtf <- "outfiles_gtf-gff3/representation"
     f_gtf <- "Greenlaw-et-al_non-collapsed-non-coding-transcriptome.gtf"  #DONE #IMPORTANT #FUTURE
 } else if(tx == "noncoding-collapsed") {
+    p_gtf <- "outfiles_gtf-gff3/representation"
     f_gtf <- "Greenlaw-et-al_representative-non-coding-transcriptome.gtf"  #TODO #TOCOMPLETE
+} else if(tx == "Trinity-G1") {
+    p_gtf <- "outfiles_gtf-gff3/Trinity-GG/G_N/filtered/locus"
+    f_gtf <- "G1_mkc-4_gte-pctl-25.clean.gtf"
+} else if(tx == "Trinity-Q") {
+    p_gtf <- "outfiles_gtf-gff3/Trinity-GG/Q_N/filtered/locus"
+    f_gtf <- "Q_mkc-4_gte-pctl-25.clean.gtf"
 }
 
 #DONOTUSE #TBD
 # f_gtf <- "Greenlaw-et-al_representative-coding-pa-ncRNA-transcriptome.gtf"
 # f_gtf <- "Greenlaw-et-al_representative-coding-ncRNA-transcriptome.gtf"
 
-# dir.exists(p_gtf)
-# file.exists(paste(p_gtf, f_gtf, sep = "/"))
+run <- FALSE
+if(base::isTRUE(run)) {
+    dir.exists(p_gtf)
+    file.exists(paste(p_gtf, f_gtf, sep = "/"))
+}
 
 t_gtf <- paste(p_gtf, f_gtf, sep = "/") %>%
     rtracklayer::import() %>%
     tibble::as_tibble() %>%
     dplyr::arrange(seqnames, start) %>%
     dplyr::select(-c(width, score, phase))
-if(base::isFALSE(tx == "noncoding-collapsed")) {
+if(tx %in% c("coding", "noncoding-non-collapsed")) {
     t_gtf <- t_gtf %>% dplyr::rename(category = type.1)
 }
     
@@ -359,24 +399,43 @@ rm(p_gtf)
 
 # Load counts matrix file of interest -----------------------------------------
 # ...which consists of collapsed/merged pa-ncRNAs and "processed" features
-p_cm <- "outfiles_htseq-count/representation/UT_prim_UMI"
 
 if(f_gtf == "Greenlaw-et-al_representative-coding-pa-ncRNA-transcriptome.gtf") {
+    p_cm <- "outfiles_htseq-count/representation/UT_prim_UMI"
     f_cm <- "representative-coding-pa-ncRNA-transcriptome.hc-strd-eq.union-none.tsv"
     # f_cm <- "representative-coding-pa-ncRNA-transcriptome.hc-strd-eq.union-fraction.tsv"
 } else if(f_gtf == "Greenlaw-et-al_representative-coding-non-pa-ncRNA-transcriptome.gtf") {
+    p_cm <- "outfiles_htseq-count/representation/UT_prim_UMI"
     f_cm <- "representative-coding-non-pa-ncRNA-transcriptome.hc-strd-eq.union-none.tsv"
     # f_cm <- "representative-coding-non-pa-ncRNA-transcriptome.hc-strd-eq.union-fraction.tsv"
 } else if(f_gtf == "Greenlaw-et-al_representative-coding-ncRNA-transcriptome.gtf") {
+    p_cm <- "outfiles_htseq-count/representation/UT_prim_UMI"
     f_cm <- "representative-coding-ncRNA-transcriptome.hc-strd-eq.union-none.tsv"
 } else if(f_gtf == "Greenlaw-et-al_non-collapsed-non-coding-transcriptome.gtf") { #DONE
+    p_cm <- "outfiles_htseq-count/representation/UT_prim_UMI"
     f_cm <- "non-collapsed-non-coding-transcriptome.hc-strd-eq.tsv"  #TODO #IMPORTANT
 } else if(f_gtf == "Greenlaw-et-al_representative-non-coding-transcriptome.gtf") {
+    p_cm <- "outfiles_htseq-count/representation/UT_prim_UMI"
     f_cm <- "representative-non-coding-transcriptome.hc-strd-eq.tsv"
+} else if(f_gtf == "G1_mkc-4_gte-pctl-25.gtf") {
+    p_cm <- "outfiles_htseq-count/Trinity-GG/G_N/filtered/locus"
+    f_cm <- "G1_mkc-4_gte-pctl-25.clean.hc-strd-eq.tsv"
+} else if(f_gtf == "Q_mkc-4_gte-pctl-25.gtf") {
+    p_cm <- "outfiles_htseq-count/Trinity-GG/Q_N/filtered/locus"
+    f_cm <- "Q_mkc-4_gte-pctl-25.clean.hc-strd-eq.tsv"
 }
 
-# dir.exists(p_cm)
-# file.exists(paste(p_cm, f_cm, sep = "/"))
+run <- FALSE
+if(base::isTRUE(run)) {
+    dir.exists(p_cm) %>% print()
+    file.exists(paste(p_cm, f_cm, sep = "/")) %>% print()
+    
+    if(f_gtf %in% c(
+        "G1_mkc-4_gte-pctl-25.clean.gtf", "Q_mkc-4_gte-pctl-25.clean.gtf"
+    )) {
+        file.exists(paste(p_cm, f_df, sep = "/")) %>% print()
+    }
+}
 
 t_cm <- read_in_counts_matrix(paste(p_cm, f_cm, sep = "/"))
 if(base::isFALSE(nrow(unique(t_cm[1])) == nrow(t_cm))) {
@@ -387,7 +446,37 @@ if(base::isFALSE(nrow(unique(t_cm[1])) == nrow(t_cm))) {
     ))
 }
 
-rm(p_cm, f_cm)
+if(f_gtf %in% c(
+    "G1_mkc-4_gte-pctl-25.clean.gtf", "Q_mkc-4_gte-pctl-25.clean.gtf"
+)) {
+    t_df <- readr::read_tsv(
+        paste(p_cm, f_df, sep = "/"),
+        show_col_types = FALSE
+    )
+    
+    alter <- TRUE
+    if(base::isTRUE(alter)) {
+        tmp_A <- t_cm[!stringr::str_detect(t_cm$gene_id, "__"), ]
+        tmp_B <- tmp_A[tmp_A$gene_id %notin% t_df$id, ]
+        tmp_C <- t_gtf[t_gtf$id %in% tmp_B$gene_id, ]
+        tmp_C <- tmp_C[tmp_C$seqnames == "Mito", ]  #  Retain Mito lines only 
+        
+        tmp_gtf <- t_gtf[t_gtf$id %notin% tmp_C$id, ]
+        tmp_cm <- t_cm[t_cm$gene_id %notin% tmp_C$id, ]
+        
+        t_gtf <- dplyr::full_join(
+            tmp_gtf, t_df[, c(6, 8:ncol(t_df))], by = "id"
+        )
+        t_cm <- tmp_cm
+        
+        rm(p_cm, f_cm, f_df, alter)
+        rm(list = ls(pattern = "tmp_"))
+    } else {
+        rm(p_cm, f_cm)
+    }
+} else {
+    rm(p_cm, f_cm)
+}
 
 
 #  Clean up the tibble of counts ----------------------------------------------
@@ -593,13 +682,13 @@ rm(summaries)
 
 
 #  Associate the counts-matrix features with appropriate gtf metadata ---------
-if(base::isTRUE(tx == "coding")) {
+if(tx == "coding") {
     t_full <- dplyr::full_join(
         t_gtf[, c(1:4, 7, 9, 10)],
         t_cm,
         by = "gene_id"
     )
-} else if(base::isTRUE(tx == "noncoding-non-collapsed")) {
+} else if(tx == "noncoding-non-collapsed") {
     t_full <- dplyr::full_join(
         t_gtf[, c(1:4, 14, 9, 7)] %>%
             dplyr::rename(
@@ -609,7 +698,7 @@ if(base::isTRUE(tx == "coding")) {
         t_cm,
         by = "gene_id"
     )
-} else if(base::isTRUE(tx == "noncoding-collapsed")) {
+} else if(tx == "noncoding-collapsed") {
     t_full <- dplyr::full_join(
         t_gtf[, c(1:4, 7, 9, 11)] %>% 
             dplyr::rename(
@@ -620,6 +709,35 @@ if(base::isTRUE(tx == "coding")) {
         by = "gene_id"
     )
     # table(t_gtf[, c(1:4, 7, 9, 11)]$gene_id %in% t_cm$gene_id)
+} else if(tx == "Trinity-G1") {
+    detailed <- FALSE  #TODO
+    if(base::isFALSE(detailed)) {
+        t_full <- dplyr::full_join(
+            t_gtf[, c(1:4, 7, 13, 14)] %>%  #REMEMBER Max of seven columns
+                dplyr::rename(
+                    "gene_id" = "id",
+                    "category" = "assignment",
+                    "category_detailed" = "assignment_detailed"
+                ),
+            t_cm,
+            by = "gene_id"
+        )
+    } else {
+       t_full <- dplyr::full_join(
+            t_gtf[, c(1:4, 7, 13, 14)] %>%  #REMEMBER Max of seven columns
+                dplyr::rename(
+                    "gene_id" = "id",
+                    "category" = "assignment_detailed",
+                    "category_original" = "assignment"
+                ),
+            t_cm,
+            by = "gene_id"
+        )
+    }
+    
+    rm(detailed)
+} else if(tx == "Trinity-Q") {
+    
 }
 
 
@@ -651,20 +769,23 @@ if(base::isFALSE(identical(test_1, test_2))) {
         "Sample-wise tallies do not equal __valid_counts. Stopping the",
         "script."
     ))
-} 
+}
 
 rm(test_1, test_2)
 
 
 #  Plot category proportions for the Ovation samples ==========================
 #  Isolate categories and relevant samples, then process them -----------------
-tmp <- t_full[-nrow(t_full), -c(1:5, 7)]  #TODO May need to be adapted for "Greenlaw-et-al_non-collapsed-non-coding-transcriptome.gtf", "non-collapsed-non-coding-transcriptome.hc-strd-eq.tsv"
+#TODO May need to be adapted for...
+#    - "Greenlaw-et-al_non-collapsed-non-coding-transcriptome.gtf"
+#    - "non-collapsed-non-coding-transcriptome.hc-strd-eq.tsv"
+tmp <- t_full[-nrow(t_full), -c(1:5, 7)]
 # colnames(tmp)
 
-# samples <- "ovation"  #ARGUMENT
+samples <- "ovation"  #ARGUMENT
 # samples <- "n3d_od"  #ARGUMENT
 # samples <- "r6n_WT"  #ARGUMENT
-samples <- "r6n_timecourse"  #ARGUMENT
+# samples <- "r6n_timecourse"  #ARGUMENT
 if(samples == "ovation") {
     tmp_samples <- tmp[, stringr::str_detect(colnames(tmp), "ovn")]
 } else if(samples == "n3d_od") {
@@ -682,8 +803,6 @@ if(samples == "ovation") {
 # colnames(tmp_samples)
 
 t_rel <- dplyr::bind_cols(tmp[, 1], tmp_samples)
-# rm(tmp, tmp_samples)  #TODO Un-comment this when below testing is completed
-
 t_rel[(nrow(t_rel) - 2), 1] <- "multimapper"
 t_rel[(nrow(t_rel) - 1), 1] <- "no feature"
 t_rel[nrow(t_rel), 1] <- "ambiguous"

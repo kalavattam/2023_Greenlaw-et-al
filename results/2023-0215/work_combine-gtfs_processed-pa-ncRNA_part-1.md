@@ -9,7 +9,7 @@
 
 1. [Get situated](#get-situated)
     1. [Code](#code)
-1. [Run `htseq-count` `Greenlaw-et-al_representative-coding-pa-ncRNA-transcriptome.gtf`s](#run-htseq-count-greenlaw-et-al_representative-coding-pa-ncrna-transcriptomegtfs)
+1. [Run `htseq-count` with `Greenlaw-et-al_representative-coding-pa-ncRNA-transcriptome.gtf`](#run-htseq-count-with-greenlaw-et-al_representative-coding-pa-ncrna-transcriptomegtf)
     1. [Set up outfile directories](#set-up-outfile-directories)
         1. [Code](#code-1)
     1. [Set up arrays of bams](#set-up-arrays-of-bams)
@@ -51,8 +51,8 @@ source activate gff3_env
 <br />
 <br />
 
-<a id="run-htseq-count-greenlaw-et-al_representative-coding-pa-ncrna-transcriptomegtfs"></a>
-## Run `htseq-count` `Greenlaw-et-al_representative-coding-pa-ncRNA-transcriptome.gtf`s
+<a id="run-htseq-count-with-greenlaw-et-al_representative-coding-pa-ncrna-transcriptomegtf"></a>
+## Run `htseq-count` with `Greenlaw-et-al_representative-coding-pa-ncRNA-transcriptome.gtf`
 *...using bams in `bams_renamed/` with the `gtf` in `outfiles_gtf-gff3/representation`*
 
 <a id="set-up-outfile-directories"></a>

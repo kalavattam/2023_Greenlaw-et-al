@@ -159,8 +159,9 @@ done
 #!/bin/bash
 
 p_gtf="outfiles_gtf-gff3/Trinity-GG"
-f_gtf_G_N="${p_gtf}/G_N/filtered/locus/G1_mkc-4_gte-pctl-25.gtf"  # ., "${f_gtf_G_N}"
-f_gtf_Q_N="${p_gtf}/Q_N/filtered/locus/Q_mkc-4_gte-pctl-25.gtf"  # ., "${f_gtf_Q_N}"
+f_gtf_G_N="${p_gtf}/G_N/filtered/locus/G1_mkc-4_gte-pctl-25.clean.gtf"  # ., "${f_gtf_G_N}"
+f_gtf_Q_N="${p_gtf}/Q_N/filtered/locus/Q_mkc-4_gte-pctl-25.clean.gtf"  # ., "${f_gtf_Q_N}"
+
 unset gtf
 typeset -a gtf=( "${f_gtf_G_N}" "${f_gtf_Q_N}" )
 echo_test "${gtf[@]}"
@@ -240,7 +241,7 @@ run=TRUE
                         --stranded \"${hc_strd}\" \\
                         --nonunique \"none\" \\
                         --type \"locus\" \\
-                        --idattr \"id\" \\
+                        --idattr \"locus_id\" \\
                         --nprocesses ${threads} \\
                         --counts_output \"${outfile}\" \\
                         --with-header \\
@@ -307,7 +308,7 @@ run=TRUE
                         --stranded \"${hc_strd}\" \\
                         --nonunique \"none\" \\
                         --type \"locus\" \\
-                        --idattr \"id\" \\
+                        --idattr \"locus_id\" \\
                         --nprocesses ${threads} \\
                         --counts_output \"${outfile}\" \\
                         --with-header \\
@@ -327,7 +328,7 @@ run=TRUE
                         --stranded "${hc_strd}" \
                         --nonunique "none" \
                         --type "locus" \
-                        --idattr "id" \
+                        --idattr "locus_id" \
                         --nprocesses ${threads} \
                         --counts_output "${outfile}" \
                         --with-header \

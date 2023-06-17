@@ -1,5 +1,6 @@
+#!/usr/bin/env Rscript
 
-#  work_assess-process_R64-1-1_gff3_part-2_categorize-Trinity-transfrags.R
+#  work_assess-process_R64-1-1-gff3_categorize-Trinity-transfrags_part-2.R
 #  KA
 
 
@@ -1369,7 +1370,7 @@ agg_G1 <- analyses_G1$wrt_Tr_all_agg
 run_checks <- FALSE
 
 #  Initialize dataframes of rough categories 
-analyze_w_pct <- FALSE
+analyze_w_pct <- FALSE  #ARGUMENT #NOTE Code for categorization with percent is not written
 if(base::isTRUE(analyze_w_pct)) {
     cols <- c("category_abbrev", "category_easy", "pct_Tr_over_all")
 } else {
@@ -1415,16 +1416,19 @@ complete_Q <- dplyr::full_join(
 ) %>%
     dplyr::relocate(c(assignment, assignment_detailed), .after = trinity)
 
+#  Write out the dataframes
 run <- FALSE  #ARGUMENT
 if(base::isTRUE(run)) {
-    #  Write out the dataframes
-    outpath <- "/Users/kalavatt/Desktop"  #ARGUMENT
+    # outpath_G1 <- outpath_Q <- "/Users/kalavatt/Desktop"  #ARGUMENT
+    outpath_G1 <- "outfiles_gtf-gff3/Trinity-GG/G_N/filtered/locus"
+    outpath_Q <- "outfiles_gtf-gff3/Trinity-GG/Q_N/filtered/locus"
     
     readr::write_tsv(
         complete_G1,
         paste(
-            outpath,
-            "Trinity-assignments.dataframe.2023-0616.G1.tsv",
+            outpath_G1,
+            # "Trinity-assignments.dataframe.2023-0616.G1.tsv",
+            "dataframe_Trinity-assignments_G1.tsv",
             sep = "/"
         )
     )
@@ -1432,11 +1436,14 @@ if(base::isTRUE(run)) {
     readr::write_tsv(
         complete_Q,
         paste(
-            outpath,
-            "Trinity-assignments.dataframe.2023-0616.Q.tsv",
+            outpath_Q,
+            # "Trinity-assignments.dataframe.2023-0616.Q.tsv",
+            "dataframe_Trinity-assignments_Q.tsv",
             sep = "/"
         )
     )
+    
+    rm(outpath_G1, outpath_Q)
 }
 
 

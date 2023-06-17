@@ -1065,7 +1065,7 @@ gtf_combined <- gtf_combined %>%
     ) %>%
     dplyr::select(-"complete")
 
-# #  Check how the new feature-wise "attribute" entries look
+#  Check how the new feature-wise "attribute" entries look
 # gtf_combined$attribute %>% head(100)
 
 

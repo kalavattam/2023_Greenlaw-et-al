@@ -179,8 +179,9 @@ run=TRUE
 [[ ${run} == TRUE ]] &&
     {
         h=0
-        # for i in "strd-eq" "strd-rv"; do
-        for i in "strd-eq"; do
+        # for i in "strd-eq" "strd-op"; do
+        # for i in "strd-eq"; do
+        for i in "strd-op"; do
             # for j in "${gtf[@]}"; do
             for j in "${gtf}"; do
                 for k in "${nonunique[@]}"; do
@@ -259,8 +260,9 @@ run=TRUE
 [[ ${run} == TRUE ]] &&
     {
         h=0
-        # for i in "strd-eq" "strd-rv"; do
-        for i in "strd-eq"; do
+        # for i in "strd-eq" "strd-op"; do
+        # for i in "strd-eq"; do
+        for i in "strd-op"; do
             # for j in "${gtf[@]}"; do
             for j in "${gtf}"; do
                 for k in "${nonunique[@]}"; do
