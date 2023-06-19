@@ -1,6 +1,6 @@
 #!/usr/bin/Rscript
 
-#  rough-draft_timecourse-samples_scaled-coverage_DGE_PCA_part-2.R
+#  rough-draft_timecourse-samples_processing_part-2a.R
 #  KA
 
 library(DESeq2)
@@ -69,8 +69,8 @@ better_sample_names <- c(
 	"WT_DSp48_SS_rep1_tech1",
 	"WT_DSp48_SS_rep1_tech2",
 	"WT_DSp48_SS_rep2_tech1",
-	"WT_G1_SS_rep1_tech2",  # Was incorrectly labeled as "WT_G1_SS_rep1_tech1"
-	"WT_G1_SS_rep2_tech2",  # Was incorrectly labeled as "WT_G1_SS_rep2_tech1"
+	"WT_G1_SS_rep1_tech2",      # Had incor. label "WT_G1_SS_rep1_tech1"
+	"WT_G1_SS_rep2_tech2",      # Had incor. label "WT_G1_SS_rep2_tech1"
 	# "WT_Q_N_rep1_tech1",
 	# "WT_Q_N_rep2_tech1",
 	"WT_Q_SS_rep1_tech1",
@@ -82,9 +82,9 @@ better_sample_names <- c(
 	"r6n_DSp24_SS_rep1_tech1",
 	"r6n_DSp24_SS_rep2_tech1",
 	"r6n_DSp48_SS_rep1_tech1",
-	"r6n_DSp48_SS_rep2_tech2",  # Was incorrectly labeled as "r6n_DSp48_SS_rep2_tech1"
-	"r6n_G1_SS_rep1_tech2",  # Was incorrectly labeled as "r6n_G1_SS_rep1_tech1"
-	"r6n_G1_SS_rep2_tech2",  # Was incorrectly labeled as "r6n_G1_SS_rep2_tech1"
+	"r6n_DSp48_SS_rep2_tech2",  # Had incor. label "r6n_DSp48_SS_rep2_tech1"
+	"r6n_G1_SS_rep1_tech2",     # Had incor. label "r6n_G1_SS_rep1_tech1"
+	"r6n_G1_SS_rep2_tech2",     # Had incor. label "r6n_G1_SS_rep2_tech1"
 	# "r6n_Q_N_rep1_tech1",
 	# "r6n_Q_N_rep2_tech1",
 	"r6n_Q_SS_rep1_tech1",

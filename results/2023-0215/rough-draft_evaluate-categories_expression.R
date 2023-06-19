@@ -486,101 +486,101 @@ colnames(t_cm) <- colnames(t_cm) %>%
     gsub("\\.UT_prim_UMI\\.bam", "", .)
 colnames(t_cm)
 
-col_cor <- setNames(  #DEKHO
+col_cor <- setNames(
     c(
-        "n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1", 
-        "n3-d_Q_day7_tcn_N_aux-T_tc-F_rep2_tech1", 
-        "n3-d_Q_day7_tcn_N_aux-T_tc-F_rep3_tech1",  #EXCLUDE
-        "n3-d_Q_day7_tcn_SS_aux-T_tc-F_rep1_tech1", 
-        "n3-d_Q_day7_tcn_SS_aux-T_tc-F_rep2_tech1", 
-        "n3-d_Q_day7_tcn_SS_aux-T_tc-F_rep3_tech1",  #EXCLUDE
-        "o-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1", 
-        "o-d_Q_day7_tcn_N_aux-T_tc-F_rep2_tech1", 
-        "o-d_Q_day7_tcn_SS_aux-T_tc-F_rep1_tech1", 
-        "o-d_Q_day7_tcn_SS_aux-T_tc-F_rep2_tech1", 
-        "r1-n_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1", 
-        "r1-n_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1", 
-        "r1-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1", 
-        "r1-n_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1", 
-        "r6-n_DSm2_day2_tcn_SS_aux-F_tc-T_rep1_tech1", 
-        "r6-n_DSm2_day2_tcn_SS_aux-F_tc-T_rep2_tech1", 
-        "r6-n_DSp24_day3_tcn_SS_aux-F_tc-T_rep1_tech1", 
-        "r6-n_DSp24_day3_tcn_SS_aux-F_tc-T_rep2_tech1", 
-        "r6-n_DSp2_day2_tcn_SS_aux-F_tc-T_rep1_tech1", 
-        "r6-n_DSp2_day2_tcn_SS_aux-F_tc-T_rep2_tech1", 
-        "r6-n_DSp48_day4_tcn_SS_aux-F_tc-T_rep1_tech1", 
-        "r6-n_DSp48_day4_tcn_SS_aux-F_tc-T_rep2_tech1",  #FIXME ∆ tech1 → tech2
-        "r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1",  #FIXME ∆ tech1 → tech2
-        "r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1",  #FIXME ∆ tech1 → tech2
-        "r6-n_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1", 
-        "r6-n_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1", 
-        "r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1",  #OK
-        "r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech2",  #OK
-        "r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1", 
-        "t4-n_DSm2_day2_tcn_SS_aux-F_tc-T_rep1_tech1", 
-        "t4-n_DSm2_day2_tcn_SS_aux-F_tc-T_rep2_tech1", 
-        "t4-n_DSp24_day3_tcn_SS_aux-F_tc-T_rep1_tech1", 
-        "t4-n_DSp24_day3_tcn_SS_aux-F_tc-T_rep2_tech1", 
-        "t4-n_DSp2_day2_tcn_SS_aux-F_tc-T_rep1_tech1", 
-        "t4-n_DSp2_day2_tcn_SS_aux-F_tc-T_rep2_tech1", 
-        "t4-n_DSp48_day4_tcn_SS_aux-F_tc-T_rep1_tech1", 
-        "t4-n_DSp48_day4_tcn_SS_aux-F_tc-T_rep2_tech1", 
-        "WT_DSm2_day2_tcn_SS_aux-F_tc-T_rep1_tech1", 
-        "WT_DSm2_day2_tcn_SS_aux-F_tc-T_rep2_tech1", 
-        "WT_DSp24_day3_tcn_SS_aux-F_tc-T_rep1_tech1", 
-        "WT_DSp24_day3_tcn_SS_aux-F_tc-T_rep2_tech1", 
-        "WT_DSp2_day2_tcn_SS_aux-F_tc-T_rep1_tech1", 
-        "WT_DSp2_day2_tcn_SS_aux-F_tc-T_rep2_tech1", 
-        "WT_DSp48_day4_tcn_SS_aux-F_tc-T_rep1_tech1",  #OK
-        "WT_DSp48_day4_tcn_SS_aux-F_tc-T_rep1_tech2",  #OK
-        "WT_DSp48_day4_tcn_SS_aux-F_tc-T_rep2_tech1", 
-        "WT_G1_day1_ovn_N_aux-F_tc-F_rep1_tech1", 
-        "WT_G1_day1_ovn_N_aux-F_tc-F_rep2_tech1", 
-        "WT_G1_day1_ovn_SS_aux-F_tc-F_rep1_tech1", 
-        "WT_G1_day1_ovn_SS_aux-F_tc-F_rep2_tech1", 
-        "WT_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1",  #FIXME ∆ tech1 → tech2
-        "WT_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1",  #FIXME ∆ tech1 → tech2
-        "WT_Q_day7_ovn_N_aux-F_tc-F_rep1_tech1", 
+        "n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1",
+        "n3-d_Q_day7_tcn_N_aux-T_tc-F_rep2_tech1",
+        "n3-d_Q_day7_tcn_N_aux-T_tc-F_rep3_tech1",       #EXCLUDE
+        "n3-d_Q_day7_tcn_SS_aux-T_tc-F_rep1_tech1",
+        "n3-d_Q_day7_tcn_SS_aux-T_tc-F_rep2_tech1",
+        "n3-d_Q_day7_tcn_SS_aux-T_tc-F_rep3_tech1",      #EXCLUDE
+        "o-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1",
+        "o-d_Q_day7_tcn_N_aux-T_tc-F_rep2_tech1",
+        "o-d_Q_day7_tcn_SS_aux-T_tc-F_rep1_tech1",
+        "o-d_Q_day7_tcn_SS_aux-T_tc-F_rep2_tech1",
+        "r1-n_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1",       #FIXME* ∆ rep1 → rep2
+        "r1-n_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1",       #FIXME* ∆ rep2 → rep1
+        "r1-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1",      #FIXME* ∆ rep1 → rep2
+        "r1-n_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1",      #FIXME* ∆ rep2 → rep1
+        "r6-n_DSm2_day2_tcn_SS_aux-F_tc-T_rep1_tech1",   #FIXME* ∆ rep1 → rep2
+        "r6-n_DSm2_day2_tcn_SS_aux-F_tc-T_rep2_tech1",   #FIXME* ∆ rep2 → rep1
+        "r6-n_DSp24_day3_tcn_SS_aux-F_tc-T_rep1_tech1",  #FIXME* ∆ rep1 → rep2
+        "r6-n_DSp24_day3_tcn_SS_aux-F_tc-T_rep2_tech1",  #FIXME* ∆ rep2 → rep1
+        "r6-n_DSp2_day2_tcn_SS_aux-F_tc-T_rep1_tech1",   #FIXME* ∆ rep1 → rep2
+        "r6-n_DSp2_day2_tcn_SS_aux-F_tc-T_rep2_tech1",   #FIXME* ∆ rep2 → rep1
+        "r6-n_DSp48_day4_tcn_SS_aux-F_tc-T_rep1_tech1",  #FIXME* ∆ rep1 → rep2
+        "r6-n_DSp48_day4_tcn_SS_aux-F_tc-T_rep2_tech1",  #FIXME* ∆ rep2 → rep1  #FIXME‡ ∆ tech1 → tech2
+        "r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1",     #FIXME* ∆ rep1 → rep2  #FIXME‡ ∆ tech1 → tech2
+        "r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1",     #FIXME* ∆ rep2 → rep1  #FIXME‡ ∆ tech1 → tech2
+        "r6-n_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1",       #FIXME* ∆ rep1 → rep2
+        "r6-n_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1",       #FIXME* ∆ rep2 → rep1
+        "r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1",      #FIXME* ∆ rep1 → rep2  #OK
+        "r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech2",      #FIXME* ∆ rep1 → rep2  #OK
+        "r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1",      #FIXME* ∆ rep2 → rep1
+        "t4-n_DSm2_day2_tcn_SS_aux-F_tc-T_rep1_tech1",
+        "t4-n_DSm2_day2_tcn_SS_aux-F_tc-T_rep2_tech1",
+        "t4-n_DSp24_day3_tcn_SS_aux-F_tc-T_rep1_tech1",
+        "t4-n_DSp24_day3_tcn_SS_aux-F_tc-T_rep2_tech1",
+        "t4-n_DSp2_day2_tcn_SS_aux-F_tc-T_rep1_tech1",
+        "t4-n_DSp2_day2_tcn_SS_aux-F_tc-T_rep2_tech1",
+        "t4-n_DSp48_day4_tcn_SS_aux-F_tc-T_rep1_tech1",
+        "t4-n_DSp48_day4_tcn_SS_aux-F_tc-T_rep2_tech1",
+        "WT_DSm2_day2_tcn_SS_aux-F_tc-T_rep1_tech1",
+        "WT_DSm2_day2_tcn_SS_aux-F_tc-T_rep2_tech1",
+        "WT_DSp24_day3_tcn_SS_aux-F_tc-T_rep1_tech1",
+        "WT_DSp24_day3_tcn_SS_aux-F_tc-T_rep2_tech1",
+        "WT_DSp2_day2_tcn_SS_aux-F_tc-T_rep1_tech1",
+        "WT_DSp2_day2_tcn_SS_aux-F_tc-T_rep2_tech1",
+        "WT_DSp48_day4_tcn_SS_aux-F_tc-T_rep1_tech1",    #OK
+        "WT_DSp48_day4_tcn_SS_aux-F_tc-T_rep1_tech2",    #OK
+        "WT_DSp48_day4_tcn_SS_aux-F_tc-T_rep2_tech1",
+        "WT_G1_day1_ovn_N_aux-F_tc-F_rep1_tech1",
+        "WT_G1_day1_ovn_N_aux-F_tc-F_rep2_tech1",
+        "WT_G1_day1_ovn_SS_aux-F_tc-F_rep1_tech1",
+        "WT_G1_day1_ovn_SS_aux-F_tc-F_rep2_tech1",
+        "WT_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1",       #FIXME‡ ∆ tech1 → tech2
+        "WT_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1",       #FIXME‡ ∆ tech1 → tech2
+        "WT_Q_day7_ovn_N_aux-F_tc-F_rep1_tech1",
         "WT_Q_day7_ovn_N_aux-F_tc-F_rep2_tech1", 
-        "WT_Q_day7_ovn_SS_aux-F_tc-F_rep1_tech1", 
-        "WT_Q_day7_ovn_SS_aux-F_tc-F_rep2_tech1", 
-        "WT_Q_day7_tcn_N_aux-F_tc-F_rep2_tech1",  #FIXME Duplicated #1
-        "WT_Q_day7_tcn_SS_aux-F_tc-F_rep2_tech1",  #FIXME Duplicated #2
-        "WT_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1", 
-        "WT_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1",  #FIXME Duplicated #1
-        "WT_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1", 
-        "WT_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1"  #FIXME Duplicated #2
+        "WT_Q_day7_ovn_SS_aux-F_tc-F_rep1_tech1",
+        "WT_Q_day7_ovn_SS_aux-F_tc-F_rep2_tech1",
+        "WT_Q_day7_tcn_N_aux-F_tc-F_rep2_tech1",         #FIXME† Duplicated #1
+        "WT_Q_day7_tcn_SS_aux-F_tc-F_rep2_tech1",        #FIXME† Duplicated #2
+        "WT_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1",
+        "WT_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1",         #FIXME† Duplicated #1
+        "WT_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1",
+        "WT_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1"         #FIXME† Duplicated #2
     ),
     c(
         "n3d_Q_N_rep1_tech1", 
         "n3d_Q_N_rep2_tech1", 
-        "n3d_Q_N_rep3_tech1",  #EXCLUDE
+        "n3d_Q_N_rep3_tech1",       #EXCLUDE
         "n3d_Q_SS_rep1_tech1", 
         "n3d_Q_SS_rep2_tech1", 
-        "n3d_Q_SS_rep3_tech1",  #EXCLUDE
+        "n3d_Q_SS_rep3_tech1",      #EXCLUDE
         "od_Q_N_rep1_tech1", 
         "od_Q_N_rep2_tech1", 
         "od_Q_SS_rep1_tech1", 
         "od_Q_SS_rep2_tech1", 
-        "r1n_Q_N_rep1_tech1", 
-        "r1n_Q_N_rep2_tech1", 
-        "r1n_Q_SS_rep1_tech1", 
-        "r1n_Q_SS_rep2_tech1", 
-        "r6n_DSm2_SS_rep1_tech1", 
-        "r6n_DSm2_SS_rep2_tech1", 
-        "r6n_DSp24_SS_rep1_tech1", 
-        "r6n_DSp24_SS_rep2_tech1", 
-        "r6n_DSp2_SS_rep1_tech1", 
-        "r6n_DSp2_SS_rep2_tech1", 
-        "r6n_DSp48_SS_rep1_tech1", 
-        "r6n_DSp48_SS_rep2_tech2",  #DONE
-        "r6n_G1_SS_rep1_tech2",  #DONE
-        "r6n_G1_SS_rep2_tech2",  #DONE
-        "r6n_Q_N_rep1_tech1", 
-        "r6n_Q_N_rep2_tech1", 
-        "r6n_Q_SS_rep1_tech1",  #OK
-        "r6n_Q_SS_rep1_tech2",  #OK
-        "r6n_Q_SS_rep2_tech1", 
+        "r1n_Q_N_rep2_tech1",       #DONE* ∆ rep1 → rep2
+        "r1n_Q_N_rep1_tech1",       #DONE* ∆ rep2 → rep1
+        "r1n_Q_SS_rep2_tech1",      #DONE* ∆ rep1 → rep2
+        "r1n_Q_SS_rep1_tech1",      #DONE* ∆ rep2 → rep1
+        "r6n_DSm2_SS_rep2_tech1",   #DONE* ∆ rep1 → rep2
+        "r6n_DSm2_SS_rep1_tech1",   #DONE* ∆ rep2 → rep1
+        "r6n_DSp24_SS_rep2_tech1",  #DONE* ∆ rep1 → rep2
+        "r6n_DSp24_SS_rep1_tech1",  #DONE* ∆ rep2 → rep1
+        "r6n_DSp2_SS_rep2_tech1",   #DONE* ∆ rep1 → rep2
+        "r6n_DSp2_SS_rep1_tech1",   #DONE* ∆ rep2 → rep1
+        "r6n_DSp48_SS_rep2_tech1",  #DONE* ∆ rep1 → rep2
+        "r6n_DSp48_SS_rep1_tech2",  #DONE* ∆ rep2 → rep1  #DONE‡ ∆ tech1 → tech2
+        "r6n_G1_SS_rep2_tech2",     #DONE* ∆ rep1 → rep2  #DONE‡ ∆ tech1 → tech2
+        "r6n_G1_SS_rep1_tech2",     #DONE* ∆ rep2 → rep1  #DONE‡ ∆ tech1 → tech2
+        "r6n_Q_N_rep2_tech1",       #DONE* ∆ rep1 → rep2
+        "r6n_Q_N_rep1_tech1",       #DONE* ∆ rep2 → rep1
+        "r6n_Q_SS_rep2_tech1",      #DONE* ∆ rep1 → rep2  #OK
+        "r6n_Q_SS_rep2_tech2",      #DONE* ∆ rep1 → rep2  #OK
+        "r6n_Q_SS_rep1_tech1",      #DONE* ∆ rep2 → rep1
         "t4n_DSm2_SS_rep1_tech1", 
         "t4n_DSm2_SS_rep2_tech1", 
         "t4n_DSp24_SS_rep1_tech1", 
@@ -595,25 +595,25 @@ col_cor <- setNames(  #DEKHO
         "WT_DSp24_SS_rep2_tech1", 
         "WT_DSp2_SS_rep1_tech1", 
         "WT_DSp2_SS_rep2_tech1", 
-        "WT_DSp48_SS_rep1_tech1",  #OK
-        "WT_DSp48_SS_rep1_tech2",  #OK
+        "WT_DSp48_SS_rep1_tech1",   #OK
+        "WT_DSp48_SS_rep1_tech2",   #OK
         "WT_DSp48_SS_rep2_tech1", 
         "WTovn_G1_N_rep1_tech1", 
         "WTovn_G1_N_rep2_tech1", 
         "WTovn_G1_SS_rep1_tech1", 
         "WTovn_G1_SS_rep2_tech1", 
-        "WT_G1_SS_rep1_tech2",  #DONE
-        "WT_G1_SS_rep2_tech2",  #DONE
+        "WT_G1_SS_rep1_tech2",      #DONE‡ ∆ tech1 → tech2
+        "WT_G1_SS_rep2_tech2",      #DONE‡ ∆ tech1 → tech2
         "WTovn_Q_N_rep1_tech1", 
         "WTovn_Q_N_rep2_tech1", 
         "WTovn_Q_SS_rep1_tech1", 
         "WTovn_Q_SS_rep2_tech1", 
-        "WTtest_Q_N_rep2_tech1",  #DONE
-        "WTtest_Q_SS_rep2_tech1",  #DONE
+        "WTtest_Q_N_rep2_tech1",    #DONE† Duplicated #1
+        "WTtest_Q_SS_rep2_tech1",   #DONE† Duplicated #2
         "WT_Q_N_rep1_tech1", 
-        "WT_Q_N_rep2_tech1",  #DONE
+        "WT_Q_N_rep2_tech1",        #DONE† Duplicated #1
         "WT_Q_SS_rep1_tech1", 
-        "WT_Q_SS_rep2_tech1"  #DONE
+        "WT_Q_SS_rep2_tech1"        #DONE† Duplicated #2
     )
 )
 

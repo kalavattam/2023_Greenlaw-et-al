@@ -1,6 +1,6 @@
 #!/usr/bin/Rscript
 
-#  rough-draft_timecourse-samples_scaled-coverage_DGE_PCA_part-1.R
+#  rough-draft_timecourse-samples_processing_part-1a.R
 #  KA
 
 library(DESeq2)
@@ -537,10 +537,10 @@ run_PCA_pipeline <- function(
             y_min_loadings_plot <- -0.5
             y_max_loadings_plot <- 0.5
         } else if(isTRUE(transformed)) {
-            x_min_biplot <- -150  # -75  # -100  # -200  #ARGUMENT?
-            x_max_biplot <- 150  # 75  # 100  # 200  #ARGUMENT?
-            y_min_biplot <- -150  # -75  # -100  # -200  #ARGUMENT?
-            y_max_biplot <- 150  # 75  # 100  # 200  #ARGUMENT?
+            x_min_biplot <- -150  # -75  # -100  # -200  #ARGUMENT
+            x_max_biplot <- 150  # 75  # 100  # 200  #ARGUMENT
+            y_min_biplot <- -150  # -75  # -100  # -200  #ARGUMENT
+            y_max_biplot <- 150  # 75  # 100  # 200  #ARGUMENT
             x_min_loadings_plot <- -0.1
             x_max_loadings_plot <- 0.1
             y_min_loadings_plot <- -0.1
@@ -554,8 +554,8 @@ run_PCA_pipeline <- function(
                 PC_y = PC_y,
                 loadings_show = FALSE,
                 loadings_n = 0,
-                meta_color = meta_color,  #DONE
-                meta_shape = meta_shape,  #DONE
+                meta_color = meta_color,
+                meta_shape = meta_shape,
                 x_min = x_min_biplot,
                 x_max = x_max_biplot,
                 y_min = y_min_biplot,
@@ -772,6 +772,9 @@ t_gff3$names <- ifelse(
     NA_character_,
     as.character(t_gff3$names)
 )
+
+#TODO Include thorough column here, then alphabetically reorder counts columns;
+#     see 'rough-draft_run-analyses_rlog-PCA_write_rds.R'
 
 
 #  Combine "counts matrix tibble" and "gff3 tibble" ---------------------------

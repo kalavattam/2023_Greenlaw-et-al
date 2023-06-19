@@ -255,7 +255,6 @@ See [`work_assessment-processing_gtfs_part-0.md`](./work_assessment-processing_g
 <details>
 <summary><i>Code: Get situated</i></summary>
 
-`#START`
 ```{r}
 #!/usr/bin/env Rscript
 
@@ -292,9 +291,7 @@ rm(p_local, p_wd)
 #!/usr/bin/env Rscript
 
 #  Initialize functions ---------------
-import_g <- function(file) {
-    rtracklayer::import(file)
-}
+import_g <- function(file) rtracklayer::import(file)
 
 
 read_in_gtfs <- function(vector_files) {
@@ -312,6 +309,7 @@ read_in_gtfs <- function(vector_files) {
         simplify = FALSE,
         USE.NAMES = TRUE
     )
+    
     return(df)
 }
 
@@ -351,14 +349,17 @@ l_Q_gtf_introns_filtered <- read_in_gtfs(files_Q_introns_filtered)
 
 
 #  Comparisons ------------------------
-# l_G_gtf[["k1"]] %>% head()
-# l_G_gtf[["k2"]] %>% head()
-# 
-# l_G_gtf[["k1"]] %>% head()
-# l_Q_gtf[["k1"]] %>% head()
-# 
-# l_Q_gtf[["k1"]] %>% head()
-# l_Q_gtf[["k2"]] %>% head()
+run <- FALSE
+if(base::isTRUE(run)) {
+    l_G_gtf[["k1"]] %>% head()
+    l_G_gtf[["k2"]] %>% head()
+
+    l_G_gtf[["k1"]] %>% head()
+    l_Q_gtf[["k1"]] %>% head()
+
+    l_Q_gtf[["k1"]] %>% head()
+    l_Q_gtf[["k2"]] %>% head()
+}
 ```
 </details>
 <br />
@@ -389,7 +390,8 @@ rename_columns <- function(list) {
     lapply(
         list,
         function(df) {
-            names(df) <- gsub("bams_renamed\\/UT_prim_UMI\\/WT_", "", names(df)) %>%
+            names(df) <-
+                gsub("bams_renamed\\/UT_prim_UMI\\/WT_", "", names(df)) %>%
                 gsub("_day1_ovn_", "_", .) %>%
                 gsub("_day7_ovn_", "_", .) %>% 
                 gsub("_aux-F_tc-F_", "_", .) %>%
@@ -475,11 +477,14 @@ l_Q_mat_introns_filtered <- read_in_mat(files_Q_introns_filtered) %>%
 
 
 #  Comparisons ------------------------
-# l_Q_mat_sam[["k1"]] %>% head()
-# l_Q_mat_sam[["k2"]] %>% head()
-# 
-# l_Q_mat_sam[["k1"]] %>% head()
-# l_Q_mat_rev[["k1"]] %>% head()
+run <- FALSE
+if(base::isTRUE(run)) {
+    l_Q_mat_sam[["k1"]] %>% head()
+    l_Q_mat_sam[["k2"]] %>% head()
+
+    l_Q_mat_sam[["k1"]] %>% head()
+    l_Q_mat_rev[["k1"]] %>% head()
+}
 
 
 #  Rename columns ---------------------
@@ -970,7 +975,11 @@ for(i in names(out_G_gtf_locus)) {
                         "transcript_id" = "transcripts"
                     ) %>%
                     dplyr::mutate(
-                        source = paste0("sacCer3; trinity; ", source, ", gffread; Greenlaw et al."),
+                        source = paste0(
+                            "sacCer3; trinity; ",
+                            source,
+                            ", gffread; Greenlaw et al."
+                        ),
                         score = ".",
                         frame = ".",
                         gene_id = process_list_column(gene_id),
@@ -1038,8 +1047,9 @@ for(i in names(out_G_gtf_locus)) {
                         )
                     ) %>%
                     dplyr::select(-c(
-                        id, Name, gene_id, locus, coverage, identity, matches, mismatches,
-                        indels, unknowns, Target, CDS_Target, partialness, InFrameStop
+                        id, Name, gene_id, locus, coverage, identity, matches,
+                        mismatches, indels, unknowns, Target, CDS_Target,
+                        partialness, InFrameStop
                     ))
             } else if(base::isTRUE(unlist(stringr::str_split(k, "_"))[3] == "exon")) {
                 if(base::isTRUE(unlist(stringr::str_split(k, "_"))[2] == "G")) {
@@ -1085,14 +1095,18 @@ for(i in names(out_G_gtf_locus)) {
                 gtf <- gtf %>%
                     tibble::as_tibble() %>%
                     dplyr::select(-c(
-                        "width", "ID", "geneIDs", "transcripts", "geneID", "Name",
-                        "coverage", "identity", "matches", "mismatches", "indels",
-                        "unknowns", "CDS_Target", "partialness", "locus", "InFrameStop"
+                        "width", "ID", "geneIDs", "transcripts", "geneID",
+                        "Name", "coverage", "identity", "matches",
+                        "mismatches", "indels", "unknowns", "CDS_Target",
+                        "partialness", "locus", "InFrameStop"
                     )) %>%
                     dplyr::arrange(seqnames, start) %>%
                     dplyr::rename("id" = "Parent", "feature" = "type") %>%
                     dplyr::mutate(
-                        source = paste0(source, "; trinity; gffread; Greenlaw et al."),
+                        source = paste0(
+                            source,
+                            "; trinity; gffread; Greenlaw et al."
+                        ),
                         score = ".",
                         frame = ".",
                         id = process_list_column(id)

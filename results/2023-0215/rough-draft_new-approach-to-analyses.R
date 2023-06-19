@@ -28,7 +28,9 @@ filter_process_counts_matrix <- function(named_character_vector) {
     )
     df <- dplyr::bind_cols(
         df[, 1:11],
-        df[, 12:ncol(df)][, match(named_character_vector, colnames(df)[12:ncol(df)])]
+        df[, 12:ncol(df)][
+            , match(named_character_vector, colnames(df)[12:ncol(df)])
+        ]
     )
     names(df)[12:ncol(df)] <- names(named_character_vector)
     
@@ -117,11 +119,20 @@ write_plot_info <- function(
 
 
 plot_volcano <- function(
-    table, label, selection, label_size, p_cutoff, FC_cutoff,
-    point_size = 1, cutoff_line_width = 0.2,
-    xlim, ylim,
-    color = c("#D3D3D3", "#D3D3D3", "#D3D3D3", "#A020F0"),  #TODO More control,
-    title, subtitle, ...
+    table,
+    label,
+    selection,
+    label_size,
+    p_cutoff,
+    FC_cutoff,
+    point_size = 1,
+    cutoff_line_width = 0.2,
+    xlim,
+    ylim,
+    color = c("#D3D3D3", "#D3D3D3", "#D3D3D3", "#A020F0"),
+    title,
+    subtitle,
+    ...
 ) {
     # ...
     #
@@ -136,7 +147,7 @@ plot_volcano <- function(
     # :param FC_cutoff: cut-off for absolute log2 fold-change; vertical lines
     #                   will be drawn at the negative and positive values of
     #                   log2FCcutoff
-    #                  <float>
+    #                   <float>
     # :param xlim: limits of the x-axis <float>
     # :param ylim: limits of the y-axis <float>
     # :param color: character vector of four hexcode colors <chr>
@@ -326,7 +337,7 @@ call_DESeq2_results_run_analyses <- function(
     #  Coerce GRanges object to tibble
     t_DGE_unshrunken <- DGE_unshrunken_GR %>% dplyr::as_tibble()
     
-    #  Identify significant features
+    #  Identify top 5 up- and downregulated significant features
     all_unshrunken <- t_DGE_unshrunken$thorough
     if(base::isTRUE(selection)) {
         selection_down_unshrunken <- t_DGE_unshrunken %>%
@@ -381,7 +392,7 @@ call_DESeq2_results_run_analyses <- function(
         FC_cutoff = threshold_lfc,
         xlim = c(x_min, x_max),
         ylim = c(y_min, y_max),
-        color = c("#D3D3D3", "#D3D3D3", "#D3D3D3", color),
+        color = c("#D3D3D3", "#D3D3D3", "#D3D3D3", color),  #TODO More control
         title = info_volcano[1],
         subtitle = info_volcano[2]
     ) + 
@@ -396,7 +407,7 @@ call_DESeq2_results_run_analyses <- function(
         FC_cutoff = threshold_lfc,
         xlim = c(x_min, x_max),
         ylim = c(y_min, y_max),
-        color = c("#D3D3D3", "#D3D3D3", "#D3D3D3", color),
+        color = c("#D3D3D3", "#D3D3D3", "#D3D3D3", color),  #TODO More control
         cutoff_line_width = 3,
         point_size = 2.5,
         title = "",
@@ -433,7 +444,7 @@ call_DESeq2_results_run_analyses <- function(
     # ] %>%
         ggplot(aes(x = pvalue)) +
         geom_histogram(
-            binwidth = 0.025,
+            binwidth = 0.025,  #TODO More control
             fill = "steelblue",
             color = "white"
         ) +
@@ -453,7 +464,7 @@ call_DESeq2_results_run_analyses <- function(
     # ] %>%
         ggplot(aes(x = padj)) +
         geom_histogram(
-            binwidth = 0.025,
+            binwidth = 0.025,  #TODO More control
             fill = "steelblue",
             color = "white"
         ) +
@@ -464,6 +475,7 @@ call_DESeq2_results_run_analyses <- function(
         ) +
         theme_slick
     
+
     #  Making plots *with* LFC shrinkage values (apeglm) ----------------------
     #  Coerce GRanges object to tibble
     t_DGE_shrunken <- DGE_shrunken_GR %>% dplyr::as_tibble()
@@ -474,7 +486,7 @@ call_DESeq2_results_run_analyses <- function(
         p_cutoff <- threshold_p
     }
     
-    #  Identify significant features
+    #  Identify top 5 up- and downregulated significant features
     all_shrunken <- t_DGE_shrunken$thorough
     if(base::isTRUE(selection)) {
         selection_down_shrunken <- t_DGE_shrunken %>%
@@ -529,7 +541,7 @@ call_DESeq2_results_run_analyses <- function(
         FC_cutoff = threshold_lfc,
         xlim = c(x_min, x_max),
         ylim = c(y_min, y_max),
-        color = c("#D3D3D3", "#D3D3D3", "#D3D3D3", color),
+        color = c("#D3D3D3", "#D3D3D3", "#D3D3D3", color),  #TODO More control
         title = info_volcano[1],
         subtitle = info_volcano[2]
     ) + 
@@ -544,7 +556,7 @@ call_DESeq2_results_run_analyses <- function(
         FC_cutoff = threshold_lfc,
         xlim = c(x_min, x_max),
         ylim = c(y_min, y_max),
-        color = c("#D3D3D3", "#D3D3D3", "#D3D3D3", color),
+        color = c("#D3D3D3", "#D3D3D3", "#D3D3D3", color),  #TODO More control
         cutoff_line_width = 3,
         point_size = 2.5,
         title = "",
@@ -578,7 +590,7 @@ call_DESeq2_results_run_analyses <- function(
     hist_shrunken_s <- t_DGE_shrunken %>%
         ggplot(aes(x = padj)) +
         geom_histogram(
-            binwidth = 0.0033,
+            binwidth = 0.0033,  #TODO More control
             fill = "steelblue",
             color = "white"
         ) +
@@ -625,7 +637,7 @@ call_DESeq2_results_run_analyses <- function(
         t_DGE_lessAbs_unshrunken <- DGE_lessAbs_unshrunken_GR %>%
             dplyr::as_tibble()
         
-        #  Identify significant features
+        #  Identify top 5 up- and downregulated significant features
         all_lessAbs_unshrunken <- t_DGE_lessAbs_unshrunken$thorough
         if(base::isTRUE(selection)) {
             selection_down_lessAbs_unshrunken <- t_DGE_lessAbs_unshrunken %>%
@@ -672,7 +684,7 @@ call_DESeq2_results_run_analyses <- function(
             FC_cutoff = threshold_lfc,
             xlim = c(-2, 2),
             ylim = c(0, 5),
-            color = c("#D3D3D3", "#D3D3D3", color, "#D3D3D3"),
+            color = c("#D3D3D3", "#D3D3D3", color, "#D3D3D3"),  #TODO More control
             title = info_volcano[1],
             subtitle = info_volcano[2]
         ) + 
@@ -687,7 +699,7 @@ call_DESeq2_results_run_analyses <- function(
             FC_cutoff = threshold_lfc,
             xlim = c(-2, 2),
             ylim = c(0, 5),
-            color = c("#D3D3D3", "#D3D3D3", color, "#D3D3D3"),
+            color = c("#D3D3D3", "#D3D3D3", color, "#D3D3D3"),  #TODO More control
             cutoff_line_width = 3,
             point_size = 2.5,
             title = "",
@@ -721,7 +733,7 @@ call_DESeq2_results_run_analyses <- function(
         hist_lessAbs_unshrunken_p <- t_DGE_lessAbs_unshrunken %>%
             ggplot(aes(x = pvalue)) +
             geom_histogram(
-                binwidth = 0.025,
+                binwidth = 0.025,  #TODO More control
                 fill = "steelblue",
                 color = "white"
             ) +
@@ -737,7 +749,7 @@ call_DESeq2_results_run_analyses <- function(
         ] %>%
             ggplot(aes(x = padj)) +
             geom_histogram(
-                binwidth = 0.025,
+                binwidth = 0.025,  #TODO More control
                 fill = "steelblue",
                 color = "white"
             ) +
