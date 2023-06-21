@@ -60,9 +60,9 @@ analyze_feature_intersections <- function(
     gtf_Tr = gtf_Q,
     gtf_all = gtf_all
 ) {
-    #  Test
-    run <- FALSE
-    if(base::isTRUE(run)) {
+    #  Perform debuging
+    debug <- FALSE
+    if(base::isTRUE(debug)) {
         gtf_Tr <- gtf_Q
         # gtf_Tr <- gtf_G1
         # gtf_Tr <- gtf_all
@@ -305,7 +305,8 @@ analyze_feature_intersections <- function(
             print(n = 100)
     }
     
-    #  Calculate pct. overlaps between "Q" and "all" features and vice versa --
+    #  Calculate pct. overlaps ------------------------------------------------
+    #+ ...between "Q" or "G1" and "all" features, and vice versa 
     wrt_Tr_all_group$pct_Tr_over_all <- mapply(
         calculate_percent_overlap,
         wrt_Tr_all_group$start,
@@ -393,7 +394,7 @@ flatten_elements_to_one <- function(x) {
     # ("flatten") the subelements into a single character element
     # 
     # :param x: <list>
-    # :return: character vector of collapsed list elements (list e)
+    # :return: vector of collapsed list elements <chr>
     
     l_collapsed <- x[lengths(x) >= 2] %>% length()
     collapsed <- vector(mode = "character", length = l_collapsed)
@@ -1419,7 +1420,6 @@ complete_Q <- dplyr::full_join(
 #  Write out the dataframes
 run <- FALSE  #ARGUMENT
 if(base::isTRUE(run)) {
-    # outpath_G1 <- outpath_Q <- "/Users/kalavatt/Desktop"  #ARGUMENT
     outpath_G1 <- "outfiles_gtf-gff3/Trinity-GG/G_N/filtered/locus"
     outpath_Q <- "outfiles_gtf-gff3/Trinity-GG/Q_N/filtered/locus"
     
@@ -1427,7 +1427,6 @@ if(base::isTRUE(run)) {
         complete_G1,
         paste(
             outpath_G1,
-            # "Trinity-assignments.dataframe.2023-0616.G1.tsv",
             "dataframe_Trinity-assignments_G1.tsv",
             sep = "/"
         )
@@ -1437,7 +1436,6 @@ if(base::isTRUE(run)) {
         complete_Q,
         paste(
             outpath_Q,
-            # "Trinity-assignments.dataframe.2023-0616.Q.tsv",
             "dataframe_Trinity-assignments_Q.tsv",
             sep = "/"
         )

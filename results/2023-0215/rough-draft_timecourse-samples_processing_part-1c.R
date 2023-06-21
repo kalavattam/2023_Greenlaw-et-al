@@ -464,6 +464,7 @@ run_PCA_pipeline <- function(
         meta_shape
 ) {
     # ...
+    #
     # :param counts: ... <data.frame>
     # :param metadata: ... <data.frame>
     # :param gene_id: ... <character vector>
@@ -472,7 +473,8 @@ run_PCA_pipeline <- function(
     # :param meta_color: ... <character>
     # :param meta_shape: ... <character>
     # :return results_list: ... <list>
-    #  Checks arguments
+    
+    #  Check arguments
     stopifnot(is.data.frame(counts))
     stopifnot(is.data.frame(metadata))
     stopifnot(isTRUE(tibble::has_rownames(metadata)))
