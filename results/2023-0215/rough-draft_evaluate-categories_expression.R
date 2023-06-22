@@ -80,7 +80,7 @@ filter_process_counts_matrix <- function(
 
 derive_summary_metrics <- function(uni_multi, summary, counts) {
     #  Debug
-    run <- TRUE
+    run <- FALSE
     if(base::isTRUE(run)) {
         uni_multi <- uni_multi_etc
         summary <- underscore
@@ -338,14 +338,14 @@ theme_slick_no_legend <- theme_slick + theme(legend.position = "none")
 # ...which consists of collapsed/merged pa-ncRNAs and "processed" features
     
 
-# tx <- "coding"  #ARGUMENT
+tx <- "coding-non-pa-ncRNA"  #ARGUMENT
 # tx <- "noncoding-non-collapsed"  #ARGUMENT
 # tx <- "noncoding-collapsed"  #ARGUMENT
 # tx <- "Trinity-G1"  #ARGUMENT
-tx <- "Trinity-Q"  #ARGUMENT
+# tx <- "Trinity-Q"  #ARGUMENT
 if(base::isFALSE(
     tx %in% c(
-        "coding", "noncoding-non-collapsed", "noncoding-collapsed",
+        "coding-non-pa-ncRNA", "noncoding-non-collapsed", "noncoding-collapsed",
         "Trinity-G1", "Trinity-Q"
     )
 )) {
@@ -354,7 +354,7 @@ if(base::isFALSE(
         "\"noncoding-non-collapsed\", or \"noncoding-collapsed\""
     ))
 }
-if(tx == "coding") {
+if(tx == "coding-non-pa-ncRNA") {
     p_gtf <- "outfiles_gtf-gff3/representation"
     f_gtf <- "Greenlaw-et-al_representative-coding-non-pa-ncRNA-transcriptome.gtf"
 } else if(tx == "noncoding-non-collapsed") {
@@ -386,7 +386,7 @@ t_gtf <- paste(p_gtf, f_gtf, sep = "/") %>%
     tibble::as_tibble() %>%
     dplyr::arrange(seqnames, start) %>%
     dplyr::select(-c(width, score, phase))
-if(tx %in% c("coding", "noncoding-non-collapsed")) {
+if(tx %in% c("coding-non-pa-ncRNA", "noncoding-non-collapsed")) {
     t_gtf <- t_gtf %>% dplyr::rename(category = type.1)
 }
     
@@ -682,7 +682,7 @@ rm(summaries)
 
 
 #  Associate the counts-matrix features with appropriate gtf metadata ---------
-if(tx == "coding") {
+if(tx == "coding-non-pa-ncRNA") {
     t_full <- dplyr::full_join(
         t_gtf[, c(1:4, 7, 9, 10)],
         t_cm,
@@ -782,12 +782,24 @@ rm(test_1, test_2)
 tmp <- t_full[-nrow(t_full), -c(1:5, 7)]
 # colnames(tmp)
 
-samples <- "ovation"  #ARGUMENT
+# samples <- "ovation"  #ARGUMENT
+# samples <- "ovation_tecan_test"  #ARGUMENT
+# samples <- "ovation_tecan_test_rrp6∆"  #ARGUMENT
+samples <- "ovation_tecan_updated"  #ARGUMENT
 # samples <- "n3d_od"  #ARGUMENT
 # samples <- "r6n_WT"  #ARGUMENT
 # samples <- "r6n_timecourse"  #ARGUMENT
 if(samples == "ovation") {
     tmp_samples <- tmp[, stringr::str_detect(colnames(tmp), "ovn")]
+} else if(samples == "ovation_tecan_test") {
+    tmp_samples <- tmp[, stringr::str_detect(colnames(tmp), "ovn|test")]
+} else if(samples == "ovation_tecan_test_rrp6∆") {
+    tmp_samples <- tmp[, stringr::str_detect(
+        colnames(tmp), "r6n_Q|r6n_G1|WT_Q|WT_G1|WTovn|WTtest"
+    )]
+} else if(samples == "ovation_tecan_updated") {
+    tmp_samples <- tmp[, stringr::str_detect(colnames(tmp), "ovn|test")] %>%
+        dplyr::select(-WTovn_Q_SS_rep1_tech1)
 } else if(samples == "n3d_od") {
     tmp_samples <- tmp[, stringr::str_detect(colnames(tmp), "n3d|od")] %>%
         dplyr::select(-dplyr::contains("rep3"))
@@ -813,7 +825,7 @@ if(base::isTRUE(colnames(t_rel)[1] != "category")) {
 # head(t_rel)
 
 #  Rename category "PG" to "pseudogene" (if applicable)
-if(tx == "coding") {
+if(tx == "coding-non-pa-ncRNA") {
     t_rel$category[stringr::str_detect(t_rel$category, "PG")] <- "pseudogene"
 }
     
@@ -822,6 +834,17 @@ if(samples %in% c("ovation", "n3d_od")) {
     colnames(t_rel) <- colnames(t_rel) %>%
         stringr::str_remove("ovn") %>%
         stringr::str_remove("_tech1")
+} else if(samples %in% c("ovation_tecan_test", "ovation_tecan_updated")) {
+    colnames(t_rel) <- colnames(t_rel) %>%
+        gsub("WTovn", "WT_ovn", .) %>%
+        gsub("WTtest", "WT_tcn", .) %>%
+        gsub("_tech1", "", .)
+} else if(samples == "ovation_tecan_test_rrp6∆") {
+    colnames(t_rel) <- colnames(t_rel) %>%
+        gsub("WT_", "WT_tcn_", .) %>%
+        gsub("r6n_", "r6n_tcn_", .) %>%
+        gsub("WTovn", "WT_ovn", .) %>%
+        gsub("WTtest", "WT_test", .)
 } else if(samples == "r6n_WT") {
     average_tech_reps <- FALSE
     if(base::isTRUE(average_tech_reps)) {
@@ -877,6 +900,66 @@ if(samples == "ovation") {
             sum_WT_Q_N_rep2 = sum(WT_Q_N_rep2),
             sum_WT_Q_SS_rep1 = sum(WT_Q_SS_rep1),
             sum_WT_Q_SS_rep2 = sum(WT_Q_SS_rep2),
+            number_of_features = dplyr::n()
+        )
+} else if(samples == "ovation_tecan_test") {
+    t_rel_summarize <- t_rel %>%
+        dplyr::group_by(category) %>%
+        dplyr::summarize(
+            sum_WT_ovn_G1_N_rep1 = sum(WT_ovn_G1_N_rep1),
+            sum_WT_ovn_G1_N_rep2 = sum(WT_ovn_G1_N_rep2),
+            sum_WT_ovn_G1_SS_rep1 = sum(WT_ovn_G1_SS_rep1),
+            sum_WT_ovn_G1_SS_rep2 = sum(WT_ovn_G1_SS_rep2),
+            sum_WT_ovn_Q_N_rep1 = sum(WT_ovn_Q_N_rep1),
+            sum_WT_ovn_Q_N_rep2 = sum(WT_ovn_Q_N_rep2),
+            sum_WT_tcn_Q_N_rep2 = sum(WT_tcn_Q_N_rep2),
+            sum_WT_ovn_Q_SS_rep1 = sum(WT_ovn_Q_SS_rep1),
+            sum_WT_ovn_Q_SS_rep2 = sum(WT_ovn_Q_SS_rep2),
+            sum_WT_tcn_Q_SS_rep2 = sum(WT_tcn_Q_SS_rep2),
+            number_of_features = dplyr::n()
+        )
+} else if(samples == "ovation_tecan_test_rrp6∆") {
+    t_rel_summarize <- t_rel %>%
+        dplyr::group_by(category) %>%
+        dplyr::summarize(
+            sum_WT_ovn_G1_N_rep2_tech1 = sum(WT_ovn_G1_N_rep2_tech1),
+            sum_WT_ovn_G1_N_rep1_tech1 = sum(WT_ovn_G1_N_rep1_tech1),
+            sum_WT_ovn_G1_SS_rep1_tech1 = sum(WT_ovn_G1_SS_rep1_tech1),
+            sum_WT_ovn_G1_SS_rep2_tech1 = sum(WT_ovn_G1_SS_rep2_tech1),
+            sum_WT_tcn_G1_SS_rep1_tech2 = sum(WT_tcn_G1_SS_rep1_tech2),
+            sum_WT_tcn_G1_SS_rep2_tech2 = sum(WT_tcn_G1_SS_rep2_tech2),
+            sum_WT_ovn_Q_N_rep1_tech1 = sum(WT_ovn_Q_N_rep1_tech1),
+            sum_WT_ovn_Q_N_rep2_tech1 = sum(WT_ovn_Q_N_rep2_tech1),
+            sum_WT_test_Q_N_rep2_tech1 = sum(WT_test_Q_N_rep2_tech1),
+            sum_WT_tcn_Q_N_rep1_tech1 = sum(WT_tcn_Q_N_rep1_tech1),
+            sum_WT_tcn_Q_N_rep2_tech1 = sum(WT_tcn_Q_N_rep2_tech1),
+            sum_WT_ovn_Q_SS_rep1_tech1 = sum(WT_ovn_Q_SS_rep1_tech1),
+            sum_WT_ovn_Q_SS_rep2_tech1 = sum(WT_ovn_Q_SS_rep2_tech1),
+            sum_WT_test_Q_SS_rep2_tech1 = sum(WT_test_Q_SS_rep2_tech1),
+            sum_WT_tcn_Q_SS_rep1_tech1 = sum(WT_tcn_Q_SS_rep1_tech1),
+            sum_WT_tcn_Q_SS_rep2_tech1 = sum(WT_tcn_Q_SS_rep2_tech1),
+            sum_r6n_tcn_G1_SS_rep2_tech2 = sum(r6n_tcn_G1_SS_rep2_tech2),
+            sum_r6n_tcn_G1_SS_rep1_tech2 = sum(r6n_tcn_G1_SS_rep1_tech2),
+            sum_r6n_tcn_Q_N_rep2_tech1 = sum(r6n_tcn_Q_N_rep2_tech1),
+            sum_r6n_tcn_Q_N_rep1_tech1 = sum(r6n_tcn_Q_N_rep1_tech1),
+            sum_r6n_tcn_Q_SS_rep2_tech1 = sum(r6n_tcn_Q_SS_rep2_tech1),
+            sum_r6n_tcn_Q_SS_rep2_tech2 = sum(r6n_tcn_Q_SS_rep2_tech2),
+            sum_r6n_tcn_Q_SS_rep1_tech1 = sum(r6n_tcn_Q_SS_rep1_tech1),
+            number_of_features = dplyr::n()
+        )
+} else if(samples == "ovation_tecan_updated") {
+    t_rel_summarize <- t_rel %>%
+        dplyr::group_by(category) %>%
+        dplyr::summarize(
+            sum_WT_ovn_G1_N_rep1 = sum(WT_ovn_G1_N_rep1),
+            sum_WT_ovn_G1_N_rep2 = sum(WT_ovn_G1_N_rep2),
+            sum_WT_ovn_G1_SS_rep1 = sum(WT_ovn_G1_SS_rep1),
+            sum_WT_ovn_G1_SS_rep2 = sum(WT_ovn_G1_SS_rep2),
+            sum_WT_ovn_Q_N_rep1 = sum(WT_ovn_Q_N_rep1),
+            sum_WT_ovn_Q_N_rep2 = sum(WT_ovn_Q_N_rep2),
+            sum_WT_tcn_Q_N_rep2 = sum(WT_tcn_Q_N_rep2),
+            sum_WT_ovn_Q_SS_rep2 = sum(WT_ovn_Q_SS_rep2),
+            sum_WT_tcn_Q_SS_rep2 = sum(WT_tcn_Q_SS_rep2),
             number_of_features = dplyr::n()
         )
 } else if(samples == "n3d_od") {
@@ -997,10 +1080,12 @@ if(tx == "noncoding-collapsed") {
         t_rel_summarize.bak <- t_rel_summarize
         
         feat_alignment <- t_rel_summarize[
-            t_rel_summarize$category %in% c("ambiguous", "multimapper", "no feature"), 
+            t_rel_summarize$category %in%
+                c("ambiguous", "multimapper", "no feature"), 
         ]
         feat_ncRNA <- t_rel_summarize[
-            t_rel_summarize$category %notin% c("ambiguous", "multimapper", "no feature"), 
+            t_rel_summarize$category %notin%
+                c("ambiguous", "multimapper", "no feature"), 
         ]
         
         # colSums(feat_alignment[, 2:ncol(feat_alignment)])
@@ -1240,10 +1325,12 @@ t_rel_summarize$number_of_features <- ifelse(
 )
 
 #  Remove unnecessary string "sum_WT_" from the column names
-if(samples == "ovation") {
+if(samples %in% c("ovation", "ovation_tecan_test", "ovation_tecan_updated")) {
     colnames(t_rel_summarize) <- colnames(t_rel_summarize) %>%
         stringr::str_remove("sum_WT_")
-} else if(samples %in% c("n3d_od", "r6n_WT", "r6n_timecourse")) {
+} else if(samples %in% c(
+    "n3d_od", "r6n_WT", "r6n_timecourse", "ovation_tecan_test_rrp6∆"
+)) {
     colnames(t_rel_summarize) <- colnames(t_rel_summarize) %>%
         stringr::str_remove("sum_")
 }
@@ -1288,6 +1375,8 @@ if(base::isTRUE(run)) {
             scale_x_discrete(guide = guide_axis(angle = 45))
     }
 }
+run <- TRUE
+if(base::isTRUE(run)) print(`prop-plot_individual-replicates`)
 
 prop_summarize <- sweep(
     t_rel_summarize[, 2:(ncol(t_rel_summarize) - 1)],
@@ -1295,35 +1384,40 @@ prop_summarize <- sweep(
     colSums(t_rel_summarize[, 2:(ncol(t_rel_summarize) - 1)]),
     `/`
 ) %>%
-dplyr::mutate(
-    category = t_rel_summarize$category,
-    number_of_features = t_rel_summarize$number_of_features
-) %>%
-dplyr::relocate(category)
+    dplyr::mutate(
+        category = t_rel_summarize$category,
+        number_of_features = t_rel_summarize$number_of_features
+    ) %>%
+    dplyr::relocate(category)
 
-if(samples == "ovation") {
-    col_piv <- colnames(t_rel_summarize)[-c(1, ncol(t_rel_summarize))]
-    # col_piv <- c(
-    #     "G1_N_rep1", "G1_N_rep2", "G1_SS_rep1", "G1_SS_rep2",
-    #     "Q_N_rep1", "Q_N_rep2", "Q_SS_rep1", "Q_SS_rep2"
-    # )
-} else if(samples == "n3d_od") {
-    col_piv <- colnames(t_rel_summarize)[-c(1, ncol(t_rel_summarize))]
-} else if(samples == "r6n_WT") {
-    col_piv <- colnames(t_rel_summarize)[-c(1, ncol(t_rel_summarize))]
-} else if(samples == "r6n_timecourse") {
-    col_piv <- colnames(t_rel_summarize)[-c(1, ncol(t_rel_summarize))]
+col_piv <- colnames(t_rel_summarize)[-c(1, ncol(t_rel_summarize))]
+
+if(samples %in% c(
+    "ovation_tecan_test", "ovation_tecan_test_rrp6∆", "ovation_tecan_updated"
+)) {
+    `sample-by-category_pivoted` <- prop_summarize[
+        , 1:(ncol(t_rel_summarize) - 1)
+    ] %>%
+        pivot_on_columns(col_piv)
+    
+    `sample-by-category_pivoted`$samples <-
+        `sample-by-category_pivoted`$samples %>%
+        stringr::str_remove_all(
+            "ovn_|tcn_|test_|_rep1|_rep2|_tech1|_tech2"
+        ) %>%
+        as.factor()
+} else {
+    `sample-by-category_pivoted` <- prop_summarize[
+        , 1:(ncol(t_rel_summarize) - 1)
+    ] %>%
+        pivot_on_columns(col_piv) %>%
+        dplyr::mutate(
+            samples = ifelse(
+                factor(stringr::str_remove(samples, "_rep1|_rep2"))
+            )
+        )
 }
 
-`sample-by-category_pivoted` <- prop_summarize[
-    , 1:(ncol(t_rel_summarize) - 1)
-] %>%
-    pivot_on_columns(col_piv) %>%
-    dplyr::mutate(
-        samples = factor(stringr::str_remove(
-            samples, "_rep1|_rep2"
-        ))
-    )
 if(samples == "n3d_od") {
     `sample-by-category_pivoted`$samples <-
         factor(
@@ -1367,23 +1461,32 @@ if(samples == "n3d_od") {
     dplyr::relocate(p.signif, .after = p)
 
 #  Checks
-# `sample-by-category_pivoted`
-# `sample-by-category_stats`  #TODO Write out tsv of stats
+run <- FALSE
+if(base::isTRUE(run)) {
+    `sample-by-category_pivoted`
+    `sample-by-category_stats`  #TODO Write out tsv of stats
+}
 
 if(samples == "ovation") {
-    if(tx == "coding") zoom <- 0.925
+    if(tx == "coding-non-pa-ncRNA") zoom <- 0.925
+    if(tx == "noncoding-non-collapsed") zoom <- 0.30
+    if(tx == "noncoding-collapsed") zoom <- 0.26
+} else if(samples %in% c(
+    "ovation_tecan_test", "ovation_tecan_test_rrp6∆", "ovation_tecan_updated"
+)) {
+    if(tx == "coding-non-pa-ncRNA") zoom <- 0.925
     if(tx == "noncoding-non-collapsed") zoom <- 0.30
     if(tx == "noncoding-collapsed") zoom <- 0.26
 } else if(samples == "n3d_od") {
-    if(tx == "coding") zoom <- 0.875
+    if(tx == "coding-non-pa-ncRNA") zoom <- 0.875
     if(tx == "noncoding-non-collapsed") zoom <- 0.525
     if(tx == "noncoding-collapsed") zoom <- 0.525
 } else if(samples == "r6n_WT") {
-    if(tx == "coding") zoom <- 0.90
+    if(tx == "coding-non-pa-ncRNA") zoom <- 0.90
     if(tx == "noncoding-non-collapsed") zoom <- 0.45
     if(tx == "noncoding-collapsed") zoom <- 0.45
 } else if(samples == "r6n_timecourse") {
-    if(tx == "coding") zoom <- 0.90
+    if(tx == "coding-non-pa-ncRNA") zoom <- 0.90
     if(tx == "noncoding-non-collapsed") zoom <- 0.35
     if(tx == "noncoding-collapsed") zoom <- 0.35
 }
