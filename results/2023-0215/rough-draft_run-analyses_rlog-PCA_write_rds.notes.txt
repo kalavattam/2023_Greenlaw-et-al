@@ -1,0 +1,87 @@
+
+#  rough-draft_run-analyses_rlog-PCA_write_rds.notes.txt
+#  KA
+
+
+I. Type: WT, G1 vs. Q, mRNA, Ovation
+	A. Size factors
+		1. Calculated with S. cerevisiae features
+			- WT_G1_N_rep1_tech1  0.9702862
+			- WT_G1_N_rep2_tech1  1.1298402
+			- WT_G1_SS_rep1_tech1 0.5122146
+			- WT_G1_SS_rep2_tech1 0.6940191
+			- WT_Q_N_rep1_tech1   3.1905848
+			- WT_Q_N_rep2_tech1   3.1597830
+			- WT_Q_SS_rep1_tech1  0.4368478
+			- WT_Q_SS_rep2_tech1  0.4248923
+		2. Calculated with K. lactis features
+			- WT_G1_N_rep1_tech1   0.3647831
+			- WT_G1_N_rep2_tech1   0.7238052
+			- WT_G1_SS_rep1_tech1  0.4122858
+			- WT_G1_SS_rep2_tech1  0.6866118
+			- WT_Q_N_rep1_tech1   10.5357476
+			- WT_Q_N_rep2_tech1    7.3765919
+			- WT_Q_SS_rep1_tech1   0.3931323
+			- WT_Q_SS_rep2_tech1   0.4889416
+
+	B. Reciprocals of size factors
+		1. Calculated with S. cerevisiae features
+			- WT_G1_N_rep1_tech1  1.0306237
+			- WT_G1_N_rep2_tech1  0.8850809
+			- WT_G1_SS_rep1_tech1 1.9523067
+			- WT_G1_SS_rep2_tech1 1.4408825
+			- WT_Q_N_rep1_tech1   0.3134222
+			- WT_Q_N_rep2_tech1   0.3164774
+			- WT_Q_SS_rep1_tech1  2.2891270
+			- WT_Q_SS_rep2_tech1  2.3535374
+		2. Calculated with K. lactis features
+			- WT_G1_N_rep1_tech1  2.74135516
+			- WT_G1_N_rep2_tech1  1.38158721
+			- WT_G1_SS_rep1_tech1 2.42550188
+			- WT_G1_SS_rep2_tech1 1.45642713
+			- WT_Q_N_rep1_tech1   0.09491495
+			- WT_Q_N_rep2_tech1   0.13556396
+			- WT_Q_SS_rep1_tech1  2.54367306
+			- WT_Q_SS_rep2_tech1  2.04523409
+
+
+II. Type: timecourse, WT vs. Rrp6∆, mRNA, Tecan
+	A. Size factors
+		1. Calculated with K. lactis features
+			- WT_DSm2_rep1_tech1   0.5682074
+		    - WT_DSm2_rep2_tech1   0.4368905
+		    - WT_DSp2_rep1_tech1   0.8104658
+		    - WT_DSp2_rep2_tech1   0.8467238
+		    - WT_DSp24_rep1_tech1  1.2374142
+		    - WT_DSp24_rep2_tech1  1.2660357
+		    - WT_DSp48_rep1_tech1  1.6936618
+		    - WT_DSp48_rep1_tech2  1.7414215
+		    - WT_DSp48_rep2_tech1  1.2492546
+		    - r6n_DSm2_rep1_tech1  0.6313840
+		    - r6n_DSm2_rep2_tech1  0.7714148
+		    - r6n_DSp2_rep1_tech1  0.9944856
+		    - r6n_DSp2_rep2_tech1  1.0158238
+		    - r6n_DSp24_rep1_tech1 0.8680379
+		    - r6n_DSp24_rep2_tech1 1.2141282
+		    - r6n_DSp48_rep1_tech1 1.4169173
+		    - r6n_DSp48_rep2_tech2 1.4839146
+
+	B. Reciprocals of size factors
+		1. Calculated with K. lactis features
+			- WT_DSm2_rep1_tech1   1.7599208
+		    - WT_DSm2_rep2_tech1   2.2889032
+		    - WT_DSp2_rep1_tech1   1.2338584
+		    - WT_DSp2_rep2_tech1   1.1810227
+		    - WT_DSp24_rep1_tech1  0.8081369
+		    - WT_DSp24_rep2_tech1  0.7898672
+		    - WT_DSp48_rep1_tech1  0.5904367
+		    - WT_DSp48_rep1_tech2  0.5742435
+		    - WT_DSp48_rep2_tech1  0.8004773
+		    - r6n_DSm2_rep1_tech1  1.5838222
+		    - r6n_DSm2_rep2_tech1  1.2963194
+		    - r6n_DSp2_rep1_tech1  1.0055450
+		    - r6n_DSp2_rep2_tech1  0.9844227
+		    - r6n_DSp24_rep1_tech1 1.1520234
+		    - r6n_DSp24_rep2_tech1 0.8236362
+		    - r6n_DSp48_rep1_tech1 0.7057575
+		    - r6n_DSp48_rep2_tech2 0.6738932

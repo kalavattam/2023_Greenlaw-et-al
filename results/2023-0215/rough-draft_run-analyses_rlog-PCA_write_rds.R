@@ -1,7 +1,43 @@
 #!/usr/bin/env Rscript
 
-#  rough-draft_run-analyses_rlog-PCA_write_rds.R
+#  rough-draft_run-analyses_rlog-TPM-PCA_write_rds.R
 #  KA
+
+
+#  Initialize arguments =======================================================
+#TODO Parser
+type <- "mRNA"  #ARGUMENT
+# type <- "pa-ncRNA"  #ARGUMENT
+# type <- "Trinity-Q"  #ARGUMENT
+# type <- "Trinity-G1"  #ARGUMENT
+# type <- "Trinity-Q-unique"  #ARGUMENT
+# type <- "Trinity-G1-unique"  #ARGUMENT
+# type <- "representation"  #TODO
+
+# samples <- "Ovation"  #ARGUMENT
+# samples <- "test.Ovation_Rrp6∆"  #ARGUMENT  #TODO Remove
+# samples <- "test.Ovation_Tecan"  #ARGUMENT  #TODO Remove
+# samples <- "Rrp6∆.G1-Q.N-SS"  #ARGUMENT
+# samples <- "Rrp6∆.G1-Q.SS"  #ARGUMENT
+# samples <- "Rrp6∆.Q.N-SS"  #ARGUMENT
+# samples <- "Rrp6∆.timecourse"  #ARGUMENT
+# samples <- "Rrp6∆.timecourse-G1-Q.SS"  #ARGUMENT
+# samples <- "Rrp6∆.timecourse-G1.SS"  #ARGUMENT
+# samples <- "Rrp6∆.timecourse-G1-Q.N-SS"  #ARGUMENT
+# samples <- "Rrp6∆.timecourse.G1-SS.Q-N"  #ARGUMENT
+# samples <- "Nab3AID.Q.N-SS"  #ARGUMENT
+# samples <- "Nab3AID.Q.N-SS_Rrp6∆.Q.N-SS"  #ARGUMENT
+samples <- "Nab3AID.Q.SS_Rrp6∆.Q.SS"
+# samples <- "Nab3AID.Q.N-SS_Rrp6∆.timecourse-G1-Q.N-SS"  #ARGUMENT
+
+run_norm <- "rlog"  #ARGUMENT
+# run_norm <- "tpm"  #ARGUMENT
+
+run_batch_correction <- FALSE  #ARGUMENT
+run_PCA <- TRUE  #ARGUMENT
+date <- "2023-0623"  #ARGUMENT
+write_norm_counts_rds <- TRUE  #ARGUMENT
+write_PCA_results <- TRUE  #ARGUMENT
 
 
 #  Load libraries, set options ================================================
@@ -475,7 +511,7 @@ run_PCA_pipeline <- function(
                 PC_x = PC_x,
                 PC_y = PC_y,
                 row_start = 1,
-                row_end = 15,  #TODO ARGUMENT
+                row_end = n_loadings,  #DONE ARGUMENT
                 x_min = x_min_loadings_plot,
                 x_max = x_max_loadings_plot,
                 y_min = y_min_loadings_plot,
@@ -652,17 +688,7 @@ p_exp <- "2022_transcriptome-construction/results/2023-0215"
 paste(p_base, p_exp, sep = "/") %>% setwd()
 # getwd()
 
-#IMPORTANT
 #  Determine mRNA counts matrix to work with, then load it
-#+ Options: "mRNA" "pa-ncRNA" "Trinity-Q" "Trinity-G1" "representation"
-type <- "mRNA"  #ARGUMENT
-# type <- "pa-ncRNA"  #ARGUMENT
-# type <- "Trinity-Q"  #ARGUMENT
-# type <- "Trinity-G1"  #ARGUMENT
-# type <- "Trinity-Q-unique"  #ARGUMENT
-# type <- "Trinity-G1-unique"  #ARGUMENT
-# type <- "representation"  #ARGUMENT
-
 #  Check on "type" option
 if(base::isTRUE(type %notin% c(
     "mRNA", "pa-ncRNA", "Trinity-Q", "Trinity-G1", "Trinity-Q-unique",
@@ -896,7 +922,7 @@ col_cor <- setNames(
     )
 )
 
-run <- FALSE
+run <- TRUE
 if(base::isTRUE(run)) {
     t_cm.bak <- t_cm
     # t_cm <- t_cm.bak
@@ -1023,7 +1049,7 @@ t_mat <- t_mat %>%
 
 #  Sort counts columns by column names
 tmp_A <- t_mat[, 1:10]
-tmp_B <- t_mat[, 12:ncol(t_mat)][, order(names(t_mat[, 12:ncol(t_mat)]))]
+tmp_B <- t_mat[, 11:ncol(t_mat)][, order(names(t_mat[, 11:ncol(t_mat)]))]
 t_mat <- dplyr::bind_cols(tmp_A, tmp_B)
 
 #  Remove unneeded variables
@@ -1088,51 +1114,115 @@ run <- TRUE
 if(base::isTRUE(run)) {
     t_mat.bak <- t_mat
     # t_mat <- t_mat.bak
+    # colnames(t_mat)
 }
 
-# samples <- "Ovation"  #ARGUMENT
-# samples <- "Ovation_Rrp6∆_test"  #ARGUMENT
-# samples <- "Ovation_Tecan_test"  #ARGUMENT
-samples <- "Rrp6∆"  #ARGUMENT
 if(samples %notin% c(
-    "Ovation", "Ovation_Rrp6∆_test", "Ovation_Tecan_test", "Rrp6∆"
+    "Ovation", "test.Ovation_Rrp6∆", "test.Ovation_Tecan", "Rrp6∆.G1-Q.N-SS",
+    "Rrp6∆.G1-Q.SS", "Rrp6∆.Q.N-SS", "Rrp6∆.timecourse",
+    "Rrp6∆.timecourse-G1-Q.SS", "Rrp6∆.timecourse-G1.SS",
+    "Rrp6∆.timecourse-G1-Q.N-SS", "Rrp6∆.timecourse.G1-SS.Q-N",
+    "Nab3AID.Q.N-SS", "Nab3AID.Q.N-SS_Rrp6∆.Q.N-SS",
+    "Nab3AID.Q.SS_Rrp6∆.Q.SS", "Nab3AID.Q.N-SS_Rrp6∆.timecourse-G1-Q.N-SS"
 )) {
     stop(paste(
-        "Variable \"samples\" must be \"Ovation\", \"Ovation_Rrp6∆_test\",",
-        "\"Ovation_Tecan_test\", \"Rrp6∆\""
+        "Variable \"samples\" must be \"Ovation\", \"test.Ovation_Rrp6∆\",",
+        "\"test.Ovation_Tecan\", \"Rrp6∆.G1-Q.N-SS\", \"Rrp6∆.G1-Q.SS\",",
+        "\"Rrp6∆.Q.N-SS\", \"Rrp6∆.timecourse\",",
+        "\"Rrp6∆.timecourse-G1-Q.SS\", \"Rrp6∆.timecourse-G1.SS\",",
+        "\"Rrp6∆.timecourse-G1-Q.N-SS\", \"Rrp6∆.timecourse.G1-SS.Q-N\",",
+        "\"Nab3AID.Q.N-SS\", \"Nab3AID.Q.N-SS_Rrp6∆.Q.N-SS\",",
+        "\"Nab3AID.Q.N-SS_Rrp6∆.timecourse-G1-Q.N-SS\""
     ))
 }
 
+tmp_A <- t_mat[, 1:11]
+tmp_B <- t_mat[, 12:ncol(t_mat)]
+
 if(samples == "Ovation") {
-    tmp_A <- t_mat[, 1:11]
-    tmp_B <- t_mat[, 12:ncol(t_mat)]
-    tmp_C <- tmp_B[, stringr::str_detect(colnames(tmp_B), "ovn")]
-    t_mat <- dplyr::bind_cols(tmp_A, tmp_C)
-} else if(samples == "Ovation_Rrp6∆_test") {
-    tmp_A <- t_mat[, 1:11]
-    tmp_B <- t_mat[, 12:ncol(t_mat)]
+    tmp_C <- tmp_B[, stringr::str_detect(
+        colnames(tmp_B), "ovn"
+    )]
+} else if(samples == "test.Ovation_Rrp6∆") {
     tmp_C <- tmp_B[, stringr::str_detect(
         colnames(tmp_B), "ovn|r6n_Q|r6n_G1|WT_Q|WT_G1"
     )]
-    t_mat <- dplyr::bind_cols(tmp_A, tmp_C)
-} else if(samples == "Ovation_Tecan_test") {
-    tmp_A <- t_mat[, 1:11]
-    tmp_B <- t_mat[, 12:ncol(t_mat)]
+} else if(samples == "test.Ovation_Tecan") {
     tmp_C <- tmp_B[, stringr::str_detect(
         colnames(tmp_B), "ovn|test"
     )] %>%
         dplyr::select(-WTovn_Q_SS_rep1_tech1)
-    t_mat <- dplyr::bind_cols(tmp_A, tmp_C)
-} else if(samples == "Rrp6∆") {
-    tmp_A <- t_mat[, 1:11]
-    tmp_B <- t_mat[, 12:ncol(t_mat)]
+} else if(samples == "Rrp6∆.G1-Q.N-SS") {
     tmp_C <- tmp_B[, stringr::str_detect(
         colnames(tmp_B), "r6n_Q|r6n_G1|WT_Q|WT_G1"
     )]
-    t_mat <- dplyr::bind_cols(tmp_A, tmp_C)
+} else if(samples == "Rrp6∆.G1-Q.SS") {
+    tmp_C <- tmp_B[, stringr::str_detect(
+        colnames(tmp_B), "r6n_Q|r6n_G1|WT_Q|WT_G1"
+    )] 
+    tmp_C <- tmp_C[, -grep("_N_", colnames(tmp_C))]
+} else if(samples == "Rrp6∆.Q.N-SS") {
+        tmp_C <- tmp_B[, stringr::str_detect(
+        colnames(tmp_B), "r6n_Q|WT_Q"
+    )] 
+} else if(samples == "Rrp6∆.timecourse") {
+    tmp_C <- tmp_B[, stringr::str_detect(
+        colnames(tmp_B), "DSm|DSp"
+    )]
+    tmp_C <- tmp_C[, -grep("t4n", colnames(tmp_C))]
+} else if(samples == "Rrp6∆.timecourse-G1-Q.SS") {
+    tmp_C <- tmp_B[, stringr::str_detect(
+        colnames(tmp_B), "DSm|DSp|r6n_Q|r6n_G1|WT_Q|WT_G1"
+    )]
+    tmp_C <- tmp_C[, -grep("_N_|t4n|r1n", colnames(tmp_C))]
+} else if(samples == "Rrp6∆.timecourse-G1.SS") {
+    tmp_C <- tmp_B[, stringr::str_detect(
+        colnames(tmp_B), "DSm|DSp|r6n_G1|WT_G1"
+    )]
+    tmp_C <- tmp_C[, -grep("_N_|t4n|r1n", colnames(tmp_C))]
+} else if(samples == "Rrp6∆.timecourse-G1-Q.N") {
+    tmp_C <- tmp_B[, stringr::str_detect(
+        colnames(tmp_B), "DSm|DSp|r6n_Q|r6n_G1|WT_Q|WT_G1"
+    )]
+    tmp_C <- tmp_C[, -grep("_N_|t4n|r1n", colnames(tmp_C))]
+} else if(samples == "Rrp6∆.timecourse-G1-Q.N-SS") {
+    tmp_C <- tmp_B[, stringr::str_detect(
+        colnames(tmp_B), "DSm|DSp|r6n_Q|r6n_G1|WT_Q|WT_G1"
+    )]
+    tmp_C <- tmp_C[, -grep("t4n|r1n", colnames(tmp_C))]
+} else if(samples == "Rrp6∆.timecourse.G1-SS.Q-N") {
+    tmp_C <- tmp_B[, stringr::str_detect(
+        colnames(tmp_B), "DSm|DSp|r6n_Q|r6n_G1|WT_Q|WT_G1"
+    )]
+    tmp_C <- tmp_C[, -grep("t4n|r1n|Q_SS", colnames(tmp_C))]
+} else if(samples == "Nab3AID.Q.N-SS") {
+    tmp_C <- tmp_B[, stringr::str_detect(
+        colnames(tmp_B), "n3d|od"
+    )]
+    tmp_C <- tmp_C[, -grep("rep3", colnames(tmp_C))]
+} else if(samples == "Nab3AID.Q.N-SS_Rrp6∆.Q.N-SS") {
+    tmp_C <- tmp_B[, stringr::str_detect(
+        colnames(tmp_B), "n3d|od|r6n_Q|WT_Q"
+    )]
+    tmp_C <- tmp_C[, -grep("rep3", colnames(tmp_C))]
+} else if(samples == "Nab3AID.Q.SS_Rrp6∆.Q.SS") {
+    tmp_C <- tmp_B[, stringr::str_detect(
+        colnames(tmp_B), "n3d|od|r6n_Q|WT_Q"
+    )]
+    tmp_C <- tmp_C[, -grep("rep3|_N_", colnames(tmp_C))]
+} else if(samples == "Nab3AID.Q.N-SS_Rrp6∆.timecourse-G1-Q.N-SS") {
+    tmp_C <- tmp_B[, stringr::str_detect(
+        colnames(tmp_B), "n3d|od|DSm|DSp|r6n_Q|r6n_G1|WT_Q|WT_G1"
+    )]
+    tmp_C <- tmp_C[, -grep("t4n|r1n|rep3", colnames(tmp_C))]
 }
 
+t_mat <- dplyr::bind_cols(tmp_A, tmp_C)
 rm(list = ls(pattern = "tmp_"))
+
+# tmp <- dplyr::bind_cols(tmp_A, tmp_C)
+# colnames(tmp)
+# colnames(t_mat)
 
 
 #  Prepare metadata, data, etc. for running PCA ===============================
@@ -1141,290 +1231,311 @@ rm(list = ls(pattern = "tmp_"))
 t_mat[12:ncol(t_mat)] <- sapply(t_mat[12:ncol(t_mat)], as.numeric)
 t_mat <- t_mat[rowSums(t_mat[12:ncol(t_mat)]) > 0, ]
 
-if(samples == "Ovation") {
-    #  Strip string "ovn" from "WTovn"
-    colnames(t_mat) <- colnames(t_mat) %>%
-        gsub("ovn", "", .)
-    
-    #  Create a metadata matrix for DESeq2, PCAtools, etc.
-    t_meta <- colnames(t_mat)[12:ncol(t_mat)] %>%
-        stringr::str_split("_") %>%
-        as.data.frame() %>%
-        t() %>%
-        tibble::as_tibble(.name_repair = "unique") %>%
-        dplyr::rename(
-            genotype = ...1, state = ...2, transcription = ...3,
-            replicate = ...4, technical = ...5
-        ) %>%
-        dplyr::mutate(rownames = colnames(t_mat)[12:ncol(t_mat)]) %>%
-        tibble::column_to_rownames("rownames") %>%  # DESeq2 requires rownames
+#  Strip various strings from column names
+colnames(t_mat) <- colnames(t_mat) %>%
+    gsub("ovn", "", .)
+
+#  Create a metadata matrix for DESeq2, PCAtools, etc.
+t_meta <- colnames(t_mat)[12:ncol(t_mat)] %>%
+    stringr::str_split("_") %>%
+    as.data.frame() %>%
+    t() %>%
+    tibble::as_tibble(.name_repair = "unique") %>%
+    dplyr::rename(
+        genotype = ...1, state = ...2, transcription = ...3,
+        replicate = ...4, technical = ...5
+    ) %>%
+    dplyr::mutate(rownames = colnames(t_mat)[12:ncol(t_mat)]) %>%
+    tibble::column_to_rownames("rownames")
+
+if(samples %in% c(
+    "Ovation", "Rrp6∆.G1-Q.N-SS", "Rrp6∆.G1-Q.SS", "Rrp6∆.Q.N-SS",
+    "Nab3AID.Q.N-SS_Rrp6∆.Q.N-SS", "Nab3AID.Q.SS_Rrp6∆.Q.SS",
+    "Nab3AID.Q.N-SS_Rrp6∆.timecourse-G1-Q.N-SS"
+)) {
+     t_meta <- t_meta %>%
         dplyr::mutate(
-            genotype = factor(genotype, level = "WT"),
-            no_genotype = as.factor(sapply(
+            genotype = factor(genotype, levels = c("WT", "r6n", "od", "n3d")),
+            
+            state = factor(state, levels = c(
+                "G1", "Q", "DSm2", "DSp2", "DSp24", "DSp48"
+            )),
+            
+            transcription = factor(transcription, levels = c("N", "SS")),
+            
+            replicate = factor(replicate, levels = c("rep1", "rep2")),
+            
+            technical = factor(technical, levels = c("tech1", "tech2")),
+            
+            no_genotype = as.numeric(sapply( 
                 as.character(genotype),
                 switch,
                 "WT" = 0,
+                "r6n" = 1,
+                "od" = 2,
+                "n3d" = 3,
                 USE.NAMES = FALSE
             )),
-            state = factor(state, levels = c("G1", "Q")),
-            no_state = as.factor(sapply(
+            
+            no_state = as.numeric(sapply( 
                 as.character(state),
                 switch,
                 "G1" = 0,
                 "Q" = 1,
+                "DSm2" = 2,
+                "DSp2" = 3,
+                "DSp24" = 4,
+                "DSp48" = 5,
                 USE.NAMES = FALSE
             )),
-            transcription = factor(transcription, levels = c("N", "SS")),
-            no_transcription = as.factor(sapply(
+            
+            no_transcription = as.numeric(sapply( 
                 as.character(transcription),
                 switch,
                 "N" = 0,
                 "SS" = 1,
                 USE.NAMES = FALSE
             )),
-            replicate = factor(replicate, levels = c("rep1", "rep2")),
-            no_replicate = as.factor(sapply(
+            
+            no_replicate = as.numeric(sapply( 
                 as.character(replicate),
                 switch,
                 "rep1" = 0,
                 "rep2" = 1,
                 USE.NAMES = FALSE
             )),
-            technical = factor(technical, levels = "tech1"),
-            no_technical = as.factor(sapply(
+            
+            no_technical = as.numeric(sapply( 
                 as.character(technical),
                 switch,
                 "tech1" = 0,
+                "tech2" = 1,
                 USE.NAMES = FALSE
+            ))
+        )
+} else if(samples %in% c(
+    "Rrp6∆.timecourse", "Rrp6∆.timecourse-G1-Q.SS", "Rrp6∆.timecourse-G1.SS",
+    "Rrp6∆.timecourse-G1-Q.N-SS", "Rrp6∆.timecourse.G1-SS.Q-N"
+)) {
+    t_meta <- t_meta %>%
+        dplyr::mutate(
+            genotype = factor(genotype, levels = c("WT", "r6n")),
+            
+            state = factor(state, levels = c(
+                "G1", "Q", "DSm2", "DSp2", "DSp24", "DSp48"
             )),
             
-        )
-} else if(samples %in% c("Ovation_Rrp6∆_test", "Rrp6∆")) {
-    #  Strip string "ovn" from "WTovn"
-    colnames(t_mat) <- colnames(t_mat) %>%
-        gsub("WT_", "WT_tcn_", .) %>%
-        gsub("r6n_", "r6n_tcn_", .) %>%
-        gsub("ovn", "_ovn", .)
-    
-    #  Create a metadata matrix for DESeq2, PCAtools, etc.
-    t_meta <- colnames(t_mat)[12:ncol(t_mat)] %>%
-        stringr::str_split("_") %>%
-        as.data.frame() %>%
-        t() %>%
-        tibble::as_tibble(.name_repair = "unique") %>%
-        dplyr::rename(
-            genotype = ...1, kit = ...2, state = ...3,
-            transcription = ...4, replicate = ...5, technical = ...6
-        ) %>%
-        dplyr::mutate(rownames = colnames(t_mat)[12:ncol(t_mat)]) %>%
-        tibble::column_to_rownames("rownames") %>%  # DESeq2 requires rownames
-        dplyr::mutate(
-            genotype = factor(genotype, level = c("WT", "r6n")),
-            no_genotype = as.factor(sapply(
+            transcription = factor(transcription, levels = c("N", "SS")),
+            
+            replicate = factor(replicate, levels = c("rep1", "rep2")),
+            
+            technical = factor(technical, levels = c("tech1", "tech2")),
+            
+            no_genotype = as.numeric(sapply( 
                 as.character(genotype),
                 switch,
                 "WT" = 0,
                 "r6n" = 1,
                 USE.NAMES = FALSE
             )),
-            kit = factor(kit, levels = c("tcn", "ovn")),
-            no_kit = as.factor(sapply(
-                as.character(kit),
-                switch,
-                "tcn" = 0,
-                "ovn" = 1,
-                USE.NAMES = FALSE
-            )),
-            state = factor(state, levels = c("G1", "Q")),
-            no_state = as.factor(sapply(
+            
+            no_state = as.numeric(sapply( 
                 as.character(state),
                 switch,
-                "G1" = 0,
-                "Q" = 1,
+                "DSm2" = 0,
+                "DSp2" = 1,
+                "DSp24" = 2,
+                "DSp48" = 3,
+                "G1" = 4,
+                "Q" = 5,
                 USE.NAMES = FALSE
             )),
-            transcription = factor(transcription, levels = c("N", "SS")),
-            no_transcription = as.factor(sapply(
+            
+            no_transcription = as.numeric(sapply( 
                 as.character(transcription),
                 switch,
                 "N" = 0,
                 "SS" = 1,
                 USE.NAMES = FALSE
             )),
-            replicate = factor(replicate, levels = c("rep1", "rep2")),
-            no_replicate = as.factor(sapply(
+            
+            no_replicate = as.numeric(sapply( 
                 as.character(replicate),
                 switch,
                 "rep1" = 0,
                 "rep2" = 1,
                 USE.NAMES = FALSE
             )),
-            technical = factor(technical, levels = c("tech1", "tech2")),
-            no_technical = as.factor(sapply(
+            
+            no_technical = as.numeric(sapply( 
                 as.character(technical),
                 switch,
                 "tech1" = 0,
                 "tech2" = 1,
                 USE.NAMES = FALSE
-            )),
-            gt_tx = factor(paste(genotype, transcription, sep = "_")),
-            no_gt_tx = as.factor(sapply(
-                as.character(gt_tx),
-                switch,
-                "r6n_SS" = 3,
-                "r6n_N" = 2,
-                "WT_SS" = 1,
-                "WT_N" = 0,
-                USE.NAMES = FALSE
-            )),
-            st_gt_tx = factor(
-                paste(state, genotype, transcription, sep = "_")
-            ),
-            no_st_gt_tx = as.factor(sapply(
-                as.character(st_gt_tx),
-                switch,
-                "G1_r6n_SS" = 7,
-                "G1_r6n_N" = 6,
-                "Q_r6n_SS" = 5,
-                "Q_r6n_N" = 4,
-                "G1_WT_SS" = 3,
-                "G1_WT_N" = 2,
-                "Q_WT_SS" = 1,
-                "Q_WT_N" = 0,
-                USE.NAMES = FALSE
             ))
-        ) %>%
-        dplyr::relocate(c(gt_tx, st_gt_tx), .after = genotype) %>%
-        dplyr::relocate(c(no_gt_tx, no_st_gt_tx), .after = no_genotype)
-    
-    if(samples == "Ovation_Rrp6∆_test") {
-        t_meta$strange <- ifelse(
-            t_meta$state == "Q" &
-            t_meta$genotype == "WT" &
-            t_meta$transcription == "SS" &
-            t_meta$kit == "ovn" &
-            t_meta$replicate == "rep1" &
-            t_meta$technical == "tech1",
-            "strange",
-            "not_strange"
         )
-        t_meta$no_strange = as.factor(sapply(
-            as.character(t_meta$strange),
-            switch,
-            "not_strange" = 0,
-            "strange" = 1,
-            USE.NAMES = FALSE
-        ))
-        
-        t_meta <- t_meta %>%
-            dplyr::relocate(strange, .after = technical) %>%
-            dplyr::relocate(no_strange, .after = no_technical)
-    }
-} else if(samples == "Ovation_Tecan_test") {
-    #  If "test" is in column name, convert "rep2" to "rep2-Tecan"
-    colnames(t_mat) <- ifelse(
-        stringr::str_detect(colnames(t_mat), "test"),
-        stringr::str_replace_all(
-            colnames(t_mat)[stringr::str_detect(colnames(t_mat), "test")],
-            "rep2",
-            "rep2-Tecan"
-        ),
-        colnames(t_mat)
-    )
-    
-    #  Strip string "ovn" from "WTovn"
-    colnames(t_mat) <- colnames(t_mat) %>%
-        gsub("ovn", "", .) %>%
-        gsub("test", "", .)
-    
+} else if(samples == "Nab3AID.Q.N-SS") {
     #  Create a metadata matrix for DESeq2, PCAtools, etc.
-    t_meta <- colnames(t_mat)[12:ncol(t_mat)] %>%
-        stringr::str_split("_") %>%
-        as.data.frame() %>%
-        t() %>%
-        tibble::as_tibble(.name_repair = "unique") %>%
-        dplyr::rename(
-            genotype = ...1, state = ...2, transcription = ...3,
-            replicate = ...4, technical = ...5
-        ) %>%
-        dplyr::mutate(rownames = colnames(t_mat)[12:ncol(t_mat)]) %>%
-        tibble::column_to_rownames("rownames") %>%  # DESeq2 requires rownames
+    t_meta <- t_meta %>%
         dplyr::mutate(
-            genotype = factor(genotype, level = "WT"),
-            no_genotype = as.factor(sapply(
+            genotype = factor(genotype, levels = c("od", "n3d")),
+            
+            state = factor(state, levels = "Q"),
+            
+            transcription = factor(transcription, levels = c("N", "SS")),
+            
+            replicate = factor(replicate, levels = c("rep1", "rep2")),
+            
+            technical = factor(technical, levels = "tech1"),
+            
+            no_genotype = as.numeric(sapply( 
                 as.character(genotype),
                 switch,
-                "WT" = 0,
+                "od" = 0,
+                "n3d" = 1,
                 USE.NAMES = FALSE
             )),
-            state = factor(state, levels = c("G1", "Q")),
-            no_state = as.factor(sapply(
+            
+            no_state = as.numeric(sapply( 
                 as.character(state),
                 switch,
-                "G1" = 0,
-                "Q" = 1,
+                "Q" = 0,
                 USE.NAMES = FALSE
             )),
-            transcription = factor(transcription, levels = c("N", "SS")),
-            no_transcription = as.factor(sapply(
+            
+            no_transcription = as.numeric(sapply( 
                 as.character(transcription),
                 switch,
                 "N" = 0,
                 "SS" = 1,
                 USE.NAMES = FALSE
             )),
-            replicate = factor(
-                replicate, levels = c("rep1", "rep2", "rep2-Tecan")
-            ),
-            no_replicate = as.factor(sapply(
+            
+            no_replicate = as.numeric(sapply( 
                 as.character(replicate),
                 switch,
                 "rep1" = 0,
                 "rep2" = 1,
-                "rep2-Tecan" = 2,
                 USE.NAMES = FALSE
             )),
-            technical = factor(technical, levels = "tech1"),
-            no_technical = as.factor(sapply(
+            
+            no_technical = as.numeric(sapply( 
                 as.character(technical),
                 switch,
                 "tech1" = 0,
                 USE.NAMES = FALSE
-            )),
-            gt_tx = factor(paste(genotype, transcription, sep = "_")),
-            no_gt_tx = as.factor(sapply(
-                as.character(gt_tx),
-                switch,
-                "WT_SS" = 1,
-                "WT_N" = 0,
-                USE.NAMES = FALSE
-            )),
-            st_tx = factor(
-                paste(state, transcription, sep = "_")
-            ),
-            no_st_tx = as.factor(sapply(
-                as.character(st_tx),
-                switch,
-                "G1_SS" = 3,
-                "G1_N" = 2,
-                "Q_SS" = 1,
-                "Q_N" = 0,
-                USE.NAMES = FALSE
             ))
         )
+}
+
+#  Add columns of combined variables
+t_meta <- t_meta %>%
+    dplyr::mutate(
+        gt_st = factor(paste(genotype, state, sep = "_")),
+        gt_tx = factor(paste(genotype, transcription, sep = "_")),
+        st_tx = factor(paste(state, transcription, sep = "_")),
+        gt_st_tx = factor(paste(genotype, state, transcription, sep = "_")),
+    ) %>%
+    dplyr::relocate(c(gt_st, gt_tx, st_tx, gt_st_tx), .before = genotype)
+
+#  Drop any unused factor levels
+forcats::fct_drop(t_meta$genotype)
+forcats::fct_drop(t_meta$state)
+forcats::fct_drop(t_meta$transcription)
+forcats::fct_drop(t_meta$replicate)
+forcats::fct_drop(t_meta$technical)
+
+
+#  Add extra model variables for certain experiments --------------------------
+#+ ...in particular, those that involve both Rrp6∆ and Nab3-AID 
+if(samples %in% c(
+    "Nab3AID.Q.N-SS_Rrp6∆.Q.N-SS", "Nab3AID.Q.SS_Rrp6∆.Q.SS",
+    "Nab3AID.Q.N-SS_Rrp6∆.timecourse-G1-Q.N-SS"
+)) {
+    t_meta <- t_meta %>%
+        dplyr::mutate(
+            day = factor(
+                ifelse(
+                    stringr::str_detect(rownames(t_meta), "n3d|od"),
+                    "day7",
+                    ifelse(
+                        stringr::str_detect(rownames(t_meta), "DSm2_|DSp2_"),
+                        "day2",
+                        ifelse(
+                            stringr::str_detect(rownames(t_meta), "DSp24_"),
+                            "day3",
+                            ifelse(
+                                stringr::str_detect(rownames(t_meta), "DSp48_"),
+                                "day4",
+                                ifelse(
+                                    stringr::str_detect(rownames(t_meta), "r6n_G1|WT_G1"),
+                                    "day1",
+                                    ifelse(
+                                        stringr::str_detect(rownames(t_meta), "r6n_Q|WT_Q"),
+                                        "day8",
+                                        NA_character_
+                                    )
+                                )
+                            )
+                        )
+                    )
+                ),
+                levels = c("day7", "day1", "day8", "day2", "day3", "day4")
+            ),
+            
+            no_day = as.numeric(sapply( 
+                as.character(day),
+                switch,
+                "day7" = 0,
+                "day1" = 1,
+                "day8" = 2,
+                "day2" = 3,
+                "day3" = 4,
+                "day4" = 5,
+                USE.NAMES = FALSE
+            )),
+            
+            aux = factor(
+                ifelse(
+                    stringr::str_detect(rownames(t_meta), "n3d|od"),
+                    TRUE,
+                    FALSE
+                ),
+                levels = c("TRUE", "FALSE")
+            ),
+            
+            no_aux = as.numeric(sapply( 
+                as.character(aux),
+                switch,
+                "TRUE" = 0,
+                "FALSE" = 1,
+                USE.NAMES = FALSE
+            )),
+            
+            tc = factor(
+                ifelse(
+                    stringr::str_detect(rownames(t_meta), "DS"),
+                    TRUE,
+                    FALSE
+                ),
+                levels = c("TRUE", "FALSE")
+            ),
+            
+            no_tc = as.numeric(sapply( 
+                as.character(tc),
+                switch,
+                "TRUE" = 0,
+                "FALSE" = 1,
+                USE.NAMES = FALSE
+            ))
+        ) %>%
+        dplyr::relocate(c(day, aux, tc), .after = technical)
     
-    t_meta$kit <- factor(ifelse(
-        t_meta$replicate != "rep2-Tecan",
-        "ovn",
-        "tcn"
-    ))
-    t_meta$no_kit <- as.factor(sapply(
-        as.character(t_meta$kit),
-        switch,
-        "tcn" = 1,
-        "ovn" = 0,
-        USE.NAMES = FALSE
-    ))
+    #  Drop any unused factor levels
+    forcats::fct_drop(t_meta$day)
+    forcats::fct_drop(t_meta$aux)
+    forcats::fct_drop(t_meta$tc)
 }
 
 
@@ -1456,8 +1567,6 @@ t_counts <- t_mat[, 12:ncol(t_mat)] %>%
 
 
 #  Perform either a TPM or rlog normalization ---------------------------------
-run_norm <- "rlog"  #ARGUMENT
-# run_norm <- "tpm"  #ARGUMENT
 if(run_norm %notin% c("rlog", "tpm")) {
     stop(paste(
         "Argument \"run_norm\" must be \"rlog\" or \"tpm\". Stopping the",
@@ -1467,16 +1576,12 @@ if(run_norm %notin% c("rlog", "tpm")) {
 
 if(run_norm == "tpm") {
     #  Make the dds object --------------------------------
-    if(samples == "Ovation") {
-        dds <- DESeq2::DESeqDataSetFromMatrix(
-            countData = t_counts,
-            colData = t_meta,
-            design = ~1,
-            rowRanges = g_pos
-        )
-    } else if(type == "something_else") {
-        #  Do something...
-    }
+    dds <- DESeq2::DESeqDataSetFromMatrix(
+        countData = t_counts,
+        colData = t_meta,
+        design = ~1,
+        rowRanges = g_pos
+    )
     
     #  Isolate raw S. cerevisiae counts -------------------
     counts_raw <- dds[dds@rowRanges$genome == "S_cerevisiae", ] %>%
@@ -1516,9 +1621,24 @@ if(run_norm == "tpm") {
         make.unique()
 } else if(run_norm == "rlog") {
     #  Make the dds object --------------------------------
-    if(samples %in% c(
-        "Ovation", "Ovation_Rrp6∆_test", "Ovation_Tecan_test", "Rrp6∆"
-    )) {
+    use_model <- FALSE
+    if(base::isTRUE(use_model)) {
+        if(samples == "Rrp6∆.timecourse-G1-Q.SS") {
+            dds <- DESeq2::DESeqDataSetFromMatrix(
+                countData = t_counts,
+                colData = t_meta,
+                design = ~technical + genotype,
+                rowRanges = g_pos
+            )
+        } else {
+            dds <- DESeq2::DESeqDataSetFromMatrix(
+                countData = t_counts,
+                colData = t_meta,
+                design = ~1,
+                rowRanges = g_pos
+            )
+        }
+    } else {
         dds <- DESeq2::DESeqDataSetFromMatrix(
             countData = t_counts,
             colData = t_meta,
@@ -1529,11 +1649,15 @@ if(run_norm == "tpm") {
     
     #  Do size-factor estimation --------------------------
     if(samples %in% c(
-        "Ovation", "Ovation_Rrp6∆_test", "Ovation_Tecan_test", "Rrp6∆"
+        "Ovation", "test.Ovation_Rrp6∆", "test.Ovation_Tecan", "Rrp6∆",
+        "Rrp6∆.timecourse-G1-Q.SS", "Rrp6∆.timecourse-G1.SS",
+        "Rrp6∆.timecourse-G1-Q.N-SS", "Nab3AID.Q.N-SS_Rrp6∆.Q.N-SS",
+        "Nab3AID.Q.SS_Rrp6∆.Q.SS",
+        "Nab3AID.Q.N-SS_Rrp6∆.timecourse-G1-Q.N-SS"
     )) {
         use_KL <- FALSE
-    } else if(samples == "something_else") {
-        #  Do something...
+    } else {
+        use_KL <- TRUE
     }
     
     if(base::isTRUE(use_KL)) {
@@ -1554,24 +1678,44 @@ if(run_norm == "tpm") {
         blind = FALSE
     )
     
-    #  If necessary, remove batch effects
-    if(samples == "Ovation_Rrp6∆_test") {
-        norm_r <- limma::removeBatchEffect(
-            SummarizedExperiment::assay(rld),
-            # batch = rld$technical,
-            # batch = rld$replicate,
-            # batch = rld$kit,
-            batch = rld$strange,
-            design = model.matrix(
-                ~1,
-                # SummarizedExperiment::colData(rld)[, 1:6]        # technical
-                # SummarizedExperiment::colData(rld)[, c(1:5, 7)]  # replicate
-                # SummarizedExperiment::colData(rld)[, c(1:9)]     # kit
-                SummarizedExperiment::colData(rld)[, c(1:8)]       # strange
-            )
-        ) %>%
-            as.data.frame()
-        # norm_r <- SummarizedExperiment::assay(rld) %>% as.data.frame()
+    #  Remove batch effects in some samples ---------------
+    if(base::isTRUE(run_batch_correction)) {
+        if(samples %in% c(
+            "Nab3AID.Q.N-SS_Rrp6∆.Q.N-SS", "Nab3AID.Q.SS_Rrp6∆.Q.SS"
+        )) {
+            norm_r <- limma::removeBatchEffect(
+                SummarizedExperiment::assay(rld),
+                batch = rld$aux,
+                design = model.matrix(
+                    ~1,
+                    SummarizedExperiment::colData(rld)[
+                        , colnames(SummarizedExperiment::colData(rld)) %in% c(
+                            "genotype", "state", "transcription", "replicate",
+                            "technical", "tc"
+                        )
+                    ]
+                )
+            ) %>%
+                as.data.frame()
+        } else if(samples %in% c(
+            "Rrp6∆.timecourse-G1-Q.SS", "Rrp6∆.timecourse-G1.SS",
+            "Rrp6∆.timecourse-G1-Q.N-SS"
+        )) {
+            norm_r <- limma::removeBatchEffect(
+                SummarizedExperiment::assay(rld),
+                batch = rld$technical,
+                design = model.matrix(
+                    ~1,
+                    SummarizedExperiment::colData(rld)[
+                        , colnames(SummarizedExperiment::colData(rld)) %in%
+                            c("genotype", "state", "transcription", "replicate")
+                    ]
+                )
+            ) %>%
+                as.data.frame()
+        } else {
+            norm_r <- SummarizedExperiment::assay(rld) %>% as.data.frame()
+        }
     } else {
         norm_r <- SummarizedExperiment::assay(rld) %>% as.data.frame()
     }
@@ -1601,242 +1745,389 @@ if(run_norm == "tpm") {
 
 
 #  Run PCA ====================================================================
-#  Arguments for run_PCA_pipeline()
-# 
-# :param counts: ... <data.frame>
-# :param metadata: ... <data.frame>
-# :param feat_id: ... <character vector>
-# :param transcription: TRUE if variable transcription is in model matrix <logical>
-# :param meta_color: ... <character>
-# :param meta_shape: ... <character>
-# :return results_list: ... <list>
-
-#TODO #PICKUPHERE
-#Figure out how to add details to the biplots for when we need to look at state, transcription, and genotype all at the same time (can use a new package called ggpattern; would need to install it)
-pca_exp <- run_PCA_pipeline(
-    counts = pca_counts,
-    metadata = t_meta,
-    feat_id = pca_feat_id,
-    x_min_biplot = -100,
-    x_max_biplot = 100,
-    y_min_biplot = -100,
-    y_max_biplot = 100,
-    x_min_loadings_plot = -0.1,
-    x_max_loadings_plot = 0.1,
-    y_min_loadings_plot = -0.1,
-    y_max_loadings_plot = 0.1,
-    n_loadings = 10L,
-    meta_color = "st_tx",
-    meta_shape = "replicate",
-    plot_loadings_pct = FALSE,
-    drop_md_levels = "gt_tx"
-)
+if(base::isTRUE(run_PCA)) {
+    if(run_norm == "rlog") {
+        input_counts <- pca_counts
+    } else {
+        input_counts <- dplyr::mutate_if(pca_counts + 1, is.numeric, log2)
+    }
+    
+    if(samples %in% c("Rrp6∆.timecourse-G1.SS", "Rrp6∆.timecourse-G1-Q.SS")) {
+        meta_color <- "genotype"
+        meta_shape <- "state"
+    } else if (samples == "Nab3AID.Q.N-SS_Rrp6∆.Q.N-SS") {
+        meta_color <- "gt_st"
+        meta_shape <- "transcription"
+    } else if(samples == "Nab3AID.Q.SS_Rrp6∆.Q.SS") {
+        meta_color <- "genotype"
+        meta_shape <- "replicate"
+    } else {
+        meta_color <- "state"
+        meta_shape <- "transcription"
+    }
+    
+    pca_exp <- run_PCA_pipeline(
+        counts = input_counts,
+        metadata = t_meta,
+        feat_id = pca_feat_id,
+        x_min_biplot = ifelse(run_norm == "rlog", -50, -100),
+        x_max_biplot = ifelse(run_norm == "rlog", 50, 100),
+        y_min_biplot = ifelse(run_norm == "rlog", -50, -100),
+        y_max_biplot = ifelse(run_norm == "rlog", 50, 100),
+        x_min_loadings_plot = ifelse(run_norm == "rlog", -0.1, -0.075),
+        x_max_loadings_plot = ifelse(run_norm == "rlog", 0.1, 0.075),
+        y_min_loadings_plot = ifelse(run_norm == "rlog", -0.1, -0.075),
+        y_max_loadings_plot = ifelse(run_norm == "rlog", 0.1, 0.075),
+        n_loadings = 10L,
+        meta_color = meta_color,
+        meta_shape = meta_shape,
+        plot_loadings_pct = FALSE,
+        drop_md_levels = c("gt_st", "gt_tx", "st_tx", "gt_st_tx", "tc", "day")
+    )
+}
 
 run <- TRUE
 if(base::isTRUE(run)) {
-    # pca_exp$`01_pca`
+    # pca_exp$`02_horn`$n %>% print()
+    # pca_exp$`03_elbow` %>% as.numeric() %>% print()
+    pca_exp$`04_p_scree` %>% print()
+    pca_exp$`12_p_cor` %>% print()
     
+    # pca_exp$`10_p_images`$PCAtools.PC2.v.PC5 %>% print()
+    # pca_exp$`10_p_images`$PCAtools.PC2.v.PC4
+    pca_exp$`10_p_images`$PCAtools.PC2.v.PC3 %>% print()
+    # pca_exp$`10_p_images`$PCAtools.PC1.v.PC5 %>% print()
+    # pca_exp$`10_p_images`$PCAtools.PC1.v.PC4 %>% print()
+    pca_exp$`10_p_images`$PCAtools.PC1.v.PC3 %>% print()
+    pca_exp$`10_p_images`$PCAtools.PC1.v.PC2 %>% print()
+    
+    # pca_exp$`10_p_images`$KA.PC1.v.PC2
+}
+
+if(base::isTRUE(write_norm_counts_rds)) {
+    if(base::isTRUE(exists("norm_r"))) {
+        to_plot <- norm_r
+        suffix <- ".counts-rlog.tsv"
+    } else {
+        to_plot <- norm_t
+        suffix <- ".counts-TPM.tsv"
+    }
+    
+    readr::write_tsv(
+        to_plot,
+        paste0(
+            getwd(), "/",
+            "data.", date, "__",
+            samples, "__",
+            type, suffix
+        )
+    )
+}
+
+if(base::isTRUE(write_PCA_results)) {
     pca_exp$`02_horn`$n %>% print()
     pca_exp$`03_elbow` %>% as.numeric() %>% print()
     
-    pca_exp$`04_p_scree` %>% print()
-    ggsave(paste0(
-        getwd(), "/",
-        "PCA.2023-0621.WT_G1-Q_N-SS.",
-        stringr::str_replace_all(samples, "_", "-"), ".",
-        type, ".scree.png"
-    ))
-    
-    pca_exp$`08_top_loadings_pos`$PC1 %>%
-        tibble::rownames_to_column() %>%
-        readr::write_tsv(paste0(
+    run <- TRUE
+    if(base::isTRUE(run)) {
+        pca_exp$`04_p_scree` %>% print()
+        ggsave(paste0(
             getwd(), "/",
-            "PCA.2023-0621.WT_G1-Q_N-SS.",
-            stringr::str_replace_all(samples, "_", "-"), ".",
-            type, ".loadings-list.PC1-pos.tsv"
+            "PCA.", date, "__",
+            samples, "__",
+            type, ".scree.png"
         ))
-    pca_exp$`08_top_loadings_pos`$PC2 %>%
-        tibble::rownames_to_column() %>%
-        readr::write_tsv(paste0(
+    }
+    
+    
+    run <- FALSE
+    if(base::isTRUE(run)) {
+        if(pca_exp$`03_elbow` >= 2) {
+            pca_exp$`08_top_loadings_pos`$PC1 %>%
+            tibble::rownames_to_column() %>%
+            readr::write_tsv(paste0(
+                getwd(), "/",
+                "PCA.", date, "__",
+                samples, "__",
+                type, ".loadings-list.PC1-pos.tsv"
+            ))
+        pca_exp$`09_top_loadings_neg`$PC1 %>%
+            tibble::rownames_to_column() %>%
+            readr::write_tsv(paste0(
+                getwd(), "/",
+                "PCA.", date, "__",
+                samples, "__",
+                type, ".loadings-list.PC1-neg.tsv"
+            ))
+        
+        pca_exp$`08_top_loadings_pos`$PC2 %>%
+            tibble::rownames_to_column() %>%
+            readr::write_tsv(paste0(
+                getwd(), "/",
+                "PCA.", date, "__",
+                samples, "__",
+                type, ".loadings-list.PC2-pos.tsv"
+            ))
+        pca_exp$`09_top_loadings_neg`$PC2 %>%
+            tibble::rownames_to_column() %>%
+            readr::write_tsv(paste0(
+                getwd(), "/",
+                "PCA.", date, "__",
+                samples, "__",
+                type, ".loadings-list.PC2-neg.tsv"
+            ))
+        }
+        
+        if(pca_exp$`03_elbow` >= 3) {
+            pca_exp$`08_top_loadings_pos`$PC3 %>%
+                tibble::rownames_to_column() %>%
+                readr::write_tsv(paste0(
+                    getwd(), "/",
+                    "PCA.", date, "__",
+                    samples, "__",
+                    type, ".loadings-list.PC3-pos.tsv"
+                ))
+            pca_exp$`09_top_loadings_neg`$PC3 %>%
+                tibble::rownames_to_column() %>%
+                readr::write_tsv(paste0(
+                    getwd(), "/",
+                    "PCA.", date, "__",
+                    samples, "__",
+                    type, ".loadings-list.PC3-neg.tsv"
+                ))
+        }
+        
+        if(pca_exp$`03_elbow` >= 4) {
+            pca_exp$`08_top_loadings_pos`$PC4 %>%
+                tibble::rownames_to_column() %>%
+                readr::write_tsv(paste0(
+                    getwd(), "/",
+                    "PCA.", date, "__",
+                    samples, "__",
+                    type, ".loadings-list.PC4-pos.tsv"
+                ))
+            pca_exp$`09_top_loadings_neg`$PC4 %>%
+                tibble::rownames_to_column() %>%
+                readr::write_tsv(paste0(
+                    getwd(), "/",
+                    "PCA.", date, "__",
+                    samples, "__",
+                    type, ".loadings-list.PC4-neg.tsv"
+                ))
+        }
+        
+        if(pca_exp$`03_elbow` >= 5) {
+            pca_exp$`08_top_loadings_pos`$PC5 %>%
+                tibble::rownames_to_column() %>%
+                readr::write_tsv(paste0(
+                    getwd(), "/",
+                    "PCA.", date, "__",
+                    samples, "__",
+                    type, ".loadings-list.PC5-pos.tsv"
+                ))
+            pca_exp$`09_top_loadings_neg`$PC5 %>%
+                tibble::rownames_to_column() %>%
+                readr::write_tsv(paste0(
+                    getwd(), "/",
+                    "PCA.", date, "__",
+                    samples, "__",
+                    type, ".loadings-list.PC5-neg.tsv"
+                ))
+        }
+    }
+    
+    
+    run <- TRUE
+    if(base::isTRUE(run)) {
+        pca_exp$`10_p_images`$PCAtools.PC1.v.PC2 %>% print()
+        ggsave(paste0(
             getwd(), "/",
-            "PCA.2023-0621.WT_G1-Q_N-SS.",
-            stringr::str_replace_all(samples, "_", "-"), ".",
-            type, ".loadings-list.PC2-pos.tsv"
+            "PCA.", date, "__",
+            samples, "__",
+            type, ".biplot.PC1-vs-PC2.png"
         ))
-    pca_exp$`08_top_loadings_pos`$PC3 %>%
-        tibble::rownames_to_column() %>%
-        readr::write_tsv(paste0(
+    }
+    
+    
+    run <- FALSE
+    if(base::isTRUE(run)) {
+        pca_exp$`10_p_images`$KA.PC1.v.PC2[1] %>% print()
+        ggsave(paste0(
             getwd(), "/",
-            "PCA.2023-0621.WT_G1-Q_N-SS.",
-            stringr::str_replace_all(samples, "_", "-"), ".",
-            type, ".loadings-list.PC3-pos.tsv"
+            "PCA.", date, "__",
+            samples, "__",
+            type, ".loadings-plot.PC1-vs-PC2.PC1-pos.png"
         ))
-
-    pca_exp$`09_top_loadings_neg`$PC1 %>%
-        tibble::rownames_to_column() %>%
-        readr::write_tsv(paste0(
+        
+        pca_exp$`10_p_images`$KA.PC1.v.PC2[2] %>% print()
+        ggsave(paste0(
             getwd(), "/",
-            "PCA.2023-0621.WT_G1-Q_N-SS.",
-            stringr::str_replace_all(samples, "_", "-"), ".",
-            type, ".loadings-list.PC1-neg.tsv"
+            "PCA.", date, "__",
+            samples, "__",
+            type, ".loadings-plot.PC1-vs-PC2.PC2-pos.png"
         ))
-    pca_exp$`09_top_loadings_neg`$PC2 %>%
-        tibble::rownames_to_column() %>%
-        readr::write_tsv(paste0(
+        
+        pca_exp$`10_p_images`$KA.PC1.v.PC2[3] %>% print()
+        ggsave(paste0(
             getwd(), "/",
-            "PCA.2023-0621.WT_G1-Q_N-SS.",
-            stringr::str_replace_all(samples, "_", "-"), ".",
-            type, ".loadings-list.PC2-neg.tsv"
+            "PCA.", date, "__",
+            samples, "__",
+            type, ".loadings-plot.PC1-vs-PC2.PC1-neg.png"
         ))
-    pca_exp$`09_top_loadings_neg`$PC3 %>%
-        tibble::rownames_to_column() %>%
-        readr::write_tsv(paste0(
+        
+        pca_exp$`10_p_images`$KA.PC1.v.PC2[4] %>% print()
+        ggsave(paste0(
             getwd(), "/",
-            "PCA.2023-0621.WT_G1-Q_N-SS.",
-            stringr::str_replace_all(samples, "_", "-"), ".",
-            type, ".loadings-list.PC3-neg.tsv"
+            "PCA.", date, "__",
+            samples, "__",
+            type, ".loadings-plot.PC1-vs-PC2.PC2-neg.png"
         ))
+    }
     
-    pca_exp$`10_p_images`$PCAtools.PC1.v.PC2 %>% print()
-    ggsave(paste0(
-        getwd(), "/",
-        "PCA.2023-0621.WT_G1-Q_N-SS.",
-        stringr::str_replace_all(samples, "_", "-"), ".",
-        type, ".biplot.PC1-vs-PC2.png"
-    ))
-    
-    pca_exp$`10_p_images`$KA.PC1.v.PC2[1] %>% print()
-    ggsave(paste0(
-        getwd(), "/",
-        "PCA.2023-0621.WT_G1-Q_N-SS.",
-        stringr::str_replace_all(samples, "_", "-"), ".",
-        type, ".loadings-plot.PC1-vs-PC2.PC1-pos.png"
-    ))
-    
-    pca_exp$`10_p_images`$KA.PC1.v.PC2[2] %>% print()
-    ggsave(paste0(
-        getwd(), "/",
-        "PCA.2023-0621.WT_G1-Q_N-SS.",
-        stringr::str_replace_all(samples, "_", "-"), ".",
-        type, ".loadings-plot.PC1-vs-PC2.PC2-pos.png"
-    ))
-    
-    pca_exp$`10_p_images`$KA.PC1.v.PC2[3] %>% print()
-    ggsave(paste0(
-        getwd(), "/",
-        "PCA.2023-0621.WT_G1-Q_N-SS.",
-        stringr::str_replace_all(samples, "_", "-"), ".",
-        type, ".loadings-plot.PC1-vs-PC2.PC1-neg.png"
-    ))
-    
-    pca_exp$`10_p_images`$KA.PC1.v.PC2[4] %>% print()
-    ggsave(paste0(
-        getwd(), "/",
-        "PCA.2023-0621.WT_G1-Q_N-SS.",
-        stringr::str_replace_all(samples, "_", "-"), ".",
-        type, ".loadings-plot.PC1-vs-PC2.PC2-neg.png"
-    ))
-    
-    pca_exp$`10_p_images`$PCAtools.PC1.v.PC3 %>% print()
-    ggsave(paste0(
-        getwd(), "/",
-        "PCA.2023-0621.WT_G1-Q_N-SS.",
-        stringr::str_replace_all(samples, "_", "-"), ".",
-        type, ".biplot.PC1-vs-PC3.png"
-    ))
-    
-    pca_exp$`10_p_images`$KA.PC1.v.PC3[1] %>% print()
-    ggsave(paste0(
-        getwd(), "/",
-        "PCA.2023-0621.WT_G1-Q_N-SS.",
-        stringr::str_replace_all(samples, "_", "-"), ".",
-        type, ".loadings-plot.PC1-vs-PC3.PC1-pos.png"
-    ))
-    
-    pca_exp$`10_p_images`$KA.PC1.v.PC3[2] %>% print()
-    ggsave(paste0(
-        getwd(), "/",
-        "PCA.2023-0621.WT_G1-Q_N-SS.",
-        stringr::str_replace_all(samples, "_", "-"), ".",
-        type, ".loadings-plot.PC1-vs-PC3.PC3-pos.png"
-    ))
-    
-    pca_exp$`10_p_images`$KA.PC1.v.PC3[3] %>% print()
-    ggsave(paste0(
-        getwd(), "/",
-        "PCA.2023-0621.WT_G1-Q_N-SS.",
-        stringr::str_replace_all(samples, "_", "-"), ".",
-        type, ".loadings-plot.PC1-vs-PC3.PC1-neg.png"
-    ))
-    
-    pca_exp$`10_p_images`$KA.PC1.v.PC3[4] %>% print()
-    ggsave(paste0(
-        getwd(), "/",
-        "PCA.2023-0621.WT_G1-Q_N-SS.",
-        stringr::str_replace_all(samples, "_", "-"), ".",
-        type, ".loadings-plot.PC1-vs-PC3.PC3-neg.png"
-    ))
-    
-    # pca_exp$`10_p_images`$PCAtools.PC1.v.PC4
-    # pca_exp$`10_p_images`$KA.PC1.v.PC4 %>% print()
-    
-    pca_exp$`10_p_images`$PCAtools.PC2.v.PC3 %>% print()
-    ggsave(paste0(
-        getwd(), "/",
-        "PCA.2023-0621.WT_G1-Q_N-SS.",
-        stringr::str_replace_all(samples, "_", "-"), ".",
-        type, ".biplot.PC2-vs-PC3.png"
-    ))
-    
-    pca_exp$`10_p_images`$KA.PC2.v.PC3[1] %>% print()
-    ggsave(paste0(
-        getwd(), "/",
-        "PCA.2023-0621.WT_G1-Q_N-SS.",
-        stringr::str_replace_all(samples, "_", "-"), ".",
-        type, ".loadings-plot.PC2-vs-PC3.PC2-pos.png"
-    ))
-    
-    pca_exp$`10_p_images`$KA.PC2.v.PC3[2] %>% print()
-    ggsave(paste0(
-        getwd(), "/",
-        "PCA.2023-0621.WT_G1-Q_N-SS.",
-        stringr::str_replace_all(samples, "_", "-"), ".",
-        type, ".loadings-plot.PC2-vs-PC3.PC3-pos.png"
-    ))
-    
-    pca_exp$`10_p_images`$KA.PC2.v.PC3[3] %>% print()
-    ggsave(paste0(
-        getwd(), "/",
-        "PCA.2023-0621.WT_G1-Q_N-SS.",
-        stringr::str_replace_all(samples, "_", "-"), ".",
-        type, ".loadings-plot.PC2-vs-PC3.PC2-neg.png"
-    ))
-    
-    pca_exp$`10_p_images`$KA.PC2.v.PC3[4] %>% print()
-    ggsave(paste0(
-        getwd(), "/",
-        "PCA.2023-0621.WT_G1-Q_N-SS.",
-        stringr::str_replace_all(samples, "_", "-"), ".",
-        type, ".loadings-plot.PC2-vs-PC3.PC3-neg.png"
-    ))
-    
-    # pca_exp$`10_p_images`$PCAtools.PC2.v.PC4 %>% print()
-    # pca_exp$`10_p_images`$KA.PC2.v.PC4 %>% print()
-    
-    # pca_exp$`10_p_images`$PCAtools.PC3.v.PC4 %>% print()
-    # pca_exp$`10_p_images`$KA.PC3.v.PC4 %>% print()
-    
-    png(
-        width = 800,
-        height = 638,
-        units = "px",
-        filename = paste0(
+    run <- TRUE
+    if(base::isTRUE(run)) {
+        pca_exp$`10_p_images`$PCAtools.PC1.v.PC3 %>% print()
+        ggsave(paste0(
             getwd(), "/",
-            "PCA.2023-0621.WT_G1-Q_N-SS.",
-            stringr::str_replace_all(samples, "_", "-"), ".",
-            type, ".correlation.png"
+            "PCA.", date, "__",
+            samples, "__",
+            type, ".biplot.PC1-vs-PC3.png"
+        ))
+    }
+    
+    
+    run <- FALSE
+    if(base::isTRUE(run)) {
+        pca_exp$`10_p_images`$KA.PC1.v.PC3[1] %>% print()
+        ggsave(paste0(
+            getwd(), "/",
+            "PCA.", date, "__",
+            samples, "__",
+            type, ".loadings-plot.PC1-vs-PC3.PC1-pos.png"
+        ))
+        
+        pca_exp$`10_p_images`$KA.PC1.v.PC3[2] %>% print()
+        ggsave(paste0(
+            getwd(), "/",
+            "PCA.", date, "__",
+            samples, "__",
+            type, ".loadings-plot.PC1-vs-PC3.PC3-pos.png"
+        ))
+        
+        pca_exp$`10_p_images`$KA.PC1.v.PC3[3] %>% print()
+        ggsave(paste0(
+            getwd(), "/",
+            "PCA.", date, "__",
+            samples, "__",
+            type, ".loadings-plot.PC1-vs-PC3.PC1-neg.png"
+        ))
+        
+        pca_exp$`10_p_images`$KA.PC1.v.PC3[4] %>% print()
+        ggsave(paste0(
+            getwd(), "/",
+            "PCA.", date, "__",
+            samples, "__",
+            type, ".loadings-plot.PC1-vs-PC3.PC3-neg.png"
+        ))
+    }
+    
+    
+    run <- TRUE
+    if(base::isTRUE(run)) {
+        pca_exp$`10_p_images`$PCAtools.PC1.v.PC4 %>% print()
+        ggsave(paste0(
+            getwd(), "/",
+            "PCA.", date, "__",
+            samples, "__",
+            type, ".biplot.PC1-vs-PC4.png"
+        ))
+    }
+    
+    
+    run <- TRUE
+    if(base::isTRUE(run)) {
+        pca_exp$`10_p_images`$PCAtools.PC2.v.PC3 %>% print()
+        ggsave(paste0(
+            getwd(), "/",
+            "PCA.", date, "__",
+            samples, "__",
+            type, ".biplot.PC2-vs-PC3.png"
+        ))
+    }
+    
+    
+    run <- FALSE
+    if(base::isTRUE(run)) {
+        pca_exp$`10_p_images`$KA.PC2.v.PC3[1] %>% print()
+        ggsave(paste0(
+            getwd(), "/",
+            "PCA.", date, "__",
+            samples, "__",
+            type, ".loadings-plot.PC2-vs-PC3.PC2-pos.png"
+        ))
+        
+        pca_exp$`10_p_images`$KA.PC2.v.PC3[2] %>% print()
+        ggsave(paste0(
+            getwd(), "/",
+            "PCA.", date, "__",
+            samples, "__",
+            type, ".loadings-plot.PC2-vs-PC3.PC3-pos.png"
+        ))
+        
+        pca_exp$`10_p_images`$KA.PC2.v.PC3[3] %>% print()
+        ggsave(paste0(
+            getwd(), "/",
+            "PCA.", date, "__",
+            samples, "__",
+            type, ".loadings-plot.PC2-vs-PC3.PC2-neg.png"
+        ))
+        
+        pca_exp$`10_p_images`$KA.PC2.v.PC3[4] %>% print()
+        ggsave(paste0(
+            getwd(), "/",
+            "PCA.", date, "__",
+            samples, "__",
+            type, ".loadings-plot.PC2-vs-PC3.PC3-neg.png"
+        ))
+    }
+    
+    run <- TRUE
+    if(base::isTRUE(run)) {
+        pca_exp$`10_p_images`$PCAtools.PC2.v.PC4 %>% print()
+        ggsave(paste0(
+            getwd(), "/",
+            "PCA.", date, "__",
+            samples, "__",
+            type, ".biplot.PC2-vs-PC4.png"
+        ))
+    }
+    
+    
+    run <- TRUE
+    if(base::isTRUE(run)) {
+        pca_exp$`10_p_images`$PCAtools.PC3.v.PC4 %>% print()
+        ggsave(paste0(
+            getwd(), "/",
+            "PCA.", date, "__",
+            samples, "__",
+            type, ".biplot.PC3-vs-PC4.png"
+        ))
+    }
+    
+    run <- TRUE
+    if(base::isTRUE(run)) {
+        png(
+            width = 800,
+            height = 638,
+            units = "px",
+            filename = paste0(
+                getwd(), "/",
+                "PCA.", date, "__",
+                samples, "__",
+                type, ".correlation.png"
+            )
         )
-    )
-    pca_exp$`12_p_cor` %>% print()
-    dev.off()
+        pca_exp$`12_p_cor` %>% print()
+        dev.off()
+    }
 }

@@ -1,0 +1,202 @@
+
+#  "Rrp6∆.G1-Q.N-SS" --------------------------------------
+"r6n_G1_SS_rep1_tech2"
+"r6n_G1_SS_rep2_tech2"
+"r6n_Q_N_rep1_tech1"
+"r6n_Q_N_rep2_tech1"
+"r6n_Q_SS_rep1_tech1"
+"r6n_Q_SS_rep2_tech1"
+"r6n_Q_SS_rep2_tech2"
+
+"WT_G1_SS_rep1_tech2"
+"WT_G1_SS_rep2_tech2"
+"WT_Q_N_rep1_tech1"
+"WT_Q_N_rep2_tech1"
+"WT_Q_SS_rep1_tech1"
+"WT_Q_SS_rep2_tech1"
+
+
+#  "Rrp6∆.G1-Q.SS" ----------------------------------------
+"r6n_G1_SS_rep1_tech2"
+"r6n_G1_SS_rep2_tech2"
+"r6n_Q_SS_rep1_tech1"
+"r6n_Q_SS_rep2_tech1"
+"r6n_Q_SS_rep2_tech2"
+
+"WT_G1_SS_rep1_tech2"
+"WT_G1_SS_rep2_tech2"
+"WT_Q_SS_rep1_tech1"
+"WT_Q_SS_rep2_tech1"
+
+
+#  "Rrp6∆.Q.N-SS" -----------------------------------------
+"r6n_Q_N_rep1_tech1"
+"r6n_Q_N_rep2_tech1"
+"r6n_Q_SS_rep1_tech1"
+"r6n_Q_SS_rep2_tech1"
+"r6n_Q_SS_rep2_tech2"
+
+"WT_Q_N_rep1_tech1"
+"WT_Q_N_rep2_tech1"
+"WT_Q_SS_rep1_tech1"
+"WT_Q_SS_rep2_tech1"
+
+
+#  "Rrp6∆.timecourse" -------------------------------------
+"r6n_DSm2_SS_rep1_tech1"
+"r6n_DSm2_SS_rep2_tech1"
+"r6n_DSp2_SS_rep1_tech1"
+"r6n_DSp2_SS_rep2_tech1"
+"r6n_DSp24_SS_rep1_tech1"
+"r6n_DSp24_SS_rep2_tech1"
+"r6n_DSp48_SS_rep1_tech2"
+"r6n_DSp48_SS_rep2_tech1"
+
+"WT_DSm2_SS_rep1_tech1"
+"WT_DSm2_SS_rep2_tech1"
+"WT_DSp2_SS_rep1_tech1"
+"WT_DSp2_SS_rep2_tech1"
+"WT_DSp24_SS_rep1_tech1"
+"WT_DSp24_SS_rep2_tech1"
+"WT_DSp48_SS_rep1_tech1"
+"WT_DSp48_SS_rep1_tech2"
+"WT_DSp48_SS_rep2_tech1"
+
+
+#  "Rrp6∆.timecourse-G1-Q.SS" -----------------------------
+"r6n_G1_SS_rep1_tech2"
+"r6n_G1_SS_rep2_tech2"
+"r6n_Q_SS_rep1_tech1"
+"r6n_Q_SS_rep2_tech1"
+"r6n_Q_SS_rep2_tech2"
+
+"r6n_DSm2_SS_rep1_tech1"
+"r6n_DSm2_SS_rep2_tech1"
+"r6n_DSp2_SS_rep1_tech1"
+"r6n_DSp2_SS_rep2_tech1"
+"r6n_DSp24_SS_rep1_tech1"
+"r6n_DSp24_SS_rep2_tech1"
+"r6n_DSp48_SS_rep1_tech2"
+"r6n_DSp48_SS_rep2_tech1"
+
+"WT_G1_SS_rep1_tech2"
+"WT_G1_SS_rep2_tech2"
+"WT_Q_SS_rep1_tech1"
+"WT_Q_SS_rep2_tech1"
+
+"WT_DSm2_SS_rep1_tech1"
+"WT_DSm2_SS_rep2_tech1"
+"WT_DSp2_SS_rep1_tech1"
+"WT_DSp2_SS_rep2_tech1"
+"WT_DSp24_SS_rep1_tech1"
+"WT_DSp24_SS_rep2_tech1"
+"WT_DSp48_SS_rep1_tech1"
+"WT_DSp48_SS_rep1_tech2"
+"WT_DSp48_SS_rep2_tech1"
+
+
+#  "Nab3AID.Q.N-SS" ---------------------------------------
+"n3d_Q_N_rep1_tech1"
+"n3d_Q_N_rep2_tech1"
+"n3d_Q_SS_rep1_tech1"
+"n3d_Q_SS_rep2_tech1"
+
+"od_Q_N_rep1_tech1"
+"od_Q_N_rep2_tech1"
+"od_Q_SS_rep1_tech1"
+"od_Q_SS_rep2_tech1"
+
+
+#  "Nab3AID.Q.N-SS_Rrp6∆.Q.N-SS" --------------------------
+"n3d_Q_N_rep1_tech1"
+"n3d_Q_N_rep2_tech1"
+"n3d_Q_SS_rep1_tech1"
+"n3d_Q_SS_rep2_tech1"
+
+"od_Q_N_rep1_tech1"
+"od_Q_N_rep2_tech1"
+"od_Q_SS_rep1_tech1"
+"od_Q_SS_rep2_tech1"
+
+"r6n_Q_N_rep1_tech1"
+"r6n_Q_N_rep2_tech1"
+"r6n_Q_SS_rep1_tech1"
+"r6n_Q_SS_rep2_tech1"
+"r6n_Q_SS_rep2_tech2"
+
+"WT_Q_N_rep1_tech1"
+"WT_Q_N_rep2_tech1"
+"WT_Q_SS_rep1_tech1"
+"WT_Q_SS_rep2_tech1"
+
+
+#  "Nab3AID.Q.N-SS_Rrp6∆.timecourse-G1-Q.N-SS" --------------------------
+"n3d_Q_N_rep1_tech1"
+"n3d_Q_N_rep2_tech1"
+"n3d_Q_SS_rep1_tech1"
+"n3d_Q_SS_rep2_tech1"
+
+"r6n_DSm2_SS_rep1_tech1"
+"r6n_DSm2_SS_rep2_tech1"
+"r6n_DSp2_SS_rep1_tech1"
+"r6n_DSp2_SS_rep2_tech1"
+"r6n_DSp24_SS_rep1_tech1"
+"r6n_DSp24_SS_rep2_tech1"
+"r6n_DSp48_SS_rep1_tech2"
+"r6n_DSp48_SS_rep2_tech1"
+
+"r6n_G1_SS_rep1_tech2"
+"r6n_G1_SS_rep2_tech2"
+"r6n_Q_N_rep1_tech1"
+"r6n_Q_N_rep2_tech1"
+"r6n_Q_SS_rep1_tech1"
+"r6n_Q_SS_rep2_tech1"
+"r6n_Q_SS_rep2_tech2"
+
+"od_Q_N_rep1_tech1"
+"od_Q_N_rep2_tech1"
+"od_Q_SS_rep1_tech1"
+"od_Q_SS_rep2_tech1"
+
+"WT_DSm2_SS_rep1_tech1"
+"WT_DSm2_SS_rep2_tech1"
+"WT_DSp2_SS_rep1_tech1"
+"WT_DSp2_SS_rep2_tech1"
+"WT_DSp24_SS_rep1_tech1"
+"WT_DSp24_SS_rep2_tech1"
+"WT_DSp48_SS_rep1_tech1"
+"WT_DSp48_SS_rep1_tech2"
+"WT_DSp48_SS_rep2_tech1"
+
+"WT_G1_SS_rep1_tech2"
+"WT_G1_SS_rep2_tech2"
+"WT_Q_N_rep1_tech1"
+"WT_Q_N_rep2_tech1"
+"WT_Q_SS_rep1_tech1"
+"WT_Q_SS_rep2_tech1"
+
+
+#  Logic for additional variables ---------------------------------------------
+IF str_detect n3d | od:
+	day = day7
+	aux = TRUE
+
+IF str_detect DSm2_ | DSp2_:
+	day = day2
+ELSE IF str_detect DSp24_:
+	day = day3
+ELSE IF str_detect DSp48_:
+	day = day4
+
+IF str_detect r6n_G1:
+	day = day1
+ELSE IF str_detect r6n_Q:
+	day = day8
+
+IF str_detect r6n | WT:
+	aux = FALSE
+
+IF str_detect DS:
+	tc = TRUE
+ELSE
+	tc = FALSE

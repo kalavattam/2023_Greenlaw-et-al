@@ -134,6 +134,7 @@ paste(p_base, p_exp, sep = "/") %>% setwd()
 #  Load RDS files
 p_RDS <- "notebook/KA.2023-0608.rds-data-objects_min-4-cts-all-but-1-samps"
 p_mRNA <- "rds_mRNA"
+p_mRNA_AS <- "rds_mRNA_AS"
 p_ncRNAcm <- "rds_pa-ncRNA-collapsed-merged"
 
 mRNA_N_Q_r6n <- readRDS(paste(
@@ -158,6 +159,12 @@ mRNA_N_Q_n3d <- readRDS(paste(
     p_RDS,
     p_mRNA,
     "DGE-analysis_mRNA_N-Q-nab3d_N-Q-parental.rds",
+    sep = "/"
+))
+mRNA_SS_Q_n3d <- readRDS(paste(
+    p_RDS,
+    p_mRNA,
+    "DGE-analysis_mRNA_SS-Q-nab3d_SS-Q-parental.rds",
     sep = "/"
 ))
 
@@ -185,14 +192,29 @@ ncRNAcm_N_Q_n3d <- readRDS(paste(
     "DGE-analysis_pa-ncRNA-collapsed-merged_N-Q-nab3d_N-Q-parental.rds",
     sep = "/"
 ))
+ncRNA_SS_Q_n3d <- readRDS(paste(
+    p_RDS,
+    p_ncRNAcm,
+    "DGE-analysis_pa-ncRNA-collapsed-merged_SS-Q-nab3d_SS-Q-parental.rds",
+    sep = "/"
+))
+
+`mRNA-AS_N_Q_n3d` <- readRDS(paste(
+    p_RDS,
+    p_mRNA_AS,
+    "DGE-analysis_mRNA-antisense_N-Q-nab3d_N-Q-parental.rds",
+    sep = "/"
+))
 
 rm(list = ls(pattern = "p_"))
 
 
 #TODO Plot/assess the following comparisons ===================================
-#+ 1 - SS_G1_r6n ~ SS_Q_r6n (y ~ x): mRNA_SS_G1_r6n, mRNA_SS_Q_r6n; ncRNAcm_SS_G1_r6n, ncRNAcm_SS_Q_r6n
-#+ 2 -  SS_Q_r6n ~  N_Q_r6n (y ~ x):  mRNA_SS_Q_r6n,  mRNA_N_Q_r6n; ncRNAcm_SS_G1_r6n,  ncRNAcm_N_Q_r6n
-#+ 3 -  SS_Q_r6n ~  N_Q_n3d (y ~ x):  mRNA_SS_Q_r6n,  mRNA_N_Q_n3d; ncRNAcm_SS_G1_r6n,  ncRNAcm_N_Q_n3d
+#+ 5 -  SS_Q_r6n ~ SS_Q_n3d    (y ~ x): 
+#+ 4 -   N_Q_n3d ~  N_Q_n3d_AS (y ~ x): mRNA_N_Q_n3d,  `mRNA-AS_N_Q_n3d`
+#+ 1 - SS_G1_r6n ~ SS_Q_r6n    (y ~ x): mRNA_SS_G1_r6n, mRNA_SS_Q_r6n; ncRNAcm_SS_G1_r6n, ncRNAcm_SS_Q_r6n
+#+ 2 -  SS_Q_r6n ~  N_Q_r6n    (y ~ x): mRNA_SS_Q_r6n,  mRNA_N_Q_r6n; ncRNAcm_SS_G1_r6n,  ncRNAcm_N_Q_r6n
+#+ 3 -  SS_Q_r6n ~  N_Q_n3d    (y ~ x): mRNA_SS_Q_r6n,  mRNA_N_Q_n3d; ncRNAcm_SS_G1_r6n,  ncRNAcm_N_Q_n3d
 
 #  Color rules: "If all Steady State use purple 481A6C: if all Nascent, then 
 #+ use blue 3A5388."
@@ -241,6 +263,42 @@ if(base::isTRUE(run)) {
 #TODO "Function-ize" the following code
 #TODO Save metrics, plot objects to list object that is output as rds
 
+#  Look at N Q Nab3-AID (mRNA) ~ N Q Nab3-AID (mRNA antisense)
+#+ (N_Q_n3d ~ N_Q_n3d_AS)
+dge_mRNA_N_Q_n3d <- mRNA_N_Q_n3d$`09_lfc_0.58_fc_1.5`$`04_t_DGE_unshrunken`
+`dge_mRNA-AS_N_Q_n3d` <- `mRNA-AS_N_Q_n3d`$`09_lfc_0.58_fc_1.5`$`04_t_DGE_unshrunken`
+tmp <- tibble::tibble(
+    "x" = dge_mRNA_N_Q_n3d[
+        dge_mRNA_N_Q_n3d$features %in% `dge_mRNA-AS_N_Q_n3d`$features, 
+    ]$log2FoldChange,
+    "y" = `dge_mRNA-AS_N_Q_n3d`[
+        `dge_mRNA-AS_N_Q_n3d`$features %in% dge_mRNA_N_Q_n3d$features, 
+    ]$log2FoldChange
+)
+
+linear_model <- lm(tmp$y ~ tmp$x)
+lm_summary <- summary(linear_model)
+m <- linear_model$coefficients[["tmp$x"]]
+r_sq <- lm_summary$adj.r.squared
+rho <- cor(tmp$y, tmp$x, method = "spearman")
+r <- cor(tmp$y, tmp$x, method = "pearson")
+
+plot_scatter(
+    x = x,
+    y = y,
+    lm = linear_model,
+    r = round(r, 2),
+    m = round(m, 2),
+    color = "#3A538833",
+    xlab = "log2(FC) mRNA antisense",
+    ylab = "log2(FC) mRNA",
+    x_low = -9,
+    x_high = 9,
+    y_low = -9,
+    y_high = 9
+)
+
+
 #  Look at SS Q rrp6∆ ~ N Q rrp6∆ (SS_Q_r6n ~ N_Q_r6n) for mRNA
 dge_mRNA_N_Q_r6n <- mRNA_N_Q_r6n$`09_lfc_0.58_fc_1.5`$`04_t_DGE_unshrunken`
 dge_mRNA_SS_Q_r6n <- mRNA_SS_Q_r6n$`09_lfc_0.58_fc_1.5`$`04_t_DGE_unshrunken`
@@ -274,6 +332,7 @@ plot_scatter(
     y_low = -7,
     y_high = 7
 )
+
 
 #  Look at SS Q rrp6∆ ~ N Q rrp6∆ (SS_Q_r6n ~ N_Q_r6n) for pa-ncRNA
 dge_ncRNAcm_N_Q_r6n <- ncRNAcm_N_Q_r6n$`09_lfc_0.58_fc_1.5`$`04_t_DGE_unshrunken`
@@ -492,3 +551,7 @@ count_sig_down(dge_ncRNAcm_SS_G1_r6n)
 
 count_sig_up(dge_ncRNAcm_SS_Q_r6n)
 count_sig_down(dge_ncRNAcm_SS_Q_r6n)
+
+
+count_sig_up(dge_mRNA_N_Q_n3d)
+count_sig_down(`dge_mRNA-AS_N_Q_n3d`)

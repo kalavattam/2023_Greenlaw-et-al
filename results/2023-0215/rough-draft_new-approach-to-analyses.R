@@ -4,6 +4,13 @@
 #  KA
 
 
+#  Initialize arguments =======================================================
+# run <- "mRNA"  #ARGUMENT
+run <- "mRNA_AS"  #ARGUMENT
+# run <- "ncRNA-collapsed"  #ARGUMENT
+# run <- "ncRNA-non-collapsed"  #ARGUMENT
+
+
 #  Load libraries, set options ================================================
 suppressMessages(library(apeglm))
 suppressMessages(library(DESeq2))
@@ -1566,30 +1573,34 @@ p_exp <- "2022_transcriptome-construction/results/2023-0215"
 paste(p_base, p_exp, sep = "/") %>% setwd()
 # getwd()
 
-#IMPORTANT
 #  Determine counts matrix to work with, then load it
 #+ Options: "mRNA" "ncRNA-collapsed" "ncRNA-non-collapsed"
-run <- "mRNA"  #ARGUMENT
-# run <- "ncRNA-collapsed"  #ARGUMENT
-# run <- "ncRNA-non-collapsed"  #ARGUMENT
 
 #  Check on "run" option
 if(base::isTRUE(run %notin% c(
-    "mRNA", "ncRNA-collapsed", "ncRNA-non-collapsed"
+    "mRNA", "mRNA_AS", "ncRNA-collapsed", "ncRNA-non-collapsed"
 ))) {
     stop(paste(
-        "Variable \"run\" must be \"mRNA\", \"ncRNA-collapsed\", or",
-        "\"ncRNA-non-collapsed\""
+        "Variable \"run\" must be \"mRNA\", \"mRNA_AS\", \"ncRNA-collapsed\",",
+        "or \"ncRNA-non-collapsed\""
     ))
 }
 
 #  Load counts matrix or matrices
-if(base::isTRUE(run == "mRNA")) {
-    #  (for mRNA)
+if(base::isTRUE(run %in% c("mRNA", "mRNA_AS"))) {
     p_tsv <- "outfiles_htseq-count/already/combined-SC-KL-20S/UT_prim_UMI"
-    f_tsv <- "all-samples.combined-SC-KL-20S.hc-strd-eq.mRNA.tsv"
-    # paste(p_base, p_exp, p_tsv, f_tsv, sep = "/") %>%
-    #     file.exists()  # [1] TRUE
+    
+    if(base::isTRUE(run == "mRNA")) {
+        #  (for mRNA)
+        f_tsv <- "all-samples.combined-SC-KL-20S.hc-strd-eq.mRNA.tsv"
+        # paste(p_base, p_exp, p_tsv, f_tsv, sep = "/") %>%
+        #     file.exists()  # [1] TRUE
+    } else if(base::isTRUE(run == "mRNA_AS")) {
+        #  (for mRNA_AS)
+        f_tsv <- "all-samples.combined-SC-KL-20S.hc-strd-op.mRNA.tsv"
+        # paste(p_base, p_exp, p_tsv, f_tsv, sep = "/") %>%
+        #     file.exists()  # [1] TRUE
+    }
     
     #  Read in htseq-count counts matrix derived from combined_SC_KL_20S.gff3
     t_tsv <- paste(p_base, p_exp, p_tsv, f_tsv, sep = "/") %>%
@@ -1598,7 +1609,8 @@ if(base::isTRUE(run == "mRNA")) {
     
     #  "Clean up" counts matrix column names and "features" elements
     colnames(t_tsv) <- colnames(t_tsv) %>%
-        gsub(".UT_prim_UMI.hc-strd-eq.tsv", "", .)
+        gsub(".UT_prim_UMI.hc-strd-eq.tsv", "", .) %>%
+        gsub(".UT_prim_UMI.hc-strd-op.tsv", "", .)
     
     t_tsv <- t_tsv %>%
         dplyr::mutate(
@@ -1606,16 +1618,16 @@ if(base::isTRUE(run == "mRNA")) {
                 gsub("^transcript\\:", "", .) %>%
                 gsub("_mRNA", "", .)
         )
-} else if(base::isTRUE(run != "mRNA")) {
+} else if(base::isTRUE(run %notin% c("mRNA", "mRNA_AS"))) {
+    p_tsv <- "outfiles_htseq-count/representation/UT_prim_UMI"
+    
     if(base::isTRUE(run == "ncRNA-collapsed")) {
         #  Handle pa-ncRNA, collapsed and merged
-        p_tsv <- "outfiles_htseq-count/representation/UT_prim_UMI"
         f_tsv <- "representative-non-coding-transcriptome.hc-strd-eq.tsv"  # (collapsed, merged)
         # paste(p_base, p_exp, p_tsv, f_tsv, sep = "/") %>%
         #     file.exists()  # [1] TRUE
     } else if(base::isTRUE(run == "ncRNA-non-collapsed")) {
         #  Handle pa-ncRNA, not collapsed and merged
-        p_tsv <- "outfiles_htseq-count/representation/UT_prim_UMI"
         f_tsv <- "non-collapsed-non-coding-transcriptome.hc-strd-eq.tsv"  # (not collapsed, merged)
         # paste(p_base, p_exp, p_tsv, f_tsv, sep = "/") %>%
         #     file.exists()  # [1] TRUE
@@ -1674,9 +1686,11 @@ t_xslx <- paste(p_base, p_exp, p_xlsx, f_xlsx, sep = "/") %>%
 #FIXME #LATER In this file, replicate information for 7079, 7078, 7747, 7748
 #             is incorrect
 
+#NOTE It seems that we're no longer using the xlsx file
+
 
 #  Associate features with metadata and format/munge dataframe(s) =============
-if(base::isTRUE(run == "mRNA")) {
+if(base::isTRUE(run %in% c("mRNA", "mRNA_AS"))) {
     #  Handle "mRNA"
     p_gff3 <- "infiles_gtf-gff3/already"
     f_gff3 <- "combined_SC_KL_20S.gff3"
@@ -1735,7 +1749,7 @@ if(base::isTRUE(run == "mRNA")) {
         t_gff3$features,
         t_gff3$names
     )
-} else if(base::isTRUE(run != "mRNA")) {
+} else if(base::isTRUE(run %notin% c("mRNA", "mRNA_AS"))) {
     if(base::isTRUE(run == "ncRNA-collapsed")) {
         #  Handle pa-ncRNA, collapsed and merged
         p_gff3 <- "outfiles_gtf-gff3/representation"
@@ -1858,8 +1872,6 @@ if(base::isTRUE(run == "mRNA")) {
     #  Row-bind the two tibbles
     t_gff3 <- dplyr::bind_rows(t_gff3, t_gff3_KL)
     rm(t_gff3_KL)
-    
-
 }
 
 #  Order t_gff3 by chromosome names and feature start positions
@@ -1898,7 +1910,7 @@ rm(chr_20S, chr_KL, chr_SC, chr_order)
 t_mat <- dplyr::full_join(t_gff3, t_tsv, by = "features")
 
 #  Remove all non-pa-ncRNA features except for K. lactis features
-if(base::isTRUE(run != "mRNA")) {
+if(base::isTRUE(run %notin% c("mRNA", "mRNA_AS"))) {
     tmp_feature <- t_mat %>%
         dplyr::filter(type == "feature")
     tmp_KL <- t_mat %>%
@@ -1916,7 +1928,7 @@ t_mat.bak <- t_mat
 
 #  For "mRNA" analyses, exclude htseq-count "summary metrics" (already excluded
 #+ for "pa-ncRNA" analyses) and "Mito" chromosome counts (rows)
-if(base::isTRUE(run == "mRNA")) {
+if(base::isTRUE(run %in% c("mRNA", "mRNA_AS"))) {
     t_mat <- t_mat %>%
         dplyr::filter(genome %notin% c(NA, "20S")) %>%
         dplyr::filter(chr != "Mito")
@@ -1925,7 +1937,7 @@ if(base::isTRUE(run == "mRNA")) {
 #HACK
 #  For non-"mRNA" analyses, change all column "type" assignments from "feature"
 #+ to "mRNA"
-if(base::isTRUE(run != "mRNA")) {
+if(base::isTRUE(run %notin% c("mRNA", "mRNA_AS"))) {
     t_mat$type <- ifelse(t_mat$type == "feature", "mRNA", t_mat$type)
 }
 

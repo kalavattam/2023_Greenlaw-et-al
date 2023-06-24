@@ -4,6 +4,11 @@
 #  KA
 
 
+#  Initialize arguments -------------------------------------------------------
+write_dataframe <- FALSE  #ARGUMENT
+analyze_w_pct <- FALSE  #ARGUMENT #NOTE Code for categorization with pct not written
+
+
 #  Get situated ---------------------------------------------------------------
 suppressMessages(library(GenomicRanges))
 suppressMessages(library(IRanges))
@@ -1222,7 +1227,9 @@ run_assignment_logic <- function (feat_Tr) {
 }
 
 
-draw_barplot <- function(tbl, fill, x, y, version = "absolute") {
+draw_barplot <- function(
+    tbl, fill, x, y, version = "absolute", borders = NULL
+) {
     if(version == "absolute") {
         position <- "stack"
         ylab <- "no. annotations"
@@ -1242,7 +1249,7 @@ draw_barplot <- function(tbl, fill, x, y, version = "absolute") {
             length() %>%
             viridisLite::viridis()
     } else if(fill == "assignment_detailed") {
-        color <- c("#8F68AF", "#6DB8BC")
+        color <- c("#8F68AF", "#768CB8", "#6DB8BC", "#89CF95")
     } else {
         stop(paste(
             "Argument \"fill\" must be \"assignment\" or",
@@ -1250,11 +1257,25 @@ draw_barplot <- function(tbl, fill, x, y, version = "absolute") {
         ))
     }
     
-    ggplot2::ggplot(tbl, aes(fill = get(fill), x = get(x), y = get(y))) +
-        geom_bar(position = position, stat = "identity") +
-        ylab(ylab) +
-        scale_fill_manual(values = color) +
-        theme_slick
+    if(is.null(borders)) {
+        ggplot2::ggplot(tbl, aes(fill = get(fill), x = get(x), y = get(y))) +
+            geom_bar(position = position, stat = "identity") +
+            ylab(ylab) +
+            scale_fill_manual(values = color) +
+            theme_slick
+    } else if(borders == "white") {
+        ggplot2::ggplot(tbl, aes(fill = get(fill), x = get(x), y = get(y))) +
+            geom_bar(position = position, stat = "identity", color = "white") +
+            ylab(ylab) +
+            scale_fill_manual(values = color) +
+            theme_slick
+    } else if(borders == "black") {
+        ggplot2::ggplot(tbl, aes(fill = get(fill), x = get(x), y = get(y))) +
+            geom_bar(position = position, stat = "identity", color = "black") +
+            ylab(ylab) +
+            scale_fill_manual(values = color) +
+            theme_slick
+    }
 }
 
 
@@ -1273,6 +1294,33 @@ theme_slick <- theme_classic() +
     )
 
 theme_slick_no_legend <- theme_slick + theme(legend.position = "none")
+
+theme_AG <- theme_classic() +
+    theme(
+        panel.grid.major = ggplot2::element_line(linewidth = 3),
+        panel.grid.minor = ggplot2::element_line(linewidth = 2),
+        axis.line = ggplot2::element_line(linewidth = 0.5),
+        axis.ticks = ggplot2::element_line(linewidth = 1.0),
+        axis.text = ggplot2::element_text(
+            color = "black", size = 20, face = "bold"
+        ),
+        axis.title.x = ggplot2::element_text(size = 25, face = "bold"),
+        axis.title.y = ggplot2::element_text(size = 25, face = "bold"),
+        plot.title = ggplot2::element_text(size = 20),
+        text = element_text(family = "")
+    )
+
+theme_AG_boxed <- theme_AG +
+    theme(
+        axis.line = ggplot2::element_line(linewidth = 0),
+        panel.border = element_rect(linewidth = 2, color = "black", fill = NA)
+    )
+
+theme_slick_no_legend <- theme_slick + theme(legend.position = "none")
+
+theme_AG_no_legend <- theme_AG + theme(legend.position = "none")
+
+theme_AG_boxed_no_legend <- theme_AG_boxed + theme(legend.position = "none")
 
 
 #  Load gtfs as tibbles -------------------------------------------------------
@@ -1311,7 +1359,9 @@ gtf_all <- rtracklayer::import(paste(p_gtf_all, f_gtf_all, sep = "/")) %>%
 #  Load R64-1-1 ncRNA annotations
 p_gtf_ncRNA_R64 <- paste(p_main, "representation", sep = "/")
 f_gtf_ncRNA_R64 <- "Greenlaw-et-al_ncRNAs.gtf"
-gtf_ncRNA <- rtracklayer::import(paste(p_gtf_ncRNA_R64, f_gtf_ncRNA_R64, sep = "/")) %>%
+gtf_ncRNA <- rtracklayer::import(
+    paste(p_gtf_ncRNA_R64, f_gtf_ncRNA_R64, sep = "/")
+) %>%
     tibble::as_tibble() %>%
     dplyr::select(-c(phase, score)) %>%
     dplyr::arrange(seqnames, start, strand)
@@ -1371,7 +1421,6 @@ agg_G1 <- analyses_G1$wrt_Tr_all_agg
 run_checks <- FALSE
 
 #  Initialize dataframes of rough categories 
-analyze_w_pct <- FALSE  #ARGUMENT #NOTE Code for categorization with percent is not written
 if(base::isTRUE(analyze_w_pct)) {
     cols <- c("category_abbrev", "category_easy", "pct_Tr_over_all")
 } else {
@@ -1418,8 +1467,7 @@ complete_Q <- dplyr::full_join(
     dplyr::relocate(c(assignment, assignment_detailed), .after = trinity)
 
 #  Write out the dataframes
-run <- FALSE  #ARGUMENT
-if(base::isTRUE(run)) {
+if(base::isTRUE(write_dataframe)) {
     outpath_G1 <- "outfiles_gtf-gff3/Trinity-GG/G_N/filtered/locus"
     outpath_Q <- "outfiles_gtf-gff3/Trinity-GG/Q_N/filtered/locus"
     
@@ -1477,9 +1525,13 @@ if(base::isTRUE(run)) {
 data <- tibble::tibble(
     state = c(rep("Q", nrow(logic_Q)), rep("G1", nrow(logic_G1))),
     assignment = c(logic_Q$assignment, logic_G1$assignment),
-    assignment_detailed = c(logic_Q$assignment_detailed, logic_G1$assignment_detailed),
+    assignment_detailed = c(
+        logic_Q$assignment_detailed, logic_G1$assignment_detailed
+    ),
     tally = c(logic_Q$tally, logic_G1$tally)
-)
+) %>%
+    group_by(state, assignment) %>%
+    dplyr::summarize(tally = sum(tally))
 
 #  Make abbreviated dataframe of only novel noncoding assignments
 tmp_Q <- logic_Q[logic_Q$assignment == "noncoding: novel", ]
@@ -1487,10 +1539,125 @@ tmp_G1 <- logic_G1[logic_G1$assignment == "noncoding: novel", ]
 data_sub <- tibble::tibble(
     state = c(rep("Q", nrow(tmp_Q)), rep("G1", nrow(tmp_G1))),
     assignment = c(tmp_Q$assignment, tmp_G1$assignment),
-    assignment_detailed = c(tmp_Q$assignment_detailed, tmp_G1$assignment_detailed),
+    assignment_detailed = c(
+        tmp_Q$assignment_detailed, tmp_G1$assignment_detailed
+    ),
     tally = c(tmp_Q$tally, tmp_G1$tally)
-)
+) %>%
+    group_by(state, assignment_detailed) %>%
+    dplyr::summarize(tally = sum(tally))
+
 rm(tmp_Q, tmp_G1)
 
-draw_barplot(data, fill = "assignment", x = "state", y = "tally")
-draw_barplot(data_sub, fill = "assignment_detailed", x = "state", y = "tally")
+#  In order to subdivide categories "noncoding: novel, antisense" and
+#+ "noncoding: novel, intergenic" by "wholly unique" features and features that 
+#+ overlap "previously annotated ncRNAs" (e.g., CUTs, XUTs, NUTs, etc.), load
+#+ dataframes from the following script:
+#+ "work_assess-process_R64-1-1-gff3_categorize-Trinity-transfrags_part-3.R"
+p_wu <- "notebook/KA.2023-0620.Trinity_putative-transcripts.Q_G1"
+f_wu_Q <- "Trinity_putative-transcripts.2023-0620.unique.Q.tsv"
+f_wu_G1 <- "Trinity_putative-transcripts.2023-0620.unique.G1.tsv"
+
+wu_Q <- readr::read_tsv(
+    paste(p_wu, f_wu_Q, sep = "/"), show_col_types = FALSE
+)
+wu_G1 <- readr::read_tsv(
+    paste(p_wu, f_wu_G1, sep = "/"), show_col_types = FALSE
+)
+
+uniq_G1_A <- wu_G1[wu_G1$assignment == "noncoding: novel, antisense", ] %>%
+    nrow()  # [1] 14
+uniq_G1_I <- wu_G1[wu_G1$assignment == "noncoding: novel, intergenic", ] %>%
+    nrow()  # [1] 28
+uniq_Q_A <- wu_Q[wu_Q$assignment == "noncoding: novel, antisense", ] %>%
+    nrow()  # [1] 170
+uniq_Q_I <- wu_Q[wu_Q$assignment == "noncoding: novel, intergenic", ] %>%
+    nrow()  # [1] 71
+uniq_values <- c(uniq_G1_A, uniq_G1_I, uniq_Q_A, uniq_Q_I)
+
+data_sub_uniq <- tibble::tibble(
+    state = c(rep("G1", 2), rep("Q", 2)),
+    assignment_detailed = rep(c(
+        "noncoding: novel, antisense, unique",
+        "noncoding: novel, intergenic, unique"
+    ), 2),
+    tally = uniq_values
+)
+
+data_sub_plot <- tibble::tibble(
+    state = c(
+        data_sub$state,
+        data_sub_uniq$state
+    ),
+    assignment_detailed = c(
+        data_sub$assignment_detailed,
+        data_sub_uniq$assignment_detailed
+    ),
+    tally = c(
+        data_sub$tally - uniq_values,
+        data_sub_uniq$tally
+    )
+)
+
+#  Stacked bar chart for all categories (where "noncoding: novel" is not split)
+bars_full <- draw_barplot(
+    data,
+    fill = "assignment",
+    x = "state",
+    y = "tally"
+) +
+    xlab("state") +
+    guides(fill = guide_legend(title = "categories"))
+
+#  Stacked bar chart for only category "noncoding: novel" (non-unique and
+#+ unique)
+bars_sub <- draw_barplot(
+    data_sub_plot,
+    fill = "assignment_detailed",
+    x = "state",
+    y = "tally"
+) +
+    xlab("state") +
+    guides(fill = guide_legend(title = "categories"))
+
+
+#  Plot "bars_full" -------------------
+width <- 7  #ARGUMENT
+height <- 7  #ARGUMENT
+part_1 <- "abs-bar-plot"
+part_2 <- "Trinity-transfrags"
+part_3 <- "G1-Q"
+part_4 <- "full"
+file_prefix <- paste(part_1, part_2, part_3, part_4, sep = "_")
+outpath <- getwd()  #ARGUMENT
+outfile <- paste0(
+    outpath, "/",
+    file_prefix, ".",
+    format(Sys.time(), format = "%F_%H.%M.%S"),
+    ".pdf"
+)
+
+pdf(file = outfile, width = width, height = height)
+print(bars_full + theme_AG_boxed)
+dev.off()
+
+
+#  Plot "bars_sub" --------------------
+width <- 7  #ARGUMENT
+height <- 7  #ARGUMENT
+part_1 <- "abs-bar-plot"
+part_2 <- "Trinity-transfrags"
+part_3 <- "G1-Q"
+part_4 <- "sub"
+file_prefix <- paste(part_1, part_2, part_3, part_4, sep = "_")
+outpath <- getwd()  #ARGUMENT
+outfile <- paste0(
+    outpath, "/",
+    file_prefix, ".",
+    format(Sys.time(), format = "%F_%H.%M.%S"),
+    ".pdf"
+)
+
+pdf(file = outfile, width = width, height = height)
+print(bars_sub + theme_AG_boxed)
+dev.off()
