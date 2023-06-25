@@ -291,7 +291,8 @@ prepare_mean_TPM_plot <- function(mean_df) {
         piv_k$samples,
         levels = c(
             "WT_G1", "r6n_G1", "WT_DSm2", "r6n_DSm2", "WT_DSp2", "r6n_DSp2",
-            "WT_DSp24", "r6n_DSp24", "WT_DSp48", "r6n_DSp48", "WT_Q_SS", "r6n_Q_SS"
+            "WT_DSp24", "r6n_DSp24", "WT_DSp48", "r6n_DSp48", "WT_Q_SS",
+            "r6n_Q_SS"
         )
     )
     
@@ -303,14 +304,14 @@ piv_k2 <- prepare_mean_TPM_plot(mean_TPM_k2)
 piv_k3 <- prepare_mean_TPM_plot(mean_TPM_k3)
 
 
-plot_distributions <- function(piv_k) {
+plot_distributions <- function(piv_k, k) {
     plot <- ggplot(
         piv_k, aes(x = samples, y = log2(value + 1), fill = samples)
     ) +
         geom_violin(trim = FALSE) +
         geom_boxplot(width = 0.2, fill = "white") +
         labs(
-            title = "Comparisons of distributions",
+            title = paste("Comparisons of distributions, k =", k),
             x = "",
             y = "log2(TPM + 1)"
         ) +
@@ -320,7 +321,20 @@ plot_distributions <- function(piv_k) {
     return(plot)
 }
 
-plot_distributions(piv_k1)
-plot_distributions(piv_k2)
-plot_distributions(piv_k3)
+plot_distributions(piv_k1, 1)
+plot_distributions(piv_k2, 2)
+plot_distributions(piv_k3, 3)
 
+#  Write out feature lists (e.g., for GO analyses)
+readr::write_tsv(
+    mean_TPM_k1$features %>% as.data.frame(),
+    "05_gene-list_k-1.tsv"
+)
+readr::write_tsv(
+    mean_TPM_k2$features %>% as.data.frame(),
+    "05_gene-list_k-2.tsv"
+)
+readr::write_tsv(
+    mean_TPM_k3$features %>% as.data.frame(),
+    "05_gene-list_k-3.tsv"
+)

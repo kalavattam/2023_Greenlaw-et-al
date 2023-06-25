@@ -91,9 +91,6 @@ filter_process_counts_matrix <- function(
 }
 
 
-`%notin%` <- Negate(`%in%`)
-
-
 derive_summary_metrics <- function(uni_multi, summary, counts) {
     #  Debug
     run <- FALSE

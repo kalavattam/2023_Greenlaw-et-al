@@ -1,6 +1,8 @@
+#!/usr/bin/env Rscript
 
 #  rough-draft_draw_scatter-plots.R
 #  KA
+
 
 #  Load libraries, set options ================================================
 suppressMessages(library(tidyverse))

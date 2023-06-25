@@ -14,14 +14,14 @@ type <- "mRNA"  #ARGUMENT
 # type <- "Trinity-G1-unique"  #ARGUMENT
 # type <- "representation"  #TODO
 
-# samples <- "Ovation"  #ARGUMENT
+samples <- "Ovation"  #ARGUMENT
 # samples <- "test.Ovation_Rrp6∆"  #ARGUMENT  #TODO Remove
 # samples <- "test.Ovation_Tecan"  #ARGUMENT  #TODO Remove
 # samples <- "Rrp6∆.G1-Q.N-SS"  #ARGUMENT
 # samples <- "Rrp6∆.G1-Q.SS"  #ARGUMENT
 # samples <- "Rrp6∆.Q.N-SS"  #ARGUMENT
 # samples <- "Rrp6∆.timecourse"  #ARGUMENT
-samples <- "Rrp6∆.timecourse-G1-Q.SS"  #ARGUMENT
+# samples <- "Rrp6∆.timecourse-G1-Q.SS"  #ARGUMENT
 # samples <- "Rrp6∆.timecourse-G1.SS"  #ARGUMENT
 # samples <- "Rrp6∆.timecourse-G1-Q.N-SS"  #ARGUMENT
 # samples <- "Rrp6∆.timecourse.G1-SS.Q-N"  #ARGUMENT
@@ -30,12 +30,12 @@ samples <- "Rrp6∆.timecourse-G1-Q.SS"  #ARGUMENT
 # samples <- "Nab3AID.Q.SS_Rrp6∆.Q.SS"
 # samples <- "Nab3AID.Q.N-SS_Rrp6∆.timecourse-G1-Q.N-SS"  #ARGUMENT
 
-# run_norm <- "rlog"  #ARGUMENT
-run_norm <- "tpm"  #ARGUMENT
+run_norm <- "rlog"  #ARGUMENT
+# run_norm <- "tpm"  #ARGUMENT
 
 run_batch_correction <- FALSE  #ARGUMENT
 run_PCA <- TRUE  #ARGUMENT
-date <- "2023-0624"  #ARGUMENT
+date <- "2023-0625"  #ARGUMENT
 write_norm_counts_rds <- TRUE  #ARGUMENT
 write_PCA_results <- TRUE  #ARGUMENT
 
@@ -50,7 +50,7 @@ options(scipen = 999)
 options(ggrepel.max.overlaps = Inf)
 
 
-#  Initialize functions and themes ============================================
+#  Initialize functions and ggplot2 themes ====================================
 `%notin%` <- base::Negate(`%in%`)
 
 
@@ -64,9 +64,9 @@ filter_process_counts_matrix <- function(
     # :param named_character_vector: ...
     # :return df: counts matrix as tibble
     
-    #  Debug
-    run <- FALSE
-    if(base::isTRUE(run)) {
+    #  Perform debugging
+    debug <- FALSE
+    if(base::isTRUE(debug)) {
         counts_matrix <- t_cm
         named_character_vector <- col_cor
     }
@@ -202,82 +202,6 @@ plot_biplot <- function(
 }
 
 
-plot_pos_neg_loadings_each_axis <- function(
-    df_all, df_pos, df_neg,
-    PC_x, PC_y,
-    row_start, row_end,
-    x_min, x_max, y_min, y_max,
-    x_nudge, y_nudge, x_label, y_label,
-    col_line_pos, col_line_neg, col_seg_pos, col_seg_neg
-) {
-    # ...
-    #
-    # :param df_all: dataframe: all loadings (from, e.g., PCAtools)
-    # :param df_pos: dataframe: positive loadings ordered largest to smallest
-    # :param df_neg: dataframe: negative loadings ordered smallest to largest
-    # :param PC_x: PC to plot on the x axis
-    # :param PC_y: PC to plot on the y axis
-    # :param row_start: row from which to begin subsetting the PCs on x and y
-    # :param row_end: row at which to end subsetting the PCs on x and y
-    # :param x_min: minimum value on x axis <dbl>
-    # :param x_max: maximum value on x axis <dbl>
-    # :param y_min: minimum value on y axis <dbl>
-    # :param y_max: maximum value on y axis <dbl>
-    # :param x_nudge: amount to nudge labels on the x axis <dbl>
-    # :param y_nudge: amount to nudge labels on the y axis <dbl>
-    # :param x_label: x axis label <chr>
-    # :param y_label: y axis label <chr>
-    # :param col_line_pos: color: lines, arrows for positive loadings <chr>
-    # :param col_line_neg: color: lines, arrows for negative loadings <chr>
-    # :param col_seg_pos: color: segments connecting arrowhead and text bubble
-    #                     for positive loadings <chr>
-    # :param col_seg_neg: color: segments connecting arrowhead and text bubble
-    #                     for negative loadings <chr>
-    # :return image: ...
-    
-    filter_pos_1 <- rownames(df_pos[[PC_x]][row_start:row_end, ])
-    filter_pos_2 <- rownames(df_pos[[PC_y]][row_start:row_end, ])
-    filter_neg_1 <- rownames(df_neg[[PC_x]][row_start:row_end, ])
-    filter_neg_2 <- rownames(df_neg[[PC_y]][row_start:row_end, ])
-    
-    loadings_filter_pos_1 <- df_all[rownames(df_all) %in% filter_pos_1, ]
-    loadings_filter_pos_2 <- df_all[rownames(df_all) %in% filter_pos_2, ]
-    loadings_filter_neg_1 <- df_all[rownames(df_all) %in% filter_neg_1, ]
-    loadings_filter_neg_2 <- df_all[rownames(df_all) %in% filter_neg_2, ]
-    
-    images <- list()
-    images[["PC_x_pos"]] <- plot_loadings(
-        loadings_filter_pos_1,
-        loadings_filter_pos_1[[PC_x]],
-        loadings_filter_pos_1[[PC_y]],
-        x_min, x_max, y_min, y_max, x_nudge, y_nudge,
-        x_label, y_label, col_line_pos, col_seg_pos
-    )
-    images[["PC_y_pos"]] <- plot_loadings(
-        loadings_filter_pos_2,
-        loadings_filter_pos_2[[PC_x]],
-        loadings_filter_pos_2[[PC_y]],
-        x_min, x_max, y_min, y_max, x_nudge, y_nudge,
-        x_label, y_label, col_line_pos, col_seg_pos
-    )
-    images[["PC_x_neg"]] <- plot_loadings(
-        loadings_filter_neg_1,
-        loadings_filter_neg_1[[PC_x]],
-        loadings_filter_neg_1[[PC_y]],
-        x_min, x_max, y_min, y_max, -y_nudge, x_nudge,
-        x_label, y_label, col_line_neg, col_seg_neg
-    )
-    images[["PC_y_neg"]] <- plot_loadings(
-        loadings_filter_neg_2,
-        loadings_filter_neg_2[[PC_x]],
-        loadings_filter_neg_2[[PC_y]],
-        x_min, x_max, y_min, y_max, x_nudge, -y_nudge,
-        x_label, y_label, col_line_neg, col_seg_neg
-    )
-    return(images)
-}
-
-
 plot_loadings <- function(x, y, z, a, b, d, e, f, g, h, i, j, k) {
     # ...
     #
@@ -296,7 +220,25 @@ plot_loadings <- function(x, y, z, a, b, d, e, f, g, h, i, j, k) {
     # :param k: color of segment connecting arrowhead and text bubble <chr>
     # :return l: ...
     
-    l <- ggplot2::ggplot(x, ggplot2::aes(x = y, y = z)) +  #TODO #FUNCTION
+    #  Perform debugging
+    debug <- FALSE
+    if(base::isTRUE(debug)) {
+        x = loadings_etc
+        y = coords_PC1
+        z = coords_PC2
+        a = x_min
+        b = x_max
+        d = y_min
+        e = y_max
+        f = x$nudge_x
+        g = x$nudge_y
+        h = x_label
+        i = y_label
+        j = x$label
+        k = col_seg_pos
+    }
+    
+    l <- ggplot2::ggplot(x, ggplot2::aes(x = y, y = z)) +
         ggplot2::coord_cartesian(xlim = c(a, b), ylim = c(d, e)) +
         ggplot2::geom_segment(
             aes(xend = 0, yend = 0, alpha = 0.5),
@@ -311,11 +253,11 @@ plot_loadings <- function(x, y, z, a, b, d, e, f, g, h, i, j, k) {
             mapping = ggplot2::aes(
                 fontface = 1, segment.color = k, segment.size = 0.25
             ),
-            label = rownames(x),
+            label = x[["feature_names"]],
             label.size = 0.05,
             direction = "both",
-            nudge_x = f,  # 0.02
-            nudge_y = g,  # 0.04
+            nudge_x = f,
+            nudge_y = g,
             force = 4,
             force_pull = 1,
             hjust = 0
@@ -326,7 +268,237 @@ plot_loadings <- function(x, y, z, a, b, d, e, f, g, h, i, j, k) {
     
     return(l)
 }
-#TODO Add return description
+
+
+plot_pos_neg_loadings_each_axis <- function(
+    df_all, df_pos, df_neg,
+    PC_x, PC_y,
+    row_start, row_end,
+    x_min, x_max, y_min, y_max,
+    x_pos_nudge_x, y_pos_nudge_x,
+    x_neg_nudge_x, y_neg_nudge_x,
+    x_pos_nudge_y, y_pos_nudge_y,
+    x_neg_nudge_y, y_neg_nudge_y,
+    x_label, y_label,
+    col_x_pos = "#440154", col_y_pos = "#3B528B",
+    col_x_neg = "#21918C", col_y_neg = "#5EC962",
+    col_seg_pos, col_seg_neg
+) {
+    # ...
+    #
+    # :param df_all: dataframe: all loadings (from, e.g., PCAtools)
+    # :param df_pos: dataframe: positive loadings ordered largest to smallest
+    # :param df_neg: dataframe: negative loadings ordered smallest to largest
+    # :param PC_x: PC to plot on the x axis
+    # :param PC_y: PC to plot on the y axis
+    # :param row_start: row from which to begin subsetting the PCs on x and y
+    # :param row_end: row at which to end subsetting the PCs on x and y
+    # :param x_min: minimum value on x axis <dbl>
+    # :param x_max: maximum value on x axis <dbl>
+    # :param y_min: minimum value on y axis <dbl>
+    # :param y_max: maximum value on y axis <dbl>
+    # :param x_pos_nudge_x: amount to nudge labels for x positive loadings on x
+    #                       axis <dbl>
+    # :param y_pos_nudge_x: amount to nudge labels for y positive loadings on x
+    #                       axis <dbl>
+    # :param x_neg_nudge_x: amount to nudge labels for x negative loadings on x
+    #                       axis <dbl>
+    # :param y_neg_nudge_x: amount to nudge labels for y negative loadings on x
+    #                       axis <dbl>
+    # :param x_pos_nudge_y: amount to nudge labels for x positive loadings on y
+    #                       axis <dbl>
+    # :param y_pos_nudge_y: amount to nudge labels for y positive loadings on y
+    #                       axis <dbl>
+    # :param x_neg_nudge_y: amount to nudge labels for x negative loadings on y
+    #                       axis <dbl>
+    # :param y_neg_nudge_y: amount to nudge labels for y negative loadings on y
+    #                       axis <dbl>
+    # :param x_label: x axis label <chr>
+    # :param y_label: y axis label <chr>
+    # :param col_x_pos: color: lines, arrows for x positive loadings <chr>
+    # :param col_y_pos: color: lines, arrows for y positive loadings <chr>
+    # :param col_x_neg: color: lines, arrows for x negative loadings <chr>
+    # :param col_y_neg: color: lines, arrows for y negative loadings <chr>
+    # :param col_seg_pos: color: segments connecting arrowhead and text bubble
+    #                     for positive loadings <chr>
+    # :param col_seg_neg: color: segments connecting arrowhead and text bubble
+    #                     for negative loadings <chr>
+    # :return image: ...
+    
+    #  Perform debugging
+    debug <- FALSE
+    if(base::isTRUE(debug)) {
+        df_all = loadings
+        df_pos = top_loadings_pos
+        df_neg = top_loadings_neg
+        PC_x = PC_x
+        PC_y = PC_y
+        row_start = 1
+        row_end = n_loadings
+        x_min = x_min_loadings_plot
+        x_max = x_max_loadings_plot
+        y_min = y_min_loadings_plot
+        y_max = y_max_loadings_plot
+        x_pos_nudge_x = 0.04
+        y_pos_nudge_x = 0
+        x_neg_nudge_x = -0.04
+        y_neg_nudge_x = -0.02
+        x_pos_nudge_y = 0
+        y_pos_nudge_y = 0.04
+        x_neg_nudge_y = 0
+        y_neg_nudge_y = -0.04
+        x_label = x_label
+        y_label = y_label
+        col_x_pos = "#440154"
+        col_y_pos = "#3B528B"
+        col_x_neg = "#21918C"
+        col_y_neg = "#5EC962"
+        col_seg_pos = "grey"
+        col_seg_neg = "grey"
+    }
+    
+    filter_pos_1 <- rownames(df_pos[[PC_x]][row_start:row_end, ])
+    filter_pos_2 <- rownames(df_pos[[PC_y]][row_start:row_end, ])
+    filter_neg_1 <- rownames(df_neg[[PC_x]][row_start:row_end, ])
+    filter_neg_2 <- rownames(df_neg[[PC_y]][row_start:row_end, ])
+    
+    loadings_filter_pos_1 <- df_all[rownames(df_all) %in% filter_pos_1, ]
+    loadings_filter_pos_2 <- df_all[rownames(df_all) %in% filter_pos_2, ]
+    loadings_filter_neg_1 <- df_all[rownames(df_all) %in% filter_neg_1, ]
+    loadings_filter_neg_2 <- df_all[rownames(df_all) %in% filter_neg_2, ]
+    
+    loadings_etc <- dplyr::bind_rows(
+        loadings_filter_pos_1,
+        loadings_filter_pos_2,
+        loadings_filter_neg_1,
+        loadings_filter_neg_2
+    )
+    loadings_etc$label <- c(
+        rep("x_pos", 10),
+        rep("y_pos", 10),
+        rep("x_neg", 10),
+        rep("y_neg", 10)
+    )
+    loadings_etc$color <- c(
+        rep(col_x_pos, 10),  # x pos
+        rep(col_y_pos, 10),  # y pos
+        rep(col_x_neg, 10),  # x neg
+        rep(col_y_neg, 10)  # y neg
+    )
+    loadings_etc$nudge_x <- c(
+        rep(x_pos_nudge_x, 10),  # x pos
+        rep(y_pos_nudge_x, 10),  # y pos
+        rep(x_neg_nudge_x, 10),  # x neg
+        rep(y_neg_nudge_x, 10)  # y neg
+    )
+    loadings_etc$nudge_y <- c(
+        rep(x_pos_nudge_y, 10),  # x pos
+        rep(y_pos_nudge_y, 10),  # y pos
+        rep(x_neg_nudge_y, 10),  # x neg
+        rep(y_neg_nudge_y, 10)  # y neg
+    )
+    
+    #  Move rownames to a column, then remove signs of duplicate rownames (but
+    #+ keep the duplicate entries (at least for now))
+    loadings_etc <- loadings_etc %>%
+        tibble::rownames_to_column("feature_names")
+    loadings_etc$feature_names <- loadings_etc$feature_names %>%
+        stringr::str_remove_all("\\.\\.\\.[0-9]{1,2}$")
+    if(base::isTRUE(debug)) loadings_etc %>% head()
+    
+    coords_PC1 <- c(
+        loadings_filter_pos_1[[PC_x]],
+        loadings_filter_pos_2[[PC_x]],
+        loadings_filter_neg_1[[PC_x]],
+        loadings_filter_neg_2[[PC_x]]
+    )
+    coords_PC2 <- c(
+        loadings_filter_pos_1[[PC_y]],
+        loadings_filter_pos_2[[PC_y]],
+        loadings_filter_neg_1[[PC_y]],
+        loadings_filter_neg_2[[PC_y]]
+    )
+    
+    images <- list()
+    images[["all"]] <- plot_loadings(
+        loadings_etc,
+        coords_PC1,
+        coords_PC2,
+        x_min,
+        x_max,
+        y_min,
+        y_max,
+        loadings_etc$nudge_x,
+        loadings_etc$nudge_y,
+        x_label,
+        y_label,
+        loadings_etc$color,
+        col_seg_pos
+    )
+    images[["PC_x_pos"]] <- plot_loadings(
+        loadings_filter_pos_1,
+        loadings_filter_pos_1[[PC_x]],
+        loadings_filter_pos_1[[PC_y]],
+        x_min,
+        x_max,
+        y_min,
+        y_max,
+        loadings_etc[loadings_etc$label == "x_pos", ]$nudge_x[1],
+        loadings_etc[loadings_etc$label == "x_pos", ]$nudge_y[1],
+        x_label,
+        y_label,
+        loadings_etc[loadings_etc$label == "x_pos", ]$color[1],
+        col_seg_pos
+    )
+    images[["PC_y_pos"]] <- plot_loadings(
+        loadings_filter_pos_2,
+        loadings_filter_pos_2[[PC_x]],
+        loadings_filter_pos_2[[PC_y]],
+        x_min,
+        x_max,
+        y_min,
+        y_max,
+        loadings_etc[loadings_etc$label == "y_pos", ]$nudge_x[1],
+        loadings_etc[loadings_etc$label == "y_pos", ]$nudge_y[1],
+        x_label,
+        y_label,
+        loadings_etc[loadings_etc$label == "y_pos", ]$color[1],
+        col_seg_pos
+    )
+    images[["PC_x_neg"]] <- plot_loadings(
+        loadings_filter_neg_1,
+        loadings_filter_neg_1[[PC_x]],
+        loadings_filter_neg_1[[PC_y]],
+        x_min,
+        x_max,
+        y_min,
+        y_max,
+        loadings_etc[loadings_etc$label == "x_neg", ]$nudge_x[1],
+        loadings_etc[loadings_etc$label == "x_neg", ]$nudge_y[1],
+        x_label,
+        y_label,
+        loadings_etc[loadings_etc$label == "x_neg", ]$color[1],
+        col_seg_neg
+    )
+    images[["PC_y_neg"]] <- plot_loadings(
+        loadings_filter_neg_2,
+        loadings_filter_neg_2[[PC_x]],
+        loadings_filter_neg_2[[PC_y]],
+        x_min,
+        x_max,
+        y_min,
+        y_max,
+        loadings_etc[loadings_etc$label == "y_neg", ]$nudge_x[1],
+        loadings_etc[loadings_etc$label == "y_neg", ]$nudge_y[1],
+        x_label,
+        y_label,
+        loadings_etc[loadings_etc$label == "y_neg", ]$color[1],
+        col_seg_neg
+    )
+    
+    if(base::isTRUE(debug)) images[["all"]]
+    return(images)
+}
 
 
 draw_scree_plot <- function(pca, horn, elbow) {
@@ -366,11 +538,20 @@ run_PCA_pipeline <- function(
     x_max_loadings_plot = 0.1,
     y_min_loadings_plot = -0.1,
     y_max_loadings_plot = 0.1,
-    n_loadings = 10L,
+    n_loadings = 10,
+    x_pos_nudge_x = 0.04,
+    y_pos_nudge_x = 0,
+    x_neg_nudge_x = -0.04,
+    y_neg_nudge_x = -0.02,
+    x_pos_nudge_y = 0,
+    y_pos_nudge_y = 0.04,
+    x_neg_nudge_y = 0,
+    y_neg_nudge_y = -0.04,
     meta_color,
     meta_shape,
     plot_loadings_pct = FALSE,
-    drop_md_levels = NULL
+    drop_md_levels = NULL,
+    PCs_cor_plot
 ) {
     # ...
     #
@@ -387,34 +568,60 @@ run_PCA_pipeline <- function(
     # :param y_max_loadings_plot: ... <dbl> [default: 0.1]
     # :param n_loadings: Number of loading vectors to show per positive and 
     #                    negative x and y axis <int> [default: 10L]
+    # :param x_pos_nudge_x: amount to nudge labels for x positive loadings on x
+    #                       axis <dbl>
+    # :param y_pos_nudge_x: amount to nudge labels for y positive loadings on x
+    #                       axis <dbl>
+    # :param x_neg_nudge_x: amount to nudge labels for x negative loadings on x
+    #                       axis <dbl>
+    # :param y_neg_nudge_x: amount to nudge labels for y negative loadings on x
+    #                       axis <dbl>
+    # :param x_pos_nudge_y: amount to nudge labels for x positive loadings on y
+    #                       axis <dbl>
+    # :param y_pos_nudge_y: amount to nudge labels for y positive loadings on y
+    #                       axis <dbl>
+    # :param x_neg_nudge_y: amount to nudge labels for x negative loadings on y
+    #                       axis <dbl>
+    # :param y_neg_nudge_y: amount to nudge labels for y negative loadings on y
+    #                       axis <dbl>
     # :param meta_color: ... <character>
     # :param meta_shape: ... <character>
     # :param plot_loadings_pct: Plot top 2.5% loadings for elbow + 2 number of
     #                           PCs <lgl> [default: FALSE]
     # :param drop_md_levels: Metadata variables to drop from correlation plot
     #                        <chr> [default: NULL]
+    # :param PCs_cor_plot: PCs to include in correlation plot <dbl>
+    #                      [default: NULL]
     # :return results_list: ... <list>
     
     #  Perform debugging
     debug <- FALSE
     if(base::isTRUE(debug)) {
-        counts <- pca_counts
-        metadata <- t_meta
-        feat_id <- pca_feat_id
-        x_min_biplot <- -100
-        x_max_biplot <- 100
-        y_min_biplot <- -100
-        y_max_biplot <- 100
-        x_min_loadings_plot <- -0.1
-        x_max_loadings_plot <- 0.1
-        y_min_loadings_plot <- -0.1
-        y_max_loadings_plot <- 0.1
-        n_loadings <- 10L
-        meta_color <- "st_gt_tx"
-        meta_shape <- "kit"
-        plot_loadings_pct <- FALSE
-        # drop_md_levels <- c("technical", "kit")
-        drop_md_levels <- NULL
+        counts = input_counts
+        metadata = t_meta
+        feat_id = pca_feat_id
+        x_min_biplot = ifelse(run_norm == "rlog", -50, -100)
+        x_max_biplot = ifelse(run_norm == "rlog", 50, 100)
+        y_min_biplot = ifelse(run_norm == "rlog", -50, -100)
+        y_max_biplot = ifelse(run_norm == "rlog", 50, 100)
+        x_min_loadings_plot = ifelse(run_norm == "rlog", -0.1, -0.1)
+        x_max_loadings_plot = ifelse(run_norm == "rlog", 0.1, 0.1)
+        y_min_loadings_plot = ifelse(run_norm == "rlog", -0.1, -0.1)
+        y_max_loadings_plot = ifelse(run_norm == "rlog", 0.1, 0.1)
+        n_loadings = 10L
+        x_pos_nudge_x = 0.04
+        y_pos_nudge_x = 0
+        x_neg_nudge_x = -0.04
+        y_neg_nudge_x = -0.02
+        x_pos_nudge_y = 0
+        y_pos_nudge_y = 0.04
+        x_neg_nudge_y = 0
+        y_neg_nudge_y = -0.04
+        meta_color = meta_color
+        meta_shape = meta_shape
+        plot_loadings_pct = FALSE
+        drop_md_levels = c("gt_st", "gt_tx", "st_tx", "gt_st_tx", "tc", "day")
+        PCs_cor_plot = 3
     }
     
     #  Check arguments
@@ -425,32 +632,32 @@ run_PCA_pipeline <- function(
     #TODO Checks for {x,y}_{min,max}_*
     stopifnot(is.logical(plot_loadings_pct))
     if(!is.null(drop_md_levels)) stopifnot(is.character(drop_md_levels))
+    if(!is.null(PCs_cor_plot)) stopifnot(is.numeric(PCs_cor_plot))
     
     #  Create a PCAtools "pca" S4 object
     pca <- PCAtools::pca(counts, metadata = metadata)
     rownames(pca$loadings) <- feat_id
     
-    #  Determine "significant" PCs with Horn's parallel analysis (see
-    #+ Horn, 1965)
+    #  Determine "significant" PCs with Horn's parallel analysis (see Horn,
+    #+ 1965)
     horn <- PCAtools::parallelPCA(counts[, 2:ncol(counts)]) %>%
         suppressWarnings()
     if(base::isTRUE(debug)) print(horn$n)
     
-    #  Determine "significant" principle components with the elbow
-    #+ method (see Buja and Eyuboglu, 1992)
+    #  Determine "significant" principle components with the elbow method (see
+    #+ Buja and Eyuboglu, 1992)
     elbow <- PCAtools::findElbowPoint(pca$variance)
     if(base::isTRUE(debug)) print(elbow)
     
-    #  Evaluate cumulative proportion of explained variance with a
-    #+ scree plot
+    #  Evaluate cumulative proportion of explained variance with a scree plot
     p_scree <- draw_scree_plot(pca, horn = horn$n, elbow = elbow)
     if(base::isTRUE(debug)) print(p_scree)
     
     #  Save component loading vectors in their own dataframe
     loadings <- as.data.frame(pca$loadings)
     
-    #  Evaluate the component loading vectors for the number of
-    #+ "significant" PCs identified via the elbow method plus two
+    #  Evaluate the component loading vectors for the number of "significant"
+    #+ PCs identified via the elbow method plus two
     PCs <- paste0("PC", 1:(as.numeric(elbow) + 2))
     top_loadings_all <- lapply(
         PCs, get_top_loadings, x = loadings, z = "all", a = TRUE
@@ -472,20 +679,11 @@ run_PCA_pipeline <- function(
     p_images <- list()
     mat <- combn(PCs, 2)
     for(l in 1:ncol(mat)) {
-        # l <- 1
+        # l <- 2
         m <- mat[, l]
         
         PC_x <- x_label <- m[1]
         PC_y <- y_label <- m[2]
-        
-        x_min_biplot <- x_min_biplot
-        x_max_biplot <- x_max_biplot
-        y_min_biplot <- y_min_biplot
-        y_max_biplot <- y_max_biplot
-        x_min_loadings_plot <- x_min_loadings_plot
-        x_max_loadings_plot <- x_max_loadings_plot
-        y_min_loadings_plot <- y_min_loadings_plot
-        y_max_loadings_plot <- y_max_loadings_plot
         
         p_images[[paste0("PCAtools.", PC_x, ".v.", PC_y)]] <-
             plot_biplot(
@@ -501,32 +699,42 @@ run_PCA_pipeline <- function(
                 y_min = y_min_biplot,
                 y_max = y_max_biplot
             )
-        p_images[[paste0("PCAtools.", PC_x, ".v.", PC_y)]]
+        if(base::isTRUE(debug)) p_images[[
+            paste0("PCAtools.", PC_x, ".v.", PC_y)
+        ]]
         
         p_images[[paste0("KA.", PC_x, ".v.", PC_y)]] <-
-            plot_pos_neg_loadings_each_axis(
+            plot_pos_neg_loadings_each_axis(  #DEBUGFROMHERE
                 df_all = loadings,
                 df_pos = top_loadings_pos,
                 df_neg = top_loadings_neg,
                 PC_x = PC_x,
                 PC_y = PC_y,
                 row_start = 1,
-                row_end = n_loadings,  #DONE ARGUMENT
+                row_end = n_loadings,
                 x_min = x_min_loadings_plot,
                 x_max = x_max_loadings_plot,
                 y_min = y_min_loadings_plot,
                 y_max = y_max_loadings_plot,
-                x_nudge = 0.02,  # 0.02,  # 0.04,  #TODO #ARGUMENT
-                y_nudge = 0.04,  # 0.04,  # 0.02,  #TODO #ARGUMENT
+                x_pos_nudge_x = x_pos_nudge_x,
+                y_pos_nudge_x = y_pos_nudge_x,
+                x_neg_nudge_x = x_neg_nudge_x,
+                y_neg_nudge_x = y_neg_nudge_x,
+                x_pos_nudge_y = x_pos_nudge_y,
+                y_pos_nudge_y = y_pos_nudge_y,
+                x_neg_nudge_y = x_neg_nudge_y,
+                y_neg_nudge_y = y_neg_nudge_y,
                 x_label = x_label,
                 y_label = y_label,
-                col_line_pos = "#229E37",  #TODO #ARGUMENT
-                col_line_neg = "#113275",  #TODO #ARGUMENT
+                col_x_pos = "#440154",
+                col_y_pos = "#3B528B",
+                col_x_neg = "#21918C",
+                col_y_neg = "#5EC962",
                 col_seg_pos = "grey",
                 col_seg_neg = "grey"
             )
         
-        p_images[[paste0("KA.", PC_x, ".v.", PC_y)]]
+        if(base::isTRUE(debug)) p_images[[paste0("KA.", PC_x, ".v.", PC_y)]]
     }
     if(base::isTRUE(debug)) {
         # p_images$PCAtools.PC3.v.PC4 %>% print()
@@ -593,10 +801,16 @@ run_PCA_pipeline <- function(
         metavars <- metavars %>%
             dplyr::select(-dplyr::any_of(drop_md_levels))
     }
-
+    
+    components <- if(is.null(PCs_cor_plot)) {
+        PCAtools::getComponents(pca, 1:(elbow + 2))
+    } else {
+        paste0("PC", c(1:PCs_cor_plot))
+    }
+    
     p_cor <- PCAtools::eigencorplot(
         pca,
-        components = PCAtools::getComponents(pca, 1:(elbow + 2)),  #TODO #ARGUMENT
+        components = components,
         metavars = colnames(metavars),
         col = c("#FFFFFF", "#7835AC"),
         scale = FALSE,
@@ -959,6 +1173,9 @@ if(type == "mRNA") {
         dplyr::select(-c(score, phase))
     
     if(stringr::str_detect(type, "unique")) {
+        #  Load dataframe for custom annotations that do not overlap R64 or
+        #+ pa-ncRNA collapsed/merged annotations:
+        #+ "Trinity_putative-transcripts.2023-0620.unique"
         p_df <- "notebook/KA.2023-0620.Trinity_putative-transcripts.Q_G1"
         
         if(stringr::str_detect(type, "Q")) {
@@ -971,6 +1188,7 @@ if(type == "mRNA") {
             paste(p_df, f_df, sep = "/"), show_col_types = FALSE
         )
         
+        #  Filter gtf to retain only "unique" custom annotations
         t_gtf <- t_gtf[t_gtf$locus_id %in% df$feature, ]
         t_cm <- t_cm[t_cm$features %in% df$feature, ]
         
@@ -1044,8 +1262,7 @@ t_mat <- dplyr::full_join(t_gtf, t_cm, by = "features")
 
 #  Add column of "thorough" names
 t_mat$thorough <- ifelse(!is.na(t_mat$names), t_mat$names, t_mat$features)
-t_mat <- t_mat %>%
-    dplyr::relocate(thorough, .after = names)
+t_mat <- t_mat %>% dplyr::relocate(thorough, .after = names)
 
 #  Sort counts columns by column names
 tmp_A <- t_mat[, 1:10]
@@ -1440,11 +1657,11 @@ t_meta <- t_meta %>%
     dplyr::relocate(c(gt_st, gt_tx, st_tx, gt_st_tx), .before = genotype)
 
 #  Drop any unused factor levels
-forcats::fct_drop(t_meta$genotype)
-forcats::fct_drop(t_meta$state)
-forcats::fct_drop(t_meta$transcription)
-forcats::fct_drop(t_meta$replicate)
-forcats::fct_drop(t_meta$technical)
+t_meta$genotype <- forcats::fct_drop(t_meta$genotype)
+t_meta$state <- forcats::fct_drop(t_meta$state)
+t_meta$transcription <- forcats::fct_drop(t_meta$transcription)
+t_meta$replicate <- forcats::fct_drop(t_meta$replicate)
+t_meta$technical <- forcats::fct_drop(t_meta$technical)
 
 
 #  Add extra model variables for certain experiments --------------------------
@@ -1533,9 +1750,9 @@ if(samples %in% c(
         dplyr::relocate(c(day, aux, tc), .after = technical)
     
     #  Drop any unused factor levels
-    forcats::fct_drop(t_meta$day)
-    forcats::fct_drop(t_meta$aux)
-    forcats::fct_drop(t_meta$tc)
+    t_meta$day <- forcats::fct_drop(t_meta$day)
+    t_meta$aux <- forcats::fct_drop(t_meta$aux)
+    t_meta$tc <- forcats::fct_drop(t_meta$tc)
 }
 
 
@@ -1566,7 +1783,7 @@ t_counts <- t_mat[, 12:ncol(t_mat)] %>%
     as.data.frame()
 
 
-#  Perform either a TPM or rlog normalization ---------------------------------
+#  Perform either TPM or rlog normalization -----------------------------------
 if(run_norm %notin% c("rlog", "tpm")) {
     stop(paste(
         "Argument \"run_norm\" must be \"rlog\" or \"tpm\". Stopping the",
@@ -1749,6 +1966,7 @@ if(base::isTRUE(run_PCA)) {
     if(run_norm == "rlog") {
         input_counts <- pca_counts
     } else {
+        #  Transform TPM values: log2(TPM + 1)
         input_counts <- dplyr::mutate_if(pca_counts + 1, is.numeric, log2)
     }
     
@@ -1769,6 +1987,8 @@ if(base::isTRUE(run_PCA)) {
         meta_shape <- "transcription"
     }
     
+    #TODO Should this reordering of levels for "Rrp6∆.timecourse-G1-Q.SS" be
+    #     somewhere up above?
     if(samples == "Rrp6∆.timecourse-G1-Q.SS") {
         t_meta$state <- factor(
             t_meta$state,
@@ -1780,23 +2000,32 @@ if(base::isTRUE(run_PCA)) {
         counts = input_counts,
         metadata = t_meta,
         feat_id = pca_feat_id,
-        x_min_biplot = ifelse(run_norm == "rlog", -50, -100),
-        x_max_biplot = ifelse(run_norm == "rlog", 50, 100),
-        y_min_biplot = ifelse(run_norm == "rlog", -50, -100),
-        y_max_biplot = ifelse(run_norm == "rlog", 50, 100),
+        x_min_biplot = ifelse(run_norm == "rlog", -100, -100),
+        x_max_biplot = ifelse(run_norm == "rlog", 100, 100),
+        y_min_biplot = ifelse(run_norm == "rlog", -100, -100),
+        y_max_biplot = ifelse(run_norm == "rlog", 100, 100),
         x_min_loadings_plot = ifelse(run_norm == "rlog", -0.1, -0.1),
         x_max_loadings_plot = ifelse(run_norm == "rlog", 0.1, 0.1),
         y_min_loadings_plot = ifelse(run_norm == "rlog", -0.1, -0.1),
         y_max_loadings_plot = ifelse(run_norm == "rlog", 0.1, 0.1),
         n_loadings = 10L,
+        x_pos_nudge_x = ifelse(samples == "Ovation", 0.04, "#TBD"),
+        y_pos_nudge_x = ifelse(samples == "Ovation", 0, "#TBD"),
+        x_neg_nudge_x = ifelse(samples == "Ovation", -0.04, "#TBD"),
+        y_neg_nudge_x = ifelse(samples == "Ovation", -0.02, "#TBD"),
+        x_pos_nudge_y = ifelse(samples == "Ovation", 0, "#TBD"),
+        y_pos_nudge_y = ifelse(samples == "Ovation", 0.04, "#TBD"),
+        x_neg_nudge_y = ifelse(samples == "Ovation", 0, "#TBD"),
+        y_neg_nudge_y = ifelse(samples == "Ovation", -0.04, "#TBD"),
         meta_color = meta_color,
         meta_shape = meta_shape,
         plot_loadings_pct = FALSE,
-        drop_md_levels = c("gt_st", "gt_tx", "st_tx", "gt_st_tx", "tc", "day")
+        drop_md_levels = c("gt_st", "gt_tx", "st_tx", "gt_st_tx", "tc", "day"),
+        PCs_cor_plot = ifelse(samples == "Ovation", 3, NULL)
     )
 }
 
-run <- TRUE
+run <- FALSE
 if(base::isTRUE(run)) {
     # pca_exp$`02_horn`$n %>% print()
     # pca_exp$`03_elbow` %>% as.numeric() %>% print()
@@ -1811,7 +2040,9 @@ if(base::isTRUE(run)) {
     pca_exp$`10_p_images`$PCAtools.PC1.v.PC3 %>% print()
     pca_exp$`10_p_images`$PCAtools.PC1.v.PC2 %>% print()
     
-    # pca_exp$`10_p_images`$KA.PC1.v.PC2
+    pca_exp$`10_p_images`$KA.PC2.v.PC3[["all"]] %>% print()
+    pca_exp$`10_p_images`$KA.PC1.v.PC3[["all"]] %>% print()
+    pca_exp$`10_p_images`$KA.PC1.v.PC2[["all"]] %>% print()
 }
 
 if(base::isTRUE(write_norm_counts_rds)) {
@@ -1853,277 +2084,213 @@ if(base::isTRUE(write_PCA_results)) {
     run <- TRUE
     if(base::isTRUE(run)) {
         if(pca_exp$`03_elbow` >= 2) {
-            pca_exp$`08_top_loadings_pos`$PC1 %>%
-            tibble::rownames_to_column() %>%
-            readr::write_tsv(paste0(
-                getwd(), "/",
-                "PCA.", date, "__",
-                samples, "__",
-                type, ".loadings-list.PC1-pos.tsv"
-            ))
-        pca_exp$`09_top_loadings_neg`$PC1 %>%
-            tibble::rownames_to_column() %>%
-            readr::write_tsv(paste0(
-                getwd(), "/",
-                "PCA.", date, "__",
-                samples, "__",
-                type, ".loadings-list.PC1-neg.tsv"
-            ))
-        
-        pca_exp$`08_top_loadings_pos`$PC2 %>%
-            tibble::rownames_to_column() %>%
-            readr::write_tsv(paste0(
-                getwd(), "/",
-                "PCA.", date, "__",
-                samples, "__",
-                type, ".loadings-list.PC2-pos.tsv"
-            ))
-        pca_exp$`09_top_loadings_neg`$PC2 %>%
-            tibble::rownames_to_column() %>%
-            readr::write_tsv(paste0(
-                getwd(), "/",
-                "PCA.", date, "__",
-                samples, "__",
-                type, ".loadings-list.PC2-neg.tsv"
-            ))
+            run <- TRUE
+            if(base::isTRUE(run)) {
+                pca_exp$`08_top_loadings_pos`$PC1 %>%
+                    tibble::rownames_to_column() %>%
+                    readr::write_tsv(paste0(
+                        getwd(), "/",
+                        "PCA.", date, "__",
+                        samples, "__",
+                        type, ".loadings-list.PC1-pos.tsv"
+                    ))
+                pca_exp$`09_top_loadings_neg`$PC1 %>%
+                    tibble::rownames_to_column() %>%
+                    readr::write_tsv(paste0(
+                        getwd(), "/",
+                        "PCA.", date, "__",
+                        samples, "__",
+                        type, ".loadings-list.PC1-neg.tsv"
+                    ))
+            }
+            
+            run <- TRUE
+            if(base::isTRUE(run)) {
+                pca_exp$`08_top_loadings_pos`$PC2 %>%
+                    tibble::rownames_to_column() %>%
+                    readr::write_tsv(paste0(
+                        getwd(), "/",
+                        "PCA.", date, "__",
+                        samples, "__",
+                        type, ".loadings-list.PC2-pos.tsv"
+                    ))
+                pca_exp$`09_top_loadings_neg`$PC2 %>%
+                    tibble::rownames_to_column() %>%
+                    readr::write_tsv(paste0(
+                        getwd(), "/",
+                        "PCA.", date, "__",
+                        samples, "__",
+                        type, ".loadings-list.PC2-neg.tsv"
+                    ))
+            }
+            
+            run <- TRUE
+            if(base::isTRUE(run)) {
+                pca_exp$`10_p_images`$PCAtools.PC1.v.PC2 %>% print()
+                ggsave(paste0(
+                    getwd(), "/",
+                    "PCA.", date, "__",
+                    samples, "__",
+                    type, ".biplot.PC1-vs-PC2.png"
+                ))
+            }
+
+            run <- TRUE
+            if(base::isTRUE(run)) {
+                pca_exp$`10_p_images`$KA.PC1.v.PC2[["all"]] %>% print()
+                ggsave(paste0(
+                    getwd(), "/",
+                    "PCA.", date, "__",
+                    samples, "__",
+                    type, ".loadings-plot.PC1-vs-PC2.all.png"
+                ))
+            }
         }
         
         if(pca_exp$`03_elbow` >= 3) {
-            pca_exp$`08_top_loadings_pos`$PC3 %>%
-                tibble::rownames_to_column() %>%
-                readr::write_tsv(paste0(
+            run <- TRUE
+            if(base::isTRUE(run)) {
+                pca_exp$`08_top_loadings_pos`$PC3 %>%
+                    tibble::rownames_to_column() %>%
+                    readr::write_tsv(paste0(
+                        getwd(), "/",
+                        "PCA.", date, "__",
+                        samples, "__",
+                        type, ".loadings-list.PC3-pos.tsv"
+                    ))
+                pca_exp$`09_top_loadings_neg`$PC3 %>%
+                    tibble::rownames_to_column() %>%
+                    readr::write_tsv(paste0(
+                        getwd(), "/",
+                        "PCA.", date, "__",
+                        samples, "__",
+                        type, ".loadings-list.PC3-neg.tsv"
+                    ))
+            }
+            
+            run <- TRUE
+            if(base::isTRUE(run)) {
+                pca_exp$`10_p_images`$PCAtools.PC1.v.PC3 %>% print()
+                ggsave(paste0(
                     getwd(), "/",
                     "PCA.", date, "__",
                     samples, "__",
-                    type, ".loadings-list.PC3-pos.tsv"
+                    type, ".biplot.PC1-vs-PC3.png"
                 ))
-            pca_exp$`09_top_loadings_neg`$PC3 %>%
-                tibble::rownames_to_column() %>%
-                readr::write_tsv(paste0(
+            }
+            
+            run <- TRUE
+            if(base::isTRUE(run)) {
+                pca_exp$`10_p_images`$KA.PC1.v.PC3[["all"]] %>% print()
+                ggsave(paste0(
                     getwd(), "/",
                     "PCA.", date, "__",
                     samples, "__",
-                    type, ".loadings-list.PC3-neg.tsv"
+                    type, ".loadings-plot.PC1-vs-PC3.all.png"
                 ))
+            }
+            
+            run <- TRUE
+            if(base::isTRUE(run)) {
+                pca_exp$`10_p_images`$PCAtools.PC2.v.PC3 %>% print()
+                ggsave(paste0(
+                    getwd(), "/",
+                    "PCA.", date, "__",
+                    samples, "__",
+                    type, ".biplot.PC2-vs-PC3.png"
+                ))
+            }
+            
+            run <- TRUE
+            if(base::isTRUE(run)) {
+                pca_exp$`10_p_images`$KA.PC2.v.PC3[["all"]] %>% print()
+                ggsave(paste0(
+                    getwd(), "/",
+                    "PCA.", date, "__",
+                    samples, "__",
+                    type, ".loadings-plot.PC2-vs-PC3.all.png"
+                ))
+            }
         }
         
         if(pca_exp$`03_elbow` >= 4) {
-            pca_exp$`08_top_loadings_pos`$PC4 %>%
-                tibble::rownames_to_column() %>%
-                readr::write_tsv(paste0(
+            run <- TRUE
+            if(base::isTRUE(run)) {
+                pca_exp$`08_top_loadings_pos`$PC4 %>%
+                    tibble::rownames_to_column() %>%
+                    readr::write_tsv(paste0(
+                        getwd(), "/",
+                        "PCA.", date, "__",
+                        samples, "__",
+                        type, ".loadings-list.PC4-pos.tsv"
+                    ))
+                pca_exp$`09_top_loadings_neg`$PC4 %>%
+                    tibble::rownames_to_column() %>%
+                    readr::write_tsv(paste0(
+                        getwd(), "/",
+                        "PCA.", date, "__",
+                        samples, "__",
+                        type, ".loadings-list.PC4-neg.tsv"
+                    ))
+            }
+            
+            run <- TRUE
+            if(base::isTRUE(run)) {
+                pca_exp$`10_p_images`$PCAtools.PC1.v.PC4 %>% print()
+                ggsave(paste0(
                     getwd(), "/",
                     "PCA.", date, "__",
                     samples, "__",
-                    type, ".loadings-list.PC4-pos.tsv"
+                    type, ".biplot.PC1-vs-PC4.png"
                 ))
-            pca_exp$`09_top_loadings_neg`$PC4 %>%
-                tibble::rownames_to_column() %>%
-                readr::write_tsv(paste0(
+            }
+            
+            run <- TRUE
+            if(base::isTRUE(run)) {
+                pca_exp$`10_p_images`$PCAtools.PC2.v.PC4 %>% print()
+                ggsave(paste0(
                     getwd(), "/",
                     "PCA.", date, "__",
                     samples, "__",
-                    type, ".loadings-list.PC4-neg.tsv"
+                    type, ".biplot.PC2-vs-PC4.png"
                 ))
+            }
+            
+            run <- TRUE
+            if(base::isTRUE(run)) {
+                pca_exp$`10_p_images`$PCAtools.PC3.v.PC4 %>% print()
+                ggsave(paste0(
+                    getwd(), "/",
+                    "PCA.", date, "__",
+                    samples, "__",
+                    type, ".biplot.PC3-vs-PC4.png"
+                ))
+            }
         }
         
         if(pca_exp$`03_elbow` >= 5) {
-            pca_exp$`08_top_loadings_pos`$PC5 %>%
-                tibble::rownames_to_column() %>%
-                readr::write_tsv(paste0(
-                    getwd(), "/",
-                    "PCA.", date, "__",
-                    samples, "__",
-                    type, ".loadings-list.PC5-pos.tsv"
-                ))
-            pca_exp$`09_top_loadings_neg`$PC5 %>%
-                tibble::rownames_to_column() %>%
-                readr::write_tsv(paste0(
-                    getwd(), "/",
-                    "PCA.", date, "__",
-                    samples, "__",
-                    type, ".loadings-list.PC5-neg.tsv"
-                ))
+            run <- TRUE
+            if(base::isTRUE(run)) {
+                pca_exp$`08_top_loadings_pos`$PC5 %>%
+                    tibble::rownames_to_column() %>%
+                    readr::write_tsv(paste0(
+                        getwd(), "/",
+                        "PCA.", date, "__",
+                        samples, "__",
+                        type, ".loadings-list.PC5-pos.tsv"
+                    ))
+                pca_exp$`09_top_loadings_neg`$PC5 %>%
+                    tibble::rownames_to_column() %>%
+                    readr::write_tsv(paste0(
+                        getwd(), "/",
+                        "PCA.", date, "__",
+                        samples, "__",
+                        type, ".loadings-list.PC5-neg.tsv"
+                    ))
+            }
         }
     }
-    
-    
-    run <- TRUE
-    if(base::isTRUE(run)) {
-        pca_exp$`10_p_images`$PCAtools.PC1.v.PC2 %>% print()
-        ggsave(paste0(
-            getwd(), "/",
-            "PCA.", date, "__",
-            samples, "__",
-            type, ".biplot.PC1-vs-PC2.png"
-        ))
-    }
-    
-    
-    run <- FALSE
-    if(base::isTRUE(run)) {
-        pca_exp$`10_p_images`$KA.PC1.v.PC2[1] %>% print()
-        ggsave(paste0(
-            getwd(), "/",
-            "PCA.", date, "__",
-            samples, "__",
-            type, ".loadings-plot.PC1-vs-PC2.PC1-pos.png"
-        ))
-        
-        pca_exp$`10_p_images`$KA.PC1.v.PC2[2] %>% print()
-        ggsave(paste0(
-            getwd(), "/",
-            "PCA.", date, "__",
-            samples, "__",
-            type, ".loadings-plot.PC1-vs-PC2.PC2-pos.png"
-        ))
-        
-        pca_exp$`10_p_images`$KA.PC1.v.PC2[3] %>% print()
-        ggsave(paste0(
-            getwd(), "/",
-            "PCA.", date, "__",
-            samples, "__",
-            type, ".loadings-plot.PC1-vs-PC2.PC1-neg.png"
-        ))
-        
-        pca_exp$`10_p_images`$KA.PC1.v.PC2[4] %>% print()
-        ggsave(paste0(
-            getwd(), "/",
-            "PCA.", date, "__",
-            samples, "__",
-            type, ".loadings-plot.PC1-vs-PC2.PC2-neg.png"
-        ))
-    }
-    
-    run <- TRUE
-    if(base::isTRUE(run)) {
-        pca_exp$`10_p_images`$PCAtools.PC1.v.PC3 %>% print()
-        ggsave(paste0(
-            getwd(), "/",
-            "PCA.", date, "__",
-            samples, "__",
-            type, ".biplot.PC1-vs-PC3.png"
-        ))
-    }
-    
-    
-    run <- FALSE
-    if(base::isTRUE(run)) {
-        pca_exp$`10_p_images`$KA.PC1.v.PC3[1] %>% print()
-        ggsave(paste0(
-            getwd(), "/",
-            "PCA.", date, "__",
-            samples, "__",
-            type, ".loadings-plot.PC1-vs-PC3.PC1-pos.png"
-        ))
-        
-        pca_exp$`10_p_images`$KA.PC1.v.PC3[2] %>% print()
-        ggsave(paste0(
-            getwd(), "/",
-            "PCA.", date, "__",
-            samples, "__",
-            type, ".loadings-plot.PC1-vs-PC3.PC3-pos.png"
-        ))
-        
-        pca_exp$`10_p_images`$KA.PC1.v.PC3[3] %>% print()
-        ggsave(paste0(
-            getwd(), "/",
-            "PCA.", date, "__",
-            samples, "__",
-            type, ".loadings-plot.PC1-vs-PC3.PC1-neg.png"
-        ))
-        
-        pca_exp$`10_p_images`$KA.PC1.v.PC3[4] %>% print()
-        ggsave(paste0(
-            getwd(), "/",
-            "PCA.", date, "__",
-            samples, "__",
-            type, ".loadings-plot.PC1-vs-PC3.PC3-neg.png"
-        ))
-    }
-    
-    
-    run <- TRUE
-    if(base::isTRUE(run)) {
-        pca_exp$`10_p_images`$PCAtools.PC1.v.PC4 %>% print()
-        ggsave(paste0(
-            getwd(), "/",
-            "PCA.", date, "__",
-            samples, "__",
-            type, ".biplot.PC1-vs-PC4.png"
-        ))
-    }
-    
-    
-    run <- TRUE
-    if(base::isTRUE(run)) {
-        pca_exp$`10_p_images`$PCAtools.PC2.v.PC3 %>% print()
-        ggsave(paste0(
-            getwd(), "/",
-            "PCA.", date, "__",
-            samples, "__",
-            type, ".biplot.PC2-vs-PC3.png"
-        ))
-    }
-    
-    
-    run <- TRUE
-    if(base::isTRUE(run)) {
-        pca_exp$`10_p_images`$KA.PC2.v.PC3[1] %>% print()
-        ggsave(paste0(
-            getwd(), "/",
-            "PCA.", date, "__",
-            samples, "__",
-            type, ".loadings-plot.PC2-vs-PC3.PC2-pos.png"
-        ))
-        
-        pca_exp$`10_p_images`$KA.PC2.v.PC3[2] %>% print()
-        ggsave(paste0(
-            getwd(), "/",
-            "PCA.", date, "__",
-            samples, "__",
-            type, ".loadings-plot.PC2-vs-PC3.PC3-pos.png"
-        ))
-        
-        pca_exp$`10_p_images`$KA.PC2.v.PC3[3] %>% print()
-        ggsave(paste0(
-            getwd(), "/",
-            "PCA.", date, "__",
-            samples, "__",
-            type, ".loadings-plot.PC2-vs-PC3.PC2-neg.png"
-        ))
-        
-        pca_exp$`10_p_images`$KA.PC2.v.PC3[4] %>% print()
-        ggsave(paste0(
-            getwd(), "/",
-            "PCA.", date, "__",
-            samples, "__",
-            type, ".loadings-plot.PC2-vs-PC3.PC3-neg.png"
-        ))
-    }
-    
-    run <- TRUE
-    if(base::isTRUE(run)) {
-        pca_exp$`10_p_images`$PCAtools.PC2.v.PC4 %>% print()
-        ggsave(paste0(
-            getwd(), "/",
-            "PCA.", date, "__",
-            samples, "__",
-            type, ".biplot.PC2-vs-PC4.png"
-        ))
-    }
-    
-    
-    run <- TRUE
-    if(base::isTRUE(run)) {
-        pca_exp$`10_p_images`$PCAtools.PC3.v.PC4 %>% print()
-        ggsave(paste0(
-            getwd(), "/",
-            "PCA.", date, "__",
-            samples, "__",
-            type, ".biplot.PC3-vs-PC4.png"
-        ))
-    }
-    
+
     run <- TRUE
     if(base::isTRUE(run)) {
         png(
