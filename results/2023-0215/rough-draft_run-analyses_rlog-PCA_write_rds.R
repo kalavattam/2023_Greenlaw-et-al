@@ -21,21 +21,21 @@ type <- "mRNA"  #ARGUMENT
 # samples <- "Rrp6∆.G1-Q.SS"  #ARGUMENT
 # samples <- "Rrp6∆.Q.N-SS"  #ARGUMENT
 # samples <- "Rrp6∆.timecourse"  #ARGUMENT
-# samples <- "Rrp6∆.timecourse-G1-Q.SS"  #ARGUMENT
+samples <- "Rrp6∆.timecourse-G1-Q.SS"  #ARGUMENT
 # samples <- "Rrp6∆.timecourse-G1.SS"  #ARGUMENT
 # samples <- "Rrp6∆.timecourse-G1-Q.N-SS"  #ARGUMENT
 # samples <- "Rrp6∆.timecourse.G1-SS.Q-N"  #ARGUMENT
 # samples <- "Nab3AID.Q.N-SS"  #ARGUMENT
 # samples <- "Nab3AID.Q.N-SS_Rrp6∆.Q.N-SS"  #ARGUMENT
-samples <- "Nab3AID.Q.SS_Rrp6∆.Q.SS"
+# samples <- "Nab3AID.Q.SS_Rrp6∆.Q.SS"
 # samples <- "Nab3AID.Q.N-SS_Rrp6∆.timecourse-G1-Q.N-SS"  #ARGUMENT
 
-run_norm <- "rlog"  #ARGUMENT
-# run_norm <- "tpm"  #ARGUMENT
+# run_norm <- "rlog"  #ARGUMENT
+run_norm <- "tpm"  #ARGUMENT
 
 run_batch_correction <- FALSE  #ARGUMENT
 run_PCA <- TRUE  #ARGUMENT
-date <- "2023-0623"  #ARGUMENT
+date <- "2023-0624"  #ARGUMENT
 write_norm_counts_rds <- TRUE  #ARGUMENT
 write_PCA_results <- TRUE  #ARGUMENT
 
@@ -1752,7 +1752,10 @@ if(base::isTRUE(run_PCA)) {
         input_counts <- dplyr::mutate_if(pca_counts + 1, is.numeric, log2)
     }
     
-    if(samples %in% c("Rrp6∆.timecourse-G1.SS", "Rrp6∆.timecourse-G1-Q.SS")) {
+    if(samples %in% c(
+        "Rrp6∆.timecourse-G1.SS", "Rrp6∆.timecourse-G1-Q.SS",
+        "Rrp6∆.timecourse.G1-SS.Q-N"
+    )) {
         meta_color <- "genotype"
         meta_shape <- "state"
     } else if (samples == "Nab3AID.Q.N-SS_Rrp6∆.Q.N-SS") {
@@ -1766,6 +1769,13 @@ if(base::isTRUE(run_PCA)) {
         meta_shape <- "transcription"
     }
     
+    if(samples == "Rrp6∆.timecourse-G1-Q.SS") {
+        t_meta$state <- factor(
+            t_meta$state,
+            levels = c("G1", "DSm2", "DSp2", "DSp24", "DSp48", "Q")
+        )
+    }
+    
     pca_exp <- run_PCA_pipeline(
         counts = input_counts,
         metadata = t_meta,
@@ -1774,10 +1784,10 @@ if(base::isTRUE(run_PCA)) {
         x_max_biplot = ifelse(run_norm == "rlog", 50, 100),
         y_min_biplot = ifelse(run_norm == "rlog", -50, -100),
         y_max_biplot = ifelse(run_norm == "rlog", 50, 100),
-        x_min_loadings_plot = ifelse(run_norm == "rlog", -0.1, -0.075),
-        x_max_loadings_plot = ifelse(run_norm == "rlog", 0.1, 0.075),
-        y_min_loadings_plot = ifelse(run_norm == "rlog", -0.1, -0.075),
-        y_max_loadings_plot = ifelse(run_norm == "rlog", 0.1, 0.075),
+        x_min_loadings_plot = ifelse(run_norm == "rlog", -0.1, -0.1),
+        x_max_loadings_plot = ifelse(run_norm == "rlog", 0.1, 0.1),
+        y_min_loadings_plot = ifelse(run_norm == "rlog", -0.1, -0.1),
+        y_max_loadings_plot = ifelse(run_norm == "rlog", 0.1, 0.1),
         n_loadings = 10L,
         meta_color = meta_color,
         meta_shape = meta_shape,
@@ -1825,8 +1835,8 @@ if(base::isTRUE(write_norm_counts_rds)) {
 }
 
 if(base::isTRUE(write_PCA_results)) {
-    pca_exp$`02_horn`$n %>% print()
-    pca_exp$`03_elbow` %>% as.numeric() %>% print()
+    # pca_exp$`02_horn`$n %>% print()
+    # pca_exp$`03_elbow` %>% as.numeric() %>% print()
     
     run <- TRUE
     if(base::isTRUE(run)) {
@@ -1840,7 +1850,7 @@ if(base::isTRUE(write_PCA_results)) {
     }
     
     
-    run <- FALSE
+    run <- TRUE
     if(base::isTRUE(run)) {
         if(pca_exp$`03_elbow` >= 2) {
             pca_exp$`08_top_loadings_pos`$PC1 %>%
@@ -2056,7 +2066,7 @@ if(base::isTRUE(write_PCA_results)) {
     }
     
     
-    run <- FALSE
+    run <- TRUE
     if(base::isTRUE(run)) {
         pca_exp$`10_p_images`$KA.PC2.v.PC3[1] %>% print()
         ggsave(paste0(
