@@ -14,14 +14,14 @@ type <- "mRNA"  #ARGUMENT
 # type <- "Trinity-G1-unique"  #ARGUMENT
 # type <- "representation"  #TODO
 
-# samples <- "Ovation"  #ARGUMENT
+samples <- "Ovation"  #ARGUMENT
 # samples <- "test.Ovation_Rrp6∆"  #ARGUMENT  #TODO Remove
 # samples <- "test.Ovation_Tecan"  #ARGUMENT  #TODO Remove
 # samples <- "Rrp6∆.G1-Q.N-SS"  #ARGUMENT
 # samples <- "Rrp6∆.G1-Q.SS"  #ARGUMENT
 # samples <- "Rrp6∆.Q.N-SS"  #ARGUMENT
 # samples <- "Rrp6∆.timecourse"  #ARGUMENT
-samples <- "Rrp6∆.timecourse-G1-Q.SS"  #ARGUMENT
+# samples <- "Rrp6∆.timecourse-G1-Q.SS"  #ARGUMENT
 # samples <- "Rrp6∆.timecourse-G1.SS"  #ARGUMENT
 # samples <- "Rrp6∆.timecourse-G1-Q.N-SS"  #ARGUMENT
 # samples <- "Rrp6∆.timecourse.G1-SS.Q-N"  #ARGUMENT
@@ -48,7 +48,7 @@ write_pdfs <- TRUE
 
 #  Load libraries, set options ================================================
 suppressMessages(library(DESeq2))
-suppressMessages(library(limma))
+# suppressMessages(library(limma))
 suppressMessages(library(PCAtools))
 suppressMessages(library(tidyverse))
 
@@ -947,7 +947,11 @@ theme_AG_boxed_no_legend <- theme_AG_boxed + theme(legend.position = "none")
 
 
 #  Get situated, load counts matrix ===========================================
-p_base <- "/Users/kalavatt/projects-etc"
+if(stringr::str_detect(getwd(), "kalavattam")) {
+    p_base <- "/Users/kalavattam/Dropbox/FHCC"
+} else {
+    p_base <- "/Users/kalavatt/projects-etc"
+}
 p_exp <- "2022_transcriptome-construction/results/2023-0215"
 
 #  Set work dir
@@ -1349,7 +1353,8 @@ t_mat$genome <- ifelse(
         t_mat$chr %in% chr_KL,
         "K_lactis",
         ifelse(
-            t_mat$chr %in% chr_20S,
+            # t_mat$chr %in% chr_20S,
+            t_mat$features %in% chr_20S,
             "20S",
             NA
         )
@@ -1357,6 +1362,11 @@ t_mat$genome <- ifelse(
 ) %>%
     as.factor()
 t_mat <- t_mat %>% dplyr::relocate(genome, .before = chr)
+
+t_mat$start[which(t_mat$genome == "20S")] <-
+    t_mat$end[which(t_mat$genome == "20S")] <-
+    0
+t_mat$chr[which(t_mat$genome == "20S")] <- "20S"
 
 #  Remove unneeded variables again
 rm(chr_20S, chr_KL, chr_SC, chr_order)

@@ -133,7 +133,11 @@ theme_AG_boxed_no_legend <- theme_AG_boxed + theme(legend.position = "none")
 
 
 #  Get situated, load counts matrix ===========================================
-p_base <- "/Users/kalavatt/projects-etc"
+if(stringr::str_detect(getwd(), "kalavattam")) {
+    p_base <- "/Users/kalavattam/Dropbox/FHCC"
+} else {
+    p_base <- "/Users/kalavatt/projects-etc"
+}
 p_exp <- "2022_transcriptome-construction/results/2023-0215"
 
 #  Set work dir
@@ -143,88 +147,111 @@ paste(p_base, p_exp, sep = "/") %>% setwd()
 p_panther <- "notebook/KA.2023-0625.PCA-TPM_Ovation"
 f_pre <- "PCA.2023-0625__Ovation__mRNA.feature-list-"
 f_pos <- ".pantherdb-BP.txt"
-f_PC1_neg_BP_100 <- paste0(f_pre, "100.PC1-neg", f_pos)
-f_PC2_neg_BP_100 <- paste0(f_pre, "100.PC2-neg", f_pos)
-f_PC3_neg_BP_100 <- paste0(f_pre, "100.PC3-neg", f_pos)
-f_PC1_neg_BP_200 <- paste0(f_pre, "200.PC1-neg", f_pos)
-f_PC2_neg_BP_200 <- paste0(f_pre, "200.PC2-neg", f_pos)
-f_PC3_neg_BP_200 <- paste0(f_pre, "200.PC3-neg", f_pos)
-f_PC1_neg_BP_500 <- paste0(f_pre, "500.PC1-neg", f_pos)
-f_PC2_neg_BP_500 <- paste0(f_pre, "500.PC2-neg", f_pos)
-f_PC3_neg_BP_500 <- paste0(f_pre, "500.PC3-neg", f_pos)
 
-f_PC1_pos_BP_100 <- paste0(f_pre, "100.PC1-pos", f_pos)
-f_PC2_pos_BP_100 <- paste0(f_pre, "100.PC2-pos", f_pos)
-f_PC3_pos_BP_100 <- paste0(f_pre, "100.PC3-pos", f_pos)
-f_PC1_pos_BP_200 <- paste0(f_pre, "200.PC1-pos", f_pos)
-f_PC2_pos_BP_200 <- paste0(f_pre, "200.PC2-pos", f_pos)
-f_PC3_pos_BP_200 <- paste0(f_pre, "200.PC3-pos", f_pos)
-f_PC1_pos_BP_500 <- paste0(f_pre, "500.PC1-pos", f_pos)
-f_PC2_pos_BP_500 <- paste0(f_pre, "500.PC2-pos", f_pos)
-f_PC3_pos_BP_500 <- paste0(f_pre, "500.PC3-pos", f_pos)
+run <- FALSE
+if(base::isTRUE(run)) {
+    f_PC1_pos_BP_100 <- paste0(f_pre, "100.PC1-pos", f_pos)
+    f_PC2_pos_BP_100 <- paste0(f_pre, "100.PC2-pos", f_pos)
+    f_PC3_pos_BP_100 <- paste0(f_pre, "100.PC3-pos", f_pos)
+    f_PC1_neg_BP_100 <- paste0(f_pre, "100.PC1-neg", f_pos)
+    f_PC2_neg_BP_100 <- paste0(f_pre, "100.PC2-neg", f_pos)
+    f_PC3_neg_BP_100 <- paste0(f_pre, "100.PC3-neg", f_pos)
+}
 
-#  100 features
-BP_PC1_neg_100 <- load_panther_results(
-    paste(p_panther, f_PC1_neg_BP_100, sep = "/")
-)
-BP_PC2_neg_100 <- load_panther_results(
-    paste(p_panther, f_PC2_neg_BP_100, sep = "/")
-)
-BP_PC3_neg_100 <- load_panther_results(
-    paste(p_panther, f_PC3_neg_BP_100, sep = "/")
-)
+run <- FALSE
+if(base::isTRUE(run)) {
+    f_PC1_pos_BP_200 <- paste0(f_pre, "200.PC1-pos", f_pos)
+    f_PC2_pos_BP_200 <- paste0(f_pre, "200.PC2-pos", f_pos)
+    f_PC3_pos_BP_200 <- paste0(f_pre, "200.PC3-pos", f_pos)
+    f_PC1_neg_BP_200 <- paste0(f_pre, "200.PC1-neg", f_pos)
+    f_PC2_neg_BP_200 <- paste0(f_pre, "200.PC2-neg", f_pos)
+    f_PC3_neg_BP_200 <- paste0(f_pre, "200.PC3-neg", f_pos)
+}
 
-BP_PC1_pos_100 <- load_panther_results(
-    paste(p_panther, f_PC1_pos_BP_100, sep = "/")
-)
-BP_PC2_pos_100 <- load_panther_results(
-    paste(p_panther, f_PC2_pos_BP_100, sep = "/")
-)
-BP_PC3_pos_100 <- load_panther_results(
-    paste(p_panther, f_PC3_pos_BP_100, sep = "/")
-)
+run <- TRUE
+if(base::isTRUE(run)) {
+    f_PC1_pos_BP_500 <- paste0(f_pre, "500.PC1-pos", f_pos)
+    f_PC2_pos_BP_500 <- paste0(f_pre, "500.PC2-pos", f_pos)
+    f_PC3_pos_BP_500 <- paste0(f_pre, "500.PC3-pos", f_pos)
+    f_PC1_neg_BP_500 <- paste0(f_pre, "500.PC1-neg", f_pos)
+    f_PC2_neg_BP_500 <- paste0(f_pre, "500.PC2-neg", f_pos)
+    f_PC3_neg_BP_500 <- paste0(f_pre, "500.PC3-neg", f_pos)
+}
 
-#  200 features
-BP_PC1_neg_200 <- load_panther_results(
-    paste(p_panther, f_PC1_neg_BP_200, sep = "/")
-)
-BP_PC2_neg_200 <- load_panther_results(
-    paste(p_panther, f_PC2_neg_BP_200, sep = "/")
-)
-BP_PC3_neg_200 <- load_panther_results(
-    paste(p_panther, f_PC3_neg_BP_200, sep = "/")
-)
+#  Panther, 100 features
+run <- FALSE
+if(base::isTRUE(run)) {
+    BP_PC1_pos_100 <- load_panther_results(
+        paste(p_panther, f_PC1_pos_BP_100, sep = "/")
+    )
+    BP_PC1_neg_100 <- load_panther_results(
+        paste(p_panther, f_PC1_neg_BP_100, sep = "/")
+    )
 
-BP_PC1_pos_200 <- load_panther_results(
-    paste(p_panther, f_PC1_pos_BP_200, sep = "/")
-)
-BP_PC2_pos_200 <- load_panther_results(
-    paste(p_panther, f_PC2_pos_BP_200, sep = "/")
-)
-BP_PC3_pos_200 <- load_panther_results(
-    paste(p_panther, f_PC3_pos_BP_200, sep = "/")
-)
+    BP_PC2_pos_100 <- load_panther_results(
+        paste(p_panther, f_PC2_pos_BP_100, sep = "/")
+    )
+    BP_PC2_neg_100 <- load_panther_results(
+        paste(p_panther, f_PC2_neg_BP_100, sep = "/")
+    )
+    
+    BP_PC3_pos_100 <- load_panther_results(
+        paste(p_panther, f_PC3_pos_BP_100, sep = "/")
+    )
+    BP_PC3_neg_100 <- load_panther_results(
+        paste(p_panther, f_PC3_neg_BP_100, sep = "/")
+    )
+}
 
-#  500 features
-BP_PC1_neg_500 <- load_panther_results(
-    paste(p_panther, f_PC1_neg_BP_500, sep = "/")
-)
-BP_PC2_neg_500 <- load_panther_results(
-    paste(p_panther, f_PC2_neg_BP_500, sep = "/")
-)
-BP_PC3_neg_500 <- load_panther_results(
-    paste(p_panther, f_PC3_neg_BP_500, sep = "/")
-)
+#  Panther, 200 features
+run <- FALSE
+if(base::isTRUE(run)) {
+    BP_PC1_pos_200 <- load_panther_results(
+        paste(p_panther, f_PC1_pos_BP_200, sep = "/")
+    )
+    BP_PC1_neg_200 <- load_panther_results(
+        paste(p_panther, f_PC1_neg_BP_200, sep = "/")
+    )
 
-BP_PC1_pos_500 <- load_panther_results(
-    paste(p_panther, f_PC1_pos_BP_500, sep = "/")
-)
-BP_PC2_pos_500 <- load_panther_results(
-    paste(p_panther, f_PC2_pos_BP_500, sep = "/")
-)
-BP_PC3_pos_500 <- load_panther_results(
-    paste(p_panther, f_PC3_pos_BP_500, sep = "/")
-)
+    BP_PC2_pos_200 <- load_panther_results(
+        paste(p_panther, f_PC2_pos_BP_200, sep = "/")
+    )
+    BP_PC2_neg_200 <- load_panther_results(
+        paste(p_panther, f_PC2_neg_BP_200, sep = "/")
+    )
+
+    BP_PC3_pos_200 <- load_panther_results(
+        paste(p_panther, f_PC3_pos_BP_200, sep = "/")
+    )
+    BP_PC3_neg_200 <- load_panther_results(
+        paste(p_panther, f_PC3_neg_BP_200, sep = "/")
+    )
+}
+
+#  Panther, 500 features
+run <- FALSE
+if(base::isTRUE(run)) {
+    BP_PC1_pos_500 <- load_panther_results(
+        paste(p_panther, f_PC1_pos_BP_500, sep = "/")
+    )
+    BP_PC1_neg_500 <- load_panther_results(
+        paste(p_panther, f_PC1_neg_BP_500, sep = "/")
+    )
+    
+    BP_PC2_pos_500 <- load_panther_results(
+        paste(p_panther, f_PC2_pos_BP_500, sep = "/")
+    )
+    BP_PC2_neg_500 <- load_panther_results(
+        paste(p_panther, f_PC2_neg_BP_500, sep = "/")
+    )
+    
+    BP_PC3_pos_500 <- load_panther_results(
+        paste(p_panther, f_PC3_pos_BP_500, sep = "/")
+    )
+    BP_PC3_neg_500 <- load_panther_results(
+        paste(p_panther, f_PC3_neg_BP_500, sep = "/")
+    )
+}
 
 top_n <- 15
 run <- TRUE
