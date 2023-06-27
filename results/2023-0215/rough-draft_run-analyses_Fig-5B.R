@@ -208,6 +208,7 @@ heat_h <- pheatmap::pheatmap(
     color = color_range(100)
 )
 
+set.seed(24)
 heat_k <- pheatmap::pheatmap(
     mean_TPM_div_log2[, 2:ncol(mean_TPM_div_log2)],
     kmeans_k = 3,
@@ -232,6 +233,7 @@ heat_h_k1 <- pheatmap::pheatmap(
     cutree_cols = 1,
     scale = "row",
     border = "white",
+    treeheight_row = 0,
     cluster_cols = FALSE,
     show_rownames = FALSE,
     color = color_range(100)
@@ -248,6 +250,7 @@ heat_h_k2 <- pheatmap::pheatmap(
     cutree_cols = 1,
     scale = "row",
     border = "white",
+    treeheight_row = 0,
     cluster_cols = FALSE,
     show_rownames = FALSE,
     color = color_range(100)
@@ -264,6 +267,7 @@ heat_h_k3 <- pheatmap::pheatmap(
     cutree_cols = 1,
     scale = "row",
     border = "white",
+    treeheight_row = 0,
     cluster_cols = FALSE,
     show_rownames = FALSE,
     color = color_range(100)
@@ -326,15 +330,131 @@ plot_distributions(piv_k2, 2)
 plot_distributions(piv_k3, 3)
 
 #  Write out feature lists (e.g., for GO analyses)
+date <- "2023-0626"
+
+#  mean_TPM_k1$features %>% length()  # 313
 readr::write_tsv(
     mean_TPM_k1$features %>% as.data.frame(),
-    "05_gene-list_k-1.tsv"
+    paste("heatmap-Fig5B", date, "gene-group-1.txt", sep = ".")
 )
+#  mean_TPM_k2$features %>% length()  # 629
 readr::write_tsv(
     mean_TPM_k2$features %>% as.data.frame(),
-    "05_gene-list_k-2.tsv"
+    paste("heatmap-Fig5B", date, "gene-group-2.txt", sep = ".")
 )
+#  mean_TPM_k3$features %>% length()  # 308
 readr::write_tsv(
     mean_TPM_k3$features %>% as.data.frame(),
-    "05_gene-list_k-3.tsv"
+    paste("heatmap-Fig5B", date, "gene-group-3.txt", sep = ".")
 )
+
+# mean_TPM_k1 %>% nrow()  # 313
+# df_k1[, 2:ncol(df_k1)] %>% nrow()  # 313
+date <- "2023-0626"
+width <- 7
+height <- 6.9666  # 313
+outfile <- paste("heatmap-Fig5B", date, "k-means-cluster-1", "pdf", sep = ".")
+pdf(file = outfile, width = width, height = height)
+print(heat_h_k1)
+dev.off()
+
+# mean_TPM_k2 %>% nrow()  # 629
+# df_k2[, 2:ncol(df_k2)] %>% nrow()  # 629
+date <- "2023-0626"
+width <- 7
+height <- 14  # 629
+outfile <- paste("heatmap-Fig5B", date, "k-means-cluster-2", "pdf", sep = ".")
+pdf(file = outfile, width = width, height = height)
+print(heat_h_k2)
+dev.off()
+
+# mean_TPM_k3 %>% nrow()  # 308
+# df_k3[, 2:ncol(df_k3)] %>% nrow()  # 308
+date <- "2023-0626"
+width <- 7
+height <- 6.8553  # 308
+outfile <- paste("heatmap-Fig5B", date, "k-means-cluster-3", "pdf", sep = ".")
+pdf(file = outfile, width = width, height = height)
+print(heat_h_k3)
+dev.off()
+
+
+load_yeastmine_results <- function(file) {
+    df <- readr::read_tsv(
+        file,
+        col_names = c("term", "q_BH", "features", "n_GO"),
+        show_col_types = FALSE
+    )
+    
+    return(df)
+}
+
+
+plot_top_terms <- function(df, top_n) {
+    #  Perform debugging
+    run <- FALSE
+    if(base::isTRUE(run)) {
+        top_n <- 15
+        df <- group_1
+    }
+    
+    p <- df %>%
+        dplyr::mutate(q = -log10(q_BH)) %>%
+        dplyr::arrange(desc(q)) %>%
+        dplyr::slice_head(n = top_n) %>%
+        ggplot2::ggplot(aes(x = reorder(term, q), y = q)) +
+        geom_bar(stat = "identity") +
+        coord_flip() +
+        xlab("") +
+        ylab("-log10(q)") +
+        ggtitle(paste(
+            "GO terms:",
+            deparse(substitute(df)) %>%
+                gsub("df_", "", .) %>%
+                gsub("_", ", ", .) %>%
+                gsub("BP, ", "", .)
+        )) +
+        theme_minimal()
+    
+    return(p)
+}
+
+top_n <- 15
+date <- "2023-0626"
+p_GO <- "notebook/KA.2023-0626.Fig5.k-means-heatmaps_ratios-TPM"
+
+group <- 1
+f_GO <- paste(
+    "heatmap-Fig5B",
+    date,
+    paste0("gene-group-", group),
+    "yeastmine-GO.tsv",
+    sep = "."
+)
+
+group_1 <- load_yeastmine_results(paste(p_GO, f_GO, sep = "/"))
+plot_GO_group_1 <- plot_top_terms(group_1, top_n)
+
+group <- 2
+f_GO <- paste(
+    "heatmap-Fig5B",
+    date,
+    paste0("gene-group-", group),
+    "yeastmine-GO.tsv",
+    sep = "."
+)
+
+group_2 <- load_yeastmine_results(paste(p_GO, f_GO, sep = "/"))
+plot_GO_group_2 <- plot_top_terms(group_2, top_n)
+
+group <- 3
+f_GO <- paste(
+    "heatmap-Fig5B",
+    date,
+    paste0("gene-group-", group),
+    "yeastmine-GO.tsv",
+    sep = "."
+)
+
+group_3 <- load_yeastmine_results(paste(p_GO, f_GO, sep = "/"))
+plot_GO_group_3 <- plot_top_terms(group_3, top_n)

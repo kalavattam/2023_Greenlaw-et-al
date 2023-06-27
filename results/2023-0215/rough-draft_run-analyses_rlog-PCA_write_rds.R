@@ -14,14 +14,14 @@ type <- "mRNA"  #ARGUMENT
 # type <- "Trinity-G1-unique"  #ARGUMENT
 # type <- "representation"  #TODO
 
-samples <- "Ovation"  #ARGUMENT
+# samples <- "Ovation"  #ARGUMENT
 # samples <- "test.Ovation_Rrp6∆"  #ARGUMENT  #TODO Remove
 # samples <- "test.Ovation_Tecan"  #ARGUMENT  #TODO Remove
 # samples <- "Rrp6∆.G1-Q.N-SS"  #ARGUMENT
 # samples <- "Rrp6∆.G1-Q.SS"  #ARGUMENT
 # samples <- "Rrp6∆.Q.N-SS"  #ARGUMENT
 # samples <- "Rrp6∆.timecourse"  #ARGUMENT
-# samples <- "Rrp6∆.timecourse-G1-Q.SS"  #ARGUMENT
+samples <- "Rrp6∆.timecourse-G1-Q.SS"  #ARGUMENT
 # samples <- "Rrp6∆.timecourse-G1.SS"  #ARGUMENT
 # samples <- "Rrp6∆.timecourse-G1-Q.N-SS"  #ARGUMENT
 # samples <- "Rrp6∆.timecourse.G1-SS.Q-N"  #ARGUMENT
@@ -30,14 +30,20 @@ samples <- "Ovation"  #ARGUMENT
 # samples <- "Nab3AID.Q.SS_Rrp6∆.Q.SS"
 # samples <- "Nab3AID.Q.N-SS_Rrp6∆.timecourse-G1-Q.N-SS"  #ARGUMENT
 
-run_norm <- "rlog"  #ARGUMENT
-# run_norm <- "tpm"  #ARGUMENT
+# run_norm <- "rlog"  #ARGUMENT
+run_norm <- "tpm"  #ARGUMENT
 
 run_batch_correction <- FALSE  #ARGUMENT
 run_PCA <- TRUE  #ARGUMENT
 date <- "2023-0625"  #ARGUMENT
+
 write_norm_counts_rds <- TRUE  #ARGUMENT
+# write_norm_counts_rds <- FALSE  #ARGUMENT
+
 write_PCA_results <- TRUE  #ARGUMENT
+# write_PCA_results <- FALSE  #ARGUMENT
+
+write_pdfs <- TRUE
 
 
 #  Load libraries, set options ================================================
@@ -223,18 +229,32 @@ plot_loadings <- function(x, y, z, a, b, d, e, f, g, h, i, j, k) {
     #  Perform debugging
     debug <- FALSE
     if(base::isTRUE(debug)) {
-        x = loadings_etc
-        y = coords_PC1
-        z = coords_PC2
+        # x = loadings_etc
+        # y = coords_PC1
+        # z = coords_PC2
+        # a = x_min
+        # b = x_max
+        # d = y_min
+        # e = y_max
+        # f = x$nudge_x
+        # g = x$nudge_y
+        # h = x_label
+        # i = y_label
+        # j = x$color
+        # k = col_seg_pos
+        
+        x = loadings_filter_pos_1
+        y = loadings_filter_pos_1[[PC_x]]
+        z = loadings_filter_pos_1[[PC_y]]
         a = x_min
         b = x_max
         d = y_min
         e = y_max
-        f = x$nudge_x
-        g = x$nudge_y
+        f = loadings_etc[loadings_etc$label == "x_pos", ]$nudge_x[1]
+        g = loadings_etc[loadings_etc$label == "x_pos", ]$nudge_y[1]
         h = x_label
         i = y_label
-        j = x$label
+        j = loadings_etc[loadings_etc$label == "x_pos", ]$color[1]
         k = col_seg_pos
     }
     
@@ -266,6 +286,7 @@ plot_loadings <- function(x, y, z, a, b, d, e, f, g, h, i, j, k) {
         ggplot2::ylab(i) +
         theme_slick_no_legend
     
+    if(base::isTRUE(debug)) l
     return(l)
 }
 
@@ -404,8 +425,39 @@ plot_pos_neg_loadings_each_axis <- function(
         tibble::rownames_to_column("feature_names")
     loadings_etc$feature_names <- loadings_etc$feature_names %>%
         stringr::str_remove_all("\\.\\.\\.[0-9]{1,2}$")
-    if(base::isTRUE(debug)) loadings_etc %>% head()
     
+    loadings_filter_pos_1 <- loadings_filter_pos_1 %>%
+        tibble::rownames_to_column("feature_names")
+    loadings_filter_pos_1$feature_names <-
+        loadings_filter_pos_1$feature_names %>%
+        stringr::str_remove_all("\\.\\.\\.[0-9]{1,2}$")
+    
+    loadings_filter_pos_2 <- loadings_filter_pos_2 %>%
+        tibble::rownames_to_column("feature_names")
+    loadings_filter_pos_2$feature_names <-
+        loadings_filter_pos_2$feature_names %>%
+        stringr::str_remove_all("\\.\\.\\.[0-9]{1,2}$")
+    
+    loadings_filter_neg_1 <- loadings_filter_neg_1 %>%
+        tibble::rownames_to_column("feature_names")
+    loadings_filter_neg_1$feature_names <-
+        loadings_filter_neg_1$feature_names %>%
+        stringr::str_remove_all("\\.\\.\\.[0-9]{1,2}$")
+    
+    loadings_filter_neg_2 <- loadings_filter_neg_2 %>%
+        tibble::rownames_to_column("feature_names")
+    loadings_filter_neg_2$feature_names <-
+        loadings_filter_neg_2$feature_names %>%
+        stringr::str_remove_all("\\.\\.\\.[0-9]{1,2}$")
+    
+    if(base::isTRUE(debug)) {
+        loadings_etc %>% head()
+        loadings_filter_pos_1 %>% head()
+        loadings_filter_pos_2 %>% head()
+        loadings_filter_neg_1 %>% head()
+        loadings_filter_neg_2 %>% head()
+    }
+
     coords_PC1 <- c(
         loadings_filter_pos_1[[PC_x]],
         loadings_filter_pos_2[[PC_x]],
@@ -594,7 +646,7 @@ run_PCA_pipeline <- function(
     #                      [default: NULL]
     # :return results_list: ... <list>
     
-    #  Perform debugging
+    #  Perform debugging  #SHORTCUT
     debug <- FALSE
     if(base::isTRUE(debug)) {
         counts = input_counts
@@ -742,10 +794,10 @@ run_PCA_pipeline <- function(
         # p_images$PCAtools.PC2.v.PC3 %>% print()
         # p_images$PCAtools.PC1.v.PC4 %>% print()
         # p_images$PCAtools.PC1.v.PC3 %>% print()
-        p_images$PCAtools.PC1.v.PC2 %>% print()
+        # p_images$PCAtools.PC1.v.PC2 %>% print()
         
         run <- FALSE
-        if(base::isTRUE(run)) p_images$KA.PC1.v.PC2
+        if(base::isTRUE(run)) p_images$KA.PC1.v.PC2 %>% print()
     }
     
     #  Plot the top features on an axis of "component loading range" to
@@ -1674,22 +1726,34 @@ if(samples %in% c(
         dplyr::mutate(
             day = factor(
                 ifelse(
-                    stringr::str_detect(rownames(t_meta), "n3d|od"),
+                    stringr::str_detect(
+                        rownames(t_meta), "n3d|od"
+                    ),
                     "day7",
                     ifelse(
-                        stringr::str_detect(rownames(t_meta), "DSm2_|DSp2_"),
+                        stringr::str_detect(
+                            rownames(t_meta), "DSm2_|DSp2_"
+                        ),
                         "day2",
                         ifelse(
-                            stringr::str_detect(rownames(t_meta), "DSp24_"),
+                            stringr::str_detect(
+                                rownames(t_meta), "DSp24_"
+                            ),
                             "day3",
                             ifelse(
-                                stringr::str_detect(rownames(t_meta), "DSp48_"),
+                                stringr::str_detect(
+                                    rownames(t_meta), "DSp48_"
+                                ),
                                 "day4",
                                 ifelse(
-                                    stringr::str_detect(rownames(t_meta), "r6n_G1|WT_G1"),
+                                    stringr::str_detect(
+                                        rownames(t_meta), "r6n_G1|WT_G1"
+                                    ),
                                     "day1",
                                     ifelse(
-                                        stringr::str_detect(rownames(t_meta), "r6n_Q|WT_Q"),
+                                        stringr::str_detect(
+                                            rownames(t_meta), "r6n_Q|WT_Q"
+                                        ),
                                         "day8",
                                         NA_character_
                                     )
@@ -1961,6 +2025,7 @@ if(run_norm == "tpm") {
 }
 
 
+#SHORTCUT
 #  Run PCA ====================================================================
 if(base::isTRUE(run_PCA)) {
     if(run_norm == "rlog") {
@@ -1994,6 +2059,28 @@ if(base::isTRUE(run_PCA)) {
             t_meta$state,
             levels = c("G1", "DSm2", "DSp2", "DSp24", "DSp48", "Q")
         )
+        
+        t_meta$period_start_end <- t_meta$state %>%
+            gsub("G1$|DSm2$", "early", .) %>%
+            gsub("DSp2$|DSp24$", "mid", .) %>%
+            gsub("DSp48$|Q$", "late", .)
+        t_meta$period_start_end <- factor(
+            t_meta$period_start_end, levels = c("early", "mid", "late")
+        )
+        t_meta$no_period_start_end <- t_meta$period_start_end %>%
+            gsub("early", 0, .) %>%
+            gsub("mid", 1, .) %>%
+            gsub("late", 2, .)
+        
+        t_meta$period_middle <- t_meta$state %>%
+            gsub("G1$|DSm2$|DSp48$|Q$", "early_late", .) %>%
+            gsub("DSp2$|DSp24$", "mid", .)
+        t_meta$period_middle <- factor(
+            t_meta$period_middle, levels = c("early_late", "mid")
+        )
+        t_meta$no_period_middle <- t_meta$period_middle %>%
+            gsub("early_late", 0, .) %>%
+            gsub("mid", 1, .)
     }
     
     pca_exp <- run_PCA_pipeline(
@@ -2009,19 +2096,27 @@ if(base::isTRUE(run_PCA)) {
         y_min_loadings_plot = ifelse(run_norm == "rlog", -0.1, -0.1),
         y_max_loadings_plot = ifelse(run_norm == "rlog", 0.1, 0.1),
         n_loadings = 10L,
-        x_pos_nudge_x = ifelse(samples == "Ovation", 0.04, "#TBD"),
-        y_pos_nudge_x = ifelse(samples == "Ovation", 0, "#TBD"),
-        x_neg_nudge_x = ifelse(samples == "Ovation", -0.04, "#TBD"),
-        y_neg_nudge_x = ifelse(samples == "Ovation", -0.02, "#TBD"),
-        x_pos_nudge_y = ifelse(samples == "Ovation", 0, "#TBD"),
-        y_pos_nudge_y = ifelse(samples == "Ovation", 0.04, "#TBD"),
-        x_neg_nudge_y = ifelse(samples == "Ovation", 0, "#TBD"),
-        y_neg_nudge_y = ifelse(samples == "Ovation", -0.04, "#TBD"),
+        x_pos_nudge_x = ifelse(samples == "Ovation", 0.04, 0.04),
+        y_pos_nudge_x = ifelse(samples == "Ovation", 0, 0),
+        x_neg_nudge_x = ifelse(samples == "Ovation", -0.04, -0.04),
+        y_neg_nudge_x = ifelse(samples == "Ovation", -0.02, -0.02),
+        x_pos_nudge_y = ifelse(samples == "Ovation", 0, 0),
+        y_pos_nudge_y = ifelse(samples == "Ovation", 0.04, 0.04),
+        x_neg_nudge_y = ifelse(samples == "Ovation", 0, 0),
+        y_neg_nudge_y = ifelse(samples == "Ovation", -0.04, -0.04),
         meta_color = meta_color,
         meta_shape = meta_shape,
         plot_loadings_pct = FALSE,
         drop_md_levels = c("gt_st", "gt_tx", "st_tx", "gt_st_tx", "tc", "day"),
-        PCs_cor_plot = ifelse(samples == "Ovation", 3, NULL)
+        PCs_cor_plot = ifelse(
+            samples == "Ovation",
+            3,
+            ifelse(
+                samples == "Rrp6∆.timecourse-G1-Q.SS",
+                4,
+                NULL
+            )
+        )
     )
 }
 
@@ -2065,6 +2160,7 @@ if(base::isTRUE(write_norm_counts_rds)) {
     )
 }
 
+#TODO Functionalize this code
 if(base::isTRUE(write_PCA_results)) {
     # pca_exp$`02_horn`$n %>% print()
     # pca_exp$`03_elbow` %>% as.numeric() %>% print()
@@ -2084,6 +2180,7 @@ if(base::isTRUE(write_PCA_results)) {
     run <- TRUE
     if(base::isTRUE(run)) {
         if(pca_exp$`03_elbow` >= 2) {
+            #  PC1: Generate loading vector and feature lists
             run <- TRUE
             if(base::isTRUE(run)) {
                 pca_exp$`08_top_loadings_pos`$PC1 %>%
@@ -2102,8 +2199,71 @@ if(base::isTRUE(write_PCA_results)) {
                         samples, "__",
                         type, ".loadings-list.PC1-neg.tsv"
                     ))
+                
+                run <- TRUE
+                if(base::isTRUE(run)) {
+                    #  Use "Y" gene names in lists for GO analyses
+                    pca_exp$`08_top_loadings_pos`$PC1 <-
+                        pca_exp$`08_top_loadings_pos`$PC1 %>%
+                        tibble::rownames_to_column("thorough")
+                    pca_exp$`09_top_loadings_neg`$PC1 <-
+                        pca_exp$`09_top_loadings_neg`$PC1 %>%
+                        tibble::rownames_to_column("thorough")
+                    
+                    if(run_norm == "rlog") {
+                        pca_exp$`08_top_loadings_pos`$PC1 <-
+                            dplyr::full_join(
+                                pca_exp$`08_top_loadings_pos`$PC1,
+                                norm_r[, c(8, 11)],
+                                by = "thorough"
+                            )
+                        pca_exp$`09_top_loadings_neg`$PC1 <-
+                            dplyr::full_join(
+                                pca_exp$`09_top_loadings_neg`$PC1,
+                                norm_r[, c(8, 11)],
+                                by = "thorough"
+                            )
+                    } else {
+                        pca_exp$`08_top_loadings_pos`$PC1 <-
+                            dplyr::full_join(
+                                pca_exp$`08_top_loadings_pos`$PC1,
+                                norm_t[, c(8, 11)],
+                                by = "thorough"
+                            )
+                        pca_exp$`09_top_loadings_neg`$PC1 <-
+                            dplyr::full_join(
+                                pca_exp$`09_top_loadings_neg`$PC1,
+                                norm_t[, c(8, 11)],
+                                by = "thorough"
+                            )
+                    }
+                    
+                    for(i in c(100, 200, 500)) {
+                        pca_exp$`08_top_loadings_pos`$PC1 %>%
+                            tibble::rownames_to_column() %>%
+                            dplyr::select("features") %>%
+                            head(i) %>%
+                            readr::write_tsv(paste0(
+                                getwd(), "/",
+                                "PCA.", date, "__",
+                                samples, "__",
+                                type, ".feature-list-", i,".PC1-pos.tsv"
+                            ))
+                        pca_exp$`09_top_loadings_neg`$PC1 %>%
+                            tibble::rownames_to_column() %>%
+                            dplyr::select("features") %>%
+                            head(i) %>%
+                            readr::write_tsv(paste0(
+                                getwd(), "/",
+                                "PCA.", date, "__",
+                                samples, "__",
+                                type, ".feature-list-", i,".PC1-neg.tsv"
+                            ))
+                    }
+                }
             }
             
+            #  PC2: Generate loading vector and feature lists
             run <- TRUE
             if(base::isTRUE(run)) {
                 pca_exp$`08_top_loadings_pos`$PC2 %>%
@@ -2122,8 +2282,71 @@ if(base::isTRUE(write_PCA_results)) {
                         samples, "__",
                         type, ".loadings-list.PC2-neg.tsv"
                     ))
+                
+                run <- TRUE
+                if(base::isTRUE(run)) {
+                    #  Use "Y" gene names in lists for GO analyses
+                    pca_exp$`08_top_loadings_pos`$PC2 <-
+                        pca_exp$`08_top_loadings_pos`$PC2 %>%
+                        tibble::rownames_to_column("thorough")
+                    pca_exp$`09_top_loadings_neg`$PC2 <-
+                        pca_exp$`09_top_loadings_neg`$PC2 %>%
+                        tibble::rownames_to_column("thorough")
+                    
+                    if(run_norm == "rlog") {
+                        pca_exp$`08_top_loadings_pos`$PC2 <-
+                            dplyr::full_join(
+                                pca_exp$`08_top_loadings_pos`$PC2,
+                                norm_r[, c(8, 11)],
+                                by = "thorough"
+                            )
+                        pca_exp$`09_top_loadings_neg`$PC2 <-
+                            dplyr::full_join(
+                                pca_exp$`09_top_loadings_neg`$PC2,
+                                norm_r[, c(8, 11)],
+                                by = "thorough"
+                            )
+                    } else {
+                        pca_exp$`08_top_loadings_pos`$PC2 <-
+                            dplyr::full_join(
+                                pca_exp$`08_top_loadings_pos`$PC2,
+                                norm_t[, c(8, 11)],
+                                by = "thorough"
+                            )
+                        pca_exp$`09_top_loadings_neg`$PC2 <-
+                            dplyr::full_join(
+                                pca_exp$`09_top_loadings_neg`$PC2,
+                                norm_t[, c(8, 11)],
+                                by = "thorough"
+                            )
+                    }
+                    
+                    for(i in c(100, 200, 500)) {
+                        pca_exp$`08_top_loadings_pos`$PC2 %>%
+                            tibble::rownames_to_column() %>%
+                            dplyr::select("features") %>%
+                            head(i) %>%
+                            readr::write_tsv(paste0(
+                                getwd(), "/",
+                                "PCA.", date, "__",
+                                samples, "__",
+                                type, ".feature-list-", i,".PC2-pos.tsv"
+                            ))
+                        pca_exp$`09_top_loadings_neg`$PC2 %>%
+                            tibble::rownames_to_column() %>%
+                            dplyr::select("features") %>%
+                            head(i) %>%
+                            readr::write_tsv(paste0(
+                                getwd(), "/",
+                                "PCA.", date, "__",
+                                samples, "__",
+                                type, ".feature-list-", i,".PC2-neg.tsv"
+                            ))
+                    }
+                }
             }
             
+            #  PC1 vs PC2: Biplot
             run <- TRUE
             if(base::isTRUE(run)) {
                 pca_exp$`10_p_images`$PCAtools.PC1.v.PC2 %>% print()
@@ -2134,7 +2357,8 @@ if(base::isTRUE(write_PCA_results)) {
                     type, ".biplot.PC1-vs-PC2.png"
                 ))
             }
-
+            
+            #  PC1 vs PC2: Loading vector plot
             run <- TRUE
             if(base::isTRUE(run)) {
                 pca_exp$`10_p_images`$KA.PC1.v.PC2[["all"]] %>% print()
@@ -2142,12 +2366,13 @@ if(base::isTRUE(write_PCA_results)) {
                     getwd(), "/",
                     "PCA.", date, "__",
                     samples, "__",
-                    type, ".loadings-plot.PC1-vs-PC2.all.png"
+                    type, ".loading-vector-plot.PC1-vs-PC2.all.png"
                 ))
             }
         }
         
         if(pca_exp$`03_elbow` >= 3) {
+            #  PC3: Generate loading vector and feature lists
             run <- TRUE
             if(base::isTRUE(run)) {
                 pca_exp$`08_top_loadings_pos`$PC3 %>%
@@ -2166,8 +2391,71 @@ if(base::isTRUE(write_PCA_results)) {
                         samples, "__",
                         type, ".loadings-list.PC3-neg.tsv"
                     ))
+                
+                run <- TRUE
+                if(base::isTRUE(run)) {
+                    #  Use "Y" gene names in lists for GO analyses
+                    pca_exp$`08_top_loadings_pos`$PC3 <-
+                        pca_exp$`08_top_loadings_pos`$PC3 %>%
+                        tibble::rownames_to_column("thorough")
+                    pca_exp$`09_top_loadings_neg`$PC3 <-
+                        pca_exp$`09_top_loadings_neg`$PC3 %>%
+                        tibble::rownames_to_column("thorough")
+                    
+                    if(run_norm == "rlog") {
+                        pca_exp$`08_top_loadings_pos`$PC3 <-
+                            dplyr::full_join(
+                                pca_exp$`08_top_loadings_pos`$PC3,
+                                norm_r[, c(8, 11)],
+                                by = "thorough"
+                            )
+                        pca_exp$`09_top_loadings_neg`$PC3 <-
+                            dplyr::full_join(
+                                pca_exp$`09_top_loadings_neg`$PC3,
+                                norm_r[, c(8, 11)],
+                                by = "thorough"
+                            )
+                    } else {
+                        pca_exp$`08_top_loadings_pos`$PC3 <-
+                            dplyr::full_join(
+                                pca_exp$`08_top_loadings_pos`$PC3,
+                                norm_t[, c(8, 11)],
+                                by = "thorough"
+                            )
+                        pca_exp$`09_top_loadings_neg`$PC3 <-
+                            dplyr::full_join(
+                                pca_exp$`09_top_loadings_neg`$PC3,
+                                norm_t[, c(8, 11)],
+                                by = "thorough"
+                            )
+                    }
+
+                    for(i in c(100, 200, 500)) {
+                        pca_exp$`08_top_loadings_pos`$PC3 %>%
+                            tibble::rownames_to_column() %>%
+                            dplyr::select("features") %>%
+                            head(i) %>%
+                            readr::write_tsv(paste0(
+                                getwd(), "/",
+                                "PCA.", date, "__",
+                                samples, "__",
+                                type, ".feature-list-", i,".PC3-pos.tsv"
+                            ))
+                        pca_exp$`09_top_loadings_neg`$PC3 %>%
+                            tibble::rownames_to_column() %>%
+                            dplyr::select("features") %>%
+                            head(i) %>%
+                            readr::write_tsv(paste0(
+                                getwd(), "/",
+                                "PCA.", date, "__",
+                                samples, "__",
+                                type, ".feature-list-", i,".PC3-neg.tsv"
+                            ))
+                    }
+                }
             }
             
+            #  PC1 vs PC3: Biplot
             run <- TRUE
             if(base::isTRUE(run)) {
                 pca_exp$`10_p_images`$PCAtools.PC1.v.PC3 %>% print()
@@ -2179,6 +2467,7 @@ if(base::isTRUE(write_PCA_results)) {
                 ))
             }
             
+            #  PC1 vs PC3: Loading vector plot
             run <- TRUE
             if(base::isTRUE(run)) {
                 pca_exp$`10_p_images`$KA.PC1.v.PC3[["all"]] %>% print()
@@ -2186,10 +2475,11 @@ if(base::isTRUE(write_PCA_results)) {
                     getwd(), "/",
                     "PCA.", date, "__",
                     samples, "__",
-                    type, ".loadings-plot.PC1-vs-PC3.all.png"
+                    type, ".loading-vector-plot.PC1-vs-PC3.all.png"
                 ))
             }
             
+            #  PC2 vs PC3: Biplot
             run <- TRUE
             if(base::isTRUE(run)) {
                 pca_exp$`10_p_images`$PCAtools.PC2.v.PC3 %>% print()
@@ -2201,6 +2491,7 @@ if(base::isTRUE(write_PCA_results)) {
                 ))
             }
             
+            #  PC2 vs PC3: Loading vector plot
             run <- TRUE
             if(base::isTRUE(run)) {
                 pca_exp$`10_p_images`$KA.PC2.v.PC3[["all"]] %>% print()
@@ -2208,12 +2499,13 @@ if(base::isTRUE(write_PCA_results)) {
                     getwd(), "/",
                     "PCA.", date, "__",
                     samples, "__",
-                    type, ".loadings-plot.PC2-vs-PC3.all.png"
+                    type, ".loading-vector-plot.PC2-vs-PC3.all.png"
                 ))
             }
         }
         
         if(pca_exp$`03_elbow` >= 4) {
+            #  PC4: Generate loading vector and feature lists
             run <- TRUE
             if(base::isTRUE(run)) {
                 pca_exp$`08_top_loadings_pos`$PC4 %>%
@@ -2232,8 +2524,71 @@ if(base::isTRUE(write_PCA_results)) {
                         samples, "__",
                         type, ".loadings-list.PC4-neg.tsv"
                     ))
+                
+                run <- TRUE
+                if(base::isTRUE(run)) {
+                    #  Use "Y" gene names in lists for GO analyses
+                    pca_exp$`08_top_loadings_pos`$PC4 <-
+                        pca_exp$`08_top_loadings_pos`$PC4 %>%
+                        tibble::rownames_to_column("thorough")
+                    pca_exp$`09_top_loadings_neg`$PC4 <-
+                        pca_exp$`09_top_loadings_neg`$PC4 %>%
+                        tibble::rownames_to_column("thorough")
+                    
+                    if(run_norm == "rlog") {
+                        pca_exp$`08_top_loadings_pos`$PC4 <-
+                            dplyr::full_join(
+                                pca_exp$`08_top_loadings_pos`$PC4,
+                                norm_r[, c(8, 11)],
+                                by = "thorough"
+                            )
+                        pca_exp$`09_top_loadings_neg`$PC4 <-
+                            dplyr::full_join(
+                                pca_exp$`09_top_loadings_neg`$PC4,
+                                norm_r[, c(8, 11)],
+                                by = "thorough"
+                            )
+                    } else {
+                        pca_exp$`08_top_loadings_pos`$PC4 <-
+                            dplyr::full_join(
+                                pca_exp$`08_top_loadings_pos`$PC4,
+                                norm_t[, c(8, 11)],
+                                by = "thorough"
+                            )
+                        pca_exp$`09_top_loadings_neg`$PC4 <-
+                            dplyr::full_join(
+                                pca_exp$`09_top_loadings_neg`$PC4,
+                                norm_t[, c(8, 11)],
+                                by = "thorough"
+                            )
+                    }
+
+                    for(i in c(100, 200, 500)) {
+                        pca_exp$`08_top_loadings_pos`$PC4 %>%
+                            tibble::rownames_to_column() %>%
+                            dplyr::select("features") %>%
+                            head(i) %>%
+                            readr::write_tsv(paste0(
+                                getwd(), "/",
+                                "PCA.", date, "__",
+                                samples, "__",
+                                type, ".feature-list-", i,".PC4-pos.tsv"
+                            ))
+                        pca_exp$`09_top_loadings_neg`$PC4 %>%
+                            tibble::rownames_to_column() %>%
+                            dplyr::select("features") %>%
+                            head(i) %>%
+                            readr::write_tsv(paste0(
+                                getwd(), "/",
+                                "PCA.", date, "__",
+                                samples, "__",
+                                type, ".feature-list-", i,".PC4-neg.tsv"
+                            ))
+                    }
+                }
             }
             
+            #  PC1 vs PC4: Biplot
             run <- TRUE
             if(base::isTRUE(run)) {
                 pca_exp$`10_p_images`$PCAtools.PC1.v.PC4 %>% print()
@@ -2245,6 +2600,19 @@ if(base::isTRUE(write_PCA_results)) {
                 ))
             }
             
+            #  PC1 vs PC4: Loading vector plot
+            run <- TRUE
+            if(base::isTRUE(run)) {
+                pca_exp$`10_p_images`$KA.PC1.v.PC4[["all"]] %>% print()
+                ggsave(paste0(
+                    getwd(), "/",
+                    "PCA.", date, "__",
+                    samples, "__",
+                    type, ".loading-vector-plot.PC1-vs-PC4.all.png"
+                ))
+            }
+            
+            #  PC2 vs PC4: Biplot
             run <- TRUE
             if(base::isTRUE(run)) {
                 pca_exp$`10_p_images`$PCAtools.PC2.v.PC4 %>% print()
@@ -2256,6 +2624,19 @@ if(base::isTRUE(write_PCA_results)) {
                 ))
             }
             
+            #  PC2 vs PC4: Loading vector plot
+            run <- TRUE
+            if(base::isTRUE(run)) {
+                pca_exp$`10_p_images`$KA.PC2.v.PC4[["all"]] %>% print()
+                ggsave(paste0(
+                    getwd(), "/",
+                    "PCA.", date, "__",
+                    samples, "__",
+                    type, ".loading-vector-plot.PC2-vs-PC4.all.png"
+                ))
+            }
+        
+            #  PC3 vs PC4: Biplot
             run <- TRUE
             if(base::isTRUE(run)) {
                 pca_exp$`10_p_images`$PCAtools.PC3.v.PC4 %>% print()
@@ -2266,9 +2647,22 @@ if(base::isTRUE(write_PCA_results)) {
                     type, ".biplot.PC3-vs-PC4.png"
                 ))
             }
+            
+            #  PC3 vs PC4: Loading vector plot
+            run <- TRUE
+            if(base::isTRUE(run)) {
+                pca_exp$`10_p_images`$KA.PC3.v.PC4[["all"]] %>% print()
+                ggsave(paste0(
+                    getwd(), "/",
+                    "PCA.", date, "__",
+                    samples, "__",
+                    type, ".loading-vector-plot.PC3-vs-PC4.all.png"
+                ))
+            }
         }
         
         if(pca_exp$`03_elbow` >= 5) {
+            #  PC5: Generate loading vector and feature lists
             run <- TRUE
             if(base::isTRUE(run)) {
                 pca_exp$`08_top_loadings_pos`$PC5 %>%
@@ -2287,6 +2681,164 @@ if(base::isTRUE(write_PCA_results)) {
                         samples, "__",
                         type, ".loadings-list.PC5-neg.tsv"
                     ))
+                
+                run <- TRUE
+                if(base::isTRUE(run)) {
+                    #  Use "Y" gene names in lists for GO analyses
+                    pca_exp$`08_top_loadings_pos`$PC5 <-
+                        pca_exp$`08_top_loadings_pos`$PC5 %>%
+                        tibble::rownames_to_column("thorough")
+                    pca_exp$`09_top_loadings_neg`$PC5 <-
+                        pca_exp$`09_top_loadings_neg`$PC5 %>%
+                        tibble::rownames_to_column("thorough")
+                    
+                    if(run_norm == "rlog") {
+                        pca_exp$`08_top_loadings_pos`$PC5 <-
+                            dplyr::full_join(
+                                pca_exp$`08_top_loadings_pos`$PC5,
+                                norm_r[, c(8, 11)],
+                                by = "thorough"
+                            )
+                        pca_exp$`09_top_loadings_neg`$PC5 <-
+                            dplyr::full_join(
+                                pca_exp$`09_top_loadings_neg`$PC5,
+                                norm_r[, c(8, 11)],
+                                by = "thorough"
+                            )
+                    } else {
+                        pca_exp$`08_top_loadings_pos`$PC5 <-
+                            dplyr::full_join(
+                                pca_exp$`08_top_loadings_pos`$PC5,
+                                norm_t[, c(8, 11)],
+                                by = "thorough"
+                            )
+                        pca_exp$`09_top_loadings_neg`$PC5 <-
+                            dplyr::full_join(
+                                pca_exp$`09_top_loadings_neg`$PC5,
+                                norm_t[, c(8, 11)],
+                                by = "thorough"
+                            )
+                    }
+
+                    for(i in c(100, 200, 500)) {
+                        pca_exp$`08_top_loadings_pos`$PC5 %>%
+                            tibble::rownames_to_column() %>%
+                            dplyr::select("features") %>%
+                            head(i) %>%
+                            readr::write_tsv(paste0(
+                                getwd(), "/",
+                                "PCA.", date, "__",
+                                samples, "__",
+                                type, ".feature-list-", i,".PC5-pos.tsv"
+                            ))
+                        pca_exp$`09_top_loadings_neg`$PC5 %>%
+                            tibble::rownames_to_column() %>%
+                            dplyr::select("features") %>%
+                            head(i) %>%
+                            readr::write_tsv(paste0(
+                                getwd(), "/",
+                                "PCA.", date, "__",
+                                samples, "__",
+                                type, ".feature-list-", i,".PC5-neg.tsv"
+                            ))
+                    }
+                }
+            }
+            
+            #  PC1 vs PC5: Biplot
+            run <- TRUE
+            if(base::isTRUE(run)) {
+                pca_exp$`10_p_images`$PCAtools.PC1.v.PC5 %>% print()
+                ggsave(paste0(
+                    getwd(), "/",
+                    "PCA.", date, "__",
+                    samples, "__",
+                    type, ".biplot.PC1-vs-PC5.png"
+                ))
+            }
+            
+            #  PC1 vs PC5: Loading vector plot
+            run <- TRUE
+            if(base::isTRUE(run)) {
+                pca_exp$`10_p_images`$KA.PC1.v.PC5[["all"]] %>% print()
+                ggsave(paste0(
+                    getwd(), "/",
+                    "PCA.", date, "__",
+                    samples, "__",
+                    type, ".loading-vector-plot.PC1-vs-PC5.all.png"
+                ))
+            }
+            
+            #  PC2 vs PC5: Biplot
+            run <- TRUE
+            if(base::isTRUE(run)) {
+                pca_exp$`10_p_images`$PCAtools.PC2.v.PC5 %>% print()
+                ggsave(paste0(
+                    getwd(), "/",
+                    "PCA.", date, "__",
+                    samples, "__",
+                    type, ".biplot.PC2-vs-PC5.png"
+                ))
+            }
+            
+            #  PC2 vs PC5: Loading vector plot
+            run <- TRUE
+            if(base::isTRUE(run)) {
+                pca_exp$`10_p_images`$KA.PC2.v.PC5[["all"]] %>% print()
+                ggsave(paste0(
+                    getwd(), "/",
+                    "PCA.", date, "__",
+                    samples, "__",
+                    type, ".loading-vector-plot.PC2-vs-PC5.all.png"
+                ))
+            }
+
+            #  PC3 vs PC5: Biplot
+            run <- TRUE
+            if(base::isTRUE(run)) {
+                pca_exp$`10_p_images`$PCAtools.PC3.v.PC5 %>% print()
+                ggsave(paste0(
+                    getwd(), "/",
+                    "PCA.", date, "__",
+                    samples, "__",
+                    type, ".biplot.PC3-vs-PC5.png"
+                ))
+            }
+            
+            #  PC3 vs PC5: Loading vector plot
+            run <- TRUE
+            if(base::isTRUE(run)) {
+                pca_exp$`10_p_images`$KA.PC3.v.PC5[["all"]] %>% print()
+                ggsave(paste0(
+                    getwd(), "/",
+                    "PCA.", date, "__",
+                    samples, "__",
+                    type, ".loading-vector-plot.PC3-vs-PC5.all.png"
+                ))
+            }
+
+            #  PC4 vs PC5: Biplot
+            run <- TRUE
+            if(base::isTRUE(run)) {
+                pca_exp$`10_p_images`$PCAtools.PC4.v.PC5 %>% print()
+                ggsave(paste0(
+                    getwd(), "/",
+                    "PCA.", date, "__",
+                    samples, "__",
+                    type, ".biplot.PC4-vs-PC5.png"
+                ))
+            }
+            
+            #  PC4 vs PC5: Loading vector plot
+            run <- TRUE
+            if(base::isTRUE(run)) {
+                pca_exp$`10_p_images`$KA.PC4.v.PC5[["all"]] %>% print()
+                ggsave(paste0(
+                    getwd(), "/",
+                    "PCA.", date, "__",
+                    samples, "__",
+                    type, ".loading-vector-plot.PC4-vs-PC5.all.png"
+                ))
             }
         }
     }
@@ -2307,4 +2859,24 @@ if(base::isTRUE(write_PCA_results)) {
         pca_exp$`12_p_cor` %>% print()
         dev.off()
     }
+}
+
+if(base::isTRUE(write_pdfs)) {
+    width <- 7
+    height <- 7
+    
+    outfile <- "PCA-Fig5A.2023-0626.PC1-vs-PC2.pdf"
+    pdf(file = outfile, width = width, height = height)
+    pca_exp$`10_p_images`$PCAtools.PC1.v.PC2 %>% print()
+    dev.off()
+    
+    outfile <- "PCA-Fig5A.2023-0626.PC1-vs-PC3.pdf"
+    pdf(file = outfile, width = width, height = height)
+    pca_exp$`10_p_images`$PCAtools.PC1.v.PC3 %>% print()
+    dev.off()
+    
+    outfile <- "PCA-Fig5A.2023-0626.PC2-vs-PC3.pdf"
+    pdf(file = outfile, width = width, height = height)
+    pca_exp$`10_p_images`$PCAtools.PC2.v.PC3 %>% print()
+    dev.off()
 }
