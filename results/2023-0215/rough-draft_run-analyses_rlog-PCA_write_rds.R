@@ -1300,7 +1300,7 @@ t_gtf$names <- ifelse(
     as.character(t_gtf$names)
 )
 
-#  Given Trinity annotations cleaner, clearer names
+#  Give Trinity annotations cleaner, clearer names
 if(stringr::str_detect(type, "Trinity")) {
     t_gtf$names <- t_gtf$names %>%
         stringr::str_remove_all("antisense_gene: |antisense_ncRNA: ") %>%

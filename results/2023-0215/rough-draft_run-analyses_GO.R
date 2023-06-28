@@ -144,144 +144,178 @@ p_exp <- "2022_transcriptome-construction/results/2023-0215"
 paste(p_base, p_exp, sep = "/") %>% setwd()
 # getwd()
 
-p_panther <- "notebook/KA.2023-0625.PCA-TPM_Ovation"
+p_GO <- "notebook/KA.2023-0626-0627.PCA-GO-TPM_Ovation"
 f_pre <- "PCA.2023-0625__Ovation__mRNA.feature-list-"
-f_pos <- ".pantherdb-BP.txt"
+f_suf <- ".YeastMine-GO.tsv"
 
 run <- FALSE
-if(base::isTRUE(run)) {
-    f_PC1_pos_BP_100 <- paste0(f_pre, "100.PC1-pos", f_pos)
-    f_PC2_pos_BP_100 <- paste0(f_pre, "100.PC2-pos", f_pos)
-    f_PC3_pos_BP_100 <- paste0(f_pre, "100.PC3-pos", f_pos)
-    f_PC1_neg_BP_100 <- paste0(f_pre, "100.PC1-neg", f_pos)
-    f_PC2_neg_BP_100 <- paste0(f_pre, "100.PC2-neg", f_pos)
-    f_PC3_neg_BP_100 <- paste0(f_pre, "100.PC3-neg", f_pos)
-}
+if(base::isTRUE(run)) dir.exists(p_GO)
 
+#  GO using top 100 features
 run <- FALSE
 if(base::isTRUE(run)) {
-    f_PC1_pos_BP_200 <- paste0(f_pre, "200.PC1-pos", f_pos)
-    f_PC2_pos_BP_200 <- paste0(f_pre, "200.PC2-pos", f_pos)
-    f_PC3_pos_BP_200 <- paste0(f_pre, "200.PC3-pos", f_pos)
-    f_PC1_neg_BP_200 <- paste0(f_pre, "200.PC1-neg", f_pos)
-    f_PC2_neg_BP_200 <- paste0(f_pre, "200.PC2-neg", f_pos)
-    f_PC3_neg_BP_200 <- paste0(f_pre, "200.PC3-neg", f_pos)
+    f_PC1_pos_BP_100 <- paste0(f_pre, "100.PC1-pos", f_suf)
+    f_PC2_pos_BP_100 <- paste0(f_pre, "100.PC2-pos", f_suf)
+    f_PC3_pos_BP_100 <- paste0(f_pre, "100.PC3-pos", f_suf)
+    f_PC1_neg_BP_100 <- paste0(f_pre, "100.PC1-neg", f_suf)
+    f_PC2_neg_BP_100 <- paste0(f_pre, "100.PC2-neg", f_suf)
+    f_PC3_neg_BP_100 <- paste0(f_pre, "100.PC3-neg", f_suf)
 }
 
+#  GO using top 200 features
+run <- FALSE
+if(base::isTRUE(run)) {
+    f_PC1_pos_BP_200 <- paste0(f_pre, "200.PC1-pos", f_suf)
+    f_PC2_pos_BP_200 <- paste0(f_pre, "200.PC2-pos", f_suf)
+    f_PC3_pos_BP_200 <- paste0(f_pre, "200.PC3-pos", f_suf)
+    f_PC1_neg_BP_200 <- paste0(f_pre, "200.PC1-neg", f_suf)
+    f_PC2_neg_BP_200 <- paste0(f_pre, "200.PC2-neg", f_suf)
+    f_PC3_neg_BP_200 <- paste0(f_pre, "200.PC3-neg", f_suf)
+}
+
+#  GO using top 500 features
 run <- TRUE
 if(base::isTRUE(run)) {
-    f_PC1_pos_BP_500 <- paste0(f_pre, "500.PC1-pos", f_pos)
-    f_PC2_pos_BP_500 <- paste0(f_pre, "500.PC2-pos", f_pos)
-    f_PC3_pos_BP_500 <- paste0(f_pre, "500.PC3-pos", f_pos)
-    f_PC1_neg_BP_500 <- paste0(f_pre, "500.PC1-neg", f_pos)
-    f_PC2_neg_BP_500 <- paste0(f_pre, "500.PC2-neg", f_pos)
-    f_PC3_neg_BP_500 <- paste0(f_pre, "500.PC3-neg", f_pos)
+    f_PC1_pos_BP_500 <- paste0(f_pre, "500.PC1-pos", f_suf)
+    f_PC2_pos_BP_500 <- paste0(f_pre, "500.PC2-pos", f_suf)
+    f_PC3_pos_BP_500 <- paste0(f_pre, "500.PC3-pos", f_suf)
+    f_PC1_neg_BP_500 <- paste0(f_pre, "500.PC1-neg", f_suf)
+    f_PC2_neg_BP_500 <- paste0(f_pre, "500.PC2-neg", f_suf)
+    f_PC3_neg_BP_500 <- paste0(f_pre, "500.PC3-neg", f_suf)
 }
+
 
 #  Panther, 100 features
 run <- FALSE
 if(base::isTRUE(run)) {
-    BP_PC1_pos_100 <- load_panther_results(
-        paste(p_panther, f_PC1_pos_BP_100, sep = "/")
+    BP_PC1_pos_100 <- load_yeastmine_results(
+        paste(p_GO, f_PC1_pos_BP_100, sep = "/")
     )
-    BP_PC1_neg_100 <- load_panther_results(
-        paste(p_panther, f_PC1_neg_BP_100, sep = "/")
+    BP_PC1_neg_100 <- load_yeastmine_results(
+        paste(p_GO, f_PC1_neg_BP_100, sep = "/")
     )
 
-    BP_PC2_pos_100 <- load_panther_results(
-        paste(p_panther, f_PC2_pos_BP_100, sep = "/")
+    BP_PC2_pos_100 <- load_yeastmine_results(
+        paste(p_GO, f_PC2_pos_BP_100, sep = "/")
     )
-    BP_PC2_neg_100 <- load_panther_results(
-        paste(p_panther, f_PC2_neg_BP_100, sep = "/")
+    BP_PC2_neg_100 <- load_yeastmine_results(
+        paste(p_GO, f_PC2_neg_BP_100, sep = "/")
     )
     
-    BP_PC3_pos_100 <- load_panther_results(
-        paste(p_panther, f_PC3_pos_BP_100, sep = "/")
+    BP_PC3_pos_100 <- load_yeastmine_results(
+        paste(p_GO, f_PC3_pos_BP_100, sep = "/")
     )
-    BP_PC3_neg_100 <- load_panther_results(
-        paste(p_panther, f_PC3_neg_BP_100, sep = "/")
+    BP_PC3_neg_100 <- load_yeastmine_results(
+        paste(p_GO, f_PC3_neg_BP_100, sep = "/")
     )
 }
 
 #  Panther, 200 features
 run <- FALSE
 if(base::isTRUE(run)) {
-    BP_PC1_pos_200 <- load_panther_results(
-        paste(p_panther, f_PC1_pos_BP_200, sep = "/")
+    BP_PC1_pos_200 <- load_yeastmine_results(
+        paste(p_GO, f_PC1_pos_BP_200, sep = "/")
     )
-    BP_PC1_neg_200 <- load_panther_results(
-        paste(p_panther, f_PC1_neg_BP_200, sep = "/")
-    )
-
-    BP_PC2_pos_200 <- load_panther_results(
-        paste(p_panther, f_PC2_pos_BP_200, sep = "/")
-    )
-    BP_PC2_neg_200 <- load_panther_results(
-        paste(p_panther, f_PC2_neg_BP_200, sep = "/")
+    BP_PC1_neg_200 <- load_yeastmine_results(
+        paste(p_GO, f_PC1_neg_BP_200, sep = "/")
     )
 
-    BP_PC3_pos_200 <- load_panther_results(
-        paste(p_panther, f_PC3_pos_BP_200, sep = "/")
+    BP_PC2_pos_200 <- load_yeastmine_results(
+        paste(p_GO, f_PC2_pos_BP_200, sep = "/")
     )
-    BP_PC3_neg_200 <- load_panther_results(
-        paste(p_panther, f_PC3_neg_BP_200, sep = "/")
+    BP_PC2_neg_200 <- load_yeastmine_results(
+        paste(p_GO, f_PC2_neg_BP_200, sep = "/")
+    )
+
+    BP_PC3_pos_200 <- load_yeastmine_results(
+        paste(p_GO, f_PC3_pos_BP_200, sep = "/")
+    )
+    BP_PC3_neg_200 <- load_yeastmine_results(
+        paste(p_GO, f_PC3_neg_BP_200, sep = "/")
     )
 }
 
 #  Panther, 500 features
-run <- FALSE
-if(base::isTRUE(run)) {
-    BP_PC1_pos_500 <- load_panther_results(
-        paste(p_panther, f_PC1_pos_BP_500, sep = "/")
-    )
-    BP_PC1_neg_500 <- load_panther_results(
-        paste(p_panther, f_PC1_neg_BP_500, sep = "/")
-    )
+# run <- TRUE
+# if(base::isTRUE(run)) {
+    if(file.exists(paste(p_GO, f_PC1_pos_BP_500, sep = "/"))) {
+        BP_PC1_pos_500 <- load_yeastmine_results(
+            paste(p_GO, f_PC1_pos_BP_500, sep = "/")
+        )
+    } else {
+        paste("File does not exists", paste(p_GO, f_PC1_pos_BP_500, sep = "/"))
+    }
     
-    BP_PC2_pos_500 <- load_panther_results(
-        paste(p_panther, f_PC2_pos_BP_500, sep = "/")
-    )
-    BP_PC2_neg_500 <- load_panther_results(
-        paste(p_panther, f_PC2_neg_BP_500, sep = "/")
-    )
+    if(file.exists(paste(p_GO, f_PC1_neg_BP_500, sep = "/"))) {
+        BP_PC1_neg_500 <- load_yeastmine_results(
+            paste(p_GO, f_PC1_neg_BP_500, sep = "/")
+        )
+    } else {
+        paste("File does not exists", paste(p_GO, f_PC1_neg_BP_500, sep = "/"))
+    }
     
-    BP_PC3_pos_500 <- load_panther_results(
-        paste(p_panther, f_PC3_pos_BP_500, sep = "/")
-    )
-    BP_PC3_neg_500 <- load_panther_results(
-        paste(p_panther, f_PC3_neg_BP_500, sep = "/")
-    )
-}
+    if(file.exists(paste(p_GO, f_PC2_pos_BP_500, sep = "/"))) {
+        BP_PC2_pos_500 <- load_yeastmine_results(
+            paste(p_GO, f_PC2_pos_BP_500, sep = "/")
+        )
+    } else {
+        paste("File does not exists", paste(p_GO, f_PC2_pos_BP_500, sep = "/"))
+    }
+    
+    if(file.exists(paste(p_GO, f_PC2_neg_BP_500, sep = "/"))) {
+        BP_PC2_neg_500 <- load_yeastmine_results(
+            paste(p_GO, f_PC2_neg_BP_500, sep = "/")
+        )
+    } else {
+        paste("File does not exists", paste(p_GO, f_PC2_neg_BP_500, sep = "/"))
+    }
+    
+    if(file.exists(paste(p_GO, f_PC3_pos_BP_500, sep = "/"))) {
+        BP_PC3_pos_500 <- load_yeastmine_results(
+            paste(p_GO, f_PC3_pos_BP_500, sep = "/")
+        )
+    } else {
+        paste("File does not exists", paste(p_GO, f_PC3_pos_BP_500, sep = "/"))
+    }
+    
+    if(file.exists(paste(p_GO, f_PC3_neg_BP_500, sep = "/"))) {
+        BP_PC3_neg_500 <- load_yeastmine_results(
+            paste(p_GO, f_PC3_neg_BP_500, sep = "/")
+        )
+    } else {
+        paste("File does not exists", paste(p_GO, f_PC3_neg_BP_500, sep = "/"))
+    }
+# }
 
 top_n <- 15
 run <- TRUE
 if(base::isTRUE(run)) {
-    bars_BP_PC1_neg_100 <- plot_top_terms_pantherdb(BP_PC1_neg_100, top_n)
-    bars_BP_PC1_neg_200 <- plot_top_terms_pantherdb(BP_PC1_neg_200, top_n)
-    bars_BP_PC1_neg_500 <- plot_top_terms_pantherdb(BP_PC1_neg_500, top_n)
+    # bars_BP_PC1_neg_100 <- plot_top_terms_YeastMine(BP_PC1_neg_100, top_n)
+    # bars_BP_PC1_neg_200 <- plot_top_terms_YeastMine(BP_PC1_neg_200, top_n)
+    bars_BP_PC1_neg_500 <- plot_top_terms_YeastMine(BP_PC1_neg_500, top_n)
     
-    bars_BP_PC2_neg_100 <- plot_top_terms_pantherdb(BP_PC2_neg_100, top_n)
-    bars_BP_PC2_neg_200 <- plot_top_terms_pantherdb(BP_PC2_neg_200, top_n)
-    bars_BP_PC2_neg_500 <- plot_top_terms_pantherdb(BP_PC2_neg_500, top_n)
+    # bars_BP_PC2_neg_100 <- plot_top_terms_YeastMine(BP_PC2_neg_100, top_n)
+    # bars_BP_PC2_neg_200 <- plot_top_terms_YeastMine(BP_PC2_neg_200, top_n)
+    # bars_BP_PC2_neg_500 <- plot_top_terms_YeastMine(BP_PC2_neg_500, top_n)  #DOESNOTEXIST
 
-    # bars_BP_PC3_neg_100 <- plot_top_terms_pantherdb(BP_PC3_neg_100, top_n)
-    # bars_BP_PC3_neg_200 <- plot_top_terms_pantherdb(BP_PC3_neg_200, top_n)
-    # bars_BP_PC3_neg_500 <- plot_top_terms_pantherdb(BP_PC3_neg_500, top_n)
+    # bars_BP_PC3_neg_100 <- plot_top_terms_YeastMine(BP_PC3_neg_100, top_n)
+    # bars_BP_PC3_neg_200 <- plot_top_terms_YeastMine(BP_PC3_neg_200, top_n)
+    bars_BP_PC3_neg_500 <- plot_top_terms_YeastMine(BP_PC3_neg_500, top_n)
     
-    bars_BP_PC1_pos_100 <- plot_top_terms_pantherdb(BP_PC1_pos_100, top_n)
-    bars_BP_PC1_pos_200 <- plot_top_terms_pantherdb(BP_PC1_pos_200, top_n)
-    bars_BP_PC1_pos_500 <- plot_top_terms_pantherdb(BP_PC1_pos_500, top_n)
+    # bars_BP_PC1_pos_100 <- plot_top_terms_YeastMine(BP_PC1_pos_100, top_n)
+    # bars_BP_PC1_pos_200 <- plot_top_terms_YeastMine(BP_PC1_pos_200, top_n)
+    bars_BP_PC1_pos_500 <- plot_top_terms_YeastMine(BP_PC1_pos_500, top_n)
     
-    bars_BP_PC2_pos_100 <- plot_top_terms_pantherdb(BP_PC2_pos_100, top_n)
-    bars_BP_PC2_pos_200 <- plot_top_terms_pantherdb(BP_PC2_pos_200, top_n)
-    bars_BP_PC2_pos_500 <- plot_top_terms_pantherdb(BP_PC2_pos_500, top_n)
+    # bars_BP_PC2_pos_100 <- plot_top_terms_YeastMine(BP_PC2_pos_100, top_n)
+    # bars_BP_PC2_pos_200 <- plot_top_terms_YeastMine(BP_PC2_pos_200, top_n)
+    bars_BP_PC2_pos_500 <- plot_top_terms_YeastMine(BP_PC2_pos_500, top_n)
 
-    # bars_BP_PC3_pos_100 <- plot_top_terms_pantherdb(BP_PC3_pos_100, top_n)
-    # bars_BP_PC3_pos_200 <- plot_top_terms_pantherdb(BP_PC3_pos_200, top_n)
-    # bars_BP_PC3_pos_500 <- plot_top_terms_pantherdb(BP_PC3_pos_500, top_n)
+    # bars_BP_PC3_pos_100 <- plot_top_terms_YeastMine(BP_PC3_pos_100, top_n)
+    # bars_BP_PC3_pos_200 <- plot_top_terms_YeastMine(BP_PC3_pos_200, top_n)
+    bars_BP_PC3_pos_500 <- plot_top_terms_YeastMine(BP_PC3_pos_500, top_n)
 }
 
-run <- FALSE
+run <- TRUE
 if(base::isTRUE(run)) {
     # print(bars_BP_PC1_neg_100)
     # print(bars_BP_PC2_neg_100)
@@ -295,16 +329,16 @@ if(base::isTRUE(run)) {
     # print(bars_BP_PC2_neg_500)
     # print(bars_BP_PC3_neg_500)
     
-    print(bars_BP_PC1_neg_100)
-    print(bars_BP_PC1_neg_200)
+    # print(bars_BP_PC1_neg_100)
+    # print(bars_BP_PC1_neg_200)
     print(bars_BP_PC1_neg_500)
     
-    print(bars_BP_PC2_neg_100)
-    print(bars_BP_PC2_neg_200)
-    print(bars_BP_PC2_neg_500)
+    # print(bars_BP_PC2_neg_100)
+    # print(bars_BP_PC2_neg_200)
+    # print(bars_BP_PC2_neg_500)  #DOESNOTEXIST
     
-    print(bars_BP_PC3_neg_100)
-    print(bars_BP_PC3_neg_200)
+    # print(bars_BP_PC3_neg_100)
+    # print(bars_BP_PC3_neg_200)
     print(bars_BP_PC3_neg_500)
     
     # print(bars_BP_PC1_pos_100)
@@ -319,69 +353,78 @@ if(base::isTRUE(run)) {
     # print(bars_BP_PC2_pos_500)
     # print(bars_BP_PC3_pos_500)
     
-    print(bars_BP_PC1_pos_100)
-    print(bars_BP_PC1_pos_200)
+    # print(bars_BP_PC1_pos_100)
+    # print(bars_BP_PC1_pos_200)
     print(bars_BP_PC1_pos_500)
     
-    print(bars_BP_PC2_pos_100)
-    print(bars_BP_PC2_pos_200)
+    # print(bars_BP_PC2_pos_100)
+    # print(bars_BP_PC2_pos_200)
     print(bars_BP_PC2_pos_500)
     
-    print(bars_BP_PC3_pos_100)
-    print(bars_BP_PC3_pos_200)
+    # print(bars_BP_PC3_pos_100)
+    # print(bars_BP_PC3_pos_200)
     print(bars_BP_PC3_pos_500)
 }
 
 #  Save PC1 results
-ggsave(
-    paste0(getwd(), "/", deparse(substitute(bars_BP_PC1_pos_100)), ".png"),
-    bars_BP_PC1_pos_100
-)
-ggsave(
-    paste0(getwd(), "/", deparse(substitute(bars_BP_PC1_pos_200)), ".png"),
-    bars_BP_PC1_pos_200
-)
+# ggsave(
+#     paste0(getwd(), "/", deparse(substitute(bars_BP_PC1_pos_100)), ".png"),
+#     bars_BP_PC1_pos_100
+# )
+# ggsave(
+#     paste0(getwd(), "/", deparse(substitute(bars_BP_PC1_pos_200)), ".png"),
+#     bars_BP_PC1_pos_200
+# )
 ggsave(
     paste0(getwd(), "/", deparse(substitute(bars_BP_PC1_pos_500)), ".png"),
     bars_BP_PC1_pos_500
 )
 
-ggsave(
-    paste0(getwd(), "/", deparse(substitute(bars_BP_PC1_neg_100)), ".png"),
-    bars_BP_PC1_neg_100
-)
-ggsave(
-    paste0(getwd(), "/", deparse(substitute(bars_BP_PC1_neg_200)), ".png"),
-    bars_BP_PC1_neg_200
-)
+# ggsave(
+#     paste0(getwd(), "/", deparse(substitute(bars_BP_PC1_neg_100)), ".png"),
+#     bars_BP_PC1_neg_100
+# )
+# ggsave(
+#     paste0(getwd(), "/", deparse(substitute(bars_BP_PC1_neg_200)), ".png"),
+#     bars_BP_PC1_neg_200
+# )
 ggsave(
     paste0(getwd(), "/", deparse(substitute(bars_BP_PC1_neg_500)), ".png"),
     bars_BP_PC1_neg_500
 )
 
 #  Save PC2 results
-ggsave(
-    paste0(getwd(), "/", deparse(substitute(bars_BP_PC2_pos_100)), ".png"),
-    bars_BP_PC2_pos_100
-)
-ggsave(
-    paste0(getwd(), "/", deparse(substitute(bars_BP_PC2_pos_200)), ".png"),
-    bars_BP_PC2_pos_200
-)
+# ggsave(
+#     paste0(getwd(), "/", deparse(substitute(bars_BP_PC2_pos_100)), ".png"),
+#     bars_BP_PC2_pos_100
+# )
+# ggsave(
+#     paste0(getwd(), "/", deparse(substitute(bars_BP_PC2_pos_200)), ".png"),
+#     bars_BP_PC2_pos_200
+# )
 ggsave(
     paste0(getwd(), "/", deparse(substitute(bars_BP_PC2_pos_500)), ".png"),
     bars_BP_PC2_pos_500
 )
 
+# ggsave(
+#     paste0(getwd(), "/", deparse(substitute(bars_BP_PC2_neg_100)), ".png"),
+#     bars_BP_PC2_neg_100
+# )
+# ggsave(
+#     paste0(getwd(), "/", deparse(substitute(bars_BP_PC2_neg_200)), ".png"),
+#     bars_BP_PC2_neg_200
+# )
+# ggsave(
+#     paste0(getwd(), "/", deparse(substitute(bars_BP_PC2_neg_500)), ".png"),
+#     bars_BP_PC2_neg_500
+# )  #DOESNOTEXIST
+
 ggsave(
-    paste0(getwd(), "/", deparse(substitute(bars_BP_PC2_neg_100)), ".png"),
-    bars_BP_PC2_neg_100
+    paste0(getwd(), "/", deparse(substitute(bars_BP_PC3_pos_500)), ".png"),
+    bars_BP_PC3_pos_500
 )
 ggsave(
-    paste0(getwd(), "/", deparse(substitute(bars_BP_PC2_neg_200)), ".png"),
-    bars_BP_PC2_neg_200
-)
-ggsave(
-    paste0(getwd(), "/", deparse(substitute(bars_BP_PC2_neg_500)), ".png"),
-    bars_BP_PC2_neg_500
+    paste0(getwd(), "/", deparse(substitute(bars_BP_PC3_neg_500)), ".png"),
+    bars_BP_PC3_neg_500
 )
