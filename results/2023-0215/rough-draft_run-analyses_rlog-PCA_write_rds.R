@@ -6,10 +6,10 @@
 
 #  Initialize arguments =======================================================
 #TODO Parser
-type <- "mRNA"  #ARGUMENT
+# type <- "mRNA"  #ARGUMENT
 # type <- "pa-ncRNA"  #ARGUMENT
 # type <- "Trinity-Q"  #ARGUMENT
-# type <- "Trinity-G1"  #ARGUMENT
+type <- "Trinity-G1"  #ARGUMENT
 # type <- "Trinity-Q-unique"  #ARGUMENT
 # type <- "Trinity-G1-unique"  #ARGUMENT
 # type <- "representation"  #TODO
@@ -35,13 +35,13 @@ run_norm <- "tpm"  #ARGUMENT
 
 run_batch_correction <- FALSE  #ARGUMENT
 run_PCA <- TRUE  #ARGUMENT
-date <- "2023-0625"  #ARGUMENT
+date <- "2023-0628"  #ARGUMENT
 
 write_norm_counts_rds <- TRUE  #ARGUMENT
 # write_norm_counts_rds <- FALSE  #ARGUMENT
 
-write_PCA_results <- TRUE  #ARGUMENT
-# write_PCA_results <- FALSE  #ARGUMENT
+# write_PCA_results <- TRUE  #ARGUMENT
+write_PCA_results <- FALSE  #ARGUMENT
 
 write_pdfs <- TRUE
 
@@ -158,7 +158,8 @@ get_top_loadings <- function(x, y, z, a) {
 plot_biplot <- function(
     pca, PC_x, PC_y,
     loadings_show, loadings_n,
-    meta_color, meta_shape,
+    meta_color, meta_shape, shape_key = NULL,
+    point_size = 6, encircle = FALSE,
     x_min, x_max, y_min, y_max
 ) {
     # ...
@@ -170,6 +171,10 @@ plot_biplot <- function(
     # :param loadings_n: number of top loadings to show <int >= 0>
     # :param meta_color: column in "pca" list metadata to color by <chr>
     # :param meta_shape: column in "pca" list metadata to shape by <chr>
+    # :param shape_key: vector of name-value pairs relating to value passed to
+    #                   "shape" <...>
+    # :param point_size: size of plotted points <int>
+    # :param encircle: draw a polygon around groups specified by "colby" <lgl>
     # :param x_min: minimum value on x axis <dbl>
     # :param x_max: maximum value on x axis <dbl>
     # :param y_min: minimum value on y axis <dbl>
@@ -177,32 +182,46 @@ plot_biplot <- function(
     # :param title: title of biplot <dbl>
     # :return image: ...
     
-    image <- pca %>%
-        PCAtools::biplot(
-            x = PC_x,
-            y = PC_y,
-            lab = NULL,
-            showLoadings = loadings_show,
-            ntopLoadings = loadings_n,
-            boxedLoadingsNames = TRUE,
-            colby = meta_color,
-            shape = meta_shape,
-            encircle = FALSE,
-            ellipse = FALSE,
-            max.overlaps = Inf,
-            xlim = c(x_min, x_max),
-            ylim = c(y_min, y_max)
-        ) +
-            # theme_slick
-            theme_bw() +
-            theme(
-                aspect.ratio = 1,
-                panel.grid.minor = element_line(linewidth = 0.5),
-                panel.grid.major = element_line(linewidth = 1),
-                axis.text = element_text(size = 20, face = "bold", color="black"),
-                axis.title = element_text(size =25, face = "bold")
-            ) # +
-            # coord_obs_pred()
+    if(is.null(shape_key)) {
+        image <- pca %>%
+            PCAtools::biplot(
+                x = PC_x,
+                y = PC_y,
+                lab = NULL,
+                showLoadings = loadings_show,
+                ntopLoadings = loadings_n,
+                boxedLoadingsNames = TRUE,
+                colby = meta_color,
+                shape = meta_shape,
+                pointSize = point_size,
+                encircle = FALSE,
+                ellipse = FALSE,
+                max.overlaps = Inf,
+                xlim = c(x_min, x_max),
+                ylim = c(y_min, y_max)
+            )
+    } else {
+        image <- pca %>%
+            PCAtools::biplot(
+                x = PC_x,
+                y = PC_y,
+                lab = NULL,
+                showLoadings = loadings_show,
+                ntopLoadings = loadings_n,
+                boxedLoadingsNames = TRUE,
+                colby = meta_color,
+                shape = meta_shape,
+                shapekey = shape_key,
+                pointSize = point_size,
+                encircle = FALSE,
+                ellipse = FALSE,
+                max.overlaps = Inf,
+                xlim = c(x_min, x_max),
+                ylim = c(y_min, y_max)
+            )
+    }
+
+    image <- image + theme_AG_boxed
     
     return(image)
 }
@@ -601,6 +620,9 @@ run_PCA_pipeline <- function(
     y_neg_nudge_y = -0.04,
     meta_color,
     meta_shape,
+    shape_key = NULL,
+    point_size = 6,
+    encircle = FALSE,
     plot_loadings_pct = FALSE,
     drop_md_levels = NULL,
     PCs_cor_plot
@@ -636,8 +658,11 @@ run_PCA_pipeline <- function(
     #                       axis <dbl>
     # :param y_neg_nudge_y: amount to nudge labels for y negative loadings on y
     #                       axis <dbl>
-    # :param meta_color: ... <character>
-    # :param meta_shape: ... <character>
+    # :param meta_color: ... <chr>
+    # :param meta_shape: ... <chr>
+    # :param shape_key: ... <...>
+    # :param point_size: size of plotted points <int>
+    # :param encircle: draw a polygon around groups specified by "colby" <lgl>
     # :param plot_loadings_pct: Plot top 2.5% loadings for elbow + 2 number of
     #                           PCs <lgl> [default: FALSE]
     # :param drop_md_levels: Metadata variables to drop from correlation plot
@@ -746,6 +771,9 @@ run_PCA_pipeline <- function(
                 loadings_n = 0,
                 meta_color = meta_color,  #DONE
                 meta_shape = meta_shape,  #DONE
+                shape_key = shape_key,
+                point_size = point_size,
+                encircle = encircle,
                 x_min = x_min_biplot,
                 x_max = x_max_biplot,
                 y_min = y_min_biplot,
@@ -2093,14 +2121,20 @@ if(base::isTRUE(run_PCA)) {
             gsub("mid", 1, .)
     }
     
+    if(samples == "Ovation") {
+        shape_key <- c(N = 16, SS = 7)
+    } else {
+        shape_key <- NULL
+    }
+    
     pca_exp <- run_PCA_pipeline(
         counts = input_counts,
         metadata = t_meta,
         feat_id = pca_feat_id,
-        x_min_biplot = ifelse(run_norm == "rlog", -100, -100),
-        x_max_biplot = ifelse(run_norm == "rlog", 100, 100),
-        y_min_biplot = ifelse(run_norm == "rlog", -100, -100),
-        y_max_biplot = ifelse(run_norm == "rlog", 100, 100),
+        x_min_biplot = ifelse(run_norm == "rlog", -100, -125),
+        x_max_biplot = ifelse(run_norm == "rlog", 100, 125),
+        y_min_biplot = ifelse(run_norm == "rlog", -100, -125),
+        y_max_biplot = ifelse(run_norm == "rlog", 100, 125),
         x_min_loadings_plot = ifelse(run_norm == "rlog", -0.1, -0.1),
         x_max_loadings_plot = ifelse(run_norm == "rlog", 0.1, 0.1),
         y_min_loadings_plot = ifelse(run_norm == "rlog", -0.1, -0.1),
@@ -2116,6 +2150,7 @@ if(base::isTRUE(run_PCA)) {
         y_neg_nudge_y = ifelse(samples == "Ovation", -0.04, -0.04),
         meta_color = meta_color,
         meta_shape = meta_shape,
+        shape_key = shape_key,
         plot_loadings_pct = FALSE,
         drop_md_levels = c("gt_st", "gt_tx", "st_tx", "gt_st_tx", "tc", "day"),
         PCs_cor_plot = ifelse(
@@ -2871,22 +2906,70 @@ if(base::isTRUE(write_PCA_results)) {
     }
 }
 
+figure <- 2
+# figure <- 5
 if(base::isTRUE(write_pdfs)) {
-    width <- 7
-    height <- 7
+
     
-    outfile <- "PCA-Fig5A.2023-0626.PC1-vs-PC2.pdf"
-    pdf(file = outfile, width = width, height = height)
-    pca_exp$`10_p_images`$PCAtools.PC1.v.PC2 %>% print()
-    dev.off()
-    
-    outfile <- "PCA-Fig5A.2023-0626.PC1-vs-PC3.pdf"
-    pdf(file = outfile, width = width, height = height)
-    pca_exp$`10_p_images`$PCAtools.PC1.v.PC3 %>% print()
-    dev.off()
-    
-    outfile <- "PCA-Fig5A.2023-0626.PC2-vs-PC3.pdf"
-    pdf(file = outfile, width = width, height = height)
-    pca_exp$`10_p_images`$PCAtools.PC2.v.PC3 %>% print()
-    dev.off()
+    if(figure == 2) {
+        width <- 10
+        height <- 6
+        outfile <- paste0(
+            getwd(), "/", "PCA-Fig2A.", date, "__", samples, "__", type,
+            ".scree.pdf"
+        )
+        pdf(file = outfile, width = width, height = height)
+        pca_exp$`04_p_scree` %>% print()
+        dev.off()
+        
+        width <- 8
+        height <- 7
+        outfile <- paste0(
+            getwd(), "/", "PCA-Fig2A.", date, "__", samples, "__", type,
+            ".correlation.pdf"
+        )
+        pdf(file = outfile, width = width, height = height)
+        pca_exp$`12_p_cor` %>% print()
+        dev.off()
+        
+        outfile <- paste0(
+            getwd(), "/", "PCA-Fig2A.", date, "__", samples, "__", type,
+            ".biplot.PC1-vs-PC2.pdf"
+        )
+        pdf(file = outfile, width = width, height = height)
+        pca_exp$`10_p_images`$PCAtools.PC1.v.PC2 %>% print()
+        dev.off()
+        
+        outfile <- paste0(
+            getwd(), "/", "PCA-Fig2A.", date, "__", samples, "__", type,
+            ".biplot.PC1-vs-PC3.pdf"
+        )
+        pdf(file = outfile, width = width, height = height)
+        pca_exp$`10_p_images`$PCAtools.PC1.v.PC3 %>% print()
+        dev.off()
+        
+        outfile <- paste0(
+            getwd(), "/", "PCA-Fig2A.", date, "__", samples, "__", type,
+            ".biplot.PC2-vs-PC3.pdf"
+        )
+        pdf(file = outfile, width = width, height = height)
+        pca_exp$`10_p_images`$PCAtools.PC2.v.PC3 %>% print()
+        dev.off()
+        
+    } else if(figure == 5) {
+        outfile <- "PCA-Fig5A.2023-0626.PC1-vs-PC2.pdf"
+        pdf(file = outfile, width = width, height = height)
+        pca_exp$`10_p_images`$PCAtools.PC1.v.PC2 %>% print()
+        dev.off()
+        
+        outfile <- "PCA-Fig5A.2023-0626.PC1-vs-PC3.pdf"
+        pdf(file = outfile, width = width, height = height)
+        pca_exp$`10_p_images`$PCAtools.PC1.v.PC3 %>% print()
+        dev.off()
+        
+        outfile <- "PCA-Fig5A.2023-0626.PC2-vs-PC3.pdf"
+        pdf(file = outfile, width = width, height = height)
+        pca_exp$`10_p_images`$PCAtools.PC2.v.PC3 %>% print()
+        dev.off()
+    }
 }
