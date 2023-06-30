@@ -4,8 +4,8 @@
 #  KA
 
 
-#  Goal: Estimate RNA degredation using a simple model based on the work of
-#+       Vock and Simon, RNA 2023
+#  Goal: Estimate RNA degredation using a model based in Vock and Simon, RNA
+#+ 2023
 #+ 
 #+ From the paper (p. 4, partial ¶ 1):
 #+ "If RNA levels are assumed to be at steady-state, meaning that the total RNA
@@ -26,7 +26,7 @@
 #+ ...where
 #+     - θ is the fraction of new transcription; we estimate this value by
 #+       dividing feature_N/input (feature_SS)
-#+     - k is RNA degredation in absolute units of inverse time, since θ is
+#+     - k is RNA degradation in absolute units of inverse time, since θ is
 #+       dimensionless
 #+     - t is labeling time, which we set to 6 minutes per Alison's benchwork
 #+ 
@@ -37,7 +37,7 @@
 #TODO Parser
 type <- "mRNA"  #ARGUMENT
 samples <- "Ovation"  #ARGUMENT
-filtering <- "min-4-cts-all-but-1-samps"
+filtering <- "min-4-cts"
 
 
 #  Load libraries, set options ================================================
@@ -518,10 +518,10 @@ rm(list = ls(pattern = "tmp_"))
 
 #  (Optional) Filter counts matrix --------------------------------------------
 #+ ...to exclude rows without a minimum of 10 counts in n - 1 samples
-if(filtering %notin% c("none", "min-4-cts-all-but-1-samps")) {
+if(filtering %notin% c("none", "min-4-cts-all-but-1-samps", "min-4-cts")) {
     stop(paste(
-        "Argument for \"filtering\" must be \"none\" or",
-        "\"min-10-cts-all-but-1-samps\""
+        "Argument for \"filtering\" must be \"none\",",
+        "\"min-10-cts-all-but-1-samps\", or \"min-4-cts\""
     ))
 }
 
@@ -536,6 +536,56 @@ if(filtering == "none") {
     
     run <- TRUE
     if(base::isTRUE(run)) rm(counts, keep)
+} else if(filtering == "min-4-cts") {
+    counts <- sapply(t_sub[, 12:ncol(t_mat)], as.numeric)
+    
+    sketch_1 <- FALSE
+    if(base::isTRUE(sketch_1)) {
+        #  Sketch 1 ---------------------------------
+        counts_G1_1 <- counts[, c(1, 3)]
+        counts_G1_2 <- counts[, c(2, 4)]
+        counts_Q_1 <- counts[, c(5, 7)]
+        counts_Q_2 <- counts[, c(6, 8)]
+        
+        keep_G1_1 <- rowSums(counts_G1_1 >= 4) >= ncol(counts_G1_1)
+        keep_G1_2 <- rowSums(counts_G1_2 >= 4) >= ncol(counts_G1_2)
+        keep_Q_1 <- rowSums(counts_Q_1 >= 4) >= ncol(counts_Q_1)
+        keep_Q_2 <- rowSums(counts_Q_2 >= 4) >= ncol(counts_Q_2)
+        
+        # table(keep_G1_1)
+        # table(keep_G1_2)
+        # table(keep_Q_1)
+        # table(keep_Q_2)
+    }
+    
+    sketch_2 <- TRUE
+    if(base::isTRUE(sketch_2)) {
+        #  Sketch 2 ---------------------------------
+        counts_G1 <- counts[, c(1, 3, 2, 4)]
+        counts_Q <- counts[, c(5, 7, 6, 8)]
+        
+        keep_G1 <- rowSums(counts_G1 >= 4) >= ncol(counts_G1)
+        keep_Q <- rowSums(counts_Q >= 4) >= ncol(counts_Q)
+        
+        # table(keep_G1)
+        # table(keep_Q)
+        
+        df_G1 <- dplyr::bind_cols(t_sub[keep_G1, 1:11], counts_G1[keep_G1, ])
+        df_Q <- dplyr::bind_cols(t_sub[keep_Q, 1:11], counts_G1[keep_Q, ])
+    }
+    
+    sketch_3 <- TRUE
+    if(base::isTRUE(sketch_3)) {
+        #  Sketch 3 ---------------------------------
+        counts_all <- counts[, c(1, 3, 2, 4, 5, 7, 6, 8)]
+        keep_all <- rowSums(counts_all >= 4) >= ncol(counts_all)
+        # table(keep_all)
+        
+        df_all <- dplyr::bind_cols(
+            t_sub[keep_all, 1:11],
+            counts_all[keep_all, ]
+        )
+    }
 }
 
 
@@ -543,11 +593,10 @@ if(filtering == "none") {
 #+ ...where
 #+     - θ is the fraction of new transcription; we estimate this value by
 #+       dividing feature_N ÷ feature_SS
-#+     - k is RNA degredation in absolute units of inverse time, since θ is
+#+     - k is RNA degradation in absolute units of inverse time, since θ is
 #+       dimensionless
 #+     - t is labeling time, which we set to 6 minutes per Alison's benchwork
 calculate_k <- function(N, SS, t = 6) {
-    #NOTE log is, by default in R, the natural logarithm
     #  Perform debugging
     debug <- FALSE
     if(base::isTRUE(debug)) {
@@ -561,25 +610,142 @@ calculate_k <- function(N, SS, t = 6) {
 }
 
 
-t_sub[, 12:ncol(t_sub)] <- sapply(t_sub[, 12:ncol(t_sub)], as.numeric)
+calculate_k_updated <- function(N, SS, t = 6) {
+    #  Perform debugging
+    debug <- FALSE
+    if(base::isTRUE(debug)) {
+        N <- G_N_1
+        SS <- G_S_1
+    }
+    
+    k <- -log(1 - N/(N + SS))/t
+    
+    return(k)
+}
 
-G_N_1 <- t_sub$WTovn_G1_N_rep1_tech1
-G_S_1 <- t_sub$WTovn_G1_SS_rep1_tech1
 
-G_N_2 <- t_sub$WTovn_G1_N_rep2_tech1
-G_S_2 <- t_sub$WTovn_G1_SS_rep2_tech1
+df_all[, 12:ncol(df_all)] <- sapply(df_all[, 12:ncol(df_all)], as.numeric)
 
-Q_N_1 <- t_sub$WTovn_Q_N_rep1_tech1
-Q_S_1 <- t_sub$WTovn_Q_SS_rep1_tech1
+G_N_1 <- df_all$WTovn_G1_N_rep1_tech1
+G_S_1 <- df_all$WTovn_G1_SS_rep1_tech1
 
-Q_N_2 <- t_sub$WTovn_Q_N_rep2_tech1
-Q_S_2 <- t_sub$WTovn_Q_SS_rep2_tech1
+G_N_2 <- df_all$WTovn_G1_N_rep2_tech1
+G_S_2 <- df_all$WTovn_G1_SS_rep2_tech1
+
+Q_N_1 <- df_all$WTovn_Q_N_rep1_tech1
+Q_S_1 <- df_all$WTovn_Q_SS_rep1_tech1
+
+Q_N_2 <- df_all$WTovn_Q_N_rep2_tech1
+Q_S_2 <- df_all$WTovn_Q_SS_rep2_tech1
 
 t <- 6
 
-k_G_1 <- calculate_k(N = G_N_1, SS = G_S_1, t = t)
-k_G_2 <- calculate_k(N = G_N_2, SS = G_S_2, t = t)
-k_Q_1 <- calculate_k(N = Q_N_1, SS = Q_S_1, t = t)
-k_Q_2 <- calculate_k(N = Q_N_2, SS = Q_S_2, t = t)
+# k_G_1 <- calculate_k(N = G_N_1, SS = G_S_1, t = t)
+# k_G_2 <- calculate_k(N = G_N_2, SS = G_S_2, t = t)
+# k_Q_1 <- calculate_k(N = Q_N_1, SS = Q_S_1, t = t)
+# k_Q_2 <- calculate_k(N = Q_N_2, SS = Q_S_2, t = t)
+
+k_G_1 <- calculate_k_updated(N = G_N_1, SS = G_S_1, t = t)
+k_G_2 <- calculate_k_updated(N = G_N_2, SS = G_S_2, t = t)
+k_Q_1 <- calculate_k_updated(N = Q_N_1, SS = Q_S_1, t = t)
+k_Q_2 <- calculate_k_updated(N = Q_N_2, SS = Q_S_2, t = t)
+
+k_all <- tibble::tibble(
+    k_G_1 = k_G_1,
+    k_G_2 = k_G_2,
+    k_Q_1 = k_Q_1,
+    k_Q_2 = k_Q_2
+)
+
+min(k_all)
+max(k_all)
 
 
+k_all_long <- reshape2::melt(k_all)
+colnames(k_all_long) <- c("sample", "k")
+ggplot2::ggplot(k_all_long, aes(x = sample, y = k, fill = sample)) +
+    geom_violin(trim = FALSE, color = "black") +
+    geom_boxplot(
+        width = 0.2,
+        fill = "white",
+        color = "black",
+        outlier.shape = NA
+    ) +
+    labs(x = "", y = "k_deg") +
+    ggtitle(
+        "Distributions of k_deg values",
+        subtitle = "theta = N / (N + SS)"
+    ) +
+    theme(plot.title = element_text(hjust = 0.5)) +
+    theme_minimal()
+
+#  Minimal reproducible example ###############################################
+suppressMessages(library(tidyverse))
+
+#  Load functions for two ways to calculate k
+calculate_k <- function(N, SS, t = 6) {
+    k <- -log(1 - (N/SS))/t  # Only SS in theta denominator
+    return(k)
+}
+
+
+calculate_k_updated <- function(N, SS, t = 6) {
+    k <- -log(1 - (N/(N + SS)))/t  # N plus SS in theta denominator
+    return(k)
+}
+
+
+#  Fill 100-row dataframe with random integers between 0 and 1000
+num_rows <- 100
+max_value <- 1000
+df <- data.frame(matrix(ncol = 8, nrow = num_rows))
+
+set.seed(24)
+for (col in 1:8) {
+    df[, col] <- sample(0:max_value, num_rows, replace = TRUE)
+}
+
+#  Give dataframe sample-like column names
+colnames(df) <- c(
+    paste(rep(c("G1_N", "G1_SS"), 2), c(1, 1, 2, 2), sep = "_"),
+    paste(rep(c("Q_N", "Q_SS"), 2), c(1, 1, 2, 2), sep = "_")
+)
+
+#  Make dataframe of k values when only feature_SS is in the denominator
+df_k_denom_SS <- data.frame(
+    k_G1_1 = calculate_k(df$G1_N_1, df$G1_SS_1, 6),
+    k_G1_2 = calculate_k(df$G1_N_2, df$G1_SS_2, 6),
+    k_Q_1 = calculate_k(df$Q_N_1, df$Q_SS_1, 6),
+    k_Q_2 = calculate_k(df$Q_N_2, df$Q_SS_2, 6)
+)  # Get NaN warnings
+
+#  Make dataframe of k values when feature_N + feature_SS is in the denominator
+df_k_denom_N_SS <- data.frame(
+    k_G1_1 = calculate_k_updated(df$G1_N_1, df$G1_SS_1, 6),
+    k_G1_2 = calculate_k_updated(df$G1_N_2, df$G1_SS_2, 6),
+    k_Q_1 = calculate_k_updated(df$Q_N_1, df$Q_SS_1, 6),
+    k_Q_2 = calculate_k_updated(df$Q_N_2, df$Q_SS_2, 6)
+)
+
+head(df_k_denom_SS)
+head(df_k_denom_N_SS)
+
+#  Plot the distributions of the simulated samples
+df_k_denom_N_SS_long <- reshape2::melt(df_k_denom_N_SS)
+colnames(df_k_denom_N_SS_long) <- c("sample", "k")
+ggplot2::ggplot(df_k_denom_N_SS_long, aes(x = sample, y = k, fill = sample)) +
+    geom_violin(trim = FALSE, color = "black") +
+    geom_boxplot(
+        width = 0.2,
+        fill = "white",
+        color = "black",
+        outlier.shape = NA
+    ) +
+    labs(x = "", y = "k_deg") +
+    ggtitle(
+        "Distributions of k_deg values",
+        subtitle = "theta = N / (N + SS)"
+    ) +
+    theme(plot.title = element_text(hjust = 0.5)) +
+    theme_minimal()
+    

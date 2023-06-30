@@ -43,7 +43,7 @@ write_norm_counts_rds <- TRUE  #ARGUMENT
 # write_PCA_results <- TRUE  #ARGUMENT
 write_PCA_results <- FALSE  #ARGUMENT
 
-write_pdfs <- TRUE
+# write_pdfs <- TRUE  #ARGUMENT
 
 
 #  Load libraries, set options ================================================
@@ -1229,7 +1229,7 @@ t_cm <- filter_process_counts_matrix(t_cm, col_cor)
 
 
 #  To associate features with metadata, load gff3 or gtf file -----------------
-run <- FALSE
+run <- TRUE
 if(base::isTRUE(run)) {
     paste(p_gtf, f_gtf, sep = "/") %>% file.exists()  # [1] TRUE
 }
@@ -2909,8 +2909,6 @@ if(base::isTRUE(write_PCA_results)) {
 figure <- 2
 # figure <- 5
 if(base::isTRUE(write_pdfs)) {
-
-    
     if(figure == 2) {
         width <- 10
         height <- 6
@@ -2955,7 +2953,6 @@ if(base::isTRUE(write_pdfs)) {
         pdf(file = outfile, width = width, height = height)
         pca_exp$`10_p_images`$PCAtools.PC2.v.PC3 %>% print()
         dev.off()
-        
     } else if(figure == 5) {
         outfile <- "PCA-Fig5A.2023-0626.PC1-vs-PC2.pdf"
         pdf(file = outfile, width = width, height = height)
