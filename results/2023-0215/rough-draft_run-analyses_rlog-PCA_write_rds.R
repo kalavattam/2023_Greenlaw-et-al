@@ -9,8 +9,8 @@
 # type <- "mRNA"  #ARGUMENT
 # type <- "pa-ncRNA"  #ARGUMENT
 # type <- "Trinity-Q"  #ARGUMENT
-type <- "Trinity-G1"  #ARGUMENT
-# type <- "Trinity-Q-unique"  #ARGUMENT
+# type <- "Trinity-G1"  #ARGUMENT
+type <- "Trinity-Q-unique"  #ARGUMENT
 # type <- "Trinity-G1-unique"  #ARGUMENT
 # type <- "representation"  #TODO
 
@@ -37,13 +37,14 @@ run_batch_correction <- FALSE  #ARGUMENT
 run_PCA <- TRUE  #ARGUMENT
 date <- "2023-0628"  #ARGUMENT
 
-write_norm_counts_rds <- TRUE  #ARGUMENT
-# write_norm_counts_rds <- FALSE  #ARGUMENT
+# write_norm_counts_rds <- TRUE  #ARGUMENT
+write_norm_counts_rds <- FALSE  #ARGUMENT
 
 # write_PCA_results <- TRUE  #ARGUMENT
 write_PCA_results <- FALSE  #ARGUMENT
 
 # write_pdfs <- TRUE  #ARGUMENT
+write_pdfs <- FALSE  #ARGUMENT
 
 
 #  Load libraries, set options ================================================
@@ -681,10 +682,10 @@ run_PCA_pipeline <- function(
         x_max_biplot = ifelse(run_norm == "rlog", 50, 100)
         y_min_biplot = ifelse(run_norm == "rlog", -50, -100)
         y_max_biplot = ifelse(run_norm == "rlog", 50, 100)
-        x_min_loadings_plot = ifelse(run_norm == "rlog", -0.1, -0.1)
-        x_max_loadings_plot = ifelse(run_norm == "rlog", 0.1, 0.1)
-        y_min_loadings_plot = ifelse(run_norm == "rlog", -0.1, -0.1)
-        y_max_loadings_plot = ifelse(run_norm == "rlog", 0.1, 0.1)
+        x_min_loadings_plot = ifelse(run_norm == "rlog", -0.1, -0.3)
+        x_max_loadings_plot = ifelse(run_norm == "rlog", 0.1, 0.3)
+        y_min_loadings_plot = ifelse(run_norm == "rlog", -0.1, -0.3)
+        y_max_loadings_plot = ifelse(run_norm == "rlog", 0.1, 0.3)
         n_loadings = 10L
         x_pos_nudge_x = 0.04
         y_pos_nudge_x = 0
@@ -696,6 +697,8 @@ run_PCA_pipeline <- function(
         y_neg_nudge_y = -0.04
         meta_color = meta_color
         meta_shape = meta_shape
+        point_size = 6
+        shape_key = NULL
         plot_loadings_pct = FALSE
         drop_md_levels = c("gt_st", "gt_tx", "st_tx", "gt_st_tx", "tc", "day")
         PCs_cor_plot = 3
@@ -750,13 +753,14 @@ run_PCA_pipeline <- function(
         names(top_loadings_neg) <-
         PCs
     if(base::isTRUE(debug)) print(names(top_loadings_all))
+    if(base::isTRUE(debug)) test_check <- top_loadings_all$PC1
     
     #  Evaluate positive and negative loadings on axes of biplots; look at the
     #+ top 15 per axis
     p_images <- list()
     mat <- combn(PCs, 2)
     for(l in 1:ncol(mat)) {
-        # l <- 2
+        # l <- 1
         m <- mat[, l]
         
         PC_x <- x_label <- m[1]
@@ -772,7 +776,7 @@ run_PCA_pipeline <- function(
                 meta_color = meta_color,  #DONE
                 meta_shape = meta_shape,  #DONE
                 shape_key = shape_key,
-                point_size = point_size,
+                point_size = point_size,  #HERE
                 encircle = encircle,
                 x_min = x_min_biplot,
                 x_max = x_max_biplot,
@@ -814,7 +818,7 @@ run_PCA_pipeline <- function(
                 col_seg_neg = "grey"
             )
         
-        if(base::isTRUE(debug)) p_images[[paste0("KA.", PC_x, ".v.", PC_y)]]
+        if(base::isTRUE(debug)) p_images[[paste0("KA.", PC_x, ".v.", PC_y)]][1]
     }
     if(base::isTRUE(debug)) {
         # p_images$PCAtools.PC3.v.PC4 %>% print()
@@ -2220,7 +2224,6 @@ if(base::isTRUE(write_PCA_results)) {
             type, ".scree.png"
         ))
     }
-    
     
     run <- TRUE
     if(base::isTRUE(run)) {

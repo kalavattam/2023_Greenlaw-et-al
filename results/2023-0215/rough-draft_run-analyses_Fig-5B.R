@@ -24,6 +24,49 @@ load_RDS_mRNA <- function(
 }
 
 
+#  Load custom ggplot2 themes -------------------------------------------------
+theme_slick <- theme_classic() +
+    theme(
+        panel.grid.major = ggplot2::element_line(linewidth = 0.4),
+        panel.grid.minor = ggplot2::element_line(linewidth = 0.2),
+        axis.line = ggplot2::element_line(linewidth = 0.2),
+        axis.ticks = ggplot2::element_line(linewidth = 0.4),
+        axis.text = ggplot2::element_text(color = "black"),
+        axis.title.x = ggplot2::element_text(),
+        axis.title.y = ggplot2::element_text(),
+        plot.title = ggplot2::element_text(),
+        text = element_text(family = "")
+    )
+
+
+theme_AG <- theme_classic() +
+    theme(
+        panel.grid.major = ggplot2::element_line(linewidth = 3),
+        panel.grid.minor = ggplot2::element_line(linewidth = 2),
+        axis.line = ggplot2::element_line(linewidth = 0.5),
+        axis.ticks = ggplot2::element_line(linewidth = 1.0),
+        axis.text = ggplot2::element_text(
+            color = "black", size = 20, face = "bold"
+        ),
+        axis.title.x = ggplot2::element_text(size = 25, face = "bold"),
+        axis.title.y = ggplot2::element_text(size = 25, face = "bold"),
+        plot.title = ggplot2::element_text(size = 20),
+        text = element_text(family = "")
+    )
+
+theme_AG_boxed <- theme_AG +
+    theme(
+        axis.line = ggplot2::element_line(linewidth = 0),
+        panel.border = element_rect(colour = "black", fill = NA, linewidth = 2)
+    )
+
+theme_slick_no_legend <- theme_slick + theme(legend.position = "none")
+
+theme_AG_no_legend <- theme_AG + theme(legend.position = "none")
+
+theme_AG_boxed_no_legend <- theme_AG_boxed + theme(legend.position = "none")
+
+
 #  Get situated, load RDS files, and load TPM dataframe =======================
 #  Set work dir
 p_base <- "/Users/kalavatt/projects-etc"
@@ -42,6 +85,7 @@ mRNA_SS_G1_r6n <- load_RDS_mRNA(
     f_RDS = "DGE-analysis_mRNA_SS-G1-rrp6∆_SS-G1-WT.rds"
 )
 
+#TODO Note the scripts and parameters used to generate these files:
 p_TPM <- "notebook/KA.2023-0624.PCA-TPM_Rrp6∆-timecourse-G1-Q.SS"
 f_TPM <- "data.2023-0624__Rrp6∆.timecourse-G1-Q.SS__mRNA.counts-TPM.tsv"
 df_TPM <- readr::read_tsv(
@@ -273,6 +317,7 @@ heat_h_k3 <- pheatmap::pheatmap(
     color = color_range(100)
 )
 
+
 mean_TPM <- mean_TPM %>%
     dplyr::mutate(
         features = filt_TPM$features
@@ -283,51 +328,110 @@ mean_TPM_k1 <- mean_TPM[mean_TPM$features %in% df_k1$features, ]
 mean_TPM_k2 <- mean_TPM[mean_TPM$features %in% df_k2$features, ]
 mean_TPM_k3 <- mean_TPM[mean_TPM$features %in% df_k3$features, ]
 
+
 prepare_mean_TPM_plot <- function(mean_df) {
+    debug <- FALSE
+    if(base::isTRUE(debug)) {
+        mean_df <- mean_TPM_k1
+    }
+    
     piv_k <- mean_df %>%
         pivot_longer(names_to = "samples", cols = c(
             "mean_r6n_G1", "mean_WT_G1", "mean_r6n_DSm2", "mean_WT_DSm2",
             "mean_r6n_DSp2", "mean_WT_DSp2", "mean_r6n_DSp24", "mean_WT_DSp24",
             "mean_r6n_DSp48", "mean_WT_DSp48", "mean_r6n_Q_SS", "mean_WT_Q_SS"
         ))
-    piv_k$samples <- gsub("mean_", "", piv_k$samples)
+    piv_k$samples <- gsub("^mean_", "", piv_k$samples)
+    piv_k$samples <- gsub("_SS$", "", piv_k$samples)
     piv_k$samples <- factor(
         piv_k$samples,
         levels = c(
             "WT_G1", "r6n_G1", "WT_DSm2", "r6n_DSm2", "WT_DSp2", "r6n_DSp2",
-            "WT_DSp24", "r6n_DSp24", "WT_DSp48", "r6n_DSp48", "WT_Q_SS",
-            "r6n_Q_SS"
+            "WT_DSp24", "r6n_DSp24", "WT_DSp48", "r6n_DSp48", "WT_Q",
+            "r6n_Q"
         )
     )
     
+    tmp <- piv_k$samples %>%
+        stringr::str_split_fixed("_", n = Inf) %>%
+        as.data.frame()
+    colnames(tmp) <- c("genotype", "state")
+    
+    piv_k$genotype <- tmp$genotype
+    piv_k$state <- tmp$state
+    
+    rm(tmp)
+    
     return(piv_k)
 }
+
 
 piv_k1 <- prepare_mean_TPM_plot(mean_TPM_k1)
 piv_k2 <- prepare_mean_TPM_plot(mean_TPM_k2)
 piv_k3 <- prepare_mean_TPM_plot(mean_TPM_k3)
 
 
-plot_distributions <- function(piv_k, k) {
+# plot_distributions <- function(piv_k, k)
+plot_distributions <- function(piv_k) {
+    debug <- FALSE
+    if(base::isTRUE(debug)) piv_k <- piv_k1
+    
     plot <- ggplot(
-        piv_k, aes(x = samples, y = log2(value + 1), fill = samples)
+        piv_k, aes(x = samples, y = log2(value + 1), fill = genotype)
     ) +
         geom_violin(trim = FALSE) +
         geom_boxplot(width = 0.2, fill = "white") +
         labs(
-            title = paste("Comparisons of distributions, k =", k),
+            # title = paste("Comparisons of distributions, k =", k),
             x = "",
             y = "log2(TPM + 1)"
         ) +
-        theme_minimal() +
+        # scale_fill_discrete(limits = c("WT", "r6n")) +
+        scale_fill_manual(
+            values = c("#89CF95", "#8F68AF"), limits = c("WT", "r6n")
+        ) +
+        theme_AG_boxed +
         theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
+    if(base::isTRUE(debug)) plot
     
     return(plot)
 }
 
-plot_distributions(piv_k1, 1)
-plot_distributions(piv_k2, 2)
-plot_distributions(piv_k3, 3)
+
+print_plot <- function(
+    object,
+    outpath = "/Users/kalavatt/Desktop",
+    filename,
+    width = 7,
+    height = 7
+) {
+    debug <- FALSE
+    if(base::isTRUE(debug)) {
+        object = etc$`09_lm_fit_plot`
+        outpath = "/Users/kalavatt/Desktop"
+        filename = "test.pdf"
+        width = 7
+        height = 7
+    }
+    
+    outfile <- paste0(outpath, "/", filename)
+    
+    pdf(file = outfile, width = width, height = height)
+    print(object)
+    dev.off()
+}
+
+filename <- "mean-TPM-dists.2023-0630.group-k1.pdf"
+plot_k1 <- plot_distributions(piv_k1)
+print_plot(object = plot_k1, filename = filename, width = 10, height = 7)
+
+filename <- "mean-TPM-dists.2023-0630.group-k2.pdf"
+plot_k2 <- plot_distributions(piv_k2)
+print_plot(object = plot_k2, filename = filename, width = 10, height = 7)
+
+filename <- "mean-TPM-dists.2023-0630.group-k3.pdf"
+plot_k3 <- plot_distributions(piv_k3)
+print_plot(object = plot_k3, filename = filename, width = 10, height = 7)
 
 #  Write out feature lists (e.g., for GO analyses)
 date <- "2023-0626"
