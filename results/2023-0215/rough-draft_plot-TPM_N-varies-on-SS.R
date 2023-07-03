@@ -256,7 +256,7 @@ perform_lm_LOESS_MW_etc <- function(
             x = x_low,
             y = y_high * 0.9,
             size = 7,
-            label = paste("Pearson r =", round(r_Q, 2)),
+            label = paste("Pearson r =", round(r_G1, 2)),
             fontface = "bold"
         ) +
         annotate(  # label the model equation
@@ -497,7 +497,7 @@ perform_lm_LOESS_MW_etc <- function(
             x = x_low,
             y = y_high * 0.9,
             size = 7,
-            label = paste("Pearson r =", round(r_Q, 2)),
+            label = paste("Pearson r =", round(r_G1, 2)),
             fontface = "bold"
         ) +
         annotate(  # label the r-squared value

@@ -6,22 +6,22 @@
 
 #  Initialize arguments =======================================================
 #TODO Parser
-# type <- "mRNA"  #ARGUMENT
+type <- "mRNA"  #ARGUMENT
 # type <- "pa-ncRNA"  #ARGUMENT
 # type <- "Trinity-Q"  #ARGUMENT
 # type <- "Trinity-G1"  #ARGUMENT
-type <- "Trinity-Q-unique"  #ARGUMENT
+# type <- "Trinity-Q-unique"  #ARGUMENT
 # type <- "Trinity-G1-unique"  #ARGUMENT
 # type <- "representation"  #TODO
 
-samples <- "Ovation"  #ARGUMENT
+# samples <- "Ovation"  #ARGUMENT  #FIG1.5
 # samples <- "test.Ovation_Rrp6∆"  #ARGUMENT  #TODO Remove
 # samples <- "test.Ovation_Tecan"  #ARGUMENT  #TODO Remove
 # samples <- "Rrp6∆.G1-Q.N-SS"  #ARGUMENT
 # samples <- "Rrp6∆.G1-Q.SS"  #ARGUMENT
 # samples <- "Rrp6∆.Q.N-SS"  #ARGUMENT
 # samples <- "Rrp6∆.timecourse"  #ARGUMENT
-# samples <- "Rrp6∆.timecourse-G1-Q.SS"  #ARGUMENT
+samples <- "Rrp6∆.timecourse-G1-Q.SS"  #ARGUMENT  #FIG5
 # samples <- "Rrp6∆.timecourse-G1.SS"  #ARGUMENT
 # samples <- "Rrp6∆.timecourse-G1-Q.N-SS"  #ARGUMENT
 # samples <- "Rrp6∆.timecourse.G1-SS.Q-N"  #ARGUMENT
@@ -35,7 +35,7 @@ run_norm <- "tpm"  #ARGUMENT
 
 run_batch_correction <- FALSE  #ARGUMENT
 run_PCA <- TRUE  #ARGUMENT
-date <- "2023-0628"  #ARGUMENT
+date <- "2023-0702"  #ARGUMENT
 
 # write_norm_counts_rds <- TRUE  #ARGUMENT
 write_norm_counts_rds <- FALSE  #ARGUMENT
@@ -44,7 +44,7 @@ write_norm_counts_rds <- FALSE  #ARGUMENT
 write_PCA_results <- FALSE  #ARGUMENT
 
 # write_pdfs <- TRUE  #ARGUMENT
-write_pdfs <- FALSE  #ARGUMENT
+write_pdfs <- TRUE  #ARGUMENT
 
 
 #  Load libraries, set options ================================================
@@ -2135,10 +2135,10 @@ if(base::isTRUE(run_PCA)) {
         counts = input_counts,
         metadata = t_meta,
         feat_id = pca_feat_id,
-        x_min_biplot = ifelse(run_norm == "rlog", -100, -125),
-        x_max_biplot = ifelse(run_norm == "rlog", 100, 125),
-        y_min_biplot = ifelse(run_norm == "rlog", -100, -125),
-        y_max_biplot = ifelse(run_norm == "rlog", 100, 125),
+        x_min_biplot = ifelse(run_norm == "rlog", -100, -100),  # -125
+        x_max_biplot = ifelse(run_norm == "rlog", 100, 100),  # 125
+        y_min_biplot = ifelse(run_norm == "rlog", -100, -100),  # -125
+        y_max_biplot = ifelse(run_norm == "rlog", 100, 100),  # 125
         x_min_loadings_plot = ifelse(run_norm == "rlog", -0.1, -0.1),
         x_max_loadings_plot = ifelse(run_norm == "rlog", 0.1, 0.1),
         y_min_loadings_plot = ifelse(run_norm == "rlog", -0.1, -0.1),
@@ -2162,14 +2162,14 @@ if(base::isTRUE(run_PCA)) {
             3,
             ifelse(
                 samples == "Rrp6∆.timecourse-G1-Q.SS",
-                4,
+                3,
                 NULL
             )
         )
     )
 }
 
-run <- FALSE
+run <- TRUE
 if(base::isTRUE(run)) {
     # pca_exp$`02_horn`$n %>% print()
     # pca_exp$`03_elbow` %>% as.numeric() %>% print()
@@ -2909,8 +2909,8 @@ if(base::isTRUE(write_PCA_results)) {
     }
 }
 
-figure <- 2
-# figure <- 5
+# figure <- 2
+figure <- 5
 if(base::isTRUE(write_pdfs)) {
     if(figure == 2) {
         width <- 10
@@ -2957,19 +2957,48 @@ if(base::isTRUE(write_pdfs)) {
         pca_exp$`10_p_images`$PCAtools.PC2.v.PC3 %>% print()
         dev.off()
     } else if(figure == 5) {
-        outfile <- "PCA-Fig5A.2023-0626.PC1-vs-PC2.pdf"
+        width <- 10
+        height <- 6
+        outfile <- "PCA-Fig5A.2023-0702.scree.pdf"
+        pdf(file = outfile, width = width, height = height)
+        pca_exp$`04_p_scree` %>% print()
+        dev.off()
+        
+        width <- 8
+        height <- 7
+        outfile <- "PCA-Fig5A.2023-0702.correlation.pdf"
+        pdf(file = outfile, width = width, height = height)
+        pca_exp$`12_p_cor` %>% print()
+        dev.off()
+        
+        outfile <- "PCA-Fig5A.2023-0702.biplot.PC1-vs-PC2.pdf"
         pdf(file = outfile, width = width, height = height)
         pca_exp$`10_p_images`$PCAtools.PC1.v.PC2 %>% print()
         dev.off()
         
-        outfile <- "PCA-Fig5A.2023-0626.PC1-vs-PC3.pdf"
+        outfile <- "PCA-Fig5A.2023-0702.biplot.PC1-vs-PC3.pdf"
         pdf(file = outfile, width = width, height = height)
         pca_exp$`10_p_images`$PCAtools.PC1.v.PC3 %>% print()
         dev.off()
         
-        outfile <- "PCA-Fig5A.2023-0626.PC2-vs-PC3.pdf"
+        outfile <- "PCA-Fig5A.2023-0702.biplot.PC1-vs-PC4.pdf"
+        pdf(file = outfile, width = width, height = height)
+        pca_exp$`10_p_images`$PCAtools.PC1.v.PC4 %>% print()
+        dev.off()
+        
+        outfile <- "PCA-Fig5A.2023-0702.biplot.PC2-vs-PC3.pdf"
         pdf(file = outfile, width = width, height = height)
         pca_exp$`10_p_images`$PCAtools.PC2.v.PC3 %>% print()
+        dev.off()
+        
+        outfile <- "PCA-Fig5A.2023-0702.biplot.PC2-vs-PC4.pdf"
+        pdf(file = outfile, width = width, height = height)
+        pca_exp$`10_p_images`$PCAtools.PC2.v.PC4 %>% print()
+        dev.off()
+        
+        outfile <- "PCA-Fig5A.2023-0702.biplot.PC3-vs-PC4.pdf"
+        pdf(file = outfile, width = width, height = height)
+        pca_exp$`10_p_images`$PCAtools.PC3.v.PC4 %>% print()
         dev.off()
     }
 }
