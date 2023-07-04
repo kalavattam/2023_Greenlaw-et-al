@@ -6,22 +6,22 @@
 
 #  Initialize arguments =======================================================
 #TODO Parser
-type <- "mRNA"  #ARGUMENT
+# type <- "mRNA"  #ARGUMENT
 # type <- "pa-ncRNA"  #ARGUMENT
 # type <- "Trinity-Q"  #ARGUMENT
 # type <- "Trinity-G1"  #ARGUMENT
-# type <- "Trinity-Q-unique"  #ARGUMENT
+type <- "Trinity-Q-unique"  #ARGUMENT
 # type <- "Trinity-G1-unique"  #ARGUMENT
 # type <- "representation"  #TODO
 
-# samples <- "Ovation"  #ARGUMENT  #FIG1.5
+samples <- "Ovation"  #ARGUMENT  #FIG1.5
 # samples <- "test.Ovation_Rrp6∆"  #ARGUMENT  #TODO Remove
 # samples <- "test.Ovation_Tecan"  #ARGUMENT  #TODO Remove
 # samples <- "Rrp6∆.G1-Q.N-SS"  #ARGUMENT
 # samples <- "Rrp6∆.G1-Q.SS"  #ARGUMENT
 # samples <- "Rrp6∆.Q.N-SS"  #ARGUMENT
 # samples <- "Rrp6∆.timecourse"  #ARGUMENT
-samples <- "Rrp6∆.timecourse-G1-Q.SS"  #ARGUMENT  #FIG5
+# samples <- "Rrp6∆.timecourse-G1-Q.SS"  #ARGUMENT  #FIG5
 # samples <- "Rrp6∆.timecourse-G1.SS"  #ARGUMENT
 # samples <- "Rrp6∆.timecourse-G1-Q.N-SS"  #ARGUMENT
 # samples <- "Rrp6∆.timecourse.G1-SS.Q-N"  #ARGUMENT
@@ -34,17 +34,17 @@ samples <- "Rrp6∆.timecourse-G1-Q.SS"  #ARGUMENT  #FIG5
 run_norm <- "tpm"  #ARGUMENT
 
 run_batch_correction <- FALSE  #ARGUMENT
-run_PCA <- TRUE  #ARGUMENT
-date <- "2023-0702"  #ARGUMENT
+run_PCA <- FALSE  #ARGUMENT
+date <- "2023-0704"  #ARGUMENT
 
 # write_norm_counts_rds <- TRUE  #ARGUMENT
-write_norm_counts_rds <- FALSE  #ARGUMENT
+write_norm_counts_rds <- TRUE  #ARGUMENT
 
 # write_PCA_results <- TRUE  #ARGUMENT
 write_PCA_results <- FALSE  #ARGUMENT
 
 # write_pdfs <- TRUE  #ARGUMENT
-write_pdfs <- TRUE  #ARGUMENT
+write_pdfs <- FALSE  #ARGUMENT
 
 
 #  Load libraries, set options ================================================
@@ -598,6 +598,7 @@ draw_scree_plot <- function(pca, horn, elbow) {
 }
 
 
+#SHORTCUT
 run_PCA_pipeline <- function(
     counts,
     metadata,
@@ -626,7 +627,7 @@ run_PCA_pipeline <- function(
     encircle = FALSE,
     plot_loadings_pct = FALSE,
     drop_md_levels = NULL,
-    PCs_cor_plot
+    PCs_cor_plot = NULL
 ) {
     # ...
     #
@@ -678,14 +679,14 @@ run_PCA_pipeline <- function(
         counts = input_counts
         metadata = t_meta
         feat_id = pca_feat_id
-        x_min_biplot = ifelse(run_norm == "rlog", -50, -100)
-        x_max_biplot = ifelse(run_norm == "rlog", 50, 100)
-        y_min_biplot = ifelse(run_norm == "rlog", -50, -100)
-        y_max_biplot = ifelse(run_norm == "rlog", 50, 100)
-        x_min_loadings_plot = ifelse(run_norm == "rlog", -0.1, -0.3)
-        x_max_loadings_plot = ifelse(run_norm == "rlog", 0.1, 0.3)
-        y_min_loadings_plot = ifelse(run_norm == "rlog", -0.1, -0.3)
-        y_max_loadings_plot = ifelse(run_norm == "rlog", 0.1, 0.3)
+        x_min_biplot = -150
+        x_max_biplot = 150
+        y_min_biplot = -150
+        y_max_biplot = 150
+        x_min_loadings_plot = -0.1
+        x_max_loadings_plot = 0.1
+        y_min_loadings_plot = -0.1
+        y_max_loadings_plot = 0.1
         n_loadings = 10L
         x_pos_nudge_x = 0.04
         y_pos_nudge_x = 0
@@ -756,7 +757,7 @@ run_PCA_pipeline <- function(
     if(base::isTRUE(debug)) test_check <- top_loadings_all$PC1
     
     #  Evaluate positive and negative loadings on axes of biplots; look at the
-    #+ top 15 per axis
+    #+ top n per axis
     p_images <- list()
     mat <- combn(PCs, 2)
     for(l in 1:ncol(mat)) {
@@ -825,10 +826,10 @@ run_PCA_pipeline <- function(
         # p_images$PCAtools.PC2.v.PC4 %>% print()
         # p_images$PCAtools.PC2.v.PC3 %>% print()
         # p_images$PCAtools.PC1.v.PC4 %>% print()
-        # p_images$PCAtools.PC1.v.PC3 %>% print()
-        # p_images$PCAtools.PC1.v.PC2 %>% print()
+        p_images$PCAtools.PC1.v.PC3 %>% print()
+        p_images$PCAtools.PC1.v.PC2 %>% print()
         
-        run <- FALSE
+        run <- TRUE
         if(base::isTRUE(run)) p_images$KA.PC1.v.PC2 %>% print()
     }
     
@@ -1224,7 +1225,7 @@ col_cor <- setNames(
     )
 )
 
-run <- TRUE
+run <- FALSE
 if(base::isTRUE(run)) {
     t_cm.bak <- t_cm
     # t_cm <- t_cm.bak
@@ -1233,7 +1234,7 @@ t_cm <- filter_process_counts_matrix(t_cm, col_cor)
 
 
 #  To associate features with metadata, load gff3 or gtf file -----------------
-run <- TRUE
+run <- FALSE
 if(base::isTRUE(run)) {
     paste(p_gtf, f_gtf, sep = "/") %>% file.exists()  # [1] TRUE
 }
@@ -1421,7 +1422,7 @@ if(base::isTRUE(run)) t_mat %>% tail(10)
 
 
 #  Subset t_mat to include counts only for samples of interest ----------------
-run <- TRUE
+run <- FALSE
 if(base::isTRUE(run)) {
     t_mat.bak <- t_mat
     # t_mat <- t_mat.bak
@@ -1534,6 +1535,61 @@ rm(list = ls(pattern = "tmp_"))
 # tmp <- dplyr::bind_cols(tmp_A, tmp_C)
 # colnames(tmp)
 # colnames(t_mat)
+
+
+#TODO #LATER Move this chunk to its own script
+#  For Trinity gtfs, examine feature length and expression distributions ======
+run <- TRUE
+if(base::isTRUE(run)) {
+    df <- t_mat %>% dplyr::select(c(features, biotype, width))
+    df$biotype <- factor(df$biotype)
+    df$width <- df$width / 1000
+    
+    tally <- df %>%
+        group_by(biotype) %>%
+        summarize(count = n())
+    
+    df %>%
+        ggplot2::ggplot(aes(x = biotype, y = width, fill = biotype)) +
+        geom_violin(trim = FALSE) +
+        geom_boxplot(width = 0.2, fill = "white") +
+        labs(
+            title = "Trinity Q \"unique\" annotations: width",
+            x = "",
+            y = "kb"
+        ) +
+        geom_text(
+            data = tally,
+            aes(label = paste("n =", count)),
+            y = max(df$width) + 0.4
+        ) +
+        theme_slick +
+        theme(
+            legend.position = "none",
+            axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)
+        )
+    
+    #TODO #TBC #TOMORROW
+    df_2 <- t_mat %>% dplyr::select(c(features, biotype, ))
+    df %>%
+        ggplot2::ggplot(aes(x = biotype, y = width, fill = biotype)) +
+        geom_violin(trim = FALSE) +
+        geom_boxplot(width = 0.2, fill = "white") +
+        labs(
+            title = "Trinity Q \"unique\" annotations",
+            x = "",
+            y = "width (kb)"
+        ) +
+        geom_text(
+            data = tally,
+            aes(label = paste("n =", count)),
+            y = max(df$width) + 0.4
+        ) +
+        theme(
+            legend.position = "none",
+            axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)
+        )
+}
 
 
 #  Prepare metadata, data, etc. for running PCA ===============================
@@ -2089,6 +2145,9 @@ if(base::isTRUE(run_PCA)) {
     } else if(samples == "Nab3AID.Q.SS_Rrp6∆.Q.SS") {
         meta_color <- "genotype"
         meta_shape <- "replicate"
+    } else if(samples == "Nab3AID.Q.N-SS") {
+        meta_color <- "genotype"
+        meta_shape <- "transcription"
     } else {
         meta_color <- "state"
         meta_shape <- "transcription"
@@ -2131,40 +2190,47 @@ if(base::isTRUE(run_PCA)) {
         shape_key <- NULL
     }
     
+    #SHORTCUT
     pca_exp <- run_PCA_pipeline(
         counts = input_counts,
         metadata = t_meta,
         feat_id = pca_feat_id,
-        x_min_biplot = ifelse(run_norm == "rlog", -100, -100),  # -125
-        x_max_biplot = ifelse(run_norm == "rlog", 100, 100),  # 125
-        y_min_biplot = ifelse(run_norm == "rlog", -100, -100),  # -125
-        y_max_biplot = ifelse(run_norm == "rlog", 100, 100),  # 125
-        x_min_loadings_plot = ifelse(run_norm == "rlog", -0.1, -0.1),
-        x_max_loadings_plot = ifelse(run_norm == "rlog", 0.1, 0.1),
-        y_min_loadings_plot = ifelse(run_norm == "rlog", -0.1, -0.1),
-        y_max_loadings_plot = ifelse(run_norm == "rlog", 0.1, 0.1),
+        x_min_biplot = ifelse(
+            samples %in% c("Nab3AID.Q.N-SS", "Rrp6∆.timecourse-G1-Q.SS"),
+            -125, -100
+        ),
+        x_max_biplot = ifelse(
+            samples %in% c("Nab3AID.Q.N-SS", "Rrp6∆.timecourse-G1-Q.SS"),
+            125, 100
+        ),
+        y_min_biplot = ifelse(
+            samples %in% c("Nab3AID.Q.N-SS", "Rrp6∆.timecourse-G1-Q.SS"),
+            -125, -100
+        ),
+        y_max_biplot = ifelse(
+            samples %in% c("Nab3AID.Q.N-SS", "Rrp6∆.timecourse-G1-Q.SS"),
+            125, 100
+        ),
+        x_min_loadings_plot = -0.1,
+        x_max_loadings_plot = 0.1,
+        y_min_loadings_plot = -0.1,
+        y_max_loadings_plot = 0.1,
         n_loadings = 10L,
-        x_pos_nudge_x = ifelse(samples == "Ovation", 0.04, 0.04),
-        y_pos_nudge_x = ifelse(samples == "Ovation", 0, 0),
-        x_neg_nudge_x = ifelse(samples == "Ovation", -0.04, -0.04),
-        y_neg_nudge_x = ifelse(samples == "Ovation", -0.02, -0.02),
-        x_pos_nudge_y = ifelse(samples == "Ovation", 0, 0),
-        y_pos_nudge_y = ifelse(samples == "Ovation", 0.04, 0.04),
-        x_neg_nudge_y = ifelse(samples == "Ovation", 0, 0),
-        y_neg_nudge_y = ifelse(samples == "Ovation", -0.04, -0.04),
+        x_pos_nudge_x = 0.04,
+        y_pos_nudge_x = 0,
+        x_neg_nudge_x = -0.04,
+        y_neg_nudge_x = -0.02,
+        x_pos_nudge_y = 0,
+        y_pos_nudge_y = 0.04,
+        x_neg_nudge_y = 0,
+        y_neg_nudge_y = -0.04,
         meta_color = meta_color,
         meta_shape = meta_shape,
         shape_key = shape_key,
         plot_loadings_pct = FALSE,
-        drop_md_levels = c("gt_st", "gt_tx", "st_tx", "gt_st_tx", "tc", "day"),
+        # drop_md_levels = c("gt_st", "gt_tx", "st_tx", "gt_st_tx", "tc", "day"),
         PCs_cor_plot = ifelse(
-            samples == "Ovation",
-            3,
-            ifelse(
-                samples == "Rrp6∆.timecourse-G1-Q.SS",
-                3,
-                NULL
-            )
+            samples %in% c("Ovation", "Rrp6∆.timecourse-G1-Q.SS"), 3, 2
         )
     )
 }
@@ -2910,7 +2976,8 @@ if(base::isTRUE(write_PCA_results)) {
 }
 
 # figure <- 2
-figure <- 5
+figure <- 4
+# figure <- 6
 if(base::isTRUE(write_pdfs)) {
     if(figure == 2) {
         width <- 10
@@ -2956,47 +3023,76 @@ if(base::isTRUE(write_pdfs)) {
         pdf(file = outfile, width = width, height = height)
         pca_exp$`10_p_images`$PCAtools.PC2.v.PC3 %>% print()
         dev.off()
-    } else if(figure == 5) {
+    } else if(figure == 4) {
         width <- 10
         height <- 6
-        outfile <- "PCA-Fig5A.2023-0702.scree.pdf"
+        outfile <- "PCA-Fig4.2023-0702.scree.pdf"
         pdf(file = outfile, width = width, height = height)
         pca_exp$`04_p_scree` %>% print()
         dev.off()
         
         width <- 8
         height <- 7
-        outfile <- "PCA-Fig5A.2023-0702.correlation.pdf"
+        outfile <- "PCA-Fig4.2023-0702.correlation.pdf"
         pdf(file = outfile, width = width, height = height)
         pca_exp$`12_p_cor` %>% print()
         dev.off()
         
-        outfile <- "PCA-Fig5A.2023-0702.biplot.PC1-vs-PC2.pdf"
+        outfile <- "PCA-Fig4.2023-0702.biplot.PC1-vs-PC2.pdf"
         pdf(file = outfile, width = width, height = height)
         pca_exp$`10_p_images`$PCAtools.PC1.v.PC2 %>% print()
         dev.off()
         
-        outfile <- "PCA-Fig5A.2023-0702.biplot.PC1-vs-PC3.pdf"
+        outfile <- "PCA-Fig4.2023-0702.biplot.PC1-vs-PC3.pdf"
         pdf(file = outfile, width = width, height = height)
         pca_exp$`10_p_images`$PCAtools.PC1.v.PC3 %>% print()
         dev.off()
         
-        outfile <- "PCA-Fig5A.2023-0702.biplot.PC1-vs-PC4.pdf"
+        outfile <- "PCA-Fig4.2023-0702.biplot.PC2-vs-PC3.pdf"
+        pdf(file = outfile, width = width, height = height)
+        pca_exp$`10_p_images`$PCAtools.PC2.v.PC3 %>% print()
+        dev.off()
+    } else if(figure == 6) {
+        width <- 10
+        height <- 6
+        outfile <- "PCA-Fig6A.2023-0702.scree.pdf"
+        pdf(file = outfile, width = width, height = height)
+        pca_exp$`04_p_scree` %>% print()
+        dev.off()
+        
+        width <- 8
+        height <- 7
+        outfile <- "PCA-Fig6A.2023-0702.correlation.pdf"
+        pdf(file = outfile, width = width, height = height)
+        pca_exp$`12_p_cor` %>% print()
+        dev.off()
+        
+        outfile <- "PCA-Fig6A.2023-0702.biplot.PC1-vs-PC2.pdf"
+        pdf(file = outfile, width = width, height = height)
+        pca_exp$`10_p_images`$PCAtools.PC1.v.PC2 %>% print()
+        dev.off()
+        
+        outfile <- "PCA-Fig6A.2023-0702.biplot.PC1-vs-PC3.pdf"
+        pdf(file = outfile, width = width, height = height)
+        pca_exp$`10_p_images`$PCAtools.PC1.v.PC3 %>% print()
+        dev.off()
+        
+        outfile <- "PCA-Fig6A.2023-0702.biplot.PC1-vs-PC4.pdf"
         pdf(file = outfile, width = width, height = height)
         pca_exp$`10_p_images`$PCAtools.PC1.v.PC4 %>% print()
         dev.off()
         
-        outfile <- "PCA-Fig5A.2023-0702.biplot.PC2-vs-PC3.pdf"
+        outfile <- "PCA-Fig6A.2023-0702.biplot.PC2-vs-PC3.pdf"
         pdf(file = outfile, width = width, height = height)
         pca_exp$`10_p_images`$PCAtools.PC2.v.PC3 %>% print()
         dev.off()
         
-        outfile <- "PCA-Fig5A.2023-0702.biplot.PC2-vs-PC4.pdf"
+        outfile <- "PCA-Fig6A.2023-0702.biplot.PC2-vs-PC4.pdf"
         pdf(file = outfile, width = width, height = height)
         pca_exp$`10_p_images`$PCAtools.PC2.v.PC4 %>% print()
         dev.off()
         
-        outfile <- "PCA-Fig5A.2023-0702.biplot.PC3-vs-PC4.pdf"
+        outfile <- "PCA-Fig6A.2023-0702.biplot.PC3-vs-PC4.pdf"
         pdf(file = outfile, width = width, height = height)
         pca_exp$`10_p_images`$PCAtools.PC3.v.PC4 %>% print()
         dev.off()

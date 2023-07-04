@@ -1,6 +1,6 @@
 #!/usr/bin/env Rscript
 
-#  rough-draft_plot-TPM_N-varies-on-SS.R
+#  rough-draft_plot-TPM_N-varies-on-SS_LFC-varies-on-TPM.R
 #  KA
 
 
@@ -47,6 +47,37 @@ calculate_mean_TPMs <- function(df) {
         , colnames(df) %in% c("WT_Q_SS_rep1_tech1", "WT_Q_SS_rep2_tech1")
     ]
     df[["Q_SS"]] <- rowMeans(mean_Q_SS)
+    
+    return(df)
+}
+
+
+calculate_mean_TPMs_n3d <- function(df) {
+    debug <- FALSE
+    if(base::isTRUE(debug)) {
+        df <- t_mRNA
+        colnames(df)[12:ncol(df)]
+    }
+    
+    mean_n3d_N <- df[
+        , colnames(df) %in% c("n3d_Q_N_rep1_tech1", "n3d_Q_N_rep2_tech1")
+    ]
+    df[["n3d_N"]] <- rowMeans(mean_n3d_N)
+    
+    mean_n3d_SS <- df[
+        , colnames(df) %in% c("n3d_Q_SS_rep1_tech1", "n3d_Q_SS_rep2_tech1")
+    ]
+    df[["n3d_SS"]] <- rowMeans(mean_n3d_SS)
+    
+    mean_od_N <- df[
+        , colnames(df) %in% c("od_Q_N_rep1_tech1", "od_Q_N_rep2_tech1")
+    ]
+    df[["od_N"]] <- rowMeans(mean_od_N)
+    
+    mean_od_SS <- df[
+        , colnames(df) %in% c("od_Q_SS_rep1_tech1", "od_Q_SS_rep2_tech1")
+    ]
+    df[["od_SS"]] <- rowMeans(mean_od_SS)
     
     return(df)
 }
@@ -351,7 +382,7 @@ perform_lm_LOESS_MW_etc <- function(
             label = bquote(r^2 ~ "=" ~ .(round(lm_Q_r_sq, 2))),
             fontface = "bold"
         ) +
-        annotate(  # label the r-squared value
+        annotate(  # label the MWU p value
             "text",
             hjust = 0,
             x = x_low,
@@ -773,49 +804,250 @@ t_Tr_G1 <- calculate_mean_TPMs(t_Tr_G1)
 
 
 #  Run linear and LOESS regressions, and statistical tests ====================
-etc_mRNA <- perform_lm_LOESS_MW_etc(t_mRNA)
-etc_pancRNA <- perform_lm_LOESS_MW_etc(t_pancRNA)
-etc_Tr_Q <- perform_lm_LOESS_MW_etc(t_Tr_Q)
-etc_Tr_G1 <- perform_lm_LOESS_MW_etc(t_Tr_G1)
-
-for(i in 1:4) {
-    if(i == 1) {
-        etc <- etc_mRNA
-        label <- "mRNA"
-    } else if(i == 2) {
-        etc <- etc_pancRNA
-        label <- "pancRNA"
-    } else if(i == 3) {
-        etc <- etc_Tr_Q
-        label <- "Tr_Q"
-    } else if(i == 4) {
-        etc <- etc_Tr_G1
-        label <- "Tr_G1"
+run <- FALSE  #ARGUMENT
+if(base::isTRUE(run)) {
+    etc_mRNA <- perform_lm_LOESS_MW_etc(t_mRNA)
+    etc_pancRNA <- perform_lm_LOESS_MW_etc(t_pancRNA)
+    etc_Tr_Q <- perform_lm_LOESS_MW_etc(t_Tr_Q)
+    etc_Tr_G1 <- perform_lm_LOESS_MW_etc(t_Tr_G1)
+    
+    for(i in 1:4) {
+        if(i == 1) {
+            etc <- etc_mRNA
+            label <- "mRNA"
+        } else if(i == 2) {
+            etc <- etc_pancRNA
+            label <- "pancRNA"
+        } else if(i == 3) {
+            etc <- etc_Tr_Q
+            label <- "Tr_Q"
+        } else if(i == 4) {
+            etc <- etc_Tr_G1
+            label <- "Tr_G1"
+        }
+        
+        print_regression_plot(
+            object = etc[["09_lm_scatter_G1"]],
+            filename = paste("lm-scatter", label, "G1.pdf", sep = "_")
+        )
+        print_regression_plot(
+            object = etc[["09_lm_scatter_Q"]],
+            filename = paste("lm-scatter", label, "Q.pdf", sep = "_")
+        )
+        print_regression_plot(
+            object = etc[["09_lm_fit_plot"]],
+            filename = paste0("lm-fit_", label, ".pdf")
+        )
+        
+        print_regression_plot(
+            object = etc[["12_loess_scatter_G1"]],
+            filename = paste("loess-scatter", label, "G1.pdf", sep = "_")
+        )
+        print_regression_plot(
+            object = etc[["12_loess_scatter_Q"]],
+            filename = paste("loess-scatter", label, "Q.pdf", sep = "_")
+        )
+        print_regression_plot(
+            object = etc[["12_loess_fit_plot"]],
+            filename = paste0("loess-fit_", label, ".pdf")
+        )
     }
-    
-    print_regression_plot(
-        object = etc[["09_lm_scatter_G1"]],
-        filename = paste("lm-scatter", label, "G1.pdf", sep = "_")
-    )
-    print_regression_plot(
-        object = etc[["09_lm_scatter_Q"]],
-        filename = paste("lm-scatter", label, "Q.pdf", sep = "_")
-    )
-    print_regression_plot(
-        object = etc[["09_lm_fit_plot"]],
-        filename = paste0("lm-fit_", label, ".pdf")
-    )
-    
-    print_regression_plot(
-        object = etc[["12_loess_scatter_G1"]],
-        filename = paste("loess-scatter", label, "G1.pdf", sep = "_")
-    )
-    print_regression_plot(
-        object = etc[["12_loess_scatter_Q"]],
-        filename = paste("loess-scatter", label, "Q.pdf", sep = "_")
-    )
-    print_regression_plot(
-        object = etc[["12_loess_fit_plot"]],
-        filename = paste0("loess-fit_", label, ".pdf")
-    )
 }
+
+
+#  Examine Nab3-AID/Parent log2(FC) w/r/to Parent TPM =========================
+#  Load necessary RDS file
+p_RDS <- "notebook/KA.2023-0608-0703.rds-data-objects_min-4-cts-all-but-1-samps"
+p_mRNA <- "rds_mRNA"
+
+load_mRNA_N_Q_n3d <- TRUE  #ARGUMENT
+if(base::isTRUE(load_mRNA_N_Q_n3d)) {
+    mRNA_N_Q_n3d <- readRDS(paste(
+        p_RDS,
+        p_mRNA,
+        "mRNA_DGE-analysis_N-Q-nab3d_N-Q-parental.rds",
+        sep = "/"
+    ))
+    
+    LFC_N_Q_n3d <- mRNA_N_Q_n3d$`09_lfc_0.58_fc_1.5`$`04_t_DGE_unshrunken`
+    LFC_N_Q_n3d <- LFC_N_Q_n3d[, c(12, 7)]
+}
+
+load_mRNA_SS_Q_n3d <- TRUE  #ARGUMENT
+if(base::isTRUE(load_mRNA_SS_Q_n3d)) {
+    mRNA_SS_Q_n3d <- readRDS(paste(
+        p_RDS,
+        p_mRNA,
+        "mRNA_DGE-analysis_SS-Q-nab3d_SS-Q-parental.rds",
+        sep = "/"
+    ))
+    
+    LFC_SS_Q_n3d <- mRNA_SS_Q_n3d$`09_lfc_0.58_fc_1.5`$`04_t_DGE_unshrunken`
+    LFC_SS_Q_n3d <- LFC_SS_Q_n3d[, c(12, 7)]
+}
+
+#  Load TPM tsv files
+#  (TPM files are from running "rough-draft_run-analyses_rlog-PCA_write-rds.R")
+p_TPM <- "notebook/KA.2023-0704.Fig4.PCA_TPM"
+f_mRNA <- "data.2023-0704__Nab3AID.Q.N-SS__mRNA.counts-TPM.tsv"
+t_mRNA <- load_TPM(p_TPM, f_mRNA)
+
+#  Calculate columns of sample-specific mean TPM values
+t_mRNA <- calculate_mean_TPMs_n3d(t_mRNA)
+t_mRNA <- t_mRNA[, c(8, 20:23)]
+
+
+#  Prepare the data for analyses ----------------------------------------------
+run <- "N"
+# run <- "SS"
+if(run == "N") {
+    TPM_parent <- t_mRNA[, c(1, 4)]
+    LFC_on_TPM <- dplyr::full_join(
+        LFC_N_Q_n3d[LFC_N_Q_n3d$features %in% TPM_parent$features,],
+        TPM_parent[TPM_parent$features %in% LFC_N_Q_n3d$features, ],
+        by = "features"
+    ) %>%
+        dplyr::rename(
+            LFC = log2FoldChange,
+            TPM = od_N
+        )
+} else if(run == "SS") {
+    TPM_parent <- t_mRNA[, c(1, 5)]
+    LFC_on_TPM <- dplyr::full_join(
+        LFC_SS_Q_n3d[LFC_SS_Q_n3d$features %in% TPM_parent$features,],
+        TPM_parent[TPM_parent$features %in% LFC_SS_Q_n3d$features, ],
+        by = "features"
+    ) %>%
+        dplyr::rename(
+            LFC = log2FoldChange,
+            TPM = od_SS
+        )
+}
+
+
+#  Evaluate and plot the relationship -----------------------------------------
+df_LFC_on_TPM <- tibble::tibble(
+    y = LFC_on_TPM[["LFC"]],
+    x = log2(LFC_on_TPM[["TPM"]] + 1)
+)
+
+#  Fit linear regression models on regularized TPM values
+lm_LFC_on_TPM <- lm(df_LFC_on_TPM$y ~ df_LFC_on_TPM$x)
+
+#  Calculate lm metrics and other statistics
+lm_LFC_on_TPM_summary <- summary(lm_LFC_on_TPM)
+lm_LFC_on_TPM_coef <- lm_LFC_on_TPM$coefficients
+lm_LFC_on_TPM_m <- lm_LFC_on_TPM_coef[2]
+lm_LFC_on_TPM_intercept <- lm_LFC_on_TPM_coef[1]
+lm_LFC_on_TPM_equation <- paste(
+    "y =",
+    paste(
+        round(lm_LFC_on_TPM_intercept, 2),
+        paste(
+            round(lm_LFC_on_TPM_m, 2),
+            "x",  # names(lm_LFC_on_TPM_coef[-1]),
+            sep = "",  # sep = " * ",
+            collapse =" + "
+        ),
+        sep = " + "
+    ),
+    "+ e"  # "+ ϵ"
+)
+lm_LFC_on_TPM_r_sq <- lm_LFC_on_TPM_summary$adj.r.squared
+rho_LFC_on_TPM <- cor(df_LFC_on_TPM$y, df_LFC_on_TPM$x, method = "spearman")
+r_LFC_on_TPM <- cor(df_LFC_on_TPM$y, df_LFC_on_TPM$x, method = "pearson")
+
+draw_density <- FALSE
+x_low <- 0
+x_high <- 16
+y_low <- -4
+y_high <- 10
+x_lab <- ifelse(
+    run == "N",
+    "Parent log2(TPM + 1) nascent",
+    "Parent log2(TPM + 1) steady state"
+)
+y_lab <- ifelse(
+    run == "N",
+    "Nab3-AID/Parent\nlog2(FC) nascent",
+    "Nab3-AID/Parent\nlog2(FC) steady state"
+)
+plot_LFC_on_TPM <- ggplot2::ggplot(
+    LFC_on_TPM, aes(x = log2(TPM + 1), y = LFC)
+) +
+    geom_hline(  # y = 0
+        yintercept = 0,
+        linetype = "solid",
+        color = "#000000",
+        linewidth = 1
+    ) +
+    geom_vline(  # x = 0
+        xintercept = 0,
+        linetype = "solid",
+        color = "#000000",
+        linewidth = 1
+    ) +
+    geom_abline(  # x = y (example of one-to-one linear relationship)
+        slope = 1,
+        linetype = "solid",
+        color = "#00000050",
+        linewidth = 1
+    ) +
+    geom_point(size = 2.5, col = "#3A538833") +
+    { if(base::isTRUE(draw_density)) geom_density_2d(color = "#FFFFFF") } +
+    geom_smooth(
+        method = "lm",
+        formula = y ~ x,
+        se = FALSE,
+        color = "#B40400",
+        linetype = "dotdash",
+        fullrange = TRUE,
+        alpha = 0.8,
+        linewidth = 6
+    ) +
+    annotate(  # label the Pearson correlation
+        "text",
+        hjust = 0,
+        x = x_low,
+        y = y_high * 0.9,
+        size = 7,
+        label = paste("Pearson r =", round(r_LFC_on_TPM, 2)),
+        fontface = "bold"
+    ) +
+    annotate(  # label the model equation
+        "text",
+        hjust = 0,
+        x = x_low,
+        y = y_high * 0.8,
+        size = 7,
+        label = lm_LFC_on_TPM_equation,
+        fontface = "bold"
+    ) +
+    annotate(  # label the r-squared value
+        "text",
+        hjust = 0,
+        x = x_low,
+        y = y_high * 0.7,
+        size = 7,
+        label = bquote(r^2 ~ "=" ~ .(round(lm_LFC_on_TPM_r_sq, 2))),
+        fontface = "bold"
+    ) +
+    xlim(c(x_low, x_high)) +
+    ylim(c(y_low, y_high)) +
+    labs(x = x_lab, y = y_lab) +
+    theme_AG_boxed_no_legend
+ 
+object <- plot_LFC_on_TPM
+outpath <- "/Users/kalavatt/Desktop"
+filename <- ifelse(
+    run == "N",
+    "scatter-plot_LFC-on-TPM.Q_N_n3d.pdf",
+    "scatter-plot_LFC-on-TPM.Q_SS_n3d.pdf"
+)
+width <- 7
+height <- 7
+outfile <- paste0(outpath, "/", filename)
+
+pdf(file = outfile, width = width, height = height)
+print(object)
+dev.off()

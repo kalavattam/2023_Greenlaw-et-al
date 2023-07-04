@@ -496,8 +496,8 @@ p_mRNA_AS <- "rds_mRNA-AS"
 p_ncRNAcm <- "rds_ncRNA-collapsed"
 p_R64_etc <- "rds_coding-non-pa-ncRNA"
 
-#  mRNA features
-load_mRNA_N_Q_r6n <- FALSE  #ARGUMENT
+#  mRNA features ------------------------------------------
+load_mRNA_N_Q_r6n <- TRUE  #ARGUMENT
 if(base::isTRUE(load_mRNA_N_Q_r6n)) {
     mRNA_N_Q_r6n <- readRDS(paste(
         p_RDS,
@@ -507,7 +507,7 @@ if(base::isTRUE(load_mRNA_N_Q_r6n)) {
     ))
 }
 
-load_mRNA_SS_Q_r6n <- FALSE  #ARGUMENT
+load_mRNA_SS_Q_r6n <- TRUE  #ARGUMENT
 if(base::isTRUE(load_mRNA_SS_Q_r6n)) {
     mRNA_SS_Q_r6n <- readRDS(paste(
         p_RDS,
@@ -548,7 +548,7 @@ if(base::isTRUE(load_mRNA_SS_Q_n3d)) {
 }
 
 
-#  collapsed, merged pa-ncRNA features ----------
+#  collapsed, merged pa-ncRNA features --------------------
 load_ncRNAcm_N_Q_r6n <- FALSE  #ARGUMENT
 if(base::isTRUE(load_ncRNAcm_N_Q_r6n)) {
     ncRNAcm_N_Q_r6n <- readRDS(paste(
@@ -600,8 +600,8 @@ if(base::isTRUE(load_ncRNAcm_SS_Q_n3d)) {
 }
 
 
-#  antisense mRNA features ----------------------
-`load_mRNA-AS_N_Q_r6n` <- FALSE  #ARGUMENT
+#  antisense mRNA features --------------------------------
+`load_mRNA-AS_N_Q_r6n` <- TRUE  #ARGUMENT
 if(base::isTRUE(`load_mRNA-AS_N_Q_r6n`)) {
     `mRNA-AS_N_Q_r6n` <- readRDS(paste(
         p_RDS,
@@ -612,7 +612,7 @@ if(base::isTRUE(`load_mRNA-AS_N_Q_r6n`)) {
     
 }
 
-`load_mRNA-AS_SS_Q_r6n` <- FALSE  #ARGUMENT
+`load_mRNA-AS_SS_Q_r6n` <- TRUE  #ARGUMENT
 if(base::isTRUE(`load_mRNA-AS_SS_Q_r6n`)) {
     `mRNA-AS_SS_Q_r6n` <- readRDS(paste(
         p_RDS,
@@ -655,7 +655,7 @@ if(base::isTRUE(`load_mRNA-AS_SS_Q_n3d`)) {
 }
 
 
-#  R64 coding, noncoding, etc. features ---------
+#  R64 coding, noncoding, etc. features  ------------------
 `load_R64-etc_N_Q_r6n` <- FALSE  #ARGUMENT
 if(base::isTRUE(`load_R64-etc_N_Q_r6n`)) {
     `R64-etc_N_Q_r6n` <- readRDS(paste(
@@ -686,7 +686,7 @@ if(base::isTRUE(`load_R64-etc_SS_G1_r6n`)) {
     ))
 }
 
-`load_R64-etc_N_Q_n3d` <- TRUE  #ARGUMENT
+`load_R64-etc_N_Q_n3d` <- FALSE  #ARGUMENT
 if(base::isTRUE(`load_R64-etc_N_Q_n3d`)) {
     `R64-etc_N_Q_n3d` <- readRDS(paste(
         p_RDS,
@@ -721,104 +721,9 @@ rm(list = ls(pattern = "p_"))
 
 
 #  Draw scatter plots and do linear modeling ----------------------------------
-#  Look at SS Q rrp6∆ ~ N Q rrp6∆ (SS_Q_r6n ~ N_Q_r6n) for mRNA
-run <- FALSE
-if(base::isTRUE(run)) {
-    `mRNA_SS-Q-r6n_N-Q-r6n` <- model_plot_scatter_log2FC(
-        x = mRNA_N_Q_r6n$`09_lfc_0.58_fc_1.5`$`04_t_DGE_unshrunken`,
-        y = mRNA_SS_Q_r6n$`09_lfc_0.58_fc_1.5`$`04_t_DGE_unshrunken`,
-        color = "#06636833",
-        xlab = "log2(FC) nascent",
-        ylab = "log2(FC) steady state",
-        x_low = -7,
-        x_high = 7,
-        y_low = -7,
-        y_high = 7
-    )
-}
-
-#  Look at SS Q rrp6∆ ~ N Q rrp6∆ (SS_Q_r6n ~ N_Q_r6n) for pa-ncRNA
-run <- FALSE
-if(base::isTRUE(run)) {
-    `ncRNAcm_SS-Q-r6n_N-Q-r6n` <- model_plot_scatter_log2FC(
-        x = ncRNAcm_N_Q_r6n$`09_lfc_0.58_fc_1.5`$`04_t_DGE_unshrunken`,
-        y = ncRNAcm_SS_Q_r6n$`09_lfc_0.58_fc_1.5`$`04_t_DGE_unshrunken`,
-        color = "#06636833",
-        xlab = "log2(FC) nascent",
-        ylab = "log2(FC) steady state",
-        x_low = -7,
-        x_high = 7,
-        y_low = -7,
-        y_high = 7
-    )
-}
-
-#  Look at SS Q rrp6∆ ~ N Q nab3d for mRNA
-run <- FALSE
-if(base::isTRUE(run)) {
-    `mRNA_SS-Q-r6n_N-Q-n3d` <- model_plot_scatter_log2FC(
-        x = mRNA_N_Q_n3d$`09_lfc_0.58_fc_1.5`$`04_t_DGE_unshrunken`,
-        y = mRNA_SS_Q_r6n$`09_lfc_0.58_fc_1.5`$`04_t_DGE_unshrunken`,
-        color = "#06636833",
-        xlab = "log2(FC) nascent nab3d/WT",
-        ylab = "log2(FC) steady state rrp6n/WT",
-        x_low = -9,
-        x_high = 9,
-        y_low = -9,
-        y_high = 9
-    )
-}
-
-#  Look at SS Q rrp6∆ ~ N Q nab3d for pa-ncRNA
-run <- FALSE
-if(base::isTRUE(run)) {
-    `ncRNAcm_SS-Q-r6n_N-Q-n3d` <- model_plot_scatter_log2FC(
-        x = ncRNAcm_N_Q_n3d$`09_lfc_0.58_fc_1.5`$`04_t_DGE_unshrunken`,
-        y = ncRNAcm_SS_Q_r6n$`09_lfc_0.58_fc_1.5`$`04_t_DGE_unshrunken`,
-        color = "#06636833",
-        xlab = "log2(FC) nascent nab3d/WT",
-        ylab = "log2(FC) steady state rrp6n/WT",
-        x_low = -9,
-        x_high = 9,
-        y_low = -9,
-        y_high = 9
-    )
-}
-
-#  Look at SS Q rrp6∆ ~ SS Q nab3d for mRNA
-run <- FALSE
-if(base::isTRUE(run)) {
-    `mRNA_SS-Q-r6n_SS-Q-n3d` <- model_plot_scatter_log2FC(
-        x = mRNA_SS_Q_n3d$`09_lfc_0.58_fc_1.5`$`04_t_DGE_unshrunken`,
-        y = mRNA_SS_Q_r6n$`09_lfc_0.58_fc_1.5`$`04_t_DGE_unshrunken`,
-        color = "#06636833",
-        xlab = "log2(FC) nascent nab3d/WT",
-        ylab = "log2(FC) steady state rrp6n/WT",
-        x_low = -9,
-        x_high = 9,
-        y_low = -9,
-        y_high = 9
-    )
-}
-
-#  Look at SS Q rrp6∆ ~ SS Q nab3d for pa-ncRNA
-run <- FALSE
-if(base::isTRUE(run)) {
-    `ncRNAcm_SS-Q-r6n_SS-Q-n3d` <- model_plot_scatter_log2FC(
-        x = ncRNAcm_SS_Q_n3d$`09_lfc_0.58_fc_1.5`$`04_t_DGE_unshrunken`,
-        y = ncRNAcm_SS_Q_r6n$`09_lfc_0.58_fc_1.5`$`04_t_DGE_unshrunken`,
-        color = "#06636833",
-        xlab = "log2(FC) nascent nab3d/WT",
-        ylab = "log2(FC) steady state rrp6n/WT",
-        x_low = -10,
-        x_high = 10,
-        y_low = -10,
-        y_high = 10
-    )
-}
-
-
-#  Look at SS_G1_r6n ~ SS_Q_r6n for mRNA
+#  Fig. 3 -------------------------------------------------
+#  Fig. 3B: Look at SS_G1_r6n ~ SS_Q_r6n for mRNA
+#+ i.e., mRNA_SS_G1_r6n ~ mRNA_SS_Q_r6n
 run <- FALSE
 if(base::isTRUE(run)) {
     `mRNA_SS-G1-r6n_SS-Q-r6n` <- model_plot_scatter_log2FC(
@@ -834,7 +739,8 @@ if(base::isTRUE(run)) {
     )
 }
 
-#  Look at SS_G1_r6n ~ SS_Q_r6n for pa-ncRNA
+#  Fig. 3B: Look at SS_G1_r6n ~ SS_Q_r6n for pa-ncRNA
+#+ i.e., ncRNAcm_SS_G1_r6n ~ ncRNAcm_SS_Q_r6n
 run <- FALSE
 if(base::isTRUE(run)) {
     `ncRNAcm_SS-G1-r6n_SS-Q-r6n` <- model_plot_scatter_log2FC(
@@ -850,13 +756,116 @@ if(base::isTRUE(run)) {
     )
 }
 
-#  Look at N Q Nab3-AID mRNA ~ N Q Nab3-AID mRNA antisense
-#+ (N_Q_n3d ~ N_Q_n3d_AS)
+#  Fig. 3D: Look at SS Q rrp6∆ ~ N Q rrp6∆ (SS_Q_r6n ~ N_Q_r6n) for mRNA
+#+ i.e., mRNA_SS_Q_r6n ~ mRNA_N_Q_r6n
+run <- FALSE
+if(base::isTRUE(run)) {
+    `mRNA_SS-Q-r6n_N-Q-r6n` <- model_plot_scatter_log2FC(
+        x = mRNA_N_Q_r6n$`09_lfc_0.58_fc_1.5`$`04_t_DGE_unshrunken`,
+        y = mRNA_SS_Q_r6n$`09_lfc_0.58_fc_1.5`$`04_t_DGE_unshrunken`,
+        color = "#06636833",
+        xlab = "log2(FC) nascent",
+        ylab = "log2(FC) steady state",
+        x_low = -7,
+        x_high = 7,
+        y_low = -7,
+        y_high = 7
+    )
+}
+
+#  Fig. 3D: Look at SS Q rrp6∆ ~ N Q rrp6∆ (SS_Q_r6n ~ N_Q_r6n) for pa-ncRNA
+#+ i.e., ncRNAcm_SS_Q_r6n ~ ncRNAcm_N_Q_r6n
+run <- FALSE
+if(base::isTRUE(run)) {
+    `ncRNAcm_SS-Q-r6n_N-Q-r6n` <- model_plot_scatter_log2FC(
+        x = ncRNAcm_N_Q_r6n$`09_lfc_0.58_fc_1.5`$`04_t_DGE_unshrunken`,
+        y = ncRNAcm_SS_Q_r6n$`09_lfc_0.58_fc_1.5`$`04_t_DGE_unshrunken`,
+        color = "#06636833",
+        xlab = "log2(FC) nascent",
+        ylab = "log2(FC) steady state",
+        x_low = -7,
+        x_high = 7,
+        y_low = -7,
+        y_high = 7
+    )
+}
+
+#  Fig. 4 -------------------------------------------------
+#  Fig. 4B: Look at SS Q rrp6∆ ~ N Q nab3d for mRNA
+#+ i.e., mRNA_SS_Q_r6n ~ mRNA_N_Q_n3d
+run <- FALSE
+if(base::isTRUE(run)) {
+    `mRNA_SS-Q-r6n_N-Q-n3d` <- model_plot_scatter_log2FC(
+        x = mRNA_N_Q_n3d$`09_lfc_0.58_fc_1.5`$`04_t_DGE_unshrunken`,
+        y = mRNA_SS_Q_r6n$`09_lfc_0.58_fc_1.5`$`04_t_DGE_unshrunken`,
+        color = "#06636833",
+        xlab = "log2(FC) nascent nab3d/WT",
+        ylab = "log2(FC) steady state rrp6n/WT",
+        x_low = -9,
+        x_high = 9,
+        y_low = -9,
+        y_high = 9
+    )
+}
+
+#  Fig. 4B: Look at SS Q rrp6∆ ~ N Q nab3d for pa-ncRNA
+#+ i.e., ncRNAcm_SS_Q_r6n ~ ncRNAcm_N_Q_n3d
+run <- FALSE
+if(base::isTRUE(run)) {
+    `ncRNAcm_SS-Q-r6n_N-Q-n3d` <- model_plot_scatter_log2FC(
+        x = ncRNAcm_N_Q_n3d$`09_lfc_0.58_fc_1.5`$`04_t_DGE_unshrunken`,
+        y = ncRNAcm_SS_Q_r6n$`09_lfc_0.58_fc_1.5`$`04_t_DGE_unshrunken`,
+        color = "#06636833",
+        xlab = "log2(FC) nascent nab3d/WT",
+        ylab = "log2(FC) steady state rrp6n/WT",
+        x_low = -9,
+        x_high = 9,
+        y_low = -9,
+        y_high = 9
+    )
+}
+
+#  Fig. 4_: Look at SS Q rrp6∆ ~ SS Q nab3d for mRNA
+#+ i.e., mRNA_SS_Q_r6n ~ mRNA_SS_Q_n3d
+run <- FALSE
+if(base::isTRUE(run)) {
+    `mRNA_SS-Q-r6n_SS-Q-n3d` <- model_plot_scatter_log2FC(
+        x = mRNA_SS_Q_n3d$`09_lfc_0.58_fc_1.5`$`04_t_DGE_unshrunken`,
+        y = mRNA_SS_Q_r6n$`09_lfc_0.58_fc_1.5`$`04_t_DGE_unshrunken`,
+        color = "#06636833",
+        xlab = "log2(FC) nascent nab3d/WT",
+        ylab = "log2(FC) steady state rrp6n/WT",
+        x_low = -9,
+        x_high = 9,
+        y_low = -9,
+        y_high = 9
+    )
+}
+
+#  Fig. 4_: Look at SS Q rrp6∆ ~ SS Q nab3d for pa-ncRNA
+#+ i.e., ncRNAcm_SS_Q_r6n ~ ncRNAcm_SS_Q_n3d
+run <- FALSE
+if(base::isTRUE(run)) {
+    `ncRNAcm_SS-Q-r6n_SS-Q-n3d` <- model_plot_scatter_log2FC(
+        x = ncRNAcm_SS_Q_n3d$`09_lfc_0.58_fc_1.5`$`04_t_DGE_unshrunken`,
+        y = ncRNAcm_SS_Q_r6n$`09_lfc_0.58_fc_1.5`$`04_t_DGE_unshrunken`,
+        color = "#06636833",
+        xlab = "log2(FC) nascent nab3d/WT",
+        ylab = "log2(FC) steady state rrp6n/WT",
+        x_low = -10,
+        x_high = 10,
+        y_low = -10,
+        y_high = 10
+    )
+}
+
+#  Fig. 4C: Look at N Q Nab3-AID mRNA ~ N Q Nab3-AID mRNA antisense
+#+ i.e., mRNA_N_Q_n3d ~ `mRNA-AS_N_Q_n3d`
 run <- FALSE
 if(base::isTRUE(run)) {
     `mRNA-mRNA-AS_N-Q-n3d` <- model_plot_scatter_log2FC(
-        x = mRNA_N_Q_n3d$`09_lfc_0.58_fc_1.5`$`04_t_DGE_unshrunken`,
-        y = `mRNA-AS_N_Q_n3d`$`09_lfc_0.58_fc_1.5`$`04_t_DGE_unshrunken`,
+        x = `mRNA-AS_N_Q_n3d`$`09_lfc_0.58_fc_1.5`$`04_t_DGE_unshrunken`,
+        y = mRNA_N_Q_n3d$`09_lfc_0.58_fc_1.5`$`04_t_DGE_unshrunken`,
         color = "#3A538833",
         xlab = "log2(FC) mRNA antisense",
         ylab = "log2(FC) mRNA",
@@ -867,7 +876,25 @@ if(base::isTRUE(run)) {
     )
 }
 
-#  Look at SS Q Nab3-AID ~ N Q Nab3-AID for mRNA
+#  Fig. 4_: Look at N Q Rrp6∆ mRNA ~ N Q Rrp6∆ mRNA antisense
+#+ i.e., mRNA_N_Q_r6n ~ `mRNA-AS_N_Q_r6n`
+run <- TRUE
+if(base::isTRUE(run)) {
+    `mRNA-mRNA-AS_N-Q-r6n` <- model_plot_scatter_log2FC(
+        x = `mRNA-AS_N_Q_r6n`$`09_lfc_0.58_fc_1.5`$`04_t_DGE_unshrunken`,
+        y = mRNA_N_Q_r6n$`09_lfc_0.58_fc_1.5`$`04_t_DGE_unshrunken`,
+        color = "#3A538833",
+        xlab = "log2(FC) mRNA antisense",
+        ylab = "log2(FC) mRNA",
+        x_low = -9,
+        x_high = 9,
+        y_low = -9,
+        y_high = 9
+    )
+}
+
+#  Fig. 4_: Look at SS Q Nab3-AID ~ N Q Nab3-AID for mRNA
+#+ i.e., mRNA_SS_Q_n3d ~ mRNA_N_Q_n3d
 run <- FALSE
 if(base::isTRUE(run)) {
     `mRNA_SS-Q-n3d_N-Q-n3d` <- model_plot_scatter_log2FC(
@@ -883,7 +910,8 @@ if(base::isTRUE(run)) {
     )
 }
 
-#  Look at N SS Nab3-AID ~ N Q Nab3-AID for pa-ncRNA
+#  Fig. 4_: Look at SS Q Nab3-AID ~ N Q Nab3-AID for pa-ncRNA
+#+ i.e., ncRNAcm_SS_Q_n3d ~ ncRNAcm_N_Q_n3d
 run <- FALSE
 if(base::isTRUE(run)) {
     `ncRNAcm_SS-Q-n3d_N-Q-n3d` <- model_plot_scatter_log2FC(
@@ -903,55 +931,56 @@ if(base::isTRUE(run)) {
 #  Write out scatter-plot-etc lists as rds objects ----------------------------
 run <- FALSE
 if(base::isTRUE(run)) {
+    output_rds(`mRNA_SS-G1-r6n_SS-Q-r6n`)
+    output_rds(`ncRNAcm_SS-G1-r6n_SS-Q-r6n`)
     output_rds(`mRNA_SS-Q-r6n_N-Q-r6n`)
     output_rds(`ncRNAcm_SS-Q-r6n_N-Q-r6n`)
     output_rds(`mRNA_SS-Q-r6n_N-Q-n3d`)
     output_rds(`ncRNAcm_SS-Q-r6n_N-Q-n3d`)
     output_rds(`mRNA_SS-Q-r6n_SS-Q-n3d`)
     output_rds(`ncRNAcm_SS-Q-r6n_SS-Q-n3d`)
-    output_rds(`mRNA_SS-G1-r6n_SS-Q-r6n`)
-    output_rds(`ncRNAcm_SS-G1-r6n_SS-Q-r6n`)
     output_rds(`mRNA-mRNA-AS_N-Q-n3d`)
+    output_rds(`mRNA-mRNA-AS_N-Q-r6n`)
     output_rds(`mRNA_SS-Q-n3d_N-Q-n3d`)
-    output_rds(`ncRNAcm_SS-Q-n3d_N-Q-n3d`)
 }
 
 
 #  Write out pdfs of scatter plots --------------------------------------------
 run <- FALSE
 if(base::isTRUE(run)) {
+    print_scatter(dataframe = `mRNA_SS-G1-r6n_SS-Q-r6n`)
+    print_scatter(dataframe = `ncRNAcm_SS-G1-r6n_SS-Q-r6n`)
     print_scatter(dataframe = `mRNA_SS-Q-r6n_N-Q-r6n`)
     print_scatter(dataframe = `ncRNAcm_SS-Q-r6n_N-Q-r6n`)
     print_scatter(dataframe = `mRNA_SS-Q-r6n_N-Q-n3d`)
     print_scatter(dataframe = `ncRNAcm_SS-Q-r6n_N-Q-n3d`)
     print_scatter(dataframe = `mRNA_SS-Q-r6n_SS-Q-n3d`)
     print_scatter(dataframe = `ncRNAcm_SS-Q-r6n_SS-Q-n3d`)
-    print_scatter(dataframe = `mRNA_SS-G1-r6n_SS-Q-r6n`)
-    print_scatter(dataframe = `ncRNAcm_SS-G1-r6n_SS-Q-r6n`)
     print_scatter(dataframe = `mRNA-mRNA-AS_N-Q-n3d`)
+    print_scatter(dataframe = `mRNA-mRNA-AS_N-Q-r6n`)
     print_scatter(dataframe = `mRNA_SS-Q-n3d_N-Q-n3d`)
-    print_scatter(dataframe = `ncRNAcm_SS-Q-n3d_N-Q-n3d`)
 }
 
 check <- FALSE
 if(base::isTRUE(check)) {
+    `mRNA_SS-G1-r6n_SS-Q-r6n`$`05_scatter_density`
+    `ncRNAcm_SS-G1-r6n_SS-Q-r6n`$`05_scatter_density`
     `mRNA_SS-Q-r6n_N-Q-r6n`$`05_scatter_density`
     `ncRNAcm_SS-Q-r6n_N-Q-r6n`$`05_scatter_density`
     `mRNA_SS-Q-r6n_N-Q-n3d`$`05_scatter_density`
     `ncRNAcm_SS-Q-r6n_N-Q-n3d`$`05_scatter_density`
     `mRNA_SS-Q-r6n_SS-Q-n3d`$`05_scatter_density`
     `ncRNAcm_SS-Q-r6n_SS-Q-n3d`$`05_scatter_density`
-    `mRNA_SS-G1-r6n_SS-Q-r6n`$`05_scatter_density`
-    `ncRNAcm_SS-G1-r6n_SS-Q-r6n`$`05_scatter_density`
     `mRNA-mRNA-AS_N-Q-n3d`$`05_scatter_density`
+    `mRNA-mRNA-AS_N-Q-r6n`$`05_scatter_density`
     `mRNA_SS-Q-n3d_N-Q-n3d`$`05_scatter_density`
-    `ncRNAcm_SS-Q-n3d_N-Q-n3d`$`05_scatter_density`
 }
 
 
-#  Custom work: Plot Nab3-AID/parent log2FC w/r/to ORF length =================
 #  Color rules: "If all Steady State use purple 481A6C: if all Nascent, then 
 #+ use blue 3A5388."
+
+#  Custom work: Fig. 5: Plot Nab3-AID/parent log2FC w/r/to ORF length =========
 run <- FALSE
 if(base::isTRUE(run)) {
     #  ...for Nab3-AID Nascent Q --------------------------
