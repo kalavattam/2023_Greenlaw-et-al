@@ -1537,61 +1537,6 @@ rm(list = ls(pattern = "tmp_"))
 # colnames(t_mat)
 
 
-#TODO #LATER Move this chunk to its own script
-#  For Trinity gtfs, examine feature length and expression distributions ======
-run <- TRUE
-if(base::isTRUE(run)) {
-    df <- t_mat %>% dplyr::select(c(features, biotype, width))
-    df$biotype <- factor(df$biotype)
-    df$width <- df$width / 1000
-    
-    tally <- df %>%
-        group_by(biotype) %>%
-        summarize(count = n())
-    
-    df %>%
-        ggplot2::ggplot(aes(x = biotype, y = width, fill = biotype)) +
-        geom_violin(trim = FALSE) +
-        geom_boxplot(width = 0.2, fill = "white") +
-        labs(
-            title = "Trinity Q \"unique\" annotations: width",
-            x = "",
-            y = "kb"
-        ) +
-        geom_text(
-            data = tally,
-            aes(label = paste("n =", count)),
-            y = max(df$width) + 0.4
-        ) +
-        theme_slick +
-        theme(
-            legend.position = "none",
-            axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)
-        )
-    
-    #TODO #TBC #TOMORROW
-    df_2 <- t_mat %>% dplyr::select(c(features, biotype, ))
-    df %>%
-        ggplot2::ggplot(aes(x = biotype, y = width, fill = biotype)) +
-        geom_violin(trim = FALSE) +
-        geom_boxplot(width = 0.2, fill = "white") +
-        labs(
-            title = "Trinity Q \"unique\" annotations",
-            x = "",
-            y = "width (kb)"
-        ) +
-        geom_text(
-            data = tally,
-            aes(label = paste("n =", count)),
-            y = max(df$width) + 0.4
-        ) +
-        theme(
-            legend.position = "none",
-            axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)
-        )
-}
-
-
 #  Prepare metadata, data, etc. for running PCA ===============================
 #  Make a dds object from t_mat -----------------------------------------------
 #  Exclude features with row-wise sums of zero

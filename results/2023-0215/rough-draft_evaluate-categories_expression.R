@@ -14,10 +14,10 @@ samples <- "ovation"  #ARGUMENT
 # samples <- "r6n_timecourse"  #ARGUMENT
 # samples <- "Rrp6∆.timecourse-G1-Q.SS"
 
-tx <- "coding-non-pa-ncRNA"  #ARGUMENT  #IMPORTANT
+# tx <- "coding-non-pa-ncRNA"  #ARGUMENT  #IMPORTANT  #NOTE i.e., "R64"
 # tx <- "noncoding-collapsed"  #ARGUMENT  #IMPORTANT
 # tx <- "noncoding-non-collapsed"  #ARGUMENT
-# tx <- "Trinity-G1"  #ARGUMENT
+tx <- "Trinity-G1"  #ARGUMENT
 # tx <- "Trinity-Q"  #ARGUMENT
 
 
@@ -1645,10 +1645,10 @@ if(base::isTRUE(run)) {
 }
 
 if(samples == "ovation") {
-    if(tx == "coding-non-pa-ncRNA") zoom <- 0.30 # 0.925
+    if(tx == "coding-non-pa-ncRNA") zoom <- 0.30  # 0.925
     if(tx == "noncoding-non-collapsed") zoom <- 0.30
     if(tx == "noncoding-collapsed") zoom <- 0.26
-    if(tx %in% c("Trinity-G1", "Trinity-Q")) zoom <- 0.95
+    if(tx %in% c("Trinity-G1", "Trinity-Q")) zoom <- 0.375  # 0.20  # 0.95
 } else if(samples %in% c(
     "ovation_tecan_test", "ovation_tecan_test_rrp6∆", "ovation_tecan_updated"
 )) {
@@ -1749,8 +1749,8 @@ if(base::isTRUE(run)) {
     `prop-plot_individual-replicates` %>% print()
     `prop-plot_w-error_full` %>% print()
     `prop-plot_w-error_zoom` %>% print()
-    `prop-plot_no-error_full` %>% print()
-    `prop-plot_no-error_zoom` %>% print()
+    # `prop-plot_no-error_full` %>% print()
+    # `prop-plot_no-error_zoom` %>% print()
 }
 
 
