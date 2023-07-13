@@ -16,8 +16,8 @@ samples <- "ovation"  #ARGUMENT
 
 # tx <- "coding-non-pa-ncRNA"  #ARGUMENT  #IMPORTANT  #NOTE i.e., "R64"
 # tx <- "noncoding-collapsed"  #ARGUMENT  #IMPORTANT
-# tx <- "noncoding-non-collapsed"  #ARGUMENT
-tx <- "Trinity-G1"  #ARGUMENT
+tx <- "noncoding-non-collapsed"  #ARGUMENT
+# tx <- "Trinity-G1"  #ARGUMENT
 # tx <- "Trinity-Q"  #ARGUMENT
 
 

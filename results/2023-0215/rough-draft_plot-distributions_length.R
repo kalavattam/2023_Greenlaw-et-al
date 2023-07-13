@@ -27,7 +27,8 @@ samples <- "Ovation"  #ARGUMENT  #FIG1.5
 # samples <- "Nab3AID.Q.SS_Rrp6∆.Q.SS"
 # samples <- "Nab3AID.Q.N-SS_Rrp6∆.timecourse-G1-Q.N-SS"  #ARGUMENT
 
-do_subsetting <- TRUE  #ARGUMENT
+# do_subsetting <- TRUE  #ARGUMENT
+do_subsetting <- FALSE  #ARGUMENT
 
 
 #  Load libraries, set options ================================================
@@ -438,8 +439,26 @@ if(base::isTRUE(do_subsetting)) {
                 theme_AG_boxed
             }
         }
+    
+    plot_dist_len_comb <- df_len_tmp %>%
+        ggplot2::ggplot(aes(x = state, y = width)) +
+        geom_violin(aes(fill = state)) +
+        geom_boxplot(
+            aes(group = state),
+            width = 0.2,
+            fill = "#FFFFFF",
+            position = position_dodge(width = 0.9),
+            outlier.shape = NA
+        ) +
+        scale_fill_manual(
+            breaks = c("Q", "G1"),
+            values = c("#277F8E", "#A0DA39")
+        ) +
+        labs(x = "", y = "feature length (kb)") +
+        theme_AG_boxed_no_legend
 }
 
 plot_dist_len
+plot_dist_len_comb
 
-#NOTE Manually wrote 7" by 7" pdfs with the plots panel
+#NOTE Manually wrote 7" by 7" pdfs with the RStudio plots panel
