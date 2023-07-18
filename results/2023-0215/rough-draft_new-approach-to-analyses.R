@@ -5,9 +5,9 @@
 
 
 #  Initialize arguments =======================================================
-# type <- "mRNA"  #ARGUMENT
+type <- "mRNA"  #ARGUMENT
 # type <- "mRNA-AS"  #ARGUMENT
-type <- "coding-non-pa-ncRNA"  #ARGUMENT
+# type <- "coding-non-pa-ncRNA"  #ARGUMENT
 # type <- "ncRNA-collapsed"  #ARGUMENT
 # type <- "ncRNA-non-collapsed"  #ARGUMENT
 
@@ -2460,6 +2460,7 @@ if(base::isTRUE(run_new_approach)) {
     # ]
 }
 
+
 #  Analyze, graph datasets of interest ========================================
 `DGE-analysis_N-Q-nab3d_N-Q-parental` <- run_main(
     #  See 230517_lab_meeting.pptx, slide 15
@@ -2536,9 +2537,9 @@ if(base::isTRUE(run_new_approach)) {
 run_test <- FALSE
 if(base::isTRUE(run_test)) {
     #  Run tests/check things
-    # test <- `DGE-analysis_N-Q-nab3d_N-Q-parental`
+    test <- `DGE-analysis_N-Q-nab3d_N-Q-parental`
     # test <- `DGE-analysis_SS-Q-nab3d_SS-Q-parental`
-    test <- `DGE-analysis_SS-Q-rrp6∆_SS-Q-WT`
+    # test <- `DGE-analysis_SS-Q-rrp6∆_SS-Q-WT`
     # test <- `DGE-analysis_SS-G1-rrp6∆_SS-G1-WT`
     # test <- `DGE-analysis_N-Q-rrp6∆_N-Q-WT`
 

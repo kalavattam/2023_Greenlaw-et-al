@@ -497,7 +497,7 @@ p_ncRNAcm <- "rds_ncRNA-collapsed"
 p_R64_etc <- "rds_coding-non-pa-ncRNA"
 
 #  mRNA features ------------------------------------------
-load_mRNA_N_Q_r6n <- TRUE  #ARGUMENT
+load_mRNA_N_Q_r6n <- FALSE  #ARGUMENT
 if(base::isTRUE(load_mRNA_N_Q_r6n)) {
     mRNA_N_Q_r6n <- readRDS(paste(
         p_RDS,
@@ -507,7 +507,7 @@ if(base::isTRUE(load_mRNA_N_Q_r6n)) {
     ))
 }
 
-load_mRNA_SS_Q_r6n <- TRUE  #ARGUMENT
+load_mRNA_SS_Q_r6n <- FALSE  #ARGUMENT
 if(base::isTRUE(load_mRNA_SS_Q_r6n)) {
     mRNA_SS_Q_r6n <- readRDS(paste(
         p_RDS,
@@ -601,7 +601,7 @@ if(base::isTRUE(load_ncRNAcm_SS_Q_n3d)) {
 
 
 #  antisense mRNA features --------------------------------
-`load_mRNA-AS_N_Q_r6n` <- TRUE  #ARGUMENT
+`load_mRNA-AS_N_Q_r6n` <- FALSE  #ARGUMENT
 if(base::isTRUE(`load_mRNA-AS_N_Q_r6n`)) {
     `mRNA-AS_N_Q_r6n` <- readRDS(paste(
         p_RDS,
@@ -612,7 +612,7 @@ if(base::isTRUE(`load_mRNA-AS_N_Q_r6n`)) {
     
 }
 
-`load_mRNA-AS_SS_Q_r6n` <- TRUE  #ARGUMENT
+`load_mRNA-AS_SS_Q_r6n` <- FALSE  #ARGUMENT
 if(base::isTRUE(`load_mRNA-AS_SS_Q_r6n`)) {
     `mRNA-AS_SS_Q_r6n` <- readRDS(paste(
         p_RDS,
@@ -634,7 +634,7 @@ if(base::isTRUE(`load_mRNA-AS_SS_G1_r6n`)) {
     
 }
 
-`load_mRNA-AS_N_Q_n3d` <- FALSE  #ARGUMENT
+`load_mRNA-AS_N_Q_n3d` <- TRUE  #ARGUMENT
 if(base::isTRUE(`load_mRNA-AS_N_Q_n3d`)) {
     `mRNA-AS_N_Q_n3d` <- readRDS(paste(
         p_RDS,
@@ -696,7 +696,7 @@ if(base::isTRUE(`load_R64-etc_N_Q_n3d`)) {
     ))
 }
 
-`load_R64-etc_SS_Q_n3d` <- TRUE  #ARGUMENT
+`load_R64-etc_SS_Q_n3d` <- FALSE  #ARGUMENT
 if(base::isTRUE(`load_R64-etc_SS_Q_n3d`)) {
     `R64-etc_SS_Q_n3d` <- readRDS(paste(
         p_RDS,
