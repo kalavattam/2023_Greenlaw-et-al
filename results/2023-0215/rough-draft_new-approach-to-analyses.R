@@ -5,16 +5,17 @@
 
 
 #  Initialize arguments =======================================================
-# run <- "mRNA"  #ARGUMENT
-run <- "mRNA_AS"  #ARGUMENT
-# run <- "ncRNA-collapsed"  #ARGUMENT
-# run <- "ncRNA-non-collapsed"  #ARGUMENT
+# type <- "mRNA"  #ARGUMENT
+# type <- "mRNA-AS"  #ARGUMENT
+type <- "coding-non-pa-ncRNA"  #ARGUMENT
+# type <- "ncRNA-collapsed"  #ARGUMENT
+# type <- "ncRNA-non-collapsed"  #ARGUMENT
 
 
 #  Load libraries, set options ================================================
 suppressMessages(library(apeglm))
 suppressMessages(library(DESeq2))
-suppressMessages(library(edgeR))
+# suppressMessages(library(edgeR))
 suppressMessages(library(tidyverse))
 
 options(scipen = 999)
@@ -23,26 +24,6 @@ options(ggrepel.max.overlaps = Inf)
 
 #  Initialize functions and themes ============================================
 `%notin%` <- base::Negate(`%in%`)
-
-
-filter_process_counts_matrix <- function(named_character_vector) {
-    #  Test
-    # named_character_vector <- `SS-Q-nab3d_SS-Q-parental`
-    
-    df <- dplyr::bind_cols(
-        t_mat[, 1:11],
-        t_mat[, colnames(t_mat) %in% named_character_vector]
-    )
-    df <- dplyr::bind_cols(
-        df[, 1:11],
-        df[, 12:ncol(df)][
-            , match(named_character_vector, colnames(df)[12:ncol(df)])
-        ]
-    )
-    names(df)[12:ncol(df)] <- names(named_character_vector)
-    
-    return(df)
-}
 
 
 write_plot_info <- function(
@@ -874,18 +855,21 @@ run_main <- function(
     # :param color: ...
     # :return results_list: ...
     
-    #  Test  #HERE
-    # t_sub <- `SS-Q-nab3d_SS-Q-parental`
-    # genotype_exp <- "n3d"
-    # genotype_ctrl <- "od"
-    # filtering <- "min-4-cts-3-samps"
-    # threshold_p <- 0.05
-    # threshold_p_lessAbs <- 0.99
-    # x_min <- -5
-    # x_max <- 10
-    # y_min <- 0
-    # y_max <- 100
-    # color <- "#481A6C"
+    #  Debug code
+    debug <- FALSE
+    if(base::isTRUE(debug)) {
+        t_sub <- `SS-Q-nab3d_SS-Q-parental`
+        genotype_exp <- "n3d"
+        genotype_ctrl <- "od"
+        filtering <- "min-4-cts-3-samps"
+        threshold_p <- 0.05
+        threshold_p_lessAbs <- 0.99
+        x_min <- -5
+        x_max <- 10
+        y_min <- 0
+        y_max <- 100
+        color <- "#481A6C"
+    }
     
     
     #  Check arguments --------------------------------------------------------
@@ -993,7 +977,7 @@ run_main <- function(
         t_tmp <- t_sub[t_sub$genome == "S_cerevisiae", ]
         t_tmp <- t_tmp[keep, ]
         
-        #  Clean up variables
+        #  Clean up
         rm(t_edge, group, eds, design, t_tmp)
         
         # dispose[dispose$genome == "S_cerevisiae", ] %>% nrow()
@@ -1412,25 +1396,43 @@ print_volcano_unshrunken <- function(
     lfc = "lfc-gt-0.58",
     width = 7,
     height = 7,
-    style = "AG"
+    style = "AG",
+    type = type  # Must be "mRNA", "mRNA-AS", "Ovation", etc.
 ) {
     # ...
     #
+    # :param dataframe: ...
     # :param outpath: ...
     # :param type_plot: ...
     # :param type_feature: ...
+    # :param lfc: ...
     # :param dataframe: ...
     # :param width: ...
     # :param height: ...
+    # :param style: ...
+    # :param type: ...
+    
+    debug <- FALSE
+    if(base::isTRUE(debug)) {
+        dataframe <- `DGE-analysis_SS-Q-rrp6∆_SS-Q-WT`
+        outpath <- "/Users/kalavatt/Desktop"
+        type_plot <- "volcano"
+        type_feature <- "mRNA"
+        lfc <- "lfc-gt-0"
+        width <- 7
+        height <- 7
+        style <- "AG"
+        type <- "mRNA-AS"
+    }
     
     part_1 <- unlist(stringr::str_split(deparse(substitute(dataframe)), "_"))[2]
     part_2 <- unlist(stringr::str_split(deparse(substitute(dataframe)), "_"))[3]
     part_3 <- lfc
     part_4 <- type_feature
     part_5 <- type_plot
-
+    
     file_prefix <- paste(
-        part_1, "vs", part_2, part_3, part_4, part_5,
+        type, part_1, "vs", part_2, part_3, part_4, part_5,
         sep = "_"
     )
     
@@ -1513,12 +1515,71 @@ print_volcano_unshrunken <- function(
 
 output_rds <- function(
     dataframe,
-    outfile = paste0(
-        "/Users/kalavatt/Desktop", "/",
-        deparse(substitute(dataframe)), ".rds"
-    )
+    type
 ) {
+    outfile <- paste0(
+        "/Users/kalavatt/Desktop", "/",
+        type, "_", deparse(substitute(dataframe)), ".rds"
+    )
     readr::write_rds(dataframe, outfile)
+}
+
+
+#TODO Relocate to match order below
+filter_process_counts_matrix <- function(
+    counts_matrix,
+    named_character_vector
+) {
+    # ...
+    #
+    # :param counts_matrix: counts matrix from htseq-count
+    # :param named_character_vector: ...
+    # :return df: counts matrix as tibble
+    
+    #  Perform debugging
+    debug <- FALSE
+    if(base::isTRUE(debug)) {
+        counts_matrix <- t_cm
+        named_character_vector <- col_cor
+    }
+    
+    df <- dplyr::bind_cols(
+        counts_matrix[, 1],
+        counts_matrix[
+            , colnames(counts_matrix) %in% named_character_vector
+        ]
+    )
+    df <- dplyr::bind_cols(
+        df[, 1],
+        df[, 2:ncol(df)][
+            , match(named_character_vector, colnames(df)[2:ncol(df)])
+        ]
+    )
+    names(df)[2:ncol(df)] <- names(named_character_vector)
+    
+    return(df)
+}
+
+
+#TODO Relocate to match order below
+#TODO Can these two functions be merged? Is one redundant?
+subset_process_counts_matrix <- function(named_character_vector) {
+    #  Test
+    # named_character_vector <- `SS-Q-nab3d_SS-Q-parental`
+    
+    df <- dplyr::bind_cols(
+        t_mat[, 1:11],
+        t_mat[, colnames(t_mat) %in% named_character_vector]
+    )
+    df <- dplyr::bind_cols(
+        df[, 1:11],
+        df[, 12:ncol(df)][
+            , match(named_character_vector, colnames(df)[12:ncol(df)])
+        ]
+    )
+    names(df)[12:ncol(df)] <- names(named_character_vector)
+    
+    return(df)
 }
 
 
@@ -1555,7 +1616,7 @@ theme_AG <- theme_classic() +
 theme_AG_boxed <- theme_AG +
     theme(
         axis.line = ggplot2::element_line(linewidth = 0),
-        panel.border = element_rect(colour = "black", fill = NA, size = 2)
+        panel.border = element_rect(colour = "black", fill = NA, linewidth = 2)
     )
 
 theme_slick_no_legend <- theme_slick + theme(legend.position = "none")
@@ -1577,26 +1638,28 @@ paste(p_base, p_exp, sep = "/") %>% setwd()
 #+ Options: "mRNA" "ncRNA-collapsed" "ncRNA-non-collapsed"
 
 #  Check on "run" option
-if(base::isTRUE(run %notin% c(
-    "mRNA", "mRNA_AS", "ncRNA-collapsed", "ncRNA-non-collapsed"
+if(base::isTRUE(type %notin% c(
+    "mRNA", "mRNA-AS", "coding-non-pa-ncRNA", "ncRNA-collapsed",
+    "ncRNA-non-collapsed"
 ))) {
     stop(paste(
-        "Variable \"run\" must be \"mRNA\", \"mRNA_AS\", \"ncRNA-collapsed\",",
-        "or \"ncRNA-non-collapsed\""
+        "Variable \"type\" must be \"mRNA\", \"mRNA-AS\",",
+        "\"coding-non-pa-ncRNA\", \"ncRNA-collapsed\", or",
+        "\"ncRNA-non-collapsed\""
     ))
 }
 
 #  Load counts matrix or matrices
-if(base::isTRUE(run %in% c("mRNA", "mRNA_AS"))) {
+if(base::isTRUE(type %in% c("mRNA", "mRNA-AS"))) {
     p_tsv <- "outfiles_htseq-count/already/combined-SC-KL-20S/UT_prim_UMI"
     
-    if(base::isTRUE(run == "mRNA")) {
+    if(base::isTRUE(type == "mRNA")) {
         #  (for mRNA)
         f_tsv <- "all-samples.combined-SC-KL-20S.hc-strd-eq.mRNA.tsv"
         # paste(p_base, p_exp, p_tsv, f_tsv, sep = "/") %>%
         #     file.exists()  # [1] TRUE
-    } else if(base::isTRUE(run == "mRNA_AS")) {
-        #  (for mRNA_AS)
+    } else if(base::isTRUE(type == "mRNA-AS")) {
+        #  (for mRNA-AS)
         f_tsv <- "all-samples.combined-SC-KL-20S.hc-strd-op.mRNA.tsv"
         # paste(p_base, p_exp, p_tsv, f_tsv, sep = "/") %>%
         #     file.exists()  # [1] TRUE
@@ -1618,16 +1681,20 @@ if(base::isTRUE(run %in% c("mRNA", "mRNA_AS"))) {
                 gsub("^transcript\\:", "", .) %>%
                 gsub("_mRNA", "", .)
         )
-} else if(base::isTRUE(run %notin% c("mRNA", "mRNA_AS"))) {
-    p_tsv <- "outfiles_htseq-count/representation/UT_prim_UMI"
-    
-    if(base::isTRUE(run == "ncRNA-collapsed")) {
+} else if(base::isTRUE(type %notin% c("mRNA", "mRNA-AS"))) {
+    if(base::isTRUE(type == "coding-non-pa-ncRNA")) {
+        #  Handle R64 coding, noncoding, etc. features
+        p_tsv <- "outfiles_htseq-count/representation/UT_prim_UMI"
+        f_tsv <- "representative-coding-non-pa-ncRNA-transcriptome.hc-strd-eq.union-none.tsv"
+    } else if(base::isTRUE(type == "ncRNA-collapsed")) {
         #  Handle pa-ncRNA, collapsed and merged
+        p_tsv <- "outfiles_htseq-count/representation/UT_prim_UMI"
         f_tsv <- "representative-non-coding-transcriptome.hc-strd-eq.tsv"  # (collapsed, merged)
         # paste(p_base, p_exp, p_tsv, f_tsv, sep = "/") %>%
         #     file.exists()  # [1] TRUE
-    } else if(base::isTRUE(run == "ncRNA-non-collapsed")) {
+    } else if(base::isTRUE(type == "ncRNA-non-collapsed")) {
         #  Handle pa-ncRNA, not collapsed and merged
+        p_tsv <- "outfiles_htseq-count/representation/UT_prim_UMI"
         f_tsv <- "non-collapsed-non-coding-transcriptome.hc-strd-eq.tsv"  # (not collapsed, merged)
         # paste(p_base, p_exp, p_tsv, f_tsv, sep = "/") %>%
         #     file.exists()  # [1] TRUE
@@ -1655,42 +1722,180 @@ if(base::isTRUE(run %in% c("mRNA", "mRNA_AS"))) {
     colnames(t_KL) <- colnames(t_KL) %>%
         gsub(".UT_prim_UMI.hc-strd-eq.tsv", "", .)
     
+    #  Isolate K. lactis specific rows and bind to feature-of-interest rows
     t_KL <- t_KL %>%
         dplyr::mutate(
-            features = features %>%
-                gsub("^transcript\\:", "", .) %>%
-                gsub("_mRNA", "", .)
+            features = features %>% gsub("^transcript\\:", "", .)
         )
-    
     rm(p_KL, f_KL)
     
-    #  Convert t_KL counts columns from type <chr> to <double>
-    t_KL[, 2:ncol(t_KL)] <- sapply(t_KL[, 2:ncol(t_KL)], as.double) %>%
-        tibble::as_tibble()
+    t_KL <- t_KL[!stringr::str_detect(t_KL$features, "mRNA|__"), ]
+    t_KL[, 2:ncol(t_KL)] <- t_KL[, 2:ncol(t_KL)] %>% sapply(., as.numeric)
     
     #  Row-bind dataframes t_tsv and t_KL
-    # colnames(t_tsv) %in% colnames(t_KL)
     t_tsv <- dplyr::bind_rows(t_tsv, t_KL)
     rm(t_KL)
 }
 
+#  Clean up, correct, and abbreviate sample names
+col_cor <- setNames(
+    c(
+        "n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1",
+        "n3-d_Q_day7_tcn_N_aux-T_tc-F_rep2_tech1",
+        "n3-d_Q_day7_tcn_N_aux-T_tc-F_rep3_tech1",       #EXCLUDE
+        "n3-d_Q_day7_tcn_SS_aux-T_tc-F_rep1_tech1",
+        "n3-d_Q_day7_tcn_SS_aux-T_tc-F_rep2_tech1",
+        "n3-d_Q_day7_tcn_SS_aux-T_tc-F_rep3_tech1",      #EXCLUDE
+        "o-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1",
+        "o-d_Q_day7_tcn_N_aux-T_tc-F_rep2_tech1",
+        "o-d_Q_day7_tcn_SS_aux-T_tc-F_rep1_tech1",
+        "o-d_Q_day7_tcn_SS_aux-T_tc-F_rep2_tech1",
+        "r1-n_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1",       #FIXME* ∆ rep1 → rep2
+        "r1-n_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1",       #FIXME* ∆ rep2 → rep1
+        "r1-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1",      #FIXME* ∆ rep1 → rep2
+        "r1-n_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1",      #FIXME* ∆ rep2 → rep1
+        "r6-n_DSm2_day2_tcn_SS_aux-F_tc-T_rep1_tech1",   #FIXME* ∆ rep1 → rep2
+        "r6-n_DSm2_day2_tcn_SS_aux-F_tc-T_rep2_tech1",   #FIXME* ∆ rep2 → rep1
+        "r6-n_DSp24_day3_tcn_SS_aux-F_tc-T_rep1_tech1",  #FIXME* ∆ rep1 → rep2
+        "r6-n_DSp24_day3_tcn_SS_aux-F_tc-T_rep2_tech1",  #FIXME* ∆ rep2 → rep1
+        "r6-n_DSp2_day2_tcn_SS_aux-F_tc-T_rep1_tech1",   #FIXME* ∆ rep1 → rep2
+        "r6-n_DSp2_day2_tcn_SS_aux-F_tc-T_rep2_tech1",   #FIXME* ∆ rep2 → rep1
+        "r6-n_DSp48_day4_tcn_SS_aux-F_tc-T_rep1_tech1",  #FIXME* ∆ rep1 → rep2
+        "r6-n_DSp48_day4_tcn_SS_aux-F_tc-T_rep2_tech1",  #FIXME* ∆ rep2 → rep1  #FIXME‡ ∆ tech1 → tech2
+        "r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1",     #FIXME* ∆ rep1 → rep2  #FIXME‡ ∆ tech1 → tech2
+        "r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1",     #FIXME* ∆ rep2 → rep1  #FIXME‡ ∆ tech1 → tech2
+        "r6-n_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1",       #FIXME* ∆ rep1 → rep2
+        "r6-n_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1",       #FIXME* ∆ rep2 → rep1
+        "r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1",      #FIXME* ∆ rep1 → rep2  #OK
+        "r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech2",      #FIXME* ∆ rep1 → rep2  #OK
+        "r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1",      #FIXME* ∆ rep2 → rep1
+        "t4-n_DSm2_day2_tcn_SS_aux-F_tc-T_rep1_tech1",
+        "t4-n_DSm2_day2_tcn_SS_aux-F_tc-T_rep2_tech1",
+        "t4-n_DSp24_day3_tcn_SS_aux-F_tc-T_rep1_tech1",
+        "t4-n_DSp24_day3_tcn_SS_aux-F_tc-T_rep2_tech1",
+        "t4-n_DSp2_day2_tcn_SS_aux-F_tc-T_rep1_tech1",
+        "t4-n_DSp2_day2_tcn_SS_aux-F_tc-T_rep2_tech1",
+        "t4-n_DSp48_day4_tcn_SS_aux-F_tc-T_rep1_tech1",
+        "t4-n_DSp48_day4_tcn_SS_aux-F_tc-T_rep2_tech1",
+        "WT_DSm2_day2_tcn_SS_aux-F_tc-T_rep1_tech1",
+        "WT_DSm2_day2_tcn_SS_aux-F_tc-T_rep2_tech1",
+        "WT_DSp24_day3_tcn_SS_aux-F_tc-T_rep1_tech1",
+        "WT_DSp24_day3_tcn_SS_aux-F_tc-T_rep2_tech1",
+        "WT_DSp2_day2_tcn_SS_aux-F_tc-T_rep1_tech1",
+        "WT_DSp2_day2_tcn_SS_aux-F_tc-T_rep2_tech1",
+        "WT_DSp48_day4_tcn_SS_aux-F_tc-T_rep1_tech1",    #OK
+        "WT_DSp48_day4_tcn_SS_aux-F_tc-T_rep1_tech2",    #OK
+        "WT_DSp48_day4_tcn_SS_aux-F_tc-T_rep2_tech1",
+        "WT_G1_day1_ovn_N_aux-F_tc-F_rep1_tech1",
+        "WT_G1_day1_ovn_N_aux-F_tc-F_rep2_tech1",
+        "WT_G1_day1_ovn_SS_aux-F_tc-F_rep1_tech1",
+        "WT_G1_day1_ovn_SS_aux-F_tc-F_rep2_tech1",
+        "WT_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1",       #FIXME‡ ∆ tech1 → tech2
+        "WT_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1",       #FIXME‡ ∆ tech1 → tech2
+        "WT_Q_day7_ovn_N_aux-F_tc-F_rep1_tech1",
+        "WT_Q_day7_ovn_N_aux-F_tc-F_rep2_tech1", 
+        "WT_Q_day7_ovn_SS_aux-F_tc-F_rep1_tech1",
+        "WT_Q_day7_ovn_SS_aux-F_tc-F_rep2_tech1",
+        "WT_Q_day7_tcn_N_aux-F_tc-F_rep2_tech1",         #FIXME† Duplicated #1
+        "WT_Q_day7_tcn_SS_aux-F_tc-F_rep2_tech1",        #FIXME† Duplicated #2
+        "WT_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1",
+        "WT_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1",         #FIXME† Duplicated #1
+        "WT_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1",
+        "WT_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1"         #FIXME† Duplicated #2
+    ),
+    c(
+        "n3d_Q_N_rep1_tech1", 
+        "n3d_Q_N_rep2_tech1", 
+        "n3d_Q_N_rep3_tech1",       #EXCLUDE
+        "n3d_Q_SS_rep1_tech1", 
+        "n3d_Q_SS_rep2_tech1", 
+        "n3d_Q_SS_rep3_tech1",      #EXCLUDE
+        "od_Q_N_rep1_tech1", 
+        "od_Q_N_rep2_tech1", 
+        "od_Q_SS_rep1_tech1", 
+        "od_Q_SS_rep2_tech1", 
+        "r1n_Q_N_rep2_tech1",       #DONE* ∆ rep1 → rep2
+        "r1n_Q_N_rep1_tech1",       #DONE* ∆ rep2 → rep1
+        "r1n_Q_SS_rep2_tech1",      #DONE* ∆ rep1 → rep2
+        "r1n_Q_SS_rep1_tech1",      #DONE* ∆ rep2 → rep1
+        "r6n_DSm2_SS_rep2_tech1",   #DONE* ∆ rep1 → rep2
+        "r6n_DSm2_SS_rep1_tech1",   #DONE* ∆ rep2 → rep1
+        "r6n_DSp24_SS_rep2_tech1",  #DONE* ∆ rep1 → rep2
+        "r6n_DSp24_SS_rep1_tech1",  #DONE* ∆ rep2 → rep1
+        "r6n_DSp2_SS_rep2_tech1",   #DONE* ∆ rep1 → rep2
+        "r6n_DSp2_SS_rep1_tech1",   #DONE* ∆ rep2 → rep1
+        "r6n_DSp48_SS_rep2_tech1",  #DONE* ∆ rep1 → rep2
+        "r6n_DSp48_SS_rep1_tech2",  #DONE* ∆ rep2 → rep1  #DONE‡ ∆ tech1 → tech2
+        "r6n_G1_SS_rep2_tech2",     #DONE* ∆ rep1 → rep2  #DONE‡ ∆ tech1 → tech2
+        "r6n_G1_SS_rep1_tech2",     #DONE* ∆ rep2 → rep1  #DONE‡ ∆ tech1 → tech2
+        "r6n_Q_N_rep2_tech1",       #DONE* ∆ rep1 → rep2
+        "r6n_Q_N_rep1_tech1",       #DONE* ∆ rep2 → rep1
+        "r6n_Q_SS_rep2_tech1",      #DONE* ∆ rep1 → rep2  #OK
+        "r6n_Q_SS_rep2_tech2",      #DONE* ∆ rep1 → rep2  #OK
+        "r6n_Q_SS_rep1_tech1",      #DONE* ∆ rep2 → rep1
+        "t4n_DSm2_SS_rep1_tech1", 
+        "t4n_DSm2_SS_rep2_tech1", 
+        "t4n_DSp24_SS_rep1_tech1", 
+        "t4n_DSp24_SS_rep2_tech1", 
+        "t4n_DSp2_SS_rep1_tech1", 
+        "t4n_DSp2_SS_rep2_tech1", 
+        "t4n_DSp48_SS_rep1_tech1", 
+        "t4n_DSp48_SS_rep2_tech1", 
+        "WT_DSm2_SS_rep1_tech1", 
+        "WT_DSm2_SS_rep2_tech1", 
+        "WT_DSp24_SS_rep1_tech1", 
+        "WT_DSp24_SS_rep2_tech1", 
+        "WT_DSp2_SS_rep1_tech1", 
+        "WT_DSp2_SS_rep2_tech1", 
+        "WT_DSp48_SS_rep1_tech1",   #OK
+        "WT_DSp48_SS_rep1_tech2",   #OK
+        "WT_DSp48_SS_rep2_tech1", 
+        "WTovn_G1_N_rep1_tech1", 
+        "WTovn_G1_N_rep2_tech1", 
+        "WTovn_G1_SS_rep1_tech1", 
+        "WTovn_G1_SS_rep2_tech1", 
+        "WT_G1_SS_rep1_tech2",      #DONE‡ ∆ tech1 → tech2
+        "WT_G1_SS_rep2_tech2",      #DONE‡ ∆ tech1 → tech2
+        "WTovn_Q_N_rep1_tech1", 
+        "WTovn_Q_N_rep2_tech1", 
+        "WTovn_Q_SS_rep1_tech1", 
+        "WTovn_Q_SS_rep2_tech1", 
+        "WTtest_Q_N_rep2_tech1",    #DONE† Duplicated #1
+        "WTtest_Q_SS_rep2_tech1",   #DONE† Duplicated #2
+        "WT_Q_N_rep1_tech1", 
+        "WT_Q_N_rep2_tech1",        #DONE† Duplicated #1
+        "WT_Q_SS_rep1_tech1", 
+        "WT_Q_SS_rep2_tech1"        #DONE† Duplicated #2
+    )
+)
+
+init_bak <- TRUE
+if(base::isTRUE(init_bak)) {
+    t_tsv.bak <- t_tsv
+    # t_tsv <- t_tsv.bak
+}
+t_tsv <- filter_process_counts_matrix(t_tsv, col_cor)
+
 
 #  Load Excel spreadsheet of samples names and variables ======================
-p_xlsx <- "notebook"
-f_xlsx <- "variables.xlsx"
-# paste(p_base, p_exp, p_xlsx, f_xlsx, sep = "/") %>%
-#     file.exists()  # [1] TRUE
-
-t_xslx <- paste(p_base, p_exp, p_xlsx, f_xlsx, sep = "/") %>%
-    readxl::read_xlsx()  
-#FIXME #LATER In this file, replicate information for 7079, 7078, 7747, 7748
-#             is incorrect
-
-#NOTE It seems that we're no longer using the xlsx file
+load_xlsx <- FALSE
+if(base::isTRUE(load_xlsx)) {
+    p_xlsx <- "notebook"
+    f_xlsx <- "variables.xlsx"
+    # paste(p_base, p_exp, p_xlsx, f_xlsx, sep = "/") %>%
+    #     file.exists()  # [1] TRUE
+    
+    t_xslx <- paste(p_base, p_exp, p_xlsx, f_xlsx, sep = "/") %>%
+        readxl::read_xlsx()  
+    #NOTE In this file, replicate info for 7079, 7078, 7747, 7748 is incorrect
+    #NOTE It seems that we're no longer using the xlsx file, so this code can
+    #     be removed
+}
 
 
 #  Associate features with metadata and format/munge dataframe(s) =============
-if(base::isTRUE(run %in% c("mRNA", "mRNA_AS"))) {
+#HERE
+if(base::isTRUE(type %in% c("mRNA", "mRNA-AS"))) {
     #  Handle "mRNA"
     p_gff3 <- "infiles_gtf-gff3/already"
     f_gff3 <- "combined_SC_KL_20S.gff3"
@@ -1749,8 +1954,44 @@ if(base::isTRUE(run %in% c("mRNA", "mRNA_AS"))) {
         t_gff3$features,
         t_gff3$names
     )
-} else if(base::isTRUE(run %notin% c("mRNA", "mRNA_AS"))) {
-    if(base::isTRUE(run == "ncRNA-collapsed")) {
+} else if(base::isTRUE(type %notin% c("mRNA", "mRNA-AS"))) {
+    if(base::isTRUE(type == "coding-non-pa-ncRNA")) {
+        p_gff3 <- "outfiles_gtf-gff3/representation"
+        f_gff3 <- "Greenlaw-et-al_representative-coding-non-pa-ncRNA-transcriptome.gtf"
+        # paste(p_base, p_exp, p_gff3, f_gff3, sep = "/") %>%
+            # file.exists()  # [1] TRUE
+        
+        #  Load, format gff3
+        t_gff3 <- paste(p_gff3, f_gff3, sep = "/") %>%
+            rtracklayer::import() %>%
+            as.data.frame() %>%
+            dplyr::as_tibble() %>%
+            dplyr::rename(c(
+                chr = seqnames,
+                features = gene_id,
+                biotype = type.1
+            )) %>%
+            dplyr::mutate(
+                names = NA_character_,
+                thorough = NA_character_
+                # names = paste0(features),
+                # thorough = paste(biotype, features, sep = "-")
+            )
+        rm(p_gff3, f_gff3)
+        
+        #  Subset gff3 tibble to keep only relevant columns, and order columns
+        keep <- c(
+            "chr", "start", "end", "width", "strand", "type", "features",
+            "biotype", "names", "thorough"
+        )
+        t_gff3 <- t_gff3[, colnames(t_gff3) %in% keep]
+        t_gff3 <- dplyr::relocate(
+            t_gff3[, colnames(t_gff3) %in% keep],
+            keep[-1],
+            .after = "chr"
+        )
+        rm(keep)
+    } else if(base::isTRUE(type == "ncRNA-collapsed")) {
         #  Handle pa-ncRNA, collapsed and merged
         p_gff3 <- "outfiles_gtf-gff3/representation"
         f_gff3 <- "Greenlaw-et-al_representative-non-coding-transcriptome.gtf"
@@ -1783,7 +2024,7 @@ if(base::isTRUE(run %in% c("mRNA", "mRNA_AS"))) {
             .after = "chr"
         )
         rm(keep)
-    } else if(base::isTRUE(run == "ncRNA-non-collapsed")) {
+    } else if(base::isTRUE(type == "ncRNA-non-collapsed")) {
         #  Handle pa-ncRNA, not collapsed and merged
         p_gff3 <- "outfiles_gtf-gff3/representation"
         f_gff3 <- "Greenlaw-et-al_non-collapsed-non-coding-transcriptome.gtf"
@@ -1844,9 +2085,8 @@ if(base::isTRUE(run %in% c("mRNA", "mRNA_AS"))) {
     
     #  Subset K. lactis gff3 tibble to keep only relevant columns
     keep <- c(
-        "chr", "start", "end",
-        "width", "strand", "type",
-        "features", "biotype", "names", "thorough"
+        "chr", "start", "end", "width", "strand", "type", "features",
+        "biotype", "names", "thorough"
     )
     t_gff3_KL <- t_gff3_KL[, colnames(t_gff3_KL) %in% keep]
     t_gff3_KL <- dplyr::relocate(
@@ -1869,9 +2109,16 @@ if(base::isTRUE(run %in% c("mRNA", "mRNA_AS"))) {
         as.character(t_gff3_KL$thorough)
     )
     
-    #  Row-bind the two tibbles
+    #  Exclude S. cerevisiae contextual information, then append K. lactis
+    #+ information to features of interest
+    chr_KL <- c("A", "B", "C", "D", "E", "F")
+    t_gff3_KL <- t_gff3_KL[t_gff3_KL$chr %in% chr_KL, ]  # 5076
+    t_gff3_KL$chr <- t_gff3_KL$chr %>% droplevels()
+    t_gff3_KL$chr <- factor(t_gff3_KL$chr, levels = chr_KL)
+    t_gff3_KL <- t_gff3_KL %>% dplyr::arrange(chr, start)
+    
     t_gff3 <- dplyr::bind_rows(t_gff3, t_gff3_KL)
-    rm(t_gff3_KL)
+    rm(t_gff3_KL, chr_KL)
 }
 
 #  Order t_gff3 by chromosome names and feature start positions
@@ -1909,206 +2156,309 @@ rm(chr_20S, chr_KL, chr_SC, chr_order)
 #  Combine "counts matrix tibble" and "gff3 tibble" ===========================
 t_mat <- dplyr::full_join(t_gff3, t_tsv, by = "features")
 
-#  Remove all non-pa-ncRNA features except for K. lactis features
-if(base::isTRUE(run %notin% c("mRNA", "mRNA_AS"))) {
-    tmp_feature <- t_mat %>%
-        dplyr::filter(type == "feature")
-    tmp_KL <- t_mat %>%
-        dplyr::filter(genome == "K_lactis")
-    t_mat <- dplyr::bind_rows(tmp_feature, tmp_KL)
-    rm(tmp_feature, tmp_KL)
+#  Remove unneeded variables
+if(base::isTRUE(load_xlsx)) {
+    rm(f_tsv, f_xlsx, p_base, p_exp, p_tsv, p_xlsx, t_gff3, t_tsv)
+} else {
+    rm(f_tsv, p_base, p_exp, p_tsv, t_gff3, t_tsv)
 }
 
-#  Remove unneeded variables
-rm(f_tsv, f_xlsx, p_base, p_exp, p_tsv, p_xlsx, t_gff3, t_tsv)
-
 #  Create a backup of t_mat
-t_mat.bak <- t_mat
-# t_mat <- t_mat.bak
+if(base::isTRUE(init_bak)) {
+    t_mat.bak <- t_mat
+    # t_mat <- t_mat.bak
+}
 
 #  For "mRNA" analyses, exclude htseq-count "summary metrics" (already excluded
 #+ for "pa-ncRNA" analyses) and "Mito" chromosome counts (rows)
-if(base::isTRUE(run %in% c("mRNA", "mRNA_AS"))) {
+if(base::isTRUE(type %in% c("mRNA", "mRNA-AS"))) {
     t_mat <- t_mat %>%
         dplyr::filter(genome %notin% c(NA, "20S")) %>%
         dplyr::filter(chr != "Mito")
 }
 
-#HACK
 #  For non-"mRNA" analyses, change all column "type" assignments from "feature"
-#+ to "mRNA"
-if(base::isTRUE(run %notin% c("mRNA", "mRNA_AS"))) {
+#+ to "mRNA"  #HACK
+if(base::isTRUE(type %notin% c("mRNA", "mRNA-AS"))) {
     t_mat$type <- ifelse(t_mat$type == "feature", "mRNA", t_mat$type)
 }
 
+#  If any htseq-count metric rows remain in the dataframe, then remove them
+t_mat <- t_mat[!is.na(t_mat$genome), ]
+#TODO Move this logic to an approriate location associated with handling
+#     non-mRNA/mRNA-AS-feature dataframe
+
 
 #  Filter counts matrix for samples of interest ===============================
-`N-Q-nab3d_N-Q-parental` <- setNames(
-    c(
-        "n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1",
-        "n3-d_Q_day7_tcn_N_aux-T_tc-F_rep2_tech1",
-        "o-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1",
-        "o-d_Q_day7_tcn_N_aux-T_tc-F_rep2_tech1"
-    ),
-    c(
+#NOTE Can no longer do the following; data column names changed with call to 
+#     filter_process_counts_matrix() above
+run_old_approach <- FALSE
+if(base::isTRUE(run_old_approach)) {
+    `N-Q-nab3d_N-Q-parental` <- setNames(
+        c(
+            "n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1",
+            "n3-d_Q_day7_tcn_N_aux-T_tc-F_rep2_tech1",
+            "o-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1",
+            "o-d_Q_day7_tcn_N_aux-T_tc-F_rep2_tech1"
+        ),
+        c(
+            "n3d_Q_N_rep1_tech1",
+            "n3d_Q_N_rep2_tech1",
+            "od_Q_N_rep1_tech1",
+            "od_Q_N_rep2_tech1"
+        )
+    )
+    `N-Q-nab3d_N-Q-parental` <- subset_process_counts_matrix(
+        `N-Q-nab3d_N-Q-parental`
+    )
+    
+    `SS-Q-nab3d_SS-Q-parental` <- setNames(
+        c(
+            "n3-d_Q_day7_tcn_SS_aux-T_tc-F_rep1_tech1",
+            "n3-d_Q_day7_tcn_SS_aux-T_tc-F_rep2_tech1",
+            "o-d_Q_day7_tcn_SS_aux-T_tc-F_rep1_tech1",
+            "o-d_Q_day7_tcn_SS_aux-T_tc-F_rep2_tech1"
+        ),
+        c(
+            "n3d_Q_SS_rep1_tech1",
+            "n3d_Q_SS_rep2_tech1",
+            "od_Q_SS_rep1_tech1",
+            "od_Q_SS_rep2_tech1"
+        )
+    )
+    `SS-Q-nab3d_SS-Q-parental` <- subset_process_counts_matrix(
+        `SS-Q-nab3d_SS-Q-parental`
+    )
+    
+    `SS-Q-rrp6∆_SS-Q-WT` <- setNames(
+        c(
+            "r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1",
+            "r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech2",
+            "r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1",
+            "WT_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1",
+            "WT_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1"
+        ),
+        c(
+            "r6n_Q_SS_rep1_tech1",
+            "r6n_Q_SS_rep1_tech2",
+            "r6n_Q_SS_rep2_tech1",
+            "WT_Q_SS_rep1_tech1",
+            "WT_Q_SS_rep2_tech1"
+        )
+    )
+    `SS-Q-rrp6∆_SS-Q-WT` <- subset_process_counts_matrix(
+        `SS-Q-rrp6∆_SS-Q-WT`
+    )
+    
+    `SS-G1-rrp6∆_SS-G1-WT` <- setNames(
+        c(
+            "r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1",
+            "r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1",
+            "WT_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1",
+            "WT_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1"
+        ),
+        c(
+            "r6n_G1_SS_rep1_tech2",
+            "r6n_G1_SS_rep2_tech2",
+            "WT_G1_SS_rep1_tech2",
+            "WT_G1_SS_rep2_tech2"
+        )
+    )
+    `SS-G1-rrp6∆_SS-G1-WT` <- subset_process_counts_matrix(
+        `SS-G1-rrp6∆_SS-G1-WT`
+    )
+    
+    `N-Q-rrp6∆_N-Q-WT` <- setNames(
+        c(
+            "r6-n_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1",
+            "r6-n_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1",
+            "WT_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1",
+            "WT_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1"
+        ),
+        c(
+            "r6n_Q_N_rep1_tech1",
+            "r6n_Q_N_rep2_tech1",
+            "WT_Q_N_rep1_tech1",
+            "WT_Q_N_rep2_tech1"
+        )
+    )
+    `N-Q-rrp6∆_N-Q-WT` <- subset_process_counts_matrix(
+        `N-Q-rrp6∆_N-Q-WT`
+    )
+    
+    # `SS-DSm2-rrp6∆_SS-DSm2-WT` <- setNames(
+    #     c(
+    #         "r6-n_DSm2_day2_tcn_SS_aux-F_tc-T_rep1_tech1",
+    #         "r6-n_DSm2_day2_tcn_SS_aux-F_tc-T_rep2_tech1",
+    #         "WT_DSm2_day2_tcn_SS_aux-F_tc-T_rep1_tech1",
+    #         "WT_DSm2_day2_tcn_SS_aux-F_tc-T_rep2_tech1"
+    #     ),
+    #     c(
+    #         "r6n_DSm2_SS_rep1_tech1",
+    #         "r6n_DSm2_SS_rep2_tech1",
+    #         "WT_DSm2_SS_rep1_tech1",
+    #         "WT_DSm2_SS_rep2_tech1"
+    #     )
+    # )
+    # `SS-DSm2-rrp6∆_SS-DSm2-WT` <- subset_process_counts_matrix(
+    #     `SS-DSm2-rrp6∆_SS-DSm2-WT`
+    # )
+    # 
+    # `SS-DSp2-rrp6∆_SS-DSp2-WT` <- setNames(
+    #     c(
+    #         "r6-n_DSp2_day2_tcn_SS_aux-F_tc-T_rep1_tech1",
+    #         "r6-n_DSp2_day2_tcn_SS_aux-F_tc-T_rep2_tech1",
+    #         "WT_DSp2_day2_tcn_SS_aux-F_tc-T_rep1_tech1",
+    #         "WT_DSp2_day2_tcn_SS_aux-F_tc-T_rep2_tech1"
+    #     ),
+    #     c(
+    #         "r6n_DSp2_SS_rep1_tech1",
+    #         "r6n_DSp2_SS_rep2_tech1",
+    #         "WT_DSp2_SS_rep1_tech1",
+    #         "WT_DSp2_SS_rep2_tech1"
+    #     )
+    # )
+    # `SS-DSp2-rrp6∆_SS-DSp2-WT` <- subset_process_counts_matrix(
+    #     `SS-DSp2-rrp6∆_SS-DSp2-WT`
+    # )
+    # 
+    # `SS-DSp24-rrp6∆_SS-DSp24-WT` <- setNames(
+    #     c(
+    #         "r6-n_DSp24_day3_tcn_SS_aux-F_tc-T_rep1_tech1",
+    #         "r6-n_DSp24_day3_tcn_SS_aux-F_tc-T_rep2_tech1",
+    #         "WT_DSp24_day3_tcn_SS_aux-F_tc-T_rep1_tech1",
+    #         "WT_DSp24_day3_tcn_SS_aux-F_tc-T_rep2_tech1"
+    #     ),
+    #     c(
+    #         "r6n_DSp24_SS_rep1_tech1",
+    #         "r6n_DSp24_SS_rep2_tech1",
+    #         "WT_DSp24_SS_rep1_tech1",
+    #         "WT_DSp24_SS_rep2_tech1"
+    #     )
+    # )
+    # `SS-DSp24-rrp6∆_SS-DSp24-WT` <- subset_process_counts_matrix(
+    #     `SS-DSp24-rrp6∆_SS-DSp24-WT`
+    # )
+    # 
+    # `SS-DSp48-rrp6∆_SS-DSp48-WT` <- setNames(
+    #     c(
+    #         "r6-n_DSp48_day4_tcn_SS_aux-F_tc-T_rep1_tech1",
+    #         "r6-n_DSp48_day4_tcn_SS_aux-F_tc-T_rep2_tech1",
+    #         "WT_DSp48_day4_tcn_SS_aux-F_tc-T_rep1_tech1",
+    #         "WT_DSp48_day4_tcn_SS_aux-F_tc-T_rep1_tech2",
+    #         "WT_DSp48_day4_tcn_SS_aux-F_tc-T_rep2_tech1"
+    #     ),
+    #     c(
+    #         "r6n_DSp48_SS_rep1_tech1",
+    #         "r6n_DSp48_SS_rep2_tech2",
+    #         "WT_DSp48_SS_rep1_tech1",
+    #         "WT_DSp48_SS_rep1_tech2",
+    #         "WT_DSp48_SS_rep2_tech1"
+    #     )
+    # )
+    # `SS-DSp48-rrp6∆_SS-DSp48-WT` <- subset_process_counts_matrix(
+    #     `SS-DSp48-rrp6∆_SS-DSp48-WT`
+    # )
+}
+
+run_new_approach <- TRUE
+if(base::isTRUE(run_new_approach)) {
+    col_meta <- colnames(t_mat)[1:11]
+    
+    `N-Q-nab3d_N-Q-parental` <- c(
         "n3d_Q_N_rep1_tech1",
         "n3d_Q_N_rep2_tech1",
+        # "n3d_Q_N_rep3_tech1",  #EXCLUDE
         "od_Q_N_rep1_tech1",
         "od_Q_N_rep2_tech1"
     )
-)
-`N-Q-nab3d_N-Q-parental` <- filter_process_counts_matrix(
-    `N-Q-nab3d_N-Q-parental`
-)
-
-`SS-Q-nab3d_SS-Q-parental` <- setNames(
-    c(
-        "n3-d_Q_day7_tcn_SS_aux-T_tc-F_rep1_tech1",
-        "n3-d_Q_day7_tcn_SS_aux-T_tc-F_rep2_tech1",
-        "o-d_Q_day7_tcn_SS_aux-T_tc-F_rep1_tech1",
-        "o-d_Q_day7_tcn_SS_aux-T_tc-F_rep2_tech1"
-    ),
-    c(
+    `N-Q-nab3d_N-Q-parental` <- t_mat[
+        , colnames(t_mat) %in% c(col_meta, `N-Q-nab3d_N-Q-parental`)
+    ]
+    
+    `SS-Q-nab3d_SS-Q-parental` <- c(
         "n3d_Q_SS_rep1_tech1",
         "n3d_Q_SS_rep2_tech1",
+        # "n3d_Q_SS_rep3_tech1",  #EXCLUDE
         "od_Q_SS_rep1_tech1",
         "od_Q_SS_rep2_tech1"
     )
-)
-`SS-Q-nab3d_SS-Q-parental` <- filter_process_counts_matrix(
-    `SS-Q-nab3d_SS-Q-parental`
-)
-
-`SS-Q-rrp6∆_SS-Q-WT` <- setNames(
-    c(
-        "r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1",
-        "r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech2",
-        "r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1",
-        "WT_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1",
-        "WT_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1"
-    ),
-    c(
-        "r6n_Q_SS_rep1_tech1",
-        "r6n_Q_SS_rep1_tech2",
+    `SS-Q-nab3d_SS-Q-parental` <- t_mat[
+        , colnames(t_mat) %in% c(col_meta, `SS-Q-nab3d_SS-Q-parental`)
+    ]
+    
+    `SS-Q-rrp6∆_SS-Q-WT` <- c(
         "r6n_Q_SS_rep2_tech1",
+        "r6n_Q_SS_rep2_tech2",
+        "r6n_Q_SS_rep1_tech1",
         "WT_Q_SS_rep1_tech1",
         "WT_Q_SS_rep2_tech1"
     )
-)
-`SS-Q-rrp6∆_SS-Q-WT` <- filter_process_counts_matrix(
-    `SS-Q-rrp6∆_SS-Q-WT`
-)
-
-`SS-G1-rrp6∆_SS-G1-WT` <- setNames(
-    c(
-        "r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1",
-        "r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1",
-        "WT_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1",
-        "WT_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1"
-    ),
-    c(
-        "r6n_G1_SS_rep1_tech2",
+    `SS-Q-rrp6∆_SS-Q-WT` <- t_mat[
+        , colnames(t_mat) %in% c(col_meta, `SS-Q-rrp6∆_SS-Q-WT`)
+    ]
+    
+    `SS-G1-rrp6∆_SS-G1-WT` <- c(
         "r6n_G1_SS_rep2_tech2",
+        "r6n_G1_SS_rep1_tech2",
         "WT_G1_SS_rep1_tech2",
         "WT_G1_SS_rep2_tech2"
     )
-)
-`SS-G1-rrp6∆_SS-G1-WT` <- filter_process_counts_matrix(
-    `SS-G1-rrp6∆_SS-G1-WT`
-)
-
-`N-Q-rrp6∆_N-Q-WT` <- setNames(
-    c(
-        "r6-n_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1",
-        "r6-n_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1",
-        "WT_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1",
-        "WT_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1"
-    ),
-    c(
-        "r6n_Q_N_rep1_tech1",
+    `SS-G1-rrp6∆_SS-G1-WT` <- t_mat[
+        , colnames(t_mat) %in% c(col_meta, `SS-G1-rrp6∆_SS-G1-WT`)
+    ]
+    
+    `N-Q-rrp6∆_N-Q-WT` <- c(
         "r6n_Q_N_rep2_tech1",
+        "r6n_Q_N_rep1_tech1",
         "WT_Q_N_rep1_tech1",
         "WT_Q_N_rep2_tech1"
     )
-)
-`N-Q-rrp6∆_N-Q-WT` <- filter_process_counts_matrix(
-    `N-Q-rrp6∆_N-Q-WT`
-)
-
-# `SS-DSm2-rrp6∆_SS-DSm2-WT` <- setNames(
-#     c(
-#         "r6-n_DSm2_day2_tcn_SS_aux-F_tc-T_rep1_tech1",
-#         "r6-n_DSm2_day2_tcn_SS_aux-F_tc-T_rep2_tech1",
-#         "WT_DSm2_day2_tcn_SS_aux-F_tc-T_rep1_tech1",
-#         "WT_DSm2_day2_tcn_SS_aux-F_tc-T_rep2_tech1"
-#     ),
-#     c(
-#         "r6n_DSm2_SS_rep1_tech1",
-#         "r6n_DSm2_SS_rep2_tech1",
-#         "WT_DSm2_SS_rep1_tech1",
-#         "WT_DSm2_SS_rep2_tech1"
-#     )
-# )
-# `SS-DSm2-rrp6∆_SS-DSm2-WT` <- filter_process_counts_matrix(
-#     `SS-DSm2-rrp6∆_SS-DSm2-WT`
-# )
-# 
-# `SS-DSp2-rrp6∆_SS-DSp2-WT` <- setNames(
-#     c(
-#         "r6-n_DSp2_day2_tcn_SS_aux-F_tc-T_rep1_tech1",
-#         "r6-n_DSp2_day2_tcn_SS_aux-F_tc-T_rep2_tech1",
-#         "WT_DSp2_day2_tcn_SS_aux-F_tc-T_rep1_tech1",
-#         "WT_DSp2_day2_tcn_SS_aux-F_tc-T_rep2_tech1"
-#     ),
-#     c(
-#         "r6n_DSp2_SS_rep1_tech1",
-#         "r6n_DSp2_SS_rep2_tech1",
-#         "WT_DSp2_SS_rep1_tech1",
-#         "WT_DSp2_SS_rep2_tech1"
-#     )
-# )
-# `SS-DSp2-rrp6∆_SS-DSp2-WT` <- filter_process_counts_matrix(
-#     `SS-DSp2-rrp6∆_SS-DSp2-WT`
-# )
-# 
-# `SS-DSp24-rrp6∆_SS-DSp24-WT` <- setNames(
-#     c(
-#         "r6-n_DSp24_day3_tcn_SS_aux-F_tc-T_rep1_tech1",
-#         "r6-n_DSp24_day3_tcn_SS_aux-F_tc-T_rep2_tech1",
-#         "WT_DSp24_day3_tcn_SS_aux-F_tc-T_rep1_tech1",
-#         "WT_DSp24_day3_tcn_SS_aux-F_tc-T_rep2_tech1"
-#     ),
-#     c(
-#         "r6n_DSp24_SS_rep1_tech1",
-#         "r6n_DSp24_SS_rep2_tech1",
-#         "WT_DSp24_SS_rep1_tech1",
-#         "WT_DSp24_SS_rep2_tech1"
-#     )
-# )
-# `SS-DSp24-rrp6∆_SS-DSp24-WT` <- filter_process_counts_matrix(
-#     `SS-DSp24-rrp6∆_SS-DSp24-WT`
-# )
-# 
-# `SS-DSp48-rrp6∆_SS-DSp48-WT` <- setNames(
-#     c(
-#         "r6-n_DSp48_day4_tcn_SS_aux-F_tc-T_rep1_tech1",
-#         "r6-n_DSp48_day4_tcn_SS_aux-F_tc-T_rep2_tech1",
-#         "WT_DSp48_day4_tcn_SS_aux-F_tc-T_rep1_tech1",
-#         "WT_DSp48_day4_tcn_SS_aux-F_tc-T_rep1_tech2",
-#         "WT_DSp48_day4_tcn_SS_aux-F_tc-T_rep2_tech1"
-#     ),
-#     c(
-#         "r6n_DSp48_SS_rep1_tech1",
-#         "r6n_DSp48_SS_rep2_tech2",
-#         "WT_DSp48_SS_rep1_tech1",
-#         "WT_DSp48_SS_rep1_tech2",
-#         "WT_DSp48_SS_rep2_tech1"
-#     )
-# )
-# `SS-DSp48-rrp6∆_SS-DSp48-WT` <- filter_process_counts_matrix(
-#     `SS-DSp48-rrp6∆_SS-DSp48-WT`
-# )
-
+    `N-Q-rrp6∆_N-Q-WT` <- t_mat[
+        , colnames(t_mat) %in% c(col_meta, `N-Q-rrp6∆_N-Q-WT`)
+    ]
+    
+    # `SS-DSm2-rrp6∆_SS-DSm2-WT` <- c(
+    #     "r6n_DSm2_SS_rep2_tech1",
+    #     "r6n_DSm2_SS_rep1_tech1",
+    #     "WT_DSm2_SS_rep1_tech1",
+    #     "WT_DSm2_SS_rep2_tech1"
+    # )
+    # `SS-DSm2-rrp6∆_SS-DSm2-WT` <- t_mat[
+    #     , colnames(t_mat) %in% c(col_meta, `SS-DSm2-rrp6∆_SS-DSm2-WT`)
+    # ]
+    # 
+    # `SS-DSp2-rrp6∆_SS-DSp2-WT` <- c(
+    #     "r6n_DSp2_SS_rep2_tech1",
+    #     "r6n_DSp2_SS_rep1_tech1",
+    #     "WT_DSp2_SS_rep1_tech1",
+    #     "WT_DSp2_SS_rep2_tech1"
+    # )
+    # `SS-DSp2-rrp6∆_SS-DSp2-WT` <- t_mat[
+    #     , colnames(t_mat) %in% c(col_meta, `SS-DSp2-rrp6∆_SS-DSp2-WT`)
+    # ]
+    # 
+    # `SS-DSp24-rrp6∆_SS-DSp24-WT` <- c(
+    #     "r6n_DSp24_SS_rep2_tech1",
+    #     "r6n_DSp24_SS_rep1_tech1",
+    #     "WT_DSp24_SS_rep1_tech1",
+    #     "WT_DSp24_SS_rep2_tech1"
+    # )
+    # `SS-DSp24-rrp6∆_SS-DSp24-WT` <- t_mat[
+    #     , colnames(t_mat) %in% c(col_meta, `SS-DSp24-rrp6∆_SS-DSp24-WT`)
+    # ]
+    # 
+    # `SS-DSp48-rrp6∆_SS-DSp48-WT` <- c(
+    #     "r6n_DSp48_SS_rep2_tech1",
+    #     "r6n_DSp48_SS_rep1_tech2",
+    #     "WT_DSp48_SS_rep1_tech1",
+    #     "WT_DSp48_SS_rep1_tech2",
+    #     "WT_DSp48_SS_rep2_tech1"
+    # )
+    # `SS-DSp48-rrp6∆_SS-DSp48-WT` <- t_mat[
+    #     , colnames(t_mat) %in% c(col_meta, `SS-DSp48-rrp6∆_SS-DSp48-WT`)
+    # ]
+}
 
 #  Analyze, graph datasets of interest ========================================
 `DGE-analysis_N-Q-nab3d_N-Q-parental` <- run_main(
@@ -2123,7 +2473,7 @@ if(base::isTRUE(run %notin% c("mRNA", "mRNA_AS"))) {
     x_min = -5,
     x_max = 10,
     y_min = 0,
-    y_max = ifelse(run == "mRNA", 40, 100),
+    y_max = ifelse(type == "mRNA", 40, 100),
     color = "#3A538B"
 )
 
@@ -2183,170 +2533,196 @@ if(base::isTRUE(run %notin% c("mRNA", "mRNA_AS"))) {
     color = "#3A538B"
 )
 
-#  Run tests/check things
-# test <- `DGE-analysis_N-Q-nab3d_N-Q-parental`
-# test <- `DGE-analysis_SS-Q-nab3d_SS-Q-parental`
-# test <- `DGE-analysis_SS-Q-rrp6∆_SS-Q-WT`
-# test <- `DGE-analysis_SS-G1-rrp6∆_SS-G1-WT`
-# test <- `DGE-analysis_N-Q-rrp6∆_N-Q-WT`
-#
-# test$`01_t_init`
-# test$`02_t_meta`
-# test$`03_filtering`
-# test$`04_t_tmp`
-# test$`05_t_sub`
-# test$`06_g_pos` %>% tibble::as_tibble()
-# test$`07_t_counts` %>% tibble::as_tibble()
-# test$`08_size_factors`
-# test$`08_size_factors_recip`
-# test$`08_col_data`
-# test$`08_dds`@rowRanges %>% tibble::as_tibble()
-# test$`08_dds`@colData
-#
-# test$`09_lfc_0.415_fc_1.33`$`01_dds`
-# test$`09_lfc_0.415_fc_1.33`$`02_DGE_unshrunken_DF` %>% tibble::as_tibble()
-# test$`09_lfc_0.415_fc_1.33`$`02_DGE_shrunken_DF` %>% tibble::as_tibble()
-# test$`09_lfc_0.415_fc_1.33`$`02_DGE_lessAbs_unshrunken_DF` %>% tibble::as_tibble()
-# test$`09_lfc_0.415_fc_1.33`$`03_DGE_unshrunken_GR` %>% tibble::as_tibble()
-# test$`09_lfc_0.415_fc_1.33`$`03_DGE_shrunken_GR` %>% tibble::as_tibble()
-# test$`09_lfc_0.415_fc_1.33`$`03_DGE_lessAbs_unshrunken_GR` %>% tibble::as_tibble()
-# test$`09_lfc_0.415_fc_1.33`$`04_t_DGE_unshrunken`
-# test$`09_lfc_0.415_fc_1.33`$`04_t_DGE_lessAbs_unshrunken`
-# as.numeric(table(test$`09_lfc_0.415_fc_1.33`$`04_t_DGE_lessAbs_unshrunken`$padj < 0.99)[2])
-# test$`09_lfc_0.415_fc_1.33`$`04_t_DGE_shrunken`
-# test$`09_lfc_0.415_fc_1.33`$`08_p_vol_unshrunken_KA`
-# test$`09_lfc_0.415_fc_1.33`$`08_p_vol_shrunken_KA`
-# test$`09_lfc_0.415_fc_1.33`$`08_p_vol_lessAbs_unshrunken_KA`
-# test$`09_lfc_0.415_fc_1.33`$`09_p_MA_unshrunken`
-# test$`09_lfc_0.415_fc_1.33`$`09_p_MA_shrunken`
-# test$`09_lfc_0.415_fc_1.33`$`09_p_MA_lessAbs_unshrunken`
-# test$`09_lfc_0.415_fc_1.33`$`10_hist_unshrunken_p`
-# test$`09_lfc_0.415_fc_1.33`$`10_hist_unshrunken_q`
-# test$`09_lfc_0.415_fc_1.33`$`10_hist_shrunken_s`
-# test$`09_lfc_0.415_fc_1.33`$`10_hist_lessAbs_unshrunken_p`
-# test$`09_lfc_0.415_fc_1.33`$`10_hist_lessAbs_unshrunken_q`
-# 
-# test$`09_lfc_0.58_fc_1.5`$`01_dds`
-# test$`09_lfc_0.58_fc_1.5`$`02_DGE_unshrunken_DF` %>% tibble::as_tibble()
-# test$`09_lfc_0.58_fc_1.5`$`02_DGE_shrunken_DF` %>% tibble::as_tibble()
-# test$`09_lfc_0.58_fc_1.5`$`02_DGE_lessAbs_unshrunken_DF` %>% tibble::as_tibble()
-# test$`09_lfc_0.58_fc_1.5`$`03_DGE_unshrunken_GR` %>% tibble::as_tibble()
-# test$`09_lfc_0.58_fc_1.5`$`03_DGE_shrunken_GR` %>% tibble::as_tibble()
-# test$`09_lfc_0.58_fc_1.5`$`03_DGE_lessAbs_unshrunken_GR` %>% tibble::as_tibble()
-# test$`09_lfc_0.58_fc_1.5`$`04_t_DGE_unshrunken`
-# test$`09_lfc_0.58_fc_1.5`$`04_t_DGE_lessAbs_unshrunken`
-# as.numeric(table(test$`09_lfc_0.58_fc_1.5`$`04_t_DGE_lessAbs_unshrunken`$padj < 0.99)[2])
-# test$`09_lfc_0.58_fc_1.5`$`04_t_DGE_shrunken`
-# test$`09_lfc_0.58_fc_1.5`$`08_p_vol_unshrunken_KA`
-# test$`09_lfc_0.58_fc_1.5`$`08_p_vol_shrunken_KA`
-# test$`09_lfc_0.58_fc_1.5`$`08_p_vol_lessAbs_unshrunken_KA`
-# test$`09_lfc_0.58_fc_1.5`$`09_p_MA_unshrunken`
-# test$`09_lfc_0.58_fc_1.5`$`09_p_MA_shrunken`
-# test$`09_lfc_0.58_fc_1.5`$`09_p_MA_lessAbs_unshrunken`
-# test$`09_lfc_0.58_fc_1.5`$`10_hist_unshrunken_p`
-# test$`09_lfc_0.58_fc_1.5`$`10_hist_unshrunken_q`
-# test$`09_lfc_0.58_fc_1.5`$`10_hist_shrunken_s`
-# test$`09_lfc_0.58_fc_1.5`$`10_hist_lessAbs_unshrunken_p`
-# test$`09_lfc_0.58_fc_1.5`$`10_hist_lessAbs_unshrunken_q`
-#
-# test$`09_lfc_0.807_fc_1.75`$`01_dds`
-# test$`09_lfc_0.807_fc_1.75`$`02_DGE_unshrunken_DF` %>% tibble::as_tibble()
-# test$`09_lfc_0.807_fc_1.75`$`02_DGE_shrunken_DF` %>% tibble::as_tibble()
-# test$`09_lfc_0.807_fc_1.75`$`02_DGE_lessAbs_unshrunken_DF` %>% tibble::as_tibble()
-# test$`09_lfc_0.807_fc_1.75`$`03_DGE_unshrunken_GR` %>% tibble::as_tibble()
-# test$`09_lfc_0.807_fc_1.75`$`03_DGE_shrunken_GR` %>% tibble::as_tibble()
-# test$`09_lfc_0.807_fc_1.75`$`03_DGE_lessAbs_unshrunken_GR` %>% tibble::as_tibble()
-# test$`09_lfc_0.807_fc_1.75`$`04_t_DGE_unshrunken`
-# test$`09_lfc_0.807_fc_1.75`$`04_t_DGE_lessAbs_unshrunken`
-# as.numeric(table(test$`09_lfc_0.807_fc_1.75`$`04_t_DGE_lessAbs_unshrunken`$padj < 0.99)[2])
-# test$`09_lfc_0.807_fc_1.75`$`04_t_DGE_shrunken`
-# test$`09_lfc_0.807_fc_1.75`$`08_p_vol_unshrunken_KA`
-# test$`09_lfc_0.807_fc_1.75`$`08_p_vol_shrunken_KA`
-# test$`09_lfc_0.807_fc_1.75`$`08_p_vol_lessAbs_unshrunken_KA`
-# test$`09_lfc_0.807_fc_1.75`$`09_p_MA_unshrunken`
-# test$`09_lfc_0.807_fc_1.75`$`09_p_MA_shrunken`
-# test$`09_lfc_0.807_fc_1.75`$`09_p_MA_lessAbs_unshrunken`
-# test$`09_lfc_0.807_fc_1.75`$`10_hist_unshrunken_p`
-# test$`09_lfc_0.807_fc_1.75`$`10_hist_unshrunken_q`
-# test$`09_lfc_0.807_fc_1.75`$`10_hist_shrunken_s`
-# test$`09_lfc_0.807_fc_1.75`$`10_hist_lessAbs_unshrunken_p`
-# test$`09_lfc_0.807_fc_1.75`$`10_hist_lessAbs_unshrunken_q`
+run_test <- FALSE
+if(base::isTRUE(run_test)) {
+    #  Run tests/check things
+    # test <- `DGE-analysis_N-Q-nab3d_N-Q-parental`
+    # test <- `DGE-analysis_SS-Q-nab3d_SS-Q-parental`
+    test <- `DGE-analysis_SS-Q-rrp6∆_SS-Q-WT`
+    # test <- `DGE-analysis_SS-G1-rrp6∆_SS-G1-WT`
+    # test <- `DGE-analysis_N-Q-rrp6∆_N-Q-WT`
+
+    # test$`01_t_init`
+    # test$`02_t_meta`
+    # test$`03_filtering`
+    # test$`04_t_tmp`
+    # test$`05_t_sub`
+    # test$`06_g_pos` %>% tibble::as_tibble()
+    # test$`07_t_counts` %>% tibble::as_tibble()
+    # test$`08_size_factors`
+    # test$`08_size_factors_recip`
+    # test$`08_col_data`
+    # test$`08_dds`@rowRanges %>% tibble::as_tibble()
+    # test$`08_dds`@colData
+
+    # test$`09_lfc_0.415_fc_1.33`$`01_dds`
+    # test$`09_lfc_0.415_fc_1.33`$`02_DGE_unshrunken_DF` %>% tibble::as_tibble()
+    # test$`09_lfc_0.415_fc_1.33`$`02_DGE_shrunken_DF` %>% tibble::as_tibble()
+    # test$`09_lfc_0.415_fc_1.33`$`02_DGE_lessAbs_unshrunken_DF` %>% tibble::as_tibble()
+    # test$`09_lfc_0.415_fc_1.33`$`03_DGE_unshrunken_GR` %>% tibble::as_tibble()
+    # test$`09_lfc_0.415_fc_1.33`$`03_DGE_shrunken_GR` %>% tibble::as_tibble()
+    # test$`09_lfc_0.415_fc_1.33`$`03_DGE_lessAbs_unshrunken_GR` %>% tibble::as_tibble()
+    # test$`09_lfc_0.415_fc_1.33`$`04_t_DGE_unshrunken`
+    # test$`09_lfc_0.415_fc_1.33`$`04_t_DGE_lessAbs_unshrunken`
+    # as.numeric(table(test$`09_lfc_0.415_fc_1.33`$`04_t_DGE_lessAbs_unshrunken`$padj < 0.99)[2])
+    # test$`09_lfc_0.415_fc_1.33`$`04_t_DGE_shrunken`
+    test$`09_lfc_0.415_fc_1.33`$`08_p_vol_unshrunken_KA`
+    # test$`09_lfc_0.415_fc_1.33`$`08_p_vol_shrunken_KA`
+    # test$`09_lfc_0.415_fc_1.33`$`08_p_vol_lessAbs_unshrunken_KA`
+    # test$`09_lfc_0.415_fc_1.33`$`09_p_MA_unshrunken`
+    # test$`09_lfc_0.415_fc_1.33`$`09_p_MA_shrunken`
+    # test$`09_lfc_0.415_fc_1.33`$`09_p_MA_lessAbs_unshrunken`
+    # test$`09_lfc_0.415_fc_1.33`$`10_hist_unshrunken_p`
+    # test$`09_lfc_0.415_fc_1.33`$`10_hist_unshrunken_q`
+    # test$`09_lfc_0.415_fc_1.33`$`10_hist_shrunken_s`
+    # test$`09_lfc_0.415_fc_1.33`$`10_hist_lessAbs_unshrunken_p`
+    # test$`09_lfc_0.415_fc_1.33`$`10_hist_lessAbs_unshrunken_q`
+
+    # test$`09_lfc_0.58_fc_1.5`$`01_dds`
+    # test$`09_lfc_0.58_fc_1.5`$`02_DGE_unshrunken_DF` %>% tibble::as_tibble()
+    # test$`09_lfc_0.58_fc_1.5`$`02_DGE_shrunken_DF` %>% tibble::as_tibble()
+    # test$`09_lfc_0.58_fc_1.5`$`02_DGE_lessAbs_unshrunken_DF` %>% tibble::as_tibble()
+    # test$`09_lfc_0.58_fc_1.5`$`03_DGE_unshrunken_GR` %>% tibble::as_tibble()
+    # test$`09_lfc_0.58_fc_1.5`$`03_DGE_shrunken_GR` %>% tibble::as_tibble()
+    # test$`09_lfc_0.58_fc_1.5`$`03_DGE_lessAbs_unshrunken_GR` %>% tibble::as_tibble()
+    # test$`09_lfc_0.58_fc_1.5`$`04_t_DGE_unshrunken`
+    # test$`09_lfc_0.58_fc_1.5`$`04_t_DGE_lessAbs_unshrunken`
+    # as.numeric(table(test$`09_lfc_0.58_fc_1.5`$`04_t_DGE_lessAbs_unshrunken`$padj < 0.99)[2])
+    # test$`09_lfc_0.58_fc_1.5`$`04_t_DGE_shrunken`
+    test$`09_lfc_0.58_fc_1.5`$`08_p_vol_unshrunken_KA`
+    # test$`09_lfc_0.58_fc_1.5`$`08_p_vol_shrunken_KA`
+    # test$`09_lfc_0.58_fc_1.5`$`08_p_vol_lessAbs_unshrunken_KA`
+    # test$`09_lfc_0.58_fc_1.5`$`09_p_MA_unshrunken`
+    # test$`09_lfc_0.58_fc_1.5`$`09_p_MA_shrunken`
+    # test$`09_lfc_0.58_fc_1.5`$`09_p_MA_lessAbs_unshrunken`
+    # test$`09_lfc_0.58_fc_1.5`$`10_hist_unshrunken_p`
+    # test$`09_lfc_0.58_fc_1.5`$`10_hist_unshrunken_q`
+    # test$`09_lfc_0.58_fc_1.5`$`10_hist_shrunken_s`
+    # test$`09_lfc_0.58_fc_1.5`$`10_hist_lessAbs_unshrunken_p`
+    # test$`09_lfc_0.58_fc_1.5`$`10_hist_lessAbs_unshrunken_q`
+
+    # test$`09_lfc_0.807_fc_1.75`$`01_dds`
+    # test$`09_lfc_0.807_fc_1.75`$`02_DGE_unshrunken_DF` %>% tibble::as_tibble()
+    # test$`09_lfc_0.807_fc_1.75`$`02_DGE_shrunken_DF` %>% tibble::as_tibble()
+    # test$`09_lfc_0.807_fc_1.75`$`02_DGE_lessAbs_unshrunken_DF` %>% tibble::as_tibble()
+    # test$`09_lfc_0.807_fc_1.75`$`03_DGE_unshrunken_GR` %>% tibble::as_tibble()
+    # test$`09_lfc_0.807_fc_1.75`$`03_DGE_shrunken_GR` %>% tibble::as_tibble()
+    # test$`09_lfc_0.807_fc_1.75`$`03_DGE_lessAbs_unshrunken_GR` %>% tibble::as_tibble()
+    # test$`09_lfc_0.807_fc_1.75`$`04_t_DGE_unshrunken`
+    # test$`09_lfc_0.807_fc_1.75`$`04_t_DGE_lessAbs_unshrunken`
+    # as.numeric(table(test$`09_lfc_0.807_fc_1.75`$`04_t_DGE_lessAbs_unshrunken`$padj < 0.99)[2])
+    # test$`09_lfc_0.807_fc_1.75`$`04_t_DGE_shrunken`
+    test$`09_lfc_0.807_fc_1.75`$`08_p_vol_unshrunken_KA`
+    # test$`09_lfc_0.807_fc_1.75`$`08_p_vol_shrunken_KA`
+    # test$`09_lfc_0.807_fc_1.75`$`08_p_vol_lessAbs_unshrunken_KA`
+    # test$`09_lfc_0.807_fc_1.75`$`09_p_MA_unshrunken`
+    # test$`09_lfc_0.807_fc_1.75`$`09_p_MA_shrunken`
+    # test$`09_lfc_0.807_fc_1.75`$`09_p_MA_lessAbs_unshrunken`
+    # test$`09_lfc_0.807_fc_1.75`$`10_hist_unshrunken_p`
+    # test$`09_lfc_0.807_fc_1.75`$`10_hist_unshrunken_q`
+    # test$`09_lfc_0.807_fc_1.75`$`10_hist_shrunken_s`
+    # test$`09_lfc_0.807_fc_1.75`$`10_hist_lessAbs_unshrunken_p`
+    # test$`09_lfc_0.807_fc_1.75`$`10_hist_lessAbs_unshrunken_q`
+    
+    rm(test)
+}
 
 
-print_volcano_unshrunken(
-    dataframe = `DGE-analysis_N-Q-nab3d_N-Q-parental`,
-    lfc = "lfc-gt-0",
-    style = "AG"
-)
-print_volcano_unshrunken(
-    dataframe = `DGE-analysis_SS-Q-nab3d_SS-Q-parental`,
-    lfc = "lfc-gt-0",
-    style = "AG"
-)
-
-print_volcano_unshrunken(
-    dataframe = `DGE-analysis_SS-Q-rrp6∆_SS-Q-WT`,
-    lfc = "lfc-gt-0",
-    style = "AG"
-)
-print_volcano_unshrunken(
-    dataframe = `DGE-analysis_SS-G1-rrp6∆_SS-G1-WT`,
-    lfc = "lfc-gt-0",
-    style = "AG"
-)
-print_volcano_unshrunken(
-    dataframe = `DGE-analysis_N-Q-rrp6∆_N-Q-WT`,
-    lfc = "lfc-gt-0",
-    style = "AG"
-)
-
-print_volcano_unshrunken(
-    dataframe = `DGE-analysis_N-Q-nab3d_N-Q-parental`,
-    lfc = "lfc-gt-0.58",
-    style = "AG"
-)
-print_volcano_unshrunken(
-    dataframe = `DGE-analysis_SS-Q-nab3d_SS-Q-parental`,
-    lfc = "lfc-gt-0.58",
-    style = "AG"
-)
-
-print_volcano_unshrunken(
-    dataframe = `DGE-analysis_SS-Q-rrp6∆_SS-Q-WT`,
-    lfc = "lfc-gt-0.58",
-    style = "AG"
-)
-print_volcano_unshrunken(
-    dataframe = `DGE-analysis_SS-G1-rrp6∆_SS-G1-WT`,
-    lfc = "lfc-gt-0.58",
-    style = "AG"
-)
-print_volcano_unshrunken(
-    dataframe = `DGE-analysis_N-Q-rrp6∆_N-Q-WT`,
-    lfc = "lfc-gt-0.58",
-    style = "AG"
-)
+run <- FALSE
+if(base::isTRUE(run)) {
+    print_volcano_unshrunken(
+        dataframe = `DGE-analysis_N-Q-nab3d_N-Q-parental`,
+        lfc = "lfc-gt-0",
+        style = "AG",
+        type = type
+    )
+    print_volcano_unshrunken(
+        dataframe = `DGE-analysis_SS-Q-nab3d_SS-Q-parental`,
+        lfc = "lfc-gt-0",
+        style = "AG",
+        type = type
+    )
+    
+    print_volcano_unshrunken(
+        dataframe = `DGE-analysis_SS-Q-rrp6∆_SS-Q-WT`,
+        lfc = "lfc-gt-0",
+        style = "AG",
+        type = type
+    )
+    print_volcano_unshrunken(
+        dataframe = `DGE-analysis_SS-G1-rrp6∆_SS-G1-WT`,
+        lfc = "lfc-gt-0",
+        style = "AG",
+        type = type
+    )
+    print_volcano_unshrunken(
+        dataframe = `DGE-analysis_N-Q-rrp6∆_N-Q-WT`,
+        lfc = "lfc-gt-0",
+        style = "AG",
+        type = type
+    )
+}
 
 run <- TRUE
 if(base::isTRUE(run)) {
     print_volcano_unshrunken(
         dataframe = `DGE-analysis_N-Q-nab3d_N-Q-parental`,
+        lfc = "lfc-gt-0.58",
+        style = "AG",
+        type = type
+    )
+    print_volcano_unshrunken(
+        dataframe = `DGE-analysis_SS-Q-nab3d_SS-Q-parental`,
+        lfc = "lfc-gt-0.58",
+        style = "AG",
+        type = type
+    )
+    
+    print_volcano_unshrunken(
+        dataframe = `DGE-analysis_SS-Q-rrp6∆_SS-Q-WT`,
+        lfc = "lfc-gt-0.58",
+        style = "AG",
+        type = type
+    )
+    print_volcano_unshrunken(
+        dataframe = `DGE-analysis_SS-G1-rrp6∆_SS-G1-WT`,
+        lfc = "lfc-gt-0.58",
+        style = "AG",
+        type = type
+    )
+    print_volcano_unshrunken(
+        dataframe = `DGE-analysis_N-Q-rrp6∆_N-Q-WT`,
+        lfc = "lfc-gt-0.58",
+        style = "AG",
+        type = type
+    )
+}
+
+run <- FALSE
+if(base::isTRUE(run)) {
+    print_volcano_unshrunken(
+        dataframe = `DGE-analysis_N-Q-nab3d_N-Q-parental`,
         lfc = "lfc-gt-4",
-        style = "KA"
+        style = "KA",
+        type = type
     )
     print_volcano_unshrunken(
         dataframe = `DGE-analysis_SS-Q-nab3d_SS-Q-parental`,
         lfc = "lfc-gt-4",
-        style = "KA"
+        style = "KA",
+        type = type
     )
 }
 
-output_rds(`DGE-analysis_N-Q-nab3d_N-Q-parental`)
-output_rds(`DGE-analysis_SS-Q-nab3d_SS-Q-parental`)
-
-output_rds(`DGE-analysis_SS-Q-rrp6∆_SS-Q-WT`)
-output_rds(`DGE-analysis_SS-G1-rrp6∆_SS-G1-WT`)
-output_rds(`DGE-analysis_N-Q-rrp6∆_N-Q-WT`)
+write_rds_files <- TRUE  #ARGUMENT
+if(base::isTRUE(write_rds_files)) {
+    output_rds(`DGE-analysis_N-Q-nab3d_N-Q-parental`, type)
+    output_rds(`DGE-analysis_SS-Q-nab3d_SS-Q-parental`, type)
+    
+    output_rds(`DGE-analysis_SS-Q-rrp6∆_SS-Q-WT`, type)
+    output_rds(`DGE-analysis_SS-G1-rrp6∆_SS-G1-WT`, type)
+    output_rds(`DGE-analysis_N-Q-rrp6∆_N-Q-WT`, type)
+}
 
 
 #  Notes ======================================================================

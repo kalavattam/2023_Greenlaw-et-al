@@ -5,19 +5,20 @@
 
 
 #  Initialize arguments =======================================================
-# samples <- "ovation"  #ARGUMENT
+samples <- "ovation"  #ARGUMENT
 # samples <- "ovation_tecan_test"  #ARGUMENT
 # samples <- "ovation_tecan_test_rrp6∆"  #ARGUMENT
 # samples <- "ovation_tecan_updated"  #ARGUMENT
 # samples <- "n3d_od"  #ARGUMENT
 # samples <- "r6n"  #ARGUMENT
-samples <- "r6n_timecourse"  #ARGUMENT
+# samples <- "r6n_timecourse"  #ARGUMENT
+# samples <- "Rrp6∆.timecourse-G1-Q.SS"
 
-# tx <- "coding-non-pa-ncRNA"  #ARGUMENT
-# tx <- "noncoding-non-collapsed"  #ARGUMENT
-# tx <- "noncoding-collapsed"  #ARGUMENT
+# tx <- "coding-non-pa-ncRNA"  #ARGUMENT  #IMPORTANT  #NOTE i.e., "R64"
+# tx <- "noncoding-collapsed"  #ARGUMENT  #IMPORTANT
+tx <- "noncoding-non-collapsed"  #ARGUMENT
 # tx <- "Trinity-G1"  #ARGUMENT
-tx <- "Trinity-Q"  #ARGUMENT
+# tx <- "Trinity-Q"  #ARGUMENT
 
 
 #  Get situated ===============================================================
@@ -787,6 +788,12 @@ if(samples == "ovation") {
 } else if(samples == "r6n_timecourse") {
     tmp_samples <- tmp[, stringr::str_detect(colnames(tmp), "DS")] %>%
         dplyr::select(-dplyr::contains("t4n"))
+} else if(samples == "Rrp6∆.timecourse-G1-Q.SS") {
+    tmp_samples <- tmp[, stringr::str_detect(colnames(tmp), "r6n|WT|DS")] %>%
+        dplyr::select(-dplyr::contains("t4n")) %>%
+        dplyr::select(-dplyr::contains("ovn")) %>%
+        dplyr::select(-dplyr::contains("test")) %>%
+        dplyr::select(-dplyr::contains("_N_"))
 }
 # colnames(tmp_samples)
 
@@ -952,38 +959,6 @@ if(samples == "ovation") {
             sum_r6n_Q_SS_rep2_tech2 = sum(r6n_Q_SS_rep2_tech2),
             number_of_features = dplyr::n()
         )
-} else if(samples == "r6n") {
-    t_rel <- t_rel %>% dplyr::relocate(
-            c("WT_G1_SS_rep1_tech2", "WT_G1_SS_rep2_tech2"),
-            .after = "category"
-        ) %>%
-        dplyr::relocate(
-            c("WT_Q_N_rep1_tech1", "WT_Q_N_rep2_tech1"),
-            .before = "r6n_Q_N_rep1_tech1"
-        ) %>%
-        dplyr::relocate(
-            c("WT_Q_SS_rep1_tech1", "WT_Q_SS_rep2_tech1"),
-            .before = "r6n_Q_SS_rep1_tech1"
-        )
-    
-    t_rel_summarize <- t_rel %>%
-        dplyr::group_by(category) %>%
-        dplyr::summarize(
-            sum_WT_G1_SS_rep1_tech2 = sum(WT_G1_SS_rep1_tech2),
-            sum_WT_G1_SS_rep2_tech2 = sum(WT_G1_SS_rep2_tech2),
-            sum_r6n_G1_SS_rep1_tech2 = sum(r6n_G1_SS_rep1_tech2),
-            sum_r6n_G1_SS_rep2_tech2 = sum(r6n_G1_SS_rep2_tech2),
-            sum_WT_Q_N_rep1_tech1 = sum(WT_Q_N_rep1_tech1),
-            sum_WT_Q_N_rep2_tech1 = sum(WT_Q_N_rep2_tech1),
-            sum_r6n_Q_N_rep1_tech1 = sum(r6n_Q_N_rep1_tech1),
-            sum_r6n_Q_N_rep2_tech1 = sum(r6n_Q_N_rep2_tech1),
-            sum_WT_Q_SS_rep1_tech1 = sum(WT_Q_SS_rep1_tech1),
-            sum_WT_Q_SS_rep2_tech1 = sum(WT_Q_SS_rep2_tech1),
-            sum_r6n_Q_SS_rep1_tech1 = sum(r6n_Q_SS_rep1_tech1),
-            sum_r6n_Q_SS_rep1_tech2 = sum(r6n_Q_SS_rep1_tech2),
-            sum_r6n_Q_SS_rep2_tech1 = sum(r6n_Q_SS_rep2_tech1),
-            number_of_features = dplyr::n()
-        )
 } else if(samples == "r6n_timecourse") {
     t_rel <- t_rel %>% dplyr::relocate(
             c("r6n_DSm2_SS_rep1_tech1", "r6n_DSm2_SS_rep2_tech1"),
@@ -1033,7 +1008,59 @@ if(samples == "ovation") {
                 sum_r6n_DSp48_SS_rep2_tech1 = sum(r6n_DSp48_SS_rep2_tech1),
                 number_of_features = dplyr::n()
             )
-}
+} else if(samples == "Rrp6∆.timecourse-G1-Q.SS") {
+    t_rel <- t_rel %>%
+        dplyr::relocate(
+            c(
+                "WT_G1_SS_rep1_tech2", "WT_G1_SS_rep2_tech2",
+                "r6n_G1_SS_rep1_tech2", "r6n_G1_SS_rep2_tech2",
+                "WT_DSm2_SS_rep1_tech1", "WT_DSm2_SS_rep2_tech1",
+                "r6n_DSm2_SS_rep1_tech1", "r6n_DSm2_SS_rep2_tech1",
+                "WT_DSp2_SS_rep1_tech1", "WT_DSp2_SS_rep2_tech1",
+                "r6n_DSp2_SS_rep1_tech1", "r6n_DSp2_SS_rep2_tech1",
+                "WT_DSp24_SS_rep1_tech1", "WT_DSp24_SS_rep2_tech1",
+                "r6n_DSp24_SS_rep1_tech1", "r6n_DSp24_SS_rep2_tech1",
+                "WT_DSp48_SS_rep1_tech1", "WT_DSp48_SS_rep1_tech2",
+                "WT_DSp48_SS_rep2_tech1", "r6n_DSp48_SS_rep1_tech2",
+                "r6n_DSp48_SS_rep2_tech1", "WT_Q_SS_rep1_tech1",
+                "WT_Q_SS_rep2_tech1", "r6n_Q_SS_rep1_tech1",
+                "r6n_Q_SS_rep2_tech1", "r6n_Q_SS_rep2_tech2"
+            ),
+            .after = "category"
+        )
+    
+    t_rel_summarize <- t_rel %>%
+        dplyr::group_by(category) %>%
+        dplyr::summarize(
+            sum_WT_G1_SS_rep1_tech2 = sum(WT_G1_SS_rep1_tech2),
+            sum_WT_G1_SS_rep2_tech2 = sum(WT_G1_SS_rep2_tech2),
+            sum_r6n_G1_SS_rep1_tech2 = sum(r6n_G1_SS_rep1_tech2),
+            sum_r6n_G1_SS_rep2_tech2 = sum(r6n_G1_SS_rep2_tech2),
+            sum_WT_DSm2_SS_rep1_tech1 = sum(WT_DSm2_SS_rep1_tech1),
+            sum_WT_DSm2_SS_rep2_tech1 = sum(WT_DSm2_SS_rep2_tech1),
+            sum_r6n_DSm2_SS_rep1_tech1 = sum(r6n_DSm2_SS_rep1_tech1),
+            sum_r6n_DSm2_SS_rep2_tech1 = sum(r6n_DSm2_SS_rep2_tech1),
+            sum_WT_DSp2_SS_rep1_tech1 = sum(WT_DSp2_SS_rep1_tech1),
+            sum_WT_DSp2_SS_rep2_tech1 = sum(WT_DSp2_SS_rep2_tech1),
+            sum_r6n_DSp2_SS_rep1_tech1 = sum(r6n_DSp2_SS_rep1_tech1),
+            sum_r6n_DSp2_SS_rep2_tech1 = sum(r6n_DSp2_SS_rep2_tech1),
+            sum_WT_DSp24_SS_rep1_tech1 = sum(WT_DSp24_SS_rep1_tech1),
+            sum_WT_DSp24_SS_rep2_tech1 = sum(WT_DSp24_SS_rep2_tech1),
+            sum_r6n_DSp24_SS_rep1_tech1 = sum(r6n_DSp24_SS_rep1_tech1),
+            sum_r6n_DSp24_SS_rep2_tech1 = sum(r6n_DSp24_SS_rep2_tech1),
+            sum_WT_DSp48_SS_rep1_tech1 = sum(WT_DSp48_SS_rep1_tech1),
+            sum_WT_DSp48_SS_rep1_tech2 = sum(WT_DSp48_SS_rep1_tech2),
+            sum_WT_DSp48_SS_rep2_tech1 = sum(WT_DSp48_SS_rep2_tech1),
+            sum_r6n_DSp48_SS_rep1_tech2 = sum(r6n_DSp48_SS_rep1_tech2),
+            sum_r6n_DSp48_SS_rep2_tech1 = sum(r6n_DSp48_SS_rep2_tech1),
+            sum_WT_Q_SS_rep1_tech1 = sum(WT_Q_SS_rep1_tech1),
+            sum_WT_Q_SS_rep2_tech1 = sum(WT_Q_SS_rep2_tech1),
+            sum_r6n_Q_SS_rep1_tech1 = sum(r6n_Q_SS_rep1_tech1),
+            sum_r6n_Q_SS_rep2_tech1 = sum(r6n_Q_SS_rep2_tech1),
+            sum_r6n_Q_SS_rep2_tech2 = sum(r6n_Q_SS_rep2_tech2),
+            number_of_features = dplyr::n()
+        )
+}  #HERE
 # colnames(t_rel)
 # colnames(t_rel_summarize)
 # t_rel_summarize$category
@@ -1275,6 +1302,122 @@ if(tx == "noncoding-collapsed") {
                         ])
                     )
                 )
+        } else if(samples == "Rrp6∆.timecourse-G1-Q.SS") {
+            feat_ncRNA <- rbind(
+                feat_ncRNA[feat_ncRNA$number_of_features >= threshold, ],
+                    list(
+                        # category = "other",
+                        category = "ncRNA",
+                        sum_WT_G1_SS_rep1_tech2 = sum(feat_ncRNA[
+                            feat_ncRNA$number_of_features < threshold,
+                            "sum_WT_G1_SS_rep1_tech2"
+                        ]),
+                        sum_WT_G1_SS_rep2_tech2 = sum(feat_ncRNA[
+                            feat_ncRNA$number_of_features < threshold,
+                            "sum_WT_G1_SS_rep2_tech2"
+                        ]),
+                        sum_r6n_G1_SS_rep1_tech2 = sum(feat_ncRNA[
+                            feat_ncRNA$number_of_features < threshold,
+                            "sum_r6n_G1_SS_rep1_tech2"
+                        ]),
+                        sum_r6n_G1_SS_rep2_tech2 = sum(feat_ncRNA[
+                            feat_ncRNA$number_of_features < threshold,
+                            "sum_r6n_G1_SS_rep2_tech2"
+                        ]),
+                        sum_WT_DSm2_SS_rep1_tech1= sum(feat_ncRNA[
+                        feat_ncRNA$number_of_features < threshold,
+                        "sum_WT_DSm2_SS_rep1_tech1"
+                        ]),
+                        sum_WT_DSm2_SS_rep2_tech1= sum(feat_ncRNA[
+                            feat_ncRNA$number_of_features < threshold,
+                            "sum_WT_DSm2_SS_rep2_tech1"
+                        ]),
+                        sum_r6n_DSm2_SS_rep1_tech1= sum(feat_ncRNA[
+                            feat_ncRNA$number_of_features < threshold,
+                            "sum_r6n_DSm2_SS_rep1_tech1"
+                        ]),
+                        sum_r6n_DSm2_SS_rep2_tech1= sum(feat_ncRNA[
+                            feat_ncRNA$number_of_features < threshold,
+                            "sum_r6n_DSm2_SS_rep2_tech1"
+                        ]),
+                        sum_WT_DSp2_SS_rep1_tech1= sum(feat_ncRNA[
+                            feat_ncRNA$number_of_features < threshold,
+                            "sum_WT_DSp2_SS_rep1_tech1"
+                        ]),
+                        sum_WT_DSp2_SS_rep2_tech1= sum(feat_ncRNA[
+                            feat_ncRNA$number_of_features < threshold,
+                            "sum_WT_DSp2_SS_rep2_tech1"
+                        ]),
+                        sum_r6n_DSp2_SS_rep1_tech1= sum(feat_ncRNA[
+                            feat_ncRNA$number_of_features < threshold,
+                            "sum_r6n_DSp2_SS_rep1_tech1"
+                        ]),
+                        sum_r6n_DSp2_SS_rep2_tech1= sum(feat_ncRNA[
+                            feat_ncRNA$number_of_features < threshold,
+                            "sum_r6n_DSp2_SS_rep2_tech1"
+                        ]),
+                        sum_WT_DSp24_SS_rep1_tech1= sum(feat_ncRNA[
+                            feat_ncRNA$number_of_features < threshold,
+                            "sum_WT_DSp24_SS_rep1_tech1"
+                        ]),
+                        sum_WT_DSp24_SS_rep2_tech1= sum(feat_ncRNA[
+                            feat_ncRNA$number_of_features < threshold,
+                            "sum_WT_DSp24_SS_rep2_tech1"
+                        ]),
+                        sum_r6n_DSp24_SS_rep1_tech1= sum(feat_ncRNA[
+                            feat_ncRNA$number_of_features < threshold,
+                            "sum_r6n_DSp24_SS_rep1_tech1"
+                        ]),
+                        sum_r6n_DSp24_SS_rep2_tech1= sum(feat_ncRNA[
+                            feat_ncRNA$number_of_features < threshold,
+                            "sum_r6n_DSp24_SS_rep2_tech1"
+                        ]),
+                        sum_WT_DSp48_SS_rep1_tech1= sum(feat_ncRNA[
+                            feat_ncRNA$number_of_features < threshold,
+                            "sum_WT_DSp48_SS_rep1_tech1"
+                        ]),
+                        sum_WT_DSp48_SS_rep1_tech2= sum(feat_ncRNA[
+                            feat_ncRNA$number_of_features < threshold,
+                            "sum_WT_DSp48_SS_rep1_tech2"
+                        ]),
+                        sum_WT_DSp48_SS_rep2_tech1= sum(feat_ncRNA[
+                            feat_ncRNA$number_of_features < threshold,
+                            "sum_WT_DSp48_SS_rep2_tech1"
+                        ]),
+                        sum_r6n_DSp48_SS_rep1_tech2= sum(feat_ncRNA[
+                            feat_ncRNA$number_of_features < threshold,
+                            "sum_r6n_DSp48_SS_rep1_tech2"
+                        ]),
+                        sum_r6n_DSp48_SS_rep2_tech1= sum(feat_ncRNA[
+                            feat_ncRNA$number_of_features < threshold,
+                            "sum_r6n_DSp48_SS_rep2_tech1"
+                        ]),
+                        sum_WT_Q_SS_rep1_tech1 = sum(feat_ncRNA[
+                            feat_ncRNA$number_of_features < threshold,
+                            "sum_WT_Q_SS_rep1_tech1"
+                        ]),
+                        sum_WT_Q_SS_rep2_tech1 = sum(feat_ncRNA[
+                            feat_ncRNA$number_of_features < threshold,
+                            "sum_WT_Q_SS_rep2_tech1"
+                        ]),
+                        sum_r6n_Q_SS_rep1_tech1 = sum(feat_ncRNA[
+                            feat_ncRNA$number_of_features < threshold,
+                            "sum_r6n_Q_SS_rep1_tech1"
+                        ]),
+                        sum_r6n_Q_SS_rep2_tech1 = sum(feat_ncRNA[
+                            feat_ncRNA$number_of_features < threshold,
+                            "sum_r6n_Q_SS_rep2_tech1"
+                        ]),
+                        sum_r6n_Q_SS_rep2_tech2 = sum(feat_ncRNA[
+                            feat_ncRNA$number_of_features < threshold,
+                            "sum_r6n_Q_SS_rep2_tech2"
+                        ]),
+                        number_of_features = sum(feat_ncRNA[
+                            feat_ncRNA$number_of_features < threshold,
+                            "number_of_features"
+                        ])
+                    )
+                )
         }
         # feat_ncRNA %>% colnames()
         
@@ -1292,7 +1435,7 @@ if(tx == "noncoding-collapsed") {
             rm(feat_alignment, feat_ncRNA)
         }
     }
-}
+}  #HERE
 
 #  Order the categories alphabetically without respect to case, and exclude
 #+ the "multimapper (excluded)" and "pseudogene" categories
@@ -1346,7 +1489,8 @@ if(samples %in% c("ovation", "ovation_tecan_test", "ovation_tecan_updated")) {
     colnames(t_rel_summarize) <- colnames(t_rel_summarize) %>%
         stringr::str_remove("sum_WT_")
 } else if(samples %in% c(
-    "n3d_od", "r6n", "r6n_timecourse", "ovation_tecan_test_rrp6∆"
+    "n3d_od", "r6n", "r6n_timecourse", "ovation_tecan_test_rrp6∆",
+    "Rrp6∆.timecourse-G1-Q.SS"
 )) {
     colnames(t_rel_summarize) <- colnames(t_rel_summarize) %>%
         stringr::str_remove("sum_")
@@ -1412,7 +1556,7 @@ col_piv <- colnames(t_rel_summarize)[-c(1, ncol(t_rel_summarize))]
 `sample-by-category_pivoted` <- prop_summarize[
     , 1:(ncol(t_rel_summarize) - 1)
 ] %>%
-    pivot_on_columns(col_piv)
+    pivot_on_columns(col_piv)  #HERE
 
 if(samples %in% c(
     "ovation_tecan_test", "ovation_tecan_test_rrp6∆", "ovation_tecan_updated"
@@ -1428,18 +1572,34 @@ if(samples %in% c(
         `sample-by-category_pivoted`$samples %>%
         stringr::str_remove_all("_rep1|_rep2") %>%
         as.factor()
-} else if (samples %in% c("r6n", "r6n_timecourse")) {
+} else if (samples %in% c("r6n", "r6n_timecourse", "Rrp6∆.timecourse-G1-Q.SS")) {
     `sample-by-category_pivoted`$samples <-
         `sample-by-category_pivoted`$samples %>%
         stringr::str_remove_all("_tech1|_tech2|_rep1|_rep2")
     
-    `sample-by-category_pivoted`$samples <- factor(
-        `sample-by-category_pivoted`$samples,
-        levels = c(
-            "WT_DSm2_SS", "r6n_DSm2_SS", "WT_DSp2_SS", "r6n_DSp2_SS",
-            "WT_DSp24_SS", "r6n_DSp24_SS", "WT_DSp48_SS", "r6n_DSp48_SS"
+    if(samples == "r6n") {
+        `sample-by-category_pivoted`$samples <- factor(
+            `sample-by-category_pivoted`$samples,
+            levels = c("WT_G1_SS", "r6n_G1_SS", "WT_Q_SS", "r6n_Q_SS")
         )
-    )
+    } else if(samples == "Rrp6∆.timecourse-G1-Q.SS") {
+        `sample-by-category_pivoted`$samples <- factor(
+            `sample-by-category_pivoted`$samples,
+            levels = c(
+                "WT_G1_SS", "r6n_G1_SS", "WT_DSm2_SS", "r6n_DSm2_SS",
+                "WT_DSp2_SS", "r6n_DSp2_SS", "WT_DSp24_SS", "r6n_DSp24_SS",
+                "WT_DSp48_SS", "r6n_DSp48_SS", "WT_Q_SS", "r6n_Q_SS"
+            )
+        )
+    } else {
+        `sample-by-category_pivoted`$samples <- factor(
+            `sample-by-category_pivoted`$samples,
+            levels = c(
+                "WT_DSm2_SS", "r6n_DSm2_SS", "WT_DSp2_SS", "r6n_DSp2_SS",
+                "WT_DSp24_SS", "r6n_DSp24_SS", "WT_DSp48_SS", "r6n_DSp48_SS"
+            )
+        )
+    }
 } else {
     `sample-by-category_pivoted`$samples <-
         `sample-by-category_pivoted`$samples %>%
@@ -1485,10 +1645,10 @@ if(base::isTRUE(run)) {
 }
 
 if(samples == "ovation") {
-    if(tx == "coding-non-pa-ncRNA") zoom <- 0.925
+    if(tx == "coding-non-pa-ncRNA") zoom <- 0.30  # 0.925
     if(tx == "noncoding-non-collapsed") zoom <- 0.30
     if(tx == "noncoding-collapsed") zoom <- 0.26
-    if(tx %in% c("Trinity-G1", "Trinity-Q")) zoom <- 0.95
+    if(tx %in% c("Trinity-G1", "Trinity-Q")) zoom <- 0.375  # 0.20  # 0.95
 } else if(samples %in% c(
     "ovation_tecan_test", "ovation_tecan_test_rrp6∆", "ovation_tecan_updated"
 )) {
@@ -1501,7 +1661,7 @@ if(samples == "ovation") {
     if(tx == "noncoding-non-collapsed") zoom <- 0.525
     if(tx == "noncoding-collapsed") zoom <- 0.525
     if(tx %in% c("Trinity-G1", "Trinity-Q")) zoom <- 0.95
-} else if(samples == "r6n") {
+} else if(samples %in% c("r6n", "Rrp6∆.timecourse-G1-Q.SS")) {
     if(tx == "coding-non-pa-ncRNA") zoom <- 0.90
     if(tx == "noncoding-non-collapsed") zoom <- 0.45
     if(tx == "noncoding-collapsed") zoom <- 0.45
@@ -1589,16 +1749,15 @@ if(base::isTRUE(run)) {
     `prop-plot_individual-replicates` %>% print()
     `prop-plot_w-error_full` %>% print()
     `prop-plot_w-error_zoom` %>% print()
-    `prop-plot_no-error_full` %>% print()
-    `prop-plot_no-error_zoom` %>% print()
+    # `prop-plot_no-error_full` %>% print()
+    # `prop-plot_no-error_zoom` %>% print()
 }
-
-#TODO Get these plots into a format that's good for AG's work with Affinity
-width <- 7  #ARGUMENT
-height <- 7  #ARGUMENT
 
 
 #  Individual replicates ----------------------------------
+width <- 12  #ARGUMENT
+height <- 7  #ARGUMENT
+
 part_1 <- unlist(stringr::str_split(
     deparse(substitute(`prop-plot_individual-replicates`)), "_"
 ))[1]
@@ -1611,8 +1770,8 @@ file_prefix <- paste(part_1, part_2, part_3, part_4, sep = "_")
 outpath <- getwd()  #ARGUMENT
 outfile <- paste0(
     outpath, "/",
-    file_prefix, ".",
-    format(Sys.time(), format = "%F_%H.%M.%S"),
+    file_prefix,
+    # ".", format(Sys.time(), format = "%F_%H.%M.%S"),
     ".pdf"
 )
 
@@ -1622,6 +1781,9 @@ dev.off()
 
 
 #  Averaged replicates, full ------------------------------
+width <- 9  #ARGUMENT
+height <- 7  #ARGUMENT
+
 part_1 <- unlist(stringr::str_split(
     deparse(substitute(`prop-plot_w-error_full`)), "_"
 ))[1]
@@ -1634,8 +1796,8 @@ file_prefix <- paste(part_1, part_2, part_3, part_4, sep = "_")
 outpath <- getwd()  #ARGUMENT
 outfile <- paste0(
     outpath, "/",
-    file_prefix, ".",
-    format(Sys.time(), format = "%F_%H.%M.%S"),
+    file_prefix,
+    # ".", format(Sys.time(), format = "%F_%H.%M.%S"),
     ".pdf"
 )
 
@@ -1645,6 +1807,9 @@ dev.off()
 
 
 #  Averaged replicates, zoomed ----------------------------
+width <- 9  #ARGUMENT
+height <- 7  #ARGUMENT
+
 part_1 <- unlist(stringr::str_split(
     deparse(substitute(`prop-plot_w-error_zoom`)), "_"
 ))[1]
@@ -1658,8 +1823,8 @@ file_prefix <- paste(part_1, part_2, part_3, part_4, sep = "_")
 outpath <- getwd()  #ARGUMENT
 outfile <- paste0(
     outpath, "/",
-    file_prefix, ".",
-    format(Sys.time(), format = "%F_%H.%M.%S"),
+    file_prefix, 
+    # ".", format(Sys.time(), format = "%F_%H.%M.%S"),
     ".pdf"
 )
 
@@ -1668,7 +1833,7 @@ print(`prop-plot_w-error_zoom` + theme_AG_boxed)
 dev.off()
 
 
-#INPROGRESS
+#TODO
 # #  Write out t_rel_summarize, prop_summarize as tsvs
 # readr::write_tsv(
 #     t_rel_summarize,
@@ -1679,9 +1844,3 @@ dev.off()
 #     prop_summarize,
 #     file = "prop_summarize.tsv"
 # )
-
-#TBD
-# #  For when tx == "noncoding-collapsed"
-# test <- t_gtf %>%
-#     dplyr::group_by(details_type_alpha) %>% 
-#     dplyr::summarize(n = dplyr::n())
