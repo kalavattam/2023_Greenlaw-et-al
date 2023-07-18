@@ -252,7 +252,6 @@
 *Get situated, do a quick check of the \*R{1,2,3}\*.fastq.gz files*
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 transcriptome && 
     {
@@ -269,7 +268,6 @@ transcriptome &&
 *Making the symlinks*
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 mkdir -p {FastQC,fastqs}_UMI-dedup/
 mkdir -p fastqs_UMI-dedup/{symlinks,umi-tools_extract}
@@ -346,7 +344,6 @@ done
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 transcriptome && 
     {
@@ -371,7 +368,6 @@ module purge
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 #  Create the array
 unset fq_bases
@@ -413,7 +409,6 @@ echo $(( ${#fq_bases[@]} * 3 ))  # 165
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 unset UMIs
 
@@ -531,7 +526,6 @@ echo "${#prefix_UT[@]}"
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 transcriptome && 
     {
@@ -561,7 +555,6 @@ fi
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 script_run="run_umi-tools_extract.sh"  # echo "${script_run}"
 script_submit="submit_run_umi-tools_extract.sh"  # echo "${script_submit}"
@@ -589,7 +582,6 @@ max_id_task=8  # echo "${max_id_task}"
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 #  Header
 if [[ -f "${store_lists}/${list}" ]]; then
@@ -634,7 +626,6 @@ parallel --header : --colsep " " -k -j 1 echo \
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 if [[ -f "${store_lists}/${list%.txt}.4.txt" ]]; then
     # rm "${store_lists}/"${list%.txt}.{?,??,???}.txt
@@ -681,7 +672,6 @@ done
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 if [[ -f "./${store_scripts}/${script_run}" ]]; then
     rm "./${store_scripts}/${script_run}"
@@ -790,7 +780,6 @@ chmod +x "./${store_scripts}/${script_run}"
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 if [[ -f "./${store_scripts}/${script_submit}" ]]; then
     rm "./${store_scripts}/${script_submit}"
@@ -857,7 +846,6 @@ script
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 if [[ "${CONDA_DEFAULT_ENV}" != "base" ]]; then 
     conda deactivate
@@ -885,7 +873,6 @@ sbatch "${store_scripts}/${script_submit}"
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 transcriptome && 
     {
@@ -915,7 +902,6 @@ fi
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 script_run="run_atria_trim.sh"  # echo "${script_run}"
 script_submit="submit_run_atria_trim.sh"  # echo "${script_submit}"
@@ -943,7 +929,6 @@ max_id_task=8  # echo "${max_id_task}"
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 #  Header
 if [[ -f "${store_lists}/${list}" ]]; then
@@ -983,7 +968,6 @@ parallel --header : --colsep " " -k -j 1 echo \
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 if [[ -f "${store_lists}/${list%.txt}.4.txt" ]]; then
     # rm "${store_lists}/"${list%.txt}.{?,??,???}.txt
@@ -1030,7 +1014,6 @@ done
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 if [[ -f "./${store_scripts}/${script_run}" ]]; then
     rm "./${store_scripts}/${script_run}"
@@ -1128,7 +1111,6 @@ chmod +x "./${store_scripts}/${script_run}"
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 if [[ -f "./${store_scripts}/${script_submit}" ]]; then
     rm "./${store_scripts}/${script_submit}"
@@ -1195,7 +1177,6 @@ script
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 if [[ "${CONDA_DEFAULT_ENV}" != "base" ]]; then 
     conda deactivate
@@ -1225,7 +1206,6 @@ sbatch "${store_scripts}/${script_submit}"
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 transcriptome && 
     {
@@ -1255,7 +1235,6 @@ fi
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 script_run="run_rcorrector.sh"  # echo "${script_run}"
 script_submit="submit_run_rcorrector.sh"  # echo "${script_submit}"
@@ -1283,7 +1262,6 @@ max_id_task=8  # echo "${max_id_task}"
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 #  Header
 if [[ -f "${store_lists}/${list}" ]]; then
@@ -1323,7 +1301,6 @@ parallel --header : --colsep " " -k -j 1 echo \
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 if [[ -f "${store_lists}/${list%.txt}.4.txt" ]]; then
     # rm "${store_lists}/"${list%.txt}.{?,??,???}.txt
@@ -1370,7 +1347,6 @@ done
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 if [[ -f "./${store_scripts}/${script_run}" ]]; then
     rm "./${store_scripts}/${script_run}"
@@ -1464,7 +1440,6 @@ chmod +x "./${store_scripts}/${script_run}"
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 #TODO Fix line 1307: Wrong directory!
 if [[ -f "./${store_scripts}/${script_submit}" ]]; then
@@ -1533,7 +1508,6 @@ script
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 if [[ "${CONDA_DEFAULT_ENV}" != "base" ]]; then 
     conda deactivate
@@ -1563,7 +1537,6 @@ sbatch "${store_scripts}/${script_submit}"
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 transcriptome && 
     {
@@ -1593,7 +1566,6 @@ fi
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 script_run="${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/bin/filter_rCorrector-treated-fastqs.py"  # echo "${script_run}"
 script_submit="submit_run_rcorrector_clean-up.sh"  # echo "${script_submit}"
@@ -1621,7 +1593,6 @@ max_id_task=8  # echo "${max_id_task}"
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 #  Header
 if [[ -f "${store_lists}/${list}" ]]; then
@@ -1664,7 +1635,6 @@ parallel --header : --colsep " " -k -j 1 echo \
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 if [[ -f "${store_lists}/${list%.txt}.4.txt" ]]; then
     # rm "${store_lists}/"${list%.txt}.{?,??,???}.txt
@@ -1711,7 +1681,6 @@ done
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 ., "${script_run}"
 cat -n "${script_run}"
@@ -1728,7 +1697,6 @@ cat -n "${script_run}"
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 #NOTE 1/3 Here, note how we're calling the Python script from it's absolute
 #NOTE 2/3 path starting from home and also sourcing the in- and outfiles
@@ -1811,7 +1779,6 @@ script
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 if [[ "${CONDA_DEFAULT_ENV}" != "base" ]]; then 
     conda deactivate
@@ -1840,7 +1807,6 @@ sbatch "${store_scripts}/${script_submit}"
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 transcriptome && 
     {
@@ -1875,7 +1841,6 @@ fi
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 find_relative_path() {
     realpath --relative-to="${1}" "${2}"
@@ -1893,7 +1858,6 @@ find_relative_path() {
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 p_kmer_cor_path="$(
     find_relative_path \
@@ -1914,7 +1878,6 @@ p_kmer_cor_path="$(
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 p_kmer_uncor_path="$(
     find_relative_path \
@@ -1935,7 +1898,6 @@ p_kmer_uncor_path="$(
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 #  UMI-extracted (U), trimmed (T), kmer-corrected (K) files
 unset fq_kmer_cor_init
@@ -1975,7 +1937,6 @@ done < <(\
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 #  UMI-extracted (U), trimmed (T) files
 unset fq_kmer_uncor_init
@@ -2018,7 +1979,6 @@ done < <(\
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 cd "./bams_UMI-dedup/to-align_umi-extracted_trimmed_kmer-corrected" ||
     echo "cd'ing failed; check on this..."
@@ -2042,7 +2002,6 @@ done
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 cd "../to-align_umi-extracted_trimmed" ||
     echo "cd'ing failed; check on this..."
@@ -2066,7 +2025,6 @@ done
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 transcriptome && 
     {
@@ -2086,7 +2044,6 @@ transcriptome &&
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 script_run="run_STAR.sh"  # echo "${script_run}"
 # threads=1  # echo "${threads}"  # For echo tests
@@ -2133,7 +2090,6 @@ list_UT="STAR_UT.txt"  # echo "${list_UT}"
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 #  Header
 if [[ -f "${store_list_UTK}/${list_UTK}" ]]; then
@@ -2173,7 +2129,6 @@ parallel --header : --colsep " " -k -j 1 echo \
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 #  Header
 if [[ -f "${store_list_UT}/${list_UT}" ]]; then
@@ -2215,7 +2170,6 @@ parallel --header : --colsep " " -k -j 1 echo \
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 if [[ -f "${store_list_UTK}/${list_UTK%.txt}.4.txt" ]]; then
     # rm "${store_list_UTK}/"${list_UTK%.txt}.{?,??,???}.txt
@@ -2262,7 +2216,6 @@ done
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 if [[ -f "${store_list_UT}/${list_UT%.txt}.4.txt" ]]; then
     # rm "${store_list_UT}/"${list_UT%.txt}.{?,??,???}.txt
@@ -2309,7 +2262,6 @@ done
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 if [[ -f "./${store_scripts}/${script_run}" ]]; then
     rm "./${store_scripts}/${script_run}"
@@ -2437,7 +2389,6 @@ chmod +x "./${store_scripts}/${script_run}"
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 if [[ -f "./${store_scripts}/${script_submit_UTK}" ]]; then
     rm "./${store_scripts}/${script_submit_UTK}"
@@ -2506,7 +2457,6 @@ script
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 if [[ -f "./${store_scripts}/${script_submit_UT}" ]]; then
     rm "./${store_scripts}/${script_submit_UT}"
@@ -2576,7 +2526,6 @@ script
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 transcriptome && 
     {
@@ -2611,7 +2560,6 @@ sbatch "${store_scripts}/${script_submit_UT}"
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 transcriptome && 
     {
@@ -2645,7 +2593,6 @@ rm -r *_STARtmp/
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 #  Check on the problem bam (see 'Notes, etc.' below) -------------------------
 cd ../../sh_err_out/err_out
@@ -4368,7 +4315,6 @@ renamed './bams_UMI-dedup/aligned_umi-extracted_trimmed/bak' -> './bams_UMI-dedu
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 transcriptome && 
     {
@@ -4405,7 +4351,6 @@ rm -r *_STARtmp/
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 #  Get situated
 grabnode  # 16, etc.
@@ -4443,7 +4388,6 @@ mkdir -p "./bams_UMI-dedup/aligned_UTK_primary-unmapped"
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 unset bams_UT_prim
 typeset -a bams_UT_prim
@@ -4472,7 +4416,6 @@ echo "${#bams_UT_prim[@]}"
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 unset bams_UT_p_s
 typeset -a bams_UT_p_s
@@ -4501,7 +4444,6 @@ echo "${#bams_UT_p_s[@]}"
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 unset bams_UT_p_u
 typeset -a bams_UT_p_u
@@ -4530,7 +4472,6 @@ echo "${#bams_UT_p_u[@]}"
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 unset bams_UTK_prim
 typeset -a bams_UTK_prim
@@ -4563,7 +4504,6 @@ echo "${#bams_UTK_prim[@]}"
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 # bash ../../bin/separate_bam.sh
 
@@ -4602,7 +4542,6 @@ done
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 unset outbams
 typeset -a outbams
@@ -5059,7 +4998,6 @@ bams_UMI-dedup/aligned_UT_primary/CW8_7079_8day_Q_PD_UT.primary.list-tally-flags
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 # bash ../../bin/separate_bam.sh
 
@@ -5098,7 +5036,6 @@ done
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 unset outbams
 typeset -a outbams
@@ -5258,7 +5195,6 @@ bams_UMI-dedup/aligned_UTK_primary-secondary//5782_Q_IP_UTK.primary-secondary.li
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 # bash ../../bin/separate_bam.sh
 
@@ -5297,9 +5233,7 @@ done
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 unset outbams
 typeset -a outbams
@@ -5467,7 +5401,6 @@ bams_UMI-dedup/aligned_UTK_primary-unmapped/5782_Q_IP_UTK.proper-etc.list-tally-
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 # bash ../../bin/separate_bam.sh
 
@@ -5506,7 +5439,6 @@ done
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 unset outbams
 typeset -a outbams
@@ -5963,7 +5895,6 @@ bams_UMI-dedup/aligned_UTK_primary/CW8_7079_8day_Q_PD_UTK.primary.list-tally-fla
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 cd ./bams_UMI-dedup \
     || echo "cd'ing failed; check on this..."
@@ -5995,7 +5926,6 @@ echo "${#bams[@]}"
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 parallel \
     -k \
@@ -6023,7 +5953,6 @@ parallel \
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 #  Get situated
 grabnode  # 16, etc.
@@ -6061,7 +5990,6 @@ mkdir -p "./bams_UMI-dedup/aligned_UTK_primary_dedup-pos"
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 unset inbams
 typeset -a inbams
@@ -6107,7 +6035,6 @@ echo "${#outbams_pos[@]}"
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 parallel \
     -j "${SLURM_CPUS_ON_NODE}" \
@@ -6158,7 +6085,6 @@ parallel \
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 parallel \
     -j "${SLURM_CPUS_ON_NODE}" \
@@ -6211,7 +6137,6 @@ parallel \
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 unset inbams
 typeset -a inbams
@@ -6257,7 +6182,6 @@ echo "${#outbams_pos[@]}"
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 parallel \
     -j "${SLURM_CPUS_ON_NODE}" \
@@ -6308,7 +6232,6 @@ parallel \
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 parallel \
     -j "${SLURM_CPUS_ON_NODE}" \
@@ -6361,7 +6284,6 @@ parallel \
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 module purge
 module load SAMtools/1.16.1-GCC-11.2.0
@@ -6396,7 +6318,6 @@ echo "${#bams[@]}"
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 parallel \
     -k \
@@ -6426,7 +6347,6 @@ parallel \
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 #  Get situated
 grabnode  # 16, etc.
@@ -6460,7 +6380,6 @@ mkdir -p "./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S"
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 #  primary + secondary (Trinity GG): exclude K. lactis and 20S alignments -----
 unset inbams_ps
@@ -6511,7 +6430,6 @@ outdir_pu="./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S"
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 #  primary + secondary (Trinity GG): exclude K. lactis and 20S alignments -----
 parallel \
@@ -6596,7 +6514,6 @@ samtools view -@ 2 -h ./bams_UMI-dedup/aligned_UTK_primary-unmapped/5782_Q_IP_UT
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 #  Get situated
 grabnode  # 16, etc.
@@ -6630,7 +6547,6 @@ mkdir -p "./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_merged"
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 #  primary + secondary (Trinity GG): exclude K. lactis and 20S alignments -----
 indir_ps="./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S"
@@ -6815,7 +6731,6 @@ Value 2 (out): ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_merged/
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 #  primary + secondary (Trinity GG): exclude K. lactis and 20S alignments -----
 parallel \
@@ -6899,7 +6814,6 @@ samtools merge -@ 4 ./bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S/57
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 #  Get situated
 grabnode  # 16, etc.
@@ -6935,7 +6849,6 @@ mkdir -p "./bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_merged_bam-
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 #  What is what -----------------------
 # pS aligned_UTK_primary-secondary_sans-KL-20S/
@@ -7231,7 +7144,6 @@ echo "${#pUm_o[@]}"
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 #  pS ---------------------------------
 parallel \
