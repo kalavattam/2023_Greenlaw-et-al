@@ -506,7 +506,7 @@ run=FALSE
 
 <a id="3-corrected-names-etc-now-including-strain-information"></a>
 #### 3. Corrected names (etc.), now including strain information
-Also, hyphenation was converted to camelCase
+Also, *most* hyphenation was converted to camelCase
 <details>
 <summary><i>Code</i></summary>
 
@@ -3574,6 +3574,9 @@ b9fbe34f835db28c602adbb8acd2b587  WT_G1_day1_ovn_N_auxF_tcF_5781-2_rep-merge_bat
 ```bash
 #!/bin/bash
 
+d_proj="${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction"
+d_exp_0215="results/2023-0215"
+
 cd "${d_proj}/${d_exp_0215}" || echo "cd'ing failed; check on this..."
 
 d_gtfs="GEO/gtfs"
@@ -3586,27 +3589,27 @@ echo """
 #  Concatenated genome for standard and transcriptome-assembly work
 cp \\
     \"infiles_gtf-gff3/already/combined_SC_KL_20S.gff3\" \\
-    \"${d_gtfs}/${f_pre}.concatenated-genome.SC-KL-20S.gff3\"
+    \"${d_gtfs}/${f_pre}.concatenated-genome_SC-KL-20S.gff3\"
 
 #  R64-1-1 blacklist for generation of deepTools BPM coverage tracks
 cp \\
     \"outfiles_gtf-gff3/already/SC_features-rRNA-tRNA.gtf\" \\
-    \"${d_gtfs}/${f_pre}.R64-1-1.blacklist_rRNA-tRNA.${f_suf}\"
+    \"${d_gtfs}/${f_pre}.R64-1-1_blacklist_rRNA-tRNA.${f_suf}\"
 
 #  \"100% representation\" R64-1-1 genome
 cp \\
     \"${d_work}/comprehensive/S288C_reference_genome_R64-1-1_20110203/processed_features-intergenic_sense-antisense.${f_suf}\" \\
-    \"${d_gtfs}/${f_pre}.R64-1-1.features-intergenic_sense-antisense.${f_suf}\"
+    \"${d_gtfs}/${f_pre}.R64-1-1_features-intergenic_sense-antisense.${f_suf}\"
 
 #  Noncoding collapsed features
 cp \\
     \"${d_work}/representation/Greenlaw-et-al_representative-non-coding-transcriptome.${f_suf}\" \\
-    \"${d_gtfs}/${f_pre}.txome_representative-noncoding.${f_suf}\"
+    \"${d_gtfs}/${f_pre}.txome_representative-pa-ncRNA.${f_suf}\"
 
 #  Noncoding non-collapsed features
 cp \\
     \"${d_work}/representation/Greenlaw-et-al_non-collapsed-non-coding-transcriptome.${f_suf}\" \\
-    \"${d_gtfs}/${f_pre}.txome_non-collapsed-noncoding.${f_suf}\"
+    \"${d_gtfs}/${f_pre}.txome_non-collapsed-pa-ncRNA.${f_suf}\"
 
 #  Coding, no pa-ncRNA features
 cp \\
@@ -3627,27 +3630,27 @@ cp \\
 #  Concatenated genome for standard and transcriptome-assembly work
 cp \
     "infiles_gtf-gff3/already/combined_SC_KL_20S.gff3" \
-    "${d_gtfs}/${f_pre}.concatenated-genome.SC-KL-20S.gff3"
+    "${d_gtfs}/${f_pre}.concatenated-genome_SC-KL-20S.gff3"
 
 #  R64-1-1 blacklist for generation of deepTools BPM coverage tracks
 cp \
     "outfiles_gtf-gff3/already/SC_features-rRNA-tRNA.gtf" \
-    "${d_gtfs}/${f_pre}.R64-1-1.blacklist_rRNA-tRNA.${f_suf}"
+    "${d_gtfs}/${f_pre}.R64-1-1_blacklist_rRNA-tRNA.${f_suf}"
 
 #  "100% representation" R64-1-1 genome
 cp \
     "${d_work}/comprehensive/S288C_reference_genome_R64-1-1_20110203/processed_features-intergenic_sense-antisense.${f_suf}" \
-    "${d_gtfs}/${f_pre}.R64-1-1.features-intergenic_sense-antisense.${f_suf}"
+    "${d_gtfs}/${f_pre}.R64-1-1_features-intergenic_sense-antisense.${f_suf}"
 
 #  Noncoding collapsed features
 cp \
     "${d_work}/representation/Greenlaw-et-al_representative-non-coding-transcriptome.${f_suf}" \
-    "${d_gtfs}/${f_pre}.txome_representative-noncoding.${f_suf}"
+    "${d_gtfs}/${f_pre}.txome_representative-pa-ncRNA.${f_suf}"
 
 #  Noncoding non-collapsed features
 cp \
     "${d_work}/representation/Greenlaw-et-al_non-collapsed-non-coding-transcriptome.${f_suf}" \
-    "${d_gtfs}/${f_pre}.txome_non-collapsed-noncoding.${f_suf}"
+    "${d_gtfs}/${f_pre}.txome_non-collapsed-pa-ncRNA.${f_suf}"
 
 #  Coding, no pa-ncRNA features
 cp \
@@ -3689,6 +3692,12 @@ cat md5/*.txt
 <summary><i>Printed</i></summary>
 
 ```txt
+❯ d_proj="${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction"
+
+
+❯ d_exp_0215="results/2023-0215"
+
+
 ❯ cd "${d_proj}/${d_exp_0215}" || echo "cd'ing failed; check on this..."
 
 
@@ -3711,27 +3720,27 @@ cat md5/*.txt
 > #  Concatenated genome for standard and transcriptome-assembly work
 > cp \\
 >     \"infiles_gtf-gff3/already/combined_SC_KL_20S.gff3\" \\
->     \"${d_gtfs}/${f_pre}.concatenated-genome.SC-KL-20S.gff3\"
+>     \"${d_gtfs}/${f_pre}.concatenated-genome_SC-KL-20S.gff3\"
 > 
 > #  R64-1-1 blacklist for generation of deepTools BPM coverage tracks
 > cp \\
 >     \"outfiles_gtf-gff3/already/SC_features-rRNA-tRNA.gtf\" \\
->     \"${d_gtfs}/${f_pre}.R64-1-1.blacklist_rRNA-tRNA.${f_suf}\"
+>     \"${d_gtfs}/${f_pre}.R64-1-1_blacklist_rRNA-tRNA.${f_suf}\"
 > 
 > #  \"100% representation\" R64-1-1 genome
 > cp \\
 >     \"${d_work}/comprehensive/S288C_reference_genome_R64-1-1_20110203/processed_features-intergenic_sense-antisense.${f_suf}\" \\
->     \"${d_gtfs}/${f_pre}.R64-1-1.features-intergenic_sense-antisense.${f_suf}\"
+>     \"${d_gtfs}/${f_pre}.R64-1-1_features-intergenic_sense-antisense.${f_suf}\"
 > 
 > #  Noncoding collapsed features
 > cp \\
 >     \"${d_work}/representation/Greenlaw-et-al_representative-non-coding-transcriptome.${f_suf}\" \\
->     \"${d_gtfs}/${f_pre}.txome_representative-noncoding.${f_suf}\"
+>     \"${d_gtfs}/${f_pre}.txome_representative-pa-ncRNA.${f_suf}\"
 > 
 > #  Noncoding non-collapsed features
 > cp \\
 >     \"${d_work}/representation/Greenlaw-et-al_non-collapsed-non-coding-transcriptome.${f_suf}\" \\
->     \"${d_gtfs}/${f_pre}.txome_non-collapsed-noncoding.${f_suf}\"
+>     \"${d_gtfs}/${f_pre}.txome_non-collapsed-pa-ncRNA.${f_suf}\"
 > 
 > #  Coding, no pa-ncRNA features
 > cp \\
@@ -3751,27 +3760,27 @@ cat md5/*.txt
 #  Concatenated genome for standard and transcriptome-assembly work
 cp \
     "infiles_gtf-gff3/already/combined_SC_KL_20S.gff3" \
-    "GEO/gtfs/Greenlaw-et-al.concatenated-genome.SC-KL-20S.gff3"
+    "GEO/gtfs/Greenlaw-et-al.concatenated-genome_SC-KL-20S.gff3"
 
 #  R64-1-1 blacklist for generation of deepTools BPM coverage tracks
 cp \
     "outfiles_gtf-gff3/already/SC_features-rRNA-tRNA.gtf" \
-    "GEO/gtfs/Greenlaw-et-al.R64-1-1.blacklist_rRNA-tRNA.gtf"
+    "GEO/gtfs/Greenlaw-et-al.R64-1-1_blacklist_rRNA-tRNA.gtf"
 
 #  "100% representation" R64-1-1 genome
 cp \
     "outfiles_gtf-gff3/comprehensive/S288C_reference_genome_R64-1-1_20110203/processed_features-intergenic_sense-antisense.gtf" \
-    "GEO/gtfs/Greenlaw-et-al.R64-1-1.features-intergenic_sense-antisense.gtf"
+    "GEO/gtfs/Greenlaw-et-al.R64-1-1_features-intergenic_sense-antisense.gtf"
 
 #  Noncoding collapsed features
 cp \
     "outfiles_gtf-gff3/representation/Greenlaw-et-al_representative-non-coding-transcriptome.gtf" \
-    "GEO/gtfs/Greenlaw-et-al.txome_representative-noncoding.gtf"
+    "GEO/gtfs/Greenlaw-et-al.txome_representative-pa-ncRNA.gtf"
 
 #  Noncoding non-collapsed features
 cp \
     "outfiles_gtf-gff3/representation/Greenlaw-et-al_non-collapsed-non-coding-transcriptome.gtf" \
-    "GEO/gtfs/Greenlaw-et-al.txome_non-collapsed-noncoding.gtf"
+    "GEO/gtfs/Greenlaw-et-al.txome_non-collapsed-pa-ncRNA.gtf"
 
 #  Coding, no pa-ncRNA features
 cp \
@@ -3794,8 +3803,8 @@ cp \
 
 ❯ cp \
 >     "infiles_gtf-gff3/already/combined_SC_KL_20S.gff3" \
->     "${d_gtfs}/${f_pre}.concatenated-genome.SC-KL-20S.gff3"
-'infiles_gtf-gff3/already/combined_SC_KL_20S.gff3' -> 'GEO/gtfs/Greenlaw-et-al.concatenated-genome.SC-KL-20S.gff3'
+>     "${d_gtfs}/${f_pre}.concatenated-genome_SC-KL-20S.gff3"
+'infiles_gtf-gff3/already/combined_SC_KL_20S.gff3' -> 'GEO/gtfs/Greenlaw-et-al.concatenated-genome_SC-KL-20S.gff3'
 
 
 ❯ #  R64-1-1 blacklist for generation of deepTools BPM coverage tracks
@@ -3803,8 +3812,8 @@ cp \
 
 ❯ cp \
 >     "outfiles_gtf-gff3/already/SC_features-rRNA-tRNA.gtf" \
->     "${d_gtfs}/${f_pre}.R64-1-1.blacklist_rRNA-tRNA.${f_suf}"
-'outfiles_gtf-gff3/already/SC_features-rRNA-tRNA.gtf' -> 'GEO/gtfs/Greenlaw-et-al.R64-1-1.blacklist_rRNA-tRNA.gtf'
+>     "${d_gtfs}/${f_pre}.R64-1-1_blacklist_rRNA-tRNA.${f_suf}"
+'outfiles_gtf-gff3/already/SC_features-rRNA-tRNA.gtf' -> 'GEO/gtfs/Greenlaw-et-al.R64-1-1_blacklist_rRNA-tRNA.gtf'
 
 
 ❯ #  "100% representation" R64-1-1 genome
@@ -3812,8 +3821,8 @@ cp \
 
 ❯ cp \
 >     "${d_work}/comprehensive/S288C_reference_genome_R64-1-1_20110203/processed_features-intergenic_sense-antisense.${f_suf}" \
->     "${d_gtfs}/${f_pre}.R64-1-1.features-intergenic_sense-antisense.${f_suf}"
-'outfiles_gtf-gff3/comprehensive/S288C_reference_genome_R64-1-1_20110203/processed_features-intergenic_sense-antisense.gtf' -> 'GEO/gtfs/Greenlaw-et-al.R64-1-1.features-intergenic_sense-antisense.gtf'
+>     "${d_gtfs}/${f_pre}.R64-1-1_features-intergenic_sense-antisense.${f_suf}"
+'outfiles_gtf-gff3/comprehensive/S288C_reference_genome_R64-1-1_20110203/processed_features-intergenic_sense-antisense.gtf' -> 'GEO/gtfs/Greenlaw-et-al.R64-1-1_features-intergenic_sense-antisense.gtf'
 
 
 ❯ #  Noncoding collapsed features
@@ -3821,8 +3830,8 @@ cp \
 
 ❯ cp \
 >     "${d_work}/representation/Greenlaw-et-al_representative-non-coding-transcriptome.${f_suf}" \
->     "${d_gtfs}/${f_pre}.txome_representative-noncoding.${f_suf}"
-'outfiles_gtf-gff3/representation/Greenlaw-et-al_representative-non-coding-transcriptome.gtf' -> 'GEO/gtfs/Greenlaw-et-al.txome_representative-noncoding.gtf'
+>     "${d_gtfs}/${f_pre}.txome_representative-pa-ncRNA.${f_suf}"
+'outfiles_gtf-gff3/representation/Greenlaw-et-al_representative-non-coding-transcriptome.gtf' -> 'GEO/gtfs/Greenlaw-et-al.txome_representative-pa-ncRNA.gtf'
 
 
 ❯ #  Noncoding non-collapsed features
@@ -3830,8 +3839,8 @@ cp \
 
 ❯ cp \
 >     "${d_work}/representation/Greenlaw-et-al_non-collapsed-non-coding-transcriptome.${f_suf}" \
->     "${d_gtfs}/${f_pre}.txome_non-collapsed-noncoding.${f_suf}"
-'outfiles_gtf-gff3/representation/Greenlaw-et-al_non-collapsed-non-coding-transcriptome.gtf' -> 'GEO/gtfs/Greenlaw-et-al.txome_non-collapsed-noncoding.gtf'
+>     "${d_gtfs}/${f_pre}.txome_non-collapsed-pa-ncRNA.${f_suf}"
+'outfiles_gtf-gff3/representation/Greenlaw-et-al_non-collapsed-non-coding-transcriptome.gtf' -> 'GEO/gtfs/Greenlaw-et-al.txome_non-collapsed-pa-ncRNA.gtf'
 
 
 ❯ #  Coding, no pa-ncRNA features
@@ -3872,14 +3881,14 @@ cp \
 total 15M
 drwxrws--- 2 kalavatt   526 Jul 18 15:18 ./
 drwxrws--- 7 kalavatt   115 Jul 18 07:59 ../
--rw-rw---- 1 kalavatt  8.5M Jul 18 15:18 Greenlaw-et-al.concatenated-genome.SC-KL-20S.gff3
--rw-rw---- 1 kalavatt  315K Jul 18 15:18 Greenlaw-et-al.R64-1-1.blacklist_rRNA-tRNA.gtf
--rw-rw---- 1 kalavatt  4.5M Jul 18 15:18 Greenlaw-et-al.R64-1-1.features-intergenic_sense-antisense.gtf
+-rw-rw---- 1 kalavatt  8.5M Jul 18 15:18 Greenlaw-et-al.concatenated-genome_SC-KL-20S.gff3
+-rw-rw---- 1 kalavatt  315K Jul 18 15:18 Greenlaw-et-al.R64-1-1_blacklist_rRNA-tRNA.gtf
+-rw-rw---- 1 kalavatt  4.5M Jul 18 15:18 Greenlaw-et-al.R64-1-1_features-intergenic_sense-antisense.gtf
 -rw-rw---- 1 kalavatt  3.1M Jul 18 15:18 Greenlaw-et-al.txome_nascent_G1.gtf
 -rw-rw---- 1 kalavatt  3.8M Jul 18 15:18 Greenlaw-et-al.txome_nascent_Q.gtf
--rw-rw---- 1 kalavatt  1.7M Jul 18 15:18 Greenlaw-et-al.txome_non-collapsed-noncoding.gtf
+-rw-rw---- 1 kalavatt  1.7M Jul 18 15:18 Greenlaw-et-al.txome_non-collapsed-pa-ncRNA.gtf
 -rw-rw---- 1 kalavatt 1016K Jul 18 15:18 Greenlaw-et-al.txome_representative-coding-non-pa-ncRNA.gtf
--rw-rw---- 1 kalavatt  1.6M Jul 18 15:18 Greenlaw-et-al.txome_representative-noncoding.gtf
+-rw-rw---- 1 kalavatt  1.6M Jul 18 15:18 Greenlaw-et-al.txome_representative-pa-ncRNA.gtf
 
 
 ❯ [[ ! -f md5/ ]] && mkdir md5/
@@ -3889,14 +3898,14 @@ mkdir: created directory 'md5/'
 ❯ for i in *.{gff3,gtf}; do
 >     echo "md5sum \"${i}\" > md5/${i%.g*}.md5.txt"
 > done
-md5sum "Greenlaw-et-al.concatenated-genome.SC-KL-20S.gff3" > md5/Greenlaw-et-al.concatenated-genome.SC-KL-20S.md5.txt
-md5sum "Greenlaw-et-al.R64-1-1.blacklist_rRNA-tRNA.gtf" > md5/Greenlaw-et-al.R64-1-1.blacklist_rRNA-tRNA.md5.txt
-md5sum "Greenlaw-et-al.R64-1-1.features-intergenic_sense-antisense.gtf" > md5/Greenlaw-et-al.R64-1-1.features-intergenic_sense-antisense.md5.txt
+md5sum "Greenlaw-et-al.concatenated-genome_SC-KL-20S.gff3" > md5/Greenlaw-et-al.concatenated-genome_SC-KL-20S.md5.txt
+md5sum "Greenlaw-et-al.R64-1-1_blacklist_rRNA-tRNA.gtf" > md5/Greenlaw-et-al.R64-1-1_blacklist_rRNA-tRNA.md5.txt
+md5sum "Greenlaw-et-al.R64-1-1_features-intergenic_sense-antisense.gtf" > md5/Greenlaw-et-al.R64-1-1_features-intergenic_sense-antisense.md5.txt
 md5sum "Greenlaw-et-al.txome_nascent_G1.gtf" > md5/Greenlaw-et-al.txome_nascent_G1.md5.txt
 md5sum "Greenlaw-et-al.txome_nascent_Q.gtf" > md5/Greenlaw-et-al.txome_nascent_Q.md5.txt
-md5sum "Greenlaw-et-al.txome_non-collapsed-noncoding.gtf" > md5/Greenlaw-et-al.txome_non-collapsed-noncoding.md5.txt
+md5sum "Greenlaw-et-al.txome_non-collapsed-pa-ncRNA.gtf" > md5/Greenlaw-et-al.txome_non-collapsed-pa-ncRNA.md5.txt
 md5sum "Greenlaw-et-al.txome_representative-coding-non-pa-ncRNA.gtf" > md5/Greenlaw-et-al.txome_representative-coding-non-pa-ncRNA.md5.txt
-md5sum "Greenlaw-et-al.txome_representative-noncoding.gtf" > md5/Greenlaw-et-al.txome_representative-noncoding.md5.txt
+md5sum "Greenlaw-et-al.txome_representative-pa-ncRNA.gtf" > md5/Greenlaw-et-al.txome_representative-pa-ncRNA.md5.txt
 
 
 ❯ for i in *.{gff3,gtf}; do
@@ -3905,38 +3914,38 @@ md5sum "Greenlaw-et-al.txome_representative-noncoding.gtf" > md5/Greenlaw-et-al.
 
 
 ❯ ls -lhaFG ./*
--rw-rw---- 1 kalavatt  8.5M Jul 18 15:18 ./Greenlaw-et-al.concatenated-genome.SC-KL-20S.gff3
--rw-rw---- 1 kalavatt  315K Jul 18 15:18 ./Greenlaw-et-al.R64-1-1.blacklist_rRNA-tRNA.gtf
--rw-rw---- 1 kalavatt  4.5M Jul 18 15:18 ./Greenlaw-et-al.R64-1-1.features-intergenic_sense-antisense.gtf
+-rw-rw---- 1 kalavatt  8.5M Jul 18 15:18 ./Greenlaw-et-al.concatenated-genome_SC-KL-20S.gff3
+-rw-rw---- 1 kalavatt  315K Jul 18 15:18 ./Greenlaw-et-al.R64-1-1_blacklist_rRNA-tRNA.gtf
+-rw-rw---- 1 kalavatt  4.5M Jul 18 15:18 ./Greenlaw-et-al.R64-1-1_features-intergenic_sense-antisense.gtf
 -rw-rw---- 1 kalavatt  3.1M Jul 18 15:18 ./Greenlaw-et-al.txome_nascent_G1.gtf
 -rw-rw---- 1 kalavatt  3.8M Jul 18 15:18 ./Greenlaw-et-al.txome_nascent_Q.gtf
--rw-rw---- 1 kalavatt  1.7M Jul 18 15:18 ./Greenlaw-et-al.txome_non-collapsed-noncoding.gtf
+-rw-rw---- 1 kalavatt  1.7M Jul 18 15:18 ./Greenlaw-et-al.txome_non-collapsed-pa-ncRNA.gtf
 -rw-rw---- 1 kalavatt 1016K Jul 18 15:18 ./Greenlaw-et-al.txome_representative-coding-non-pa-ncRNA.gtf
--rw-rw---- 1 kalavatt  1.6M Jul 18 15:18 ./Greenlaw-et-al.txome_representative-noncoding.gtf
+-rw-rw---- 1 kalavatt  1.6M Jul 18 15:18 ./Greenlaw-et-al.txome_representative-pa-ncRNA.gtf
 
 ./md5:
 total 296K
 drwxrws--- 2 kalavatt 557 Jul 18 15:25 ./
 drwxrws--- 3 kalavatt 547 Jul 18 15:22 ../
--rw-rw---- 1 kalavatt  84 Jul 18 15:25 Greenlaw-et-al.concatenated-genome.SC-KL-20S.md5.txt
--rw-rw---- 1 kalavatt  81 Jul 18 15:25 Greenlaw-et-al.R64-1-1.blacklist_rRNA-tRNA.md5.txt
--rw-rw---- 1 kalavatt  97 Jul 18 15:25 Greenlaw-et-al.R64-1-1.features-intergenic_sense-antisense.md5.txt
+-rw-rw---- 1 kalavatt  84 Jul 18 15:25 Greenlaw-et-al.concatenated-genome_SC-KL-20S.md5.txt
+-rw-rw---- 1 kalavatt  81 Jul 18 15:25 Greenlaw-et-al.R64-1-1_blacklist_rRNA-tRNA.md5.txt
+-rw-rw---- 1 kalavatt  97 Jul 18 15:25 Greenlaw-et-al.R64-1-1_features-intergenic_sense-antisense.md5.txt
 -rw-rw---- 1 kalavatt  70 Jul 18 15:25 Greenlaw-et-al.txome_nascent_G1.md5.txt
 -rw-rw---- 1 kalavatt  69 Jul 18 15:25 Greenlaw-et-al.txome_nascent_Q.md5.txt
--rw-rw---- 1 kalavatt  83 Jul 18 15:25 Greenlaw-et-al.txome_non-collapsed-noncoding.md5.txt
+-rw-rw---- 1 kalavatt  83 Jul 18 15:25 Greenlaw-et-al.txome_non-collapsed-pa-ncRNA.md5.txt
 -rw-rw---- 1 kalavatt  94 Jul 18 15:25 Greenlaw-et-al.txome_representative-coding-non-pa-ncRNA.md5.txt
--rw-rw---- 1 kalavatt  84 Jul 18 15:25 Greenlaw-et-al.txome_representative-noncoding.md5.txt
+-rw-rw---- 1 kalavatt  84 Jul 18 15:25 Greenlaw-et-al.txome_representative-pa-ncRNA.md5.txt
 
 
 ❯ cat md5/*.txt
-39e691a98c40a028506103684e43ed3e  Greenlaw-et-al.concatenated-genome.SC-KL-20S.gff3
-a8433aa4c6a279ca256a2348682b03c8  Greenlaw-et-al.R64-1-1.blacklist_rRNA-tRNA.gtf
-b8a083a4a34830cf28d594ab12afd799  Greenlaw-et-al.R64-1-1.features-intergenic_sense-antisense.gtf
+39e691a98c40a028506103684e43ed3e  Greenlaw-et-al.concatenated-genome_SC-KL-20S.gff3
+a8433aa4c6a279ca256a2348682b03c8  Greenlaw-et-al.R64-1-1_blacklist_rRNA-tRNA.gtf
+b8a083a4a34830cf28d594ab12afd799  Greenlaw-et-al.R64-1-1_features-intergenic_sense-antisense.gtf
 a9de7165b681fe6c5a9a62708d90f738  Greenlaw-et-al.txome_nascent_G1.gtf
 a44ac63231bc68098d30d7c0e495886e  Greenlaw-et-al.txome_nascent_Q.gtf
-bf1f6e99ee614c2ce347514fd83a3f52  Greenlaw-et-al.txome_non-collapsed-noncoding.gtf
+bf1f6e99ee614c2ce347514fd83a3f52  Greenlaw-et-al.txome_non-collapsed-pa-ncRNA.gtf
 546438d4eee056bc467294420ee1b276  Greenlaw-et-al.txome_representative-coding-non-pa-ncRNA.gtf
-214e9f2b24e9a401f799601b8ba05b4c  Greenlaw-et-al.txome_representative-noncoding.gtf
+214e9f2b24e9a401f799601b8ba05b4c  Greenlaw-et-al.txome_representative-pa-ncRNA.gtf
 ```
 </details>
 <br />
@@ -3950,13 +3959,13 @@ bf1f6e99ee614c2ce347514fd83a3f52  Greenlaw-et-al.txome_non-collapsed-noncoding.g
 <summary><i>Notes</i></summary>
 
 - `outfiles_htseq-count/combined-SC-KL-20S/UT_prim_UMI/all-samples.combined-SC-KL-20S.hc-strd-eq.mRNA.tsv`
-    + → `GEO/matrices/Greenlaw-et-al.concatenated-genome.SC-KL-20S.mRNA.hc_strd-eq_nonuniq-none.tsv`
+    + → `GEO/matrices/Greenlaw-et-al.concatenated-genome_SC-KL-20S.mRNA.hc_strd-eq_nonuniq-none.tsv`
 - `outfiles_htseq-count/combined-SC-KL-20S/UT_prim_UMI/all-samples.combined-SC-KL-20S.hc-strd-op.mRNA.tsv`
-    + → `GEO/matrices/Greenlaw-et-al.concatenated-genome.SC-KL-20S.mRNA.hc_strd-op_nonuniq-none.tsv`
+    + → `GEO/matrices/Greenlaw-et-al.concatenated-genome_SC-KL-20S.mRNA.hc_strd-op_nonuniq-none.tsv`
 - `outfiles_htseq-count/representation/UT_prim_UMI/representative-non-coding-transcriptome.hc-strd-eq.tsv`
-    + → `GEO/matrices/Greenlaw-et-al.txome_representative-noncoding.hc_strd-eq_nonuniq-none.tsv`
+    + → `GEO/matrices/Greenlaw-et-al.txome_representative-pa-ncRNA.hc_strd-eq_nonuniq-none.tsv`
 - `outfiles_htseq-count/representation/UT_prim_UMI/non-collapsed-non-coding-transcriptome.hc-strd-eq.tsv`
-    + → `GEO/matrices/Greenlaw-et-al.txome_non-collapsed-noncoding.hc_strd-eq_nonuniq-none.tsv`
+    + → `GEO/matrices/Greenlaw-et-al.txome_non-collapsed-pa-ncRNA.hc_strd-eq_nonuniq-none.tsv`
 - `outfiles_htseq-count/representation/UT_prim_UMI/representative-coding-non-pa-ncRNA-transcriptome.hc-strd-eq.union-none.tsv`
     + → `GEO/matrices/Greenlaw-et-al.txome_representative-coding-non-pa-ncRNA.hc_strd-eq_nonuniq-none.tsv`
 - `outfiles_htseq-count/Trinity-GG/G_N/filtered/locus/G1_mkc-4_gte-pctl-25.clean.hc-strd-eq.tsv`
@@ -3986,22 +3995,22 @@ echo """
 #+ calculate K. lactis size factors)
 cp \\
     \"${d_work}/already/combined-SC-KL-20S/UT_prim_UMI/all-samples.combined-SC-KL-20S.hc-strd-eq.mRNA.${f_suf}\" \\
-    \"${d_tsvs}/${f_pre}.concatenated-genome.SC-KL-20S.mRNA.${f_info}.${f_suf}\"
+    \"${d_tsvs}/${f_pre}.concatenated-genome_SC-KL-20S.mRNA.${f_info}.${f_suf}\"
 
 #  Opposite-strand tallies for concatenated genome
 cp \\
     \"${d_work}/already/combined-SC-KL-20S/UT_prim_UMI/all-samples.combined-SC-KL-20S.hc-strd-op.mRNA.${f_suf}\" \\
-    \"${d_tsvs}/${f_pre}.concatenated-genome.SC-KL-20S.mRNA.hc_strd-op_nonuniq-none.${f_suf}\"
+    \"${d_tsvs}/${f_pre}.concatenated-genome_SC-KL-20S.mRNA.hc_strd-op_nonuniq-none.${f_suf}\"
 
 #  Same-strand tallies for noncoding collapsed features 
 cp \\
     \"${d_work}/representation/UT_prim_UMI/representative-non-coding-transcriptome.hc-strd-eq.${f_suf}\" \\
-    \"${d_tsvs}/${f_pre}.txome_representative-noncoding.${f_info}.${f_suf}\"
+    \"${d_tsvs}/${f_pre}.txome_representative-pa-ncRNA.${f_info}.${f_suf}\"
 
 #  Same-strand tallies for noncoding non-collapsed features
 cp \\
     \"${d_work}/representation/UT_prim_UMI/non-collapsed-non-coding-transcriptome.hc-strd-eq.${f_suf}\" \\
-    \"${d_tsvs}/${f_pre}.txome_non-collapsed-noncoding.${f_info}.${f_suf}\"
+    \"${d_tsvs}/${f_pre}.txome_non-collapsed-pa-ncRNA.${f_info}.${f_suf}\"
 
 #  Same-strand tallies for coding (i.e., R64-1-1 functional annotations)
 #+ non-pa-ncRNA features
@@ -4024,22 +4033,22 @@ cp \\
 #+ calculate K. lactis size factors)
 cp \
     "${d_work}/already/combined-SC-KL-20S/UT_prim_UMI/all-samples.combined-SC-KL-20S.hc-strd-eq.mRNA.${f_suf}" \
-    "${d_tsvs}/${f_pre}.concatenated-genome.SC-KL-20S.mRNA.${f_info}.${f_suf}"
+    "${d_tsvs}/${f_pre}.concatenated-genome_SC-KL-20S.mRNA.${f_info}.${f_suf}"
 
 #  Opposite-strand tallies for concatenated genome
 cp \
     "${d_work}/already/combined-SC-KL-20S/UT_prim_UMI/all-samples.combined-SC-KL-20S.hc-strd-op.mRNA.${f_suf}" \
-    "${d_tsvs}/${f_pre}.concatenated-genome.SC-KL-20S.mRNA.hc_strd-op_nonuniq-none.${f_suf}"
+    "${d_tsvs}/${f_pre}.concatenated-genome_SC-KL-20S.mRNA.hc_strd-op_nonuniq-none.${f_suf}"
 
 #  Same-strand tallies for noncoding collapsed features 
 cp \
     "${d_work}/representation/UT_prim_UMI/representative-non-coding-transcriptome.hc-strd-eq.${f_suf}" \
-    "${d_tsvs}/${f_pre}.txome_representative-noncoding.${f_info}.${f_suf}"
+    "${d_tsvs}/${f_pre}.txome_representative-pa-ncRNA.${f_info}.${f_suf}"
 
 #  Same-strand tallies for noncoding non-collapsed features
 cp \
     "${d_work}/representation/UT_prim_UMI/non-collapsed-non-coding-transcriptome.hc-strd-eq.${f_suf}" \
-    "${d_tsvs}/${f_pre}.txome_non-collapsed-noncoding.${f_info}.${f_suf}"
+    "${d_tsvs}/${f_pre}.txome_non-collapsed-pa-ncRNA.${f_info}.${f_suf}"
 
 #  Same-strand tallies for coding (i.e., R64-1-1 functional annotations)
 #+ non-pa-ncRNA features
@@ -4064,12 +4073,13 @@ cd "${d_tsvs}" || echo "cd'ing failed; check on this..."
 
 ls -lhaFG
 
+#NOTE Run counts matrices through script work_prepare-data_GEO_matrices.R
+
 for i in *.tsv; do md5sum "${i}" > "md5/${i%.tsv}.md5.txt"; done
-#TODO 1/3 Need to delete and regenerate MD5 checksums after cleaning up and
-#TODO 2/3 correcting column names, and removing columns for the 16 unused
-#TODO 3/3 samples (from 62 to 46)
 
 ls -lhaFG ./*
+
+cat md5/*.txt
 ```
 </details>
 <br />
@@ -4100,21 +4110,21 @@ ls -lhaFG ./*
 > #  Same-strand tallies for concatenated genome (e.g., use these counts to
 > #+ calculate K. lactis size factors)
 > cp \\
->     \"${d_work}/already/combined-SC-KL-20S/UT_prim_UMI/all-samples.combined-SC-KL-20S.hc-strd-eq.mRNA.${f_suf}\" \\>     \"${d_tsvs}/${f_pre}.concatenated-genome.SC-KL-20S.mRNA.${f_info}.${f_suf}\"
+>     \"${d_work}/already/combined-SC-KL-20S/UT_prim_UMI/all-samples.combined-SC-KL-20S.hc-strd-eq.mRNA.${f_suf}\" \\>     \"${d_tsvs}/${f_pre}.concatenated-genome_SC-KL-20S.mRNA.${f_info}.${f_suf}\"
 > 
 > #  Opposite-strand tallies for concatenated genome
 > cp \\
->     \"${d_work}/already/combined-SC-KL-20S/UT_prim_UMI/all-samples.combined-SC-KL-20S.hc-strd-op.mRNA.${f_suf}\" \\>     \"${d_tsvs}/${f_pre}.concatenated-genome.SC-KL-20S.mRNA.hc_strd-op_nonuniq-none.${f_suf}\"
+>     \"${d_work}/already/combined-SC-KL-20S/UT_prim_UMI/all-samples.combined-SC-KL-20S.hc-strd-op.mRNA.${f_suf}\" \\>     \"${d_tsvs}/${f_pre}.concatenated-genome_SC-KL-20S.mRNA.hc_strd-op_nonuniq-none.${f_suf}\"
 > 
 > #  Same-strand tallies for noncoding collapsed features
 > cp \\
 >     \"${d_work}/representation/UT_prim_UMI/representative-non-coding-transcriptome.hc-strd-eq.${f_suf}\" \\
->     \"${d_tsvs}/${f_pre}.txome_representative-noncoding.${f_info}.${f_suf}\"
+>     \"${d_tsvs}/${f_pre}.txome_representative-pa-ncRNA.${f_info}.${f_suf}\"
 > 
 > #  Same-strand tallies for noncoding non-collapsed features
 > cp \\
 >     \"${d_work}/representation/UT_prim_UMI/non-collapsed-non-coding-transcriptome.hc-strd-eq.${f_suf}\" \\
->     \"${d_tsvs}/${f_pre}.txome_non-collapsed-noncoding.${f_info}.${f_suf}\"
+>     \"${d_tsvs}/${f_pre}.txome_non-collapsed-pa-ncRNA.${f_info}.${f_suf}\"
 > 
 > #  Same-strand tallies for coding (i.e., R64-1-1 functional annotations)
 > #+ non-pa-ncRNA features
@@ -4136,22 +4146,22 @@ ls -lhaFG ./*
 #+ calculate K. lactis size factors)
 cp \
     "outfiles_htseq-count/already/combined-SC-KL-20S/UT_prim_UMI/all-samples.combined-SC-KL-20S.hc-strd-eq.mRNA.tsv" \
-    "GEO/matrices/Greenlaw-et-al.concatenated-genome.SC-KL-20S.mRNA.hc_strd-eq_nonuniq-none.tsv"
+    "GEO/matrices/Greenlaw-et-al.concatenated-genome_SC-KL-20S.mRNA.hc_strd-eq_nonuniq-none.tsv"
 
 #  Opposite-strand tallies for concatenated genome
 cp \
     "outfiles_htseq-count/already/combined-SC-KL-20S/UT_prim_UMI/all-samples.combined-SC-KL-20S.hc-strd-op.mRNA.tsv" \
-    "GEO/matrices/Greenlaw-et-al.concatenated-genome.SC-KL-20S.mRNA.hc_strd-op_nonuniq-none.tsv"
+    "GEO/matrices/Greenlaw-et-al.concatenated-genome_SC-KL-20S.mRNA.hc_strd-op_nonuniq-none.tsv"
 
 #  Same-strand tallies for noncoding collapsed features
 cp \
     "outfiles_htseq-count/representation/UT_prim_UMI/representative-non-coding-transcriptome.hc-strd-eq.tsv" \
-    "GEO/matrices/Greenlaw-et-al.txome_representative-noncoding.hc_strd-eq_nonuniq-none.tsv"
+    "GEO/matrices/Greenlaw-et-al.txome_representative-pa-ncRNA.hc_strd-eq_nonuniq-none.tsv"
 
 #  Same-strand tallies for noncoding non-collapsed features
 cp \
     "outfiles_htseq-count/representation/UT_prim_UMI/non-collapsed-non-coding-transcriptome.hc-strd-eq.tsv" \
-    "GEO/matrices/Greenlaw-et-al.txome_non-collapsed-noncoding.hc_strd-eq_nonuniq-none.tsv"
+    "GEO/matrices/Greenlaw-et-al.txome_non-collapsed-pa-ncRNA.hc_strd-eq_nonuniq-none.tsv"
 
 #  Same-strand tallies for coding (i.e., R64-1-1 functional annotations)
 #+ non-pa-ncRNA features
@@ -4176,8 +4186,8 @@ cp \
 
 ❯ cp \
 >     "${d_work}/already/combined-SC-KL-20S/UT_prim_UMI/all-samples.combined-SC-KL-20S.hc-strd-eq.mRNA.${f_suf}" \
->     "${d_tsvs}/${f_pre}.concatenated-genome.SC-KL-20S.mRNA.${f_info}.${f_suf}"
-'outfiles_htseq-count/already/combined-SC-KL-20S/UT_prim_UMI/all-samples.combined-SC-KL-20S.hc-strd-eq.mRNA.tsv' -> 'GEO/matrices/Greenlaw-et-al.concatenated-genome.SC-KL-20S.mRNA.hc_strd-eq_nonuniq-none.tsv'
+>     "${d_tsvs}/${f_pre}.concatenated-genome_SC-KL-20S.mRNA.${f_info}.${f_suf}"
+'outfiles_htseq-count/already/combined-SC-KL-20S/UT_prim_UMI/all-samples.combined-SC-KL-20S.hc-strd-eq.mRNA.tsv' -> 'GEO/matrices/Greenlaw-et-al.concatenated-genome_SC-KL-20S.mRNA.hc_strd-eq_nonuniq-none.tsv'
 
 
 ❯ #  Opposite-strand tallies for concatenated genome
@@ -4185,8 +4195,8 @@ cp \
 
 ❯ cp \
 >     "${d_work}/already/combined-SC-KL-20S/UT_prim_UMI/all-samples.combined-SC-KL-20S.hc-strd-op.mRNA.${f_suf}" \
->     "${d_tsvs}/${f_pre}.concatenated-genome.SC-KL-20S.mRNA.hc_strd-op_nonuniq-none.${f_suf}"
-'outfiles_htseq-count/already/combined-SC-KL-20S/UT_prim_UMI/all-samples.combined-SC-KL-20S.hc-strd-op.mRNA.tsv' -> 'GEO/matrices/Greenlaw-et-al.concatenated-genome.SC-KL-20S.mRNA.hc_strd-op_nonuniq-none.tsv'
+>     "${d_tsvs}/${f_pre}.concatenated-genome_SC-KL-20S.mRNA.hc_strd-op_nonuniq-none.${f_suf}"
+'outfiles_htseq-count/already/combined-SC-KL-20S/UT_prim_UMI/all-samples.combined-SC-KL-20S.hc-strd-op.mRNA.tsv' -> 'GEO/matrices/Greenlaw-et-al.concatenated-genome_SC-KL-20S.mRNA.hc_strd-op_nonuniq-none.tsv'
 
 
 ❯ #  Same-strand tallies for noncoding collapsed features
@@ -4194,8 +4204,8 @@ cp \
 
 ❯ cp \
 >     "${d_work}/representation/UT_prim_UMI/representative-non-coding-transcriptome.hc-strd-eq.${f_suf}" \
->     "${d_tsvs}/${f_pre}.txome_representative-noncoding.${f_info}.${f_suf}"
-'outfiles_htseq-count/representation/UT_prim_UMI/representative-non-coding-transcriptome.hc-strd-eq.tsv' -> 'GEO/matrices/Greenlaw-et-al.txome_representative-noncoding.hc_strd-eq_nonuniq-none.tsv'
+>     "${d_tsvs}/${f_pre}.txome_representative-pa-ncRNA.${f_info}.${f_suf}"
+'outfiles_htseq-count/representation/UT_prim_UMI/representative-non-coding-transcriptome.hc-strd-eq.tsv' -> 'GEO/matrices/Greenlaw-et-al.txome_representative-pa-ncRNA.hc_strd-eq_nonuniq-none.tsv'
 
 
 ❯ #  Same-strand tallies for noncoding non-collapsed features
@@ -4203,8 +4213,8 @@ cp \
 
 ❯ cp \
 >     "${d_work}/representation/UT_prim_UMI/non-collapsed-non-coding-transcriptome.hc-strd-eq.${f_suf}" \
->     "${d_tsvs}/${f_pre}.txome_non-collapsed-noncoding.${f_info}.${f_suf}"
-'outfiles_htseq-count/representation/UT_prim_UMI/non-collapsed-non-coding-transcriptome.hc-strd-eq.tsv' -> 'GEO/matrices/Greenlaw-et-al.txome_non-collapsed-noncoding.hc_strd-eq_nonuniq-none.tsv'
+>     "${d_tsvs}/${f_pre}.txome_non-collapsed-pa-ncRNA.${f_info}.${f_suf}"
+'outfiles_htseq-count/representation/UT_prim_UMI/non-collapsed-non-coding-transcriptome.hc-strd-eq.tsv' -> 'GEO/matrices/Greenlaw-et-al.txome_non-collapsed-pa-ncRNA.hc_strd-eq_nonuniq-none.tsv'
 
 
 ❯ #  Same-strand tallies for coding (i.e., R64-1-1 functional annotations)
@@ -4247,13 +4257,13 @@ mkdir: created directory 'md5/'
 total 9.9M
 drwxrws--- 3 kalavatt  646 Jul 18 16:42 ./
 drwxrws--- 7 kalavatt  115 Jul 18 07:59 ../
--rw-rw---- 1 kalavatt 2.8M Jul 18 16:37 Greenlaw-et-al.concatenated-genome.SC-KL-20S.mRNA.hc_strd-eq_nonuniq-none.tsv
--rw-rw---- 1 kalavatt 2.1M Jul 18 16:37 Greenlaw-et-al.concatenated-genome.SC-KL-20S.mRNA.hc_strd-op_nonuniq-none.tsv
+-rw-rw---- 1 kalavatt 2.8M Jul 18 16:37 Greenlaw-et-al.concatenated-genome_SC-KL-20S.mRNA.hc_strd-eq_nonuniq-none.tsv
+-rw-rw---- 1 kalavatt 2.1M Jul 18 16:37 Greenlaw-et-al.concatenated-genome_SC-KL-20S.mRNA.hc_strd-op_nonuniq-none.tsv
 -rw-rw---- 1 kalavatt 1.4M Jul 18 16:37 Greenlaw-et-al.txome_nascent_G1.hc_strd-eq_nonuniq-none.tsv
 -rw-rw---- 1 kalavatt 1.6M Jul 18 16:37 Greenlaw-et-al.txome_nascent_Q.hc_strd-eq_nonuniq-none.tsv
--rw-rw---- 1 kalavatt 1.3M Jul 18 16:37 Greenlaw-et-al.txome_non-collapsed-noncoding.hc_strd-eq_nonuniq-none.tsv
+-rw-rw---- 1 kalavatt 1.3M Jul 18 16:37 Greenlaw-et-al.txome_non-collapsed-pa-ncRNA.hc_strd-eq_nonuniq-none.tsv
 -rw-rw---- 1 kalavatt 1.6M Jul 18 16:37 Greenlaw-et-al.txome_representative-coding-non-pa-ncRNA.hc_strd-eq_nonuniq-none.tsv
--rw-rw---- 1 kalavatt 888K Jul 18 16:37 Greenlaw-et-al.txome_representative-noncoding.hc_strd-eq_nonuniq-none.tsv
+-rw-rw---- 1 kalavatt 888K Jul 18 16:37 Greenlaw-et-al.txome_representative-pa-ncRNA.hc_strd-eq_nonuniq-none.tsv
 drwxrws--- 2 kalavatt    0 Jul 18 16:42 md5/
 
 
@@ -4266,25 +4276,35 @@ drwxrws--- 2 kalavatt    0 Jul 18 16:42 md5/
 
 
 ❯ ls -lhaFG ./*
--rw-rw---- 1 kalavatt 2.8M Jul 18 16:37 ./Greenlaw-et-al.concatenated-genome.SC-KL-20S.mRNA.hc_strd-eq_nonuniq-none.tsv
--rw-rw---- 1 kalavatt 2.1M Jul 18 16:37 ./Greenlaw-et-al.concatenated-genome.SC-KL-20S.mRNA.hc_strd-op_nonuniq-none.tsv
--rw-rw---- 1 kalavatt 1.4M Jul 18 16:37 ./Greenlaw-et-al.txome_nascent_G1.hc_strd-eq_nonuniq-none.tsv
--rw-rw---- 1 kalavatt 1.6M Jul 18 16:37 ./Greenlaw-et-al.txome_nascent_Q.hc_strd-eq_nonuniq-none.tsv
--rw-rw---- 1 kalavatt 1.3M Jul 18 16:37 ./Greenlaw-et-al.txome_non-collapsed-noncoding.hc_strd-eq_nonuniq-none.tsv
--rw-rw---- 1 kalavatt 1.6M Jul 18 16:37 ./Greenlaw-et-al.txome_representative-coding-non-pa-ncRNA.hc_strd-eq_nonuniq-none.tsv
--rw-rw---- 1 kalavatt 888K Jul 18 16:37 ./Greenlaw-et-al.txome_representative-noncoding.hc_strd-eq_nonuniq-none.tsv
+-rw-rw---- 1 kalavatt 2.7M Jul 19 12:42 ./Greenlaw-et-al.concatenated-genome_SC-KL-20S.mRNA.hc_strd-eq_nonuniq-none.tsv
+-rw-rw---- 1 kalavatt 2.2M Jul 19 12:42 ./Greenlaw-et-al.concatenated-genome_SC-KL-20S.mRNA.hc_strd-op_nonuniq-none.tsv
+-rw-rw---- 1 kalavatt 2.9M Jul 19 12:42 ./Greenlaw-et-al.txome_nascent_G1.hc_strd-eq_nonuniq-none.tsv
+-rw-rw---- 1 kalavatt 3.6M Jul 19 12:42 ./Greenlaw-et-al.txome_nascent_Q.hc_strd-eq_nonuniq-none.tsv
+-rw-rw---- 1 kalavatt 2.1M Jul 19 12:42 ./Greenlaw-et-al.txome_non-collapsed-pa-ncRNA.hc_strd-eq_nonuniq-none.tsv
+-rw-rw---- 1 kalavatt 1.7M Jul 19 12:42 ./Greenlaw-et-al.txome_representative-coding-non-pa-ncRNA.hc_strd-eq_nonuniq-none.tsv
+-rw-rw---- 1 kalavatt 1.6M Jul 19 12:42 ./Greenlaw-et-al.txome_representative-pa-ncRNA.hc_strd-eq_nonuniq-none.tsv
 
 ./md5:
-total 256K
-drwxrws--- 2 kalavatt 653 Jul 18 16:44 ./
-drwxrws--- 3 kalavatt 646 Jul 18 16:42 ../
--rw-rw---- 1 kalavatt 112 Jul 18 16:43 Greenlaw-et-al.concatenated-genome.SC-KL-20S.mRNA.hc_strd-eq_nonuniq-none.md5.txt
--rw-rw---- 1 kalavatt 112 Jul 18 16:43 Greenlaw-et-al.concatenated-genome.SC-KL-20S.mRNA.hc_strd-op_nonuniq-none.md5.txt
--rw-rw---- 1 kalavatt  94 Jul 18 16:43 Greenlaw-et-al.txome_nascent_G1.hc_strd-eq_nonuniq-none.md5.txt
--rw-rw---- 1 kalavatt  93 Jul 18 16:44 Greenlaw-et-al.txome_nascent_Q.hc_strd-eq_nonuniq-none.md5.txt
--rw-rw---- 1 kalavatt 107 Jul 18 16:44 Greenlaw-et-al.txome_non-collapsed-noncoding.hc_strd-eq_nonuniq-none.md5.txt
--rw-rw---- 1 kalavatt 118 Jul 18 16:44 Greenlaw-et-al.txome_representative-coding-non-pa-ncRNA.hc_strd-eq_nonuniq-none.md5.txt
--rw-rw---- 1 kalavatt 108 Jul 18 16:44 Greenlaw-et-al.txome_representative-noncoding.hc_strd-eq_nonuniq-none.md5.txt
+total 272K
+drwxrws--- 2 kalavatt  651 Jul 19 12:47 ./
+drwxrws--- 3 kalavatt 1.3K Jul 19 12:47 ../
+-rw-rw---- 1 kalavatt  112 Jul 19 12:47 Greenlaw-et-al.concatenated-genome_SC-KL-20S.mRNA.hc_strd-eq_nonuniq-none.md5.txt
+-rw-rw---- 1 kalavatt  112 Jul 19 12:47 Greenlaw-et-al.concatenated-genome_SC-KL-20S.mRNA.hc_strd-op_nonuniq-none.md5.txt
+-rw-rw---- 1 kalavatt   94 Jul 19 12:47 Greenlaw-et-al.txome_nascent_G1.hc_strd-eq_nonuniq-none.md5.txt
+-rw-rw---- 1 kalavatt   93 Jul 19 12:47 Greenlaw-et-al.txome_nascent_Q.hc_strd-eq_nonuniq-none.md5.txt
+-rw-rw---- 1 kalavatt  106 Jul 19 12:47 Greenlaw-et-al.txome_non-collapsed-pa-ncRNA.hc_strd-eq_nonuniq-none.md5.txt
+-rw-rw---- 1 kalavatt  118 Jul 19 12:47 Greenlaw-et-al.txome_representative-coding-non-pa-ncRNA.hc_strd-eq_nonuniq-none.md5.txt
+-rw-rw---- 1 kalavatt  107 Jul 19 12:47 Greenlaw-et-al.txome_representative-pa-ncRNA.hc_strd-eq_nonuniq-none.md5.txt
+
+
+❯ cat md5/*.txt
+1f701cd2de97a1f7dd787c70693fbda1  Greenlaw-et-al.concatenated-genome_SC-KL-20S.mRNA.hc_strd-eq_nonuniq-none.tsv
+a79af572fffd34a63ab31f3a71c6161f  Greenlaw-et-al.concatenated-genome_SC-KL-20S.mRNA.hc_strd-op_nonuniq-none.tsv
+f5042f448885bda59011480b9d635ae7  Greenlaw-et-al.txome_nascent_G1.hc_strd-eq_nonuniq-none.tsv
+79e74b8613e3b9515e85c4effcdac6b2  Greenlaw-et-al.txome_nascent_Q.hc_strd-eq_nonuniq-none.tsv
+eccb07887774f15bf745783db3c99216  Greenlaw-et-al.txome_non-collapsed-pa-ncRNA.hc_strd-eq_nonuniq-none.tsv
+39d3d5573ef5e9796b8ead8ba83dd566  Greenlaw-et-al.txome_representative-coding-non-pa-ncRNA.hc_strd-eq_nonuniq-none.tsv
+a88e399e136bec2f12f6f35fad16caa4  Greenlaw-et-al.txome_representative-pa-ncRNA.hc_strd-eq_nonuniq-none.tsv
 ```
 </details>
 <br />
