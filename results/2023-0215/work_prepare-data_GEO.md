@@ -29,6 +29,7 @@
     1. [Determine/find/copy over the `gff3`s and `gtf`s to submit](#determinefindcopy-over-the-gff3s-and-gtfs-to-submit)
 1. [Prepare and copy over counts matrices](#prepare-and-copy-over-counts-matrices)
     1. [Determine/find/copy over the counts matrices to submit](#determinefindcopy-over-the-counts-matrices-to-submit)
+1. [Prepare and copy over `bw`s](#prepare-and-copy-over-bws)
 
 <!-- /MarkdownTOC -->
 </details>
@@ -90,6 +91,7 @@ cd "${d_proj}/${d_exp_0215}" || echo "cd'ing failed; check on this..."
     {
         mkdir -p GEO/{bams,bws,matrices,fastqs,gtfs}
         mkdir -p GEO/bams/{transcriptome-assembly,standard-analyses}
+        mkdir -p GEO/bws/{individual,mean}
     }
 
 
@@ -121,6 +123,9 @@ mkdir: created directory 'GEO/fastqs'
 mkdir: created directory 'GEO/gtfs'
 mkdir: created directory 'GEO/bams/transcriptome-assembly'
 mkdir: created directory 'GEO/bams/standard-analyses'
+mkdir: created directory 'GEO/bws'
+mkdir: created directory 'GEO/bws/individual'
+mkdir: created directory 'GEO/bws/mean'
 ```
 </details>
 <br />
@@ -4308,14 +4313,504 @@ a88e399e136bec2f12f6f35fad16caa4  Greenlaw-et-al.txome_representative-pa-ncRNA.h
 ```
 </details>
 <br />
+<br />
 
+<a id="prepare-and-copy-over-bws"></a>
+## Prepare and copy over `bw`s
 <details>
-<summary><i>Code</i></summary>
+<summary><i>Notes (and code and printed)</i></summary>
+
+Manually copied over files from `~/tsukiyamalab/alisong/KL_bigwigs_for_geo`:
+```bash
+#!/bin/bash
+
+ls -lhaFG "${HOME}/tsukiyamalab/alisong/KL_bigwigs_for_geo"
+```
+
+```txt
+❯ ls -lhaFG
+total 1.6G
+drwxrws---   2 agreenla 5.7K Jul 19 16:09 ./
+drwxrws--- 101 agreenla 5.7K Jul 19 16:05 ../
+-rw-rw----   1 agreenla  47M Apr 26 16:20 n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI_m.bw
+-rw-rw----   1 agreenla  47M Apr 26 16:25 n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI_p.bw
+-rw-rw----   1 agreenla  46M Apr 26 16:32 n3-d_Q_day7_tcn_N_aux-T_tc-F_rep2_tech1.UT_prim_UMI_m.bw
+-rw-rw----   1 agreenla  46M Apr 26 16:39 n3-d_Q_day7_tcn_N_aux-T_tc-F_rep2_tech1.UT_prim_UMI_p.bw
+-rw-rw----   1 agreenla  17M May 24 13:12 n3-d_Q_day7_tcn_SS_aux-T_tc-F_rep1_tech1.UT_prim_UMI_m.bw
+-rw-rw----   1 agreenla  17M May 24 13:30 n3-d_Q_day7_tcn_SS_aux-T_tc-F_rep1_tech1.UT_prim_UMI_p.bw
+-rw-rw----   1 agreenla  14M May 24 13:44 n3-d_Q_day7_tcn_SS_aux-T_tc-F_rep2_tech1.UT_prim_UMI_m.bw
+-rw-rw----   1 agreenla  15M May 24 14:04 n3-d_Q_day7_tcn_SS_aux-T_tc-F_rep2_tech1.UT_prim_UMI_p.bw
+-rw-rw----   1 agreenla  35M Apr 26 16:44 o-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI_m.bw
+-rw-rw----   1 agreenla  35M Apr 26 16:48 o-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI_p.bw
+-rw-rw----   1 agreenla  34M Apr 26 16:54 o-d_Q_day7_tcn_N_aux-T_tc-F_rep2_tech1.UT_prim_UMI_m.bw
+-rw-rw----   1 agreenla  34M Apr 26 16:59 o-d_Q_day7_tcn_N_aux-T_tc-F_rep2_tech1.UT_prim_UMI_p.bw
+-rw-rw----   1 agreenla 7.4M May 24 14:14 o-d_Q_day7_tcn_SS_aux-T_tc-F_rep1_tech1.UT_prim_UMI_m.bw
+-rw-rw----   1 agreenla 7.7M May 24 14:27 o-d_Q_day7_tcn_SS_aux-T_tc-F_rep1_tech1.UT_prim_UMI_p.bw
+-rw-rw----   1 agreenla 7.4M May 24 14:39 o-d_Q_day7_tcn_SS_aux-T_tc-F_rep2_tech1.UT_prim_UMI_m.bw
+-rw-rw----   1 agreenla 7.7M May 24 14:52 o-d_Q_day7_tcn_SS_aux-T_tc-F_rep2_tech1.UT_prim_UMI_p.bw
+-rw-rw----   1 agreenla  20M May  2 13:44 r6-n_DSm2_day2_tcn_SS_aux-F_tc-T_rep1_tech1.UT_prim_UMI_m.bw
+-rw-rw----   1 agreenla  20M May  2 13:48 r6-n_DSm2_day2_tcn_SS_aux-F_tc-T_rep1_tech1.UT_prim_UMI_p.bw
+-rw-rw----   1 agreenla  22M May  2 13:54 r6-n_DSm2_day2_tcn_SS_aux-F_tc-T_rep2_tech1.UT_prim_UMI_m.bw
+-rw-rw----   1 agreenla  22M May  2 13:59 r6-n_DSm2_day2_tcn_SS_aux-F_tc-T_rep2_tech1.UT_prim_UMI_p.bw
+-rw-rw----   1 agreenla  17M May  2 14:02 r6-n_DSp24_day3_tcn_SS_aux-F_tc-T_rep1_tech1.UT_prim_UMI_m.bw
+-rw-rw----   1 agreenla  17M May  2 14:06 r6-n_DSp24_day3_tcn_SS_aux-F_tc-T_rep1_tech1.UT_prim_UMI_p.bw
+-rw-rw----   1 agreenla  20M May  2 14:11 r6-n_DSp24_day3_tcn_SS_aux-F_tc-T_rep2_tech1.UT_prim_UMI_m.bw
+-rw-rw----   1 agreenla  20M May  2 14:15 r6-n_DSp24_day3_tcn_SS_aux-F_tc-T_rep2_tech1.UT_prim_UMI_p.bw
+-rw-rw----   1 agreenla  21M May  2 13:50 r6-n_DSp2_day2_tcn_SS_aux-F_tc-T_rep1_tech1.UT_prim_UMI_m.bw
+-rw-rw----   1 agreenla  22M May  2 13:55 r6-n_DSp2_day2_tcn_SS_aux-F_tc-T_rep1_tech1.UT_prim_UMI_p.bw
+-rw-rw----   1 agreenla  22M May  2 14:02 r6-n_DSp2_day2_tcn_SS_aux-F_tc-T_rep2_tech1.UT_prim_UMI_m.bw
+-rw-rw----   1 agreenla  23M May  2 14:06 r6-n_DSp2_day2_tcn_SS_aux-F_tc-T_rep2_tech1.UT_prim_UMI_p.bw
+-rw-rw----   1 agreenla  17M May  2 14:04 r6-n_DSp48_day4_tcn_SS_aux-F_tc-T_rep1_tech1.UT_prim_UMI_m.bw
+-rw-rw----   1 agreenla  17M May  2 14:11 r6-n_DSp48_day4_tcn_SS_aux-F_tc-T_rep1_tech1.UT_prim_UMI_p.bw
+-rw-rw----   1 agreenla  16M May  2 15:38 r6-n_DSp48_day4_tcn_SS_aux-F_tc-T_rep2_tech2.UT_prim_UMI_m.bw
+-rw-rw----   1 agreenla  17M May  2 15:45 r6-n_DSp48_day4_tcn_SS_aux-F_tc-T_rep2_tech2.UT_prim_UMI_p.bw
+-rw-rw----   1 agreenla  22M May  5 13:15 r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1.UT_prim_UMI_m.bw
+-rw-rw----   1 agreenla  22M May  5 13:24 r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1.UT_prim_UMI_p.bw
+-rw-rw----   1 agreenla  22M May  5 13:35 r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1.UT_prim_UMI_m.bw
+-rw-rw----   1 agreenla  22M May  5 13:44 r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1.UT_prim_UMI_p.bw
+-rw-rw----   1 agreenla  40M May 24 14:42 r6-n_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1.UT_prim_UMI_m.bw
+-rw-rw----   1 agreenla  40M May 24 14:46 r6-n_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1.UT_prim_UMI_p.bw
+-rw-rw----   1 agreenla  39M May 24 14:53 r6-n_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1.UT_prim_UMI_m.bw
+-rw-rw----   1 agreenla  39M May 24 14:58 r6-n_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1.UT_prim_UMI_p.bw
+-rw-rw----   1 agreenla  11M May  5 12:44 r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1.UT_prim_UMI_m.bw
+-rw-rw----   1 agreenla  12M May  5 13:00 r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1.UT_prim_UMI_p.bw
+-rw-rw----   1 agreenla 9.7M May  5 13:13 r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech2.UT_prim_UMI_m.bw
+-rw-rw----   1 agreenla 9.9M May  5 13:26 r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech2.UT_prim_UMI_p.bw
+-rw-rw----   1 agreenla  13M May  5 13:37 r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1.UT_prim_UMI_m.bw
+-rw-rw----   1 agreenla  13M May  5 13:53 r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1.UT_prim_UMI_p.bw
+-rw-rw----   1 agreenla  19M May  2 14:05 WT_DSm2_day2_tcn_SS_aux-F_tc-T_rep1_tech1.UT_prim_UMI_m.bw
+-rw-rw----   1 agreenla  19M May  2 14:10 WT_DSm2_day2_tcn_SS_aux-F_tc-T_rep1_tech1.UT_prim_UMI_p.bw
+-rw-rw----   1 agreenla  17M May  2 14:16 WT_DSm2_day2_tcn_SS_aux-F_tc-T_rep2_tech1.UT_prim_UMI_m.bw
+-rw-rw----   1 agreenla  17M May  2 14:21 WT_DSm2_day2_tcn_SS_aux-F_tc-T_rep2_tech1.UT_prim_UMI_p.bw
+-rw-rw----   1 agreenla  17M May  2 14:21 WT_DSp24_day3_tcn_SS_aux-F_tc-T_rep1_tech1.UT_prim_UMI_m.bw
+-rw-rw----   1 agreenla  17M May  2 14:25 WT_DSp24_day3_tcn_SS_aux-F_tc-T_rep1_tech1.UT_prim_UMI_p.bw
+-rw-rw----   1 agreenla  17M May  2 14:31 WT_DSp24_day3_tcn_SS_aux-F_tc-T_rep2_tech1.UT_prim_UMI_m.bw
+-rw-rw----   1 agreenla  17M May  2 14:34 WT_DSp24_day3_tcn_SS_aux-F_tc-T_rep2_tech1.UT_prim_UMI_p.bw
+-rw-rw----   1 agreenla  18M May  2 14:13 WT_DSp2_day2_tcn_SS_aux-F_tc-T_rep1_tech1.UT_prim_UMI_m.bw
+-rw-rw----   1 agreenla  18M May  2 14:17 WT_DSp2_day2_tcn_SS_aux-F_tc-T_rep1_tech1.UT_prim_UMI_p.bw
+-rw-rw----   1 agreenla  18M May  2 14:25 WT_DSp2_day2_tcn_SS_aux-F_tc-T_rep2_tech1.UT_prim_UMI_m.bw
+-rw-rw----   1 agreenla  19M May  2 14:30 WT_DSp2_day2_tcn_SS_aux-F_tc-T_rep2_tech1.UT_prim_UMI_p.bw
+-rw-rw----   1 agreenla  14M May  2 14:15 WT_DSp48_day4_tcn_SS_aux-F_tc-T_rep1_tech1.UT_prim_UMI_m.bw
+-rw-rw----   1 agreenla  15M May  2 14:22 WT_DSp48_day4_tcn_SS_aux-F_tc-T_rep1_tech1.UT_prim_UMI_p.bw
+-rw-rw----   1 agreenla  14M May  2 14:33 WT_DSp48_day4_tcn_SS_aux-F_tc-T_rep1_tech2.UT_prim_UMI_m.bw
+-rw-rw----   1 agreenla  15M May  2 14:41 WT_DSp48_day4_tcn_SS_aux-F_tc-T_rep1_tech2.UT_prim_UMI_p.bw
+-rw-rw----   1 agreenla  13M May  2 14:46 WT_DSp48_day4_tcn_SS_aux-F_tc-T_rep2_tech1.UT_prim_UMI_m.bw
+-rw-rw----   1 agreenla  13M May  2 14:51 WT_DSp48_day4_tcn_SS_aux-F_tc-T_rep2_tech1.UT_prim_UMI_p.bw
+-rw-rw----   1 agreenla  17M May  5 13:57 WT_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1.UT_prim_UMI_m.bw
+-rw-rw----   1 agreenla  18M May  5 14:06 WT_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1.UT_prim_UMI_p.bw
+-rw-rw----   1 agreenla  16M May  5 14:18 WT_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1.UT_prim_UMI_m.bw
+-rw-rw----   1 agreenla  17M May  5 14:27 WT_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1.UT_prim_UMI_p.bw
+-rw-rw----   1 agreenla  38M May 24 15:03 WT_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1.UT_prim_UMI_m.bw
+-rw-rw----   1 agreenla  38M May 24 15:08 WT_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1.UT_prim_UMI_p.bw
+-rw-rw----   1 agreenla  38M May 24 15:14 WT_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1.UT_prim_UMI_m.bw
+-rw-rw----   1 agreenla  38M May 24 15:18 WT_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1.UT_prim_UMI_p.bw
+-rw-rw----   1 agreenla 8.0M May  5 14:04 WT_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1.UT_prim_UMI_m.bw
+-rw-rw----   1 agreenla 8.3M May  5 14:20 WT_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1.UT_prim_UMI_p.bw
+-rw-rw----   1 agreenla 8.4M May  5 14:31 WT_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1.UT_prim_UMI_m.bw
+-rw-rw----   1 agreenla 8.5M May  5 14:50 WT_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1.UT_prim_UMI_p.bw
+```
+
+In particular, copied these files:
+```txt
+### #FOUND n3-d SS, #FOUND o-d SS ###
+#PICKUPHERE  #TODO
+
+n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI_m.bw
+n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI_p.bw
+n3-d_Q_day7_tcn_N_aux-T_tc-F_rep2_tech1.UT_prim_UMI_m.bw
+n3-d_Q_day7_tcn_N_aux-T_tc-F_rep2_tech1.UT_prim_UMI_p.bw
+
+o-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI_m.bw
+o-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI_p.bw
+o-d_Q_day7_tcn_N_aux-T_tc-F_rep2_tech1.UT_prim_UMI_m.bw
+o-d_Q_day7_tcn_N_aux-T_tc-F_rep2_tech1.UT_prim_UMI_p.bw
+
+r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1.UT_prim_UMI_m.bw
+r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1.UT_prim_UMI_p.bw
+r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1.UT_prim_UMI_m.bw
+r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1.UT_prim_UMI_p.bw
+
+r6-n_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1.UT_prim_UMI_m.bw
+r6-n_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1.UT_prim_UMI_p.bw
+r6-n_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1.UT_prim_UMI_m.bw
+r6-n_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1.UT_prim_UMI_p.bw
+
+r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1.UT_prim_UMI_m.bw
+r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1.UT_prim_UMI_p.bw
+r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech2.UT_prim_UMI_m.bw
+r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech2.UT_prim_UMI_p.bw
+r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1.UT_prim_UMI_m.bw
+r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1.UT_prim_UMI_p.bw
+
+WT_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1.UT_prim_UMI_m.bw
+WT_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1.UT_prim_UMI_p.bw
+WT_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1.UT_prim_UMI_m.bw
+WT_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1.UT_prim_UMI_p.bw
+
+WT_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1.UT_prim_UMI_m.bw
+WT_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1.UT_prim_UMI_p.bw
+WT_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1.UT_prim_UMI_m.bw
+WT_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1.UT_prim_UMI_p.bw
+
+WT_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1.UT_prim_UMI_m.bw
+WT_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1.UT_prim_UMI_p.bw
+WT_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1.UT_prim_UMI_m.bw
+WT_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1.UT_prim_UMI_p.bw
+```
+
+Also, manually copied over files from `~/tsukiyamalab/alisong/merged_bigwigs_for_geo`:
+```bash
+#!/bin/bash
+
+ls -lhaFG "${HOME}/tsukiyamalab/alisong/merged_bigwigs_for_geo"
+```
+
+```txt
+❯ ls -lhaFG "${HOME}/tsukiyamalab/alisong/merged_bigwigs_for_geo"
+total 1.9G
+drwxrws---   2 agreenla 2.4K Jul 19 13:13 ./
+drwxrws--- 100 agreenla 5.6K Jul 19 14:45 ../
+-rw-rw----   1 agreenla  76M May 24 13:02 mean_n3-d_Q_day7_tcn_N_aux-T_tc-F__KL.m.bw
+-rw-rw----   1 agreenla  75M May 24 13:05 mean_n3-d_Q_day7_tcn_N_aux-T_tc-F__KL.p.bw
+-rw-rw----   1 agreenla  30M May 24 16:02 mean_n3-d_Q_day7_tcn_SS_aux-T_tc-F__KL.m.bw
+-rw-rw----   1 agreenla  31M May 24 16:05 mean_n3-d_Q_day7_tcn_SS_aux-T_tc-F__KL.p.bw
+-rw-rw----   1 agreenla  60M May 24 13:04 mean_o-d_Q_day7_tcn_N_aux-T_tc-F__KL.m.bw
+-rw-rw----   1 agreenla  60M May 24 13:07 mean_o-d_Q_day7_tcn_N_aux-T_tc-F__KL.p.bw
+-rw-rw----   1 agreenla  15M May 24 16:03 mean_o-d_Q_day7_tcn_SS_aux-T_tc-F__KL.m.bw
+-rw-rw----   1 agreenla  16M May 24 16:06 mean_o-d_Q_day7_tcn_SS_aux-T_tc-F__KL.p.bw
+-rw-rw----   1 agreenla  39M May 24 16:06 mean_r6-n_DSm2_day2_tcn_SS_aux-F_tc-T__KL.m.bw
+-rw-rw----   1 agreenla  40M May 24 16:23 mean_r6-n_DSm2_day2_tcn_SS_aux-F_tc-T__KL.p.bw
+-rw-rw----   1 agreenla  35M May 24 16:07 mean_r6-n_DSp24_day3_tcn_SS_aux-F_tc-T__KL.m.bw
+-rw-rw----   1 agreenla  35M May 24 16:25 mean_r6-n_DSp24_day3_tcn_SS_aux-F_tc-T__KL.p.bw
+-rw-rw----   1 agreenla  41M May 24 16:09 mean_r6-n_DSp2_day2_tcn_SS_aux-F_tc-T__KL.m.bw
+-rw-rw----   1 agreenla  42M May 24 16:26 mean_r6-n_DSp2_day2_tcn_SS_aux-F_tc-T__KL.p.bw
+-rw-rw----   1 agreenla  40M May 24 16:10 mean_r6-n_G1_day1_tcn_SS_aux-F_tc-F__KL.m.bw
+-rw-rw----   1 agreenla  41M May 24 16:28 mean_r6-n_G1_day1_tcn_SS_aux-F_tc-F__KL.p.bw
+-rw-rw----   1 agreenla  69M May 24 16:12 mean_r6-n_Q_day8_tcn_N_aux-F_tc-F__KL.m.bw
+-rw-rw----   1 agreenla  69M May 24 16:29 mean_r6-n_Q_day8_tcn_N_aux-F_tc-F__KL.p.bw
+-rw-rw----   1 agreenla  24M May 24 16:13 mean_r6-n_Q_day8_tcn_SS_aux-F_tc-F__KL.m.bw
+-rw-rw----   1 agreenla  24M May 24 16:30 mean_r6-n_Q_day8_tcn_SS_aux-F_tc-F__KL.p.bw
+-rw-rw----   1 agreenla  32M May 24 16:14 mean_WT_DSm2_day2_tcn_SS_aux-F_tc-T__KL.m.bw
+-rw-rw----   1 agreenla  32M May 24 16:32 mean_WT_DSm2_day2_tcn_SS_aux-F_tc-T__KL.p.bw
+-rw-rw----   1 agreenla  32M May 24 16:15 mean_WT_DSp24_day3_tcn_SS_aux-F_tc-T__KL.m.bw
+-rw-rw----   1 agreenla  32M May 24 16:33 mean_WT_DSp24_day3_tcn_SS_aux-F_tc-T__KL.p.bw
+-rw-rw----   1 agreenla  33M May 24 16:17 mean_WT_DSp2_day2_tcn_SS_aux-F_tc-T__KL.m.bw
+-rw-rw----   1 agreenla  34M May 24 16:34 mean_WT_DSp2_day2_tcn_SS_aux-F_tc-T__KL.p.bw
+-rw-rw----   1 agreenla  26M May 24 16:18 mean_WT_DSp48_day4_tcn_SS_aux-F_tc-T__KL.m.bw
+-rw-rw----   1 agreenla  26M May 24 16:35 mean_WT_DSp48_day4_tcn_SS_aux-F_tc-T__KL.p.bw
+-rw-rw----   1 agreenla  30M May 24 16:19 mean_WT_G1_day1_tcn_SS_aux-F_tc-F__KL.m.bw
+-rw-rw----   1 agreenla  31M May 24 16:37 mean_WT_G1_day1_tcn_SS_aux-F_tc-F__KL.p.bw
+-rw-rw----   1 agreenla  40M May 24 13:04 mean_WT_G1_N_.bl-TPM.m.bw
+-rw-rw----   1 agreenla  40M May 24 13:10 mean_WT_G1_N_.bl-TPM.p.bw
+-rw-rw----   1 agreenla  28M May 24 13:05 mean_WT_G1_SS_.bl-TPM.m.bw
+-rw-rw----   1 agreenla  29M May 24 13:11 mean_WT_G1_SS_.bl-TPM.p.bw
+-rw-rw----   1 agreenla  67M May 24 16:21 mean_WT_Q_day8_tcn_N_aux-F_tc-F__KL.m.bw
+-rw-rw----   1 agreenla  68M May 24 16:38 mean_WT_Q_day8_tcn_N_aux-F_tc-F__KL.p.bw
+-rw-rw----   1 agreenla  17M May 24 16:22 mean_WT_Q_day8_tcn_SS_aux-F_tc-F__KL.m.bw
+-rw-rw----   1 agreenla  18M May 24 16:39 mean_WT_Q_day8_tcn_SS_aux-F_tc-F__KL.p.bw
+-rw-rw----   1 agreenla  64M May 24 13:07 mean_WT_Q_N_.bl-TPM.m.bw
+-rw-rw----   1 agreenla  64M May 24 13:13 mean_WT_Q_N_.bl-TPM.p.bw
+-rw-rw----   1 agreenla  24M May 24 13:08 mean_WT_Q_SS_.bl-TPM.m.bw
+-rw-rw----   1 agreenla  25M May 24 13:14 mean_WT_Q_SS_.bl-TPM.p.bw
+```
+
+Nothing appears to be missing from this. Copied all of these files.
 
 ```bash
 #!/bin/bash
 
+cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bws" ||
+    echo "cd'ing failed; check on this..."
 
+ls -lhaFG ./*
 ```
+
+```txt
+### #FOUND n3-d SS, #FOUND o-d SS ###
+#PICKUPHERE  #TODO
+#REDO
+❯ ls -lhaFG ./*
+./individual:
+total 1.1G
+drwxrws--- 2 kalavatt 2.5K Jul 19 16:08 ./
+drwxrws--- 4 kalavatt  106 Jul 19 16:08 ../
+-rw-rw---- 1 kalavatt  47M Apr 26 16:20 n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI_m.bw
+-rw-rw---- 1 kalavatt  47M Apr 26 16:25 n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI_p.bw
+-rw-rw---- 1 kalavatt  46M Apr 26 16:32 n3-d_Q_day7_tcn_N_aux-T_tc-F_rep2_tech1.UT_prim_UMI_m.bw
+-rw-rw---- 1 kalavatt  46M Apr 26 16:39 n3-d_Q_day7_tcn_N_aux-T_tc-F_rep2_tech1.UT_prim_UMI_p.bw
+-rw-rw---- 1 kalavatt  35M Apr 26 16:44 o-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI_m.bw
+-rw-rw---- 1 kalavatt  35M Apr 26 16:48 o-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI_p.bw
+-rw-rw---- 1 kalavatt  34M Apr 26 16:54 o-d_Q_day7_tcn_N_aux-T_tc-F_rep2_tech1.UT_prim_UMI_m.bw
+-rw-rw---- 1 kalavatt  34M Apr 26 16:59 o-d_Q_day7_tcn_N_aux-T_tc-F_rep2_tech1.UT_prim_UMI_p.bw
+-rw-rw---- 1 kalavatt  22M May  5 13:15 r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1.UT_prim_UMI_m.bw
+-rw-rw---- 1 kalavatt  22M May  5 13:24 r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1.UT_prim_UMI_p.bw
+-rw-rw---- 1 kalavatt  22M May  5 13:35 r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1.UT_prim_UMI_m.bw
+-rw-rw---- 1 kalavatt  22M May  5 13:44 r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1.UT_prim_UMI_p.bw
+-rw-rw---- 1 kalavatt  40M May 24 14:42 r6-n_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1.UT_prim_UMI_m.bw
+-rw-rw---- 1 kalavatt  40M May 24 14:46 r6-n_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1.UT_prim_UMI_p.bw
+-rw-rw---- 1 kalavatt  39M May 24 14:53 r6-n_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1.UT_prim_UMI_m.bw
+-rw-rw---- 1 kalavatt  39M May 24 14:58 r6-n_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1.UT_prim_UMI_p.bw
+-rw-rw---- 1 kalavatt  11M May  5 12:44 r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1.UT_prim_UMI_m.bw
+-rw-rw---- 1 kalavatt  12M May  5 13:00 r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1.UT_prim_UMI_p.bw
+-rw-rw---- 1 kalavatt 9.7M May  5 13:13 r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech2.UT_prim_UMI_m.bw
+-rw-rw---- 1 kalavatt 9.9M May  5 13:26 r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech2.UT_prim_UMI_p.bw
+-rw-rw---- 1 kalavatt  13M May  5 13:37 r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1.UT_prim_UMI_m.bw
+-rw-rw---- 1 kalavatt  13M May  5 13:53 r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1.UT_prim_UMI_p.bw
+-rw-rw---- 1 kalavatt  17M May  5 13:57 WT_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1.UT_prim_UMI_m.bw
+-rw-rw---- 1 kalavatt  18M May  5 14:06 WT_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1.UT_prim_UMI_p.bw
+-rw-rw---- 1 kalavatt  16M May  5 14:18 WT_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1.UT_prim_UMI_m.bw
+-rw-rw---- 1 kalavatt  17M May  5 14:27 WT_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1.UT_prim_UMI_p.bw
+-rw-rw---- 1 kalavatt  38M May 24 15:03 WT_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1.UT_prim_UMI_m.bw
+-rw-rw---- 1 kalavatt  38M May 24 15:08 WT_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1.UT_prim_UMI_p.bw
+-rw-rw---- 1 kalavatt  38M May 24 15:14 WT_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1.UT_prim_UMI_m.bw
+-rw-rw---- 1 kalavatt  38M May 24 15:18 WT_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1.UT_prim_UMI_p.bw
+-rw-rw---- 1 kalavatt 8.0M May  5 14:04 WT_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1.UT_prim_UMI_m.bw
+-rw-rw---- 1 kalavatt 8.3M May  5 14:20 WT_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1.UT_prim_UMI_p.bw
+-rw-rw---- 1 kalavatt 8.4M May  5 14:31 WT_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1.UT_prim_UMI_m.bw
+-rw-rw---- 1 kalavatt 8.5M May  5 14:50 WT_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1.UT_prim_UMI_p.bw
+
+./mean:
+total 1.9G
+drwxrws--- 2 kalavatt 2.4K Jul 19 15:29 ./
+drwxrws--- 4 kalavatt  106 Jul 19 16:08 ../
+-rw-rw---- 1 kalavatt  76M May 24 13:02 mean_n3-d_Q_day7_tcn_N_aux-T_tc-F__KL.m.bw
+-rw-rw---- 1 kalavatt  75M May 24 13:05 mean_n3-d_Q_day7_tcn_N_aux-T_tc-F__KL.p.bw
+-rw-rw---- 1 kalavatt  30M May 24 16:02 mean_n3-d_Q_day7_tcn_SS_aux-T_tc-F__KL.m.bw
+-rw-rw---- 1 kalavatt  31M May 24 16:05 mean_n3-d_Q_day7_tcn_SS_aux-T_tc-F__KL.p.bw
+-rw-rw---- 1 kalavatt  60M May 24 13:04 mean_o-d_Q_day7_tcn_N_aux-T_tc-F__KL.m.bw
+-rw-rw---- 1 kalavatt  60M May 24 13:07 mean_o-d_Q_day7_tcn_N_aux-T_tc-F__KL.p.bw
+-rw-rw---- 1 kalavatt  15M May 24 16:03 mean_o-d_Q_day7_tcn_SS_aux-T_tc-F__KL.m.bw
+-rw-rw---- 1 kalavatt  16M May 24 16:06 mean_o-d_Q_day7_tcn_SS_aux-T_tc-F__KL.p.bw
+-rw-rw---- 1 kalavatt  39M May 24 16:06 mean_r6-n_DSm2_day2_tcn_SS_aux-F_tc-T__KL.m.bw
+-rw-rw---- 1 kalavatt  40M May 24 16:23 mean_r6-n_DSm2_day2_tcn_SS_aux-F_tc-T__KL.p.bw
+-rw-rw---- 1 kalavatt  35M May 24 16:07 mean_r6-n_DSp24_day3_tcn_SS_aux-F_tc-T__KL.m.bw
+-rw-rw---- 1 kalavatt  35M May 24 16:25 mean_r6-n_DSp24_day3_tcn_SS_aux-F_tc-T__KL.p.bw
+-rw-rw---- 1 kalavatt  41M May 24 16:09 mean_r6-n_DSp2_day2_tcn_SS_aux-F_tc-T__KL.m.bw
+-rw-rw---- 1 kalavatt  42M May 24 16:26 mean_r6-n_DSp2_day2_tcn_SS_aux-F_tc-T__KL.p.bw
+-rw-rw---- 1 kalavatt  40M May 24 16:10 mean_r6-n_G1_day1_tcn_SS_aux-F_tc-F__KL.m.bw
+-rw-rw---- 1 kalavatt  41M May 24 16:28 mean_r6-n_G1_day1_tcn_SS_aux-F_tc-F__KL.p.bw
+-rw-rw---- 1 kalavatt  69M May 24 16:12 mean_r6-n_Q_day8_tcn_N_aux-F_tc-F__KL.m.bw
+-rw-rw---- 1 kalavatt  69M May 24 16:29 mean_r6-n_Q_day8_tcn_N_aux-F_tc-F__KL.p.bw
+-rw-rw---- 1 kalavatt  24M May 24 16:13 mean_r6-n_Q_day8_tcn_SS_aux-F_tc-F__KL.m.bw
+-rw-rw---- 1 kalavatt  24M May 24 16:30 mean_r6-n_Q_day8_tcn_SS_aux-F_tc-F__KL.p.bw
+-rw-rw---- 1 kalavatt  32M May 24 16:14 mean_WT_DSm2_day2_tcn_SS_aux-F_tc-T__KL.m.bw
+-rw-rw---- 1 kalavatt  32M May 24 16:32 mean_WT_DSm2_day2_tcn_SS_aux-F_tc-T__KL.p.bw
+-rw-rw---- 1 kalavatt  32M May 24 16:15 mean_WT_DSp24_day3_tcn_SS_aux-F_tc-T__KL.m.bw
+-rw-rw---- 1 kalavatt  32M May 24 16:33 mean_WT_DSp24_day3_tcn_SS_aux-F_tc-T__KL.p.bw
+-rw-rw---- 1 kalavatt  33M May 24 16:17 mean_WT_DSp2_day2_tcn_SS_aux-F_tc-T__KL.m.bw
+-rw-rw---- 1 kalavatt  34M May 24 16:34 mean_WT_DSp2_day2_tcn_SS_aux-F_tc-T__KL.p.bw
+-rw-rw---- 1 kalavatt  26M May 24 16:18 mean_WT_DSp48_day4_tcn_SS_aux-F_tc-T__KL.m.bw
+-rw-rw---- 1 kalavatt  26M May 24 16:35 mean_WT_DSp48_day4_tcn_SS_aux-F_tc-T__KL.p.bw
+-rw-rw---- 1 kalavatt  30M May 24 16:19 mean_WT_G1_day1_tcn_SS_aux-F_tc-F__KL.m.bw
+-rw-rw---- 1 kalavatt  31M May 24 16:37 mean_WT_G1_day1_tcn_SS_aux-F_tc-F__KL.p.bw
+-rw-rw---- 1 kalavatt  40M May 24 13:04 mean_WT_G1_N_.bl-TPM.m.bw
+-rw-rw---- 1 kalavatt  40M May 24 13:10 mean_WT_G1_N_.bl-TPM.p.bw
+-rw-rw---- 1 kalavatt  28M May 24 13:05 mean_WT_G1_SS_.bl-TPM.m.bw
+-rw-rw---- 1 kalavatt  29M May 24 13:11 mean_WT_G1_SS_.bl-TPM.p.bw
+-rw-rw---- 1 kalavatt  67M May 24 16:21 mean_WT_Q_day8_tcn_N_aux-F_tc-F__KL.m.bw
+-rw-rw---- 1 kalavatt  68M May 24 16:38 mean_WT_Q_day8_tcn_N_aux-F_tc-F__KL.p.bw
+-rw-rw---- 1 kalavatt  17M May 24 16:22 mean_WT_Q_day8_tcn_SS_aux-F_tc-F__KL.m.bw
+-rw-rw---- 1 kalavatt  18M May 24 16:39 mean_WT_Q_day8_tcn_SS_aux-F_tc-F__KL.p.bw
+-rw-rw---- 1 kalavatt  64M May 24 13:07 mean_WT_Q_N_.bl-TPM.m.bw
+-rw-rw---- 1 kalavatt  64M May 24 13:13 mean_WT_Q_N_.bl-TPM.p.bw
+-rw-rw---- 1 kalavatt  24M May 24 13:08 mean_WT_Q_SS_.bl-TPM.m.bw
+-rw-rw---- 1 kalavatt  25M May 24 13:14 mean_WT_Q_SS_.bl-TPM.p.bw
+```
+
+Renaming strategy for <b><u>individual</u></b> datasets from Alison:  
+<i>Original</i>
+```txt
+--------                                                    ------
+original                                                    change
+--------                                                    ------
+n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI_m.bw
+n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI_p.bw
+n3-d_Q_day7_tcn_N_aux-T_tc-F_rep2_tech1.UT_prim_UMI_m.bw
+n3-d_Q_day7_tcn_N_aux-T_tc-F_rep2_tech1.UT_prim_UMI_p.bw
+
+o-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI_m.bw
+o-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI_p.bw
+o-d_Q_day7_tcn_N_aux-T_tc-F_rep2_tech1.UT_prim_UMI_m.bw
+o-d_Q_day7_tcn_N_aux-T_tc-F_rep2_tech1.UT_prim_UMI_p.bw
+
+--------                                                    ------
+original                                                    change
+--------                                                    ------
+### #FOUND n3-d SS, #FOUND o-d SS ###
+#PICKUPHERE  #TODO
+
+--------                                                    ------
+original                                                    change
+--------                                                    ------
+WT_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1.UT_prim_UMI_m.bw      
+WT_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1.UT_prim_UMI_p.bw      
+WT_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1.UT_prim_UMI_m.bw      #FIXME† Duplicated #1
+WT_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1.UT_prim_UMI_p.bw      #FIXME† Duplicated #1
+
+r6-n_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1.UT_prim_UMI_m.bw    #FIXME* ∆ rep1 → rep2
+r6-n_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1.UT_prim_UMI_p.bw    #FIXME* ∆ rep1 → rep2
+r6-n_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1.UT_prim_UMI_m.bw    #FIXME* ∆ rep2 → rep1
+r6-n_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1.UT_prim_UMI_p.bw    #FIXME* ∆ rep2 → rep1
+
+--------                                                    ------
+original                                                    change
+--------                                                    ------
+WT_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1.UT_prim_UMI_m.bw     
+WT_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1.UT_prim_UMI_p.bw     
+WT_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1.UT_prim_UMI_m.bw     #FIXME† Duplicated #2
+WT_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1.UT_prim_UMI_p.bw     #FIXME† Duplicated #2
+
+r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1.UT_prim_UMI_m.bw   #FIXME* ∆ rep1 → rep2  #OK‡ batch
+r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1.UT_prim_UMI_p.bw   #FIXME* ∆ rep1 → rep2  #OK‡ batch
+r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech2.UT_prim_UMI_m.bw   #FIXME* ∆ rep1 → rep2  #OK‡ batch
+r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech2.UT_prim_UMI_p.bw   #FIXME* ∆ rep1 → rep2  #OK‡ batch
+r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1.UT_prim_UMI_m.bw   #FIXME* ∆ rep2 → rep1
+r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1.UT_prim_UMI_p.bw   #FIXME* ∆ rep2 → rep1
+
+--------                                                    ------
+original                                                    change
+--------                                                    ------
+WT_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1.UT_prim_UMI_m.bw    #FIXME‡ ∆ batch1 → batch2
+WT_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1.UT_prim_UMI_p.bw    #FIXME‡ ∆ batch1 → batch2
+WT_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1.UT_prim_UMI_m.bw    #FIXME‡ ∆ batch1 → batch2
+WT_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1.UT_prim_UMI_p.bw    #FIXME‡ ∆ batch1 → batch2
+
+r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1.UT_prim_UMI_m.bw  #FIXME* ∆ rep1 → rep2  #FIXME‡ ∆ batch1 → batch2
+r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1.UT_prim_UMI_p.bw  #FIXME* ∆ rep1 → rep2  #FIXME‡ ∆ batch1 → batch2
+r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1.UT_prim_UMI_m.bw  #FIXME* ∆ rep2 → rep1  #FIXME‡ ∆ batch1 → batch2
+r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1.UT_prim_UMI_p.bw  #FIXME* ∆ rep2 → rep1  #FIXME‡ ∆ batch1 → batch2
+```
+<i>Updated</i>
+```txt
+--------                                                    -------
+original                                                    updated
+--------                                                    -------
+n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI_m.bw    Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1.KLSC_m.bw
+n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI_p.bw    Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1.KLSC_p.bw
+n3-d_Q_day7_tcn_N_aux-T_tc-F_rep2_tech1.UT_prim_UMI_m.bw    Nab3-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1.KLSC_m.bw
+n3-d_Q_day7_tcn_N_aux-T_tc-F_rep2_tech1.UT_prim_UMI_p.bw    Nab3-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1.KLSC_p.bw
+
+o-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI_m.bw     Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1.KLSC_m.bw
+o-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI_p.bw     Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1.KLSC_p.bw
+o-d_Q_day7_tcn_N_aux-T_tc-F_rep2_tech1.UT_prim_UMI_m.bw     Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1.KLSC_m.bw
+o-d_Q_day7_tcn_N_aux-T_tc-F_rep2_tech1.UT_prim_UMI_p.bw     Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1.KLSC_p.bw
+
+--------                                                    -------
+original                                                    updated
+--------                                                    -------
+### #FOUND n3-d SS, #FOUND o-d SS ###
+#PICKUPHERE  #TODO
+
+--------                                                    -------
+original                                                    updated
+--------                                                    -------
+WT_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1.UT_prim_UMI_m.bw      WT_Q_day8_tcn_N_auxF_tcF_5781_rep1_batch1.KLSC_m.bw
+WT_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1.UT_prim_UMI_p.bw      WT_Q_day8_tcn_N_auxF_tcF_5781_rep1_batch1.KLSC_p.bw
+WT_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1.UT_prim_UMI_m.bw      WT_Q_day8_tcn_N_auxF_tcF_5782_rep2_batch1.KLSC_m.bw      #NOCHANGE† Duplicated #1
+WT_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1.UT_prim_UMI_p.bw      WT_Q_day8_tcn_N_auxF_tcF_5782_rep2_batch1.KLSC_p.bw      #NOCHANGE† Duplicated #1
+
+r6-n_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1.UT_prim_UMI_m.bw    rrp6_Q_day8_tcn_N_auxF_tcF_7078_rep2_batch1.KLSC_m.bw    #DONE* ∆ rep1 → rep2
+r6-n_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1.UT_prim_UMI_p.bw    rrp6_Q_day8_tcn_N_auxF_tcF_7078_rep2_batch1.KLSC_p.bw    #DONE* ∆ rep1 → rep2
+r6-n_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1.UT_prim_UMI_m.bw    rrp6_Q_day8_tcn_N_auxF_tcF_7079_rep1_batch1.KLSC_m.bw    #DONE* ∆ rep2 → rep1
+r6-n_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1.UT_prim_UMI_p.bw    rrp6_Q_day8_tcn_N_auxF_tcF_7079_rep1_batch1.KLSC_p.bw    #DONE* ∆ rep2 → rep1
+
+--------                                                    -------
+original                                                    updated
+--------                                                    -------
+WT_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1.UT_prim_UMI_m.bw     WT_Q_day8_tcn_SS_auxF_tcF_5781_rep1_batch1.KLSC_m.bw
+WT_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1.UT_prim_UMI_p.bw     WT_Q_day8_tcn_SS_auxF_tcF_5781_rep1_batch1.KLSC_p.bw
+WT_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1.UT_prim_UMI_m.bw     WT_Q_day8_tcn_SS_auxF_tcF_5782_rep2_batch1.KLSC_m.bw     #NOCHANGE† Duplicated #2
+WT_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1.UT_prim_UMI_p.bw     WT_Q_day8_tcn_SS_auxF_tcF_5782_rep2_batch1.KLSC_p.bw     #NOCHANGE† Duplicated #2
+
+r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1.UT_prim_UMI_m.bw   rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch1.KLSC_m.bw   #DONE* ∆ rep1 → rep2  #OK‡ batch
+r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1.UT_prim_UMI_p.bw   rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch1.KLSC_p.bw   #DONE* ∆ rep1 → rep2  #OK‡ batch
+r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech2.UT_prim_UMI_m.bw   rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch2.KLSC_m.bw   #DONE* ∆ rep1 → rep2  #OK‡ batch
+r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech2.UT_prim_UMI_p.bw   rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch2.KLSC_p.bw   #DONE* ∆ rep1 → rep2  #OK‡ batch
+r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1.UT_prim_UMI_m.bw   rrp6_Q_day8_tcn_SS_auxF_tcF_7079_rep1_batch1.KLSC_m.bw   #DONE* ∆ rep2 → rep1
+r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1.UT_prim_UMI_p.bw   rrp6_Q_day8_tcn_SS_auxF_tcF_7079_rep1_batch1.KLSC_p.bw   #DONE* ∆ rep2 → rep1
+
+--------                                                    -------
+original                                                    updated
+--------                                                    -------
+WT_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1.UT_prim_UMI_m.bw    WT_G1_day1_tcn_SS_auxF_tcF_5781_rep1_batch2.KLSC_m.bw    #DONE‡ ∆ batch1 → batch2
+WT_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1.UT_prim_UMI_p.bw    WT_G1_day1_tcn_SS_auxF_tcF_5781_rep1_batch2.KLSC_p.bw    #DONE‡ ∆ batch1 → batch2
+WT_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1.UT_prim_UMI_m.bw    WT_G1_day1_tcn_SS_auxF_tcF_5782_rep2_batch2.KLSC_m.bw    #DONE‡ ∆ batch1 → batch2
+WT_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1.UT_prim_UMI_p.bw    WT_G1_day1_tcn_SS_auxF_tcF_5782_rep2_batch2.KLSC_p.bw    #DONE‡ ∆ batch1 → batch2
+
+r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1.UT_prim_UMI_m.bw  rrp6_G1_day1_tcn_SS_auxF_tcF_7078_rep2_batch2.KLSC_m.bw  #DONE* ∆ rep1 → rep2  #FIXME‡ ∆ batch1 → batch2
+r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1.UT_prim_UMI_p.bw  rrp6_G1_day1_tcn_SS_auxF_tcF_7078_rep2_batch2.KLSC_p.bw  #DONE* ∆ rep1 → rep2  #FIXME‡ ∆ batch1 → batch2
+r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1.UT_prim_UMI_m.bw  rrp6_G1_day1_tcn_SS_auxF_tcF_7079_rep1_batch2.KLSC_m.bw  #DONE* ∆ rep2 → rep1  #DONE‡ ∆ batch1 → batch2
+r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1.UT_prim_UMI_p.bw  rrp6_G1_day1_tcn_SS_auxF_tcF_7079_rep1_batch2.KLSC_p.bw  #DONE* ∆ rep2 → rep1  #DONE‡ ∆ batch1 → batch2
+```
+
+Renaming strategy for <b><u>merged</u></b> datasets from Alison:  
+<i>Original</i>
+```txt
+--------                                                    ------
+original                                                    change
+--------                                                    ------
+mean_n3-d_Q_day7_tcn_N_aux-T_tc-F__KL.m.bw
+mean_n3-d_Q_day7_tcn_N_aux-T_tc-F__KL.p.bw
+
+mean_o-d_Q_day7_tcn_N_aux-T_tc-F__KL.m.bw
+mean_o-d_Q_day7_tcn_N_aux-T_tc-F__KL.p.bw
+
+--------                                                    ------
+original                                                    change
+--------                                                    ------
+mean_n3-d_Q_day7_tcn_SS_aux-T_tc-F__KL.m.bw
+mean_n3-d_Q_day7_tcn_SS_aux-T_tc-F__KL.p.bw
+
+mean_o-d_Q_day7_tcn_SS_aux-T_tc-F__KL.m.bw
+mean_o-d_Q_day7_tcn_SS_aux-T_tc-F__KL.p.bw
+
+--------                                                    ------
+original                                                    change
+--------                                                    ------
+mean_WT_Q_day8_tcn_N_aux-F_tc-F__KL.m.bw
+mean_WT_Q_day8_tcn_N_aux-F_tc-F__KL.p.bw
+
+mean_r6-n_Q_day8_tcn_N_aux-F_tc-F__KL.m.bw
+mean_r6-n_Q_day8_tcn_N_aux-F_tc-F__KL.p.bw
+
+--------                                                    ------
+original                                                    change
+--------                                                    ------
+mean_WT_Q_day8_tcn_SS_aux-F_tc-F__KL.m.bw
+mean_WT_Q_day8_tcn_SS_aux-F_tc-F__KL.p.bw
+
+mean_r6-n_Q_day8_tcn_SS_aux-F_tc-F__KL.m.bw
+mean_r6-n_Q_day8_tcn_SS_aux-F_tc-F__KL.p.bw
+
+--------                                                    ------
+original                                                    change
+--------                                                    ------
+mean_WT_G1_day1_tcn_SS_aux-F_tc-F__KL.m.bw
+mean_WT_G1_day1_tcn_SS_aux-F_tc-F__KL.p.bw
+
+mean_r6-n_G1_day1_tcn_SS_aux-F_tc-F__KL.m.bw
+mean_r6-n_G1_day1_tcn_SS_aux-F_tc-F__KL.p.bw
+
+--------                                                    ------
+original                                                    change
+--------                                                    ------
+mean_WT_G1_N_.bl-TPM.m.bw
+mean_WT_G1_N_.bl-TPM.p.bw
+
+mean_WT_G1_SS_.bl-TPM.m.bw
+mean_WT_G1_SS_.bl-TPM.p.bw
+
+mean_WT_Q_N_.bl-TPM.m.bw
+mean_WT_Q_N_.bl-TPM.p.bw
+
+mean_WT_Q_SS_.bl-TPM.m.bw
+mean_WT_Q_SS_.bl-TPM.p.bw
+```
+</details>
+<br />
+
+<details>
+<summary><i>Code</i></summary>
+
 </details>
 <br />

@@ -91,8 +91,8 @@ read_in_gtf <- function(file) {
 #HERE
 organize_gtf <- function(tbl) {
     chr_SC <- c(
-        "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII",
-        "XIII", "XIV", "XV", "XVI", "Mito"
+        "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI",
+        "XII", "XIII", "XIV", "XV", "XVI", "Mito"
     )
     chr_KL <- c("A", "B", "C", "D", "E", "F")
     chr_20S <- "20S"
