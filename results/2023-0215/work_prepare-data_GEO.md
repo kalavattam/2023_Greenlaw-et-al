@@ -21,7 +21,10 @@
         1. [6. Generate `MD5` checksums for the `fastq`s](#6-generate-md5-checksums-for-the-fastqs)
 1. [Prepare and copy over `bam`s: standard analyses](#prepare-and-copy-over-bams-standard-analyses)
     1. [Get to pertinent source directory, examine `bam`s](#get-to-pertinent-source-directory-examine-bams)
+        1. [Code](#code)
+        1. [Printed](#printed)
     1. [Copy over `bam`s, renaming them in the process; generate `MD5` checksums too](#copy-over-bams-renaming-them-in-the-process-generate-md5-checksums-too)
+        1. [Code](#code-1)
 1. [Prepare and copy over `bam`s: transcriptome assembly work](#prepare-and-copy-over-bams-transcriptome-assembly-work)
     1. [Get to pertinent source directory, examine `bam`s](#get-to-pertinent-source-directory-examine-bams-1)
     1. [Copy over `bam`s, renaming them in the process; generate `MD5` checksums too](#copy-over-bams-renaming-them-in-the-process-generate-md5-checksums-too-1)
@@ -30,7 +33,36 @@
 1. [Prepare and copy over counts matrices](#prepare-and-copy-over-counts-matrices)
     1. [Determine/find/copy over the counts matrices to submit](#determinefindcopy-over-the-counts-matrices-to-submit)
 1. [Prepare and copy over `bw`s](#prepare-and-copy-over-bws)
+    1. [Notes \(and code and printed\)](#notes-and-code-and-printed)
+        1. [Code](#code-2)
+        1. [Printed](#printed-1)
+        1. [Printed](#printed-2)
+        1. [Code](#code-3)
+        1. [Printed](#printed-3)
+        1. [Code](#code-4)
+        1. [Printed](#printed-4)
+        1. [Code](#code-5)
+        1. [Printed](#printed-5)
+        1. [Code](#code-6)
+        1. [Printed](#printed-6)
+        1. [Notes `#IMPORTANT`](#notes-important)
+        1. [Notes `#IMPORTANT`](#notes-important-1)
+        1. [Code](#code-7)
+        1. [Printed](#printed-7)
+        1. [Printed](#printed-8)
+        1. [Code](#code-8)
+        1. [Printed](#printed-9)
+        1. [Code](#code-9)
+        1. [Printed](#printed-10)
+        1. [Notes `#IMPORTANT`](#notes-important-2)
+        1. [Code](#code-10)
+    1. [Correct misnamed files](#correct-misnamed-files)
+        1. [Code](#code-11)
+        1. [Printed](#printed-11)
 1. [Visualize/assess the `GEO/` directory structure](#visualizeassess-the-geo-directory-structure)
+    1. [Code](#code-12)
+    1. [Printed](#printed-12)
+1. [Working out the "data processing" text for the submission to GEO](#working-out-the-data-processing-text-for-the-submission-to-geo)
 
 <!-- /MarkdownTOC -->
 </details>
@@ -2577,6 +2609,8 @@ baee4da0eda5716c300f12fa9f0c0d8c  WT_Q_day8_tcn_SS_auxF_tcF_5782_rep2_batch1_R2.
 ## Prepare and copy over `bam`s: standard analyses
 <a id="get-to-pertinent-source-directory-examine-bams"></a>
 ### Get to pertinent source directory, examine `bam`s
+<a id="code"></a>
+#### Code
 <details>
 <summary><i>Code</i></summary>
 
@@ -2591,6 +2625,8 @@ ls -lhaFG *.bam
 </details>
 <br />
 
+<a id="printed"></a>
+#### Printed
 <details>
 <summary><i>Printed</i></summary>
 
@@ -2673,6 +2709,8 @@ ls -lhaFG *.bam
 ### Copy over `bam`s, renaming them in the process; generate `MD5` checksums too
 ~This code makes use of the arrays initialized in [this code chunk](#3-corrected-names-etc-now-including-strain-information)~
 
+<a id="code-1"></a>
+#### Code
 <details>
 <summary><i>Code</i></summary>
 
@@ -4323,10 +4361,15 @@ a88e399e136bec2f12f6f35fad16caa4  Greenlaw-et-al.txome_representative-pa-ncRNA.h
 
 <a id="prepare-and-copy-over-bws"></a>
 ## Prepare and copy over `bw`s
+<a id="notes-and-code-and-printed"></a>
+### Notes (and code and printed)
 <details>
 <summary><i>Notes (and code and printed)</i></summary>
 
 Manually copied over files from `~/tsukiyamalab/alisong/KL_bigwigs_for_geo`:
+
+<a id="code-2"></a>
+#### Code
 <details>
 <summary><i>Code</i></summary>
 
@@ -4338,6 +4381,8 @@ ls -lhaFG "${HOME}/tsukiyamalab/alisong/KL_bigwigs_for_geo"
 </details>
 <br />
 
+<a id="printed-1"></a>
+#### Printed
 <details>
 <summary><i>Printed</i></summary>
 
@@ -4432,6 +4477,8 @@ drwxrws--- 101 agreenla 5.7K Jul 19 16:05 ../
 
 <i>Above: 16 + 14 + 12 = 42 files to copy over. In particular, need to copy these files:</i>
 
+<a id="printed-2"></a>
+#### Printed
 <details>
 <summary><i>Printed</i></summary>
 
@@ -4486,6 +4533,8 @@ WT_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1.UT_prim_UMI_p.bw
 
 Check/document the files that I manually copied over:
 
+<a id="code-3"></a>
+#### Code
 <details>
 <summary><i>Code</i></summary>
 
@@ -4497,6 +4546,8 @@ ls -lhaFG "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results
 </details>
 <br />
 
+<a id="printed-3"></a>
+#### Printed
 <details>
 <summary><i>Printed</i></summary>
 
@@ -4555,6 +4606,8 @@ drwxrws--- 4 kalavatt   50 Jul 20 06:07 ../
 
 Also, manually copied over files from `~/tsukiyamalab/alisong/merged_bigwigs_for_geo`:
 
+<a id="code-4"></a>
+#### Code
 <details>
 <summary><i>Code</i></summary>
 
@@ -4566,6 +4619,8 @@ ls -lhaFG "${HOME}/tsukiyamalab/alisong/merged_bigwigs_for_geo"
 </details>
 <br />
 
+<a id="printed-4"></a>
+#### Printed
 <details>
 <summary><i>Printed</i></summary>
 
@@ -4622,6 +4677,8 @@ drwxrws--- 100 agreenla 5.6K Jul 19 14:45 ../
 
 Nothing appears to be missing from this. Except for the time course datasets, copied over all of these files. Check/document the files that I manually copied over:
 
+<a id="code-5"></a>
+#### Code
 <details>
 <summary><i>Code</i></summary>
 
@@ -4633,6 +4690,8 @@ ls -lhaFG "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results
 </details>
 <br />
 
+<a id="printed-5"></a>
+#### Printed
 <details>
 <summary><i>Printed</i></summary>
 
@@ -4675,6 +4734,8 @@ drwxrws--- 4 kalavatt   50 Jul 20 06:07 ../
 
 <i>Above: 28 lines&mdash;I copied over 28 files (again, didn't copy over the time course datasets).</i>
 
+<a id="code-6"></a>
+#### Code
 <details>
 <summary><i>Code</i></summary>
 
@@ -4689,6 +4750,8 @@ ls -lhaFG ./*
 </details>
 <br />
 
+<a id="printed-6"></a>
+#### Printed
 <details>
 <summary><i>Printed</i></summary>
 
@@ -4782,8 +4845,11 @@ drwxrws--- 4 kalavatt   50 Jul 20 06:07 ../
 <br />
 
 Renaming strategy for <b><u>individual</u></b> datasets from Alison:
+
+<a id="notes-important"></a>
+#### Notes `#IMPORTANT`
 <details>
-<summary><i>Printed</i></summary>
+<summary><i>Notes</i></summary>
 
 <i>Original</i>
 ```txt
@@ -4857,148 +4923,152 @@ r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1.UT_prim_UMI_p.bw  #FIXME* ∆ rep2 →
 
 <i>Updated</i>
 ```txt
---------                                                    -------
-original                                                    updated
---------                                                    -------
-n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI_m.bw    Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1.KLSC_m.bw
-n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI_p.bw    Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1.KLSC_p.bw
-n3-d_Q_day7_tcn_N_aux-T_tc-F_rep2_tech1.UT_prim_UMI_m.bw    Nab3-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1.KLSC_m.bw
-n3-d_Q_day7_tcn_N_aux-T_tc-F_rep2_tech1.UT_prim_UMI_p.bw    Nab3-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1.KLSC_p.bw
+--------                                                    -------                                                      ------
+original                                                    updated                                                      assess
+--------                                                    -------                                                      ------
+n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI_m.bw    Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1.KLSC_m.bw    #CHECKOK
+n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI_p.bw    Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1.KLSC_p.bw    #CHECKOK
+n3-d_Q_day7_tcn_N_aux-T_tc-F_rep2_tech1.UT_prim_UMI_m.bw    Nab3-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1.KLSC_m.bw    #CHECKOK
+n3-d_Q_day7_tcn_N_aux-T_tc-F_rep2_tech1.UT_prim_UMI_p.bw    Nab3-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1.KLSC_p.bw    #CHECKOK
 
-o-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI_m.bw     OsTIR-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1.KLSC_m.bw
-o-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI_p.bw     OsTIR-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1.KLSC_p.bw
-o-d_Q_day7_tcn_N_aux-T_tc-F_rep2_tech1.UT_prim_UMI_m.bw     OsTIR-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1.KLSC_m.bw
-o-d_Q_day7_tcn_N_aux-T_tc-F_rep2_tech1.UT_prim_UMI_p.bw     OsTIR-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1.KLSC_p.bw
+o-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI_m.bw     OsTIR-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1.KLSC_m.bw   #NOTOK  #TODO 7716 → 6125  #DONEBELOW
+o-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1.UT_prim_UMI_p.bw     OsTIR-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1.KLSC_p.bw   #NOTOK  #TODO 7716 → 6125  #DONEBELOW
+o-d_Q_day7_tcn_N_aux-T_tc-F_rep2_tech1.UT_prim_UMI_m.bw     OsTIR-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1.KLSC_m.bw   #NOTOK  #TODO 7718 → 6126  #DONEBELOW
+o-d_Q_day7_tcn_N_aux-T_tc-F_rep2_tech1.UT_prim_UMI_p.bw     OsTIR-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1.KLSC_p.bw   #NOTOK  #TODO 7718 → 6126  #DONEBELOW
 
---------                                                    -------
-original                                                    updated
---------                                                    -------
-n3-d_Q_day7_tcn_SS_aux-T_tc-F_rep1_tech1.UT_prim_UMI_m.bw   Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1.KLSC_m.bw
-n3-d_Q_day7_tcn_SS_aux-T_tc-F_rep1_tech1.UT_prim_UMI_p.bw   Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1.KLSC_p.bw
-n3-d_Q_day7_tcn_SS_aux-T_tc-F_rep2_tech1.UT_prim_UMI_m.bw   Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1.KLSC_m.bw
-n3-d_Q_day7_tcn_SS_aux-T_tc-F_rep2_tech1.UT_prim_UMI_p.bw   Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1.KLSC_p.bw
+--------                                                    -------                                                      ------
+original                                                    updated                                                      assess
+--------                                                    -------                                                      ------
+n3-d_Q_day7_tcn_SS_aux-T_tc-F_rep1_tech1.UT_prim_UMI_m.bw   Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1.KLSC_m.bw   #CHECKOK
+n3-d_Q_day7_tcn_SS_aux-T_tc-F_rep1_tech1.UT_prim_UMI_p.bw   Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1.KLSC_p.bw   #CHECKOK
+n3-d_Q_day7_tcn_SS_aux-T_tc-F_rep2_tech1.UT_prim_UMI_m.bw   Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1.KLSC_m.bw   #CHECKOK
+n3-d_Q_day7_tcn_SS_aux-T_tc-F_rep2_tech1.UT_prim_UMI_p.bw   Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1.KLSC_p.bw   #CHECKOK
 
-o-d_Q_day7_tcn_SS_aux-T_tc-F_rep1_tech1.UT_prim_UMI_m.bw    OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1.KLSC_m.bw
-o-d_Q_day7_tcn_SS_aux-T_tc-F_rep1_tech1.UT_prim_UMI_p.bw    OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1.KLSC_p.bw
-o-d_Q_day7_tcn_SS_aux-T_tc-F_rep2_tech1.UT_prim_UMI_m.bw    OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1.KLSC_m.bw
-o-d_Q_day7_tcn_SS_aux-T_tc-F_rep2_tech1.UT_prim_UMI_p.bw    OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1.KLSC_p.bw
+o-d_Q_day7_tcn_SS_aux-T_tc-F_rep1_tech1.UT_prim_UMI_m.bw    OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1.KLSC_m.bw  #NOTOK  #TODO 7716 → 6125  #DONEBELOW
+o-d_Q_day7_tcn_SS_aux-T_tc-F_rep1_tech1.UT_prim_UMI_p.bw    OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1.KLSC_p.bw  #NOTOK  #TODO 7716 → 6125  #DONEBELOW
+o-d_Q_day7_tcn_SS_aux-T_tc-F_rep2_tech1.UT_prim_UMI_m.bw    OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1.KLSC_m.bw  #NOTOK  #TODO 7718 → 6126  #DONEBELOW
+o-d_Q_day7_tcn_SS_aux-T_tc-F_rep2_tech1.UT_prim_UMI_p.bw    OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1.KLSC_p.bw  #NOTOK  #TODO 7718 → 6126  #DONEBELOW
 
---------                                                    -------
-original                                                    updated
---------                                                    -------
-WT_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1.UT_prim_UMI_m.bw      WT_Q_day8_tcn_N_auxF_tcF_5781_rep1_batch1.KLSC_m.bw
-WT_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1.UT_prim_UMI_p.bw      WT_Q_day8_tcn_N_auxF_tcF_5781_rep1_batch1.KLSC_p.bw
-WT_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1.UT_prim_UMI_m.bw      WT_Q_day8_tcn_N_auxF_tcF_5782_rep2_batch1.KLSC_m.bw      #NOCHANGE† Duplicated #1
-WT_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1.UT_prim_UMI_p.bw      WT_Q_day8_tcn_N_auxF_tcF_5782_rep2_batch1.KLSC_p.bw      #NOCHANGE† Duplicated #1
+--------                                                    -------                                                      ------
+original                                                    updated                                                      assess
+--------                                                    -------                                                      ------
+WT_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1.UT_prim_UMI_m.bw      WT_Q_day8_tcn_N_auxF_tcF_5781_rep1_batch1.KLSC_m.bw          #CHECKOK
+WT_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1.UT_prim_UMI_p.bw      WT_Q_day8_tcn_N_auxF_tcF_5781_rep1_batch1.KLSC_p.bw          #CHECKOK
+WT_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1.UT_prim_UMI_m.bw      WT_Q_day8_tcn_N_auxF_tcF_5782_rep2_batch1.KLSC_m.bw          #CHECKOK  #NOCHANGE† Duplicated #1
+WT_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1.UT_prim_UMI_p.bw      WT_Q_day8_tcn_N_auxF_tcF_5782_rep2_batch1.KLSC_p.bw          #CHECKOK  #NOCHANGE† Duplicated #1
 
-r6-n_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1.UT_prim_UMI_m.bw    rrp6_Q_day8_tcn_N_auxF_tcF_7078_rep2_batch1.KLSC_m.bw    #DONE* ∆ rep1 → rep2
-r6-n_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1.UT_prim_UMI_p.bw    rrp6_Q_day8_tcn_N_auxF_tcF_7078_rep2_batch1.KLSC_p.bw    #DONE* ∆ rep1 → rep2
-r6-n_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1.UT_prim_UMI_m.bw    rrp6_Q_day8_tcn_N_auxF_tcF_7079_rep1_batch1.KLSC_m.bw    #DONE* ∆ rep2 → rep1
-r6-n_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1.UT_prim_UMI_p.bw    rrp6_Q_day8_tcn_N_auxF_tcF_7079_rep1_batch1.KLSC_p.bw    #DONE* ∆ rep2 → rep1
+r6-n_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1.UT_prim_UMI_m.bw    rrp6_Q_day8_tcn_N_auxF_tcF_7078_rep2_batch1.KLSC_m.bw        #CHECKOK  #DONE* ∆ rep1 → rep2
+r6-n_Q_day8_tcn_N_aux-F_tc-F_rep1_tech1.UT_prim_UMI_p.bw    rrp6_Q_day8_tcn_N_auxF_tcF_7078_rep2_batch1.KLSC_p.bw        #CHECKOK  #DONE* ∆ rep1 → rep2
+r6-n_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1.UT_prim_UMI_m.bw    rrp6_Q_day8_tcn_N_auxF_tcF_7079_rep1_batch1.KLSC_m.bw        #CHECKOK  #DONE* ∆ rep2 → rep1
+r6-n_Q_day8_tcn_N_aux-F_tc-F_rep2_tech1.UT_prim_UMI_p.bw    rrp6_Q_day8_tcn_N_auxF_tcF_7079_rep1_batch1.KLSC_p.bw        #CHECKOK  #DONE* ∆ rep2 → rep1
 
---------                                                    -------
-original                                                    updated
---------                                                    -------
-WT_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1.UT_prim_UMI_m.bw     WT_Q_day8_tcn_SS_auxF_tcF_5781_rep1_batch1.KLSC_m.bw
-WT_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1.UT_prim_UMI_p.bw     WT_Q_day8_tcn_SS_auxF_tcF_5781_rep1_batch1.KLSC_p.bw
-WT_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1.UT_prim_UMI_m.bw     WT_Q_day8_tcn_SS_auxF_tcF_5782_rep2_batch1.KLSC_m.bw     #NOCHANGE† Duplicated #2
-WT_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1.UT_prim_UMI_p.bw     WT_Q_day8_tcn_SS_auxF_tcF_5782_rep2_batch1.KLSC_p.bw     #NOCHANGE† Duplicated #2
+--------                                                    -------                                                      ------
+original                                                    updated                                                      assess
+--------                                                    -------                                                      ------
+WT_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1.UT_prim_UMI_m.bw     WT_Q_day8_tcn_SS_auxF_tcF_5781_rep1_batch1.KLSC_m.bw         #CHECKOK
+WT_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1.UT_prim_UMI_p.bw     WT_Q_day8_tcn_SS_auxF_tcF_5781_rep1_batch1.KLSC_p.bw         #CHECKOK
+WT_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1.UT_prim_UMI_m.bw     WT_Q_day8_tcn_SS_auxF_tcF_5782_rep2_batch1.KLSC_m.bw         #CHECKOK  #NOCHANGE† Duplicated #2
+WT_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1.UT_prim_UMI_p.bw     WT_Q_day8_tcn_SS_auxF_tcF_5782_rep2_batch1.KLSC_p.bw         #CHECKOK  #NOCHANGE† Duplicated #2
 
-r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1.UT_prim_UMI_m.bw   rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch1.KLSC_m.bw   #DONE* ∆ rep1 → rep2  #OK‡ batch
-r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1.UT_prim_UMI_p.bw   rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch1.KLSC_p.bw   #DONE* ∆ rep1 → rep2  #OK‡ batch
-r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech2.UT_prim_UMI_m.bw   rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch2.KLSC_m.bw   #DONE* ∆ rep1 → rep2  #OK‡ batch
-r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech2.UT_prim_UMI_p.bw   rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch2.KLSC_p.bw   #DONE* ∆ rep1 → rep2  #OK‡ batch
-r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1.UT_prim_UMI_m.bw   rrp6_Q_day8_tcn_SS_auxF_tcF_7079_rep1_batch1.KLSC_m.bw   #DONE* ∆ rep2 → rep1
-r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1.UT_prim_UMI_p.bw   rrp6_Q_day8_tcn_SS_auxF_tcF_7079_rep1_batch1.KLSC_p.bw   #DONE* ∆ rep2 → rep1
+r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1.UT_prim_UMI_m.bw   rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch1.KLSC_m.bw       #CHECKOK  #DONE* ∆ rep1 → rep2  #OK‡ batch
+r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech1.UT_prim_UMI_p.bw   rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch1.KLSC_p.bw       #CHECKOK  #DONE* ∆ rep1 → rep2  #OK‡ batch
+r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech2.UT_prim_UMI_m.bw   rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch2.KLSC_m.bw       #CHECKOK  #DONE* ∆ rep1 → rep2  #OK‡ batch
+r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep1_tech2.UT_prim_UMI_p.bw   rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch2.KLSC_p.bw       #CHECKOK  #DONE* ∆ rep1 → rep2  #OK‡ batch
+r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1.UT_prim_UMI_m.bw   rrp6_Q_day8_tcn_SS_auxF_tcF_7079_rep1_batch1.KLSC_m.bw       #CHECKOK  #DONE* ∆ rep2 → rep1
+r6-n_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1.UT_prim_UMI_p.bw   rrp6_Q_day8_tcn_SS_auxF_tcF_7079_rep1_batch1.KLSC_p.bw       #CHECKOK  #DONE* ∆ rep2 → rep1
 
---------                                                    -------
-original                                                    updated
---------                                                    -------
-WT_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1.UT_prim_UMI_m.bw    WT_G1_day1_tcn_SS_auxF_tcF_5781_rep1_batch2.KLSC_m.bw    #DONE‡ ∆ batch1 → batch2
-WT_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1.UT_prim_UMI_p.bw    WT_G1_day1_tcn_SS_auxF_tcF_5781_rep1_batch2.KLSC_p.bw    #DONE‡ ∆ batch1 → batch2
-WT_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1.UT_prim_UMI_m.bw    WT_G1_day1_tcn_SS_auxF_tcF_5782_rep2_batch2.KLSC_m.bw    #DONE‡ ∆ batch1 → batch2
-WT_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1.UT_prim_UMI_p.bw    WT_G1_day1_tcn_SS_auxF_tcF_5782_rep2_batch2.KLSC_p.bw    #DONE‡ ∆ batch1 → batch2
+--------                                                    -------                                                      ------
+original                                                    updated                                                      assess
+--------                                                    -------                                                      ------
+WT_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1.UT_prim_UMI_m.bw    WT_G1_day1_tcn_SS_auxF_tcF_5781_rep1_batch2.KLSC_m.bw        #CHECKOK  #DONE‡ ∆ batch1 → batch2
+WT_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1.UT_prim_UMI_p.bw    WT_G1_day1_tcn_SS_auxF_tcF_5781_rep1_batch2.KLSC_p.bw        #CHECKOK  #DONE‡ ∆ batch1 → batch2
+WT_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1.UT_prim_UMI_m.bw    WT_G1_day1_tcn_SS_auxF_tcF_5782_rep2_batch2.KLSC_m.bw        #CHECKOK  #DONE‡ ∆ batch1 → batch2
+WT_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1.UT_prim_UMI_p.bw    WT_G1_day1_tcn_SS_auxF_tcF_5782_rep2_batch2.KLSC_p.bw        #CHECKOK  #DONE‡ ∆ batch1 → batch2
 
-r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1.UT_prim_UMI_m.bw  rrp6_G1_day1_tcn_SS_auxF_tcF_7078_rep2_batch2.KLSC_m.bw  #DONE* ∆ rep1 → rep2  #DONE‡ ∆ batch1 → batch2
-r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1.UT_prim_UMI_p.bw  rrp6_G1_day1_tcn_SS_auxF_tcF_7078_rep2_batch2.KLSC_p.bw  #DONE* ∆ rep1 → rep2  #DONE‡ ∆ batch1 → batch2
-r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1.UT_prim_UMI_m.bw  rrp6_G1_day1_tcn_SS_auxF_tcF_7079_rep1_batch2.KLSC_m.bw  #DONE* ∆ rep2 → rep1  #DONE‡ ∆ batch1 → batch2
-r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1.UT_prim_UMI_p.bw  rrp6_G1_day1_tcn_SS_auxF_tcF_7079_rep1_batch2.KLSC_p.bw  #DONE* ∆ rep2 → rep1  #DONE‡ ∆ batch1 → batch2
+r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1.UT_prim_UMI_m.bw  rrp6_G1_day1_tcn_SS_auxF_tcF_7078_rep2_batch2.KLSC_m.bw      #CHECKOK  #DONE* ∆ rep1 → rep2  #DONE‡ ∆ batch1 → batch2
+r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1.UT_prim_UMI_p.bw  rrp6_G1_day1_tcn_SS_auxF_tcF_7078_rep2_batch2.KLSC_p.bw      #CHECKOK  #DONE* ∆ rep1 → rep2  #DONE‡ ∆ batch1 → batch2
+r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1.UT_prim_UMI_m.bw  rrp6_G1_day1_tcn_SS_auxF_tcF_7079_rep1_batch2.KLSC_m.bw      #CHECKOK  #DONE* ∆ rep2 → rep1  #DONE‡ ∆ batch1 → batch2
+r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep2_tech1.UT_prim_UMI_p.bw  rrp6_G1_day1_tcn_SS_auxF_tcF_7079_rep1_batch2.KLSC_p.bw      #CHECKOK  #DONE* ∆ rep2 → rep1  #DONE‡ ∆ batch1 → batch2
 ```
 </details>
 <br />
 
 Renaming strategy for <b><u>merged</u></b> datasets from Alison:
 
+<a id="notes-important-1"></a>
+#### Notes `#IMPORTANT`
 <details>
-<summary><i>Printed</i></summary>
+<summary><i>Notes</i></summary>
 
 <i>Original</i>
 ```txt
---------                                                    -------
-original                                                    updated
---------                                                    -------
-mean_n3-d_Q_day7_tcn_N_aux-T_tc-F__KL.m.bw                  Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_m.bw
-mean_n3-d_Q_day7_tcn_N_aux-T_tc-F__KL.p.bw                  Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_p.bw
+--------                                      -------                                                               ------
+original                                      updated                                                               assess
+--------                                      -------                                                               ------
+mean_n3-d_Q_day7_tcn_N_aux-T_tc-F__KL.m.bw    Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_m.bw    #NOTOK  #TODO 7716-7718 → 6125-6126  #THISISWRONGFIXTHIS
+mean_n3-d_Q_day7_tcn_N_aux-T_tc-F__KL.p.bw    Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_p.bw    #NOTOK  #TODO 7716-7718 → 6125-6126  #THISISWRONGFIXTHIS
 
-mean_o-d_Q_day7_tcn_N_aux-T_tc-F__KL.m.bw                   OsTIR-AID_Q_day7_tcn_N_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_m.bw
-mean_o-d_Q_day7_tcn_N_aux-T_tc-F__KL.p.bw                   OsTIR-AID_Q_day7_tcn_N_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_p.bw
+mean_o-d_Q_day7_tcn_N_aux-T_tc-F__KL.m.bw     OsTIR-AID_Q_day7_tcn_N_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_m.bw   #NOTOK  #TODO 7716-7718 → 6125-6126  #WASALREADYFINE
+mean_o-d_Q_day7_tcn_N_aux-T_tc-F__KL.p.bw     OsTIR-AID_Q_day7_tcn_N_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_p.bw   #NOTOK  #TODO 7716-7718 → 6125-6126  #WASALREADYFINE
 
---------                                                    -------
-original                                                    updated
---------                                                    -------
-mean_n3-d_Q_day7_tcn_SS_aux-T_tc-F__KL.m.bw                 Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_m.bw
-mean_n3-d_Q_day7_tcn_SS_aux-T_tc-F__KL.p.bw                 Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_p.bw
+--------                                      -------                                                               ------
+original                                      updated                                                               assess
+--------                                      -------                                                               ------
+mean_n3-d_Q_day7_tcn_SS_aux-T_tc-F__KL.m.bw   Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_m.bw   #NOTOK  #TODO 7716-7718 → 6125-6126  #THISISWRONGFIXTHIS
+mean_n3-d_Q_day7_tcn_SS_aux-T_tc-F__KL.p.bw   Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_p.bw   #NOTOK  #TODO 7716-7718 → 6125-6126  #THISISWRONGFIXTHIS
 
-mean_o-d_Q_day7_tcn_SS_aux-T_tc-F__KL.m.bw                  OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_m.bw
-mean_o-d_Q_day7_tcn_SS_aux-T_tc-F__KL.p.bw                  OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_p.bw
+mean_o-d_Q_day7_tcn_SS_aux-T_tc-F__KL.m.bw    OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_m.bw  #NOTOK  #TODO 7716-7718 → 6125-6126  #WASALREADYFINE
+mean_o-d_Q_day7_tcn_SS_aux-T_tc-F__KL.p.bw    OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_p.bw  #NOTOK  #TODO 7716-7718 → 6125-6126  #WASALREADYFINE
 
---------                                                    -------
-original                                                    updated
---------                                                    -------
-mean_WT_Q_day8_tcn_N_aux-F_tc-F__KL.m.bw                    WT_Q_day8_tcn_N_auxF_tcF_5781-5782_rep-mean_batch1.KLSC_m.bw
-mean_WT_Q_day8_tcn_N_aux-F_tc-F__KL.p.bw                    WT_Q_day8_tcn_N_auxF_tcF_5781-5782_rep-mean_batch1.KLSC_p.bw
+--------                                      -------                                                               ------
+original                                      updated                                                               assess
+--------                                      -------                                                               ------
+mean_WT_Q_day8_tcn_N_aux-F_tc-F__KL.m.bw      WT_Q_day8_tcn_N_auxF_tcF_5781-5782_rep-mean_batch1.KLSC_m.bw          #CHECKOK
+mean_WT_Q_day8_tcn_N_aux-F_tc-F__KL.p.bw      WT_Q_day8_tcn_N_auxF_tcF_5781-5782_rep-mean_batch1.KLSC_p.bw          #CHECKOK
 
-mean_r6-n_Q_day8_tcn_N_aux-F_tc-F__KL.m.bw                  rrp6_Q_day8_tcn_N_auxF_tcF_7078-7079_rep-mean_batch1.KLSC_m.bw
-mean_r6-n_Q_day8_tcn_N_aux-F_tc-F__KL.p.bw                  rrp6_Q_day8_tcn_N_auxF_tcF_7078-7079_rep-mean_batch1.KLSC_p.bw
+mean_r6-n_Q_day8_tcn_N_aux-F_tc-F__KL.m.bw    rrp6_Q_day8_tcn_N_auxF_tcF_7078-7079_rep-mean_batch1.KLSC_m.bw        #CHECKOK
+mean_r6-n_Q_day8_tcn_N_aux-F_tc-F__KL.p.bw    rrp6_Q_day8_tcn_N_auxF_tcF_7078-7079_rep-mean_batch1.KLSC_p.bw        #CHECKOK
 
---------                                                    -------
-original                                                    updated
---------                                                    -------
-mean_WT_Q_day8_tcn_SS_aux-F_tc-F__KL.m.bw                   WT_Q_day8_tcn_SS_auxF_tcF_5781-5782_rep-mean_batch1.KLSC_m.bw
-mean_WT_Q_day8_tcn_SS_aux-F_tc-F__KL.p.bw                   WT_Q_day8_tcn_SS_auxF_tcF_5781-5782_rep-mean_batch1.KLSC_p.bw
+--------                                      -------                                                               ------
+original                                      updated                                                               assess
+--------                                      -------                                                               ------
+mean_WT_Q_day8_tcn_SS_aux-F_tc-F__KL.m.bw     WT_Q_day8_tcn_SS_auxF_tcF_5781-5782_rep-mean_batch1.KLSC_m.bw         #CHECKOK
+mean_WT_Q_day8_tcn_SS_aux-F_tc-F__KL.p.bw     WT_Q_day8_tcn_SS_auxF_tcF_5781-5782_rep-mean_batch1.KLSC_p.bw         #CHECKOK
 
-mean_r6-n_Q_day8_tcn_SS_aux-F_tc-F__KL.m.bw                 rrp6_Q_day8_tcn_SS_auxF_tcF_7078-7079_rep-mean_batch1-2.KLSC_m.bw
-mean_r6-n_Q_day8_tcn_SS_aux-F_tc-F__KL.p.bw                 rrp6_Q_day8_tcn_SS_auxF_tcF_7078-7079_rep-mean_batch1-2.KLSC_p.bw
+mean_r6-n_Q_day8_tcn_SS_aux-F_tc-F__KL.m.bw   rrp6_Q_day8_tcn_SS_auxF_tcF_7078-7079_rep-mean_batch1-2.KLSC_m.bw     #CHECKOK
+mean_r6-n_Q_day8_tcn_SS_aux-F_tc-F__KL.p.bw   rrp6_Q_day8_tcn_SS_auxF_tcF_7078-7079_rep-mean_batch1-2.KLSC_p.bw     #CHECKOK
 
---------                                                    -------
-original                                                    updated
---------                                                    -------
-mean_WT_G1_day1_tcn_SS_aux-F_tc-F__KL.m.bw                  WT_G1_day1_tcn_SS_auxF_tcF_5781-5782_rep-mean_batch2.KLSC_m.bw
-mean_WT_G1_day1_tcn_SS_aux-F_tc-F__KL.p.bw                  WT_G1_day1_tcn_SS_auxF_tcF_5781-5782_rep-mean_batch2.KLSC_p.bw
+--------                                      -------                                                               ------
+original                                      updated                                                               assess
+--------                                      -------                                                               ------
+mean_WT_G1_day1_tcn_SS_aux-F_tc-F__KL.m.bw    WT_G1_day1_tcn_SS_auxF_tcF_5781-5782_rep-mean_batch2.KLSC_m.bw        #CHECKOK
+mean_WT_G1_day1_tcn_SS_aux-F_tc-F__KL.p.bw    WT_G1_day1_tcn_SS_auxF_tcF_5781-5782_rep-mean_batch2.KLSC_p.bw        #CHECKOK
 
-mean_r6-n_G1_day1_tcn_SS_aux-F_tc-F__KL.m.bw                rrp6_G1_day1_tcn_SS_auxF_tcF_7078-7079_rep-mean_batch2.KLSC_m.bw
-mean_r6-n_G1_day1_tcn_SS_aux-F_tc-F__KL.p.bw                rrp6_G1_day1_tcn_SS_auxF_tcF_7078-7079_rep-mean_batch2.KLSC_p.bw
+mean_r6-n_G1_day1_tcn_SS_aux-F_tc-F__KL.m.bw  rrp6_G1_day1_tcn_SS_auxF_tcF_7078-7079_rep-mean_batch2.KLSC_m.bw      #CHECKOK
+mean_r6-n_G1_day1_tcn_SS_aux-F_tc-F__KL.p.bw  rrp6_G1_day1_tcn_SS_auxF_tcF_7078-7079_rep-mean_batch2.KLSC_p.bw      #CHECKOK
 
---------                                                    -------
-original                                                    updated
---------                                                    -------
-mean_WT_G1_N_.bl-TPM.m.bw                                   WT_G1_day1_ovn_N_auxF_tcF_5781-5782_rep-mean_batch1.BPM_m.bw
-mean_WT_G1_N_.bl-TPM.p.bw                                   WT_G1_day1_ovn_N_auxF_tcF_5781-5782_rep-mean_batch1.BPM_p.bw
+--------                                      -------                                                               ------
+original                                      updated                                                               assess
+--------                                      -------                                                               ------
+mean_WT_G1_N_.bl-TPM.m.bw                     WT_G1_day1_ovn_N_auxF_tcF_5781-5782_rep-mean_batch1.BPM_m.bw          #CHECKOK
+mean_WT_G1_N_.bl-TPM.p.bw                     WT_G1_day1_ovn_N_auxF_tcF_5781-5782_rep-mean_batch1.BPM_p.bw          #CHECKOK
 
-mean_WT_G1_SS_.bl-TPM.m.bw                                  WT_G1_day1_ovn_SS_auxF_tcF_5781-5782_rep-mean_batch1.BPM_m.bw
-mean_WT_G1_SS_.bl-TPM.p.bw                                  WT_G1_day1_ovn_SS_auxF_tcF_5781-5782_rep-mean_batch1.BPM_p.bw
+mean_WT_G1_SS_.bl-TPM.m.bw                    WT_G1_day1_ovn_SS_auxF_tcF_5781-5782_rep-mean_batch1.BPM_m.bw         #CHECKOK
+mean_WT_G1_SS_.bl-TPM.p.bw                    WT_G1_day1_ovn_SS_auxF_tcF_5781-5782_rep-mean_batch1.BPM_p.bw         #CHECKOK
 
-mean_WT_Q_N_.bl-TPM.m.bw                                    WT_Q_day7_ovn_N_auxF_tcF_5781-5782_rep-mean_batch1.BPM_m.bw
-mean_WT_Q_N_.bl-TPM.p.bw                                    WT_Q_day7_ovn_N_auxF_tcF_5781-5782_rep-mean_batch1.BPM_p.bw
+mean_WT_Q_N_.bl-TPM.m.bw                      WT_Q_day7_ovn_N_auxF_tcF_5781-5782_rep-mean_batch1.BPM_m.bw           #CHECKOK
+mean_WT_Q_N_.bl-TPM.p.bw                      WT_Q_day7_ovn_N_auxF_tcF_5781-5782_rep-mean_batch1.BPM_p.bw           #CHECKOK
 
-mean_WT_Q_SS_.bl-TPM.m.bw                                   WT_Q_day7_ovn_SS_auxF_tcF_5781-5782_rep-mean_batch1.BPM_m.bw
-mean_WT_Q_SS_.bl-TPM.p.bw                                   WT_Q_day7_ovn_SS_auxF_tcF_5781-5782_rep-mean_batch1.BPM_p.bw
+mean_WT_Q_SS_.bl-TPM.m.bw                     WT_Q_day7_ovn_SS_auxF_tcF_5781-5782_rep-mean_batch1.BPM_m.bw          #CHECKOK
+mean_WT_Q_SS_.bl-TPM.p.bw                     WT_Q_day7_ovn_SS_auxF_tcF_5781-5782_rep-mean_batch1.BPM_p.bw          #CHECKOK
 ```
 </details>
 <br />
 
 Now, I need to copy over my Ovation and time course blacklisted BPM datasets:
 
+<a id="code-7"></a>
+#### Code
 <details>
 <summary><i>Code</i></summary>
 
@@ -5013,6 +5083,8 @@ ls -lhaFG ./*
 </details>
 <br />
 
+<a id="printed-7"></a>
+#### Printed
 <details>
 <summary><i>Printed</i></summary>
 
@@ -5291,6 +5363,9 @@ drwxrws--- 8 kalavatt  193 Jul 17 16:43 ../
 <br />
 
 I need to copy over the following files:
+
+<a id="printed-8"></a>
+#### Printed
 <details>
 <summary><i>Printed</i></summary>
 
@@ -5353,6 +5428,8 @@ I need to copy over the following files:
 
 Code for copying over the above files:
 
+<a id="code-8"></a>
+#### Code
 <details>
 <summary><i>Code</i></summary>
 
@@ -5556,6 +5633,8 @@ cp \
 </details>
 <br />
 
+<a id="printed-9"></a>
+#### Printed
 <details>
 <summary><i>Printed</i></summary>
 
@@ -5855,6 +5934,9 @@ cp \
 <br />
 
 Check the BPM time course and Ovation that were copied over:
+
+<a id="code-9"></a>
+#### Code
 <details>
 <summary><i>Code</i></summary>
 
@@ -5873,6 +5955,8 @@ ls -lhaFG
 </details>
 <br />
 
+<a id="printed-10"></a>
+#### Printed
 <details>
 <summary><i>Printed</i></summary>
 
@@ -6038,75 +6122,85 @@ drwxrws--- 4 kalavatt   50 Jul 20 07:21 ../
 
 Scheme for renaming the `*bl-TPM.{p,m}.bw` files:
 
+<a id="notes-important-2"></a>
+#### Notes `#IMPORTANT`
 <details>
-<summary><i>Printed</i></summary>
+<summary><i>Notes</i></summary>
 
 ```txt
---------                                                    -------
-original                                                    updated
---------                                                    -------
-WT_DSm2_SS_rep1.bl-TPM.m.bw                                 WT_DSm2_day2_tcn_SS_auxF_tcF_5781_rep1_batch1.BPM_m.bw
-WT_DSm2_SS_rep1.bl-TPM.p.bw                                 WT_DSm2_day2_tcn_SS_auxF_tcF_5781_rep1_batch1.BPM_p.bw
-WT_DSm2_SS_rep2.bl-TPM.m.bw                                 WT_DSm2_day2_tcn_SS_auxF_tcF_5782_rep2_batch1.BPM_m.bw
-WT_DSm2_SS_rep2.bl-TPM.p.bw                                 WT_DSm2_day2_tcn_SS_auxF_tcF_5782_rep2_batch1.BPM_p.bw
-WT_DSp2_SS_rep1.bl-TPM.m.bw                                 WT_DSp2_day2_tcn_SS_auxF_tcF_5781_rep1_batch1.BPM_m.bw
-WT_DSp2_SS_rep1.bl-TPM.p.bw                                 WT_DSp2_day2_tcn_SS_auxF_tcF_5781_rep1_batch1.BPM_p.bw
-WT_DSp2_SS_rep2.bl-TPM.m.bw                                 WT_DSp2_day2_tcn_SS_auxF_tcF_5782_rep2_batch1.BPM_m.bw
-WT_DSp2_SS_rep2.bl-TPM.p.bw                                 WT_DSp2_day2_tcn_SS_auxF_tcF_5782_rep2_batch1.BPM_p.bw
-WT_DSp24_SS_rep1.bl-TPM.m.bw                                WT_DSp24_day3_tcn_SS_auxF_tcF_5781_rep1_batch1.BPM_m.bw
-WT_DSp24_SS_rep1.bl-TPM.p.bw                                WT_DSp24_day3_tcn_SS_auxF_tcF_5781_rep1_batch1.BPM_p.bw
-WT_DSp24_SS_rep2.bl-TPM.m.bw                                WT_DSp24_day3_tcn_SS_auxF_tcF_5782_rep2_batch1.BPM_m.bw
-WT_DSp24_SS_rep2.bl-TPM.p.bw                                WT_DSp24_day3_tcn_SS_auxF_tcF_5782_rep2_batch1.BPM_p.bw
-WT_DSp48_SS_rep1.bl-TPM.m.bw                                WT_DSp48_day4_tcn_SS_auxF_tcF_5781_rep1_batch1.BPM_m.bw
-WT_DSp48_SS_rep1.bl-TPM.p.bw                                WT_DSp48_day4_tcn_SS_auxF_tcF_5781_rep1_batch1.BPM_p.bw
-WT_DSp48_SS_rep2.bl-TPM.m.bw                                WT_DSp48_day4_tcn_SS_auxF_tcF_5782_rep2_batch1.BPM_m.bw
-WT_DSp48_SS_rep2.bl-TPM.p.bw                                WT_DSp48_day4_tcn_SS_auxF_tcF_5782_rep2_batch1.BPM_p.bw
+--------                                                    -------                                                    -------
+original                                                    updated                                                    further
+--------                                                    -------                                                    -------
+WT_DSm2_SS_rep1.bl-TPM.m.bw                                 WT_DSm2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_m.bw     #NOTOK  #FIXTC  #DONEBELOW
+WT_DSm2_SS_rep1.bl-TPM.p.bw                                 WT_DSm2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_p.bw     #NOTOK  #FIXTC  #DONEBELOW
+WT_DSm2_SS_rep2.bl-TPM.m.bw                                 WT_DSm2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_m.bw     #NOTOK  #FIXTC  #DONEBELOW
+WT_DSm2_SS_rep2.bl-TPM.p.bw                                 WT_DSm2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_p.bw     #NOTOK  #FIXTC  #DONEBELOW
 
-r6-n_DSm2_SS_rep1.bl-TPM.m.bw                               rrp6_DSm2_day2_tcn_SS_auxF_tcF_7078_rep2_batch1.BPM_m.bw
-r6-n_DSm2_SS_rep1.bl-TPM.p.bw                               rrp6_DSm2_day2_tcn_SS_auxF_tcF_7078_rep2_batch1.BPM_p.bw
-r6-n_DSm2_SS_rep2.bl-TPM.m.bw                               rrp6_DSm2_day2_tcn_SS_auxF_tcF_7079_rep1_batch1.BPM_m.bw
-r6-n_DSm2_SS_rep2.bl-TPM.p.bw                               rrp6_DSm2_day2_tcn_SS_auxF_tcF_7079_rep1_batch1.BPM_p.bw
-r6-n_DSp2_SS_rep1.bl-TPM.m.bw                               rrp6_DSp2_day2_tcn_SS_auxF_tcF_7078_rep2_batch1.BPM_m.bw
-r6-n_DSp2_SS_rep1.bl-TPM.p.bw                               rrp6_DSp2_day2_tcn_SS_auxF_tcF_7078_rep2_batch1.BPM_p.bw
-r6-n_DSp2_SS_rep2.bl-TPM.m.bw                               rrp6_DSp2_day2_tcn_SS_auxF_tcF_7079_rep1_batch1.BPM_m.bw
-r6-n_DSp2_SS_rep2.bl-TPM.p.bw                               rrp6_DSp2_day2_tcn_SS_auxF_tcF_7079_rep1_batch1.BPM_p.bw
-r6-n_DSp24_SS_rep1.bl-TPM.m.bw                              rrp6_DSp24_day3_tcn_SS_auxF_tcF_7078_rep2_batch1.BPM_m.bw
-r6-n_DSp24_SS_rep1.bl-TPM.p.bw                              rrp6_DSp24_day3_tcn_SS_auxF_tcF_7078_rep2_batch1.BPM_p.bw
-r6-n_DSp24_SS_rep2.bl-TPM.m.bw                              rrp6_DSp24_day3_tcn_SS_auxF_tcF_7079_rep1_batch1.BPM_m.bw
-r6-n_DSp24_SS_rep2.bl-TPM.p.bw                              rrp6_DSp24_day3_tcn_SS_auxF_tcF_7079_rep1_batch1.BPM_p.bw
-r6-n_DSp48_SS_rep1.bl-TPM.m.bw                              rrp6_DSp48_day4_tcn_SS_auxF_tcF_7078_rep2_batch1.BPM_m.bw
-r6-n_DSp48_SS_rep1.bl-TPM.p.bw                              rrp6_DSp48_day4_tcn_SS_auxF_tcF_7078_rep2_batch1.BPM_p.bw
-r6-n_DSp48_SS_rep2.bl-TPM.m.bw                              rrp6_DSp48_day4_tcn_SS_auxF_tcF_7079_rep1_batch1.BPM_m.bw
-r6-n_DSp48_SS_rep2.bl-TPM.p.bw                              rrp6_DSp48_day4_tcn_SS_auxF_tcF_7079_rep1_batch1.BPM_p.bw
+WT_DSp2_SS_rep1.bl-TPM.m.bw                                 WT_DSp2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_m.bw     #NOTOK  #FIXTC  #DONEBELOW
+WT_DSp2_SS_rep1.bl-TPM.p.bw                                 WT_DSp2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_p.bw     #NOTOK  #FIXTC  #DONEBELOW
+WT_DSp2_SS_rep2.bl-TPM.m.bw                                 WT_DSp2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_m.bw     #NOTOK  #FIXTC  #DONEBELOW
+WT_DSp2_SS_rep2.bl-TPM.p.bw                                 WT_DSp2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_p.bw     #NOTOK  #FIXTC  #DONEBELOW
 
---------                                                    -------
-original                                                    updated
---------                                                    -------
-WT_G1_N_rep1.bl-TPM.m.bw                                    WT_G1_day1_ovn_N_auxF_tcF_5781_rep1_batch1.BPM_m.bw
-WT_G1_N_rep1.bl-TPM.p.bw                                    WT_G1_day1_ovn_N_auxF_tcF_5781_rep1_batch1.BPM_p.bw
-WT_G1_N_rep2.bl-TPM.m.bw                                    WT_G1_day1_ovn_N_auxF_tcF_5782_rep2_batch1.BPM_m.bw
-WT_G1_N_rep2.bl-TPM.p.bw                                    WT_G1_day1_ovn_N_auxF_tcF_5782_rep2_batch1.BPM_p.bw
+WT_DSp24_SS_rep1.bl-TPM.m.bw                                WT_DSp24_day3_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_m.bw    #NOTOK  #FIXTC  #DONEBELOW
+WT_DSp24_SS_rep1.bl-TPM.p.bw                                WT_DSp24_day3_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_p.bw    #NOTOK  #FIXTC  #DONEBELOW
+WT_DSp24_SS_rep2.bl-TPM.m.bw                                WT_DSp24_day3_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_m.bw    #NOTOK  #FIXTC  #DONEBELOW
+WT_DSp24_SS_rep2.bl-TPM.p.bw                                WT_DSp24_day3_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_p.bw    #NOTOK  #FIXTC  #DONEBELOW
 
-WT_G1_SS_rep1.bl-TPM.m.bw                                   WT_G1_day1_ovn_SS_auxF_tcF_5781_rep1_batch1.BPM_m.bw
-WT_G1_SS_rep1.bl-TPM.p.bw                                   WT_G1_day1_ovn_SS_auxF_tcF_5781_rep1_batch1.BPM_p.bw
-WT_G1_SS_rep2.bl-TPM.m.bw                                   WT_G1_day1_ovn_SS_auxF_tcF_5782_rep2_batch1.BPM_m.bw
-WT_G1_SS_rep2.bl-TPM.p.bw                                   WT_G1_day1_ovn_SS_auxF_tcF_5782_rep2_batch1.BPM_p.bw
+WT_DSp48_SS_rep1.bl-TPM.m.bw                                WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_m.bw    #NOTOK  #FIXTC  #DONEBELOW
+WT_DSp48_SS_rep1.bl-TPM.p.bw                                WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_p.bw    #NOTOK  #FIXTC  #DONEBELOW
+WT_DSp48_SS_rep2.bl-TPM.m.bw                                WT_DSp48_day4_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_m.bw    #NOTOK  #FIXTC  #DONEBELOW
+WT_DSp48_SS_rep2.bl-TPM.p.bw                                WT_DSp48_day4_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_p.bw    #NOTOK  #FIXTC  #DONEBELOW
 
-WT_Q_N_rep1.bl-TPM.m.bw                                     WT_Q_day7_ovn_N_auxF_tcF_5781_rep1_batch1.BPM_m.bw
-WT_Q_N_rep1.bl-TPM.p.bw                                     WT_Q_day7_ovn_N_auxF_tcF_5781_rep1_batch1.BPM_p.bw
-WT_Q_N_rep2.bl-TPM.m.bw                                     WT_Q_day7_ovn_N_auxF_tcF_5782_rep2_batch1.BPM_m.bw
-WT_Q_N_rep2.bl-TPM.p.bw                                     WT_Q_day7_ovn_N_auxF_tcF_5782_rep2_batch1.BPM_p.bw
+r6-n_DSm2_SS_rep1.bl-TPM.m.bw                               rrp6_DSm2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_m.bw   #NOTOK  #FIXTC  #DONEBELOW
+r6-n_DSm2_SS_rep1.bl-TPM.p.bw                               rrp6_DSm2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_p.bw   #NOTOK  #FIXTC  #DONEBELOW
+r6-n_DSm2_SS_rep2.bl-TPM.m.bw                               rrp6_DSm2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1.BPM_m.bw   #NOTOK  #FIXTC  #DONEBELOW
+r6-n_DSm2_SS_rep2.bl-TPM.p.bw                               rrp6_DSm2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1.BPM_p.bw   #NOTOK  #FIXTC  #DONEBELOW
 
-WT_Q_SS_rep1.bl-TPM.m.bw                                    WT_Q_day7_ovn_SS_auxF_tcF_5781_rep1_batch1.BPM_m.bw
-WT_Q_SS_rep1.bl-TPM.p.bw                                    WT_Q_day7_ovn_SS_auxF_tcF_5781_rep1_batch1.BPM_p.bw
-WT_Q_SS_rep2.bl-TPM.m.bw                                    WT_Q_day7_ovn_SS_auxF_tcF_5782_rep2_batch1.BPM_m.bw
-WT_Q_SS_rep2.bl-TPM.p.bw                                    WT_Q_day7_ovn_SS_auxF_tcF_5782_rep2_batch1.BPM_p.bw
+r6-n_DSp2_SS_rep1.bl-TPM.m.bw                               rrp6_DSp2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_m.bw   #NOTOK  #FIXTC  #DONEBELOW
+r6-n_DSp2_SS_rep1.bl-TPM.p.bw                               rrp6_DSp2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_p.bw   #NOTOK  #FIXTC  #DONEBELOW
+r6-n_DSp2_SS_rep2.bl-TPM.m.bw                               rrp6_DSp2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1.BPM_m.bw   #NOTOK  #FIXTC  #DONEBELOW
+r6-n_DSp2_SS_rep2.bl-TPM.p.bw                               rrp6_DSp2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1.BPM_p.bw   #NOTOK  #FIXTC  #DONEBELOW
+
+r6-n_DSp24_SS_rep1.bl-TPM.m.bw                              rrp6_DSp24_day3_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_m.bw  #NOTOK  #FIXTC  #DONEBELOW
+r6-n_DSp24_SS_rep1.bl-TPM.p.bw                              rrp6_DSp24_day3_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_p.bw  #NOTOK  #FIXTC  #DONEBELOW
+r6-n_DSp24_SS_rep2.bl-TPM.m.bw                              rrp6_DSp24_day3_tcn_SS_auxF_tcT_7079_rep1_batch1.BPM_m.bw  #NOTOK  #FIXTC  #DONEBELOW
+r6-n_DSp24_SS_rep2.bl-TPM.p.bw                              rrp6_DSp24_day3_tcn_SS_auxF_tcT_7079_rep1_batch1.BPM_p.bw  #NOTOK  #FIXTC  #DONEBELOW
+
+r6-n_DSp48_SS_rep1.bl-TPM.m.bw                              rrp6_DSp48_day4_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_m.bw  #NOTOK  #FIXTC  #DONEBELOW
+r6-n_DSp48_SS_rep1.bl-TPM.p.bw                              rrp6_DSp48_day4_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_p.bw  #NOTOK  #FIXTC  #DONEBELOW
+r6-n_DSp48_SS_rep2.bl-TPM.m.bw                              rrp6_DSp48_day4_tcn_SS_auxF_tcT_7079_rep1_batch2.BPM_m.bw  #NOTOK  #FIXTC  #FIXBATCH  #DONEBELOW
+r6-n_DSp48_SS_rep2.bl-TPM.p.bw                              rrp6_DSp48_day4_tcn_SS_auxF_tcT_7079_rep1_batch2.BPM_p.bw  #NOTOK  #FIXTC  #FIXBATCH  #DONEBELOW
+
+--------                                                    -------                                                    -------
+original                                                    updated                                                    further
+--------                                                    -------                                                    -------
+WT_G1_N_rep1.bl-TPM.m.bw                                    WT_G1_day1_ovn_N_auxF_tcF_5781_rep1_batch1.BPM_m.bw        #NOCHANGE
+WT_G1_N_rep1.bl-TPM.p.bw                                    WT_G1_day1_ovn_N_auxF_tcF_5781_rep1_batch1.BPM_p.bw        #NOCHANGE
+WT_G1_N_rep2.bl-TPM.m.bw                                    WT_G1_day1_ovn_N_auxF_tcF_5782_rep2_batch1.BPM_m.bw        #NOCHANGE
+WT_G1_N_rep2.bl-TPM.p.bw                                    WT_G1_day1_ovn_N_auxF_tcF_5782_rep2_batch1.BPM_p.bw        #NOCHANGE
+
+WT_G1_SS_rep1.bl-TPM.m.bw                                   WT_G1_day1_ovn_SS_auxF_tcF_5781_rep1_batch1.BPM_m.bw       #NOCHANGE
+WT_G1_SS_rep1.bl-TPM.p.bw                                   WT_G1_day1_ovn_SS_auxF_tcF_5781_rep1_batch1.BPM_p.bw       #NOCHANGE
+WT_G1_SS_rep2.bl-TPM.m.bw                                   WT_G1_day1_ovn_SS_auxF_tcF_5782_rep2_batch1.BPM_m.bw       #NOCHANGE
+WT_G1_SS_rep2.bl-TPM.p.bw                                   WT_G1_day1_ovn_SS_auxF_tcF_5782_rep2_batch1.BPM_p.bw       #NOCHANGE
+
+WT_Q_N_rep1.bl-TPM.m.bw                                     WT_Q_day7_ovn_N_auxF_tcF_5781_rep1_batch1.BPM_m.bw         #NOCHANGE
+WT_Q_N_rep1.bl-TPM.p.bw                                     WT_Q_day7_ovn_N_auxF_tcF_5781_rep1_batch1.BPM_p.bw         #NOCHANGE
+WT_Q_N_rep2.bl-TPM.m.bw                                     WT_Q_day7_ovn_N_auxF_tcF_5782_rep2_batch1.BPM_m.bw         #NOCHANGE
+WT_Q_N_rep2.bl-TPM.p.bw                                     WT_Q_day7_ovn_N_auxF_tcF_5782_rep2_batch1.BPM_p.bw         #NOCHANGE
+
+WT_Q_SS_rep1.bl-TPM.m.bw                                    WT_Q_day7_ovn_SS_auxF_tcF_5781_rep1_batch1.BPM_m.bw        #NOCHANGE
+WT_Q_SS_rep1.bl-TPM.p.bw                                    WT_Q_day7_ovn_SS_auxF_tcF_5781_rep1_batch1.BPM_p.bw        #NOCHANGE
+WT_Q_SS_rep2.bl-TPM.m.bw                                    WT_Q_day7_ovn_SS_auxF_tcF_5782_rep2_batch1.BPM_m.bw        #NOCHANGE
+WT_Q_SS_rep2.bl-TPM.p.bw                                    WT_Q_day7_ovn_SS_auxF_tcF_5782_rep2_batch1.BPM_p.bw        #NOCHANGE
 ```
 </details>
 <br />
 </details>
 <br />
 
+<a id="code-10"></a>
+#### Code
 <details>
 <summary><i>Code</i></summary>
 
@@ -7151,7 +7245,7 @@ mkdir: created directory 'mean/md5'
 /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bws/mean
 
 
-#MD5
+#MD5  #DONOTUSE  #UPDATEDBELOW
 ❯ cat md5/*.txt
 f97c5652534a5ba770d4ee0669f5cc98  Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_m.bw
 62942248e7cb347faca88a55b389be0e  Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_p.bw
@@ -7183,7 +7277,7 @@ f77e2144fc32818af5b557b82bae6d2e  WT_Q_day7_ovn_N_auxF_tcF_5781-5782_rep-mean_ba
 a7cf965f741772f30ba44e325f80b79d  WT_Q_day8_tcn_SS_auxF_tcF_5781-5782_rep-mean_batch1.KLSC_p.bw
 
 
-#MD5
+#MD5  #DONOTUSE  #UPDATEDBELOW
 ❯ cd ../individual/ \
 >     && cat md5/*.txt
 a71050a29ad234e2b035e19ee64fe076  Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1.KLSC_m.bw
@@ -7279,10 +7373,879 @@ ed56c83c3838357b376226539199286a  WT_Q_day8_tcn_SS_auxF_tcF_5782_rep2_batch1.KLS
 ```
 </details>
 <br />
+
+<a id="correct-misnamed-files"></a>
+### Correct misnamed files
+<a id="code-11"></a>
+#### Code
+<details>
+<summary><i>Code</i></summary>
+
+```bash
+#!/bin/bash
+
+cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bws" \
+    || echo "cd'ing failed; check on this..."
+
+
+#  Correct file name errors in the above --------------------------------------
+#  Individual replicates, KLSC ----------------------------
+mv \
+    individual/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1.KLSC_m.bw \
+    individual/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125_rep1_batch1.KLSC_m.bw
+
+mv \
+    individual/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1.KLSC_p.bw \
+    individual/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125_rep1_batch1.KLSC_p.bw
+
+mv \
+    individual/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1.KLSC_m.bw \
+    individual/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6126_rep2_batch1.KLSC_m.bw
+
+mv \
+    individual/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1.KLSC_p.bw \
+    individual/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6126_rep2_batch1.KLSC_p.bw
+
+mv \
+    individual/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1.KLSC_m.bw \
+    individual/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125_rep1_batch1.KLSC_m.bw
+
+mv \
+    individual/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1.KLSC_p.bw \
+    individual/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125_rep1_batch1.KLSC_p.bw
+
+mv \
+    individual/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1.KLSC_m.bw \
+    individual/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6126_rep2_batch1.KLSC_m.bw
+
+mv \
+    individual/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1.KLSC_p.bw \
+    individual/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6126_rep2_batch1.KLSC_p.bw
+
+
+#  Averaged replicates, KLSC ------------------------------
+mv \
+    mean/Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_m.bw \
+    mean/Nab3-AID_Q_day7_tcn_N_auxT_tcF_6125-6126_rep-mean_batch1.KLSC_m.bw
+
+mv \
+    mean/Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_p.bw \
+    mean/Nab3-AID_Q_day7_tcn_N_auxT_tcF_6125-6126_rep-mean_batch1.KLSC_p.bw
+
+mv \
+    mean/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_m.bw \
+    mean/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125-6126_rep-mean_batch1.KLSC_m.bw
+
+mv \
+    mean/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_p.bw \
+    mean/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125-6126_rep-mean_batch1.KLSC_p.bw
+
+mv \
+    mean/Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_m.bw \
+    mean/Nab3-AID_Q_day7_tcn_SS_auxT_tcF_6125-6126_rep-mean_batch1.KLSC_m.bw
+
+mv \
+    mean/Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_p.bw \
+    mean/Nab3-AID_Q_day7_tcn_SS_auxT_tcF_6125-6126_rep-mean_batch1.KLSC_p.bw
+
+mv \
+    mean/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_m.bw \
+    mean/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125-6126_rep-mean_batch1.KLSC_m.bw
+
+mv \
+    mean/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_p.bw \
+    mean/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125-6126_rep-mean_batch1.KLSC_p.bw
+
+
+#  Individual replicates, BPM -----------------------------
+mv \
+    individual/WT_DSm2_day2_tcn_SS_auxF_tcF_5781_rep1_batch1.BPM_m.bw \
+    individual/WT_DSm2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_m.bw
+
+mv \
+    individual/WT_DSm2_day2_tcn_SS_auxF_tcF_5781_rep1_batch1.BPM_p.bw \
+    individual/WT_DSm2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_p.bw
+
+mv \
+    individual/WT_DSm2_day2_tcn_SS_auxF_tcF_5782_rep2_batch1.BPM_m.bw \
+    individual/WT_DSm2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_m.bw
+
+mv \
+    individual/WT_DSm2_day2_tcn_SS_auxF_tcF_5782_rep2_batch1.BPM_p.bw \
+    individual/WT_DSm2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_p.bw
+
+mv \
+    individual/WT_DSp2_day2_tcn_SS_auxF_tcF_5781_rep1_batch1.BPM_m.bw \
+    individual/WT_DSp2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_m.bw
+
+mv \
+    individual/WT_DSp2_day2_tcn_SS_auxF_tcF_5781_rep1_batch1.BPM_p.bw \
+    individual/WT_DSp2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_p.bw
+
+mv \
+    individual/WT_DSp2_day2_tcn_SS_auxF_tcF_5782_rep2_batch1.BPM_m.bw \
+    individual/WT_DSp2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_m.bw
+
+mv \
+    individual/WT_DSp2_day2_tcn_SS_auxF_tcF_5782_rep2_batch1.BPM_p.bw \
+    individual/WT_DSp2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_p.bw
+
+mv \
+    individual/WT_DSp24_day3_tcn_SS_auxF_tcF_5781_rep1_batch1.BPM_m.bw \
+    individual/WT_DSp24_day3_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_m.bw
+
+mv \
+    individual/WT_DSp24_day3_tcn_SS_auxF_tcF_5781_rep1_batch1.BPM_p.bw \
+    individual/WT_DSp24_day3_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_p.bw
+
+mv \
+    individual/WT_DSp24_day3_tcn_SS_auxF_tcF_5782_rep2_batch1.BPM_m.bw \
+    individual/WT_DSp24_day3_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_m.bw
+
+mv \
+    individual/WT_DSp24_day3_tcn_SS_auxF_tcF_5782_rep2_batch1.BPM_p.bw \
+    individual/WT_DSp24_day3_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_p.bw
+
+mv \
+    individual/WT_DSp48_day4_tcn_SS_auxF_tcF_5781_rep1_batch1.BPM_m.bw \
+    individual/WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_m.bw
+
+mv \
+    individual/WT_DSp48_day4_tcn_SS_auxF_tcF_5781_rep1_batch1.BPM_p.bw \
+    individual/WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_p.bw
+
+mv \
+    individual/WT_DSp48_day4_tcn_SS_auxF_tcF_5782_rep2_batch1.BPM_m.bw \
+    individual/WT_DSp48_day4_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_m.bw
+
+mv \
+    individual/WT_DSp48_day4_tcn_SS_auxF_tcF_5782_rep2_batch1.BPM_p.bw \
+    individual/WT_DSp48_day4_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_p.bw
+
+mv \
+    individual/rrp6_DSm2_day2_tcn_SS_auxF_tcF_7078_rep2_batch1.BPM_m.bw \
+    individual/rrp6_DSm2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_m.bw
+
+mv \
+    individual/rrp6_DSm2_day2_tcn_SS_auxF_tcF_7078_rep2_batch1.BPM_p.bw \
+    individual/rrp6_DSm2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_p.bw
+
+mv \
+    individual/rrp6_DSm2_day2_tcn_SS_auxF_tcF_7079_rep1_batch1.BPM_m.bw \
+    individual/rrp6_DSm2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1.BPM_m.bw
+
+mv \
+    individual/rrp6_DSm2_day2_tcn_SS_auxF_tcF_7079_rep1_batch1.BPM_p.bw \
+    individual/rrp6_DSm2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1.BPM_p.bw
+
+mv \
+    individual/rrp6_DSp2_day2_tcn_SS_auxF_tcF_7078_rep2_batch1.BPM_m.bw \
+    individual/rrp6_DSp2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_m.bw
+
+mv \
+    individual/rrp6_DSp2_day2_tcn_SS_auxF_tcF_7078_rep2_batch1.BPM_p.bw \
+    individual/rrp6_DSp2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_p.bw
+
+mv \
+    individual/rrp6_DSp2_day2_tcn_SS_auxF_tcF_7079_rep1_batch1.BPM_m.bw \
+    individual/rrp6_DSp2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1.BPM_m.bw
+
+mv \
+    individual/rrp6_DSp2_day2_tcn_SS_auxF_tcF_7079_rep1_batch1.BPM_p.bw \
+    individual/rrp6_DSp2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1.BPM_p.bw
+
+mv \
+    individual/rrp6_DSp24_day3_tcn_SS_auxF_tcF_7078_rep2_batch1.BPM_m.bw \
+    individual/rrp6_DSp24_day3_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_m.bw
+
+mv \
+    individual/rrp6_DSp24_day3_tcn_SS_auxF_tcF_7078_rep2_batch1.BPM_p.bw \
+    individual/rrp6_DSp24_day3_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_p.bw
+
+mv \
+    individual/rrp6_DSp24_day3_tcn_SS_auxF_tcF_7079_rep1_batch1.BPM_m.bw \
+    individual/rrp6_DSp24_day3_tcn_SS_auxF_tcT_7079_rep1_batch1.BPM_m.bw
+
+mv \
+    individual/rrp6_DSp24_day3_tcn_SS_auxF_tcF_7079_rep1_batch1.BPM_p.bw \
+    individual/rrp6_DSp24_day3_tcn_SS_auxF_tcT_7079_rep1_batch1.BPM_p.bw
+
+mv \
+    individual/rrp6_DSp48_day4_tcn_SS_auxF_tcF_7078_rep2_batch1.BPM_m.bw \
+    individual/rrp6_DSp48_day4_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_m.bw
+
+mv \
+    individual/rrp6_DSp48_day4_tcn_SS_auxF_tcF_7078_rep2_batch1.BPM_p.bw \
+    individual/rrp6_DSp48_day4_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_p.bw
+
+mv \
+    individual/rrp6_DSp48_day4_tcn_SS_auxF_tcF_7079_rep1_batch1.BPM_m.bw \
+    individual/rrp6_DSp48_day4_tcn_SS_auxF_tcT_7079_rep1_batch2.BPM_m.bw
+
+mv \
+    individual/rrp6_DSp48_day4_tcn_SS_auxF_tcF_7079_rep1_batch1.BPM_p.bw \
+    individual/rrp6_DSp48_day4_tcn_SS_auxF_tcT_7079_rep1_batch2.BPM_p.bw
+
+
+#  Fixing above mistakes for "averaged replicates, BPM" ---
+cd mean || echo "cd'ing failed; check on this..."
+
+mv \
+    Nab3-AID_Q_day7_tcn_N_auxT_tcF_6125-6126_rep-mean_batch1.KLSC_m.bw \
+    Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_m.bw
+
+mv \
+    Nab3-AID_Q_day7_tcn_N_auxT_tcF_6125-6126_rep-mean_batch1.KLSC_p.bw \
+    Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_p.bw
+
+mv \
+    Nab3-AID_Q_day7_tcn_SS_auxT_tcF_6125-6126_rep-mean_batch1.KLSC_m.bw \
+    Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_m.bw
+
+mv \
+    Nab3-AID_Q_day7_tcn_SS_auxT_tcF_6125-6126_rep-mean_batch1.KLSC_p.bw \
+    Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_p.bw
+
+
+#  Check on the changes made --------------------------------------------------
+cd .. && ls -lhaFG ./*
+
+
+#  After the changes, regenerate MD5 checksums for the bws --------------------
+cd individual/ && rmr md5/ && .. && cd mean/ && rmr md5/ && ..
+
+mkdir -p {individual,mean}/md5
+
+cd individual/ && for i in *.bw; do md5sum "${i}" > "md5/${i%.bw}.md5.txt"; done && ..
+cd mean/ && for i in *.bw; do md5sum "${i}" > "md5/${i%.bw}.md5.txt"; done && ..
+
+cat individual/md5/*.txt
+cat mean/md5/*.txt
+```
+</details>
+<br />
+
+<a id="printed-11"></a>
+#### Printed
+<details>
+<summary><i>Printed</i></summary>
+
+```txt
+❯ cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bws" \
+>     || echo "cd'ing failed; check on this..."
+
+
+❯ #  Correct file name errors in the above --------------------------------------
+
+
+❯ #  Individual replicates, KLSC ------------------
+
+
+❯ mv \
+>     individual/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1.KLSC_m.bw \
+>     individual/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125_rep1_batch1.KLSC_m.bw
+renamed 'individual/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1.KLSC_m.bw' -> 'individual/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125_rep1_batch1.KLSC_m.bw'
+
+
+❯ mv \
+>     individual/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1.KLSC_p.bw \
+>     individual/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125_rep1_batch1.KLSC_p.bw
+renamed 'individual/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1.KLSC_p.bw' -> 'individual/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125_rep1_batch1.KLSC_p.bw'
+
+
+❯ mv \
+>     individual/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1.KLSC_m.bw \
+>     individual/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6126_rep2_batch1.KLSC_m.bw
+renamed 'individual/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1.KLSC_m.bw' -> 'individual/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6126_rep2_batch1.KLSC_m.bw'
+
+
+❯ mv \
+>     individual/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1.KLSC_p.bw \
+>     individual/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6126_rep2_batch1.KLSC_p.bw
+renamed 'individual/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1.KLSC_p.bw' -> 'individual/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6126_rep2_batch1.KLSC_p.bw'
+
+
+❯ mv \
+>     individual/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1.KLSC_m.bw \
+>     individual/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125_rep1_batch1.KLSC_m.bw
+renamed 'individual/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1.KLSC_m.bw' -> 'individual/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125_rep1_batch1.KLSC_m.bw'
+
+
+❯ mv \
+>     individual/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1.KLSC_p.bw \
+>     individual/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125_rep1_batch1.KLSC_p.bw
+renamed 'individual/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1.KLSC_p.bw' -> 'individual/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125_rep1_batch1.KLSC_p.bw'
+
+
+❯ mv \
+>     individual/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1.KLSC_m.bw \
+>     individual/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6126_rep2_batch1.KLSC_m.bw
+renamed 'individual/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1.KLSC_m.bw' -> 'individual/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6126_rep2_batch1.KLSC_m.bw'
+
+
+❯ mv \
+>     individual/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1.KLSC_p.bw \
+>     individual/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6126_rep2_batch1.KLSC_p.bw
+renamed 'individual/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1.KLSC_p.bw' -> 'individual/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6126_rep2_batch1.KLSC_p.bw'
+
+
+❯ #  Averaged replicates, KLSC --------------------
+
+
+❯ mv \
+>     mean/Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_m.bw \
+>     mean/Nab3-AID_Q_day7_tcn_N_auxT_tcF_6125-6126_rep-mean_batch1.KLSC_m.bw
+renamed 'mean/Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_m.bw' -> 'mean/Nab3-AID_Q_day7_tcn_N_auxT_tcF_6125-6126_rep-mean_batch1.KLSC_m.bw'
+
+
+❯ mv \
+>     mean/Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_p.bw \
+>     mean/Nab3-AID_Q_day7_tcn_N_auxT_tcF_6125-6126_rep-mean_batch1.KLSC_p.bw
+renamed 'mean/Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_p.bw' -> 'mean/Nab3-AID_Q_day7_tcn_N_auxT_tcF_6125-6126_rep-mean_batch1.KLSC_p.bw'
+
+
+❯ mv \
+>     mean/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_m.bw \
+>     mean/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125-6126_rep-mean_batch1.KLSC_m.bw
+renamed 'mean/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_m.bw' -> 'mean/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125-6126_rep-mean_batch1.KLSC_m.bw'
+
+
+❯ mv \
+>     mean/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_p.bw \
+>     mean/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125-6126_rep-mean_batch1.KLSC_p.bw
+renamed 'mean/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_p.bw' -> 'mean/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125-6126_rep-mean_batch1.KLSC_p.bw'
+
+
+❯ mv \
+>     mean/Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_m.bw \
+>     mean/Nab3-AID_Q_day7_tcn_SS_auxT_tcF_6125-6126_rep-mean_batch1.KLSC_m.bw
+renamed 'mean/Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_m.bw' -> 'mean/Nab3-AID_Q_day7_tcn_SS_auxT_tcF_6125-6126_rep-mean_batch1.KLSC_m.bw'
+
+
+❯ mv \
+>     mean/Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_p.bw \
+>     mean/Nab3-AID_Q_day7_tcn_SS_auxT_tcF_6125-6126_rep-mean_batch1.KLSC_p.bw
+renamed 'mean/Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_p.bw' -> 'mean/Nab3-AID_Q_day7_tcn_SS_auxT_tcF_6125-6126_rep-mean_batch1.KLSC_p.bw'
+
+
+❯ mv \
+>     mean/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_m.bw \
+>     mean/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125-6126_rep-mean_batch1.KLSC_m.bw
+renamed 'mean/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_m.bw' -> 'mean/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125-6126_rep-mean_batch1.KLSC_m.bw'
+
+
+❯ mv \
+>     mean/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_p.bw \
+>     mean/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125-6126_rep-mean_batch1.KLSC_p.bw
+renamed 'mean/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_p.bw' -> 'mean/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125-6126_rep-mean_batch1.KLSC_p.bw'
+
+
+❯ #  Individual replicates, BPM -------------------
+
+
+❯ mv \
+>     individual/WT_DSm2_day2_tcn_SS_auxF_tcF_5781_rep1_batch1.BPM_m.bw \
+>     individual/WT_DSm2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_m.bw
+renamed 'individual/WT_DSm2_day2_tcn_SS_auxF_tcF_5781_rep1_batch1.BPM_m.bw' -> 'individual/WT_DSm2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_m.bw'
+
+
+❯ mv \
+>     individual/WT_DSm2_day2_tcn_SS_auxF_tcF_5781_rep1_batch1.BPM_p.bw \
+>     individual/WT_DSm2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_p.bw
+renamed 'individual/WT_DSm2_day2_tcn_SS_auxF_tcF_5781_rep1_batch1.BPM_p.bw' -> 'individual/WT_DSm2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_p.bw'
+
+
+❯ mv \
+>     individual/WT_DSm2_day2_tcn_SS_auxF_tcF_5782_rep2_batch1.BPM_m.bw \
+>     individual/WT_DSm2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_m.bw
+renamed 'individual/WT_DSm2_day2_tcn_SS_auxF_tcF_5782_rep2_batch1.BPM_m.bw' -> 'individual/WT_DSm2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_m.bw'
+
+
+❯ mv \
+>     individual/WT_DSm2_day2_tcn_SS_auxF_tcF_5782_rep2_batch1.BPM_p.bw \
+>     individual/WT_DSm2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_p.bw
+renamed 'individual/WT_DSm2_day2_tcn_SS_auxF_tcF_5782_rep2_batch1.BPM_p.bw' -> 'individual/WT_DSm2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_p.bw'
+
+
+❯ mv \
+>     individual/WT_DSp2_day2_tcn_SS_auxF_tcF_5781_rep1_batch1.BPM_m.bw \
+>     individual/WT_DSp2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_m.bw
+renamed 'individual/WT_DSp2_day2_tcn_SS_auxF_tcF_5781_rep1_batch1.BPM_m.bw' -> 'individual/WT_DSp2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_m.bw'
+
+
+❯ mv \
+>     individual/WT_DSp2_day2_tcn_SS_auxF_tcF_5781_rep1_batch1.BPM_p.bw \
+>     individual/WT_DSp2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_p.bw
+renamed 'individual/WT_DSp2_day2_tcn_SS_auxF_tcF_5781_rep1_batch1.BPM_p.bw' -> 'individual/WT_DSp2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_p.bw'
+
+
+❯ mv \
+>     individual/WT_DSp2_day2_tcn_SS_auxF_tcF_5782_rep2_batch1.BPM_m.bw \
+>     individual/WT_DSp2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_m.bw
+renamed 'individual/WT_DSp2_day2_tcn_SS_auxF_tcF_5782_rep2_batch1.BPM_m.bw' -> 'individual/WT_DSp2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_m.bw'
+
+
+❯ mv \
+>     individual/WT_DSp2_day2_tcn_SS_auxF_tcF_5782_rep2_batch1.BPM_p.bw \
+>     individual/WT_DSp2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_p.bw
+renamed 'individual/WT_DSp2_day2_tcn_SS_auxF_tcF_5782_rep2_batch1.BPM_p.bw' -> 'individual/WT_DSp2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_p.bw'
+
+
+❯ mv \
+>     individual/WT_DSp24_day3_tcn_SS_auxF_tcF_5781_rep1_batch1.BPM_m.bw \
+>     individual/WT_DSp24_day3_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_m.bw
+renamed 'individual/WT_DSp24_day3_tcn_SS_auxF_tcF_5781_rep1_batch1.BPM_m.bw' -> 'individual/WT_DSp24_day3_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_m.bw'
+
+
+❯ mv \
+>     individual/WT_DSp24_day3_tcn_SS_auxF_tcF_5781_rep1_batch1.BPM_p.bw \
+>     individual/WT_DSp24_day3_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_p.bw
+renamed 'individual/WT_DSp24_day3_tcn_SS_auxF_tcF_5781_rep1_batch1.BPM_p.bw' -> 'individual/WT_DSp24_day3_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_p.bw'
+
+
+❯ mv \
+>     individual/WT_DSp24_day3_tcn_SS_auxF_tcF_5782_rep2_batch1.BPM_m.bw \
+>     individual/WT_DSp24_day3_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_m.bw
+renamed 'individual/WT_DSp24_day3_tcn_SS_auxF_tcF_5782_rep2_batch1.BPM_m.bw' -> 'individual/WT_DSp24_day3_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_m.bw'
+
+
+❯ mv \
+>     individual/WT_DSp24_day3_tcn_SS_auxF_tcF_5782_rep2_batch1.BPM_p.bw \
+>     individual/WT_DSp24_day3_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_p.bw
+renamed 'individual/WT_DSp24_day3_tcn_SS_auxF_tcF_5782_rep2_batch1.BPM_p.bw' -> 'individual/WT_DSp24_day3_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_p.bw'
+
+
+❯ mv \
+>     individual/WT_DSp48_day4_tcn_SS_auxF_tcF_5781_rep1_batch1.BPM_m.bw \
+>     individual/WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_m.bw
+renamed 'individual/WT_DSp48_day4_tcn_SS_auxF_tcF_5781_rep1_batch1.BPM_m.bw' -> 'individual/WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_m.bw'
+
+
+❯ mv \
+>     individual/WT_DSp48_day4_tcn_SS_auxF_tcF_5781_rep1_batch1.BPM_p.bw \
+>     individual/WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_p.bw
+renamed 'individual/WT_DSp48_day4_tcn_SS_auxF_tcF_5781_rep1_batch1.BPM_p.bw' -> 'individual/WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_p.bw'
+
+
+❯ mv \
+>     individual/WT_DSp48_day4_tcn_SS_auxF_tcF_5782_rep2_batch1.BPM_m.bw \
+>     individual/WT_DSp48_day4_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_m.bw
+renamed 'individual/WT_DSp48_day4_tcn_SS_auxF_tcF_5782_rep2_batch1.BPM_m.bw' -> 'individual/WT_DSp48_day4_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_m.bw'
+
+
+❯ mv \
+>     individual/WT_DSp48_day4_tcn_SS_auxF_tcF_5782_rep2_batch1.BPM_p.bw \
+>     individual/WT_DSp48_day4_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_p.bw
+renamed 'individual/WT_DSp48_day4_tcn_SS_auxF_tcF_5782_rep2_batch1.BPM_p.bw' -> 'individual/WT_DSp48_day4_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_p.bw'
+
+
+❯ mv \
+>     individual/rrp6_DSm2_day2_tcn_SS_auxF_tcF_7078_rep2_batch1.BPM_m.bw \
+>     individual/rrp6_DSm2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_m.bw
+renamed 'individual/rrp6_DSm2_day2_tcn_SS_auxF_tcF_7078_rep2_batch1.BPM_m.bw' -> 'individual/rrp6_DSm2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_m.bw'
+
+
+❯ mv \
+>     individual/rrp6_DSm2_day2_tcn_SS_auxF_tcF_7078_rep2_batch1.BPM_p.bw \
+>     individual/rrp6_DSm2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_p.bw
+renamed 'individual/rrp6_DSm2_day2_tcn_SS_auxF_tcF_7078_rep2_batch1.BPM_p.bw' -> 'individual/rrp6_DSm2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_p.bw'
+
+
+❯ mv \
+>     individual/rrp6_DSm2_day2_tcn_SS_auxF_tcF_7079_rep1_batch1.BPM_m.bw \
+>     individual/rrp6_DSm2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1.BPM_m.bw
+renamed 'individual/rrp6_DSm2_day2_tcn_SS_auxF_tcF_7079_rep1_batch1.BPM_m.bw' -> 'individual/rrp6_DSm2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1.BPM_m.bw'
+
+
+❯ mv \
+>     individual/rrp6_DSm2_day2_tcn_SS_auxF_tcF_7079_rep1_batch1.BPM_p.bw \
+>     individual/rrp6_DSm2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1.BPM_p.bw
+renamed 'individual/rrp6_DSm2_day2_tcn_SS_auxF_tcF_7079_rep1_batch1.BPM_p.bw' -> 'individual/rrp6_DSm2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1.BPM_p.bw'
+
+
+❯ mv \
+>     individual/rrp6_DSp2_day2_tcn_SS_auxF_tcF_7078_rep2_batch1.BPM_m.bw \
+>     individual/rrp6_DSp2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_m.bw
+renamed 'individual/rrp6_DSp2_day2_tcn_SS_auxF_tcF_7078_rep2_batch1.BPM_m.bw' -> 'individual/rrp6_DSp2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_m.bw'
+
+
+❯ mv \
+>     individual/rrp6_DSp2_day2_tcn_SS_auxF_tcF_7078_rep2_batch1.BPM_p.bw \
+>     individual/rrp6_DSp2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_p.bw
+renamed 'individual/rrp6_DSp2_day2_tcn_SS_auxF_tcF_7078_rep2_batch1.BPM_p.bw' -> 'individual/rrp6_DSp2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_p.bw'
+
+
+❯ mv \
+>     individual/rrp6_DSp2_day2_tcn_SS_auxF_tcF_7079_rep1_batch1.BPM_m.bw \
+>     individual/rrp6_DSp2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1.BPM_m.bw
+renamed 'individual/rrp6_DSp2_day2_tcn_SS_auxF_tcF_7079_rep1_batch1.BPM_m.bw' -> 'individual/rrp6_DSp2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1.BPM_m.bw'
+
+
+❯ mv \
+>     individual/rrp6_DSp2_day2_tcn_SS_auxF_tcF_7079_rep1_batch1.BPM_p.bw \
+>     individual/rrp6_DSp2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1.BPM_p.bw
+renamed 'individual/rrp6_DSp2_day2_tcn_SS_auxF_tcF_7079_rep1_batch1.BPM_p.bw' -> 'individual/rrp6_DSp2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1.BPM_p.bw'
+
+
+❯ mv \
+>     individual/rrp6_DSp24_day3_tcn_SS_auxF_tcF_7078_rep2_batch1.BPM_m.bw \
+>     individual/rrp6_DSp24_day3_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_m.bw
+renamed 'individual/rrp6_DSp24_day3_tcn_SS_auxF_tcF_7078_rep2_batch1.BPM_m.bw' -> 'individual/rrp6_DSp24_day3_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_m.bw'
+
+
+❯ mv \
+>     individual/rrp6_DSp24_day3_tcn_SS_auxF_tcF_7078_rep2_batch1.BPM_p.bw \
+>     individual/rrp6_DSp24_day3_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_p.bw
+renamed 'individual/rrp6_DSp24_day3_tcn_SS_auxF_tcF_7078_rep2_batch1.BPM_p.bw' -> 'individual/rrp6_DSp24_day3_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_p.bw'
+
+
+❯ mv \
+>     individual/rrp6_DSp24_day3_tcn_SS_auxF_tcF_7079_rep1_batch1.BPM_m.bw \
+>     individual/rrp6_DSp24_day3_tcn_SS_auxF_tcT_7079_rep1_batch1.BPM_m.bw
+renamed 'individual/rrp6_DSp24_day3_tcn_SS_auxF_tcF_7079_rep1_batch1.BPM_m.bw' -> 'individual/rrp6_DSp24_day3_tcn_SS_auxF_tcT_7079_rep1_batch1.BPM_m.bw'
+
+
+❯ mv \
+>     individual/rrp6_DSp24_day3_tcn_SS_auxF_tcF_7079_rep1_batch1.BPM_p.bw \
+>     individual/rrp6_DSp24_day3_tcn_SS_auxF_tcT_7079_rep1_batch1.BPM_p.bw
+renamed 'individual/rrp6_DSp24_day3_tcn_SS_auxF_tcF_7079_rep1_batch1.BPM_p.bw' -> 'individual/rrp6_DSp24_day3_tcn_SS_auxF_tcT_7079_rep1_batch1.BPM_p.bw'
+
+
+❯ mv \
+>     individual/rrp6_DSp48_day4_tcn_SS_auxF_tcF_7078_rep2_batch1.BPM_m.bw \
+>     individual/rrp6_DSp48_day4_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_m.bw
+renamed 'individual/rrp6_DSp48_day4_tcn_SS_auxF_tcF_7078_rep2_batch1.BPM_m.bw' -> 'individual/rrp6_DSp48_day4_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_m.bw'
+
+
+❯ mv \
+>     individual/rrp6_DSp48_day4_tcn_SS_auxF_tcF_7078_rep2_batch1.BPM_p.bw \
+>     individual/rrp6_DSp48_day4_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_p.bw
+renamed 'individual/rrp6_DSp48_day4_tcn_SS_auxF_tcF_7078_rep2_batch1.BPM_p.bw' -> 'individual/rrp6_DSp48_day4_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_p.bw'
+
+
+❯ mv \
+>     individual/rrp6_DSp48_day4_tcn_SS_auxF_tcF_7079_rep1_batch1.BPM_m.bw \
+>     individual/rrp6_DSp48_day4_tcn_SS_auxF_tcT_7079_rep1_batch2.BPM_m.bw
+renamed 'individual/rrp6_DSp48_day4_tcn_SS_auxF_tcF_7079_rep1_batch1.BPM_m.bw' -> 'individual/rrp6_DSp48_day4_tcn_SS_auxF_tcT_7079_rep1_batch2.BPM_m.bw'
+
+
+❯ mv \
+>     individual/rrp6_DSp48_day4_tcn_SS_auxF_tcF_7079_rep1_batch1.BPM_p.bw \
+>     individual/rrp6_DSp48_day4_tcn_SS_auxF_tcT_7079_rep1_batch2.BPM_p.bw
+renamed 'individual/rrp6_DSp48_day4_tcn_SS_auxF_tcF_7079_rep1_batch1.BPM_p.bw' -> 'individual/rrp6_DSp48_day4_tcn_SS_auxF_tcT_7079_rep1_batch2.BPM_p.bw'
+
+
+❯ #  Fix mistakes for "averaged replicates, KLSC", etc. ---
+
+
+❯ cd mean || echo "cd'ing failed; check on this..."
+/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bws/mean
+
+
+❯ mv \
+>     Nab3-AID_Q_day7_tcn_N_auxT_tcF_6125-6126_rep-mean_batch1.KLSC_m.bw \
+>     Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_m.bw
+renamed 'Nab3-AID_Q_day7_tcn_N_auxT_tcF_6125-6126_rep-mean_batch1.KLSC_m.bw' -> 'Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_m.bw'
+
+
+❯ mv \
+>     Nab3-AID_Q_day7_tcn_N_auxT_tcF_6125-6126_rep-mean_batch1.KLSC_p.bw \
+>     Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_p.bw
+renamed 'Nab3-AID_Q_day7_tcn_N_auxT_tcF_6125-6126_rep-mean_batch1.KLSC_p.bw' -> 'Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_p.bw'
+
+
+❯ mv \
+>     Nab3-AID_Q_day7_tcn_SS_auxT_tcF_6125-6126_rep-mean_batch1.KLSC_m.bw \
+>     Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_m.bw
+renamed 'Nab3-AID_Q_day7_tcn_SS_auxT_tcF_6125-6126_rep-mean_batch1.KLSC_m.bw' -> 'Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_m.bw'
+
+
+❯ mv \
+>     Nab3-AID_Q_day7_tcn_SS_auxT_tcF_6125-6126_rep-mean_batch1.KLSC_p.bw \
+>     Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_p.bw
+renamed 'Nab3-AID_Q_day7_tcn_SS_auxT_tcF_6125-6126_rep-mean_batch1.KLSC_p.bw' -> 'Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_p.bw'
+
+
+❯ #  Check on the changes made --------------------------------------------------
+
+
+❯ cd .. && ❯ ls -lhaFG ./*
+./individual:
+total 2.2G
+drwxrws--- 3 kalavatt 6.4K Jul 21 09:17 ./
+drwxrws--- 4 kalavatt   50 Jul 20 07:21 ../
+drwxrws--- 2 kalavatt 6.9K Jul 20 10:44 md5/
+-rw-rw---- 1 kalavatt  47M Apr 26 16:20 Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1.KLSC_m.bw
+-rw-rw---- 1 kalavatt  47M Apr 26 16:25 Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1.KLSC_p.bw
+-rw-rw---- 1 kalavatt  46M Apr 26 16:32 Nab3-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1.KLSC_m.bw
+-rw-rw---- 1 kalavatt  46M Apr 26 16:39 Nab3-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1.KLSC_p.bw
+-rw-rw---- 1 kalavatt  17M May 24 13:12 Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1.KLSC_m.bw
+-rw-rw---- 1 kalavatt  17M May 24 13:30 Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1.KLSC_p.bw
+-rw-rw---- 1 kalavatt  14M May 24 13:44 Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1.KLSC_m.bw
+-rw-rw---- 1 kalavatt  15M May 24 14:04 Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1.KLSC_p.bw
+-rw-rw---- 1 kalavatt  35M Apr 26 16:44 OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125_rep1_batch1.KLSC_m.bw
+-rw-rw---- 1 kalavatt  35M Apr 26 16:48 OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125_rep1_batch1.KLSC_p.bw
+-rw-rw---- 1 kalavatt  34M Apr 26 16:54 OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6126_rep2_batch1.KLSC_m.bw
+-rw-rw---- 1 kalavatt  34M Apr 26 16:59 OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6126_rep2_batch1.KLSC_p.bw
+-rw-rw---- 1 kalavatt 7.4M May 24 14:14 OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125_rep1_batch1.KLSC_m.bw
+-rw-rw---- 1 kalavatt 7.7M May 24 14:27 OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125_rep1_batch1.KLSC_p.bw
+-rw-rw---- 1 kalavatt 7.4M May 24 14:39 OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6126_rep2_batch1.KLSC_m.bw
+-rw-rw---- 1 kalavatt 7.7M May 24 14:52 OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6126_rep2_batch1.KLSC_p.bw
+-rw-rw---- 1 kalavatt  20M Jul 20 07:57 rrp6_DSm2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_m.bw
+-rw-rw---- 1 kalavatt  20M Jul 20 07:57 rrp6_DSm2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_p.bw
+-rw-rw---- 1 kalavatt  22M Jul 20 07:57 rrp6_DSm2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1.BPM_m.bw
+-rw-rw---- 1 kalavatt  22M Jul 20 07:57 rrp6_DSm2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1.BPM_p.bw
+-rw-rw---- 1 kalavatt  17M Jul 20 07:57 rrp6_DSp24_day3_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_m.bw
+-rw-rw---- 1 kalavatt  17M Jul 20 07:57 rrp6_DSp24_day3_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_p.bw
+-rw-rw---- 1 kalavatt  20M Jul 20 07:58 rrp6_DSp24_day3_tcn_SS_auxF_tcT_7079_rep1_batch1.BPM_m.bw
+-rw-rw---- 1 kalavatt  20M Jul 20 07:58 rrp6_DSp24_day3_tcn_SS_auxF_tcT_7079_rep1_batch1.BPM_p.bw
+-rw-rw---- 1 kalavatt  21M Jul 20 07:58 rrp6_DSp2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_m.bw
+-rw-rw---- 1 kalavatt  22M Jul 20 07:58 rrp6_DSp2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_p.bw
+-rw-rw---- 1 kalavatt  22M Jul 20 07:58 rrp6_DSp2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1.BPM_m.bw
+-rw-rw---- 1 kalavatt  22M Jul 20 07:58 rrp6_DSp2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1.BPM_p.bw
+-rw-rw---- 1 kalavatt  16M Jul 20 07:58 rrp6_DSp48_day4_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_m.bw
+-rw-rw---- 1 kalavatt  17M Jul 20 07:58 rrp6_DSp48_day4_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_p.bw
+-rw-rw---- 1 kalavatt  16M Jul 20 07:58 rrp6_DSp48_day4_tcn_SS_auxF_tcT_7079_rep1_batch2.BPM_m.bw
+-rw-rw---- 1 kalavatt  16M Jul 20 07:58 rrp6_DSp48_day4_tcn_SS_auxF_tcT_7079_rep1_batch2.BPM_p.bw
+-rw-rw---- 1 kalavatt  22M May  5 13:15 rrp6_G1_day1_tcn_SS_auxF_tcF_7078_rep2_batch2.KLSC_m.bw
+-rw-rw---- 1 kalavatt  22M May  5 13:24 rrp6_G1_day1_tcn_SS_auxF_tcF_7078_rep2_batch2.KLSC_p.bw
+-rw-rw---- 1 kalavatt  22M May  5 13:35 rrp6_G1_day1_tcn_SS_auxF_tcF_7079_rep1_batch2.KLSC_m.bw
+-rw-rw---- 1 kalavatt  22M May  5 13:44 rrp6_G1_day1_tcn_SS_auxF_tcF_7079_rep1_batch2.KLSC_p.bw
+-rw-rw---- 1 kalavatt  40M May 24 14:42 rrp6_Q_day8_tcn_N_auxF_tcF_7078_rep2_batch1.KLSC_m.bw
+-rw-rw---- 1 kalavatt  40M May 24 14:46 rrp6_Q_day8_tcn_N_auxF_tcF_7078_rep2_batch1.KLSC_p.bw
+-rw-rw---- 1 kalavatt  39M May 24 14:53 rrp6_Q_day8_tcn_N_auxF_tcF_7079_rep1_batch1.KLSC_m.bw
+-rw-rw---- 1 kalavatt  39M May 24 14:58 rrp6_Q_day8_tcn_N_auxF_tcF_7079_rep1_batch1.KLSC_p.bw
+-rw-rw---- 1 kalavatt  11M May  5 12:44 rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch1.KLSC_m.bw
+-rw-rw---- 1 kalavatt  12M May  5 13:00 rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch1.KLSC_p.bw
+-rw-rw---- 1 kalavatt 9.7M May  5 13:13 rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch2.KLSC_m.bw
+-rw-rw---- 1 kalavatt 9.9M May  5 13:26 rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch2.KLSC_p.bw
+-rw-rw---- 1 kalavatt  13M May  5 13:37 rrp6_Q_day8_tcn_SS_auxF_tcF_7079_rep1_batch1.KLSC_m.bw
+-rw-rw---- 1 kalavatt  13M May  5 13:53 rrp6_Q_day8_tcn_SS_auxF_tcF_7079_rep1_batch1.KLSC_p.bw
+-rw-rw---- 1 kalavatt  19M Jul 20 08:03 WT_DSm2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_m.bw
+-rw-rw---- 1 kalavatt  19M Jul 20 08:03 WT_DSm2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_p.bw
+-rw-rw---- 1 kalavatt  16M Jul 20 08:03 WT_DSm2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_m.bw
+-rw-rw---- 1 kalavatt  17M Jul 20 08:03 WT_DSm2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_p.bw
+-rw-rw---- 1 kalavatt  16M Jul 20 08:03 WT_DSp24_day3_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_m.bw
+-rw-rw---- 1 kalavatt  17M Jul 20 08:03 WT_DSp24_day3_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_p.bw
+-rw-rw---- 1 kalavatt  17M Jul 20 08:03 WT_DSp24_day3_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_m.bw
+-rw-rw---- 1 kalavatt  17M Jul 20 08:03 WT_DSp24_day3_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_p.bw
+-rw-rw---- 1 kalavatt  18M Jul 20 08:03 WT_DSp2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_m.bw
+-rw-rw---- 1 kalavatt  18M Jul 20 08:03 WT_DSp2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_p.bw
+-rw-rw---- 1 kalavatt  18M Jul 20 08:03 WT_DSp2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_m.bw
+-rw-rw---- 1 kalavatt  19M Jul 20 08:04 WT_DSp2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_p.bw
+-rw-rw---- 1 kalavatt  14M Jul 20 08:04 WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_m.bw
+-rw-rw---- 1 kalavatt  15M Jul 20 08:04 WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_p.bw
+-rw-rw---- 1 kalavatt  12M Jul 20 08:04 WT_DSp48_day4_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_m.bw
+-rw-rw---- 1 kalavatt  13M Jul 20 08:04 WT_DSp48_day4_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_p.bw
+-rw-rw---- 1 kalavatt  22M Jul 20 07:58 WT_G1_day1_ovn_N_auxF_tcF_5781_rep1_batch1.BPM_m.bw
+-rw-rw---- 1 kalavatt  22M Jul 20 07:58 WT_G1_day1_ovn_N_auxF_tcF_5781_rep1_batch1.BPM_p.bw
+-rw-rw---- 1 kalavatt  24M Jul 20 07:58 WT_G1_day1_ovn_N_auxF_tcF_5782_rep2_batch1.BPM_m.bw
+-rw-rw---- 1 kalavatt  24M Jul 20 07:58 WT_G1_day1_ovn_N_auxF_tcF_5782_rep2_batch1.BPM_p.bw
+-rw-rw---- 1 kalavatt  15M Jul 20 07:58 WT_G1_day1_ovn_SS_auxF_tcF_5781_rep1_batch1.BPM_m.bw
+-rw-rw---- 1 kalavatt  15M Jul 20 07:58 WT_G1_day1_ovn_SS_auxF_tcF_5781_rep1_batch1.BPM_p.bw
+-rw-rw---- 1 kalavatt  16M Jul 20 07:58 WT_G1_day1_ovn_SS_auxF_tcF_5782_rep2_batch1.BPM_m.bw
+-rw-rw---- 1 kalavatt  16M Jul 20 07:58 WT_G1_day1_ovn_SS_auxF_tcF_5782_rep2_batch1.BPM_p.bw
+-rw-rw---- 1 kalavatt  17M May  5 13:57 WT_G1_day1_tcn_SS_auxF_tcF_5781_rep1_batch2.KLSC_m.bw
+-rw-rw---- 1 kalavatt  18M May  5 14:06 WT_G1_day1_tcn_SS_auxF_tcF_5781_rep1_batch2.KLSC_p.bw
+-rw-rw---- 1 kalavatt  16M May  5 14:18 WT_G1_day1_tcn_SS_auxF_tcF_5782_rep2_batch2.KLSC_m.bw
+-rw-rw---- 1 kalavatt  17M May  5 14:27 WT_G1_day1_tcn_SS_auxF_tcF_5782_rep2_batch2.KLSC_p.bw
+-rw-rw---- 1 kalavatt  37M Jul 20 07:59 WT_Q_day7_ovn_N_auxF_tcF_5781_rep1_batch1.BPM_m.bw
+-rw-rw---- 1 kalavatt  37M Jul 20 07:59 WT_Q_day7_ovn_N_auxF_tcF_5781_rep1_batch1.BPM_p.bw
+-rw-rw---- 1 kalavatt  35M Jul 20 07:59 WT_Q_day7_ovn_N_auxF_tcF_5782_rep2_batch1.BPM_m.bw
+-rw-rw---- 1 kalavatt  35M Jul 20 07:59 WT_Q_day7_ovn_N_auxF_tcF_5782_rep2_batch1.BPM_p.bw
+-rw-rw---- 1 kalavatt  13M Jul 20 07:59 WT_Q_day7_ovn_SS_auxF_tcF_5781_rep1_batch1.BPM_m.bw
+-rw-rw---- 1 kalavatt  13M Jul 20 07:59 WT_Q_day7_ovn_SS_auxF_tcF_5781_rep1_batch1.BPM_p.bw
+-rw-rw---- 1 kalavatt  11M Jul 20 07:59 WT_Q_day7_ovn_SS_auxF_tcF_5782_rep2_batch1.BPM_m.bw
+-rw-rw---- 1 kalavatt  12M Jul 20 07:59 WT_Q_day7_ovn_SS_auxF_tcF_5782_rep2_batch1.BPM_p.bw
+-rw-rw---- 1 kalavatt  38M May 24 15:03 WT_Q_day8_tcn_N_auxF_tcF_5781_rep1_batch1.KLSC_m.bw
+-rw-rw---- 1 kalavatt  38M May 24 15:08 WT_Q_day8_tcn_N_auxF_tcF_5781_rep1_batch1.KLSC_p.bw
+-rw-rw---- 1 kalavatt  38M May 24 15:14 WT_Q_day8_tcn_N_auxF_tcF_5782_rep2_batch1.KLSC_m.bw
+-rw-rw---- 1 kalavatt  38M May 24 15:18 WT_Q_day8_tcn_N_auxF_tcF_5782_rep2_batch1.KLSC_p.bw
+-rw-rw---- 1 kalavatt 8.0M May  5 14:04 WT_Q_day8_tcn_SS_auxF_tcF_5781_rep1_batch1.KLSC_m.bw
+-rw-rw---- 1 kalavatt 8.3M May  5 14:20 WT_Q_day8_tcn_SS_auxF_tcF_5781_rep1_batch1.KLSC_p.bw
+-rw-rw---- 1 kalavatt 8.4M May  5 14:31 WT_Q_day8_tcn_SS_auxF_tcF_5782_rep2_batch1.KLSC_m.bw
+-rw-rw---- 1 kalavatt 8.5M May  5 14:50 WT_Q_day8_tcn_SS_auxF_tcF_5782_rep2_batch1.KLSC_p.bw
+
+./mean:
+total 1.4G
+drwxrws--- 3 kalavatt 2.3K Jul 21 09:09 ./
+drwxrws--- 4 kalavatt   50 Jul 20 07:21 ../
+drwxrws--- 2 kalavatt 2.4K Jul 20 10:46 md5/
+-rw-rw---- 1 kalavatt  76M May 24 13:02 Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_m.bw
+-rw-rw---- 1 kalavatt  75M May 24 13:05 Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_p.bw
+-rw-rw---- 1 kalavatt  30M May 24 16:02 Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_m.bw
+-rw-rw---- 1 kalavatt  31M May 24 16:05 Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_p.bw
+-rw-rw---- 1 kalavatt  60M May 24 13:04 OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125-6126_rep-mean_batch1.KLSC_m.bw
+-rw-rw---- 1 kalavatt  60M May 24 13:07 OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125-6126_rep-mean_batch1.KLSC_p.bw
+-rw-rw---- 1 kalavatt  15M May 24 16:03 OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125-6126_rep-mean_batch1.KLSC_m.bw
+-rw-rw---- 1 kalavatt  16M May 24 16:06 OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125-6126_rep-mean_batch1.KLSC_p.bw
+-rw-rw---- 1 kalavatt  40M May 24 16:10 rrp6_G1_day1_tcn_SS_auxF_tcF_7078-7079_rep-mean_batch2.KLSC_m.bw
+-rw-rw---- 1 kalavatt  41M May 24 16:28 rrp6_G1_day1_tcn_SS_auxF_tcF_7078-7079_rep-mean_batch2.KLSC_p.bw
+-rw-rw---- 1 kalavatt  69M May 24 16:12 rrp6_Q_day8_tcn_N_auxF_tcF_7078-7079_rep-mean_batch1.KLSC_m.bw
+-rw-rw---- 1 kalavatt  69M May 24 16:29 rrp6_Q_day8_tcn_N_auxF_tcF_7078-7079_rep-mean_batch1.KLSC_p.bw
+-rw-rw---- 1 kalavatt  24M May 24 16:13 rrp6_Q_day8_tcn_SS_auxF_tcF_7078-7079_rep-mean_batch1-2.KLSC_m.bw
+-rw-rw---- 1 kalavatt  24M May 24 16:30 rrp6_Q_day8_tcn_SS_auxF_tcF_7078-7079_rep-mean_batch1-2.KLSC_p.bw
+-rw-rw---- 1 kalavatt  40M May 24 13:04 WT_G1_day1_ovn_N_auxF_tcF_5781-5782_rep-mean_batch1.BPM_m.bw
+-rw-rw---- 1 kalavatt  40M May 24 13:10 WT_G1_day1_ovn_N_auxF_tcF_5781-5782_rep-mean_batch1.BPM_p.bw
+-rw-rw---- 1 kalavatt  28M May 24 13:05 WT_G1_day1_ovn_SS_auxF_tcF_5781-5782_rep-mean_batch1.BPM_m.bw
+-rw-rw---- 1 kalavatt  29M May 24 13:11 WT_G1_day1_ovn_SS_auxF_tcF_5781-5782_rep-mean_batch1.BPM_p.bw
+-rw-rw---- 1 kalavatt  30M May 24 16:19 WT_G1_day1_tcn_SS_auxF_tcF_5781-5782_rep-mean_batch2.KLSC_m.bw
+-rw-rw---- 1 kalavatt  31M May 24 16:37 WT_G1_day1_tcn_SS_auxF_tcF_5781-5782_rep-mean_batch2.KLSC_p.bw
+-rw-rw---- 1 kalavatt  64M May 24 13:07 WT_Q_day7_ovn_N_auxF_tcF_5781-5782_rep-mean_batch1.BPM_m.bw
+-rw-rw---- 1 kalavatt  64M May 24 13:13 WT_Q_day7_ovn_N_auxF_tcF_5781-5782_rep-mean_batch1.BPM_p.bw
+-rw-rw---- 1 kalavatt  24M May 24 13:08 WT_Q_day7_ovn_SS_auxF_tcF_5781-5782_rep-mean_batch1.BPM_m.bw
+-rw-rw---- 1 kalavatt  25M May 24 13:14 WT_Q_day7_ovn_SS_auxF_tcF_5781-5782_rep-mean_batch1.BPM_p.bw
+-rw-rw---- 1 kalavatt  67M May 24 16:21 WT_Q_day8_tcn_N_auxF_tcF_5781-5782_rep-mean_batch1.KLSC_m.bw
+-rw-rw---- 1 kalavatt  68M May 24 16:38 WT_Q_day8_tcn_N_auxF_tcF_5781-5782_rep-mean_batch1.KLSC_p.bw
+-rw-rw---- 1 kalavatt  17M May 24 16:22 WT_Q_day8_tcn_SS_auxF_tcF_5781-5782_rep-mean_batch1.KLSC_m.bw
+-rw-rw---- 1 kalavatt  18M May 24 16:39 WT_Q_day8_tcn_SS_auxF_tcF_5781-5782_rep-mean_batch1.KLSC_p.bw
+
+
+❯ #  After the changes, regenerate MD5 checksums for the bws --------------------
+
+
+❯ cd individual/ && rmr md5/ && .. && cd mean/ && rmr md5/ && ..
+/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bws/individual
+/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bws/mean
+
+
+❯ cd individual/ && for i in *.bw; do md5sum "${i}" > "md5/${i%.bw}.md5.txt"; done && ..
+/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bws/individual
+
+
+#MD5
+❯ cat individual/md5/*.txt
+a71050a29ad234e2b035e19ee64fe076  Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1.KLSC_m.bw
+416fb9fb8bfa995b8f2f222a6cd3bfe5  Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1.KLSC_p.bw
+8c0040ca02727ea8ef54aeae73db670a  Nab3-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1.KLSC_m.bw
+d013697fcc6b58bc8535755c68787c49  Nab3-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1.KLSC_p.bw
+24fbcf7d69b767561e65c3666e98594e  Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1.KLSC_m.bw
+a1f289e80c10496901a7c5b5debf34df  Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1.KLSC_p.bw
+39ae5b48e93fb3f60c81aa9e747b150f  Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1.KLSC_m.bw
+7886545d2eeb2ae9fe077aed900c45d2  Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1.KLSC_p.bw
+06e66d3e77b5ff3ccfe82230f7ebbfa3  OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125_rep1_batch1.KLSC_m.bw
+3bfd3cec5c0b9c2bdd5e655dbac8c7f8  OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125_rep1_batch1.KLSC_p.bw
+294756862f2ce5417e92fc5999267414  OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6126_rep2_batch1.KLSC_m.bw
+48ae58058ffd52bfa6599e8d054b5c99  OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6126_rep2_batch1.KLSC_p.bw
+c8e527236977b8546db06fb3734bed87  OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125_rep1_batch1.KLSC_m.bw
+4e4039122b19abd8b040dd5394382a16  OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125_rep1_batch1.KLSC_p.bw
+27d5abcbbabbb80ff074883e583b8873  OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6126_rep2_batch1.KLSC_m.bw
+80b8dc9b27f2eca2358f9ec2a20a6053  OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6126_rep2_batch1.KLSC_p.bw
+6cd88381bdb05c6932580922e1a88183  rrp6_DSm2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_m.bw
+58ac9a536e7739e4f94e1d3ffecf50c3  rrp6_DSm2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_p.bw
+0e56a32bc036c4f16bb0d3012d66d144  rrp6_DSm2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1.BPM_m.bw
+26e1f6b38a3bc6404eeb34feba032ab5  rrp6_DSm2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1.BPM_p.bw
+a6d0d147c60e1741b9ed1ac3898a7b7c  rrp6_DSp24_day3_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_m.bw
+fbe923f842eb230164081b12a42d48bf  rrp6_DSp24_day3_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_p.bw
+72f1d5beb58920e37d41dbcd0f2f901e  rrp6_DSp24_day3_tcn_SS_auxF_tcT_7079_rep1_batch1.BPM_m.bw
+e74818fb8252a97071062d47cb99eef9  rrp6_DSp24_day3_tcn_SS_auxF_tcT_7079_rep1_batch1.BPM_p.bw
+bd095b21af45ef229d4fdb40e97bcacb  rrp6_DSp2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_m.bw
+ae672ca9ddb05147e34015f93425cd4a  rrp6_DSp2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_p.bw
+62077015b81c38ee6f85c247ea67bacd  rrp6_DSp2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1.BPM_m.bw
+7676a7cd4ad2d8ed5a5915d8823d064e  rrp6_DSp2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1.BPM_p.bw
+30fa748fdf40deaa50fadfd5133fc07c  rrp6_DSp48_day4_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_m.bw
+3c26935e77efcf2c6333f05e48323a66  rrp6_DSp48_day4_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_p.bw
+bd288bd0ccf44635728c257e4e7b0bc9  rrp6_DSp48_day4_tcn_SS_auxF_tcT_7079_rep1_batch2.BPM_m.bw
+08e2b1f8ac7a2b295dfaf13bf22d94d8  rrp6_DSp48_day4_tcn_SS_auxF_tcT_7079_rep1_batch2.BPM_p.bw
+823013914d41636ae0fa37f8146f355f  rrp6_G1_day1_tcn_SS_auxF_tcF_7078_rep2_batch2.KLSC_m.bw
+dd5534db4aa1a6e2754370ed480e32fb  rrp6_G1_day1_tcn_SS_auxF_tcF_7078_rep2_batch2.KLSC_p.bw
+d9c40d14ec905154b5347e9f9d302ad8  rrp6_G1_day1_tcn_SS_auxF_tcF_7079_rep1_batch2.KLSC_m.bw
+e85eb540c3707d77cecf11ee4c9eed8b  rrp6_G1_day1_tcn_SS_auxF_tcF_7079_rep1_batch2.KLSC_p.bw
+c4be74a0cb9fedaf60fea079ceea3ad0  rrp6_Q_day8_tcn_N_auxF_tcF_7078_rep2_batch1.KLSC_m.bw
+ecb1b6772ae9b69d8ae14a221440b108  rrp6_Q_day8_tcn_N_auxF_tcF_7078_rep2_batch1.KLSC_p.bw
+f27be34a31cb3214b68356803098609b  rrp6_Q_day8_tcn_N_auxF_tcF_7079_rep1_batch1.KLSC_m.bw
+d20fa998e1b61d72d87c1ae73f4d09ad  rrp6_Q_day8_tcn_N_auxF_tcF_7079_rep1_batch1.KLSC_p.bw
+d8fdd0f8d7a1d427ea42601503be693c  rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch1.KLSC_m.bw
+cba3b4fc580b0175abfdc9c251d23609  rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch1.KLSC_p.bw
+7a2a727853b305f1b0431f50e7024385  rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch2.KLSC_m.bw
+f596a3c079593d5d4e73f0ec1187490c  rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch2.KLSC_p.bw
+b322dc0feca84023ad0cbdf20f2b7f27  rrp6_Q_day8_tcn_SS_auxF_tcF_7079_rep1_batch1.KLSC_m.bw
+4af8ee2e9fe60a35d2a7d27fe147d761  rrp6_Q_day8_tcn_SS_auxF_tcF_7079_rep1_batch1.KLSC_p.bw
+a23b854a9b1ae6eaa6fd9545f0b90253  WT_DSm2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_m.bw
+aeecb9d438fae889925230a62394278e  WT_DSm2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_p.bw
+9d095fc70811ec3e3eafdf0d68b3068d  WT_DSm2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_m.bw
+f5da85c301a99bd3c1f2f9bbf3cee894  WT_DSm2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_p.bw
+3cc40cbce04ae053eac79d24fca8cbca  WT_DSp24_day3_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_m.bw
+af8f570bf51a8615419bb8f204f15776  WT_DSp24_day3_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_p.bw
+d2e730dcdef497280b7ce05cfaad7a42  WT_DSp24_day3_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_m.bw
+9164efe3d4e1aaf30b1f406e4c6a94d0  WT_DSp24_day3_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_p.bw
+b73b1c248c5c7fd74213d558bb567ade  WT_DSp2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_m.bw
+8af941ee92db56aab8dc0630c6e19659  WT_DSp2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_p.bw
+a3d316cfb38625b84e733e4fde849867  WT_DSp2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_m.bw
+4b0d18923613c38bd808823954a977e4  WT_DSp2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_p.bw
+7b0696d331bd549ebcc2282ae7ecb2c1  WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_m.bw
+c02d42e7bceaa3ee48f72643deefcd01  WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_p.bw
+e258ae3ffb73e0d49388e707e5f5c9c8  WT_DSp48_day4_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_m.bw
+165b021a11259e925adac3102c64914f  WT_DSp48_day4_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_p.bw
+154d2f36714a338c7a30a265480bb7bd  WT_G1_day1_ovn_N_auxF_tcF_5781_rep1_batch1.BPM_m.bw
+dacff5b198846dc57b806a357cdd34d7  WT_G1_day1_ovn_N_auxF_tcF_5781_rep1_batch1.BPM_p.bw
+3b79b5eafa8132087b4c06f2fc3a07a9  WT_G1_day1_ovn_N_auxF_tcF_5782_rep2_batch1.BPM_m.bw
+5c57985d91120c55859c55be4763c9ab  WT_G1_day1_ovn_N_auxF_tcF_5782_rep2_batch1.BPM_p.bw
+fff9e994511a2d5db2430107ceba9ed2  WT_G1_day1_ovn_SS_auxF_tcF_5781_rep1_batch1.BPM_m.bw
+34d9c5433c0327d33dde544d60091cc4  WT_G1_day1_ovn_SS_auxF_tcF_5781_rep1_batch1.BPM_p.bw
+2c9a84eae42bfc25b88b9782dc643b82  WT_G1_day1_ovn_SS_auxF_tcF_5782_rep2_batch1.BPM_m.bw
+37bc03196242e0fd88e16bc471d2e64a  WT_G1_day1_ovn_SS_auxF_tcF_5782_rep2_batch1.BPM_p.bw
+b22f4be412adbec28a85625a9fd42c64  WT_G1_day1_tcn_SS_auxF_tcF_5781_rep1_batch2.KLSC_m.bw
+815429b06c6807f73d45dd9a0dee30d5  WT_G1_day1_tcn_SS_auxF_tcF_5781_rep1_batch2.KLSC_p.bw
+bdbeb14e160f5995e8c68b3a93adab46  WT_G1_day1_tcn_SS_auxF_tcF_5782_rep2_batch2.KLSC_m.bw
+0b6482b3ba15690f6ae84f2fa9a70f1e  WT_G1_day1_tcn_SS_auxF_tcF_5782_rep2_batch2.KLSC_p.bw
+06dc4fa9b4f998044db1393613acc4ce  WT_Q_day7_ovn_N_auxF_tcF_5781_rep1_batch1.BPM_m.bw
+921934797abc89bca60a72591c88968d  WT_Q_day7_ovn_N_auxF_tcF_5781_rep1_batch1.BPM_p.bw
+7a5f10460260b8094d7949687cf767ba  WT_Q_day7_ovn_N_auxF_tcF_5782_rep2_batch1.BPM_m.bw
+90ca7db51d3faa843daf4c5cbe138b7b  WT_Q_day7_ovn_N_auxF_tcF_5782_rep2_batch1.BPM_p.bw
+5954c14c5c793d902d9da293488c3d02  WT_Q_day7_ovn_SS_auxF_tcF_5781_rep1_batch1.BPM_m.bw
+c01d1791ff8b8f41ead8c7247e6e03b4  WT_Q_day7_ovn_SS_auxF_tcF_5781_rep1_batch1.BPM_p.bw
+eb70a157bf95f31a823956b79496ab85  WT_Q_day7_ovn_SS_auxF_tcF_5782_rep2_batch1.BPM_m.bw
+295e9dc83d43b96898b450ee69e6c84a  WT_Q_day7_ovn_SS_auxF_tcF_5782_rep2_batch1.BPM_p.bw
+f2139889149a37f9201631cd6b9403d2  WT_Q_day8_tcn_N_auxF_tcF_5781_rep1_batch1.KLSC_m.bw
+48d373e3b519461e7d341725edf9edce  WT_Q_day8_tcn_N_auxF_tcF_5781_rep1_batch1.KLSC_p.bw
+dfc0c90da7b8a7caa2ab5b7c69bf4b34  WT_Q_day8_tcn_N_auxF_tcF_5782_rep2_batch1.KLSC_m.bw
+9ed704ff9a2e3d2ab8b8b6776d9d4533  WT_Q_day8_tcn_N_auxF_tcF_5782_rep2_batch1.KLSC_p.bw
+5a634ff35cdd55768001ac1d2bcc3fac  WT_Q_day8_tcn_SS_auxF_tcF_5781_rep1_batch1.KLSC_m.bw
+c07f8acfe7d32079910b687af59e6501  WT_Q_day8_tcn_SS_auxF_tcF_5781_rep1_batch1.KLSC_p.bw
+ed56c83c3838357b376226539199286a  WT_Q_day8_tcn_SS_auxF_tcF_5782_rep2_batch1.KLSC_m.bw
+5f53ca9ebab67842668b5ff86808fa3d  WT_Q_day8_tcn_SS_auxF_tcF_5782_rep2_batch1.KLSC_p.bw
+
+
+#MD5
+❯ cat mean/md5/*.txt
+f97c5652534a5ba770d4ee0669f5cc98  Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_m.bw
+62942248e7cb347faca88a55b389be0e  Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_p.bw
+75d3b4bd99ce785cfb63d1afd3bedf72  Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_m.bw
+bc4682a980bdda5e2c2e43c76a43486b  Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_p.bw
+a30ecded93d3d5b6c52829875a87bb17  OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125-6126_rep-mean_batch1.KLSC_m.bw
+bf53ff770c7a3df4f4c3ad3d34380ec3  OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125-6126_rep-mean_batch1.KLSC_p.bw
+0728258928b29efcef8b23e1ed518ba0  OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125-6126_rep-mean_batch1.KLSC_m.bw
+e1edffc2dfd6b24f05c99f463376b293  OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125-6126_rep-mean_batch1.KLSC_p.bw
+87543f664aadae9f0898290419016153  rrp6_G1_day1_tcn_SS_auxF_tcF_7078-7079_rep-mean_batch2.KLSC_m.bw
+22d930759ad6cf16048a72adc8fb5dd1  rrp6_G1_day1_tcn_SS_auxF_tcF_7078-7079_rep-mean_batch2.KLSC_p.bw
+e14e57b658fc4addad1a6105a6fb0750  rrp6_Q_day8_tcn_N_auxF_tcF_7078-7079_rep-mean_batch1.KLSC_m.bw
+fa6b515071369d128ae263a9dcd7f07a  rrp6_Q_day8_tcn_N_auxF_tcF_7078-7079_rep-mean_batch1.KLSC_p.bw
+4b0f5fbb12d93e04c204bc40a955fd06  rrp6_Q_day8_tcn_SS_auxF_tcF_7078-7079_rep-mean_batch1-2.KLSC_m.bw
+d6933acc7e94f1acb223edd4cde72add  rrp6_Q_day8_tcn_SS_auxF_tcF_7078-7079_rep-mean_batch1-2.KLSC_p.bw
+d2b01f664103b076163c888676ba9afa  WT_G1_day1_ovn_N_auxF_tcF_5781-5782_rep-mean_batch1.BPM_m.bw
+208ac27bd98a9f739370630f4a6ed588  WT_G1_day1_ovn_N_auxF_tcF_5781-5782_rep-mean_batch1.BPM_p.bw
+ecc60f4fc4317b223a156d7da0daf111  WT_G1_day1_ovn_SS_auxF_tcF_5781-5782_rep-mean_batch1.BPM_m.bw
+242ca86a36be6bb6d763d93e8f94efc1  WT_G1_day1_ovn_SS_auxF_tcF_5781-5782_rep-mean_batch1.BPM_p.bw
+8cd753b7ae40f7434ff381a4480de7a9  WT_G1_day1_tcn_SS_auxF_tcF_5781-5782_rep-mean_batch2.KLSC_m.bw
+95445c8df96460044c9c0039d526f40e  WT_G1_day1_tcn_SS_auxF_tcF_5781-5782_rep-mean_batch2.KLSC_p.bw
+f2cd4ea666de6c8847b02737c8d92e29  WT_Q_day7_ovn_N_auxF_tcF_5781-5782_rep-mean_batch1.BPM_m.bw
+f77e2144fc32818af5b557b82bae6d2e  WT_Q_day7_ovn_N_auxF_tcF_5781-5782_rep-mean_batch1.BPM_p.bw
+8f00bf9e3d9b5f8e2b3db520cb4a0cff  WT_Q_day7_ovn_SS_auxF_tcF_5781-5782_rep-mean_batch1.BPM_m.bw
+51cd92a2352fe821385ffba6b89e5994  WT_Q_day7_ovn_SS_auxF_tcF_5781-5782_rep-mean_batch1.BPM_p.bw
+2566cf2597c0470ac9ac9ac268083af8  WT_Q_day8_tcn_N_auxF_tcF_5781-5782_rep-mean_batch1.KLSC_m.bw
+2e0720de0bbc21d5b81688fb860d9dd6  WT_Q_day8_tcn_N_auxF_tcF_5781-5782_rep-mean_batch1.KLSC_p.bw
+1138b55f42cbadea25f663346900d6e7  WT_Q_day8_tcn_SS_auxF_tcF_5781-5782_rep-mean_batch1.KLSC_m.bw
+a7cf965f741772f30ba44e325f80b79d  WT_Q_day8_tcn_SS_auxF_tcF_5781-5782_rep-mean_batch1.KLSC_p.bw
+```
+</details>
+<br />
 <br />
 
 <a id="visualizeassess-the-geo-directory-structure"></a>
 ## Visualize/assess the `GEO/` directory structure
+<a id="code-12"></a>
+### Code
 <details>
 <summary><i>Code</i></summary>
 
@@ -7310,6 +8273,8 @@ echo $(( 46 + 4 + 90 + 28 + 138 + 8 + 7 ))
 </details>
 <br />
 
+<a id="printed-12"></a>
+### Printed
 <details>
 <summary><i>Printed</i></summary>
 
@@ -7321,647 +8286,647 @@ echo $(( 46 + 4 + 90 + 28 + 138 + 8 + 7 ))
 ❯ tree .
 .
 ├── bams
-│     ├── standard-analyses
-│     │     ├── md5
-│     │     │     ├── Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1.UTPD.md5.txt
-│     │     │     ├── Nab3-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1.UTPD.md5.txt
-│     │     │     ├── Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1.UTPD.md5.txt
-│     │     │     ├── Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1.UTPD.md5.txt
-│     │     │     ├── OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125_rep1_batch1.UTPD.md5.txt
-│     │     │     ├── OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6126_rep2_batch1.UTPD.md5.txt
-│     │     │     ├── OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125_rep1_batch1.UTPD.md5.txt
-│     │     │     ├── OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6126_rep2_batch1.UTPD.md5.txt
-│     │     │     ├── rrp6_DSm2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1.UTPD.md5.txt
-│     │     │     ├── rrp6_DSm2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1.UTPD.md5.txt
-│     │     │     ├── rrp6_DSp24_day3_tcn_SS_auxF_tcT_7078_rep2_batch1.UTPD.md5.txt
-│     │     │     ├── rrp6_DSp24_day3_tcn_SS_auxF_tcT_7079_rep1_batch1.UTPD.md5.txt
-│     │     │     ├── rrp6_DSp2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1.UTPD.md5.txt
-│     │     │     ├── rrp6_DSp2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1.UTPD.md5.txt
-│     │     │     ├── rrp6_DSp48_day4_tcn_SS_auxF_tcT_7078_rep2_batch1.UTPD.md5.txt
-│     │     │     ├── rrp6_DSp48_day4_tcn_SS_auxF_tcT_7079_rep1_batch2.UTPD.md5.txt
-│     │     │     ├── rrp6_G1_day1_tcn_SS_auxF_tcF_7078_rep2_batch2.UTPD.md5.txt
-│     │     │     ├── rrp6_G1_day1_tcn_SS_auxF_tcF_7079_rep1_batch2.UTPD.md5.txt
-│     │     │     ├── rrp6_Q_day8_tcn_N_auxF_tcF_7078_rep2_batch1.UTPD.md5.txt
-│     │     │     ├── rrp6_Q_day8_tcn_N_auxF_tcF_7079_rep1_batch1.UTPD.md5.txt
-│     │     │     ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch1.UTPD.md5.txt
-│     │     │     ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch2.UTPD.md5.txt
-│     │     │     ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7079_rep1_batch1.UTPD.md5.txt
-│     │     │     ├── WT_DSm2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1.UTPD.md5.txt
-│     │     │     ├── WT_DSm2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1.UTPD.md5.txt
-│     │     │     ├── WT_DSp24_day3_tcn_SS_auxF_tcT_5781_rep1_batch1.UTPD.md5.txt
-│     │     │     ├── WT_DSp24_day3_tcn_SS_auxF_tcT_5782_rep2_batch1.UTPD.md5.txt
-│     │     │     ├── WT_DSp2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1.UTPD.md5.txt
-│     │     │     ├── WT_DSp2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1.UTPD.md5.txt
-│     │     │     ├── WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch1.UTPD.md5.txt
-│     │     │     ├── WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch2.UTPD.md5.txt
-│     │     │     ├── WT_DSp48_day4_tcn_SS_auxF_tcT_5782_rep2_batch1.UTPD.md5.txt
-│     │     │     ├── WT_G1_day1_ovn_N_auxF_tcF_5781_rep1_batch1.UTPD.md5.txt
-│     │     │     ├── WT_G1_day1_ovn_N_auxF_tcF_5782_rep2_batch1.UTPD.md5.txt
-│     │     │     ├── WT_G1_day1_ovn_SS_auxF_tcF_5781_rep1_batch1.UTPD.md5.txt
-│     │     │     ├── WT_G1_day1_ovn_SS_auxF_tcF_5782_rep2_batch1.UTPD.md5.txt
-│     │     │     ├── WT_G1_day1_tcn_SS_auxF_tcF_5781_rep1_batch2.UTPD.md5.txt
-│     │     │     ├── WT_G1_day1_tcn_SS_auxF_tcF_5782_rep2_batch2.UTPD.md5.txt
-│     │     │     ├── WT_Q_day7_ovn_N_auxF_tcF_5781_rep1_batch1.UTPD.md5.txt
-│     │     │     ├── WT_Q_day7_ovn_N_auxF_tcF_5782_rep2_batch1.UTPD.md5.txt
-│     │     │     ├── WT_Q_day7_ovn_SS_auxF_tcF_5781_rep1_batch1.UTPD.md5.txt
-│     │     │     ├── WT_Q_day7_ovn_SS_auxF_tcF_5782_rep2_batch1.UTPD.md5.txt
-│     │     │     ├── WT_Q_day8_tcn_N_auxF_tcF_5781_rep1_batch1.UTPD.md5.txt
-│     │     │     ├── WT_Q_day8_tcn_N_auxF_tcF_5782_rep2_batch1.UTPD.md5.txt
-│     │     │     ├── WT_Q_day8_tcn_SS_auxF_tcF_5781_rep1_batch1.UTPD.md5.txt
-│     │     │     └── WT_Q_day8_tcn_SS_auxF_tcF_5782_rep2_batch1.UTPD.md5.txt
-│     │     ├── Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1.UTPD.bam
-│     │     ├── Nab3-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1.UTPD.bam
-│     │     ├── Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1.UTPD.bam
-│     │     ├── Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1.UTPD.bam
-│     │     ├── OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125_rep1_batch1.UTPD.bam
-│     │     ├── OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6126_rep2_batch1.UTPD.bam
-│     │     ├── OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125_rep1_batch1.UTPD.bam
-│     │     ├── OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6126_rep2_batch1.UTPD.bam
-│     │     ├── rrp6_DSm2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1.UTPD.bam
-│     │     ├── rrp6_DSm2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1.UTPD.bam
-│     │     ├── rrp6_DSp24_day3_tcn_SS_auxF_tcT_7078_rep2_batch1.UTPD.bam
-│     │     ├── rrp6_DSp24_day3_tcn_SS_auxF_tcT_7079_rep1_batch1.UTPD.bam
-│     │     ├── rrp6_DSp2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1.UTPD.bam
-│     │     ├── rrp6_DSp2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1.UTPD.bam
-│     │     ├── rrp6_DSp48_day4_tcn_SS_auxF_tcT_7078_rep2_batch1.UTPD.bam
-│     │     ├── rrp6_DSp48_day4_tcn_SS_auxF_tcT_7079_rep1_batch2.UTPD.bam
-│     │     ├── rrp6_G1_day1_tcn_SS_auxF_tcF_7078_rep2_batch2.UTPD.bam
-│     │     ├── rrp6_G1_day1_tcn_SS_auxF_tcF_7079_rep1_batch2.UTPD.bam
-│     │     ├── rrp6_Q_day8_tcn_N_auxF_tcF_7078_rep2_batch1.UTPD.bam
-│     │     ├── rrp6_Q_day8_tcn_N_auxF_tcF_7079_rep1_batch1.UTPD.bam
-│     │     ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch1.UTPD.bam
-│     │     ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch2.UTPD.bam
-│     │     ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7079_rep1_batch1.UTPD.bam
-│     │     ├── WT_DSm2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1.UTPD.bam
-│     │     ├── WT_DSm2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1.UTPD.bam
-│     │     ├── WT_DSp24_day3_tcn_SS_auxF_tcT_5781_rep1_batch1.UTPD.bam
-│     │     ├── WT_DSp24_day3_tcn_SS_auxF_tcT_5782_rep2_batch1.UTPD.bam
-│     │     ├── WT_DSp2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1.UTPD.bam
-│     │     ├── WT_DSp2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1.UTPD.bam
-│     │     ├── WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch1.UTPD.bam
-│     │     ├── WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch2.UTPD.bam
-│     │     ├── WT_DSp48_day4_tcn_SS_auxF_tcT_5782_rep2_batch1.UTPD.bam
-│     │     ├── WT_G1_day1_ovn_N_auxF_tcF_5781_rep1_batch1.UTPD.bam
-│     │     ├── WT_G1_day1_ovn_N_auxF_tcF_5782_rep2_batch1.UTPD.bam
-│     │     ├── WT_G1_day1_ovn_SS_auxF_tcF_5781_rep1_batch1.UTPD.bam
-│     │     ├── WT_G1_day1_ovn_SS_auxF_tcF_5782_rep2_batch1.UTPD.bam
-│     │     ├── WT_G1_day1_tcn_SS_auxF_tcF_5781_rep1_batch2.UTPD.bam
-│     │     ├── WT_G1_day1_tcn_SS_auxF_tcF_5782_rep2_batch2.UTPD.bam
-│     │     ├── WT_Q_day7_ovn_N_auxF_tcF_5781_rep1_batch1.UTPD.bam
-│     │     ├── WT_Q_day7_ovn_N_auxF_tcF_5782_rep2_batch1.UTPD.bam
-│     │     ├── WT_Q_day7_ovn_SS_auxF_tcF_5781_rep1_batch1.UTPD.bam
-│     │     ├── WT_Q_day7_ovn_SS_auxF_tcF_5782_rep2_batch1.UTPD.bam
-│     │     ├── WT_Q_day8_tcn_N_auxF_tcF_5781_rep1_batch1.UTPD.bam
-│     │     ├── WT_Q_day8_tcn_N_auxF_tcF_5782_rep2_batch1.UTPD.bam
-│     │     ├── WT_Q_day8_tcn_SS_auxF_tcF_5781_rep1_batch1.UTPD.bam
-│     │     └── WT_Q_day8_tcn_SS_auxF_tcF_5782_rep2_batch1.UTPD.bam
-│     └── transcriptome-assembly
-│         ├── md5
-│         │     ├── WT_G1_day1_ovn_N_auxF_tcF_5781-2_rep-merge_batch1.UTKPSSc.md5.txt
-│         │     ├── WT_G1_day1_ovn_SS_auxF_tcF_5781-2_rep-merge_batch1.UTKPSSc.md5.txt
-│         │     ├── WT_Q_day7_ovn_N_auxF_tcF_5781-2_rep-merge_batch1.UTKPSSc.md5.txt
-│         │     └── WT_Q_day7_ovn_SS_auxF_tcF_5781-2_rep-merge_batch1.UTKPSSc.md5.txt
-│         ├── WT_G1_day1_ovn_N_auxF_tcF_5781-2_rep-merge_batch1.UTKPSSc.bam
-│         ├── WT_G1_day1_ovn_SS_auxF_tcF_5781-2_rep-merge_batch1.UTKPSSc.bam
-│         ├── WT_Q_day7_ovn_N_auxF_tcF_5781-2_rep-merge_batch1.UTKPSSc.bam
-│         └── WT_Q_day7_ovn_SS_auxF_tcF_5781-2_rep-merge_batch1.UTKPSSc.bam
+│    ├── standard-analyses
+│    │    ├── md5
+│    │    │    ├── Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1.UTPD.md5.txt
+│    │    │    ├── Nab3-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1.UTPD.md5.txt
+│    │    │    ├── Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1.UTPD.md5.txt
+│    │    │    ├── Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1.UTPD.md5.txt
+│    │    │    ├── OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125_rep1_batch1.UTPD.md5.txt
+│    │    │    ├── OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6126_rep2_batch1.UTPD.md5.txt
+│    │    │    ├── OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125_rep1_batch1.UTPD.md5.txt
+│    │    │    ├── OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6126_rep2_batch1.UTPD.md5.txt
+│    │    │    ├── rrp6_DSm2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1.UTPD.md5.txt
+│    │    │    ├── rrp6_DSm2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1.UTPD.md5.txt
+│    │    │    ├── rrp6_DSp24_day3_tcn_SS_auxF_tcT_7078_rep2_batch1.UTPD.md5.txt
+│    │    │    ├── rrp6_DSp24_day3_tcn_SS_auxF_tcT_7079_rep1_batch1.UTPD.md5.txt
+│    │    │    ├── rrp6_DSp2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1.UTPD.md5.txt
+│    │    │    ├── rrp6_DSp2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1.UTPD.md5.txt
+│    │    │    ├── rrp6_DSp48_day4_tcn_SS_auxF_tcT_7078_rep2_batch1.UTPD.md5.txt
+│    │    │    ├── rrp6_DSp48_day4_tcn_SS_auxF_tcT_7079_rep1_batch2.UTPD.md5.txt
+│    │    │    ├── rrp6_G1_day1_tcn_SS_auxF_tcF_7078_rep2_batch2.UTPD.md5.txt
+│    │    │    ├── rrp6_G1_day1_tcn_SS_auxF_tcF_7079_rep1_batch2.UTPD.md5.txt
+│    │    │    ├── rrp6_Q_day8_tcn_N_auxF_tcF_7078_rep2_batch1.UTPD.md5.txt
+│    │    │    ├── rrp6_Q_day8_tcn_N_auxF_tcF_7079_rep1_batch1.UTPD.md5.txt
+│    │    │    ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch1.UTPD.md5.txt
+│    │    │    ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch2.UTPD.md5.txt
+│    │    │    ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7079_rep1_batch1.UTPD.md5.txt
+│    │    │    ├── WT_DSm2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1.UTPD.md5.txt
+│    │    │    ├── WT_DSm2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1.UTPD.md5.txt
+│    │    │    ├── WT_DSp24_day3_tcn_SS_auxF_tcT_5781_rep1_batch1.UTPD.md5.txt
+│    │    │    ├── WT_DSp24_day3_tcn_SS_auxF_tcT_5782_rep2_batch1.UTPD.md5.txt
+│    │    │    ├── WT_DSp2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1.UTPD.md5.txt
+│    │    │    ├── WT_DSp2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1.UTPD.md5.txt
+│    │    │    ├── WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch1.UTPD.md5.txt
+│    │    │    ├── WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch2.UTPD.md5.txt
+│    │    │    ├── WT_DSp48_day4_tcn_SS_auxF_tcT_5782_rep2_batch1.UTPD.md5.txt
+│    │    │    ├── WT_G1_day1_ovn_N_auxF_tcF_5781_rep1_batch1.UTPD.md5.txt
+│    │    │    ├── WT_G1_day1_ovn_N_auxF_tcF_5782_rep2_batch1.UTPD.md5.txt
+│    │    │    ├── WT_G1_day1_ovn_SS_auxF_tcF_5781_rep1_batch1.UTPD.md5.txt
+│    │    │    ├── WT_G1_day1_ovn_SS_auxF_tcF_5782_rep2_batch1.UTPD.md5.txt
+│    │    │    ├── WT_G1_day1_tcn_SS_auxF_tcF_5781_rep1_batch2.UTPD.md5.txt
+│    │    │    ├── WT_G1_day1_tcn_SS_auxF_tcF_5782_rep2_batch2.UTPD.md5.txt
+│    │    │    ├── WT_Q_day7_ovn_N_auxF_tcF_5781_rep1_batch1.UTPD.md5.txt
+│    │    │    ├── WT_Q_day7_ovn_N_auxF_tcF_5782_rep2_batch1.UTPD.md5.txt
+│    │    │    ├── WT_Q_day7_ovn_SS_auxF_tcF_5781_rep1_batch1.UTPD.md5.txt
+│    │    │    ├── WT_Q_day7_ovn_SS_auxF_tcF_5782_rep2_batch1.UTPD.md5.txt
+│    │    │    ├── WT_Q_day8_tcn_N_auxF_tcF_5781_rep1_batch1.UTPD.md5.txt
+│    │    │    ├── WT_Q_day8_tcn_N_auxF_tcF_5782_rep2_batch1.UTPD.md5.txt
+│    │    │    ├── WT_Q_day8_tcn_SS_auxF_tcF_5781_rep1_batch1.UTPD.md5.txt
+│    │    │    └── WT_Q_day8_tcn_SS_auxF_tcF_5782_rep2_batch1.UTPD.md5.txt
+│    │    ├── Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1.UTPD.bam
+│    │    ├── Nab3-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1.UTPD.bam
+│    │    ├── Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1.UTPD.bam
+│    │    ├── Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1.UTPD.bam
+│    │    ├── OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125_rep1_batch1.UTPD.bam
+│    │    ├── OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6126_rep2_batch1.UTPD.bam
+│    │    ├── OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125_rep1_batch1.UTPD.bam
+│    │    ├── OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6126_rep2_batch1.UTPD.bam
+│    │    ├── rrp6_DSm2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1.UTPD.bam
+│    │    ├── rrp6_DSm2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1.UTPD.bam
+│    │    ├── rrp6_DSp24_day3_tcn_SS_auxF_tcT_7078_rep2_batch1.UTPD.bam
+│    │    ├── rrp6_DSp24_day3_tcn_SS_auxF_tcT_7079_rep1_batch1.UTPD.bam
+│    │    ├── rrp6_DSp2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1.UTPD.bam
+│    │    ├── rrp6_DSp2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1.UTPD.bam
+│    │    ├── rrp6_DSp48_day4_tcn_SS_auxF_tcT_7078_rep2_batch1.UTPD.bam
+│    │    ├── rrp6_DSp48_day4_tcn_SS_auxF_tcT_7079_rep1_batch2.UTPD.bam
+│    │    ├── rrp6_G1_day1_tcn_SS_auxF_tcF_7078_rep2_batch2.UTPD.bam
+│    │    ├── rrp6_G1_day1_tcn_SS_auxF_tcF_7079_rep1_batch2.UTPD.bam
+│    │    ├── rrp6_Q_day8_tcn_N_auxF_tcF_7078_rep2_batch1.UTPD.bam
+│    │    ├── rrp6_Q_day8_tcn_N_auxF_tcF_7079_rep1_batch1.UTPD.bam
+│    │    ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch1.UTPD.bam
+│    │    ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch2.UTPD.bam
+│    │    ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7079_rep1_batch1.UTPD.bam
+│    │    ├── WT_DSm2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1.UTPD.bam
+│    │    ├── WT_DSm2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1.UTPD.bam
+│    │    ├── WT_DSp24_day3_tcn_SS_auxF_tcT_5781_rep1_batch1.UTPD.bam
+│    │    ├── WT_DSp24_day3_tcn_SS_auxF_tcT_5782_rep2_batch1.UTPD.bam
+│    │    ├── WT_DSp2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1.UTPD.bam
+│    │    ├── WT_DSp2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1.UTPD.bam
+│    │    ├── WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch1.UTPD.bam
+│    │    ├── WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch2.UTPD.bam
+│    │    ├── WT_DSp48_day4_tcn_SS_auxF_tcT_5782_rep2_batch1.UTPD.bam
+│    │    ├── WT_G1_day1_ovn_N_auxF_tcF_5781_rep1_batch1.UTPD.bam
+│    │    ├── WT_G1_day1_ovn_N_auxF_tcF_5782_rep2_batch1.UTPD.bam
+│    │    ├── WT_G1_day1_ovn_SS_auxF_tcF_5781_rep1_batch1.UTPD.bam
+│    │    ├── WT_G1_day1_ovn_SS_auxF_tcF_5782_rep2_batch1.UTPD.bam
+│    │    ├── WT_G1_day1_tcn_SS_auxF_tcF_5781_rep1_batch2.UTPD.bam
+│    │    ├── WT_G1_day1_tcn_SS_auxF_tcF_5782_rep2_batch2.UTPD.bam
+│    │    ├── WT_Q_day7_ovn_N_auxF_tcF_5781_rep1_batch1.UTPD.bam
+│    │    ├── WT_Q_day7_ovn_N_auxF_tcF_5782_rep2_batch1.UTPD.bam
+│    │    ├── WT_Q_day7_ovn_SS_auxF_tcF_5781_rep1_batch1.UTPD.bam
+│    │    ├── WT_Q_day7_ovn_SS_auxF_tcF_5782_rep2_batch1.UTPD.bam
+│    │    ├── WT_Q_day8_tcn_N_auxF_tcF_5781_rep1_batch1.UTPD.bam
+│    │    ├── WT_Q_day8_tcn_N_auxF_tcF_5782_rep2_batch1.UTPD.bam
+│    │    ├── WT_Q_day8_tcn_SS_auxF_tcF_5781_rep1_batch1.UTPD.bam
+│    │    └── WT_Q_day8_tcn_SS_auxF_tcF_5782_rep2_batch1.UTPD.bam
+│    └── transcriptome-assembly
+│        ├── md5
+│        │    ├── WT_G1_day1_ovn_N_auxF_tcF_5781-2_rep-merge_batch1.UTKPSSc.md5.txt
+│        │    ├── WT_G1_day1_ovn_SS_auxF_tcF_5781-2_rep-merge_batch1.UTKPSSc.md5.txt
+│        │    ├── WT_Q_day7_ovn_N_auxF_tcF_5781-2_rep-merge_batch1.UTKPSSc.md5.txt
+│        │    └── WT_Q_day7_ovn_SS_auxF_tcF_5781-2_rep-merge_batch1.UTKPSSc.md5.txt
+│        ├── WT_G1_day1_ovn_N_auxF_tcF_5781-2_rep-merge_batch1.UTKPSSc.bam
+│        ├── WT_G1_day1_ovn_SS_auxF_tcF_5781-2_rep-merge_batch1.UTKPSSc.bam
+│        ├── WT_Q_day7_ovn_N_auxF_tcF_5781-2_rep-merge_batch1.UTKPSSc.bam
+│        └── WT_Q_day7_ovn_SS_auxF_tcF_5781-2_rep-merge_batch1.UTKPSSc.bam
 ├── bws
-│     ├── individual
-│     │     ├── md5
-│     │     │     ├── Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1.KLSC_m.md5.txt
-│     │     │     ├── Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1.KLSC_p.md5.txt
-│     │     │     ├── Nab3-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1.KLSC_m.md5.txt
-│     │     │     ├── Nab3-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1.KLSC_p.md5.txt
-│     │     │     ├── Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1.KLSC_m.md5.txt
-│     │     │     ├── Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1.KLSC_p.md5.txt
-│     │     │     ├── Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1.KLSC_m.md5.txt
-│     │     │     ├── Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1.KLSC_p.md5.txt
-│     │     │     ├── OsTIR-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1.KLSC_m.md5.txt
-│     │     │     ├── OsTIR-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1.KLSC_p.md5.txt
-│     │     │     ├── OsTIR-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1.KLSC_m.md5.txt
-│     │     │     ├── OsTIR-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1.KLSC_p.md5.txt
-│     │     │     ├── OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1.KLSC_m.md5.txt
-│     │     │     ├── OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1.KLSC_p.md5.txt
-│     │     │     ├── OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1.KLSC_m.md5.txt
-│     │     │     ├── OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1.KLSC_p.md5.txt
-│     │     │     ├── rrp6_DSm2_day2_tcn_SS_auxF_tcF_7078_rep2_batch1.BPM_m.md5.txt
-│     │     │     ├── rrp6_DSm2_day2_tcn_SS_auxF_tcF_7078_rep2_batch1.BPM_p.md5.txt
-│     │     │     ├── rrp6_DSm2_day2_tcn_SS_auxF_tcF_7079_rep1_batch1.BPM_m.md5.txt
-│     │     │     ├── rrp6_DSm2_day2_tcn_SS_auxF_tcF_7079_rep1_batch1.BPM_p.md5.txt
-│     │     │     ├── rrp6_DSp24_day3_tcn_SS_auxF_tcF_7078_rep2_batch1.BPM_m.md5.txt
-│     │     │     ├── rrp6_DSp24_day3_tcn_SS_auxF_tcF_7078_rep2_batch1.BPM_p.md5.txt
-│     │     │     ├── rrp6_DSp24_day3_tcn_SS_auxF_tcF_7079_rep1_batch1.BPM_m.md5.txt
-│     │     │     ├── rrp6_DSp24_day3_tcn_SS_auxF_tcF_7079_rep1_batch1.BPM_p.md5.txt
-│     │     │     ├── rrp6_DSp2_day2_tcn_SS_auxF_tcF_7078_rep2_batch1.BPM_m.md5.txt
-│     │     │     ├── rrp6_DSp2_day2_tcn_SS_auxF_tcF_7078_rep2_batch1.BPM_p.md5.txt
-│     │     │     ├── rrp6_DSp2_day2_tcn_SS_auxF_tcF_7079_rep1_batch1.BPM_m.md5.txt
-│     │     │     ├── rrp6_DSp2_day2_tcn_SS_auxF_tcF_7079_rep1_batch1.BPM_p.md5.txt
-│     │     │     ├── rrp6_DSp48_day4_tcn_SS_auxF_tcF_7078_rep2_batch1.BPM_m.md5.txt
-│     │     │     ├── rrp6_DSp48_day4_tcn_SS_auxF_tcF_7078_rep2_batch1.BPM_p.md5.txt
-│     │     │     ├── rrp6_DSp48_day4_tcn_SS_auxF_tcF_7079_rep1_batch1.BPM_m.md5.txt
-│     │     │     ├── rrp6_DSp48_day4_tcn_SS_auxF_tcF_7079_rep1_batch1.BPM_p.md5.txt
-│     │     │     ├── rrp6_G1_day1_tcn_SS_auxF_tcF_7078_rep2_batch2.KLSC_m.md5.txt
-│     │     │     ├── rrp6_G1_day1_tcn_SS_auxF_tcF_7078_rep2_batch2.KLSC_p.md5.txt
-│     │     │     ├── rrp6_G1_day1_tcn_SS_auxF_tcF_7079_rep1_batch2.KLSC_m.md5.txt
-│     │     │     ├── rrp6_G1_day1_tcn_SS_auxF_tcF_7079_rep1_batch2.KLSC_p.md5.txt
-│     │     │     ├── rrp6_Q_day8_tcn_N_auxF_tcF_7078_rep2_batch1.KLSC_m.md5.txt
-│     │     │     ├── rrp6_Q_day8_tcn_N_auxF_tcF_7078_rep2_batch1.KLSC_p.md5.txt
-│     │     │     ├── rrp6_Q_day8_tcn_N_auxF_tcF_7079_rep1_batch1.KLSC_m.md5.txt
-│     │     │     ├── rrp6_Q_day8_tcn_N_auxF_tcF_7079_rep1_batch1.KLSC_p.md5.txt
-│     │     │     ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch1.KLSC_m.md5.txt
-│     │     │     ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch1.KLSC_p.md5.txt
-│     │     │     ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch2.KLSC_m.md5.txt
-│     │     │     ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch2.KLSC_p.md5.txt
-│     │     │     ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7079_rep1_batch1.KLSC_m.md5.txt
-│     │     │     ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7079_rep1_batch1.KLSC_p.md5.txt
-│     │     │     ├── WT_DSm2_day2_tcn_SS_auxF_tcF_5781_rep1_batch1.BPM_m.md5.txt
-│     │     │     ├── WT_DSm2_day2_tcn_SS_auxF_tcF_5781_rep1_batch1.BPM_p.md5.txt
-│     │     │     ├── WT_DSm2_day2_tcn_SS_auxF_tcF_5782_rep2_batch1.BPM_m.md5.txt
-│     │     │     ├── WT_DSm2_day2_tcn_SS_auxF_tcF_5782_rep2_batch1.BPM_p.md5.txt
-│     │     │     ├── WT_DSp24_day3_tcn_SS_auxF_tcF_5781_rep1_batch1.BPM_m.md5.txt
-│     │     │     ├── WT_DSp24_day3_tcn_SS_auxF_tcF_5781_rep1_batch1.BPM_p.md5.txt
-│     │     │     ├── WT_DSp24_day3_tcn_SS_auxF_tcF_5782_rep2_batch1.BPM_m.md5.txt
-│     │     │     ├── WT_DSp24_day3_tcn_SS_auxF_tcF_5782_rep2_batch1.BPM_p.md5.txt
-│     │     │     ├── WT_DSp2_day2_tcn_SS_auxF_tcF_5781_rep1_batch1.BPM_m.md5.txt
-│     │     │     ├── WT_DSp2_day2_tcn_SS_auxF_tcF_5781_rep1_batch1.BPM_p.md5.txt
-│     │     │     ├── WT_DSp2_day2_tcn_SS_auxF_tcF_5782_rep2_batch1.BPM_m.md5.txt
-│     │     │     ├── WT_DSp2_day2_tcn_SS_auxF_tcF_5782_rep2_batch1.BPM_p.md5.txt
-│     │     │     ├── WT_DSp48_day4_tcn_SS_auxF_tcF_5781_rep1_batch1.BPM_m.md5.txt
-│     │     │     ├── WT_DSp48_day4_tcn_SS_auxF_tcF_5781_rep1_batch1.BPM_p.md5.txt
-│     │     │     ├── WT_DSp48_day4_tcn_SS_auxF_tcF_5782_rep2_batch1.BPM_m.md5.txt
-│     │     │     ├── WT_DSp48_day4_tcn_SS_auxF_tcF_5782_rep2_batch1.BPM_p.md5.txt
-│     │     │     ├── WT_G1_day1_ovn_N_auxF_tcF_5781_rep1_batch1.BPM_m.md5.txt
-│     │     │     ├── WT_G1_day1_ovn_N_auxF_tcF_5781_rep1_batch1.BPM_p.md5.txt
-│     │     │     ├── WT_G1_day1_ovn_N_auxF_tcF_5782_rep2_batch1.BPM_m.md5.txt
-│     │     │     ├── WT_G1_day1_ovn_N_auxF_tcF_5782_rep2_batch1.BPM_p.md5.txt
-│     │     │     ├── WT_G1_day1_ovn_SS_auxF_tcF_5781_rep1_batch1.BPM_m.md5.txt
-│     │     │     ├── WT_G1_day1_ovn_SS_auxF_tcF_5781_rep1_batch1.BPM_p.md5.txt
-│     │     │     ├── WT_G1_day1_ovn_SS_auxF_tcF_5782_rep2_batch1.BPM_m.md5.txt
-│     │     │     ├── WT_G1_day1_ovn_SS_auxF_tcF_5782_rep2_batch1.BPM_p.md5.txt
-│     │     │     ├── WT_G1_day1_tcn_SS_auxF_tcF_5781_rep1_batch2.KLSC_m.md5.txt
-│     │     │     ├── WT_G1_day1_tcn_SS_auxF_tcF_5781_rep1_batch2.KLSC_p.md5.txt
-│     │     │     ├── WT_G1_day1_tcn_SS_auxF_tcF_5782_rep2_batch2.KLSC_m.md5.txt
-│     │     │     ├── WT_G1_day1_tcn_SS_auxF_tcF_5782_rep2_batch2.KLSC_p.md5.txt
-│     │     │     ├── WT_Q_day7_ovn_N_auxF_tcF_5781_rep1_batch1.BPM_m.md5.txt
-│     │     │     ├── WT_Q_day7_ovn_N_auxF_tcF_5781_rep1_batch1.BPM_p.md5.txt
-│     │     │     ├── WT_Q_day7_ovn_N_auxF_tcF_5782_rep2_batch1.BPM_m.md5.txt
-│     │     │     ├── WT_Q_day7_ovn_N_auxF_tcF_5782_rep2_batch1.BPM_p.md5.txt
-│     │     │     ├── WT_Q_day7_ovn_SS_auxF_tcF_5781_rep1_batch1.BPM_m.md5.txt
-│     │     │     ├── WT_Q_day7_ovn_SS_auxF_tcF_5781_rep1_batch1.BPM_p.md5.txt
-│     │     │     ├── WT_Q_day7_ovn_SS_auxF_tcF_5782_rep2_batch1.BPM_m.md5.txt
-│     │     │     ├── WT_Q_day7_ovn_SS_auxF_tcF_5782_rep2_batch1.BPM_p.md5.txt
-│     │     │     ├── WT_Q_day8_tcn_N_auxF_tcF_5781_rep1_batch1.KLSC_m.md5.txt
-│     │     │     ├── WT_Q_day8_tcn_N_auxF_tcF_5781_rep1_batch1.KLSC_p.md5.txt
-│     │     │     ├── WT_Q_day8_tcn_N_auxF_tcF_5782_rep2_batch1.KLSC_m.md5.txt
-│     │     │     ├── WT_Q_day8_tcn_N_auxF_tcF_5782_rep2_batch1.KLSC_p.md5.txt
-│     │     │     ├── WT_Q_day8_tcn_SS_auxF_tcF_5781_rep1_batch1.KLSC_m.md5.txt
-│     │     │     ├── WT_Q_day8_tcn_SS_auxF_tcF_5781_rep1_batch1.KLSC_p.md5.txt
-│     │     │     ├── WT_Q_day8_tcn_SS_auxF_tcF_5782_rep2_batch1.KLSC_m.md5.txt
-│     │     │     └── WT_Q_day8_tcn_SS_auxF_tcF_5782_rep2_batch1.KLSC_p.md5.txt
-│     │     ├── Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1.KLSC_m.bw
-│     │     ├── Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1.KLSC_p.bw
-│     │     ├── Nab3-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1.KLSC_m.bw
-│     │     ├── Nab3-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1.KLSC_p.bw
-│     │     ├── Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1.KLSC_m.bw
-│     │     ├── Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1.KLSC_p.bw
-│     │     ├── Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1.KLSC_m.bw
-│     │     ├── Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1.KLSC_p.bw
-│     │     ├── OsTIR-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1.KLSC_m.bw
-│     │     ├── OsTIR-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1.KLSC_p.bw
-│     │     ├── OsTIR-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1.KLSC_m.bw
-│     │     ├── OsTIR-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1.KLSC_p.bw
-│     │     ├── OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1.KLSC_m.bw
-│     │     ├── OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1.KLSC_p.bw
-│     │     ├── OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1.KLSC_m.bw
-│     │     ├── OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1.KLSC_p.bw
-│     │     ├── rrp6_DSm2_day2_tcn_SS_auxF_tcF_7078_rep2_batch1.BPM_m.bw
-│     │     ├── rrp6_DSm2_day2_tcn_SS_auxF_tcF_7078_rep2_batch1.BPM_p.bw
-│     │     ├── rrp6_DSm2_day2_tcn_SS_auxF_tcF_7079_rep1_batch1.BPM_m.bw
-│     │     ├── rrp6_DSm2_day2_tcn_SS_auxF_tcF_7079_rep1_batch1.BPM_p.bw
-│     │     ├── rrp6_DSp24_day3_tcn_SS_auxF_tcF_7078_rep2_batch1.BPM_m.bw
-│     │     ├── rrp6_DSp24_day3_tcn_SS_auxF_tcF_7078_rep2_batch1.BPM_p.bw
-│     │     ├── rrp6_DSp24_day3_tcn_SS_auxF_tcF_7079_rep1_batch1.BPM_m.bw
-│     │     ├── rrp6_DSp24_day3_tcn_SS_auxF_tcF_7079_rep1_batch1.BPM_p.bw
-│     │     ├── rrp6_DSp2_day2_tcn_SS_auxF_tcF_7078_rep2_batch1.BPM_m.bw
-│     │     ├── rrp6_DSp2_day2_tcn_SS_auxF_tcF_7078_rep2_batch1.BPM_p.bw
-│     │     ├── rrp6_DSp2_day2_tcn_SS_auxF_tcF_7079_rep1_batch1.BPM_m.bw
-│     │     ├── rrp6_DSp2_day2_tcn_SS_auxF_tcF_7079_rep1_batch1.BPM_p.bw
-│     │     ├── rrp6_DSp48_day4_tcn_SS_auxF_tcF_7078_rep2_batch1.BPM_m.bw
-│     │     ├── rrp6_DSp48_day4_tcn_SS_auxF_tcF_7078_rep2_batch1.BPM_p.bw
-│     │     ├── rrp6_DSp48_day4_tcn_SS_auxF_tcF_7079_rep1_batch1.BPM_m.bw
-│     │     ├── rrp6_DSp48_day4_tcn_SS_auxF_tcF_7079_rep1_batch1.BPM_p.bw
-│     │     ├── rrp6_G1_day1_tcn_SS_auxF_tcF_7078_rep2_batch2.KLSC_m.bw
-│     │     ├── rrp6_G1_day1_tcn_SS_auxF_tcF_7078_rep2_batch2.KLSC_p.bw
-│     │     ├── rrp6_G1_day1_tcn_SS_auxF_tcF_7079_rep1_batch2.KLSC_m.bw
-│     │     ├── rrp6_G1_day1_tcn_SS_auxF_tcF_7079_rep1_batch2.KLSC_p.bw
-│     │     ├── rrp6_Q_day8_tcn_N_auxF_tcF_7078_rep2_batch1.KLSC_m.bw
-│     │     ├── rrp6_Q_day8_tcn_N_auxF_tcF_7078_rep2_batch1.KLSC_p.bw
-│     │     ├── rrp6_Q_day8_tcn_N_auxF_tcF_7079_rep1_batch1.KLSC_m.bw
-│     │     ├── rrp6_Q_day8_tcn_N_auxF_tcF_7079_rep1_batch1.KLSC_p.bw
-│     │     ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch1.KLSC_m.bw
-│     │     ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch1.KLSC_p.bw
-│     │     ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch2.KLSC_m.bw
-│     │     ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch2.KLSC_p.bw
-│     │     ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7079_rep1_batch1.KLSC_m.bw
-│     │     ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7079_rep1_batch1.KLSC_p.bw
-│     │     ├── WT_DSm2_day2_tcn_SS_auxF_tcF_5781_rep1_batch1.BPM_m.bw
-│     │     ├── WT_DSm2_day2_tcn_SS_auxF_tcF_5781_rep1_batch1.BPM_p.bw
-│     │     ├── WT_DSm2_day2_tcn_SS_auxF_tcF_5782_rep2_batch1.BPM_m.bw
-│     │     ├── WT_DSm2_day2_tcn_SS_auxF_tcF_5782_rep2_batch1.BPM_p.bw
-│     │     ├── WT_DSp24_day3_tcn_SS_auxF_tcF_5781_rep1_batch1.BPM_m.bw
-│     │     ├── WT_DSp24_day3_tcn_SS_auxF_tcF_5781_rep1_batch1.BPM_p.bw
-│     │     ├── WT_DSp24_day3_tcn_SS_auxF_tcF_5782_rep2_batch1.BPM_m.bw
-│     │     ├── WT_DSp24_day3_tcn_SS_auxF_tcF_5782_rep2_batch1.BPM_p.bw
-│     │     ├── WT_DSp2_day2_tcn_SS_auxF_tcF_5781_rep1_batch1.BPM_m.bw
-│     │     ├── WT_DSp2_day2_tcn_SS_auxF_tcF_5781_rep1_batch1.BPM_p.bw
-│     │     ├── WT_DSp2_day2_tcn_SS_auxF_tcF_5782_rep2_batch1.BPM_m.bw
-│     │     ├── WT_DSp2_day2_tcn_SS_auxF_tcF_5782_rep2_batch1.BPM_p.bw
-│     │     ├── WT_DSp48_day4_tcn_SS_auxF_tcF_5781_rep1_batch1.BPM_m.bw
-│     │     ├── WT_DSp48_day4_tcn_SS_auxF_tcF_5781_rep1_batch1.BPM_p.bw
-│     │     ├── WT_DSp48_day4_tcn_SS_auxF_tcF_5782_rep2_batch1.BPM_m.bw
-│     │     ├── WT_DSp48_day4_tcn_SS_auxF_tcF_5782_rep2_batch1.BPM_p.bw
-│     │     ├── WT_G1_day1_ovn_N_auxF_tcF_5781_rep1_batch1.BPM_m.bw
-│     │     ├── WT_G1_day1_ovn_N_auxF_tcF_5781_rep1_batch1.BPM_p.bw
-│     │     ├── WT_G1_day1_ovn_N_auxF_tcF_5782_rep2_batch1.BPM_m.bw
-│     │     ├── WT_G1_day1_ovn_N_auxF_tcF_5782_rep2_batch1.BPM_p.bw
-│     │     ├── WT_G1_day1_ovn_SS_auxF_tcF_5781_rep1_batch1.BPM_m.bw
-│     │     ├── WT_G1_day1_ovn_SS_auxF_tcF_5781_rep1_batch1.BPM_p.bw
-│     │     ├── WT_G1_day1_ovn_SS_auxF_tcF_5782_rep2_batch1.BPM_m.bw
-│     │     ├── WT_G1_day1_ovn_SS_auxF_tcF_5782_rep2_batch1.BPM_p.bw
-│     │     ├── WT_G1_day1_tcn_SS_auxF_tcF_5781_rep1_batch2.KLSC_m.bw
-│     │     ├── WT_G1_day1_tcn_SS_auxF_tcF_5781_rep1_batch2.KLSC_p.bw
-│     │     ├── WT_G1_day1_tcn_SS_auxF_tcF_5782_rep2_batch2.KLSC_m.bw
-│     │     ├── WT_G1_day1_tcn_SS_auxF_tcF_5782_rep2_batch2.KLSC_p.bw
-│     │     ├── WT_Q_day7_ovn_N_auxF_tcF_5781_rep1_batch1.BPM_m.bw
-│     │     ├── WT_Q_day7_ovn_N_auxF_tcF_5781_rep1_batch1.BPM_p.bw
-│     │     ├── WT_Q_day7_ovn_N_auxF_tcF_5782_rep2_batch1.BPM_m.bw
-│     │     ├── WT_Q_day7_ovn_N_auxF_tcF_5782_rep2_batch1.BPM_p.bw
-│     │     ├── WT_Q_day7_ovn_SS_auxF_tcF_5781_rep1_batch1.BPM_m.bw
-│     │     ├── WT_Q_day7_ovn_SS_auxF_tcF_5781_rep1_batch1.BPM_p.bw
-│     │     ├── WT_Q_day7_ovn_SS_auxF_tcF_5782_rep2_batch1.BPM_m.bw
-│     │     ├── WT_Q_day7_ovn_SS_auxF_tcF_5782_rep2_batch1.BPM_p.bw
-│     │     ├── WT_Q_day8_tcn_N_auxF_tcF_5781_rep1_batch1.KLSC_m.bw
-│     │     ├── WT_Q_day8_tcn_N_auxF_tcF_5781_rep1_batch1.KLSC_p.bw
-│     │     ├── WT_Q_day8_tcn_N_auxF_tcF_5782_rep2_batch1.KLSC_m.bw
-│     │     ├── WT_Q_day8_tcn_N_auxF_tcF_5782_rep2_batch1.KLSC_p.bw
-│     │     ├── WT_Q_day8_tcn_SS_auxF_tcF_5781_rep1_batch1.KLSC_m.bw
-│     │     ├── WT_Q_day8_tcn_SS_auxF_tcF_5781_rep1_batch1.KLSC_p.bw
-│     │     ├── WT_Q_day8_tcn_SS_auxF_tcF_5782_rep2_batch1.KLSC_m.bw
-│     │     └── WT_Q_day8_tcn_SS_auxF_tcF_5782_rep2_batch1.KLSC_p.bw
-│     └── mean
-│         ├── md5
-│         │     ├── Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_m.md5.txt
-│         │     ├── Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_p.md5.txt
-│         │     ├── Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_m.md5.txt
-│         │     ├── Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_p.md5.txt
-│         │     ├── OsTIR-AID_Q_day7_tcn_N_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_m.md5.txt
-│         │     ├── OsTIR-AID_Q_day7_tcn_N_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_p.md5.txt
-│         │     ├── OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_m.md5.txt
-│         │     ├── OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_p.md5.txt
-│         │     ├── rrp6_G1_day1_tcn_SS_auxF_tcF_7078-7079_rep-mean_batch2.KLSC_m.md5.txt
-│         │     ├── rrp6_G1_day1_tcn_SS_auxF_tcF_7078-7079_rep-mean_batch2.KLSC_p.md5.txt
-│         │     ├── rrp6_Q_day8_tcn_N_auxF_tcF_7078-7079_rep-mean_batch1.KLSC_m.md5.txt
-│         │     ├── rrp6_Q_day8_tcn_N_auxF_tcF_7078-7079_rep-mean_batch1.KLSC_p.md5.txt
-│         │     ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7078-7079_rep-mean_batch1-2.KLSC_m.md5.txt
-│         │     ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7078-7079_rep-mean_batch1-2.KLSC_p.md5.txt
-│         │     ├── WT_G1_day1_ovn_N_auxF_tcF_5781-5782_rep-mean_batch1.BPM_m.md5.txt
-│         │     ├── WT_G1_day1_ovn_N_auxF_tcF_5781-5782_rep-mean_batch1.BPM_p.md5.txt
-│         │     ├── WT_G1_day1_ovn_SS_auxF_tcF_5781-5782_rep-mean_batch1.BPM_m.md5.txt
-│         │     ├── WT_G1_day1_ovn_SS_auxF_tcF_5781-5782_rep-mean_batch1.BPM_p.md5.txt
-│         │     ├── WT_G1_day1_tcn_SS_auxF_tcF_5781-5782_rep-mean_batch2.KLSC_m.md5.txt
-│         │     ├── WT_G1_day1_tcn_SS_auxF_tcF_5781-5782_rep-mean_batch2.KLSC_p.md5.txt
-│         │     ├── WT_Q_day7_ovn_N_auxF_tcF_5781-5782_rep-mean_batch1.BPM_m.md5.txt
-│         │     ├── WT_Q_day7_ovn_N_auxF_tcF_5781-5782_rep-mean_batch1.BPM_p.md5.txt
-│         │     ├── WT_Q_day7_ovn_SS_auxF_tcF_5781-5782_rep-mean_batch1.BPM_m.md5.txt
-│         │     ├── WT_Q_day7_ovn_SS_auxF_tcF_5781-5782_rep-mean_batch1.BPM_p.md5.txt
-│         │     ├── WT_Q_day8_tcn_N_auxF_tcF_5781-5782_rep-mean_batch1.KLSC_m.md5.txt
-│         │     ├── WT_Q_day8_tcn_N_auxF_tcF_5781-5782_rep-mean_batch1.KLSC_p.md5.txt
-│         │     ├── WT_Q_day8_tcn_SS_auxF_tcF_5781-5782_rep-mean_batch1.KLSC_m.md5.txt
-│         │     └── WT_Q_day8_tcn_SS_auxF_tcF_5781-5782_rep-mean_batch1.KLSC_p.md5.txt
-│         ├── Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_m.bw
-│         ├── Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_p.bw
-│         ├── Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_m.bw
-│         ├── Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_p.bw
-│         ├── OsTIR-AID_Q_day7_tcn_N_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_m.bw
-│         ├── OsTIR-AID_Q_day7_tcn_N_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_p.bw
-│         ├── OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_m.bw
-│         ├── OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_p.bw
-│         ├── rrp6_G1_day1_tcn_SS_auxF_tcF_7078-7079_rep-mean_batch2.KLSC_m.bw
-│         ├── rrp6_G1_day1_tcn_SS_auxF_tcF_7078-7079_rep-mean_batch2.KLSC_p.bw
-│         ├── rrp6_Q_day8_tcn_N_auxF_tcF_7078-7079_rep-mean_batch1.KLSC_m.bw
-│         ├── rrp6_Q_day8_tcn_N_auxF_tcF_7078-7079_rep-mean_batch1.KLSC_p.bw
-│         ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7078-7079_rep-mean_batch1-2.KLSC_m.bw
-│         ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7078-7079_rep-mean_batch1-2.KLSC_p.bw
-│         ├── WT_G1_day1_ovn_N_auxF_tcF_5781-5782_rep-mean_batch1.BPM_m.bw
-│         ├── WT_G1_day1_ovn_N_auxF_tcF_5781-5782_rep-mean_batch1.BPM_p.bw
-│         ├── WT_G1_day1_ovn_SS_auxF_tcF_5781-5782_rep-mean_batch1.BPM_m.bw
-│         ├── WT_G1_day1_ovn_SS_auxF_tcF_5781-5782_rep-mean_batch1.BPM_p.bw
-│         ├── WT_G1_day1_tcn_SS_auxF_tcF_5781-5782_rep-mean_batch2.KLSC_m.bw
-│         ├── WT_G1_day1_tcn_SS_auxF_tcF_5781-5782_rep-mean_batch2.KLSC_p.bw
-│         ├── WT_Q_day7_ovn_N_auxF_tcF_5781-5782_rep-mean_batch1.BPM_m.bw
-│         ├── WT_Q_day7_ovn_N_auxF_tcF_5781-5782_rep-mean_batch1.BPM_p.bw
-│         ├── WT_Q_day7_ovn_SS_auxF_tcF_5781-5782_rep-mean_batch1.BPM_m.bw
-│         ├── WT_Q_day7_ovn_SS_auxF_tcF_5781-5782_rep-mean_batch1.BPM_p.bw
-│         ├── WT_Q_day8_tcn_N_auxF_tcF_5781-5782_rep-mean_batch1.KLSC_m.bw
-│         ├── WT_Q_day8_tcn_N_auxF_tcF_5781-5782_rep-mean_batch1.KLSC_p.bw
-│         ├── WT_Q_day8_tcn_SS_auxF_tcF_5781-5782_rep-mean_batch1.KLSC_m.bw
-│         └── WT_Q_day8_tcn_SS_auxF_tcF_5781-5782_rep-mean_batch1.KLSC_p.bw
+│    ├── individual
+│    │    ├── md5
+│    │    │    ├── Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1.KLSC_m.md5.txt
+│    │    │    ├── Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1.KLSC_p.md5.txt
+│    │    │    ├── Nab3-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1.KLSC_m.md5.txt
+│    │    │    ├── Nab3-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1.KLSC_p.md5.txt
+│    │    │    ├── Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1.KLSC_m.md5.txt
+│    │    │    ├── Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1.KLSC_p.md5.txt
+│    │    │    ├── Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1.KLSC_m.md5.txt
+│    │    │    ├── Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1.KLSC_p.md5.txt
+│    │    │    ├── OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125_rep1_batch1.KLSC_m.md5.txt
+│    │    │    ├── OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125_rep1_batch1.KLSC_p.md5.txt
+│    │    │    ├── OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6126_rep2_batch1.KLSC_m.md5.txt
+│    │    │    ├── OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6126_rep2_batch1.KLSC_p.md5.txt
+│    │    │    ├── OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125_rep1_batch1.KLSC_m.md5.txt
+│    │    │    ├── OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125_rep1_batch1.KLSC_p.md5.txt
+│    │    │    ├── OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6126_rep2_batch1.KLSC_m.md5.txt
+│    │    │    ├── OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6126_rep2_batch1.KLSC_p.md5.txt
+│    │    │    ├── rrp6_DSm2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_m.md5.txt
+│    │    │    ├── rrp6_DSm2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_p.md5.txt
+│    │    │    ├── rrp6_DSm2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1.BPM_m.md5.txt
+│    │    │    ├── rrp6_DSm2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1.BPM_p.md5.txt
+│    │    │    ├── rrp6_DSp24_day3_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_m.md5.txt
+│    │    │    ├── rrp6_DSp24_day3_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_p.md5.txt
+│    │    │    ├── rrp6_DSp24_day3_tcn_SS_auxF_tcT_7079_rep1_batch1.BPM_m.md5.txt
+│    │    │    ├── rrp6_DSp24_day3_tcn_SS_auxF_tcT_7079_rep1_batch1.BPM_p.md5.txt
+│    │    │    ├── rrp6_DSp2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_m.md5.txt
+│    │    │    ├── rrp6_DSp2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_p.md5.txt
+│    │    │    ├── rrp6_DSp2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1.BPM_m.md5.txt
+│    │    │    ├── rrp6_DSp2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1.BPM_p.md5.txt
+│    │    │    ├── rrp6_DSp48_day4_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_m.md5.txt
+│    │    │    ├── rrp6_DSp48_day4_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_p.md5.txt
+│    │    │    ├── rrp6_DSp48_day4_tcn_SS_auxF_tcT_7079_rep1_batch2.BPM_m.md5.txt
+│    │    │    ├── rrp6_DSp48_day4_tcn_SS_auxF_tcT_7079_rep1_batch2.BPM_p.md5.txt
+│    │    │    ├── rrp6_G1_day1_tcn_SS_auxF_tcF_7078_rep2_batch2.KLSC_m.md5.txt
+│    │    │    ├── rrp6_G1_day1_tcn_SS_auxF_tcF_7078_rep2_batch2.KLSC_p.md5.txt
+│    │    │    ├── rrp6_G1_day1_tcn_SS_auxF_tcF_7079_rep1_batch2.KLSC_m.md5.txt
+│    │    │    ├── rrp6_G1_day1_tcn_SS_auxF_tcF_7079_rep1_batch2.KLSC_p.md5.txt
+│    │    │    ├── rrp6_Q_day8_tcn_N_auxF_tcF_7078_rep2_batch1.KLSC_m.md5.txt
+│    │    │    ├── rrp6_Q_day8_tcn_N_auxF_tcF_7078_rep2_batch1.KLSC_p.md5.txt
+│    │    │    ├── rrp6_Q_day8_tcn_N_auxF_tcF_7079_rep1_batch1.KLSC_m.md5.txt
+│    │    │    ├── rrp6_Q_day8_tcn_N_auxF_tcF_7079_rep1_batch1.KLSC_p.md5.txt
+│    │    │    ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch1.KLSC_m.md5.txt
+│    │    │    ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch1.KLSC_p.md5.txt
+│    │    │    ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch2.KLSC_m.md5.txt
+│    │    │    ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch2.KLSC_p.md5.txt
+│    │    │    ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7079_rep1_batch1.KLSC_m.md5.txt
+│    │    │    ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7079_rep1_batch1.KLSC_p.md5.txt
+│    │    │    ├── WT_DSm2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_m.md5.txt
+│    │    │    ├── WT_DSm2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_p.md5.txt
+│    │    │    ├── WT_DSm2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_m.md5.txt
+│    │    │    ├── WT_DSm2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_p.md5.txt
+│    │    │    ├── WT_DSp24_day3_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_m.md5.txt
+│    │    │    ├── WT_DSp24_day3_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_p.md5.txt
+│    │    │    ├── WT_DSp24_day3_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_m.md5.txt
+│    │    │    ├── WT_DSp24_day3_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_p.md5.txt
+│    │    │    ├── WT_DSp2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_m.md5.txt
+│    │    │    ├── WT_DSp2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_p.md5.txt
+│    │    │    ├── WT_DSp2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_m.md5.txt
+│    │    │    ├── WT_DSp2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_p.md5.txt
+│    │    │    ├── WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_m.md5.txt
+│    │    │    ├── WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_p.md5.txt
+│    │    │    ├── WT_DSp48_day4_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_m.md5.txt
+│    │    │    ├── WT_DSp48_day4_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_p.md5.txt
+│    │    │    ├── WT_G1_day1_ovn_N_auxF_tcF_5781_rep1_batch1.BPM_m.md5.txt
+│    │    │    ├── WT_G1_day1_ovn_N_auxF_tcF_5781_rep1_batch1.BPM_p.md5.txt
+│    │    │    ├── WT_G1_day1_ovn_N_auxF_tcF_5782_rep2_batch1.BPM_m.md5.txt
+│    │    │    ├── WT_G1_day1_ovn_N_auxF_tcF_5782_rep2_batch1.BPM_p.md5.txt
+│    │    │    ├── WT_G1_day1_ovn_SS_auxF_tcF_5781_rep1_batch1.BPM_m.md5.txt
+│    │    │    ├── WT_G1_day1_ovn_SS_auxF_tcF_5781_rep1_batch1.BPM_p.md5.txt
+│    │    │    ├── WT_G1_day1_ovn_SS_auxF_tcF_5782_rep2_batch1.BPM_m.md5.txt
+│    │    │    ├── WT_G1_day1_ovn_SS_auxF_tcF_5782_rep2_batch1.BPM_p.md5.txt
+│    │    │    ├── WT_G1_day1_tcn_SS_auxF_tcF_5781_rep1_batch2.KLSC_m.md5.txt
+│    │    │    ├── WT_G1_day1_tcn_SS_auxF_tcF_5781_rep1_batch2.KLSC_p.md5.txt
+│    │    │    ├── WT_G1_day1_tcn_SS_auxF_tcF_5782_rep2_batch2.KLSC_m.md5.txt
+│    │    │    ├── WT_G1_day1_tcn_SS_auxF_tcF_5782_rep2_batch2.KLSC_p.md5.txt
+│    │    │    ├── WT_Q_day7_ovn_N_auxF_tcF_5781_rep1_batch1.BPM_m.md5.txt
+│    │    │    ├── WT_Q_day7_ovn_N_auxF_tcF_5781_rep1_batch1.BPM_p.md5.txt
+│    │    │    ├── WT_Q_day7_ovn_N_auxF_tcF_5782_rep2_batch1.BPM_m.md5.txt
+│    │    │    ├── WT_Q_day7_ovn_N_auxF_tcF_5782_rep2_batch1.BPM_p.md5.txt
+│    │    │    ├── WT_Q_day7_ovn_SS_auxF_tcF_5781_rep1_batch1.BPM_m.md5.txt
+│    │    │    ├── WT_Q_day7_ovn_SS_auxF_tcF_5781_rep1_batch1.BPM_p.md5.txt
+│    │    │    ├── WT_Q_day7_ovn_SS_auxF_tcF_5782_rep2_batch1.BPM_m.md5.txt
+│    │    │    ├── WT_Q_day7_ovn_SS_auxF_tcF_5782_rep2_batch1.BPM_p.md5.txt
+│    │    │    ├── WT_Q_day8_tcn_N_auxF_tcF_5781_rep1_batch1.KLSC_m.md5.txt
+│    │    │    ├── WT_Q_day8_tcn_N_auxF_tcF_5781_rep1_batch1.KLSC_p.md5.txt
+│    │    │    ├── WT_Q_day8_tcn_N_auxF_tcF_5782_rep2_batch1.KLSC_m.md5.txt
+│    │    │    ├── WT_Q_day8_tcn_N_auxF_tcF_5782_rep2_batch1.KLSC_p.md5.txt
+│    │    │    ├── WT_Q_day8_tcn_SS_auxF_tcF_5781_rep1_batch1.KLSC_m.md5.txt
+│    │    │    ├── WT_Q_day8_tcn_SS_auxF_tcF_5781_rep1_batch1.KLSC_p.md5.txt
+│    │    │    ├── WT_Q_day8_tcn_SS_auxF_tcF_5782_rep2_batch1.KLSC_m.md5.txt
+│    │    │    └── WT_Q_day8_tcn_SS_auxF_tcF_5782_rep2_batch1.KLSC_p.md5.txt
+│    │    ├── Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1.KLSC_m.bw
+│    │    ├── Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1.KLSC_p.bw
+│    │    ├── Nab3-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1.KLSC_m.bw
+│    │    ├── Nab3-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1.KLSC_p.bw
+│    │    ├── Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1.KLSC_m.bw
+│    │    ├── Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1.KLSC_p.bw
+│    │    ├── Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1.KLSC_m.bw
+│    │    ├── Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1.KLSC_p.bw
+│    │    ├── OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125_rep1_batch1.KLSC_m.bw
+│    │    ├── OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125_rep1_batch1.KLSC_p.bw
+│    │    ├── OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6126_rep2_batch1.KLSC_m.bw
+│    │    ├── OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6126_rep2_batch1.KLSC_p.bw
+│    │    ├── OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125_rep1_batch1.KLSC_m.bw
+│    │    ├── OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125_rep1_batch1.KLSC_p.bw
+│    │    ├── OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6126_rep2_batch1.KLSC_m.bw
+│    │    ├── OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6126_rep2_batch1.KLSC_p.bw
+│    │    ├── rrp6_DSm2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_m.bw
+│    │    ├── rrp6_DSm2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_p.bw
+│    │    ├── rrp6_DSm2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1.BPM_m.bw
+│    │    ├── rrp6_DSm2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1.BPM_p.bw
+│    │    ├── rrp6_DSp24_day3_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_m.bw
+│    │    ├── rrp6_DSp24_day3_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_p.bw
+│    │    ├── rrp6_DSp24_day3_tcn_SS_auxF_tcT_7079_rep1_batch1.BPM_m.bw
+│    │    ├── rrp6_DSp24_day3_tcn_SS_auxF_tcT_7079_rep1_batch1.BPM_p.bw
+│    │    ├── rrp6_DSp2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_m.bw
+│    │    ├── rrp6_DSp2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_p.bw
+│    │    ├── rrp6_DSp2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1.BPM_m.bw
+│    │    ├── rrp6_DSp2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1.BPM_p.bw
+│    │    ├── rrp6_DSp48_day4_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_m.bw
+│    │    ├── rrp6_DSp48_day4_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_p.bw
+│    │    ├── rrp6_DSp48_day4_tcn_SS_auxF_tcT_7079_rep1_batch2.BPM_m.bw
+│    │    ├── rrp6_DSp48_day4_tcn_SS_auxF_tcT_7079_rep1_batch2.BPM_p.bw
+│    │    ├── rrp6_G1_day1_tcn_SS_auxF_tcF_7078_rep2_batch2.KLSC_m.bw
+│    │    ├── rrp6_G1_day1_tcn_SS_auxF_tcF_7078_rep2_batch2.KLSC_p.bw
+│    │    ├── rrp6_G1_day1_tcn_SS_auxF_tcF_7079_rep1_batch2.KLSC_m.bw
+│    │    ├── rrp6_G1_day1_tcn_SS_auxF_tcF_7079_rep1_batch2.KLSC_p.bw
+│    │    ├── rrp6_Q_day8_tcn_N_auxF_tcF_7078_rep2_batch1.KLSC_m.bw
+│    │    ├── rrp6_Q_day8_tcn_N_auxF_tcF_7078_rep2_batch1.KLSC_p.bw
+│    │    ├── rrp6_Q_day8_tcn_N_auxF_tcF_7079_rep1_batch1.KLSC_m.bw
+│    │    ├── rrp6_Q_day8_tcn_N_auxF_tcF_7079_rep1_batch1.KLSC_p.bw
+│    │    ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch1.KLSC_m.bw
+│    │    ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch1.KLSC_p.bw
+│    │    ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch2.KLSC_m.bw
+│    │    ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch2.KLSC_p.bw
+│    │    ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7079_rep1_batch1.KLSC_m.bw
+│    │    ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7079_rep1_batch1.KLSC_p.bw
+│    │    ├── WT_DSm2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_m.bw
+│    │    ├── WT_DSm2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_p.bw
+│    │    ├── WT_DSm2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_m.bw
+│    │    ├── WT_DSm2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_p.bw
+│    │    ├── WT_DSp24_day3_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_m.bw
+│    │    ├── WT_DSp24_day3_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_p.bw
+│    │    ├── WT_DSp24_day3_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_m.bw
+│    │    ├── WT_DSp24_day3_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_p.bw
+│    │    ├── WT_DSp2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_m.bw
+│    │    ├── WT_DSp2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_p.bw
+│    │    ├── WT_DSp2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_m.bw
+│    │    ├── WT_DSp2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_p.bw
+│    │    ├── WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_m.bw
+│    │    ├── WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_p.bw
+│    │    ├── WT_DSp48_day4_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_m.bw
+│    │    ├── WT_DSp48_day4_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_p.bw
+│    │    ├── WT_G1_day1_ovn_N_auxF_tcF_5781_rep1_batch1.BPM_m.bw
+│    │    ├── WT_G1_day1_ovn_N_auxF_tcF_5781_rep1_batch1.BPM_p.bw
+│    │    ├── WT_G1_day1_ovn_N_auxF_tcF_5782_rep2_batch1.BPM_m.bw
+│    │    ├── WT_G1_day1_ovn_N_auxF_tcF_5782_rep2_batch1.BPM_p.bw
+│    │    ├── WT_G1_day1_ovn_SS_auxF_tcF_5781_rep1_batch1.BPM_m.bw
+│    │    ├── WT_G1_day1_ovn_SS_auxF_tcF_5781_rep1_batch1.BPM_p.bw
+│    │    ├── WT_G1_day1_ovn_SS_auxF_tcF_5782_rep2_batch1.BPM_m.bw
+│    │    ├── WT_G1_day1_ovn_SS_auxF_tcF_5782_rep2_batch1.BPM_p.bw
+│    │    ├── WT_G1_day1_tcn_SS_auxF_tcF_5781_rep1_batch2.KLSC_m.bw
+│    │    ├── WT_G1_day1_tcn_SS_auxF_tcF_5781_rep1_batch2.KLSC_p.bw
+│    │    ├── WT_G1_day1_tcn_SS_auxF_tcF_5782_rep2_batch2.KLSC_m.bw
+│    │    ├── WT_G1_day1_tcn_SS_auxF_tcF_5782_rep2_batch2.KLSC_p.bw
+│    │    ├── WT_Q_day7_ovn_N_auxF_tcF_5781_rep1_batch1.BPM_m.bw
+│    │    ├── WT_Q_day7_ovn_N_auxF_tcF_5781_rep1_batch1.BPM_p.bw
+│    │    ├── WT_Q_day7_ovn_N_auxF_tcF_5782_rep2_batch1.BPM_m.bw
+│    │    ├── WT_Q_day7_ovn_N_auxF_tcF_5782_rep2_batch1.BPM_p.bw
+│    │    ├── WT_Q_day7_ovn_SS_auxF_tcF_5781_rep1_batch1.BPM_m.bw
+│    │    ├── WT_Q_day7_ovn_SS_auxF_tcF_5781_rep1_batch1.BPM_p.bw
+│    │    ├── WT_Q_day7_ovn_SS_auxF_tcF_5782_rep2_batch1.BPM_m.bw
+│    │    ├── WT_Q_day7_ovn_SS_auxF_tcF_5782_rep2_batch1.BPM_p.bw
+│    │    ├── WT_Q_day8_tcn_N_auxF_tcF_5781_rep1_batch1.KLSC_m.bw
+│    │    ├── WT_Q_day8_tcn_N_auxF_tcF_5781_rep1_batch1.KLSC_p.bw
+│    │    ├── WT_Q_day8_tcn_N_auxF_tcF_5782_rep2_batch1.KLSC_m.bw
+│    │    ├── WT_Q_day8_tcn_N_auxF_tcF_5782_rep2_batch1.KLSC_p.bw
+│    │    ├── WT_Q_day8_tcn_SS_auxF_tcF_5781_rep1_batch1.KLSC_m.bw
+│    │    ├── WT_Q_day8_tcn_SS_auxF_tcF_5781_rep1_batch1.KLSC_p.bw
+│    │    ├── WT_Q_day8_tcn_SS_auxF_tcF_5782_rep2_batch1.KLSC_m.bw
+│    │    └── WT_Q_day8_tcn_SS_auxF_tcF_5782_rep2_batch1.KLSC_p.bw
+│    └── mean
+│        ├── md5
+│        │    ├── Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_m.md5.txt
+│        │    ├── Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_p.md5.txt
+│        │    ├── Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_m.md5.txt
+│        │    ├── Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_p.md5.txt
+│        │    ├── OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125-6126_rep-mean_batch1.KLSC_m.md5.txt
+│        │    ├── OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125-6126_rep-mean_batch1.KLSC_p.md5.txt
+│        │    ├── OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125-6126_rep-mean_batch1.KLSC_m.md5.txt
+│        │    ├── OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125-6126_rep-mean_batch1.KLSC_p.md5.txt
+│        │    ├── rrp6_G1_day1_tcn_SS_auxF_tcF_7078-7079_rep-mean_batch2.KLSC_m.md5.txt
+│        │    ├── rrp6_G1_day1_tcn_SS_auxF_tcF_7078-7079_rep-mean_batch2.KLSC_p.md5.txt
+│        │    ├── rrp6_Q_day8_tcn_N_auxF_tcF_7078-7079_rep-mean_batch1.KLSC_m.md5.txt
+│        │    ├── rrp6_Q_day8_tcn_N_auxF_tcF_7078-7079_rep-mean_batch1.KLSC_p.md5.txt
+│        │    ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7078-7079_rep-mean_batch1-2.KLSC_m.md5.txt
+│        │    ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7078-7079_rep-mean_batch1-2.KLSC_p.md5.txt
+│        │    ├── WT_G1_day1_ovn_N_auxF_tcF_5781-5782_rep-mean_batch1.BPM_m.md5.txt
+│        │    ├── WT_G1_day1_ovn_N_auxF_tcF_5781-5782_rep-mean_batch1.BPM_p.md5.txt
+│        │    ├── WT_G1_day1_ovn_SS_auxF_tcF_5781-5782_rep-mean_batch1.BPM_m.md5.txt
+│        │    ├── WT_G1_day1_ovn_SS_auxF_tcF_5781-5782_rep-mean_batch1.BPM_p.md5.txt
+│        │    ├── WT_G1_day1_tcn_SS_auxF_tcF_5781-5782_rep-mean_batch2.KLSC_m.md5.txt
+│        │    ├── WT_G1_day1_tcn_SS_auxF_tcF_5781-5782_rep-mean_batch2.KLSC_p.md5.txt
+│        │    ├── WT_Q_day7_ovn_N_auxF_tcF_5781-5782_rep-mean_batch1.BPM_m.md5.txt
+│        │    ├── WT_Q_day7_ovn_N_auxF_tcF_5781-5782_rep-mean_batch1.BPM_p.md5.txt
+│        │    ├── WT_Q_day7_ovn_SS_auxF_tcF_5781-5782_rep-mean_batch1.BPM_m.md5.txt
+│        │    ├── WT_Q_day7_ovn_SS_auxF_tcF_5781-5782_rep-mean_batch1.BPM_p.md5.txt
+│        │    ├── WT_Q_day8_tcn_N_auxF_tcF_5781-5782_rep-mean_batch1.KLSC_m.md5.txt
+│        │    ├── WT_Q_day8_tcn_N_auxF_tcF_5781-5782_rep-mean_batch1.KLSC_p.md5.txt
+│        │    ├── WT_Q_day8_tcn_SS_auxF_tcF_5781-5782_rep-mean_batch1.KLSC_m.md5.txt
+│        │    └── WT_Q_day8_tcn_SS_auxF_tcF_5781-5782_rep-mean_batch1.KLSC_p.md5.txt
+│        ├── Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_m.bw
+│        ├── Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_p.bw
+│        ├── Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_m.bw
+│        ├── Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_p.bw
+│        ├── OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125-6126_rep-mean_batch1.KLSC_m.bw
+│        ├── OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125-6126_rep-mean_batch1.KLSC_p.bw
+│        ├── OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125-6126_rep-mean_batch1.KLSC_m.bw
+│        ├── OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125-6126_rep-mean_batch1.KLSC_p.bw
+│        ├── rrp6_G1_day1_tcn_SS_auxF_tcF_7078-7079_rep-mean_batch2.KLSC_m.bw
+│        ├── rrp6_G1_day1_tcn_SS_auxF_tcF_7078-7079_rep-mean_batch2.KLSC_p.bw
+│        ├── rrp6_Q_day8_tcn_N_auxF_tcF_7078-7079_rep-mean_batch1.KLSC_m.bw
+│        ├── rrp6_Q_day8_tcn_N_auxF_tcF_7078-7079_rep-mean_batch1.KLSC_p.bw
+│        ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7078-7079_rep-mean_batch1-2.KLSC_m.bw
+│        ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7078-7079_rep-mean_batch1-2.KLSC_p.bw
+│        ├── WT_G1_day1_ovn_N_auxF_tcF_5781-5782_rep-mean_batch1.BPM_m.bw
+│        ├── WT_G1_day1_ovn_N_auxF_tcF_5781-5782_rep-mean_batch1.BPM_p.bw
+│        ├── WT_G1_day1_ovn_SS_auxF_tcF_5781-5782_rep-mean_batch1.BPM_m.bw
+│        ├── WT_G1_day1_ovn_SS_auxF_tcF_5781-5782_rep-mean_batch1.BPM_p.bw
+│        ├── WT_G1_day1_tcn_SS_auxF_tcF_5781-5782_rep-mean_batch2.KLSC_m.bw
+│        ├── WT_G1_day1_tcn_SS_auxF_tcF_5781-5782_rep-mean_batch2.KLSC_p.bw
+│        ├── WT_Q_day7_ovn_N_auxF_tcF_5781-5782_rep-mean_batch1.BPM_m.bw
+│        ├── WT_Q_day7_ovn_N_auxF_tcF_5781-5782_rep-mean_batch1.BPM_p.bw
+│        ├── WT_Q_day7_ovn_SS_auxF_tcF_5781-5782_rep-mean_batch1.BPM_m.bw
+│        ├── WT_Q_day7_ovn_SS_auxF_tcF_5781-5782_rep-mean_batch1.BPM_p.bw
+│        ├── WT_Q_day8_tcn_N_auxF_tcF_5781-5782_rep-mean_batch1.KLSC_m.bw
+│        ├── WT_Q_day8_tcn_N_auxF_tcF_5781-5782_rep-mean_batch1.KLSC_p.bw
+│        ├── WT_Q_day8_tcn_SS_auxF_tcF_5781-5782_rep-mean_batch1.KLSC_m.bw
+│        └── WT_Q_day8_tcn_SS_auxF_tcF_5781-5782_rep-mean_batch1.KLSC_p.bw
 ├── fastqs
-│     ├── md5
-│     │     ├── Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1_R1.md5.txt
-│     │     ├── Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1_R2.md5.txt
-│     │     ├── Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1_R3.md5.txt
-│     │     ├── Nab3-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1_R1.md5.txt
-│     │     ├── Nab3-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1_R2.md5.txt
-│     │     ├── Nab3-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1_R3.md5.txt
-│     │     ├── Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1_R1.md5.txt
-│     │     ├── Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1_R2.md5.txt
-│     │     ├── Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1_R3.md5.txt
-│     │     ├── Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1_R1.md5.txt
-│     │     ├── Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1_R2.md5.txt
-│     │     ├── Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1_R3.md5.txt
-│     │     ├── OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125_rep1_batch1_R1.md5.txt
-│     │     ├── OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125_rep1_batch1_R2.md5.txt
-│     │     ├── OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125_rep1_batch1_R3.md5.txt
-│     │     ├── OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6126_rep2_batch1_R1.md5.txt
-│     │     ├── OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6126_rep2_batch1_R2.md5.txt
-│     │     ├── OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6126_rep2_batch1_R3.md5.txt
-│     │     ├── OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125_rep1_batch1_R1.md5.txt
-│     │     ├── OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125_rep1_batch1_R2.md5.txt
-│     │     ├── OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125_rep1_batch1_R3.md5.txt
-│     │     ├── OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6126_rep2_batch1_R1.md5.txt
-│     │     ├── OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6126_rep2_batch1_R2.md5.txt
-│     │     ├── OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6126_rep2_batch1_R3.md5.txt
-│     │     ├── rrp6_DSm2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1_R1.md5.txt
-│     │     ├── rrp6_DSm2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1_R2.md5.txt
-│     │     ├── rrp6_DSm2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1_R3.md5.txt
-│     │     ├── rrp6_DSm2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1_R1.md5.txt
-│     │     ├── rrp6_DSm2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1_R2.md5.txt
-│     │     ├── rrp6_DSm2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1_R3.md5.txt
-│     │     ├── rrp6_DSp24_day3_tcn_SS_auxF_tcT_7078_rep2_batch1_R1.md5.txt
-│     │     ├── rrp6_DSp24_day3_tcn_SS_auxF_tcT_7078_rep2_batch1_R2.md5.txt
-│     │     ├── rrp6_DSp24_day3_tcn_SS_auxF_tcT_7078_rep2_batch1_R3.md5.txt
-│     │     ├── rrp6_DSp24_day3_tcn_SS_auxF_tcT_7079_rep1_batch1_R1.md5.txt
-│     │     ├── rrp6_DSp24_day3_tcn_SS_auxF_tcT_7079_rep1_batch1_R2.md5.txt
-│     │     ├── rrp6_DSp24_day3_tcn_SS_auxF_tcT_7079_rep1_batch1_R3.md5.txt
-│     │     ├── rrp6_DSp2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1_R1.md5.txt
-│     │     ├── rrp6_DSp2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1_R2.md5.txt
-│     │     ├── rrp6_DSp2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1_R3.md5.txt
-│     │     ├── rrp6_DSp2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1_R1.md5.txt
-│     │     ├── rrp6_DSp2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1_R2.md5.txt
-│     │     ├── rrp6_DSp2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1_R3.md5.txt
-│     │     ├── rrp6_DSp48_day4_tcn_SS_auxF_tcT_7078_rep2_batch1_R1.md5.txt
-│     │     ├── rrp6_DSp48_day4_tcn_SS_auxF_tcT_7078_rep2_batch1_R2.md5.txt
-│     │     ├── rrp6_DSp48_day4_tcn_SS_auxF_tcT_7078_rep2_batch1_R3.md5.txt
-│     │     ├── rrp6_DSp48_day4_tcn_SS_auxF_tcT_7079_rep1_batch2_R1.md5.txt
-│     │     ├── rrp6_DSp48_day4_tcn_SS_auxF_tcT_7079_rep1_batch2_R2.md5.txt
-│     │     ├── rrp6_DSp48_day4_tcn_SS_auxF_tcT_7079_rep1_batch2_R3.md5.txt
-│     │     ├── rrp6_G1_day1_tcn_SS_auxF_tcF_7078_rep2_batch2_R1.md5.txt
-│     │     ├── rrp6_G1_day1_tcn_SS_auxF_tcF_7078_rep2_batch2_R2.md5.txt
-│     │     ├── rrp6_G1_day1_tcn_SS_auxF_tcF_7078_rep2_batch2_R3.md5.txt
-│     │     ├── rrp6_G1_day1_tcn_SS_auxF_tcF_7079_rep1_batch2_R1.md5.txt
-│     │     ├── rrp6_G1_day1_tcn_SS_auxF_tcF_7079_rep1_batch2_R2.md5.txt
-│     │     ├── rrp6_G1_day1_tcn_SS_auxF_tcF_7079_rep1_batch2_R3.md5.txt
-│     │     ├── rrp6_Q_day8_tcn_N_auxF_tcF_7078_rep2_batch1_R1.md5.txt
-│     │     ├── rrp6_Q_day8_tcn_N_auxF_tcF_7078_rep2_batch1_R2.md5.txt
-│     │     ├── rrp6_Q_day8_tcn_N_auxF_tcF_7078_rep2_batch1_R3.md5.txt
-│     │     ├── rrp6_Q_day8_tcn_N_auxF_tcF_7079_rep1_batch1_R1.md5.txt
-│     │     ├── rrp6_Q_day8_tcn_N_auxF_tcF_7079_rep1_batch1_R2.md5.txt
-│     │     ├── rrp6_Q_day8_tcn_N_auxF_tcF_7079_rep1_batch1_R3.md5.txt
-│     │     ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch1_R1.md5.txt
-│     │     ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch1_R2.md5.txt
-│     │     ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch1_R3.md5.txt
-│     │     ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch2_R1.md5.txt
-│     │     ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch2_R2.md5.txt
-│     │     ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch2_R3.md5.txt
-│     │     ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7079_rep1_batch1_R1.md5.txt
-│     │     ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7079_rep1_batch1_R2.md5.txt
-│     │     ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7079_rep1_batch1_R3.md5.txt
-│     │     ├── WT_DSm2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1_R1.md5.txt
-│     │     ├── WT_DSm2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1_R2.md5.txt
-│     │     ├── WT_DSm2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1_R3.md5.txt
-│     │     ├── WT_DSm2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1_R1.md5.txt
-│     │     ├── WT_DSm2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1_R2.md5.txt
-│     │     ├── WT_DSm2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1_R3.md5.txt
-│     │     ├── WT_DSp24_day3_tcn_SS_auxF_tcT_5781_rep1_batch1_R1.md5.txt
-│     │     ├── WT_DSp24_day3_tcn_SS_auxF_tcT_5781_rep1_batch1_R2.md5.txt
-│     │     ├── WT_DSp24_day3_tcn_SS_auxF_tcT_5781_rep1_batch1_R3.md5.txt
-│     │     ├── WT_DSp24_day3_tcn_SS_auxF_tcT_5782_rep2_batch1_R1.md5.txt
-│     │     ├── WT_DSp24_day3_tcn_SS_auxF_tcT_5782_rep2_batch1_R2.md5.txt
-│     │     ├── WT_DSp24_day3_tcn_SS_auxF_tcT_5782_rep2_batch1_R3.md5.txt
-│     │     ├── WT_DSp2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1_R1.md5.txt
-│     │     ├── WT_DSp2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1_R2.md5.txt
-│     │     ├── WT_DSp2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1_R3.md5.txt
-│     │     ├── WT_DSp2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1_R1.md5.txt
-│     │     ├── WT_DSp2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1_R2.md5.txt
-│     │     ├── WT_DSp2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1_R3.md5.txt
-│     │     ├── WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch1_R1.md5.txt
-│     │     ├── WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch1_R2.md5.txt
-│     │     ├── WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch1_R3.md5.txt
-│     │     ├── WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch2_R1.md5.txt
-│     │     ├── WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch2_R2.md5.txt
-│     │     ├── WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch2_R3.md5.txt
-│     │     ├── WT_DSp48_day4_tcn_SS_auxF_tcT_5782_rep2_batch1_R1.md5.txt
-│     │     ├── WT_DSp48_day4_tcn_SS_auxF_tcT_5782_rep2_batch1_R2.md5.txt
-│     │     ├── WT_DSp48_day4_tcn_SS_auxF_tcT_5782_rep2_batch1_R3.md5.txt
-│     │     ├── WT_G1_day1_ovn_N_auxF_tcF_5781_rep1_batch1_R1.md5.txt
-│     │     ├── WT_G1_day1_ovn_N_auxF_tcF_5781_rep1_batch1_R2.md5.txt
-│     │     ├── WT_G1_day1_ovn_N_auxF_tcF_5781_rep1_batch1_R3.md5.txt
-│     │     ├── WT_G1_day1_ovn_N_auxF_tcF_5782_rep2_batch1_R1.md5.txt
-│     │     ├── WT_G1_day1_ovn_N_auxF_tcF_5782_rep2_batch1_R2.md5.txt
-│     │     ├── WT_G1_day1_ovn_N_auxF_tcF_5782_rep2_batch1_R3.md5.txt
-│     │     ├── WT_G1_day1_ovn_SS_auxF_tcF_5781_rep1_batch1_R1.md5.txt
-│     │     ├── WT_G1_day1_ovn_SS_auxF_tcF_5781_rep1_batch1_R2.md5.txt
-│     │     ├── WT_G1_day1_ovn_SS_auxF_tcF_5781_rep1_batch1_R3.md5.txt
-│     │     ├── WT_G1_day1_ovn_SS_auxF_tcF_5782_rep2_batch1_R1.md5.txt
-│     │     ├── WT_G1_day1_ovn_SS_auxF_tcF_5782_rep2_batch1_R2.md5.txt
-│     │     ├── WT_G1_day1_ovn_SS_auxF_tcF_5782_rep2_batch1_R3.md5.txt
-│     │     ├── WT_G1_day1_tcn_SS_auxF_tcF_5781_rep1_batch2_R1.md5.txt
-│     │     ├── WT_G1_day1_tcn_SS_auxF_tcF_5781_rep1_batch2_R2.md5.txt
-│     │     ├── WT_G1_day1_tcn_SS_auxF_tcF_5781_rep1_batch2_R3.md5.txt
-│     │     ├── WT_G1_day1_tcn_SS_auxF_tcF_5782_rep2_batch2_R1.md5.txt
-│     │     ├── WT_G1_day1_tcn_SS_auxF_tcF_5782_rep2_batch2_R2.md5.txt
-│     │     ├── WT_G1_day1_tcn_SS_auxF_tcF_5782_rep2_batch2_R3.md5.txt
-│     │     ├── WT_Q_day7_ovn_N_auxF_tcF_5781_rep1_batch1_R1.md5.txt
-│     │     ├── WT_Q_day7_ovn_N_auxF_tcF_5781_rep1_batch1_R2.md5.txt
-│     │     ├── WT_Q_day7_ovn_N_auxF_tcF_5781_rep1_batch1_R3.md5.txt
-│     │     ├── WT_Q_day7_ovn_N_auxF_tcF_5782_rep2_batch1_R1.md5.txt
-│     │     ├── WT_Q_day7_ovn_N_auxF_tcF_5782_rep2_batch1_R2.md5.txt
-│     │     ├── WT_Q_day7_ovn_N_auxF_tcF_5782_rep2_batch1_R3.md5.txt
-│     │     ├── WT_Q_day7_ovn_SS_auxF_tcF_5781_rep1_batch1_R1.md5.txt
-│     │     ├── WT_Q_day7_ovn_SS_auxF_tcF_5781_rep1_batch1_R2.md5.txt
-│     │     ├── WT_Q_day7_ovn_SS_auxF_tcF_5781_rep1_batch1_R3.md5.txt
-│     │     ├── WT_Q_day7_ovn_SS_auxF_tcF_5782_rep2_batch1_R1.md5.txt
-│     │     ├── WT_Q_day7_ovn_SS_auxF_tcF_5782_rep2_batch1_R2.md5.txt
-│     │     ├── WT_Q_day7_ovn_SS_auxF_tcF_5782_rep2_batch1_R3.md5.txt
-│     │     ├── WT_Q_day8_tcn_N_auxF_tcF_5781_rep1_batch1_R1.md5.txt
-│     │     ├── WT_Q_day8_tcn_N_auxF_tcF_5781_rep1_batch1_R2.md5.txt
-│     │     ├── WT_Q_day8_tcn_N_auxF_tcF_5781_rep1_batch1_R3.md5.txt
-│     │     ├── WT_Q_day8_tcn_N_auxF_tcF_5782_rep2_batch1_R1.md5.txt
-│     │     ├── WT_Q_day8_tcn_N_auxF_tcF_5782_rep2_batch1_R2.md5.txt
-│     │     ├── WT_Q_day8_tcn_N_auxF_tcF_5782_rep2_batch1_R3.md5.txt
-│     │     ├── WT_Q_day8_tcn_SS_auxF_tcF_5781_rep1_batch1_R1.md5.txt
-│     │     ├── WT_Q_day8_tcn_SS_auxF_tcF_5781_rep1_batch1_R2.md5.txt
-│     │     ├── WT_Q_day8_tcn_SS_auxF_tcF_5781_rep1_batch1_R3.md5.txt
-│     │     ├── WT_Q_day8_tcn_SS_auxF_tcF_5782_rep2_batch1_R1.md5.txt
-│     │     ├── WT_Q_day8_tcn_SS_auxF_tcF_5782_rep2_batch1_R2.md5.txt
-│     │     └── WT_Q_day8_tcn_SS_auxF_tcF_5782_rep2_batch1_R3.md5.txt
-│     ├── Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1_R1.fq.gz
-│     ├── Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1_R2.fq.gz
-│     ├── Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1_R3.fq.gz
-│     ├── Nab3-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1_R1.fq.gz
-│     ├── Nab3-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1_R2.fq.gz
-│     ├── Nab3-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1_R3.fq.gz
-│     ├── Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1_R1.fq.gz
-│     ├── Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1_R2.fq.gz
-│     ├── Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1_R3.fq.gz
-│     ├── Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1_R1.fq.gz
-│     ├── Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1_R2.fq.gz
-│     ├── Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1_R3.fq.gz
-│     ├── OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125_rep1_batch1_R1.fq.gz
-│     ├── OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125_rep1_batch1_R2.fq.gz
-│     ├── OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125_rep1_batch1_R3.fq.gz
-│     ├── OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6126_rep2_batch1_R1.fq.gz
-│     ├── OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6126_rep2_batch1_R2.fq.gz
-│     ├── OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6126_rep2_batch1_R3.fq.gz
-│     ├── OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125_rep1_batch1_R1.fq.gz
-│     ├── OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125_rep1_batch1_R2.fq.gz
-│     ├── OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125_rep1_batch1_R3.fq.gz
-│     ├── OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6126_rep2_batch1_R1.fq.gz
-│     ├── OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6126_rep2_batch1_R2.fq.gz
-│     ├── OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6126_rep2_batch1_R3.fq.gz
-│     ├── rrp6_DSm2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1_R1.fq.gz
-│     ├── rrp6_DSm2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1_R2.fq.gz
-│     ├── rrp6_DSm2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1_R3.fq.gz
-│     ├── rrp6_DSm2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1_R1.fq.gz
-│     ├── rrp6_DSm2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1_R2.fq.gz
-│     ├── rrp6_DSm2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1_R3.fq.gz
-│     ├── rrp6_DSp24_day3_tcn_SS_auxF_tcT_7078_rep2_batch1_R1.fq.gz
-│     ├── rrp6_DSp24_day3_tcn_SS_auxF_tcT_7078_rep2_batch1_R2.fq.gz
-│     ├── rrp6_DSp24_day3_tcn_SS_auxF_tcT_7078_rep2_batch1_R3.fq.gz
-│     ├── rrp6_DSp24_day3_tcn_SS_auxF_tcT_7079_rep1_batch1_R1.fq.gz
-│     ├── rrp6_DSp24_day3_tcn_SS_auxF_tcT_7079_rep1_batch1_R2.fq.gz
-│     ├── rrp6_DSp24_day3_tcn_SS_auxF_tcT_7079_rep1_batch1_R3.fq.gz
-│     ├── rrp6_DSp2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1_R1.fq.gz
-│     ├── rrp6_DSp2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1_R2.fq.gz
-│     ├── rrp6_DSp2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1_R3.fq.gz
-│     ├── rrp6_DSp2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1_R1.fq.gz
-│     ├── rrp6_DSp2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1_R2.fq.gz
-│     ├── rrp6_DSp2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1_R3.fq.gz
-│     ├── rrp6_DSp48_day4_tcn_SS_auxF_tcT_7078_rep2_batch1_R1.fq.gz
-│     ├── rrp6_DSp48_day4_tcn_SS_auxF_tcT_7078_rep2_batch1_R2.fq.gz
-│     ├── rrp6_DSp48_day4_tcn_SS_auxF_tcT_7078_rep2_batch1_R3.fq.gz
-│     ├── rrp6_DSp48_day4_tcn_SS_auxF_tcT_7079_rep1_batch2_R1.fq.gz
-│     ├── rrp6_DSp48_day4_tcn_SS_auxF_tcT_7079_rep1_batch2_R2.fq.gz
-│     ├── rrp6_DSp48_day4_tcn_SS_auxF_tcT_7079_rep1_batch2_R3.fq.gz
-│     ├── rrp6_G1_day1_tcn_SS_auxF_tcF_7078_rep2_batch2_R1.fq.gz
-│     ├── rrp6_G1_day1_tcn_SS_auxF_tcF_7078_rep2_batch2_R2.fq.gz
-│     ├── rrp6_G1_day1_tcn_SS_auxF_tcF_7078_rep2_batch2_R3.fq.gz
-│     ├── rrp6_G1_day1_tcn_SS_auxF_tcF_7079_rep1_batch2_R1.fq.gz
-│     ├── rrp6_G1_day1_tcn_SS_auxF_tcF_7079_rep1_batch2_R2.fq.gz
-│     ├── rrp6_G1_day1_tcn_SS_auxF_tcF_7079_rep1_batch2_R3.fq.gz
-│     ├── rrp6_Q_day8_tcn_N_auxF_tcF_7078_rep2_batch1_R1.fq.gz
-│     ├── rrp6_Q_day8_tcn_N_auxF_tcF_7078_rep2_batch1_R2.fq.gz
-│     ├── rrp6_Q_day8_tcn_N_auxF_tcF_7078_rep2_batch1_R3.fq.gz
-│     ├── rrp6_Q_day8_tcn_N_auxF_tcF_7079_rep1_batch1_R1.fq.gz
-│     ├── rrp6_Q_day8_tcn_N_auxF_tcF_7079_rep1_batch1_R2.fq.gz
-│     ├── rrp6_Q_day8_tcn_N_auxF_tcF_7079_rep1_batch1_R3.fq.gz
-│     ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch1_R1.fq.gz
-│     ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch1_R2.fq.gz
-│     ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch1_R3.fq.gz
-│     ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch2_R1.fq.gz
-│     ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch2_R2.fq.gz
-│     ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch2_R3.fq.gz
-│     ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7079_rep1_batch1_R1.fq.gz
-│     ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7079_rep1_batch1_R2.fq.gz
-│     ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7079_rep1_batch1_R3.fq.gz
-│     ├── WT_DSm2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1_R1.fq.gz
-│     ├── WT_DSm2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1_R2.fq.gz
-│     ├── WT_DSm2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1_R3.fq.gz
-│     ├── WT_DSm2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1_R1.fq.gz
-│     ├── WT_DSm2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1_R2.fq.gz
-│     ├── WT_DSm2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1_R3.fq.gz
-│     ├── WT_DSp24_day3_tcn_SS_auxF_tcT_5781_rep1_batch1_R1.fq.gz
-│     ├── WT_DSp24_day3_tcn_SS_auxF_tcT_5781_rep1_batch1_R2.fq.gz
-│     ├── WT_DSp24_day3_tcn_SS_auxF_tcT_5781_rep1_batch1_R3.fq.gz
-│     ├── WT_DSp24_day3_tcn_SS_auxF_tcT_5782_rep2_batch1_R1.fq.gz
-│     ├── WT_DSp24_day3_tcn_SS_auxF_tcT_5782_rep2_batch1_R2.fq.gz
-│     ├── WT_DSp24_day3_tcn_SS_auxF_tcT_5782_rep2_batch1_R3.fq.gz
-│     ├── WT_DSp2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1_R1.fq.gz
-│     ├── WT_DSp2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1_R2.fq.gz
-│     ├── WT_DSp2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1_R3.fq.gz
-│     ├── WT_DSp2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1_R1.fq.gz
-│     ├── WT_DSp2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1_R2.fq.gz
-│     ├── WT_DSp2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1_R3.fq.gz
-│     ├── WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch1_R1.fq.gz
-│     ├── WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch1_R2.fq.gz
-│     ├── WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch1_R3.fq.gz
-│     ├── WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch2_R1.fq.gz
-│     ├── WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch2_R2.fq.gz
-│     ├── WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch2_R3.fq.gz
-│     ├── WT_DSp48_day4_tcn_SS_auxF_tcT_5782_rep2_batch1_R1.fq.gz
-│     ├── WT_DSp48_day4_tcn_SS_auxF_tcT_5782_rep2_batch1_R2.fq.gz
-│     ├── WT_DSp48_day4_tcn_SS_auxF_tcT_5782_rep2_batch1_R3.fq.gz
-│     ├── WT_G1_day1_ovn_N_auxF_tcF_5781_rep1_batch1_R1.fq.gz
-│     ├── WT_G1_day1_ovn_N_auxF_tcF_5781_rep1_batch1_R2.fq.gz
-│     ├── WT_G1_day1_ovn_N_auxF_tcF_5781_rep1_batch1_R3.fq.gz
-│     ├── WT_G1_day1_ovn_N_auxF_tcF_5782_rep2_batch1_R1.fq.gz
-│     ├── WT_G1_day1_ovn_N_auxF_tcF_5782_rep2_batch1_R2.fq.gz
-│     ├── WT_G1_day1_ovn_N_auxF_tcF_5782_rep2_batch1_R3.fq.gz
-│     ├── WT_G1_day1_ovn_SS_auxF_tcF_5781_rep1_batch1_R1.fq.gz
-│     ├── WT_G1_day1_ovn_SS_auxF_tcF_5781_rep1_batch1_R2.fq.gz
-│     ├── WT_G1_day1_ovn_SS_auxF_tcF_5781_rep1_batch1_R3.fq.gz
-│     ├── WT_G1_day1_ovn_SS_auxF_tcF_5782_rep2_batch1_R1.fq.gz
-│     ├── WT_G1_day1_ovn_SS_auxF_tcF_5782_rep2_batch1_R2.fq.gz
-│     ├── WT_G1_day1_ovn_SS_auxF_tcF_5782_rep2_batch1_R3.fq.gz
-│     ├── WT_G1_day1_tcn_SS_auxF_tcF_5781_rep1_batch2_R1.fq.gz
-│     ├── WT_G1_day1_tcn_SS_auxF_tcF_5781_rep1_batch2_R2.fq.gz
-│     ├── WT_G1_day1_tcn_SS_auxF_tcF_5781_rep1_batch2_R3.fq.gz
-│     ├── WT_G1_day1_tcn_SS_auxF_tcF_5782_rep2_batch2_R1.fq.gz
-│     ├── WT_G1_day1_tcn_SS_auxF_tcF_5782_rep2_batch2_R2.fq.gz
-│     ├── WT_G1_day1_tcn_SS_auxF_tcF_5782_rep2_batch2_R3.fq.gz
-│     ├── WT_Q_day7_ovn_N_auxF_tcF_5781_rep1_batch1_R1.fq.gz
-│     ├── WT_Q_day7_ovn_N_auxF_tcF_5781_rep1_batch1_R2.fq.gz
-│     ├── WT_Q_day7_ovn_N_auxF_tcF_5781_rep1_batch1_R3.fq.gz
-│     ├── WT_Q_day7_ovn_N_auxF_tcF_5782_rep2_batch1_R1.fq.gz
-│     ├── WT_Q_day7_ovn_N_auxF_tcF_5782_rep2_batch1_R2.fq.gz
-│     ├── WT_Q_day7_ovn_N_auxF_tcF_5782_rep2_batch1_R3.fq.gz
-│     ├── WT_Q_day7_ovn_SS_auxF_tcF_5781_rep1_batch1_R1.fq.gz
-│     ├── WT_Q_day7_ovn_SS_auxF_tcF_5781_rep1_batch1_R2.fq.gz
-│     ├── WT_Q_day7_ovn_SS_auxF_tcF_5781_rep1_batch1_R3.fq.gz
-│     ├── WT_Q_day7_ovn_SS_auxF_tcF_5782_rep2_batch1_R1.fq.gz
-│     ├── WT_Q_day7_ovn_SS_auxF_tcF_5782_rep2_batch1_R2.fq.gz
-│     ├── WT_Q_day7_ovn_SS_auxF_tcF_5782_rep2_batch1_R3.fq.gz
-│     ├── WT_Q_day8_tcn_N_auxF_tcF_5781_rep1_batch1_R1.fq.gz
-│     ├── WT_Q_day8_tcn_N_auxF_tcF_5781_rep1_batch1_R2.fq.gz
-│     ├── WT_Q_day8_tcn_N_auxF_tcF_5781_rep1_batch1_R3.fq.gz
-│     ├── WT_Q_day8_tcn_N_auxF_tcF_5782_rep2_batch1_R1.fq.gz
-│     ├── WT_Q_day8_tcn_N_auxF_tcF_5782_rep2_batch1_R2.fq.gz
-│     ├── WT_Q_day8_tcn_N_auxF_tcF_5782_rep2_batch1_R3.fq.gz
-│     ├── WT_Q_day8_tcn_SS_auxF_tcF_5781_rep1_batch1_R1.fq.gz
-│     ├── WT_Q_day8_tcn_SS_auxF_tcF_5781_rep1_batch1_R2.fq.gz
-│     ├── WT_Q_day8_tcn_SS_auxF_tcF_5781_rep1_batch1_R3.fq.gz
-│     ├── WT_Q_day8_tcn_SS_auxF_tcF_5782_rep2_batch1_R1.fq.gz
-│     ├── WT_Q_day8_tcn_SS_auxF_tcF_5782_rep2_batch1_R2.fq.gz
-│     └── WT_Q_day8_tcn_SS_auxF_tcF_5782_rep2_batch1_R3.fq.gz
+│    ├── md5
+│    │    ├── Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1_R1.md5.txt
+│    │    ├── Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1_R2.md5.txt
+│    │    ├── Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1_R3.md5.txt
+│    │    ├── Nab3-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1_R1.md5.txt
+│    │    ├── Nab3-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1_R2.md5.txt
+│    │    ├── Nab3-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1_R3.md5.txt
+│    │    ├── Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1_R1.md5.txt
+│    │    ├── Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1_R2.md5.txt
+│    │    ├── Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1_R3.md5.txt
+│    │    ├── Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1_R1.md5.txt
+│    │    ├── Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1_R2.md5.txt
+│    │    ├── Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1_R3.md5.txt
+│    │    ├── OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125_rep1_batch1_R1.md5.txt
+│    │    ├── OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125_rep1_batch1_R2.md5.txt
+│    │    ├── OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125_rep1_batch1_R3.md5.txt
+│    │    ├── OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6126_rep2_batch1_R1.md5.txt
+│    │    ├── OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6126_rep2_batch1_R2.md5.txt
+│    │    ├── OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6126_rep2_batch1_R3.md5.txt
+│    │    ├── OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125_rep1_batch1_R1.md5.txt
+│    │    ├── OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125_rep1_batch1_R2.md5.txt
+│    │    ├── OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125_rep1_batch1_R3.md5.txt
+│    │    ├── OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6126_rep2_batch1_R1.md5.txt
+│    │    ├── OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6126_rep2_batch1_R2.md5.txt
+│    │    ├── OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6126_rep2_batch1_R3.md5.txt
+│    │    ├── rrp6_DSm2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1_R1.md5.txt
+│    │    ├── rrp6_DSm2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1_R2.md5.txt
+│    │    ├── rrp6_DSm2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1_R3.md5.txt
+│    │    ├── rrp6_DSm2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1_R1.md5.txt
+│    │    ├── rrp6_DSm2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1_R2.md5.txt
+│    │    ├── rrp6_DSm2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1_R3.md5.txt
+│    │    ├── rrp6_DSp24_day3_tcn_SS_auxF_tcT_7078_rep2_batch1_R1.md5.txt
+│    │    ├── rrp6_DSp24_day3_tcn_SS_auxF_tcT_7078_rep2_batch1_R2.md5.txt
+│    │    ├── rrp6_DSp24_day3_tcn_SS_auxF_tcT_7078_rep2_batch1_R3.md5.txt
+│    │    ├── rrp6_DSp24_day3_tcn_SS_auxF_tcT_7079_rep1_batch1_R1.md5.txt
+│    │    ├── rrp6_DSp24_day3_tcn_SS_auxF_tcT_7079_rep1_batch1_R2.md5.txt
+│    │    ├── rrp6_DSp24_day3_tcn_SS_auxF_tcT_7079_rep1_batch1_R3.md5.txt
+│    │    ├── rrp6_DSp2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1_R1.md5.txt
+│    │    ├── rrp6_DSp2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1_R2.md5.txt
+│    │    ├── rrp6_DSp2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1_R3.md5.txt
+│    │    ├── rrp6_DSp2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1_R1.md5.txt
+│    │    ├── rrp6_DSp2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1_R2.md5.txt
+│    │    ├── rrp6_DSp2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1_R3.md5.txt
+│    │    ├── rrp6_DSp48_day4_tcn_SS_auxF_tcT_7078_rep2_batch1_R1.md5.txt
+│    │    ├── rrp6_DSp48_day4_tcn_SS_auxF_tcT_7078_rep2_batch1_R2.md5.txt
+│    │    ├── rrp6_DSp48_day4_tcn_SS_auxF_tcT_7078_rep2_batch1_R3.md5.txt
+│    │    ├── rrp6_DSp48_day4_tcn_SS_auxF_tcT_7079_rep1_batch2_R1.md5.txt
+│    │    ├── rrp6_DSp48_day4_tcn_SS_auxF_tcT_7079_rep1_batch2_R2.md5.txt
+│    │    ├── rrp6_DSp48_day4_tcn_SS_auxF_tcT_7079_rep1_batch2_R3.md5.txt
+│    │    ├── rrp6_G1_day1_tcn_SS_auxF_tcF_7078_rep2_batch2_R1.md5.txt
+│    │    ├── rrp6_G1_day1_tcn_SS_auxF_tcF_7078_rep2_batch2_R2.md5.txt
+│    │    ├── rrp6_G1_day1_tcn_SS_auxF_tcF_7078_rep2_batch2_R3.md5.txt
+│    │    ├── rrp6_G1_day1_tcn_SS_auxF_tcF_7079_rep1_batch2_R1.md5.txt
+│    │    ├── rrp6_G1_day1_tcn_SS_auxF_tcF_7079_rep1_batch2_R2.md5.txt
+│    │    ├── rrp6_G1_day1_tcn_SS_auxF_tcF_7079_rep1_batch2_R3.md5.txt
+│    │    ├── rrp6_Q_day8_tcn_N_auxF_tcF_7078_rep2_batch1_R1.md5.txt
+│    │    ├── rrp6_Q_day8_tcn_N_auxF_tcF_7078_rep2_batch1_R2.md5.txt
+│    │    ├── rrp6_Q_day8_tcn_N_auxF_tcF_7078_rep2_batch1_R3.md5.txt
+│    │    ├── rrp6_Q_day8_tcn_N_auxF_tcF_7079_rep1_batch1_R1.md5.txt
+│    │    ├── rrp6_Q_day8_tcn_N_auxF_tcF_7079_rep1_batch1_R2.md5.txt
+│    │    ├── rrp6_Q_day8_tcn_N_auxF_tcF_7079_rep1_batch1_R3.md5.txt
+│    │    ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch1_R1.md5.txt
+│    │    ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch1_R2.md5.txt
+│    │    ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch1_R3.md5.txt
+│    │    ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch2_R1.md5.txt
+│    │    ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch2_R2.md5.txt
+│    │    ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch2_R3.md5.txt
+│    │    ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7079_rep1_batch1_R1.md5.txt
+│    │    ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7079_rep1_batch1_R2.md5.txt
+│    │    ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7079_rep1_batch1_R3.md5.txt
+│    │    ├── WT_DSm2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1_R1.md5.txt
+│    │    ├── WT_DSm2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1_R2.md5.txt
+│    │    ├── WT_DSm2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1_R3.md5.txt
+│    │    ├── WT_DSm2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1_R1.md5.txt
+│    │    ├── WT_DSm2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1_R2.md5.txt
+│    │    ├── WT_DSm2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1_R3.md5.txt
+│    │    ├── WT_DSp24_day3_tcn_SS_auxF_tcT_5781_rep1_batch1_R1.md5.txt
+│    │    ├── WT_DSp24_day3_tcn_SS_auxF_tcT_5781_rep1_batch1_R2.md5.txt
+│    │    ├── WT_DSp24_day3_tcn_SS_auxF_tcT_5781_rep1_batch1_R3.md5.txt
+│    │    ├── WT_DSp24_day3_tcn_SS_auxF_tcT_5782_rep2_batch1_R1.md5.txt
+│    │    ├── WT_DSp24_day3_tcn_SS_auxF_tcT_5782_rep2_batch1_R2.md5.txt
+│    │    ├── WT_DSp24_day3_tcn_SS_auxF_tcT_5782_rep2_batch1_R3.md5.txt
+│    │    ├── WT_DSp2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1_R1.md5.txt
+│    │    ├── WT_DSp2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1_R2.md5.txt
+│    │    ├── WT_DSp2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1_R3.md5.txt
+│    │    ├── WT_DSp2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1_R1.md5.txt
+│    │    ├── WT_DSp2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1_R2.md5.txt
+│    │    ├── WT_DSp2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1_R3.md5.txt
+│    │    ├── WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch1_R1.md5.txt
+│    │    ├── WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch1_R2.md5.txt
+│    │    ├── WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch1_R3.md5.txt
+│    │    ├── WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch2_R1.md5.txt
+│    │    ├── WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch2_R2.md5.txt
+│    │    ├── WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch2_R3.md5.txt
+│    │    ├── WT_DSp48_day4_tcn_SS_auxF_tcT_5782_rep2_batch1_R1.md5.txt
+│    │    ├── WT_DSp48_day4_tcn_SS_auxF_tcT_5782_rep2_batch1_R2.md5.txt
+│    │    ├── WT_DSp48_day4_tcn_SS_auxF_tcT_5782_rep2_batch1_R3.md5.txt
+│    │    ├── WT_G1_day1_ovn_N_auxF_tcF_5781_rep1_batch1_R1.md5.txt
+│    │    ├── WT_G1_day1_ovn_N_auxF_tcF_5781_rep1_batch1_R2.md5.txt
+│    │    ├── WT_G1_day1_ovn_N_auxF_tcF_5781_rep1_batch1_R3.md5.txt
+│    │    ├── WT_G1_day1_ovn_N_auxF_tcF_5782_rep2_batch1_R1.md5.txt
+│    │    ├── WT_G1_day1_ovn_N_auxF_tcF_5782_rep2_batch1_R2.md5.txt
+│    │    ├── WT_G1_day1_ovn_N_auxF_tcF_5782_rep2_batch1_R3.md5.txt
+│    │    ├── WT_G1_day1_ovn_SS_auxF_tcF_5781_rep1_batch1_R1.md5.txt
+│    │    ├── WT_G1_day1_ovn_SS_auxF_tcF_5781_rep1_batch1_R2.md5.txt
+│    │    ├── WT_G1_day1_ovn_SS_auxF_tcF_5781_rep1_batch1_R3.md5.txt
+│    │    ├── WT_G1_day1_ovn_SS_auxF_tcF_5782_rep2_batch1_R1.md5.txt
+│    │    ├── WT_G1_day1_ovn_SS_auxF_tcF_5782_rep2_batch1_R2.md5.txt
+│    │    ├── WT_G1_day1_ovn_SS_auxF_tcF_5782_rep2_batch1_R3.md5.txt
+│    │    ├── WT_G1_day1_tcn_SS_auxF_tcF_5781_rep1_batch2_R1.md5.txt
+│    │    ├── WT_G1_day1_tcn_SS_auxF_tcF_5781_rep1_batch2_R2.md5.txt
+│    │    ├── WT_G1_day1_tcn_SS_auxF_tcF_5781_rep1_batch2_R3.md5.txt
+│    │    ├── WT_G1_day1_tcn_SS_auxF_tcF_5782_rep2_batch2_R1.md5.txt
+│    │    ├── WT_G1_day1_tcn_SS_auxF_tcF_5782_rep2_batch2_R2.md5.txt
+│    │    ├── WT_G1_day1_tcn_SS_auxF_tcF_5782_rep2_batch2_R3.md5.txt
+│    │    ├── WT_Q_day7_ovn_N_auxF_tcF_5781_rep1_batch1_R1.md5.txt
+│    │    ├── WT_Q_day7_ovn_N_auxF_tcF_5781_rep1_batch1_R2.md5.txt
+│    │    ├── WT_Q_day7_ovn_N_auxF_tcF_5781_rep1_batch1_R3.md5.txt
+│    │    ├── WT_Q_day7_ovn_N_auxF_tcF_5782_rep2_batch1_R1.md5.txt
+│    │    ├── WT_Q_day7_ovn_N_auxF_tcF_5782_rep2_batch1_R2.md5.txt
+│    │    ├── WT_Q_day7_ovn_N_auxF_tcF_5782_rep2_batch1_R3.md5.txt
+│    │    ├── WT_Q_day7_ovn_SS_auxF_tcF_5781_rep1_batch1_R1.md5.txt
+│    │    ├── WT_Q_day7_ovn_SS_auxF_tcF_5781_rep1_batch1_R2.md5.txt
+│    │    ├── WT_Q_day7_ovn_SS_auxF_tcF_5781_rep1_batch1_R3.md5.txt
+│    │    ├── WT_Q_day7_ovn_SS_auxF_tcF_5782_rep2_batch1_R1.md5.txt
+│    │    ├── WT_Q_day7_ovn_SS_auxF_tcF_5782_rep2_batch1_R2.md5.txt
+│    │    ├── WT_Q_day7_ovn_SS_auxF_tcF_5782_rep2_batch1_R3.md5.txt
+│    │    ├── WT_Q_day8_tcn_N_auxF_tcF_5781_rep1_batch1_R1.md5.txt
+│    │    ├── WT_Q_day8_tcn_N_auxF_tcF_5781_rep1_batch1_R2.md5.txt
+│    │    ├── WT_Q_day8_tcn_N_auxF_tcF_5781_rep1_batch1_R3.md5.txt
+│    │    ├── WT_Q_day8_tcn_N_auxF_tcF_5782_rep2_batch1_R1.md5.txt
+│    │    ├── WT_Q_day8_tcn_N_auxF_tcF_5782_rep2_batch1_R2.md5.txt
+│    │    ├── WT_Q_day8_tcn_N_auxF_tcF_5782_rep2_batch1_R3.md5.txt
+│    │    ├── WT_Q_day8_tcn_SS_auxF_tcF_5781_rep1_batch1_R1.md5.txt
+│    │    ├── WT_Q_day8_tcn_SS_auxF_tcF_5781_rep1_batch1_R2.md5.txt
+│    │    ├── WT_Q_day8_tcn_SS_auxF_tcF_5781_rep1_batch1_R3.md5.txt
+│    │    ├── WT_Q_day8_tcn_SS_auxF_tcF_5782_rep2_batch1_R1.md5.txt
+│    │    ├── WT_Q_day8_tcn_SS_auxF_tcF_5782_rep2_batch1_R2.md5.txt
+│    │    └── WT_Q_day8_tcn_SS_auxF_tcF_5782_rep2_batch1_R3.md5.txt
+│    ├── Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1_R1.fq.gz
+│    ├── Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1_R2.fq.gz
+│    ├── Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1_R3.fq.gz
+│    ├── Nab3-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1_R1.fq.gz
+│    ├── Nab3-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1_R2.fq.gz
+│    ├── Nab3-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1_R3.fq.gz
+│    ├── Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1_R1.fq.gz
+│    ├── Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1_R2.fq.gz
+│    ├── Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1_R3.fq.gz
+│    ├── Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1_R1.fq.gz
+│    ├── Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1_R2.fq.gz
+│    ├── Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1_R3.fq.gz
+│    ├── OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125_rep1_batch1_R1.fq.gz
+│    ├── OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125_rep1_batch1_R2.fq.gz
+│    ├── OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125_rep1_batch1_R3.fq.gz
+│    ├── OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6126_rep2_batch1_R1.fq.gz
+│    ├── OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6126_rep2_batch1_R2.fq.gz
+│    ├── OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6126_rep2_batch1_R3.fq.gz
+│    ├── OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125_rep1_batch1_R1.fq.gz
+│    ├── OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125_rep1_batch1_R2.fq.gz
+│    ├── OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125_rep1_batch1_R3.fq.gz
+│    ├── OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6126_rep2_batch1_R1.fq.gz
+│    ├── OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6126_rep2_batch1_R2.fq.gz
+│    ├── OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6126_rep2_batch1_R3.fq.gz
+│    ├── rrp6_DSm2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1_R1.fq.gz
+│    ├── rrp6_DSm2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1_R2.fq.gz
+│    ├── rrp6_DSm2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1_R3.fq.gz
+│    ├── rrp6_DSm2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1_R1.fq.gz
+│    ├── rrp6_DSm2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1_R2.fq.gz
+│    ├── rrp6_DSm2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1_R3.fq.gz
+│    ├── rrp6_DSp24_day3_tcn_SS_auxF_tcT_7078_rep2_batch1_R1.fq.gz
+│    ├── rrp6_DSp24_day3_tcn_SS_auxF_tcT_7078_rep2_batch1_R2.fq.gz
+│    ├── rrp6_DSp24_day3_tcn_SS_auxF_tcT_7078_rep2_batch1_R3.fq.gz
+│    ├── rrp6_DSp24_day3_tcn_SS_auxF_tcT_7079_rep1_batch1_R1.fq.gz
+│    ├── rrp6_DSp24_day3_tcn_SS_auxF_tcT_7079_rep1_batch1_R2.fq.gz
+│    ├── rrp6_DSp24_day3_tcn_SS_auxF_tcT_7079_rep1_batch1_R3.fq.gz
+│    ├── rrp6_DSp2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1_R1.fq.gz
+│    ├── rrp6_DSp2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1_R2.fq.gz
+│    ├── rrp6_DSp2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1_R3.fq.gz
+│    ├── rrp6_DSp2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1_R1.fq.gz
+│    ├── rrp6_DSp2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1_R2.fq.gz
+│    ├── rrp6_DSp2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1_R3.fq.gz
+│    ├── rrp6_DSp48_day4_tcn_SS_auxF_tcT_7078_rep2_batch1_R1.fq.gz
+│    ├── rrp6_DSp48_day4_tcn_SS_auxF_tcT_7078_rep2_batch1_R2.fq.gz
+│    ├── rrp6_DSp48_day4_tcn_SS_auxF_tcT_7078_rep2_batch1_R3.fq.gz
+│    ├── rrp6_DSp48_day4_tcn_SS_auxF_tcT_7079_rep1_batch2_R1.fq.gz
+│    ├── rrp6_DSp48_day4_tcn_SS_auxF_tcT_7079_rep1_batch2_R2.fq.gz
+│    ├── rrp6_DSp48_day4_tcn_SS_auxF_tcT_7079_rep1_batch2_R3.fq.gz
+│    ├── rrp6_G1_day1_tcn_SS_auxF_tcF_7078_rep2_batch2_R1.fq.gz
+│    ├── rrp6_G1_day1_tcn_SS_auxF_tcF_7078_rep2_batch2_R2.fq.gz
+│    ├── rrp6_G1_day1_tcn_SS_auxF_tcF_7078_rep2_batch2_R3.fq.gz
+│    ├── rrp6_G1_day1_tcn_SS_auxF_tcF_7079_rep1_batch2_R1.fq.gz
+│    ├── rrp6_G1_day1_tcn_SS_auxF_tcF_7079_rep1_batch2_R2.fq.gz
+│    ├── rrp6_G1_day1_tcn_SS_auxF_tcF_7079_rep1_batch2_R3.fq.gz
+│    ├── rrp6_Q_day8_tcn_N_auxF_tcF_7078_rep2_batch1_R1.fq.gz
+│    ├── rrp6_Q_day8_tcn_N_auxF_tcF_7078_rep2_batch1_R2.fq.gz
+│    ├── rrp6_Q_day8_tcn_N_auxF_tcF_7078_rep2_batch1_R3.fq.gz
+│    ├── rrp6_Q_day8_tcn_N_auxF_tcF_7079_rep1_batch1_R1.fq.gz
+│    ├── rrp6_Q_day8_tcn_N_auxF_tcF_7079_rep1_batch1_R2.fq.gz
+│    ├── rrp6_Q_day8_tcn_N_auxF_tcF_7079_rep1_batch1_R3.fq.gz
+│    ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch1_R1.fq.gz
+│    ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch1_R2.fq.gz
+│    ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch1_R3.fq.gz
+│    ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch2_R1.fq.gz
+│    ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch2_R2.fq.gz
+│    ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch2_R3.fq.gz
+│    ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7079_rep1_batch1_R1.fq.gz
+│    ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7079_rep1_batch1_R2.fq.gz
+│    ├── rrp6_Q_day8_tcn_SS_auxF_tcF_7079_rep1_batch1_R3.fq.gz
+│    ├── WT_DSm2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1_R1.fq.gz
+│    ├── WT_DSm2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1_R2.fq.gz
+│    ├── WT_DSm2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1_R3.fq.gz
+│    ├── WT_DSm2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1_R1.fq.gz
+│    ├── WT_DSm2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1_R2.fq.gz
+│    ├── WT_DSm2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1_R3.fq.gz
+│    ├── WT_DSp24_day3_tcn_SS_auxF_tcT_5781_rep1_batch1_R1.fq.gz
+│    ├── WT_DSp24_day3_tcn_SS_auxF_tcT_5781_rep1_batch1_R2.fq.gz
+│    ├── WT_DSp24_day3_tcn_SS_auxF_tcT_5781_rep1_batch1_R3.fq.gz
+│    ├── WT_DSp24_day3_tcn_SS_auxF_tcT_5782_rep2_batch1_R1.fq.gz
+│    ├── WT_DSp24_day3_tcn_SS_auxF_tcT_5782_rep2_batch1_R2.fq.gz
+│    ├── WT_DSp24_day3_tcn_SS_auxF_tcT_5782_rep2_batch1_R3.fq.gz
+│    ├── WT_DSp2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1_R1.fq.gz
+│    ├── WT_DSp2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1_R2.fq.gz
+│    ├── WT_DSp2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1_R3.fq.gz
+│    ├── WT_DSp2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1_R1.fq.gz
+│    ├── WT_DSp2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1_R2.fq.gz
+│    ├── WT_DSp2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1_R3.fq.gz
+│    ├── WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch1_R1.fq.gz
+│    ├── WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch1_R2.fq.gz
+│    ├── WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch1_R3.fq.gz
+│    ├── WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch2_R1.fq.gz
+│    ├── WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch2_R2.fq.gz
+│    ├── WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch2_R3.fq.gz
+│    ├── WT_DSp48_day4_tcn_SS_auxF_tcT_5782_rep2_batch1_R1.fq.gz
+│    ├── WT_DSp48_day4_tcn_SS_auxF_tcT_5782_rep2_batch1_R2.fq.gz
+│    ├── WT_DSp48_day4_tcn_SS_auxF_tcT_5782_rep2_batch1_R3.fq.gz
+│    ├── WT_G1_day1_ovn_N_auxF_tcF_5781_rep1_batch1_R1.fq.gz
+│    ├── WT_G1_day1_ovn_N_auxF_tcF_5781_rep1_batch1_R2.fq.gz
+│    ├── WT_G1_day1_ovn_N_auxF_tcF_5781_rep1_batch1_R3.fq.gz
+│    ├── WT_G1_day1_ovn_N_auxF_tcF_5782_rep2_batch1_R1.fq.gz
+│    ├── WT_G1_day1_ovn_N_auxF_tcF_5782_rep2_batch1_R2.fq.gz
+│    ├── WT_G1_day1_ovn_N_auxF_tcF_5782_rep2_batch1_R3.fq.gz
+│    ├── WT_G1_day1_ovn_SS_auxF_tcF_5781_rep1_batch1_R1.fq.gz
+│    ├── WT_G1_day1_ovn_SS_auxF_tcF_5781_rep1_batch1_R2.fq.gz
+│    ├── WT_G1_day1_ovn_SS_auxF_tcF_5781_rep1_batch1_R3.fq.gz
+│    ├── WT_G1_day1_ovn_SS_auxF_tcF_5782_rep2_batch1_R1.fq.gz
+│    ├── WT_G1_day1_ovn_SS_auxF_tcF_5782_rep2_batch1_R2.fq.gz
+│    ├── WT_G1_day1_ovn_SS_auxF_tcF_5782_rep2_batch1_R3.fq.gz
+│    ├── WT_G1_day1_tcn_SS_auxF_tcF_5781_rep1_batch2_R1.fq.gz
+│    ├── WT_G1_day1_tcn_SS_auxF_tcF_5781_rep1_batch2_R2.fq.gz
+│    ├── WT_G1_day1_tcn_SS_auxF_tcF_5781_rep1_batch2_R3.fq.gz
+│    ├── WT_G1_day1_tcn_SS_auxF_tcF_5782_rep2_batch2_R1.fq.gz
+│    ├── WT_G1_day1_tcn_SS_auxF_tcF_5782_rep2_batch2_R2.fq.gz
+│    ├── WT_G1_day1_tcn_SS_auxF_tcF_5782_rep2_batch2_R3.fq.gz
+│    ├── WT_Q_day7_ovn_N_auxF_tcF_5781_rep1_batch1_R1.fq.gz
+│    ├── WT_Q_day7_ovn_N_auxF_tcF_5781_rep1_batch1_R2.fq.gz
+│    ├── WT_Q_day7_ovn_N_auxF_tcF_5781_rep1_batch1_R3.fq.gz
+│    ├── WT_Q_day7_ovn_N_auxF_tcF_5782_rep2_batch1_R1.fq.gz
+│    ├── WT_Q_day7_ovn_N_auxF_tcF_5782_rep2_batch1_R2.fq.gz
+│    ├── WT_Q_day7_ovn_N_auxF_tcF_5782_rep2_batch1_R3.fq.gz
+│    ├── WT_Q_day7_ovn_SS_auxF_tcF_5781_rep1_batch1_R1.fq.gz
+│    ├── WT_Q_day7_ovn_SS_auxF_tcF_5781_rep1_batch1_R2.fq.gz
+│    ├── WT_Q_day7_ovn_SS_auxF_tcF_5781_rep1_batch1_R3.fq.gz
+│    ├── WT_Q_day7_ovn_SS_auxF_tcF_5782_rep2_batch1_R1.fq.gz
+│    ├── WT_Q_day7_ovn_SS_auxF_tcF_5782_rep2_batch1_R2.fq.gz
+│    ├── WT_Q_day7_ovn_SS_auxF_tcF_5782_rep2_batch1_R3.fq.gz
+│    ├── WT_Q_day8_tcn_N_auxF_tcF_5781_rep1_batch1_R1.fq.gz
+│    ├── WT_Q_day8_tcn_N_auxF_tcF_5781_rep1_batch1_R2.fq.gz
+│    ├── WT_Q_day8_tcn_N_auxF_tcF_5781_rep1_batch1_R3.fq.gz
+│    ├── WT_Q_day8_tcn_N_auxF_tcF_5782_rep2_batch1_R1.fq.gz
+│    ├── WT_Q_day8_tcn_N_auxF_tcF_5782_rep2_batch1_R2.fq.gz
+│    ├── WT_Q_day8_tcn_N_auxF_tcF_5782_rep2_batch1_R3.fq.gz
+│    ├── WT_Q_day8_tcn_SS_auxF_tcF_5781_rep1_batch1_R1.fq.gz
+│    ├── WT_Q_day8_tcn_SS_auxF_tcF_5781_rep1_batch1_R2.fq.gz
+│    ├── WT_Q_day8_tcn_SS_auxF_tcF_5781_rep1_batch1_R3.fq.gz
+│    ├── WT_Q_day8_tcn_SS_auxF_tcF_5782_rep2_batch1_R1.fq.gz
+│    ├── WT_Q_day8_tcn_SS_auxF_tcF_5782_rep2_batch1_R2.fq.gz
+│    └── WT_Q_day8_tcn_SS_auxF_tcF_5782_rep2_batch1_R3.fq.gz
 ├── gtfs
-│     ├── Greenlaw-et-al.concatenated-genome_SC-KL-20S.gff3
-│     ├── Greenlaw-et-al.R64-1-1_blacklist_rRNA-tRNA.gtf
-│     ├── Greenlaw-et-al.R64-1-1_features-intergenic_sense-antisense.gtf
-│     ├── Greenlaw-et-al.txome_nascent_G1.gtf
-│     ├── Greenlaw-et-al.txome_nascent_Q.gtf
-│     ├── Greenlaw-et-al.txome_non-collapsed-pa-ncRNA.gtf
-│     ├── Greenlaw-et-al.txome_representative-coding-non-pa-ncRNA.gtf
-│     ├── Greenlaw-et-al.txome_representative-pa-ncRNA.gtf
-│     └── md5
-│         ├── Greenlaw-et-al.concatenated-genome_SC-KL-20S.md5.txt
-│         ├── Greenlaw-et-al.R64-1-1_blacklist_rRNA-tRNA.md5.txt
-│         ├── Greenlaw-et-al.R64-1-1_features-intergenic_sense-antisense.md5.txt
-│         ├── Greenlaw-et-al.txome_nascent_G1.md5.txt
-│         ├── Greenlaw-et-al.txome_nascent_Q.md5.txt
-│         ├── Greenlaw-et-al.txome_non-collapsed-pa-ncRNA.md5.txt
-│         ├── Greenlaw-et-al.txome_representative-coding-non-pa-ncRNA.md5.txt
-│         └── Greenlaw-et-al.txome_representative-pa-ncRNA.md5.txt
+│    ├── Greenlaw-et-al.concatenated-genome_SC-KL-20S.gff3
+│    ├── Greenlaw-et-al.R64-1-1_blacklist_rRNA-tRNA.gtf
+│    ├── Greenlaw-et-al.R64-1-1_features-intergenic_sense-antisense.gtf
+│    ├── Greenlaw-et-al.txome_nascent_G1.gtf
+│    ├── Greenlaw-et-al.txome_nascent_Q.gtf
+│    ├── Greenlaw-et-al.txome_non-collapsed-pa-ncRNA.gtf
+│    ├── Greenlaw-et-al.txome_representative-coding-non-pa-ncRNA.gtf
+│    ├── Greenlaw-et-al.txome_representative-pa-ncRNA.gtf
+│    └── md5
+│        ├── Greenlaw-et-al.concatenated-genome_SC-KL-20S.md5.txt
+│        ├── Greenlaw-et-al.R64-1-1_blacklist_rRNA-tRNA.md5.txt
+│        ├── Greenlaw-et-al.R64-1-1_features-intergenic_sense-antisense.md5.txt
+│        ├── Greenlaw-et-al.txome_nascent_G1.md5.txt
+│        ├── Greenlaw-et-al.txome_nascent_Q.md5.txt
+│        ├── Greenlaw-et-al.txome_non-collapsed-pa-ncRNA.md5.txt
+│        ├── Greenlaw-et-al.txome_representative-coding-non-pa-ncRNA.md5.txt
+│        └── Greenlaw-et-al.txome_representative-pa-ncRNA.md5.txt
 └── matrices
     ├── Greenlaw-et-al.concatenated-genome_SC-KL-20S.mRNA.hc_strd-eq_nonuniq-none.tsv
     ├── Greenlaw-et-al.concatenated-genome_SC-KL-20S.mRNA.hc_strd-op_nonuniq-none.tsv
@@ -7978,6 +8943,8 @@ echo $(( 46 + 4 + 90 + 28 + 138 + 8 + 7 ))
         ├── Greenlaw-et-al.txome_non-collapsed-pa-ncRNA.hc_strd-eq_nonuniq-none.md5.txt
         ├── Greenlaw-et-al.txome_representative-coding-non-pa-ncRNA.hc_strd-eq_nonuniq-none.md5.txt
         └── Greenlaw-et-al.txome_representative-pa-ncRNA.hc_strd-eq_nonuniq-none.md5.txt
+
+16 directories, 642 files
 
 
 ❯ find bams/standard-analyses/ -type f -name "*.bam" | wc -l
@@ -8008,7 +8975,7 @@ echo $(( 46 + 4 + 90 + 28 + 138 + 8 + 7 ))
 7
 
 
-❯ ..
+❯ cd ..
 
 
 ❯ du -cshl GEO/
@@ -8021,4 +8988,17 @@ echo $(( 46 + 4 + 90 + 28 + 138 + 8 + 7 ))
 ```
 </details>
 <br />
+<br />
+
+<a id="working-out-the-data-processing-text-for-the-submission-to-geo"></a>
+## Working out the "data processing" text for the submission to GEO
+We assessed the quality of sequenced paired-end reads from 4tU-seq with FastQC (version 0.11.8) and MultiQC (version 1.14).
+
+We appended sequenced unique molecular identifiers (UMIs) to fastq QNAMEs with UMI-tools (version 1.01); after alignment (see below), we used this information to distinguish and filter out PCR amplification-based duplicate reads while retaining duplicate reads that are biological in origin.
+
+We performed read adapter and quality trimming with Atria (version 3.2.1) with default settings except for the switch --no-length-filtration.
+
+Using the program Rcorrector (version 1.0.5; default settings), we corrected random sequencing errors in the Ovation fastq files used to generate Q and G1 nascent transcriptome gtfs; afterwards, we filtered the corrected fastq files to exclude read pairs identified as containing irreparable errors.
+
+Using STAR (version 2.7.10b), paired-end 4tU-seq reads were aligned to a combined reference genome made from the concatenation of fasta files for the following organisms: S. cerevisiae (version R64-1-1; Saccharomyces_cerevisiae.R64-1-1.dna.toplevel.fasta), K. lactis (version ASM251v1; Kluyveromyces_lactis_gca_000002515.ASM251v1.dna.toplevel.fasta), and 20S RNA narnavirus (version NC004051; 20S_RNA_Narnavirus_1997_NC004051.fasta).
 <br />
