@@ -8,19 +8,19 @@
 <!-- MarkdownTOC -->
 
 1. [Create gff3s for specific Trinity-GG Q_N fastas](#create-gff3s-for-specific-trinity-gg-q_n-fastas)
-	1. [Get situated, create outdirectories and arrays for in-, outfiles](#get-situated-create-outdirectories-and-arrays-for-in--outfiles)
-		1. [Code](#code)
-	1. [Use a HEREDOC to make a GMAP submission script](#use-a-heredoc-to-make-a-gmap-submission-script)
-		1. [Code](#code-1)
-	1. [Launch GMAP for in-/outfile combinations](#launch-gmap-for-in-outfile-combinations)
-		1. [Code](#code-2)
+    1. [Get situated, create outdirectories and arrays for in-, outfiles](#get-situated-create-outdirectories-and-arrays-for-in--outfiles)
+        1. [Code](#code)
+    1. [Use a HEREDOC to make a GMAP submission script](#use-a-heredoc-to-make-a-gmap-submission-script)
+        1. [Code](#code-1)
+    1. [Launch GMAP for in-/outfile combinations](#launch-gmap-for-in-outfile-combinations)
+        1. [Code](#code-2)
 1. [Create gff3s for specific Trinity-GG G_N fastas](#create-gff3s-for-specific-trinity-gg-g_n-fastas)
-	1. [Get situated, create outdirectories and arrays for in-, outfiles](#get-situated-create-outdirectories-and-arrays-for-in--outfiles-1)
-		1. [Code](#code-3)
-	1. [Use a HEREDOC to make a GMAP submission script](#use-a-heredoc-to-make-a-gmap-submission-script-1)
-		1. [Code](#code-4)
-	1. [Launch GMAP for in-/outfile combinations](#launch-gmap-for-in-outfile-combinations-1)
-		1. [Code](#code-5)
+    1. [Get situated, create outdirectories and arrays for in-, outfiles](#get-situated-create-outdirectories-and-arrays-for-in--outfiles-1)
+        1. [Code](#code-3)
+    1. [Use a HEREDOC to make a GMAP submission script](#use-a-heredoc-to-make-a-gmap-submission-script-1)
+        1. [Code](#code-4)
+    1. [Launch GMAP for in-/outfile combinations](#launch-gmap-for-in-outfile-combinations-1)
+        1. [Code](#code-5)
 
 <!-- /MarkdownTOC -->
 </details>
@@ -43,7 +43,6 @@ Run `GMAP` on Trinity GG `mkc-{1,2,4,8,16,32}_mir-0.05_mg-2_gf-0.05` fasta files
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 cd "${HOME}/2022_transcriptome-construction/results/2023-0111/"
 
@@ -57,13 +56,13 @@ unset fastas
 typeset -a fastas
 while IFS=" " read -r -d $'\0'; do
     fastas+=( "${REPLY}" )
-done < <(\
+done < <(
     find "outfiles_Trinity-GG/Q_N/" \
         -maxdepth 1 \
         -type f \
         -name "*mkc-*_mir-0.05_mg-2_gf-0.05*fasta" \
         -print0 \
-            | sort -z \
+            | sort -z
 )
 echo_test "${fastas[@]}"
 echo "${!fastas[@]}"
@@ -90,7 +89,6 @@ echo "${!gff3s[@]}"
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 script_name_sub="submit_GMAP_rough-draft.sh"
 threads=1
@@ -136,7 +134,6 @@ script
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 # for i in "${!fastas[@]}"; do
 #     echo "sbatch ${sh_err_out}/${script_name_sub} \\"
@@ -172,7 +169,6 @@ done
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 cd "${HOME}/2022_transcriptome-construction/results/2023-0111/"
 
@@ -186,13 +182,13 @@ unset fastas
 typeset -a fastas
 while IFS=" " read -r -d $'\0'; do
     fastas+=( "${REPLY}" )
-done < <(\
+done < <(
     find "outfiles_Trinity-GG/G_N/" \
         -maxdepth 1 \
         -type f \
         -name "*mkc-*_mir-0.05_mg-2_gf-0.05*fasta" \
         -print0 \
-            | sort -z \
+            | sort -z
 )
 echo_test "${fastas[@]}"
 echo "${!fastas[@]}"
@@ -219,7 +215,6 @@ echo "${!gff3s[@]}"
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 script_name_sub="submit_GMAP_rough-draft.sh"
 threads=1
@@ -265,7 +260,6 @@ script
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 # for i in "${!fastas[@]}"; do
 #     echo "sbatch ${sh_err_out}/${script_name_sub} \\"

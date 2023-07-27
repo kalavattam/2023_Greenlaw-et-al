@@ -178,11 +178,10 @@
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 transcriptome && 
     {
-        cd "results/2023-0111" \
+        cd results/2023-0111 \
             || echo "cd'ing failed; check on this..."
     }
 
@@ -207,11 +206,8 @@ mkdir -p infiles_Trinity-{GG,GF}/
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
-find_relative_path() {
-    realpath --relative-to="${1}" "${2}"
-}
+find_relative_path() { realpath --relative-to="${1}" "${2}"; }
 ```
 </details>
 <br />
@@ -224,19 +220,18 @@ find_relative_path() {
 <summary><i>Code: Find relative paths for Trinity GF and GG files</i></summary>
 
 ```bash
-cd infiles_Trinity-GF/ \
-    || echo "cd'ing failed; check on this..."
+#!/bin/bash
+cd infiles_Trinity-GF/ || echo "cd'ing failed; check on this..."
 ori_GF="${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0115/bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_bam-to-fastq"
 rel_GF="$(find_relative_path "." "${ori_GF}")"  # echo "${rel_GF}"
 
-cd ../infiles_Trinity-GG/ \
-    || echo "cd'ing failed; check on this..."
+cd ../infiles_Trinity-GG/ || echo "cd'ing failed; check on this..."
 ori_GG="${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0115/bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_merged/"
 rel_GG="$(find_relative_path "." "${ori_GG}")"  # echo "${rel_GG}"
 
 transcriptome && 
     {
-        cd "results/2023-0111" \
+        cd results/2023-0111 \
             || echo "cd'ing failed; check on this..."
     }
 ```
@@ -251,16 +246,18 @@ transcriptome &&
 <summary><i>Code: Create arrays for the original Trinity GF and GG files</i></summary>
 
 ```bash
+#!/bin/bash
+
 unset f_ori_GF
 typeset -a f_ori_GF
 while IFS=" " read -r -d $'\0'; do
     f_ori_GF+=( "${REPLY}" )
-done < <(\
-        find "${ori_GF}" \
-            -type f \
-            -name "*.fq.gz" \
-            -print0 \
-                | sort -z\
+done < <(
+    find "${ori_GF}" \
+        -type f \
+        -name "*.fq.gz" \
+        -print0 \
+            | sort -z
 )
 echo_test "${f_ori_GF[@]}"
 echo "${#f_ori_GF[@]}"  # 16
@@ -269,12 +266,12 @@ unset f_ori_GG
 typeset -a f_ori_GG
 while IFS=" " read -r -d $'\0'; do
     f_ori_GG+=( "${REPLY}" )
-done < <(\
-        find "${ori_GG}" \
-            -type f \
-            -name "*.bam" \
-            -print0 \
-                | sort -z\
+done < <(
+    find "${ori_GG}" \
+        -type f \
+        -name "*.bam" \
+        -print0 \
+            | sort -z
 )
 echo_test "${f_ori_GG[@]}"
 echo "${#f_ori_GG[@]}"  # 4
@@ -290,6 +287,8 @@ echo "${#f_ori_GG[@]}"  # 4
 <summary><i>Code: Create associative arrays for original and to-be-symlinked files</i></summary>
 
 ```bash
+#!/bin/bash
+
 unset f_sym_GF
 typeset -A f_sym_GF
 for i in "${f_ori_GF[@]}"; do
@@ -367,12 +366,12 @@ echo_test "${f_sym_GG[@]}"  # Values
 ```txt
 ❯ while IFS=" " read -r -d $'\0'; do
 >     f_ori_GF+=( "${REPLY}" )
-> done < <(\
->         find "${ori_GF}" \
->             -type f \
->             -name "*.fq.gz" \
->             -print0 \
->                 | sort -z\
+> done < <(
+>     find "${ori_GF}" \
+>         -type f \
+>         -name "*.fq.gz" \
+>         -print0 \
+>             | sort -z
 > )
 
 ❯ echo_test "${f_ori_GF[@]}"
@@ -399,12 +398,12 @@ echo_test "${f_sym_GG[@]}"  # Values
 
 ❯ while IFS=" " read -r -d $'\0'; do
 >     f_ori_GG+=( "${REPLY}" )
-> done < <(\
->         find "${ori_GG}" \
->             -type f \
->             -name "*.bam" \
->             -print0 \
->                 | sort -z\
+> done < <(
+>     find "${ori_GG}" \
+>         -type f \
+>         -name "*.bam" \
+>         -print0 \
+>             | sort -z
 > )
 
 ❯ echo_test "${f_ori_GG[@]}"
@@ -670,7 +669,6 @@ G_S.bam merged_G1_IN_UTK.primary-secondary.SC.bam
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 cd infiles_Trinity-GF/
 for i in "${!f_sym_GF[@]}"; do
@@ -716,6 +714,7 @@ done
 ❯ cd infiles_Trinity-GF/
 /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0111/infiles_Trinity-GF
 
+
 ❯ for i in "${!f_sym_GF[@]}"; do
 >     echo "#  ------------------------------------"
 >     echo "    Key: ${i}"
@@ -739,7 +738,6 @@ Command:
         ../../2023-0115/bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_bam-to-fastq/5781_G1_IN_UTK.proper-etc.SC.1.fq.gz \
         5781_G_S.1.fq.gz
 
-
 #  ------------------------------------
     Key: 5782_G_N.2.fq.gz
   Value: ../../2023-0115/bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_bam-to-fastq/5782_G1_IP_UTK.proper-etc.SC.2.fq.gz
@@ -748,7 +746,6 @@ Command:
     ln -s \
         ../../2023-0115/bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_bam-to-fastq/5782_G1_IP_UTK.proper-etc.SC.2.fq.gz \
         5782_G_N.2.fq.gz
-
 
 #  ------------------------------------
     Key: 5782_Q_S.2.fq.gz
@@ -759,7 +756,6 @@ Command:
         ../../2023-0115/bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_bam-to-fastq/5782_Q_IN_UTK.proper-etc.SC.2.fq.gz \
         5782_Q_S.2.fq.gz
 
-
 #  ------------------------------------
     Key: 5782_G_S.2.fq.gz
   Value: ../../2023-0115/bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_bam-to-fastq/5782_G1_IN_UTK.proper-etc.SC.2.fq.gz
@@ -768,7 +764,6 @@ Command:
     ln -s \
         ../../2023-0115/bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_bam-to-fastq/5782_G1_IN_UTK.proper-etc.SC.2.fq.gz \
         5782_G_S.2.fq.gz
-
 
 #  ------------------------------------
     Key: 5781_Q_S.2.fq.gz
@@ -779,7 +774,6 @@ Command:
         ../../2023-0115/bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_bam-to-fastq/5781_Q_IN_UTK.proper-etc.SC.2.fq.gz \
         5781_Q_S.2.fq.gz
 
-
 #  ------------------------------------
     Key: 5782_Q_N.1.fq.gz
   Value: ../../2023-0115/bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_bam-to-fastq/5782_Q_IP_UTK.proper-etc.SC.1.fq.gz
@@ -788,7 +782,6 @@ Command:
     ln -s \
         ../../2023-0115/bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_bam-to-fastq/5782_Q_IP_UTK.proper-etc.SC.1.fq.gz \
         5782_Q_N.1.fq.gz
-
 
 #  ------------------------------------
     Key: 5781_G_S.2.fq.gz
@@ -799,7 +792,6 @@ Command:
         ../../2023-0115/bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_bam-to-fastq/5781_G1_IN_UTK.proper-etc.SC.2.fq.gz \
         5781_G_S.2.fq.gz
 
-
 #  ------------------------------------
     Key: 5782_G_N.1.fq.gz
   Value: ../../2023-0115/bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_bam-to-fastq/5782_G1_IP_UTK.proper-etc.SC.1.fq.gz
@@ -808,7 +800,6 @@ Command:
     ln -s \
         ../../2023-0115/bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_bam-to-fastq/5782_G1_IP_UTK.proper-etc.SC.1.fq.gz \
         5782_G_N.1.fq.gz
-
 
 #  ------------------------------------
     Key: 5782_Q_N.2.fq.gz
@@ -819,7 +810,6 @@ Command:
         ../../2023-0115/bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_bam-to-fastq/5782_Q_IP_UTK.proper-etc.SC.2.fq.gz \
         5782_Q_N.2.fq.gz
 
-
 #  ------------------------------------
     Key: 5781_Q_N.1.fq.gz
   Value: ../../2023-0115/bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_bam-to-fastq/5781_Q_IP_UTK.proper-etc.SC.1.fq.gz
@@ -828,7 +818,6 @@ Command:
     ln -s \
         ../../2023-0115/bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_bam-to-fastq/5781_Q_IP_UTK.proper-etc.SC.1.fq.gz \
         5781_Q_N.1.fq.gz
-
 
 #  ------------------------------------
     Key: 5781_Q_S.1.fq.gz
@@ -839,7 +828,6 @@ Command:
         ../../2023-0115/bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_bam-to-fastq/5781_Q_IN_UTK.proper-etc.SC.1.fq.gz \
         5781_Q_S.1.fq.gz
 
-
 #  ------------------------------------
     Key: 5781_G_N.1.fq.gz
   Value: ../../2023-0115/bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_bam-to-fastq/5781_G1_IP_UTK.proper-etc.SC.1.fq.gz
@@ -848,7 +836,6 @@ Command:
     ln -s \
         ../../2023-0115/bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_bam-to-fastq/5781_G1_IP_UTK.proper-etc.SC.1.fq.gz \
         5781_G_N.1.fq.gz
-
 
 #  ------------------------------------
     Key: 5782_Q_S.1.fq.gz
@@ -859,7 +846,6 @@ Command:
         ../../2023-0115/bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_bam-to-fastq/5782_Q_IN_UTK.proper-etc.SC.1.fq.gz \
         5782_Q_S.1.fq.gz
 
-
 #  ------------------------------------
     Key: 5782_G_S.1.fq.gz
   Value: ../../2023-0115/bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_bam-to-fastq/5782_G1_IN_UTK.proper-etc.SC.1.fq.gz
@@ -869,7 +855,6 @@ Command:
         ../../2023-0115/bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_bam-to-fastq/5782_G1_IN_UTK.proper-etc.SC.1.fq.gz \
         5782_G_S.1.fq.gz
 
-
 #  ------------------------------------
     Key: 5781_Q_N.2.fq.gz
   Value: ../../2023-0115/bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_bam-to-fastq/5781_Q_IP_UTK.proper-etc.SC.2.fq.gz
@@ -878,7 +863,6 @@ Command:
     ln -s \
         ../../2023-0115/bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_bam-to-fastq/5781_Q_IP_UTK.proper-etc.SC.2.fq.gz \
         5781_Q_N.2.fq.gz
-
 
 #  ------------------------------------
     Key: 5781_G_N.2.fq.gz
@@ -910,7 +894,9 @@ lrwxrwxrwx 1 kalavatt 120 Feb 14 09:16 5782_Q_N.2.fq.gz -> ../../2023-0115/bams_
 lrwxrwxrwx 1 kalavatt 120 Feb 14 09:16 5782_Q_S.1.fq.gz -> ../../2023-0115/bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_bam-to-fastq/5782_Q_IN_UTK.proper-etc.SC.1.fq.gz
 lrwxrwxrwx 1 kalavatt 120 Feb 14 09:16 5782_Q_S.2.fq.gz -> ../../2023-0115/bams_UMI-dedup/aligned_UTK_primary-unmapped_sans-KL-20S_bam-to-fastq/5782_Q_IN_UTK.proper-etc.SC.2.fq.gz
 
+
 ❯ cd ../infiles_Trinity-GG/
+
 
 ❯ for i in "${!f_sym_GG[@]}"; do
 >     echo "#  ------------------------------------"
@@ -935,7 +921,6 @@ Command:
         ../../2023-0115/bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_merged/merged_Q_IN_UTK.primary-secondary.SC.bam \
         Q_S.bam
 
-
 #  ------------------------------------
     Key: G_N.bam
   Value: ../../2023-0115/bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_merged/merged_G1_IP_UTK.primary-secondary.SC.bam
@@ -944,7 +929,6 @@ Command:
     ln -s \
         ../../2023-0115/bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_merged/merged_G1_IP_UTK.primary-secondary.SC.bam \
         G_N.bam
-
 
 #  ------------------------------------
     Key: Q_N.bam
@@ -955,7 +939,6 @@ Command:
         ../../2023-0115/bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_merged/merged_Q_IP_UTK.primary-secondary.SC.bam \
         Q_N.bam
 
-
 #  ------------------------------------
     Key: G_S.bam
   Value: ../../2023-0115/bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_merged/merged_G1_IN_UTK.primary-secondary.SC.bam
@@ -964,6 +947,7 @@ Command:
     ln -s \
         ../../2023-0115/bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_merged/merged_G1_IN_UTK.primary-secondary.SC.bam \
         G_S.bam
+
 
 ❯ .,
 total 192K
@@ -990,10 +974,8 @@ lrwxrwxrwx 1 kalavatt 120 Feb 14 09:17 Q_S.bam -> ../../2023-0115/bams_UMI-dedup
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
-cd infiles_Trinity-GF \
-	|| echo "cd'ing failed; check on this..."
+cd infiles_Trinity-GF || echo "cd'ing failed; check on this..."
 
 for i in *.fq.gz; do unlink "${i}"; done
 ```
@@ -1009,7 +991,6 @@ for i in *.fq.gz; do unlink "${i}"; done
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 #  5781_G_N
 cp \
@@ -1057,10 +1038,8 @@ cp \
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
-cd ../infiles_Trinity-GG \
-	|| echo "cd'ing failed; check on this..."
+cd ../infiles_Trinity-GG || echo "cd'ing failed; check on this..."
 
 for i in *.bam; do unlink "${i}"; done
 ```
@@ -1076,7 +1055,6 @@ for i in *.bam; do unlink "${i}"; done
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 #  G_N
 cp \
@@ -1103,11 +1081,10 @@ cp \
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 transcriptome && 
     {
-        cd "results/2023-0111" \
+        cd results/2023-0111 \
             || echo "cd'ing failed; check on this..."
     }
 
@@ -1135,7 +1112,6 @@ mkdir -p outfiles_Trinity-{GG,GF}/{Q_N,G_N}/lists
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 #  Experiment details -------------------------------------
 cell_exp="Q_N"  # echo "${cell_exp}"
@@ -1214,7 +1190,6 @@ err_out="${sh_err_out}/err_out/${mode}/${cell_exp}"  # echo "${err_out}"  #ABSPA
 *Header*
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 if [[ -f "${store}/${list}" ]]; then
     rm "${store}/${list}"
@@ -1325,7 +1300,6 @@ parallel --header : --colsep " " -k -j 1 echo \
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 if [[ -f "${store}/${list/.txt/.24.txt}" ]]; then
     rm "${store}/"*.{?,??,???}.txt
@@ -1401,7 +1375,6 @@ done
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 if [[ -f "${sh_err_out}/${script_name_sub}" ]]; then
     rm "${sh_err_out}/${script_name_sub}"
@@ -1412,7 +1385,6 @@ cat << script > "${sh_err_out}/${script_name_sub}"
 #  ${script_name_sub}
 #  KA
 #  $(date '+%Y-%m%d')
-
 
 #  ------------------------------------
 print_message_exit() {
@@ -1452,7 +1424,6 @@ calculate_run_time() {
         \$(( run_time%60 ))
     echo ""
 }
-
 
 #  ------------------------------------
 help="""
@@ -1499,7 +1470,6 @@ while getopts "a:" opt; do
 done
 
 [[ -z "\${arguments}" ]] && print_message_exit "\${help}"
-
 
 #  ------------------------------------
 check_file_exists "\${arguments}"
@@ -1559,7 +1529,6 @@ chmod +x "${sh_err_out}/${script_name_sub}"
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 if [[ -f "${sh_err_out}/${script_name_run}" ]]; then
     rm "${sh_err_out}/${script_name_run}"
@@ -1654,7 +1623,6 @@ script
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 sbatch "${sh_err_out}/${script_name_run}"
 # skal
@@ -1677,7 +1645,6 @@ sbatch "${sh_err_out}/${script_name_run}"
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 #  Experiment details -------------------------------------
 cell_exp="Q_N"  # echo "${cell_exp}"
@@ -1751,7 +1718,6 @@ err_out="${sh_err_out}/err_out/${mode}/${cell_exp}"  # echo "${err_out}"  #ABSPA
 *Header*
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 if [[ -f "${store}/${list}" ]]; then
     rm "${store}/${list}"
@@ -1847,7 +1813,6 @@ parallel --header : --colsep " " -k -j 1 echo \
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 if [[ -f "${store}/${list/.txt/.24.txt}" ]]; then
     rm "${store}/"*.{?,??,???}.txt
@@ -1920,7 +1885,6 @@ cat -n "${store}/${list/.txt/.24.txt}"
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 if [[ -f "${sh_err_out}/${script_name_sub}" ]]; then
     rm "${sh_err_out}/${script_name_sub}"
@@ -1931,7 +1895,6 @@ cat << script > "${sh_err_out}/${script_name_sub}"
 #  ${script_name_sub}
 #  KA
 #  $(date '+%Y-%m%d')
-
 
 #  ------------------------------------
 print_message_exit() {
@@ -1971,7 +1934,6 @@ calculate_run_time() {
         \$(( run_time%60 ))
     echo ""
 }
-
 
 #  ------------------------------------
 help="""
@@ -2015,7 +1977,6 @@ while getopts "a:" opt; do
 done
 
 [[ -z "\${arguments}" ]] && print_message_exit "\${help}"
-
 
 #  ------------------------------------
 check_file_exists "\${arguments}"
@@ -2074,7 +2035,6 @@ chmod +x "${sh_err_out}/${script_name_sub}"
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 if [[ -f "${sh_err_out}/${script_name_run}" ]]; then
     rm "${sh_err_out}/${script_name_run}"
@@ -2169,7 +2129,6 @@ script
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 sbatch "${sh_err_out}/${script_name_run}"
 skal
@@ -2192,11 +2151,10 @@ cd -
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 transcriptome && 
     {
-        cd "results/2023-0111" \
+        cd results/2023-0111 \
             || echo "cd'ing failed; check on this..."
     }
 
@@ -2220,7 +2178,6 @@ ml Singularity
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 #  Experiment details -------------------------------------
 cell_exp="Q_N"  # echo "${cell_exp}"
@@ -2300,7 +2257,6 @@ err_out="${sh_err_out}/err_out/${mode}/${cell_exp}"  # echo "${err_out}"  #ABSPA
 *Header*
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 if [[ -f "${store}/${list}" ]]; then
     rm "${store}/${list}"
@@ -2370,7 +2326,6 @@ parallel --header : --colsep " " -k -j 1 echo \
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 if [[ -f "${store}/${list/.txt/.24.txt}" ]]; then
     rm "${store}/"*.{?,??,???}.txt
@@ -2414,7 +2369,6 @@ done
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 if [[ -f "${sh_err_out}/${script_name_sub}" ]]; then
     rm "${sh_err_out}/${script_name_sub}"
@@ -2425,7 +2379,6 @@ cat << script > "${sh_err_out}/${script_name_sub}"
 #  ${script_name_sub}
 #  KA
 #  $(date '+%Y-%m%d')
-
 
 #  ------------------------------------
 print_message_exit() {
@@ -2465,7 +2418,6 @@ calculate_run_time() {
         \$(( run_time%60 ))
     echo ""
 }
-
 
 #  ------------------------------------
 help="""
@@ -2512,7 +2464,6 @@ while getopts "a:" opt; do
 done
 
 [[ -z "\${arguments}" ]] && print_message_exit "\${help}"
-
 
 #  ------------------------------------
 check_file_exists "\${arguments}"
@@ -2602,7 +2553,6 @@ chmod +x "${sh_err_out}/${script_name_sub}"
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 if [[ -f "${sh_err_out}/${script_name_run}" ]]; then
     rm "${sh_err_out}/${script_name_run}"
@@ -2698,7 +2648,6 @@ script
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 sbatch "${sh_err_out}/${script_name_run}"
 skal
@@ -2721,7 +2670,6 @@ cd -
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 #  Experiment details -------------------------------------
 cell_exp="Q_N"  # echo "${cell_exp}"
@@ -2796,7 +2744,6 @@ err_out="${sh_err_out}/err_out/${mode}/${cell_exp}"  # echo "${err_out}"  #ABSPA
 *Header*
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 if [[ -f "${store}/${list}" ]]; then
     rm "${store}/${list}"
@@ -2857,7 +2804,6 @@ parallel --header : --colsep " " -k -j 1 echo \
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 if [[ -f "${store}/${list/.txt/.24.txt}" ]]; then
     rm "${store}/"*.{?,??,???}.txt
@@ -2901,7 +2847,6 @@ done
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 if [[ -f "${sh_err_out}/${script_name_sub}" ]]; then
     rm "${sh_err_out}/${script_name_sub}"
@@ -2912,7 +2857,6 @@ cat << script > "${sh_err_out}/${script_name_sub}"
 #  ${script_name_sub}
 #  KA
 #  $(date '+%Y-%m%d')
-
 
 #  ------------------------------------
 print_message_exit() {
@@ -2952,7 +2896,6 @@ calculate_run_time() {
         \$(( run_time%60 ))
     echo ""
 }
-
 
 #  ------------------------------------
 help="""
@@ -2996,7 +2939,6 @@ while getopts "a:" opt; do
 done
 
 [[ -z "\${arguments}" ]] && print_message_exit "\${help}"
-
 
 #  ------------------------------------
 check_file_exists "\${arguments}"
@@ -3084,7 +3026,6 @@ chmod +x "${sh_err_out}/${script_name_sub}"
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 if [[ -f "${sh_err_out}/${script_name_run}" ]]; then
     rm "${sh_err_out}/${script_name_run}"
@@ -3180,7 +3121,6 @@ script
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 sbatch "${sh_err_out}/${script_name_run}"
 skal
@@ -3204,11 +3144,10 @@ cd -
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 transcriptome && 
     {
-        cd "results/2023-0111" \
+        cd results/2023-0111 \
             || echo "cd'ing failed; check on this..."
     }
 
@@ -3236,7 +3175,6 @@ mkdir -p outfiles_Trinity-{GG,GF}/{Q_N,G_N}/lists
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 #  Experiment details -------------------------------------
 cell_exp="G_N"  # echo "${cell_exp}"
@@ -3315,7 +3253,6 @@ err_out="${sh_err_out}/err_out/${mode}/${cell_exp}"  # echo "${err_out}"  #ABSPA
 *Header*
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 if [[ -f "${store}/${list}" ]]; then
     rm "${store}/${list}"
@@ -3426,7 +3363,6 @@ parallel --header : --colsep " " -k -j 1 echo \
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 if [[ -f "${store}/${list/.txt/.24.txt}" ]]; then
     rm "${store}/"*.{?,??,???}.txt
@@ -3502,7 +3438,6 @@ catalog scratch j_mem j_cor left_1 left_2 right_1 right_2 out min_kmer_cov min_i
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 if [[ -f "${sh_err_out}/${script_name_sub}" ]]; then
     rm "${sh_err_out}/${script_name_sub}"
@@ -3513,7 +3448,6 @@ cat << script > "${sh_err_out}/${script_name_sub}"
 #  ${script_name_sub}
 #  KA
 #  $(date '+%Y-%m%d')
-
 
 #  ------------------------------------
 print_message_exit() {
@@ -3553,7 +3487,6 @@ calculate_run_time() {
         \$(( run_time%60 ))
     echo ""
 }
-
 
 #  ------------------------------------
 help="""
@@ -3600,7 +3533,6 @@ while getopts "a:" opt; do
 done
 
 [[ -z "\${arguments}" ]] && print_message_exit "\${help}"
-
 
 #  ------------------------------------
 check_file_exists "\${arguments}"
@@ -3660,7 +3592,6 @@ chmod +x "${sh_err_out}/${script_name_sub}"
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 if [[ -f "${sh_err_out}/${script_name_run}" ]]; then
     rm "${sh_err_out}/${script_name_run}"
@@ -3755,7 +3686,6 @@ script
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 sbatch "${sh_err_out}/${script_name_run}"
 # skal
@@ -3778,7 +3708,6 @@ sbatch "${sh_err_out}/${script_name_run}"
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 #  Experiment details -------------------------------------
 cell_exp="G_N"  # echo "${cell_exp}"
@@ -3852,7 +3781,6 @@ err_out="${sh_err_out}/err_out/${mode}/${cell_exp}"  # echo "${err_out}"  #ABSPA
 *Header*
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 if [[ -f "${store}/${list}" ]]; then
     rm "${store}/${list}"
@@ -3948,7 +3876,6 @@ parallel --header : --colsep " " -k -j 1 echo \
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 if [[ -f "${store}/${list/.txt/.24.txt}" ]]; then
     rm "${store}/"*.{?,??,???}.txt
@@ -4021,7 +3948,6 @@ catalog scratch j_mem j_cor bam out min_kmer_cov min_iso_ratio min_glue glue_fac
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 if [[ -f "${sh_err_out}/${script_name_sub}" ]]; then
     rm "${sh_err_out}/${script_name_sub}"
@@ -4032,7 +3958,6 @@ cat << script > "${sh_err_out}/${script_name_sub}"
 #  ${script_name_sub}
 #  KA
 #  $(date '+%Y-%m%d')
-
 
 #  ------------------------------------
 print_message_exit() {
@@ -4072,7 +3997,6 @@ calculate_run_time() {
         \$(( run_time%60 ))
     echo ""
 }
-
 
 #  ------------------------------------
 help="""
@@ -4116,7 +4040,6 @@ while getopts "a:" opt; do
 done
 
 [[ -z "\${arguments}" ]] && print_message_exit "\${help}"
-
 
 #  ------------------------------------
 check_file_exists "\${arguments}"
@@ -4175,7 +4098,6 @@ chmod +x "${sh_err_out}/${script_name_sub}"
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 if [[ -f "${sh_err_out}/${script_name_run}" ]]; then
     rm "${sh_err_out}/${script_name_run}"
@@ -4270,7 +4192,6 @@ script
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 sbatch "${sh_err_out}/${script_name_run}"
 skal
@@ -4293,11 +4214,10 @@ cd -
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 transcriptome && 
     {
-        cd "results/2023-0111" \
+        cd results/2023-0111 \
             || echo "cd'ing failed; check on this..."
     }
 
@@ -4321,7 +4241,6 @@ ml Singularity
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 #  Experiment details -------------------------------------
 cell_exp="G_N"  # echo "${cell_exp}"
@@ -4401,7 +4320,6 @@ err_out="${sh_err_out}/err_out/${mode}/${cell_exp}"  # echo "${err_out}"  #ABSPA
 *Header*
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 if [[ -f "${store}/${list}" ]]; then
     rm "${store}/${list}"
@@ -4471,7 +4389,6 @@ parallel --header : --colsep " " -k -j 1 echo \
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 if [[ -f "${store}/${list/.txt/.24.txt}" ]]; then
     rm "${store}/"*.{?,??,???}.txt
@@ -4515,7 +4432,6 @@ done
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 if [[ -f "${sh_err_out}/${script_name_sub}" ]]; then
     rm "${sh_err_out}/${script_name_sub}"
@@ -4526,7 +4442,6 @@ cat << script > "${sh_err_out}/${script_name_sub}"
 #  ${script_name_sub}
 #  KA
 #  $(date '+%Y-%m%d')
-
 
 #  ------------------------------------
 print_message_exit() {
@@ -4566,7 +4481,6 @@ calculate_run_time() {
         \$(( run_time%60 ))
     echo ""
 }
-
 
 #  ------------------------------------
 help="""
@@ -4613,7 +4527,6 @@ while getopts "a:" opt; do
 done
 
 [[ -z "\${arguments}" ]] && print_message_exit "\${help}"
-
 
 #  ------------------------------------
 check_file_exists "\${arguments}"
@@ -4703,7 +4616,6 @@ chmod +x "${sh_err_out}/${script_name_sub}"
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 if [[ -f "${sh_err_out}/${script_name_run}" ]]; then
     rm "${sh_err_out}/${script_name_run}"
@@ -4799,7 +4711,6 @@ script
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 sbatch "${sh_err_out}/${script_name_run}"
 skal
@@ -4822,7 +4733,6 @@ cd -
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 #  Experiment details -------------------------------------
 cell_exp="G_N"  # echo "${cell_exp}"
@@ -4897,7 +4807,6 @@ err_out="${sh_err_out}/err_out/${mode}/${cell_exp}"  # echo "${err_out}"  #ABSPA
 *Header*
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 if [[ -f "${store}/${list}" ]]; then
     rm "${store}/${list}"
@@ -4958,7 +4867,6 @@ parallel --header : --colsep " " -k -j 1 echo \
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 if [[ -f "${store}/${list/.txt/.24.txt}" ]]; then
     rm "${store}/"*.{?,??,???}.txt
@@ -5002,7 +4910,6 @@ done
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 if [[ -f "${sh_err_out}/${script_name_sub}" ]]; then
     rm "${sh_err_out}/${script_name_sub}"
@@ -5013,7 +4920,6 @@ cat << script > "${sh_err_out}/${script_name_sub}"
 #  ${script_name_sub}
 #  KA
 #  $(date '+%Y-%m%d')
-
 
 #  ------------------------------------
 print_message_exit() {
@@ -5053,7 +4959,6 @@ calculate_run_time() {
         \$(( run_time%60 ))
     echo ""
 }
-
 
 #  ------------------------------------
 help="""
@@ -5097,7 +5002,6 @@ while getopts "a:" opt; do
 done
 
 [[ -z "\${arguments}" ]] && print_message_exit "\${help}"
-
 
 #  ------------------------------------
 check_file_exists "\${arguments}"
@@ -5185,7 +5089,6 @@ chmod +x "${sh_err_out}/${script_name_sub}"
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 if [[ -f "${sh_err_out}/${script_name_run}" ]]; then
     rm "${sh_err_out}/${script_name_run}"
@@ -5281,7 +5184,6 @@ script
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 sbatch "${sh_err_out}/${script_name_run}"
 skal

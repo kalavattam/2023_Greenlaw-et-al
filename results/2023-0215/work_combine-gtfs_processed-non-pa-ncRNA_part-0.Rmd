@@ -1,11 +1,14 @@
 ---
 title: "work_combine-gtfs_processed-non-pa-ncRNA_part-0.Rmd"
 author: "KA"
-email: "kalavatt@fredhutch.org"
+email: kalavatt@fredhutch.org
 output:
-    html_notebook:
-        toc: yes
-        toc_float: true
+  html_document:
+    toc: yes
+    df_print: paged
+  html_notebook:
+    toc: yes
+    toc_float: yes
 ---
 
 ## Get situated

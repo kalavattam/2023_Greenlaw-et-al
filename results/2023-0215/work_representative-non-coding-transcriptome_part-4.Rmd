@@ -1,11 +1,14 @@
 ---
 title: "work_representative-non-coding-transcriptome_part-4.Rmd"
 author: "KA"
-email: "kalavatt@fredhutch.org"
+email: kalavatt@fredhutch.org
 output:
-    html_notebook:
-        toc: yes
-        toc_float: true
+  html_document:
+    toc: yes
+    df_print: paged
+  html_notebook:
+    toc: yes
+    toc_float: yes
 ---
 <br />
 
@@ -316,7 +319,7 @@ group_chr_strand <- plyr::ddply(
     }
 ) #%>%
     #dplyr::arrange(chr, start, strand)
-#NOTE This call to arrange was throwing things off too (see lines 239-242)
+#NOTE This call to arrange was throwing things off
 
 group_chr_strand$new_group <- is.na(group_chr_strand$previous_end) | 
     (group_chr_strand$start >= group_chr_strand$previous_end)
@@ -338,106 +341,105 @@ group_chr_strand$group <- cumsum(group_chr_strand$new_group)
 ```{r, eval=FALSE}
 #!/usr/bin/env Rscript
 
-run <- FALSE
-if(base::isTRUE(run)) {
-    #  Aggregate the data
-    agg_chr <- plyr::ddply(
-        group_chr,
-        .(chr, group),
-        plyr::summarize,
-        start = min(start),
-        end = max(end),
-        details_type = paste0(type, collapse = "; "),
-        details_all = paste0(type, ": ", id, ", ", strand, collapse = "; ")
-    ) %>%
-        dplyr::arrange(chr, start) %>%
-        dplyr::mutate(strand = ".") %>%
-        dplyr::relocate(
-            c(chr, start, end, strand, details_type, details_all, group)
-        ) %>%
-        dplyr::rename(
-            details_type_init = details_type, details_all_init = details_all
-        )
-    
-    # #  Check
-    # agg_chr$details_type_init %>% head()
-    # agg_chr$details_all_init %>% head()
-    
-    #  stackoverflow.com/questions/49389792/how-to-collapse-all-character-vectors-in-a-list
-    details_type <- agg_chr$details_type %>%
-        stringr::str_remove_all("s") %>%
-        stringr::str_split("; ") %>%
-        purrr::map(sort) %>%
-        purrr::map(unique)
-    details_type <- sapply(
-        details_type[!sapply(details_type, purrr::is_empty)],
-        paste,
-        collapse = " "
-    ) %>%
-        tibble::as_tibble_col(column_name = "details_type")
-    
-    details_all <- agg_chr$details_all %>%
-        stringr::str_remove_all("s") %>%
-        stringr::str_split("; ") %>%
-        purrr::map(sort) %>%
-        purrr::map(unique)
-    details_all <- sapply(
-        details_all[!sapply(details_all, purrr::is_empty)],
-        paste,
-        collapse = "; "
-    ) %>%
-        tibble::as_tibble_col(column_name = "details_all")
-    
-    details_id <- agg_chr$details_all %>%
-        stringr::str_remove_all("s|,\\s\\+|,\\s\\-") %>%
-        stringr::str_replace_all(
-            "(CUT|CUT_4x|CUT_HMM|NUT|SRAT|SUT|XUT):\\s", ""
-        ) %>%
-        stringr::str_split("; ") %>%
-        purrr::map(sort) %>%
-        purrr::map(unique)
-    details_id <- sapply(
-        details_id[!sapply(details_id, purrr::is_empty)],
-        paste,
-        collapse = "; "
-    ) %>%
-        tibble::as_tibble_col(column_name = "details_id")
-    
-    details_strand <- agg_chr$details_all %>%
-        stringr::str_remove_all("s") %>%
-        stringr::str_remove_all(
-            "(CUT|CUT_4x|CUT_HMM|NUT|SRAT|SUT|XUT):\\s|\\;|\\,"
-        ) %>%
-        stringr::str_remove_all(
-            "(CUT|NUT|SRAT|SUT)\\d+\\s|[:digit:]+(F|R)\\-\\d+\\s"
-        ) %>%
-        tibble::as_tibble_col(column_name = "details_strand")
-    
-    n_features <- lengths(
-        gregexpr("(^[A-z]|[1-9])*;", details_id$details_id)
-    ) + 1L
-    
-    agg_chr <- dplyr::bind_cols(
-        agg_chr, details_type, details_id, details_strand, n_features,
-        details_all
-    ) %>%
-        dplyr::select(-group) %>%
-        dplyr::relocate(
-            c(details_type_init, details_all_init),
-            .after = details_all
-        ) %>%
-        dplyr::rename("n_features" = "...11")
-    
-    agg_chr$n_features <- ifelse(
-        (agg_chr$n_features == 2 & agg_chr$details_strand == "+") |
-        (agg_chr$n_features == 2 & agg_chr$details_strand == "-"),
-        1,
-        agg_chr$n_features
-    )
-    
-    rm(details_id, details_type, details_strand, n_features, details_all)
-}
-
+# run <- FALSE
+# if(base::isTRUE(run)) {
+#     #  Aggregate the data
+#     agg_chr <- plyr::ddply(
+#         group_chr,
+#         .(chr, group),
+#         plyr::summarize,
+#         start = min(start),
+#         end = max(end),
+#         details_type = paste0(type, collapse = "; "),
+#         details_all = paste0(type, ": ", id, ", ", strand, collapse = "; ")
+#     ) %>%
+#         dplyr::arrange(chr, start) %>%
+#         dplyr::mutate(strand = ".") %>%
+#         dplyr::relocate(
+#             c(chr, start, end, strand, details_type, details_all, group)
+#         ) %>%
+#         dplyr::rename(
+#             details_type_init = details_type, details_all_init = details_all
+#         )
+#     
+#     # #  Check
+#     # agg_chr$details_type_init %>% head()
+#     # agg_chr$details_all_init %>% head()
+#     
+#     #  stackoverflow.com/questions/49389792/how-to-collapse-all-character-vectors-in-a-list
+#     details_type <- agg_chr$details_type %>%
+#         stringr::str_remove_all("s") %>%
+#         stringr::str_split("; ") %>%
+#         purrr::map(sort) %>%
+#         purrr::map(unique)
+#     details_type <- sapply(
+#         details_type[!sapply(details_type, purrr::is_empty)],
+#         paste,
+#         collapse = " "
+#     ) %>%
+#         tibble::as_tibble_col(column_name = "details_type")
+#     
+#     details_all <- agg_chr$details_all %>%
+#         stringr::str_remove_all("s") %>%
+#         stringr::str_split("; ") %>%
+#         purrr::map(sort) %>%
+#         purrr::map(unique)
+#     details_all <- sapply(
+#         details_all[!sapply(details_all, purrr::is_empty)],
+#         paste,
+#         collapse = "; "
+#     ) %>%
+#         tibble::as_tibble_col(column_name = "details_all")
+#     
+#     details_id <- agg_chr$details_all %>%
+#         stringr::str_remove_all("s|,\\s\\+|,\\s\\-") %>%
+#         stringr::str_replace_all(
+#             "(CUT|CUT_4x|CUT_HMM|NUT|SRAT|SUT|XUT):\\s", ""
+#         ) %>%
+#         stringr::str_split("; ") %>%
+#         purrr::map(sort) %>%
+#         purrr::map(unique)
+#     details_id <- sapply(
+#         details_id[!sapply(details_id, purrr::is_empty)],
+#         paste,
+#         collapse = "; "
+#     ) %>%
+#         tibble::as_tibble_col(column_name = "details_id")
+#     
+#     details_strand <- agg_chr$details_all %>%
+#         stringr::str_remove_all("s") %>%
+#         stringr::str_remove_all(
+#             "(CUT|CUT_4x|CUT_HMM|NUT|SRAT|SUT|XUT):\\s|\\;|\\,"
+#         ) %>%
+#         stringr::str_remove_all(
+#             "(CUT|NUT|SRAT|SUT)\\d+\\s|[:digit:]+(F|R)\\-\\d+\\s"
+#         ) %>%
+#         tibble::as_tibble_col(column_name = "details_strand")
+#     
+#     n_features <- lengths(
+#         gregexpr("(^[A-z]|[1-9])*;", details_id$details_id)
+#     ) + 1L
+#     
+#     agg_chr <- dplyr::bind_cols(
+#         agg_chr, details_type, details_id, details_strand, n_features,
+#         details_all
+#     ) %>%
+#         dplyr::select(-group) %>%
+#         dplyr::relocate(
+#             c(details_type_init, details_all_init),
+#             .after = details_all
+#         ) %>%
+#         dplyr::rename("n_features" = "...11")
+#     
+#     agg_chr$n_features <- ifelse(
+#         (agg_chr$n_features == 2 & agg_chr$details_strand == "+") |
+#         (agg_chr$n_features == 2 & agg_chr$details_strand == "-"),
+#         1,
+#         agg_chr$n_features
+#     )
+#     
+#     rm(details_id, details_type, details_strand, n_features, details_all)
+# }
 ```
 </details>
 <br />
@@ -455,7 +457,7 @@ if(base::isTRUE(run)) {
     agg_chr_strand <- plyr::ddply(
         group_chr_strand,
         .(chr, strand, group),
-        plyr::summarize, 
+        plyr::summarize,
         start = min(start),
         end = max(end),
         details_type = paste0(type, collapse = "; "),

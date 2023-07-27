@@ -1,11 +1,13 @@
 ---
 title: "work_assess-process_R64-1-1-gff3_categorize-Trinity-transfrags_part-1.Rmd"
 author: "KA"
-email: "kalavatt@fredhutch.org"
+email: kalavatt@fredhutch.org
 output:
-    html_notebook:
-        toc: yes
-        toc_float: true
+  word_document:
+    toc: yes
+  html_notebook:
+    toc: yes
+    toc_float: yes
 ---
 
 ## Get situated
@@ -64,30 +66,31 @@ rm(p_SGD, f_SGD)
 <br />
 <br />
 
-## Execute decisions made in [`work_assess-process_R64-1-1_gff3_part-0.Rmd`](./work_assess-process_R64-1-1_gff3_part-0.Rmd)
+## Execute decisions made in [`work_assess-process_R64-1-1-gff3_categorize-Trinity-transfrags_part-0.Rmd`](./work_assess-process_R64-1-1-gff3_categorize-Trinity-transfrags_part-0.Rmd)
 ### Initialize functions
 #### Code
 <details>
 <summary><i>Code: Initialize functions</i></summary>
 
-```{r Clean environment initialize functions, results='hide', message=FALSE, warning=FALSE}
+```{r Initialize functions, results='hide', message=FALSE, warning=FALSE}
 #!/usr/bin/env Rscript
 
 #  Initialize functions -------------------------------------------------------
 # `%+=%` <- function(x, y) eval.parent(substitute(x <- x + y))
 # # stackoverflow.com/questions/5738831/r-plus-equals-and-plus-plus-equivalent-from-c-c-java-etc
-
-
+# 
+# 
 # detect_overlap <- function(x, y) {
 #     # Detect overlaps
+#     # 
 #     # :param x: row number <numeric>
 #     # :param y: range start and end columns/vectors <numeric>
 #     # :return z: Boolean <0 or 1>
 #     z <- ifelse(x[2] >= y[1], 1, 0)
 #     return(z)
 # }
-
-
+# 
+# 
 # nonOverlappingGR <- function(
 #     #' Retrieve a non-overlapping set of regions from a `GenomicRanges` object
 #     #' 
@@ -186,7 +189,6 @@ flatten_elements_to_one <- function(x) {
     # 
     # :param x: list
     # :return: character vector of collapsed list elements (list e)
-    
     l_collapsed <- x[lengths(x) >= 2] %>% length()
     collapsed <- vector(mode = "character", length = l_collapsed)
     for(i in 1:l_collapsed) {
@@ -201,6 +203,10 @@ flatten_elements_to_one <- function(x) {
 
 
 process_list_column <- function(x) {
+    # ...
+    # 
+    # :param x: ...
+    # :return y: ...
     x[lengths(x) == 0] <- NA_character_
     if(length(x[lengths(x) >= 2]) != 0) {
         x[lengths(x) >= 2] <- x[lengths(x) >= 2] %>% flatten_elements_to_one()
@@ -213,6 +219,7 @@ process_list_column <- function(x) {
 
 write_gtf <- function(x, y) {
     # ...
+    # 
     # :param x: tibble
     # :param y: outfile
     # :return: NA
@@ -228,6 +235,7 @@ write_gtf <- function(x, y) {
 
 format_SGD_tibble <- function(x) {
     # ...
+    # 
     # :param x: tibble
     # :return y: tibble in a basic gtf/gff2 format
     y <- x %>%
@@ -792,13 +800,13 @@ z_sense %>%
     )
 
 #  Sense ncRNA  # Now in pa-ncRNA gtf
-# z_sense %>%
-#     dplyr::filter(type == "ncRNA") %>%
-#     format_SGD_tibble() %>%
-#     # View()
-#     write_gtf(
-#         ., paste(p_out, "processed_ncRNA_sense.gtf", sep = "/")
-#     )
+z_sense %>%
+    dplyr::filter(type == "ncRNA") %>%
+    format_SGD_tibble() %>%
+    # View()
+    write_gtf(
+        ., paste(p_out, "processed_ncRNA_sense.gtf", sep = "/")
+    )
 
 #  Sense gene
 z_sense %>%
@@ -903,5 +911,5 @@ z_sense %>%
 ## Next step
 - Go to [`work_combine-gtfs_processed-pa-ncRNA_part-0.Rmd`](./work_combine-gtfs_processed-pa-ncRNA_part-0.Rmd)
 - Go to [`work_assess-process_R64-1-1_gff3_part-2.Rmd`](./work_assess-process_R64-1-1_gff3_part-2.Rmd) *(This is the overlap/classification work for the Q and G1 nascent transcriptomes.)* `#TODO` *Rename this notebook to better reflect its function.*
-- Go to [`work_count-features_assessed-processed-R64-1-1-gff3s.md`](./work_count-features_assessed-processed-R64-1-1-gff3s.md) *(This is the notebook for submitting htseq-counts jobs to the cluster.)*
+- Go to [`work_count-features_assessed-processed-R64-1-1-gff3s.md`](./work_count-features_assessed-processed-R64-1-1-gff3s.md) *(This is the notebook for submitting `htseq-count` jobs to the cluster.)*
 <br />

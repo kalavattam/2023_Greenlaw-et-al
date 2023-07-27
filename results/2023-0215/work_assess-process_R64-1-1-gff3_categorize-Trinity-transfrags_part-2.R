@@ -310,7 +310,7 @@ analyze_feature_intersections <- function(
             print(n = 100)
     }
     
-    #  Calculate pct. overlaps ------------------------------------------------
+    #  Calculate percent overlaps ---------------------------------------------
     #+ ...between "Q" or "G1" and "all" features, and vice versa 
     wrt_Tr_all_group$pct_Tr_over_all <- mapply(
         calculate_percent_overlap,
@@ -895,10 +895,10 @@ run_assignment_logic <- function (feat_Tr) {
         )
     
     
-    #  Determine "repeatedness" -------------------------------
+    #  Determine "repetitiveness" -------------------------------
     #+ ...of "R64_feat" and "R64_etc" feature overlaps
     
-    #  Determine repeatedness of "R64_feat" elements in "Trinity" categories
+    #  Determine repetitiveness of "R64_feat" elements in "Trinity" categories
     #+ 
     #+ -----
     #+ Logic
@@ -911,9 +911,9 @@ run_assignment_logic <- function (feat_Tr) {
     #+ THEN assign: "single"
     #+ ELSE IF "R64_feat" tally meets condition:
     #+     tally GREATER THAN 1
-    #+ THEN assign: "repeated"
+    #+ THEN assign: "repetitive"
     #+ ELSE assign: "nonrepetitive"
-    feat_Tr$repeatedness_feat <- ifelse(
+    feat_Tr$repetitiveness_feat <- ifelse(
         feat_Tr$no_G == 1 & feat_Tr$no_sum == 1 |
         feat_Tr$no_N == 1 & feat_Tr$no_sum == 1 |
         feat_Tr$no_P == 1 & feat_Tr$no_sum == 1 |
@@ -930,19 +930,19 @@ run_assignment_logic <- function (feat_Tr) {
             feat_Tr$no_O > 1 |
             feat_Tr$no_M > 1 |
             feat_Tr$no_T > 1,
-            "repeated",
+            "repetitive",
             "nonrepetitive"
         )
     )
     
-    #  Determine repeatedness of "R64_etc" elements in "Trinity" categories
+    #  Determine repetitiveness of "R64_etc" elements in "Trinity" categories
     #+ 
     #+ -----
     #+ Logic
     #+ -----
     #+ IF "R64_etc" tally meets condition:
     #+     tally GREATER THAN 1
-    #+ THEN assign: "repeated"
+    #+ THEN assign: "repetitive"
     #+ IF "R64_etc" tally and row sum meet condition:
     #+     {
     #+         tally EQUALS 1 AND
@@ -950,7 +950,7 @@ run_assignment_logic <- function (feat_Tr) {
     #+     }
     #+ THEN assign: "single"
     #+ ELSE assign: "nonrepetitive"
-    feat_Tr$repeatedness_etc <- ifelse(
+    feat_Tr$repetitiveness_etc <- ifelse(
         feat_Tr$no_A > 1 |
         feat_Tr$no_E > 1 |
         feat_Tr$no_I > 1 |
@@ -961,7 +961,7 @@ run_assignment_logic <- function (feat_Tr) {
         feat_Tr$no_aO > 1 |
         feat_Tr$no_aM > 1 |
         feat_Tr$no_aT > 1,
-        "repeated",
+        "repetitive",
         ifelse(
             feat_Tr$no_A == 1 & feat_Tr$no_sum == 1 |
             feat_Tr$no_E == 1 & feat_Tr$no_sum == 1 |
@@ -978,18 +978,18 @@ run_assignment_logic <- function (feat_Tr) {
         )
     )
     
-    #  For ease of checking the dataframe, move columns "repeatedness_feat",
-    #+ "repeatedness_etc" to just after column "mixedness_etc"
+    #  For ease of checking the dataframe, move columns "repetitiveness_feat",
+    #+ "repetitiveness_etc" to just after column "mixedness_etc"
     feat_Tr <- feat_Tr %>%
         dplyr::relocate(
-            c(repeatedness_feat, repeatedness_etc),
+            c(repetitiveness_feat, repetitiveness_etc),
             .after = "mixedness_etc"
         )
     
     
     #  Assign formal categories to "Trinity" categories -------
     #+ ...using the column of abbreviated categories assigned to Trinity
-    #+ transcripts and the new "completeness", "mixedness", and "repeatedness" columns
+    #+ transcripts and the new "completeness", "mixedness", and "repetitiveness" columns
     #+ assigned above
     
     #  Assign value "coding" to variable "assignment"
@@ -1002,7 +1002,7 @@ run_assignment_logic <- function (feat_Tr) {
     #+         category_abbrev CONTAINS (G NOT &G) AND
     #+         completeness IS "complete" AND
     #+         mixedness_feat IS "unmixed" AND
-    #+         repeatedness_feat IS "nonrepetitive"
+    #+         repetitiveness_feat IS "nonrepetitive"
     #+     }
     #+ THEN assign: "coding"
     #+ ELSE assign: NA
@@ -1010,7 +1010,7 @@ run_assignment_logic <- function (feat_Tr) {
         stringr::str_detect(feat_Tr$category_abbrev, "(?<!&)G") &
         feat_Tr$completeness == "complete" &
         feat_Tr$mixedness_feat == "unmixed" &
-        feat_Tr$repeatedness_feat == "nonrepetitive",
+        feat_Tr$repetitiveness_feat == "nonrepetitive",
         "coding",
         NA_character_
     )
@@ -1061,7 +1061,7 @@ run_assignment_logic <- function (feat_Tr) {
     #+         category_abbrev CONTAINS (G NOT &G) AND
     #+         completeness IS "complete" AND
     #+         mixedness_feat IS "unmixed" AND
-    #+         repeatedness_feat IS "repeated"
+    #+         repetitiveness_feat IS "repetitive"
     #+     }
     #+ THEN assign: "coding: multiple"
     #+ ELSE no change to assignment
@@ -1069,7 +1069,7 @@ run_assignment_logic <- function (feat_Tr) {
         stringr::str_detect(feat_Tr$category_abbrev, "(?<!&)G") &
         feat_Tr$completeness == "complete" &
         feat_Tr$mixedness_feat == "unmixed" &
-        feat_Tr$repeatedness_feat == "repeated",
+        feat_Tr$repetitiveness_feat == "repetitive",
         "coding: multiple",
         feat_Tr$assignment
     )
@@ -1084,7 +1084,7 @@ run_assignment_logic <- function (feat_Tr) {
     #+         category_abbrev CONTAINS (G NOT &G) AND
     #+         completeness IS "partial" AND
     #+         mixedness_feat IS "unmixed" AND
-    #+         repeatedness_feat IS ("nonrepetitive" OR "single")
+    #+         repetitiveness_feat IS ("nonrepetitive" OR "single")
     #+     }
     #+ THEN assign: "coding: partial"
     #+ ELSE no change to assignment
@@ -1092,7 +1092,7 @@ run_assignment_logic <- function (feat_Tr) {
         stringr::str_detect(feat_Tr$category_abbrev, "(?<!&)G") &
         feat_Tr$completeness == "partial" &
         feat_Tr$mixedness_feat == "unmixed" &
-        feat_Tr$repeatedness_feat %in% c("nonrepetitive", "single"),
+        feat_Tr$repetitiveness_feat %in% c("nonrepetitive", "single"),
         "coding: partial",
         feat_Tr$assignment
     )
@@ -1107,7 +1107,7 @@ run_assignment_logic <- function (feat_Tr) {
     #+         category_abbrev CONTAINS (G NOT &G) AND
     #+         completeness IS "partial" AND
     #+         mixedness_feat IS "unmixed" AND
-    #+         repeatedness_feat IS "repeated"
+    #+         repetitiveness_feat IS "repetitive"
     #+     }
     #+ THEN assign: "coding: multiple, partial"
     #+ ELSE no change to assignment
@@ -1115,7 +1115,7 @@ run_assignment_logic <- function (feat_Tr) {
         stringr::str_detect(feat_Tr$category_abbrev, "(?<!&)G") &
         feat_Tr$completeness == "partial" &
         feat_Tr$mixedness_feat == "unmixed" &
-        feat_Tr$repeatedness_feat == "repeated",
+        feat_Tr$repetitiveness_feat == "repetitive",
         "coding: multiple, partial",
         feat_Tr$assignment
     )

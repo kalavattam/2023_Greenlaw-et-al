@@ -687,15 +687,15 @@ gff3_SGD %>% dplyr::filter(Name == "YBL092W")
 - We should exclude `type` "repeat_region" in favor of `type` "telomere". "Centromere" can be included without any problems with any features.
 - We can exclude `type` "noncoding exon" since these will be included in variously "ncRNA", "tRNA", "snoRNA", "snRNA", "rRNA".
 - `#DEKHO` `#IMPORTANT` So, here's what to include for `type`:
-    - "ARS" (both strands)
-    - "centromere" (both strands)
+    - ~~"ARS" (both strands)~~
+    - ~~"centromere" (both strands)~~
     - "gene" (antisense too)
     - "ncRNA" (antisense too)
     - "pseudogene" (those that are not collapsed/merged into "transposable_element" below; antisense too)
     - "rRNA" (antisense too)
     - "snRNA" (antisense too)
     - "snoRNA" (antisense too)
-    - "telomere" (both strands)
+    - ~~"telomere" (both strands)~~
     - "transposable_element" (made from collapsing/merging "long_terminal_repeat", "LTR_retrotransposon", "transposable_element_gene" and "pseudogene"; antisense too)
     - "tRNA" (antisense too)
 - And here's what not to include for `type`:

@@ -112,7 +112,7 @@ dge_SS_G1_r6n_lfc_0.58 <-
 
 #  Retain features with padj <= 0.05 and LFC > 0.58 (actually, 0 is fine)
 filt_SS_Q_r6n_lfc_0.58 <- dge_SS_Q_r6n_lfc_0.58[
-    dge_SS_Q_r6n_lfc_0.58$log2FoldChange > 0.58 &
+    dge_SS_Q_r6n_lfc_0.58$log2FoldChange > 0 &
     dge_SS_Q_r6n_lfc_0.58$padj <= 0.05,
 ]  # 1304 features
 filt_SS_G1_r6n_lfc_0.58 <- dge_SS_G1_r6n_lfc_0.58[
