@@ -21,7 +21,7 @@
 			1. [Printed, notes](#printed-notes)
 		1. [Loop through the associative arrays to create the symlinks](#loop-through-the-associative-arrays-to-create-the-symlinks)
 			1. [Code](#code-4)
-	1. [Singularity has issues with symlinked files; copy them directly](#singularity-has-issues-with-symlinked-files-copy-them-directly)
+	1. [Singularity has issues with symlinked files, so copy them directly](#singularity-has-issues-with-symlinked-files-so-copy-them-directly)
 		1. [Address the problem for Trinity GF mode](#address-the-problem-for-trinity-gf-mode)
 			1. [Remove the symlinks](#remove-the-symlinks)
 				1. [Code](#code-5)
@@ -33,7 +33,7 @@
 			1. [Copy over files of interest](#copy-over-files-of-interest-1)
 				1. [Code](#code-8)
 1. [I Run echo tests with `Q_N` data](#i-run-echo-tests-with-q_n-data)
-	1. [pre Get situated, make necessary directories](#pre-get-situated-make-necessary-directories)
+	1. [PRE Get situated, make necessary directories](#pre-get-situated-make-necessary-directories)
 		1. [Code](#code-9)
 	1. [i Run an echo test for Trinity GF mode with `Q_N` data](#i-run-an-echo-test-for-trinity-gf-mode-with-q_n-data)
 		1. [01 Define variables, arrays](#01-define-variables-arrays)
@@ -68,7 +68,7 @@
 		1. [05 sbatch/srun the echo test](#05-sbatchsrun-the-echo-test-1)
 			1. [Code](#code-21)
 1. [II Run Trinity with `Q_N` data](#ii-run-trinity-with-q_n-data)
-	1. [pre Get situated, make necessary directories](#pre-get-situated-make-necessary-directories-1)
+	1. [PRE Get situated, make necessary directories](#pre-get-situated-make-necessary-directories-1)
 		1. [Code](#code-22)
 	1. [i Run Trinity GF mode with `Q_N` data](#i-run-trinity-gf-mode-with-q_n-data)
 		1. [01 Define variables, arrays](#01-define-variables-arrays-2)
@@ -99,7 +99,7 @@
 		1. [05 sbatch/srun Trinity](#05-sbatchsrun-trinity-1)
 			1. [Code](#code-34)
 1. [III Run echo tests with `G_N` data](#iii-run-echo-tests-with-g_n-data)
-	1. [pre Get situated, make necessary directories](#pre-get-situated-make-necessary-directories-2)
+	1. [PRE Get situated, make necessary directories](#pre-get-situated-make-necessary-directories-2)
 		1. [Code](#code-35)
 	1. [i Run an echo test for Trinity GF mode with `G_N` data](#i-run-an-echo-test-for-trinity-gf-mode-with-g_n-data)
 		1. [01 Define variables, arrays](#01-define-variables-arrays-4)
@@ -134,7 +134,7 @@
 		1. [05 sbatch/srun the echo test](#05-sbatchsrun-the-echo-test-3)
 			1. [Code](#code-47)
 1. [IV Run Trinity with `G_N` data](#iv-run-trinity-with-g_n-data)
-	1. [pre Get situated, make necessary directories](#pre-get-situated-make-necessary-directories-3)
+	1. [PRE Get situated, make necessary directories](#pre-get-situated-make-necessary-directories-3)
 		1. [Code](#code-48)
 	1. [i Run Trinity GF mode with `G_N` data](#i-run-trinity-gf-mode-with-g_n-data)
 		1. [01 Define variables, arrays](#01-define-variables-arrays-6)
@@ -167,6 +167,10 @@
 
 <!-- /MarkdownTOC -->
 </details>
+<br />
+
+Generate and submit Trinity genome-free (GF) and genome-guided (GG) transcriptome assembly scripts to SLURM; scripts take in and act on processed bams in [`2023-0115`](../2023-0115). (Notebook details Trinity parameterization experiments.)
+<br />
 <br />
 
 <a id="pre-set-up-the-experiment-directory-results2023-0111"></a>
@@ -961,8 +965,8 @@ lrwxrwxrwx 1 kalavatt 120 Feb 14 09:17 Q_S.bam -> ../../2023-0115/bams_UMI-dedup
 </details>
 <br />
 
-<a id="singularity-has-issues-with-symlinked-files-copy-them-directly"></a>
-### Singularity has issues with symlinked files; copy them directly
+<a id="singularity-has-issues-with-symlinked-files-so-copy-them-directly"></a>
+### Singularity has issues with symlinked files, so copy them directly
 <a id="address-the-problem-for-trinity-gf-mode"></a>
 #### Address the problem for Trinity GF mode
 <a id="remove-the-symlinks"></a>
@@ -1073,7 +1077,7 @@ cp \
 <a id="i-run-echo-tests-with-q_n-data"></a>
 ## <u>I</u> Run echo tests with `Q_N` data
 <a id="pre-get-situated-make-necessary-directories"></a>
-### <u>pre</u> Get situated, make necessary directories
+### <u>PRE</u> Get situated, make necessary directories
 <a id="code-9"></a>
 #### Code
 <details>
@@ -2143,7 +2147,7 @@ cd -
 <a id="ii-run-trinity-with-q_n-data"></a>
 ## <u>II</u> Run Trinity with `Q_N` data
 <a id="pre-get-situated-make-necessary-directories-1"></a>
-### <u>pre</u> Get situated, make necessary directories
+### <u>PRE</u> Get situated, make necessary directories
 <a id="code-22"></a>
 #### Code
 <details>
@@ -3136,7 +3140,7 @@ cd -
 <a id="iii-run-echo-tests-with-g_n-data"></a>
 ## <u>III</u> Run echo tests with `G_N` data
 <a id="pre-get-situated-make-necessary-directories-2"></a>
-### <u>pre</u> Get situated, make necessary directories
+### <u>PRE</u> Get situated, make necessary directories
 <a id="code-35"></a>
 #### Code
 <details>
@@ -4206,7 +4210,7 @@ cd -
 <a id="iv-run-trinity-with-g_n-data"></a>
 ## <u>IV</u> Run Trinity with `G_N` data
 <a id="pre-get-situated-make-necessary-directories-3"></a>
-### <u>pre</u> Get situated, make necessary directories
+### <u>PRE</u> Get situated, make necessary directories
 <a id="code-48"></a>
 #### Code
 <details>

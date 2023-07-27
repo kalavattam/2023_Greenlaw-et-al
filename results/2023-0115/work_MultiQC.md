@@ -8,21 +8,21 @@
 <!-- MarkdownTOC -->
 
 1. [Perform FastQC analyses](#perform-fastqc-analyses)
-	1. [Grab a node, get situated, make necessary outdirectories](#grab-a-node-get-situated-make-necessary-outdirectories)
-		1. [Code](#code)
-		1. [Printed](#printed)
-	1. [Run FastQC on fastqs](#run-fastqc-on-fastqs)
-		1. [Create arrays of fastq files of interest](#create-arrays-of-fastq-files-of-interest)
-			1. [Code](#code-1)
-		1. [Use GNU parallel to run FastQC on fastq array elements](#use-gnu-parallel-to-run-fastqc-on-fastq-array-elements)
-			1. [Code](#code-2)
-	1. [Run FastQC on bams](#run-fastqc-on-bams)
-		1. [Create arrays of bam files of interest](#create-arrays-of-bam-files-of-interest)
-			1. [Code](#code-3)
-		1. [Use GNU parallel to run FastQC on bam array elements](#use-gnu-parallel-to-run-fastqc-on-bam-array-elements)
-			1. [Code](#code-4)
+    1. [Grab a node, get situated, make necessary outdirectories](#grab-a-node-get-situated-make-necessary-outdirectories)
+        1. [Code](#code)
+        1. [Printed](#printed)
+    1. [Run FastQC on fastqs](#run-fastqc-on-fastqs)
+        1. [Create arrays of fastq files of interest](#create-arrays-of-fastq-files-of-interest)
+            1. [Code](#code-1)
+        1. [Use GNU parallel to run FastQC on fastq array elements](#use-gnu-parallel-to-run-fastqc-on-fastq-array-elements)
+            1. [Code](#code-2)
+    1. [Run FastQC on bams](#run-fastqc-on-bams)
+        1. [Create arrays of bam files of interest](#create-arrays-of-bam-files-of-interest)
+            1. [Code](#code-3)
+        1. [Use GNU parallel to run FastQC on bam array elements](#use-gnu-parallel-to-run-fastqc-on-bam-array-elements)
+            1. [Code](#code-4)
 1. [Run MultiQC](#run-multiqc)
-	1. [Code](#code-5)
+    1. [Code](#code-5)
 
 <!-- /MarkdownTOC -->
 </details>
@@ -40,7 +40,6 @@
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0115"
 grabnode  # 16, etc.
@@ -128,7 +127,6 @@ mkdir: created directory 'FastQC/bams_UMI-dedup/to-align_umi-extracted_trimmed_k
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 #  Symlinked fastqs ---------------------------------------
 unset fqs_sym
@@ -345,7 +343,6 @@ echo "${#fqs_rcor_cor_r2[@]}"
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 # fastqs_UMI-dedup/{atria_trim,rcorrector,rcorrector_clean-up,symlinks,umi-tools_extract}
 
@@ -385,7 +382,6 @@ parallel \
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 #  ----------------
 unset bams_UT
@@ -877,7 +873,6 @@ echo "${#fqs_UTK_prop_SC_merged_r2[@]}"
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 parallel \
     --header : \
@@ -930,7 +925,6 @@ parallel \
 
 ```bash
 #!/bin/bash
-#DONTRUN #CONTINUE
 
 mkdir -p MultiQC/fastqs_UMI-dedup/symlinks
 
@@ -938,9 +932,6 @@ multiqc \
     --interactive \
     -o MultiQC/fastqs_UMI-dedup/symlinks \
 	FastQC/fastqs_UMI-dedup/symlinks
-
-
-
 ```
 </details>
 <br />

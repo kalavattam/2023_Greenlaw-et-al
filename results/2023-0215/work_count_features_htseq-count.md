@@ -388,7 +388,7 @@ for i in "strd-eq" "strd-op"; do
 
 
         #  -------------------------------------
-        echo "\
+        echo """
         sbatch \\
             --job-name=${job_name} \\
             --nodes=1 \\
@@ -408,7 +408,7 @@ for i in "strd-eq" "strd-op"; do
                 \"${gtf}\" \\
                      > >(tee -a \"${err_out}.stdout.txt\") \\
                     2> >(tee -a \"${err_out}.stderr.txt\")
-        "
+        """
         # (Scraps)
         # --array=${iter}-${max_id_job}%${max_id_task} \
         # --array=1-${max_id_job}%${max_id_task} \
@@ -1481,7 +1481,7 @@ drwxrws--- 3 kalavatt   29 Mar 31 14:33 ../
 <br />
 
 <details>
-<summary><i>Code: </i></summary>
+<summary><i>Code</i></summary>
 
 `#TODO` *Better place or different notebook for this (and related) code chunks?*
 ```bash
