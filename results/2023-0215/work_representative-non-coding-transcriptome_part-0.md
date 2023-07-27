@@ -73,6 +73,7 @@
         1. [Problem](#problem-1)
         1. [Maybe](#maybe)
         1. [Email to Robin Dowell](#email-to-robin-dowell)
+            1. [Update](#update)
     1. [Lidschreiber, Easter et al. \(Passmore, Cramer\) `** ... **`](#lidschreiber-easter-et-al-passmore-cramer---)
         1. [How I found this article](#how-i-found-this-article)
         1. [Question](#question-4)
@@ -559,6 +560,10 @@ Fred Hutch Cancer Center
 Seattle, WA 98109
 </details>
 <br />
+
+<a id="update"></a>
+##### Update
+Never received a response from Dr. Dowell.
 
 <a id="lidschreiber-easter-et-al-passmore-cramer---"></a>
 ### Lidschreiber, Easter et al. (Passmore, Cramer) `** ... **`

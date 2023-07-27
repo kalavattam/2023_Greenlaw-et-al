@@ -207,7 +207,7 @@ cp \
 <details>
 <summary><i>Notes, code: Include SGD R64-1-1 ncRNAs</i></summary>
 
-`gtf` of SGD `R64-1-1` ncRNAs were processed/isolated from [`saccharomyces_cerevisiae_R64-1-1_20110208.gff`](http://sgd-archive.yeastgenome.org/sequence/S288C_reference/genome_releases/S288C_reference_genome_R64-1-1_20110203.tgz) in [`work_assess-process_R64-1-1-gff3_categorize-Trinity-transfrags_part-1.Rmd`](./work_assess-process_R64-1-1_gff3.Rmd).
+`gtf` of SGD `R64-1-1` ncRNAs were processed/isolated from [`saccharomyces_cerevisiae_R64-1-1_20110208.gff`](http://sgd-archive.yeastgenome.org/sequence/S288C_reference/genome_releases/S288C_reference_genome_R64-1-1_20110203.tgz) in [`work_assess-process_R64-1-1-gff3_categorize-Trinity-transfrags_part-1.Rmd`](./work_assess-process_R64-1-1-gff3_categorize-Trinity-transfrags_part-1.Rmd).
 ```bash
 #!/bin/bash
 
