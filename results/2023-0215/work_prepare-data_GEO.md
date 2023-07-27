@@ -62,7 +62,9 @@
 1. [Visualize/assess the `GEO/` directory structure](#visualizeassess-the-geo-directory-structure)
     1. [Code](#code-12)
     1. [Printed](#printed-12)
-1. [Working out the "data processing" text for the submission to GEO](#working-out-the-data-processing-text-for-the-submission-to-geo)
+1. [Copy files to a directory on the shared drive](#copy-files-to-a-directory-on-the-shared-drive)
+    1. [Code](#code-13)
+    1. [Printed](#printed-13)
 
 <!-- /MarkdownTOC -->
 </details>
@@ -8990,15 +8992,846 @@ echo $(( 46 + 4 + 90 + 28 + 138 + 8 + 7 ))
 <br />
 <br />
 
-<a id="working-out-the-data-processing-text-for-the-submission-to-geo"></a>
-## Working out the "data processing" text for the submission to GEO
-We assessed the quality of sequenced paired-end reads from 4tU-seq with FastQC (version 0.11.8) and MultiQC (version 1.14).
+<a id="copy-files-to-a-directory-on-the-shared-drive"></a>
+## Copy files to a directory on the shared drive
+<a id="code-13"></a>
+### Code
+<details>
+<summary><i>Code: Copy files to a directory on the shared drive</i></summary>
 
-We appended sequenced unique molecular identifiers (UMIs) to fastq QNAMEs with UMI-tools (version 1.01); after alignment (see below), we used this information to distinguish and filter out PCR amplification-based duplicate reads while retaining duplicate reads that are biological in origin.
+```bash
+#!/bin/bash
 
-We performed read adapter and quality trimming with Atria (version 3.2.1) with default settings except for the switch --no-length-filtration.
+grabnode  # 8, 160, 1, N
 
-Using the program Rcorrector (version 1.0.5; default settings), we corrected random sequencing errors in the Ovation fastq files used to generate Q and G1 nascent transcriptome gtfs; afterwards, we filtered the corrected fastq files to exclude read pairs identified as containing irreparable errors.
+source activate gff3_env
 
-Using STAR (version 2.7.10b), paired-end 4tU-seq reads were aligned to a combined reference genome made from the concatenation of fasta files for the following organisms: S. cerevisiae (version R64-1-1; Saccharomyces_cerevisiae.R64-1-1.dna.toplevel.fasta), K. lactis (version ASM251v1; Kluyveromyces_lactis_gca_000002515.ASM251v1.dna.toplevel.fasta), and 20S RNA narnavirus (version NC004051; 20S_RNA_Narnavirus_1997_NC004051.fasta).
+transcriptome
+
+cd results/2023-0215 || echo "cd'ing failed; check on this..."
+
+[[ ! -d "${HOME}/tsukiyamalab/alisong/KA.2023-0726.GEO" ]] \
+    && mkdir -p "${HOME}/tsukiyamalab/alisong/KA.2023-0726.GEO"
+
+cd GEO/ && ls -lhaFG
+
+cp \
+    bams/standard-analyses/*.bam \
+    "${HOME}/tsukiyamalab/alisong/KA.2023-0726.GEO"
+
+find \
+    . \
+    -type f \
+    \( \
+        -name *.bam \
+        -o -name *.bw \
+        -o -name *.fq.gz \
+        -o -name *.gff3 \
+        -o -name *.gtf \
+        -o -name *.tsv \
+    \) \
+    | wc -l
+
+
+unset to_copy
+typeset -a to_copy
+while IFS=" " read -r -d $'\0'; do
+    to_copy+=( "${REPLY}" )
+done < <(
+    find . -type f \
+        \( \
+            -name *.bam \
+            -o -name *.bw \
+            -o -name *.fq.gz \
+            -o -name *.gff3 \
+            -o -name *.gtf \
+            -o -name *.tsv \
+        \) \
+        -print0 \
+            | sort -z
+)
+# echo_test "${to_copy[@]}"
+# echo "${#to_copy[@]}"
+
+parallel \
+    -k \
+    -j "${SLURM_CPUS_ON_NODE}" \
+    --dry-run \
+    'cp "{1}" "{2}"' \
+::: "${to_copy[@]}" \
+::: "${HOME}/tsukiyamalab/alisong/KA.2023-0726.GEO"
+
+parallel \
+    -k \
+    -j "${SLURM_CPUS_ON_NODE}" \
+    'cp "{1}" "{2}"' \
+::: "${to_copy[@]}" \
+::: "${HOME}/tsukiyamalab/alisong/KA.2023-0726.GEO"
+
+ls -lhaFG ~/tsukiyamalab/alisong/KA.2023-0726.GEO
+
+ls -1 ~/tsukiyamalab/alisong/KA.2023-0726.GEO | wc -l
+```
+</details>
+<br />
+
+<a id="printed-13"></a>
+### Printed
+<details>
+<summary><i>Printed: Copy files to a directory on the shared drive</i></summary>
+
+```txt
+❯ grabnode
+How many CPUs/cores would you like to grab on the node? [1-36] 8
+How much memory (GB) would you like to grab? [160] 160
+Please enter the max number of days you would like to grab this node: [1-7] 1
+Do you need a GPU ? [y/N]N
+
+You have requested 8 CPUs on this node/server for 1 days or until you type exit.
+
+Warning: If you exit this shell before your jobs are finished, your jobs
+on this node/server will be terminated. Please use sbatch for larger jobs.
+
+Shared PI folders can be found in: /fh/fast, /fh/scratch and /fh/secure.
+
+Requesting Queue: campus-new cores: 8 memory: 160 gpu: NONE
+srun: job 25019242 queued and waiting for resources
+srun: job 25019242 has been allocated resources
+
+
+❯ source activate gff3_env
+
+
+❯ transcriptome
+
+
+❯ cd results/2023-0215 || echo "cd'ing failed; check on this..."
+/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215
+
+
+❯ [[ ! -d "${HOME}/tsukiyamalab/alisong/KA.2023-0726.GEO" ]] \
+>     && mkdir -p "${HOME}/tsukiyamalab/alisong/KA.2023-0726.GEO"
+mkdir: created directory '/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO'
+
+
+❯ cd GEO/ && ls -lhaFG
+/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO
+total 328K
+drwxrws---  7 kalavatt  115 Jul 26 17:17 ./
+drwxrws--- 10 kalavatt 5.1K Jul 26 17:14 ../
+drwxrws---  4 kalavatt   75 Jul 26 17:17 bams/
+drwxrws---  4 kalavatt   50 Jul 26 17:17 bws/
+drwxrws---  3 kalavatt 9.8K Jul 26 17:17 fastqs/
+drwxrws---  3 kalavatt  545 Jul 26 17:17 gtfs/
+drwxrws---  3 kalavatt  644 Jul 20 06:07 matrices/
+
+
+❯ find \
+>     . \
+>     -type f \
+>     \( \
+>         -name *.bam \
+>         -o -name *.bw \
+>         -o -name *.fq.gz \
+>         -o -name *.gff3 \
+>         -o -name *.gtf \
+>         -o -name *.tsv \
+>     \) \
+>     | wc -l
+321
+
+
+❯ unset to_copy
+
+
+❯ typeset -a to_copy
+
+
+❯ while IFS=" " read -r -d $'\0'; do
+>     to_copy+=( "${REPLY}" )
+> done < <(
+>     find . -type f \
+>         \( \
+>             -name *.bam \
+>             -o -name *.bw \
+>             -o -name *.fq.gz \
+>             -o -name *.gff3 \
+>             -o -name *.gtf \
+>             -o -name *.tsv \
+>         \) \
+>         -print0 \
+>             | sort -z
+> )
+
+
+❯ parallel \
+>     -k \
+>     -j "${SLURM_CPUS_ON_NODE}" \
+>     --dry-run \
+>     'cp "{1}" "{2}"' \
+> ::: "${to_copy[@]}" \
+> ::: "${HOME}/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bams/standard-analyses/Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1.UTPD.bam" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bams/standard-analyses/Nab3-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1.UTPD.bam" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bams/standard-analyses/Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1.UTPD.bam" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bams/standard-analyses/Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1.UTPD.bam" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bams/standard-analyses/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125_rep1_batch1.UTPD.bam" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bams/standard-analyses/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6126_rep2_batch1.UTPD.bam" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bams/standard-analyses/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125_rep1_batch1.UTPD.bam" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bams/standard-analyses/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6126_rep2_batch1.UTPD.bam" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bams/standard-analyses/rrp6_DSm2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1.UTPD.bam" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bams/standard-analyses/rrp6_DSm2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1.UTPD.bam" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bams/standard-analyses/rrp6_DSp24_day3_tcn_SS_auxF_tcT_7078_rep2_batch1.UTPD.bam" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bams/standard-analyses/rrp6_DSp24_day3_tcn_SS_auxF_tcT_7079_rep1_batch1.UTPD.bam" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bams/standard-analyses/rrp6_DSp2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1.UTPD.bam" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bams/standard-analyses/rrp6_DSp2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1.UTPD.bam" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bams/standard-analyses/rrp6_DSp48_day4_tcn_SS_auxF_tcT_7078_rep2_batch1.UTPD.bam" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bams/standard-analyses/rrp6_DSp48_day4_tcn_SS_auxF_tcT_7079_rep1_batch2.UTPD.bam" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bams/standard-analyses/rrp6_G1_day1_tcn_SS_auxF_tcF_7078_rep2_batch2.UTPD.bam" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bams/standard-analyses/rrp6_G1_day1_tcn_SS_auxF_tcF_7079_rep1_batch2.UTPD.bam" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bams/standard-analyses/rrp6_Q_day8_tcn_N_auxF_tcF_7078_rep2_batch1.UTPD.bam" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bams/standard-analyses/rrp6_Q_day8_tcn_N_auxF_tcF_7079_rep1_batch1.UTPD.bam" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bams/standard-analyses/rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch1.UTPD.bam" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bams/standard-analyses/rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch2.UTPD.bam" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bams/standard-analyses/rrp6_Q_day8_tcn_SS_auxF_tcF_7079_rep1_batch1.UTPD.bam" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bams/standard-analyses/WT_DSm2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1.UTPD.bam" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bams/standard-analyses/WT_DSm2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1.UTPD.bam" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bams/standard-analyses/WT_DSp24_day3_tcn_SS_auxF_tcT_5781_rep1_batch1.UTPD.bam" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bams/standard-analyses/WT_DSp24_day3_tcn_SS_auxF_tcT_5782_rep2_batch1.UTPD.bam" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bams/standard-analyses/WT_DSp2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1.UTPD.bam" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bams/standard-analyses/WT_DSp2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1.UTPD.bam" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bams/standard-analyses/WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch1.UTPD.bam" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bams/standard-analyses/WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch2.UTPD.bam" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bams/standard-analyses/WT_DSp48_day4_tcn_SS_auxF_tcT_5782_rep2_batch1.UTPD.bam" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bams/standard-analyses/WT_G1_day1_ovn_N_auxF_tcF_5781_rep1_batch1.UTPD.bam" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bams/standard-analyses/WT_G1_day1_ovn_N_auxF_tcF_5782_rep2_batch1.UTPD.bam" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bams/standard-analyses/WT_G1_day1_ovn_SS_auxF_tcF_5781_rep1_batch1.UTPD.bam" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bams/standard-analyses/WT_G1_day1_ovn_SS_auxF_tcF_5782_rep2_batch1.UTPD.bam" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bams/standard-analyses/WT_G1_day1_tcn_SS_auxF_tcF_5781_rep1_batch2.UTPD.bam" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bams/standard-analyses/WT_G1_day1_tcn_SS_auxF_tcF_5782_rep2_batch2.UTPD.bam" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bams/standard-analyses/WT_Q_day7_ovn_N_auxF_tcF_5781_rep1_batch1.UTPD.bam" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bams/standard-analyses/WT_Q_day7_ovn_N_auxF_tcF_5782_rep2_batch1.UTPD.bam" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bams/standard-analyses/WT_Q_day7_ovn_SS_auxF_tcF_5781_rep1_batch1.UTPD.bam" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bams/standard-analyses/WT_Q_day7_ovn_SS_auxF_tcF_5782_rep2_batch1.UTPD.bam" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bams/standard-analyses/WT_Q_day8_tcn_N_auxF_tcF_5781_rep1_batch1.UTPD.bam" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bams/standard-analyses/WT_Q_day8_tcn_N_auxF_tcF_5782_rep2_batch1.UTPD.bam" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bams/standard-analyses/WT_Q_day8_tcn_SS_auxF_tcF_5781_rep1_batch1.UTPD.bam" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bams/standard-analyses/WT_Q_day8_tcn_SS_auxF_tcF_5782_rep2_batch1.UTPD.bam" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bams/transcriptome-assembly/WT_G1_day1_ovn_N_auxF_tcF_5781-2_rep-merge_batch1.UTKPSSc.bam" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bams/transcriptome-assembly/WT_G1_day1_ovn_SS_auxF_tcF_5781-2_rep-merge_batch1.UTKPSSc.bam" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bams/transcriptome-assembly/WT_Q_day7_ovn_N_auxF_tcF_5781-2_rep-merge_batch1.UTKPSSc.bam" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bams/transcriptome-assembly/WT_Q_day7_ovn_SS_auxF_tcF_5781-2_rep-merge_batch1.UTKPSSc.bam" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1.KLSC_m.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1.KLSC_p.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/Nab3-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1.KLSC_m.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/Nab3-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1.KLSC_p.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1.KLSC_m.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1.KLSC_p.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1.KLSC_m.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1.KLSC_p.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125_rep1_batch1.KLSC_m.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125_rep1_batch1.KLSC_p.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6126_rep2_batch1.KLSC_m.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6126_rep2_batch1.KLSC_p.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125_rep1_batch1.KLSC_m.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125_rep1_batch1.KLSC_p.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6126_rep2_batch1.KLSC_m.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6126_rep2_batch1.KLSC_p.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/rrp6_DSm2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_m.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/rrp6_DSm2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_p.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/rrp6_DSm2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1.BPM_m.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/rrp6_DSm2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1.BPM_p.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/rrp6_DSp24_day3_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_m.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/rrp6_DSp24_day3_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_p.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/rrp6_DSp24_day3_tcn_SS_auxF_tcT_7079_rep1_batch1.BPM_m.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/rrp6_DSp24_day3_tcn_SS_auxF_tcT_7079_rep1_batch1.BPM_p.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/rrp6_DSp2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_m.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/rrp6_DSp2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_p.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/rrp6_DSp2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1.BPM_m.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/rrp6_DSp2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1.BPM_p.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/rrp6_DSp48_day4_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_m.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/rrp6_DSp48_day4_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_p.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/rrp6_DSp48_day4_tcn_SS_auxF_tcT_7079_rep1_batch2.BPM_m.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/rrp6_DSp48_day4_tcn_SS_auxF_tcT_7079_rep1_batch2.BPM_p.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/rrp6_G1_day1_tcn_SS_auxF_tcF_7078_rep2_batch2.KLSC_m.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/rrp6_G1_day1_tcn_SS_auxF_tcF_7078_rep2_batch2.KLSC_p.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/rrp6_G1_day1_tcn_SS_auxF_tcF_7079_rep1_batch2.KLSC_m.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/rrp6_G1_day1_tcn_SS_auxF_tcF_7079_rep1_batch2.KLSC_p.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/rrp6_Q_day8_tcn_N_auxF_tcF_7078_rep2_batch1.KLSC_m.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/rrp6_Q_day8_tcn_N_auxF_tcF_7078_rep2_batch1.KLSC_p.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/rrp6_Q_day8_tcn_N_auxF_tcF_7079_rep1_batch1.KLSC_m.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/rrp6_Q_day8_tcn_N_auxF_tcF_7079_rep1_batch1.KLSC_p.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch1.KLSC_m.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch1.KLSC_p.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch2.KLSC_m.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch2.KLSC_p.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/rrp6_Q_day8_tcn_SS_auxF_tcF_7079_rep1_batch1.KLSC_m.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/rrp6_Q_day8_tcn_SS_auxF_tcF_7079_rep1_batch1.KLSC_p.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/WT_DSm2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_m.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/WT_DSm2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_p.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/WT_DSm2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_m.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/WT_DSm2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_p.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/WT_DSp24_day3_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_m.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/WT_DSp24_day3_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_p.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/WT_DSp24_day3_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_m.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/WT_DSp24_day3_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_p.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/WT_DSp2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_m.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/WT_DSp2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_p.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/WT_DSp2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_m.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/WT_DSp2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_p.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_m.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_p.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/WT_DSp48_day4_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_m.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/WT_DSp48_day4_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_p.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/WT_G1_day1_ovn_N_auxF_tcF_5781_rep1_batch1.BPM_m.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/WT_G1_day1_ovn_N_auxF_tcF_5781_rep1_batch1.BPM_p.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/WT_G1_day1_ovn_N_auxF_tcF_5782_rep2_batch1.BPM_m.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/WT_G1_day1_ovn_N_auxF_tcF_5782_rep2_batch1.BPM_p.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/WT_G1_day1_ovn_SS_auxF_tcF_5781_rep1_batch1.BPM_m.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/WT_G1_day1_ovn_SS_auxF_tcF_5781_rep1_batch1.BPM_p.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/WT_G1_day1_ovn_SS_auxF_tcF_5782_rep2_batch1.BPM_m.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/WT_G1_day1_ovn_SS_auxF_tcF_5782_rep2_batch1.BPM_p.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/WT_G1_day1_tcn_SS_auxF_tcF_5781_rep1_batch2.KLSC_m.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/WT_G1_day1_tcn_SS_auxF_tcF_5781_rep1_batch2.KLSC_p.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/WT_G1_day1_tcn_SS_auxF_tcF_5782_rep2_batch2.KLSC_m.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/WT_G1_day1_tcn_SS_auxF_tcF_5782_rep2_batch2.KLSC_p.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/WT_Q_day7_ovn_N_auxF_tcF_5781_rep1_batch1.BPM_m.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/WT_Q_day7_ovn_N_auxF_tcF_5781_rep1_batch1.BPM_p.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/WT_Q_day7_ovn_N_auxF_tcF_5782_rep2_batch1.BPM_m.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/WT_Q_day7_ovn_N_auxF_tcF_5782_rep2_batch1.BPM_p.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/WT_Q_day7_ovn_SS_auxF_tcF_5781_rep1_batch1.BPM_m.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/WT_Q_day7_ovn_SS_auxF_tcF_5781_rep1_batch1.BPM_p.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/WT_Q_day7_ovn_SS_auxF_tcF_5782_rep2_batch1.BPM_m.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/WT_Q_day7_ovn_SS_auxF_tcF_5782_rep2_batch1.BPM_p.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/WT_Q_day8_tcn_N_auxF_tcF_5781_rep1_batch1.KLSC_m.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/WT_Q_day8_tcn_N_auxF_tcF_5781_rep1_batch1.KLSC_p.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/WT_Q_day8_tcn_N_auxF_tcF_5782_rep2_batch1.KLSC_m.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/WT_Q_day8_tcn_N_auxF_tcF_5782_rep2_batch1.KLSC_p.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/WT_Q_day8_tcn_SS_auxF_tcF_5781_rep1_batch1.KLSC_m.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/WT_Q_day8_tcn_SS_auxF_tcF_5781_rep1_batch1.KLSC_p.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/WT_Q_day8_tcn_SS_auxF_tcF_5782_rep2_batch1.KLSC_m.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/individual/WT_Q_day8_tcn_SS_auxF_tcF_5782_rep2_batch1.KLSC_p.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/mean/Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_m.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/mean/Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_p.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/mean/Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_m.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/mean/Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_p.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/mean/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125-6126_rep-mean_batch1.KLSC_m.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/mean/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125-6126_rep-mean_batch1.KLSC_p.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/mean/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125-6126_rep-mean_batch1.KLSC_m.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/mean/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125-6126_rep-mean_batch1.KLSC_p.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/mean/rrp6_G1_day1_tcn_SS_auxF_tcF_7078-7079_rep-mean_batch2.KLSC_m.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/mean/rrp6_G1_day1_tcn_SS_auxF_tcF_7078-7079_rep-mean_batch2.KLSC_p.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/mean/rrp6_Q_day8_tcn_N_auxF_tcF_7078-7079_rep-mean_batch1.KLSC_m.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/mean/rrp6_Q_day8_tcn_N_auxF_tcF_7078-7079_rep-mean_batch1.KLSC_p.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/mean/rrp6_Q_day8_tcn_SS_auxF_tcF_7078-7079_rep-mean_batch1-2.KLSC_m.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/mean/rrp6_Q_day8_tcn_SS_auxF_tcF_7078-7079_rep-mean_batch1-2.KLSC_p.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/mean/WT_G1_day1_ovn_N_auxF_tcF_5781-5782_rep-mean_batch1.BPM_m.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/mean/WT_G1_day1_ovn_N_auxF_tcF_5781-5782_rep-mean_batch1.BPM_p.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/mean/WT_G1_day1_ovn_SS_auxF_tcF_5781-5782_rep-mean_batch1.BPM_m.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/mean/WT_G1_day1_ovn_SS_auxF_tcF_5781-5782_rep-mean_batch1.BPM_p.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/mean/WT_G1_day1_tcn_SS_auxF_tcF_5781-5782_rep-mean_batch2.KLSC_m.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/mean/WT_G1_day1_tcn_SS_auxF_tcF_5781-5782_rep-mean_batch2.KLSC_p.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/mean/WT_Q_day7_ovn_N_auxF_tcF_5781-5782_rep-mean_batch1.BPM_m.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/mean/WT_Q_day7_ovn_N_auxF_tcF_5781-5782_rep-mean_batch1.BPM_p.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/mean/WT_Q_day7_ovn_SS_auxF_tcF_5781-5782_rep-mean_batch1.BPM_m.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/mean/WT_Q_day7_ovn_SS_auxF_tcF_5781-5782_rep-mean_batch1.BPM_p.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/mean/WT_Q_day8_tcn_N_auxF_tcF_5781-5782_rep-mean_batch1.KLSC_m.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/mean/WT_Q_day8_tcn_N_auxF_tcF_5781-5782_rep-mean_batch1.KLSC_p.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/mean/WT_Q_day8_tcn_SS_auxF_tcF_5781-5782_rep-mean_batch1.KLSC_m.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./bws/mean/WT_Q_day8_tcn_SS_auxF_tcF_5781-5782_rep-mean_batch1.KLSC_p.bw" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1_R1.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1_R2.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1_R3.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/Nab3-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1_R1.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/Nab3-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1_R2.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/Nab3-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1_R3.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1_R1.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1_R2.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1_R3.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1_R1.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1_R2.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1_R3.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125_rep1_batch1_R1.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125_rep1_batch1_R2.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125_rep1_batch1_R3.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6126_rep2_batch1_R1.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6126_rep2_batch1_R2.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6126_rep2_batch1_R3.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125_rep1_batch1_R1.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125_rep1_batch1_R2.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125_rep1_batch1_R3.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6126_rep2_batch1_R1.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6126_rep2_batch1_R2.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6126_rep2_batch1_R3.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/rrp6_DSm2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1_R1.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/rrp6_DSm2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1_R2.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/rrp6_DSm2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1_R3.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/rrp6_DSm2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1_R1.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/rrp6_DSm2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1_R2.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/rrp6_DSm2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1_R3.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/rrp6_DSp24_day3_tcn_SS_auxF_tcT_7078_rep2_batch1_R1.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/rrp6_DSp24_day3_tcn_SS_auxF_tcT_7078_rep2_batch1_R2.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/rrp6_DSp24_day3_tcn_SS_auxF_tcT_7078_rep2_batch1_R3.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/rrp6_DSp24_day3_tcn_SS_auxF_tcT_7079_rep1_batch1_R1.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/rrp6_DSp24_day3_tcn_SS_auxF_tcT_7079_rep1_batch1_R2.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/rrp6_DSp24_day3_tcn_SS_auxF_tcT_7079_rep1_batch1_R3.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/rrp6_DSp2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1_R1.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/rrp6_DSp2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1_R2.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/rrp6_DSp2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1_R3.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/rrp6_DSp2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1_R1.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/rrp6_DSp2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1_R2.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/rrp6_DSp2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1_R3.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/rrp6_DSp48_day4_tcn_SS_auxF_tcT_7078_rep2_batch1_R1.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/rrp6_DSp48_day4_tcn_SS_auxF_tcT_7078_rep2_batch1_R2.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/rrp6_DSp48_day4_tcn_SS_auxF_tcT_7078_rep2_batch1_R3.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/rrp6_DSp48_day4_tcn_SS_auxF_tcT_7079_rep1_batch2_R1.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/rrp6_DSp48_day4_tcn_SS_auxF_tcT_7079_rep1_batch2_R2.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/rrp6_DSp48_day4_tcn_SS_auxF_tcT_7079_rep1_batch2_R3.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/rrp6_G1_day1_tcn_SS_auxF_tcF_7078_rep2_batch2_R1.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/rrp6_G1_day1_tcn_SS_auxF_tcF_7078_rep2_batch2_R2.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/rrp6_G1_day1_tcn_SS_auxF_tcF_7078_rep2_batch2_R3.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/rrp6_G1_day1_tcn_SS_auxF_tcF_7079_rep1_batch2_R1.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/rrp6_G1_day1_tcn_SS_auxF_tcF_7079_rep1_batch2_R2.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/rrp6_G1_day1_tcn_SS_auxF_tcF_7079_rep1_batch2_R3.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/rrp6_Q_day8_tcn_N_auxF_tcF_7078_rep2_batch1_R1.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/rrp6_Q_day8_tcn_N_auxF_tcF_7078_rep2_batch1_R2.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/rrp6_Q_day8_tcn_N_auxF_tcF_7078_rep2_batch1_R3.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/rrp6_Q_day8_tcn_N_auxF_tcF_7079_rep1_batch1_R1.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/rrp6_Q_day8_tcn_N_auxF_tcF_7079_rep1_batch1_R2.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/rrp6_Q_day8_tcn_N_auxF_tcF_7079_rep1_batch1_R3.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch1_R1.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch1_R2.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch1_R3.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch2_R1.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch2_R2.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch2_R3.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/rrp6_Q_day8_tcn_SS_auxF_tcF_7079_rep1_batch1_R1.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/rrp6_Q_day8_tcn_SS_auxF_tcF_7079_rep1_batch1_R2.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/rrp6_Q_day8_tcn_SS_auxF_tcF_7079_rep1_batch1_R3.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/WT_DSm2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1_R1.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/WT_DSm2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1_R2.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/WT_DSm2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1_R3.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/WT_DSm2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1_R1.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/WT_DSm2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1_R2.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/WT_DSm2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1_R3.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/WT_DSp24_day3_tcn_SS_auxF_tcT_5781_rep1_batch1_R1.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/WT_DSp24_day3_tcn_SS_auxF_tcT_5781_rep1_batch1_R2.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/WT_DSp24_day3_tcn_SS_auxF_tcT_5781_rep1_batch1_R3.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/WT_DSp24_day3_tcn_SS_auxF_tcT_5782_rep2_batch1_R1.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/WT_DSp24_day3_tcn_SS_auxF_tcT_5782_rep2_batch1_R2.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/WT_DSp24_day3_tcn_SS_auxF_tcT_5782_rep2_batch1_R3.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/WT_DSp2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1_R1.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/WT_DSp2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1_R2.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/WT_DSp2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1_R3.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/WT_DSp2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1_R1.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/WT_DSp2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1_R2.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/WT_DSp2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1_R3.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch1_R1.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch1_R2.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch1_R3.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch2_R1.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch2_R2.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch2_R3.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/WT_DSp48_day4_tcn_SS_auxF_tcT_5782_rep2_batch1_R1.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/WT_DSp48_day4_tcn_SS_auxF_tcT_5782_rep2_batch1_R2.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/WT_DSp48_day4_tcn_SS_auxF_tcT_5782_rep2_batch1_R3.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/WT_G1_day1_ovn_N_auxF_tcF_5781_rep1_batch1_R1.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/WT_G1_day1_ovn_N_auxF_tcF_5781_rep1_batch1_R2.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/WT_G1_day1_ovn_N_auxF_tcF_5781_rep1_batch1_R3.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/WT_G1_day1_ovn_N_auxF_tcF_5782_rep2_batch1_R1.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/WT_G1_day1_ovn_N_auxF_tcF_5782_rep2_batch1_R2.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/WT_G1_day1_ovn_N_auxF_tcF_5782_rep2_batch1_R3.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/WT_G1_day1_ovn_SS_auxF_tcF_5781_rep1_batch1_R1.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/WT_G1_day1_ovn_SS_auxF_tcF_5781_rep1_batch1_R2.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/WT_G1_day1_ovn_SS_auxF_tcF_5781_rep1_batch1_R3.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/WT_G1_day1_ovn_SS_auxF_tcF_5782_rep2_batch1_R1.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/WT_G1_day1_ovn_SS_auxF_tcF_5782_rep2_batch1_R2.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/WT_G1_day1_ovn_SS_auxF_tcF_5782_rep2_batch1_R3.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/WT_G1_day1_tcn_SS_auxF_tcF_5781_rep1_batch2_R1.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/WT_G1_day1_tcn_SS_auxF_tcF_5781_rep1_batch2_R2.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/WT_G1_day1_tcn_SS_auxF_tcF_5781_rep1_batch2_R3.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/WT_G1_day1_tcn_SS_auxF_tcF_5782_rep2_batch2_R1.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/WT_G1_day1_tcn_SS_auxF_tcF_5782_rep2_batch2_R2.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/WT_G1_day1_tcn_SS_auxF_tcF_5782_rep2_batch2_R3.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/WT_Q_day7_ovn_N_auxF_tcF_5781_rep1_batch1_R1.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/WT_Q_day7_ovn_N_auxF_tcF_5781_rep1_batch1_R2.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/WT_Q_day7_ovn_N_auxF_tcF_5781_rep1_batch1_R3.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/WT_Q_day7_ovn_N_auxF_tcF_5782_rep2_batch1_R1.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/WT_Q_day7_ovn_N_auxF_tcF_5782_rep2_batch1_R2.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/WT_Q_day7_ovn_N_auxF_tcF_5782_rep2_batch1_R3.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/WT_Q_day7_ovn_SS_auxF_tcF_5781_rep1_batch1_R1.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/WT_Q_day7_ovn_SS_auxF_tcF_5781_rep1_batch1_R2.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/WT_Q_day7_ovn_SS_auxF_tcF_5781_rep1_batch1_R3.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/WT_Q_day7_ovn_SS_auxF_tcF_5782_rep2_batch1_R1.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/WT_Q_day7_ovn_SS_auxF_tcF_5782_rep2_batch1_R2.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/WT_Q_day7_ovn_SS_auxF_tcF_5782_rep2_batch1_R3.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/WT_Q_day8_tcn_N_auxF_tcF_5781_rep1_batch1_R1.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/WT_Q_day8_tcn_N_auxF_tcF_5781_rep1_batch1_R2.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/WT_Q_day8_tcn_N_auxF_tcF_5781_rep1_batch1_R3.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/WT_Q_day8_tcn_N_auxF_tcF_5782_rep2_batch1_R1.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/WT_Q_day8_tcn_N_auxF_tcF_5782_rep2_batch1_R2.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/WT_Q_day8_tcn_N_auxF_tcF_5782_rep2_batch1_R3.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/WT_Q_day8_tcn_SS_auxF_tcF_5781_rep1_batch1_R1.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/WT_Q_day8_tcn_SS_auxF_tcF_5781_rep1_batch1_R2.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/WT_Q_day8_tcn_SS_auxF_tcF_5781_rep1_batch1_R3.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/WT_Q_day8_tcn_SS_auxF_tcF_5782_rep2_batch1_R1.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/WT_Q_day8_tcn_SS_auxF_tcF_5782_rep2_batch1_R2.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./fastqs/WT_Q_day8_tcn_SS_auxF_tcF_5782_rep2_batch1_R3.fq.gz" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./gtfs/Greenlaw-et-al.concatenated-genome_SC-KL-20S.gff3" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./gtfs/Greenlaw-et-al.R64-1-1_blacklist_rRNA-tRNA.gtf" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./gtfs/Greenlaw-et-al.R64-1-1_features-intergenic_sense-antisense.gtf" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./gtfs/Greenlaw-et-al.txome_nascent_G1.gtf" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./gtfs/Greenlaw-et-al.txome_nascent_Q.gtf" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./gtfs/Greenlaw-et-al.txome_non-collapsed-pa-ncRNA.gtf" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./gtfs/Greenlaw-et-al.txome_representative-coding-non-pa-ncRNA.gtf" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./gtfs/Greenlaw-et-al.txome_representative-pa-ncRNA.gtf" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./matrices/Greenlaw-et-al.concatenated-genome_SC-KL-20S.mRNA.hc_strd-eq_nonuniq-none.tsv" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./matrices/Greenlaw-et-al.concatenated-genome_SC-KL-20S.mRNA.hc_strd-op_nonuniq-none.tsv" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./matrices/Greenlaw-et-al.txome_nascent_G1.hc_strd-eq_nonuniq-none.tsv" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./matrices/Greenlaw-et-al.txome_nascent_Q.hc_strd-eq_nonuniq-none.tsv" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./matrices/Greenlaw-et-al.txome_non-collapsed-pa-ncRNA.hc_strd-eq_nonuniq-none.tsv" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./matrices/Greenlaw-et-al.txome_representative-coding-non-pa-ncRNA.hc_strd-eq_nonuniq-none.tsv" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+cp "./matrices/Greenlaw-et-al.txome_representative-pa-ncRNA.hc_strd-eq_nonuniq-none.tsv" "/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO"
+
+
+❯ parallel \
+>     -k \
+>     -j "${SLURM_CPUS_ON_NODE}" \
+>     'cp "{1}" "{2}"' \
+> ::: "${to_copy[@]}" \
+> ::: "${HOME}/tsukiyamalab/alisong/KA.2023-0726.GEO"
+
+
+❯ ls -lhaFG ~/tsukiyamalab/alisong/KA.2023-0726.GEO
+total 190G
+drwxrws---   2 kalavatt   23K Jul 26 17:41 ./
+drwxrws--- 102 agreenla  5.8K Jul 26 17:16 ../
+-rw-rw----   1 kalavatt  8.5M Jul 26 17:41 Greenlaw-et-al.concatenated-genome_SC-KL-20S.gff3
+-rw-rw----   1 kalavatt  2.7M Jul 26 17:41 Greenlaw-et-al.concatenated-genome_SC-KL-20S.mRNA.hc_strd-eq_nonuniq-none.tsv
+-rw-rw----   1 kalavatt  2.2M Jul 26 17:41 Greenlaw-et-al.concatenated-genome_SC-KL-20S.mRNA.hc_strd-op_nonuniq-none.tsv
+-rw-rw----   1 kalavatt  315K Jul 26 17:41 Greenlaw-et-al.R64-1-1_blacklist_rRNA-tRNA.gtf
+-rw-rw----   1 kalavatt  4.5M Jul 26 17:41 Greenlaw-et-al.R64-1-1_features-intergenic_sense-antisense.gtf
+-rw-rw----   1 kalavatt  3.1M Jul 26 17:41 Greenlaw-et-al.txome_nascent_G1.gtf
+-rw-rw----   1 kalavatt  2.9M Jul 26 17:41 Greenlaw-et-al.txome_nascent_G1.hc_strd-eq_nonuniq-none.tsv
+-rw-rw----   1 kalavatt  3.8M Jul 26 17:41 Greenlaw-et-al.txome_nascent_Q.gtf
+-rw-rw----   1 kalavatt  3.6M Jul 26 17:41 Greenlaw-et-al.txome_nascent_Q.hc_strd-eq_nonuniq-none.tsv
+-rw-rw----   1 kalavatt  1.7M Jul 26 17:41 Greenlaw-et-al.txome_non-collapsed-pa-ncRNA.gtf
+-rw-rw----   1 kalavatt  2.1M Jul 26 17:41 Greenlaw-et-al.txome_non-collapsed-pa-ncRNA.hc_strd-eq_nonuniq-none.tsv
+-rw-rw----   1 kalavatt 1016K Jul 26 17:41 Greenlaw-et-al.txome_representative-coding-non-pa-ncRNA.gtf
+-rw-rw----   1 kalavatt  1.7M Jul 26 17:41 Greenlaw-et-al.txome_representative-coding-non-pa-ncRNA.hc_strd-eq_nonuniq-none.tsv
+-rw-rw----   1 kalavatt  1.6M Jul 26 17:41 Greenlaw-et-al.txome_representative-pa-ncRNA.gtf
+-rw-rw----   1 kalavatt  1.6M Jul 26 17:41 Greenlaw-et-al.txome_representative-pa-ncRNA.hc_strd-eq_nonuniq-none.tsv
+-rw-rw----   1 kalavatt   76M Jul 26 17:35 Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_m.bw
+-rw-rw----   1 kalavatt   75M Jul 26 17:35 Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_p.bw
+-rw-rw----   1 kalavatt   47M Jul 26 17:35 Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1.KLSC_m.bw
+-rw-rw----   1 kalavatt   47M Jul 26 17:35 Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1.KLSC_p.bw
+-rw-rw----   1 kalavatt  1.3G Jul 26 17:36 Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1_R1.fq.gz
+-rw-rw----   1 kalavatt  503M Jul 26 17:35 Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1_R2.fq.gz
+-rw-rw----   1 kalavatt  1.4G Jul 26 17:36 Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1_R3.fq.gz
+-rw-rw----   1 kalavatt  1.7G Jul 26 17:32 Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1.UTPD.bam
+-rw-rw----   1 kalavatt   46M Jul 26 17:35 Nab3-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1.KLSC_m.bw
+-rw-rw----   1 kalavatt   46M Jul 26 17:35 Nab3-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1.KLSC_p.bw
+-rw-rw----   1 kalavatt  1.3G Jul 26 17:36 Nab3-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1_R1.fq.gz
+-rw-rw----   1 kalavatt  514M Jul 26 17:35 Nab3-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1_R2.fq.gz
+-rw-rw----   1 kalavatt  1.4G Jul 26 17:36 Nab3-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1_R3.fq.gz
+-rw-rw----   1 kalavatt  1.7G Jul 26 17:32 Nab3-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1.UTPD.bam
+-rw-rw----   1 kalavatt   30M Jul 26 17:35 Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_m.bw
+-rw-rw----   1 kalavatt   31M Jul 26 17:35 Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716-7718_rep-mean_batch1.KLSC_p.bw
+-rw-rw----   1 kalavatt   17M Jul 26 17:35 Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1.KLSC_m.bw
+-rw-rw----   1 kalavatt   17M Jul 26 17:35 Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1.KLSC_p.bw
+-rw-rw----   1 kalavatt  1.2G Jul 26 17:36 Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1_R1.fq.gz
+-rw-rw----   1 kalavatt  508M Jul 26 17:35 Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1_R2.fq.gz
+-rw-rw----   1 kalavatt  1.2G Jul 26 17:36 Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1_R3.fq.gz
+-rw-rw----   1 kalavatt  1.4G Jul 26 17:32 Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1.UTPD.bam
+-rw-rw----   1 kalavatt   14M Jul 26 17:35 Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1.KLSC_m.bw
+-rw-rw----   1 kalavatt   15M Jul 26 17:35 Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1.KLSC_p.bw
+-rw-rw----   1 kalavatt  1.3G Jul 26 17:36 Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1_R1.fq.gz
+-rw-rw----   1 kalavatt  576M Jul 26 17:36 Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1_R2.fq.gz
+-rw-rw----   1 kalavatt  1.3G Jul 26 17:36 Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1_R3.fq.gz
+-rw-rw----   1 kalavatt  1.5G Jul 26 17:32 Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1.UTPD.bam
+-rw-rw----   1 kalavatt   60M Jul 26 17:35 OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125-6126_rep-mean_batch1.KLSC_m.bw
+-rw-rw----   1 kalavatt   60M Jul 26 17:35 OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125-6126_rep-mean_batch1.KLSC_p.bw
+-rw-rw----   1 kalavatt   35M Jul 26 17:35 OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125_rep1_batch1.KLSC_m.bw
+-rw-rw----   1 kalavatt   35M Jul 26 17:35 OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125_rep1_batch1.KLSC_p.bw
+-rw-rw----   1 kalavatt  1.3G Jul 26 17:36 OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125_rep1_batch1_R1.fq.gz
+-rw-rw----   1 kalavatt  503M Jul 26 17:36 OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125_rep1_batch1_R2.fq.gz
+-rw-rw----   1 kalavatt  1.3G Jul 26 17:36 OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125_rep1_batch1_R3.fq.gz
+-rw-rw----   1 kalavatt  1.5G Jul 26 17:32 OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125_rep1_batch1.UTPD.bam
+-rw-rw----   1 kalavatt   34M Jul 26 17:35 OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6126_rep2_batch1.KLSC_m.bw
+-rw-rw----   1 kalavatt   34M Jul 26 17:35 OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6126_rep2_batch1.KLSC_p.bw
+-rw-rw----   1 kalavatt  1.3G Jul 26 17:36 OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6126_rep2_batch1_R1.fq.gz
+-rw-rw----   1 kalavatt  483M Jul 26 17:36 OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6126_rep2_batch1_R2.fq.gz
+-rw-rw----   1 kalavatt  1.3G Jul 26 17:37 OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6126_rep2_batch1_R3.fq.gz
+-rw-rw----   1 kalavatt  1.5G Jul 26 17:32 OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6126_rep2_batch1.UTPD.bam
+-rw-rw----   1 kalavatt   15M Jul 26 17:35 OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125-6126_rep-mean_batch1.KLSC_m.bw
+-rw-rw----   1 kalavatt   16M Jul 26 17:35 OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125-6126_rep-mean_batch1.KLSC_p.bw
+-rw-rw----   1 kalavatt  7.4M Jul 26 17:35 OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125_rep1_batch1.KLSC_m.bw
+-rw-rw----   1 kalavatt  7.7M Jul 26 17:35 OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125_rep1_batch1.KLSC_p.bw
+-rw-rw----   1 kalavatt  1.1G Jul 26 17:37 OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125_rep1_batch1_R1.fq.gz
+-rw-rw----   1 kalavatt  476M Jul 26 17:36 OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125_rep1_batch1_R2.fq.gz
+-rw-rw----   1 kalavatt  1.2G Jul 26 17:37 OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125_rep1_batch1_R3.fq.gz
+-rw-rw----   1 kalavatt  1.3G Jul 26 17:32 OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125_rep1_batch1.UTPD.bam
+-rw-rw----   1 kalavatt  7.4M Jul 26 17:35 OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6126_rep2_batch1.KLSC_m.bw
+-rw-rw----   1 kalavatt  7.7M Jul 26 17:35 OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6126_rep2_batch1.KLSC_p.bw
+-rw-rw----   1 kalavatt  1.2G Jul 26 17:37 OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6126_rep2_batch1_R1.fq.gz
+-rw-rw----   1 kalavatt  483M Jul 26 17:37 OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6126_rep2_batch1_R2.fq.gz
+-rw-rw----   1 kalavatt  1.2G Jul 26 17:37 OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6126_rep2_batch1_R3.fq.gz
+-rw-rw----   1 kalavatt  1.3G Jul 26 17:32 OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6126_rep2_batch1.UTPD.bam
+-rw-rw----   1 kalavatt   20M Jul 26 17:35 rrp6_DSm2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_m.bw
+-rw-rw----   1 kalavatt   20M Jul 26 17:35 rrp6_DSm2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_p.bw
+-rw-r-----   1 kalavatt  540M Jul 26 17:37 rrp6_DSm2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1_R1.fq.gz
+-rw-r-----   1 kalavatt  215M Jul 26 17:37 rrp6_DSm2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1_R2.fq.gz
+-rw-r-----   1 kalavatt  543M Jul 26 17:37 rrp6_DSm2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1_R3.fq.gz
+-rw-rw----   1 kalavatt  819M Jul 26 17:32 rrp6_DSm2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1.UTPD.bam
+-rw-rw----   1 kalavatt   22M Jul 26 17:35 rrp6_DSm2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1.BPM_m.bw
+-rw-rw----   1 kalavatt   22M Jul 26 17:35 rrp6_DSm2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1.BPM_p.bw
+-rw-r-----   1 kalavatt  685M Jul 26 17:37 rrp6_DSm2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1_R1.fq.gz
+-rw-r-----   1 kalavatt  271M Jul 26 17:37 rrp6_DSm2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1_R2.fq.gz
+-rw-r-----   1 kalavatt  688M Jul 26 17:37 rrp6_DSm2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1_R3.fq.gz
+-rw-rw----   1 kalavatt  1.1G Jul 26 17:32 rrp6_DSm2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1.UTPD.bam
+-rw-rw----   1 kalavatt   17M Jul 26 17:35 rrp6_DSp24_day3_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_m.bw
+-rw-rw----   1 kalavatt   17M Jul 26 17:35 rrp6_DSp24_day3_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_p.bw
+-rw-r-----   1 kalavatt  533M Jul 26 17:37 rrp6_DSp24_day3_tcn_SS_auxF_tcT_7078_rep2_batch1_R1.fq.gz
+-rw-r-----   1 kalavatt  213M Jul 26 17:37 rrp6_DSp24_day3_tcn_SS_auxF_tcT_7078_rep2_batch1_R2.fq.gz
+-rw-r-----   1 kalavatt  538M Jul 26 17:37 rrp6_DSp24_day3_tcn_SS_auxF_tcT_7078_rep2_batch1_R3.fq.gz
+-rw-rw----   1 kalavatt  777M Jul 26 17:32 rrp6_DSp24_day3_tcn_SS_auxF_tcT_7078_rep2_batch1.UTPD.bam
+-rw-rw----   1 kalavatt   20M Jul 26 17:35 rrp6_DSp24_day3_tcn_SS_auxF_tcT_7079_rep1_batch1.BPM_m.bw
+-rw-rw----   1 kalavatt   20M Jul 26 17:35 rrp6_DSp24_day3_tcn_SS_auxF_tcT_7079_rep1_batch1.BPM_p.bw
+-rw-r-----   1 kalavatt  651M Jul 26 17:37 rrp6_DSp24_day3_tcn_SS_auxF_tcT_7079_rep1_batch1_R1.fq.gz
+-rw-r-----   1 kalavatt  262M Jul 26 17:37 rrp6_DSp24_day3_tcn_SS_auxF_tcT_7079_rep1_batch1_R2.fq.gz
+-rw-r-----   1 kalavatt  656M Jul 26 17:37 rrp6_DSp24_day3_tcn_SS_auxF_tcT_7079_rep1_batch1_R3.fq.gz
+-rw-rw----   1 kalavatt  940M Jul 26 17:32 rrp6_DSp24_day3_tcn_SS_auxF_tcT_7079_rep1_batch1.UTPD.bam
+-rw-rw----   1 kalavatt   21M Jul 26 17:35 rrp6_DSp2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_m.bw
+-rw-rw----   1 kalavatt   22M Jul 26 17:35 rrp6_DSp2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_p.bw
+-rw-r-----   1 kalavatt  641M Jul 26 17:37 rrp6_DSp2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1_R1.fq.gz
+-rw-r-----   1 kalavatt  255M Jul 26 17:37 rrp6_DSp2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1_R2.fq.gz
+-rw-r-----   1 kalavatt  647M Jul 26 17:37 rrp6_DSp2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1_R3.fq.gz
+-rw-rw----   1 kalavatt  961M Jul 26 17:32 rrp6_DSp2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1.UTPD.bam
+-rw-rw----   1 kalavatt   22M Jul 26 17:35 rrp6_DSp2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1.BPM_m.bw
+-rw-rw----   1 kalavatt   22M Jul 26 17:35 rrp6_DSp2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1.BPM_p.bw
+-rw-r-----   1 kalavatt  682M Jul 26 17:37 rrp6_DSp2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1_R1.fq.gz
+-rw-r-----   1 kalavatt  274M Jul 26 17:37 rrp6_DSp2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1_R2.fq.gz
+-rw-r-----   1 kalavatt  685M Jul 26 17:37 rrp6_DSp2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1_R3.fq.gz
+-rw-rw----   1 kalavatt 1013M Jul 26 17:32 rrp6_DSp2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1.UTPD.bam
+-rw-rw----   1 kalavatt   16M Jul 26 17:35 rrp6_DSp48_day4_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_m.bw
+-rw-rw----   1 kalavatt   17M Jul 26 17:35 rrp6_DSp48_day4_tcn_SS_auxF_tcT_7078_rep2_batch1.BPM_p.bw
+-rw-r-----   1 kalavatt  736M Jul 26 17:37 rrp6_DSp48_day4_tcn_SS_auxF_tcT_7078_rep2_batch1_R1.fq.gz
+-rw-r-----   1 kalavatt  301M Jul 26 17:37 rrp6_DSp48_day4_tcn_SS_auxF_tcT_7078_rep2_batch1_R2.fq.gz
+-rw-r-----   1 kalavatt  745M Jul 26 17:37 rrp6_DSp48_day4_tcn_SS_auxF_tcT_7078_rep2_batch1_R3.fq.gz
+-rw-rw----   1 kalavatt 1017M Jul 26 17:32 rrp6_DSp48_day4_tcn_SS_auxF_tcT_7078_rep2_batch1.UTPD.bam
+-rw-rw----   1 kalavatt   16M Jul 26 17:35 rrp6_DSp48_day4_tcn_SS_auxF_tcT_7079_rep1_batch2.BPM_m.bw
+-rw-rw----   1 kalavatt   16M Jul 26 17:35 rrp6_DSp48_day4_tcn_SS_auxF_tcT_7079_rep1_batch2.BPM_p.bw
+-rw-rw----   1 kalavatt 1008M Jul 26 17:38 rrp6_DSp48_day4_tcn_SS_auxF_tcT_7079_rep1_batch2_R1.fq.gz
+-rw-rw----   1 kalavatt  404M Jul 26 17:37 rrp6_DSp48_day4_tcn_SS_auxF_tcT_7079_rep1_batch2_R2.fq.gz
+-rw-rw----   1 kalavatt 1001M Jul 26 17:38 rrp6_DSp48_day4_tcn_SS_auxF_tcT_7079_rep1_batch2_R3.fq.gz
+-rw-rw----   1 kalavatt  1.4G Jul 26 17:32 rrp6_DSp48_day4_tcn_SS_auxF_tcT_7079_rep1_batch2.UTPD.bam
+-rw-rw----   1 kalavatt   40M Jul 26 17:35 rrp6_G1_day1_tcn_SS_auxF_tcF_7078-7079_rep-mean_batch2.KLSC_m.bw
+-rw-rw----   1 kalavatt   41M Jul 26 17:35 rrp6_G1_day1_tcn_SS_auxF_tcF_7078-7079_rep-mean_batch2.KLSC_p.bw
+-rw-rw----   1 kalavatt   22M Jul 26 17:35 rrp6_G1_day1_tcn_SS_auxF_tcF_7078_rep2_batch2.KLSC_m.bw
+-rw-rw----   1 kalavatt   22M Jul 26 17:35 rrp6_G1_day1_tcn_SS_auxF_tcF_7078_rep2_batch2.KLSC_p.bw
+-rw-rw----   1 kalavatt 1015M Jul 26 17:38 rrp6_G1_day1_tcn_SS_auxF_tcF_7078_rep2_batch2_R1.fq.gz
+-rw-rw----   1 kalavatt  414M Jul 26 17:37 rrp6_G1_day1_tcn_SS_auxF_tcF_7078_rep2_batch2_R2.fq.gz
+-rw-rw----   1 kalavatt 1014M Jul 26 17:38 rrp6_G1_day1_tcn_SS_auxF_tcF_7078_rep2_batch2_R3.fq.gz
+-rw-rw----   1 kalavatt  1.5G Jul 26 17:33 rrp6_G1_day1_tcn_SS_auxF_tcF_7078_rep2_batch2.UTPD.bam
+-rw-rw----   1 kalavatt   22M Jul 26 17:35 rrp6_G1_day1_tcn_SS_auxF_tcF_7079_rep1_batch2.KLSC_m.bw
+-rw-rw----   1 kalavatt   22M Jul 26 17:35 rrp6_G1_day1_tcn_SS_auxF_tcF_7079_rep1_batch2.KLSC_p.bw
+-rw-rw----   1 kalavatt  1.1G Jul 26 17:38 rrp6_G1_day1_tcn_SS_auxF_tcF_7079_rep1_batch2_R1.fq.gz
+-rw-rw----   1 kalavatt  402M Jul 26 17:38 rrp6_G1_day1_tcn_SS_auxF_tcF_7079_rep1_batch2_R2.fq.gz
+-rw-rw----   1 kalavatt  1.1G Jul 26 17:38 rrp6_G1_day1_tcn_SS_auxF_tcF_7079_rep1_batch2_R3.fq.gz
+-rw-rw----   1 kalavatt  1.4G Jul 26 17:33 rrp6_G1_day1_tcn_SS_auxF_tcF_7079_rep1_batch2.UTPD.bam
+-rw-rw----   1 kalavatt   69M Jul 26 17:35 rrp6_Q_day8_tcn_N_auxF_tcF_7078-7079_rep-mean_batch1.KLSC_m.bw
+-rw-rw----   1 kalavatt   69M Jul 26 17:35 rrp6_Q_day8_tcn_N_auxF_tcF_7078-7079_rep-mean_batch1.KLSC_p.bw
+-rw-rw----   1 kalavatt   40M Jul 26 17:35 rrp6_Q_day8_tcn_N_auxF_tcF_7078_rep2_batch1.KLSC_m.bw
+-rw-rw----   1 kalavatt   40M Jul 26 17:35 rrp6_Q_day8_tcn_N_auxF_tcF_7078_rep2_batch1.KLSC_p.bw
+-rw-rw----   1 kalavatt  1.3G Jul 26 17:38 rrp6_Q_day8_tcn_N_auxF_tcF_7078_rep2_batch1_R1.fq.gz
+-rw-rw----   1 kalavatt  470M Jul 26 17:38 rrp6_Q_day8_tcn_N_auxF_tcF_7078_rep2_batch1_R2.fq.gz
+-rw-rw----   1 kalavatt  1.3G Jul 26 17:38 rrp6_Q_day8_tcn_N_auxF_tcF_7078_rep2_batch1_R3.fq.gz
+-rw-rw----   1 kalavatt  1.7G Jul 26 17:33 rrp6_Q_day8_tcn_N_auxF_tcF_7078_rep2_batch1.UTPD.bam
+-rw-rw----   1 kalavatt   39M Jul 26 17:35 rrp6_Q_day8_tcn_N_auxF_tcF_7079_rep1_batch1.KLSC_m.bw
+-rw-rw----   1 kalavatt   39M Jul 26 17:35 rrp6_Q_day8_tcn_N_auxF_tcF_7079_rep1_batch1.KLSC_p.bw
+-rw-rw----   1 kalavatt  1.2G Jul 26 17:38 rrp6_Q_day8_tcn_N_auxF_tcF_7079_rep1_batch1_R1.fq.gz
+-rw-rw----   1 kalavatt  466M Jul 26 17:38 rrp6_Q_day8_tcn_N_auxF_tcF_7079_rep1_batch1_R2.fq.gz
+-rw-rw----   1 kalavatt  1.3G Jul 26 17:38 rrp6_Q_day8_tcn_N_auxF_tcF_7079_rep1_batch1_R3.fq.gz
+-rw-rw----   1 kalavatt  1.7G Jul 26 17:33 rrp6_Q_day8_tcn_N_auxF_tcF_7079_rep1_batch1.UTPD.bam
+-rw-rw----   1 kalavatt   24M Jul 26 17:35 rrp6_Q_day8_tcn_SS_auxF_tcF_7078-7079_rep-mean_batch1-2.KLSC_m.bw
+-rw-rw----   1 kalavatt   24M Jul 26 17:35 rrp6_Q_day8_tcn_SS_auxF_tcF_7078-7079_rep-mean_batch1-2.KLSC_p.bw
+-rw-rw----   1 kalavatt   11M Jul 26 17:35 rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch1.KLSC_m.bw
+-rw-rw----   1 kalavatt   12M Jul 26 17:35 rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch1.KLSC_p.bw
+-rw-rw----   1 kalavatt  1.5G Jul 26 17:39 rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch1_R1.fq.gz
+-rw-rw----   1 kalavatt  615M Jul 26 17:38 rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch1_R2.fq.gz
+-rw-rw----   1 kalavatt  1.5G Jul 26 17:39 rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch1_R3.fq.gz
+-rw-rw----   1 kalavatt  1.8G Jul 26 17:33 rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch1.UTPD.bam
+-rw-rw----   1 kalavatt  9.7M Jul 26 17:35 rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch2.KLSC_m.bw
+-rw-rw----   1 kalavatt  9.9M Jul 26 17:35 rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch2.KLSC_p.bw
+-rw-rw----   1 kalavatt  1.2G Jul 26 17:39 rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch2_R1.fq.gz
+-rw-rw----   1 kalavatt  508M Jul 26 17:38 rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch2_R2.fq.gz
+-rw-rw----   1 kalavatt  1.2G Jul 26 17:39 rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch2_R3.fq.gz
+-rw-rw----   1 kalavatt  1.5G Jul 26 17:33 rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch2.UTPD.bam
+-rw-rw----   1 kalavatt   13M Jul 26 17:35 rrp6_Q_day8_tcn_SS_auxF_tcF_7079_rep1_batch1.KLSC_m.bw
+-rw-rw----   1 kalavatt   13M Jul 26 17:35 rrp6_Q_day8_tcn_SS_auxF_tcF_7079_rep1_batch1.KLSC_p.bw
+-rw-rw----   1 kalavatt  1.2G Jul 26 17:39 rrp6_Q_day8_tcn_SS_auxF_tcF_7079_rep1_batch1_R1.fq.gz
+-rw-rw----   1 kalavatt  494M Jul 26 17:38 rrp6_Q_day8_tcn_SS_auxF_tcF_7079_rep1_batch1_R2.fq.gz
+-rw-rw----   1 kalavatt  1.2G Jul 26 17:39 rrp6_Q_day8_tcn_SS_auxF_tcF_7079_rep1_batch1_R3.fq.gz
+-rw-rw----   1 kalavatt  1.5G Jul 26 17:33 rrp6_Q_day8_tcn_SS_auxF_tcF_7079_rep1_batch1.UTPD.bam
+-rw-rw----   1 kalavatt   19M Jul 26 17:35 WT_DSm2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_m.bw
+-rw-rw----   1 kalavatt   19M Jul 26 17:35 WT_DSm2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_p.bw
+-rw-r-----   1 kalavatt  634M Jul 26 17:39 WT_DSm2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1_R1.fq.gz
+-rw-r-----   1 kalavatt  251M Jul 26 17:39 WT_DSm2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1_R2.fq.gz
+-rw-r-----   1 kalavatt  639M Jul 26 17:39 WT_DSm2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1_R3.fq.gz
+-rw-rw----   1 kalavatt  960M Jul 26 17:33 WT_DSm2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1.UTPD.bam
+-rw-rw----   1 kalavatt   16M Jul 26 17:35 WT_DSm2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_m.bw
+-rw-rw----   1 kalavatt   17M Jul 26 17:35 WT_DSm2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_p.bw
+-rw-r-----   1 kalavatt  516M Jul 26 17:39 WT_DSm2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1_R1.fq.gz
+-rw-r-----   1 kalavatt  205M Jul 26 17:39 WT_DSm2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1_R2.fq.gz
+-rw-r-----   1 kalavatt  519M Jul 26 17:39 WT_DSm2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1_R3.fq.gz
+-rw-rw----   1 kalavatt  788M Jul 26 17:33 WT_DSm2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1.UTPD.bam
+-rw-rw----   1 kalavatt   16M Jul 26 17:35 WT_DSp24_day3_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_m.bw
+-rw-rw----   1 kalavatt   17M Jul 26 17:35 WT_DSp24_day3_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_p.bw
+-rw-r-----   1 kalavatt  632M Jul 26 17:39 WT_DSp24_day3_tcn_SS_auxF_tcT_5781_rep1_batch1_R1.fq.gz
+-rw-r-----   1 kalavatt  256M Jul 26 17:39 WT_DSp24_day3_tcn_SS_auxF_tcT_5781_rep1_batch1_R2.fq.gz
+-rw-r-----   1 kalavatt  636M Jul 26 17:39 WT_DSp24_day3_tcn_SS_auxF_tcT_5781_rep1_batch1_R3.fq.gz
+-rw-rw----   1 kalavatt  919M Jul 26 17:33 WT_DSp24_day3_tcn_SS_auxF_tcT_5781_rep1_batch1.UTPD.bam
+-rw-rw----   1 kalavatt   17M Jul 26 17:35 WT_DSp24_day3_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_m.bw
+-rw-rw----   1 kalavatt   17M Jul 26 17:35 WT_DSp24_day3_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_p.bw
+-rw-r-----   1 kalavatt  644M Jul 26 17:39 WT_DSp24_day3_tcn_SS_auxF_tcT_5782_rep2_batch1_R1.fq.gz
+-rw-r-----   1 kalavatt  258M Jul 26 17:39 WT_DSp24_day3_tcn_SS_auxF_tcT_5782_rep2_batch1_R2.fq.gz
+-rw-r-----   1 kalavatt  651M Jul 26 17:39 WT_DSp24_day3_tcn_SS_auxF_tcT_5782_rep2_batch1_R3.fq.gz
+-rw-rw----   1 kalavatt  941M Jul 26 17:33 WT_DSp24_day3_tcn_SS_auxF_tcT_5782_rep2_batch1.UTPD.bam
+-rw-rw----   1 kalavatt   18M Jul 26 17:35 WT_DSp2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_m.bw
+-rw-rw----   1 kalavatt   18M Jul 26 17:35 WT_DSp2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_p.bw
+-rw-r-----   1 kalavatt  584M Jul 26 17:39 WT_DSp2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1_R1.fq.gz
+-rw-r-----   1 kalavatt  233M Jul 26 17:39 WT_DSp2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1_R2.fq.gz
+-rw-r-----   1 kalavatt  587M Jul 26 17:39 WT_DSp2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1_R3.fq.gz
+-rw-rw----   1 kalavatt  876M Jul 26 17:33 WT_DSp2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1.UTPD.bam
+-rw-rw----   1 kalavatt   18M Jul 26 17:35 WT_DSp2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_m.bw
+-rw-rw----   1 kalavatt   19M Jul 26 17:35 WT_DSp2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_p.bw
+-rw-r-----   1 kalavatt  639M Jul 26 17:39 WT_DSp2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1_R1.fq.gz
+-rw-r-----   1 kalavatt  256M Jul 26 17:39 WT_DSp2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1_R2.fq.gz
+-rw-r-----   1 kalavatt  642M Jul 26 17:39 WT_DSp2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1_R3.fq.gz
+-rw-rw----   1 kalavatt  970M Jul 26 17:33 WT_DSp2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1.UTPD.bam
+-rw-rw----   1 kalavatt   14M Jul 26 17:35 WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_m.bw
+-rw-rw----   1 kalavatt   15M Jul 26 17:35 WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch1.BPM_p.bw
+-rw-r-----   1 kalavatt  653M Jul 26 17:39 WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch1_R1.fq.gz
+-rw-r-----   1 kalavatt  268M Jul 26 17:39 WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch1_R2.fq.gz
+-rw-r-----   1 kalavatt  659M Jul 26 17:39 WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch1_R3.fq.gz
+-rw-rw----   1 kalavatt  921M Jul 26 17:33 WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch1.UTPD.bam
+-rw-rw----   1 kalavatt  1.1G Jul 26 17:40 WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch2_R1.fq.gz
+-rw-rw----   1 kalavatt  425M Jul 26 17:39 WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch2_R2.fq.gz
+-rw-rw----   1 kalavatt  1.1G Jul 26 17:40 WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch2_R3.fq.gz
+-rw-rw----   1 kalavatt  1.5G Jul 26 17:34 WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch2.UTPD.bam
+-rw-rw----   1 kalavatt   12M Jul 26 17:35 WT_DSp48_day4_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_m.bw
+-rw-rw----   1 kalavatt   13M Jul 26 17:35 WT_DSp48_day4_tcn_SS_auxF_tcT_5782_rep2_batch1.BPM_p.bw
+-rw-r-----   1 kalavatt  602M Jul 26 17:39 WT_DSp48_day4_tcn_SS_auxF_tcT_5782_rep2_batch1_R1.fq.gz
+-rw-r-----   1 kalavatt  249M Jul 26 17:39 WT_DSp48_day4_tcn_SS_auxF_tcT_5782_rep2_batch1_R2.fq.gz
+-rw-r-----   1 kalavatt  609M Jul 26 17:40 WT_DSp48_day4_tcn_SS_auxF_tcT_5782_rep2_batch1_R3.fq.gz
+-rw-rw----   1 kalavatt  849M Jul 26 17:33 WT_DSp48_day4_tcn_SS_auxF_tcT_5782_rep2_batch1.UTPD.bam
+-rw-rw----   1 kalavatt  2.6G Jul 26 17:35 WT_G1_day1_ovn_N_auxF_tcF_5781-2_rep-merge_batch1.UTKPSSc.bam
+-rw-rw----   1 kalavatt   40M Jul 26 17:35 WT_G1_day1_ovn_N_auxF_tcF_5781-5782_rep-mean_batch1.BPM_m.bw
+-rw-rw----   1 kalavatt   40M Jul 26 17:35 WT_G1_day1_ovn_N_auxF_tcF_5781-5782_rep-mean_batch1.BPM_p.bw
+-rw-rw----   1 kalavatt   22M Jul 26 17:35 WT_G1_day1_ovn_N_auxF_tcF_5781_rep1_batch1.BPM_m.bw
+-rw-rw----   1 kalavatt   22M Jul 26 17:35 WT_G1_day1_ovn_N_auxF_tcF_5781_rep1_batch1.BPM_p.bw
+-rw-rw----   1 kalavatt  642M Jul 26 17:40 WT_G1_day1_ovn_N_auxF_tcF_5781_rep1_batch1_R1.fq.gz
+-rw-rw----   1 kalavatt  233M Jul 26 17:39 WT_G1_day1_ovn_N_auxF_tcF_5781_rep1_batch1_R2.fq.gz
+-rw-rw----   1 kalavatt  673M Jul 26 17:40 WT_G1_day1_ovn_N_auxF_tcF_5781_rep1_batch1_R3.fq.gz
+-rw-rw----   1 kalavatt  1.3G Jul 26 17:34 WT_G1_day1_ovn_N_auxF_tcF_5781_rep1_batch1.UTPD.bam
+-rw-rw----   1 kalavatt   24M Jul 26 17:35 WT_G1_day1_ovn_N_auxF_tcF_5782_rep2_batch1.BPM_m.bw
+-rw-rw----   1 kalavatt   24M Jul 26 17:35 WT_G1_day1_ovn_N_auxF_tcF_5782_rep2_batch1.BPM_p.bw
+-rw-rw----   1 kalavatt  637M Jul 26 17:40 WT_G1_day1_ovn_N_auxF_tcF_5782_rep2_batch1_R1.fq.gz
+-rw-rw----   1 kalavatt  230M Jul 26 17:40 WT_G1_day1_ovn_N_auxF_tcF_5782_rep2_batch1_R2.fq.gz
+-rw-rw----   1 kalavatt  665M Jul 26 17:40 WT_G1_day1_ovn_N_auxF_tcF_5782_rep2_batch1_R3.fq.gz
+-rw-rw----   1 kalavatt  1.3G Jul 26 17:34 WT_G1_day1_ovn_N_auxF_tcF_5782_rep2_batch1.UTPD.bam
+-rw-rw----   1 kalavatt  2.0G Jul 26 17:35 WT_G1_day1_ovn_SS_auxF_tcF_5781-2_rep-merge_batch1.UTKPSSc.bam
+-rw-rw----   1 kalavatt   28M Jul 26 17:35 WT_G1_day1_ovn_SS_auxF_tcF_5781-5782_rep-mean_batch1.BPM_m.bw
+-rw-rw----   1 kalavatt   29M Jul 26 17:35 WT_G1_day1_ovn_SS_auxF_tcF_5781-5782_rep-mean_batch1.BPM_p.bw
+-rw-rw----   1 kalavatt   15M Jul 26 17:35 WT_G1_day1_ovn_SS_auxF_tcF_5781_rep1_batch1.BPM_m.bw
+-rw-rw----   1 kalavatt   15M Jul 26 17:35 WT_G1_day1_ovn_SS_auxF_tcF_5781_rep1_batch1.BPM_p.bw
+-rw-rw----   1 kalavatt  490M Jul 26 17:40 WT_G1_day1_ovn_SS_auxF_tcF_5781_rep1_batch1_R1.fq.gz
+-rw-rw----   1 kalavatt  181M Jul 26 17:40 WT_G1_day1_ovn_SS_auxF_tcF_5781_rep1_batch1_R2.fq.gz
+-rw-rw----   1 kalavatt  512M Jul 26 17:40 WT_G1_day1_ovn_SS_auxF_tcF_5781_rep1_batch1_R3.fq.gz
+-rw-rw----   1 kalavatt  822M Jul 26 17:34 WT_G1_day1_ovn_SS_auxF_tcF_5781_rep1_batch1.UTPD.bam
+-rw-rw----   1 kalavatt   16M Jul 26 17:35 WT_G1_day1_ovn_SS_auxF_tcF_5782_rep2_batch1.BPM_m.bw
+-rw-rw----   1 kalavatt   16M Jul 26 17:35 WT_G1_day1_ovn_SS_auxF_tcF_5782_rep2_batch1.BPM_p.bw
+-rw-rw----   1 kalavatt  474M Jul 26 17:40 WT_G1_day1_ovn_SS_auxF_tcF_5782_rep2_batch1_R1.fq.gz
+-rw-rw----   1 kalavatt  177M Jul 26 17:40 WT_G1_day1_ovn_SS_auxF_tcF_5782_rep2_batch1_R2.fq.gz
+-rw-rw----   1 kalavatt  497M Jul 26 17:40 WT_G1_day1_ovn_SS_auxF_tcF_5782_rep2_batch1_R3.fq.gz
+-rw-rw----   1 kalavatt  784M Jul 26 17:34 WT_G1_day1_ovn_SS_auxF_tcF_5782_rep2_batch1.UTPD.bam
+-rw-rw----   1 kalavatt   30M Jul 26 17:35 WT_G1_day1_tcn_SS_auxF_tcF_5781-5782_rep-mean_batch2.KLSC_m.bw
+-rw-rw----   1 kalavatt   31M Jul 26 17:35 WT_G1_day1_tcn_SS_auxF_tcF_5781-5782_rep-mean_batch2.KLSC_p.bw
+-rw-rw----   1 kalavatt   17M Jul 26 17:35 WT_G1_day1_tcn_SS_auxF_tcF_5781_rep1_batch2.KLSC_m.bw
+-rw-rw----   1 kalavatt   18M Jul 26 17:35 WT_G1_day1_tcn_SS_auxF_tcF_5781_rep1_batch2.KLSC_p.bw
+-rw-rw----   1 kalavatt  994M Jul 26 17:40 WT_G1_day1_tcn_SS_auxF_tcF_5781_rep1_batch2_R1.fq.gz
+-rw-rw----   1 kalavatt  399M Jul 26 17:40 WT_G1_day1_tcn_SS_auxF_tcF_5781_rep1_batch2_R2.fq.gz
+-rw-rw----   1 kalavatt  988M Jul 26 17:40 WT_G1_day1_tcn_SS_auxF_tcF_5781_rep1_batch2_R3.fq.gz
+-rw-rw----   1 kalavatt  1.4G Jul 26 17:34 WT_G1_day1_tcn_SS_auxF_tcF_5781_rep1_batch2.UTPD.bam
+-rw-rw----   1 kalavatt   16M Jul 26 17:35 WT_G1_day1_tcn_SS_auxF_tcF_5782_rep2_batch2.KLSC_m.bw
+-rw-rw----   1 kalavatt   17M Jul 26 17:35 WT_G1_day1_tcn_SS_auxF_tcF_5782_rep2_batch2.KLSC_p.bw
+-rw-rw----   1 kalavatt  908M Jul 26 17:40 WT_G1_day1_tcn_SS_auxF_tcF_5782_rep2_batch2_R1.fq.gz
+-rw-rw----   1 kalavatt  361M Jul 26 17:40 WT_G1_day1_tcn_SS_auxF_tcF_5782_rep2_batch2_R2.fq.gz
+-rw-rw----   1 kalavatt  911M Jul 26 17:40 WT_G1_day1_tcn_SS_auxF_tcF_5782_rep2_batch2_R3.fq.gz
+-rw-rw----   1 kalavatt  1.3G Jul 26 17:34 WT_G1_day1_tcn_SS_auxF_tcF_5782_rep2_batch2.UTPD.bam
+-rw-rw----   1 kalavatt  1.8G Jul 26 17:35 WT_Q_day7_ovn_N_auxF_tcF_5781-2_rep-merge_batch1.UTKPSSc.bam
+-rw-rw----   1 kalavatt   64M Jul 26 17:35 WT_Q_day7_ovn_N_auxF_tcF_5781-5782_rep-mean_batch1.BPM_m.bw
+-rw-rw----   1 kalavatt   64M Jul 26 17:35 WT_Q_day7_ovn_N_auxF_tcF_5781-5782_rep-mean_batch1.BPM_p.bw
+-rw-rw----   1 kalavatt   37M Jul 26 17:35 WT_Q_day7_ovn_N_auxF_tcF_5781_rep1_batch1.BPM_m.bw
+-rw-rw----   1 kalavatt   37M Jul 26 17:35 WT_Q_day7_ovn_N_auxF_tcF_5781_rep1_batch1.BPM_p.bw
+-rw-rw----   1 kalavatt  774M Jul 26 17:40 WT_Q_day7_ovn_N_auxF_tcF_5781_rep1_batch1_R1.fq.gz
+-rw-rw----   1 kalavatt  276M Jul 26 17:40 WT_Q_day7_ovn_N_auxF_tcF_5781_rep1_batch1_R2.fq.gz
+-rw-rw----   1 kalavatt  810M Jul 26 17:40 WT_Q_day7_ovn_N_auxF_tcF_5781_rep1_batch1_R3.fq.gz
+-rw-rw----   1 kalavatt  1.5G Jul 26 17:34 WT_Q_day7_ovn_N_auxF_tcF_5781_rep1_batch1.UTPD.bam
+-rw-rw----   1 kalavatt   35M Jul 26 17:35 WT_Q_day7_ovn_N_auxF_tcF_5782_rep2_batch1.BPM_m.bw
+-rw-rw----   1 kalavatt   35M Jul 26 17:35 WT_Q_day7_ovn_N_auxF_tcF_5782_rep2_batch1.BPM_p.bw
+-rw-rw----   1 kalavatt  696M Jul 26 17:40 WT_Q_day7_ovn_N_auxF_tcF_5782_rep2_batch1_R1.fq.gz
+-rw-rw----   1 kalavatt  251M Jul 26 17:40 WT_Q_day7_ovn_N_auxF_tcF_5782_rep2_batch1_R2.fq.gz
+-rw-rw----   1 kalavatt  726M Jul 26 17:41 WT_Q_day7_ovn_N_auxF_tcF_5782_rep2_batch1_R3.fq.gz
+-rw-rw----   1 kalavatt  1.4G Jul 26 17:34 WT_Q_day7_ovn_N_auxF_tcF_5782_rep2_batch1.UTPD.bam
+-rw-rw----   1 kalavatt  1.6G Jul 26 17:35 WT_Q_day7_ovn_SS_auxF_tcF_5781-2_rep-merge_batch1.UTKPSSc.bam
+-rw-rw----   1 kalavatt   24M Jul 26 17:35 WT_Q_day7_ovn_SS_auxF_tcF_5781-5782_rep-mean_batch1.BPM_m.bw
+-rw-rw----   1 kalavatt   25M Jul 26 17:35 WT_Q_day7_ovn_SS_auxF_tcF_5781-5782_rep-mean_batch1.BPM_p.bw
+-rw-rw----   1 kalavatt   13M Jul 26 17:35 WT_Q_day7_ovn_SS_auxF_tcF_5781_rep1_batch1.BPM_m.bw
+-rw-rw----   1 kalavatt   13M Jul 26 17:35 WT_Q_day7_ovn_SS_auxF_tcF_5781_rep1_batch1.BPM_p.bw
+-rw-rw----   1 kalavatt  497M Jul 26 17:40 WT_Q_day7_ovn_SS_auxF_tcF_5781_rep1_batch1_R1.fq.gz
+-rw-rw----   1 kalavatt  182M Jul 26 17:40 WT_Q_day7_ovn_SS_auxF_tcF_5781_rep1_batch1_R2.fq.gz
+-rw-rw----   1 kalavatt  518M Jul 26 17:41 WT_Q_day7_ovn_SS_auxF_tcF_5781_rep1_batch1_R3.fq.gz
+-rw-rw----   1 kalavatt  703M Jul 26 17:34 WT_Q_day7_ovn_SS_auxF_tcF_5781_rep1_batch1.UTPD.bam
+-rw-rw----   1 kalavatt   11M Jul 26 17:35 WT_Q_day7_ovn_SS_auxF_tcF_5782_rep2_batch1.BPM_m.bw
+-rw-rw----   1 kalavatt   12M Jul 26 17:35 WT_Q_day7_ovn_SS_auxF_tcF_5782_rep2_batch1.BPM_p.bw
+-rw-rw----   1 kalavatt  375M Jul 26 17:40 WT_Q_day7_ovn_SS_auxF_tcF_5782_rep2_batch1_R1.fq.gz
+-rw-rw----   1 kalavatt  140M Jul 26 17:40 WT_Q_day7_ovn_SS_auxF_tcF_5782_rep2_batch1_R2.fq.gz
+-rw-rw----   1 kalavatt  394M Jul 26 17:40 WT_Q_day7_ovn_SS_auxF_tcF_5782_rep2_batch1_R3.fq.gz
+-rw-rw----   1 kalavatt  625M Jul 26 17:34 WT_Q_day7_ovn_SS_auxF_tcF_5782_rep2_batch1.UTPD.bam
+-rw-rw----   1 kalavatt   67M Jul 26 17:35 WT_Q_day8_tcn_N_auxF_tcF_5781-5782_rep-mean_batch1.KLSC_m.bw
+-rw-rw----   1 kalavatt   68M Jul 26 17:35 WT_Q_day8_tcn_N_auxF_tcF_5781-5782_rep-mean_batch1.KLSC_p.bw
+-rw-rw----   1 kalavatt   38M Jul 26 17:35 WT_Q_day8_tcn_N_auxF_tcF_5781_rep1_batch1.KLSC_m.bw
+-rw-rw----   1 kalavatt   38M Jul 26 17:35 WT_Q_day8_tcn_N_auxF_tcF_5781_rep1_batch1.KLSC_p.bw
+-rw-rw----   1 kalavatt  1.2G Jul 26 17:41 WT_Q_day8_tcn_N_auxF_tcF_5781_rep1_batch1_R1.fq.gz
+-rw-rw----   1 kalavatt  456M Jul 26 17:41 WT_Q_day8_tcn_N_auxF_tcF_5781_rep1_batch1_R2.fq.gz
+-rw-rw----   1 kalavatt  1.2G Jul 26 17:41 WT_Q_day8_tcn_N_auxF_tcF_5781_rep1_batch1_R3.fq.gz
+-rw-rw----   1 kalavatt  1.6G Jul 26 17:35 WT_Q_day8_tcn_N_auxF_tcF_5781_rep1_batch1.UTPD.bam
+-rw-rw----   1 kalavatt   38M Jul 26 17:35 WT_Q_day8_tcn_N_auxF_tcF_5782_rep2_batch1.KLSC_m.bw
+-rw-rw----   1 kalavatt   38M Jul 26 17:35 WT_Q_day8_tcn_N_auxF_tcF_5782_rep2_batch1.KLSC_p.bw
+-rw-rw----   1 kalavatt  1.2G Jul 26 17:41 WT_Q_day8_tcn_N_auxF_tcF_5782_rep2_batch1_R1.fq.gz
+-rw-rw----   1 kalavatt  466M Jul 26 17:41 WT_Q_day8_tcn_N_auxF_tcF_5782_rep2_batch1_R2.fq.gz
+-rw-rw----   1 kalavatt  1.2G Jul 26 17:41 WT_Q_day8_tcn_N_auxF_tcF_5782_rep2_batch1_R3.fq.gz
+-rw-rw----   1 kalavatt  1.6G Jul 26 17:35 WT_Q_day8_tcn_N_auxF_tcF_5782_rep2_batch1.UTPD.bam
+-rw-rw----   1 kalavatt   17M Jul 26 17:35 WT_Q_day8_tcn_SS_auxF_tcF_5781-5782_rep-mean_batch1.KLSC_m.bw
+-rw-rw----   1 kalavatt   18M Jul 26 17:35 WT_Q_day8_tcn_SS_auxF_tcF_5781-5782_rep-mean_batch1.KLSC_p.bw
+-rw-rw----   1 kalavatt  8.0M Jul 26 17:35 WT_Q_day8_tcn_SS_auxF_tcF_5781_rep1_batch1.KLSC_m.bw
+-rw-rw----   1 kalavatt  8.3M Jul 26 17:35 WT_Q_day8_tcn_SS_auxF_tcF_5781_rep1_batch1.KLSC_p.bw
+-rw-rw----   1 kalavatt  1.1G Jul 26 17:41 WT_Q_day8_tcn_SS_auxF_tcF_5781_rep1_batch1_R1.fq.gz
+-rw-rw----   1 kalavatt  475M Jul 26 17:41 WT_Q_day8_tcn_SS_auxF_tcF_5781_rep1_batch1_R2.fq.gz
+-rw-rw----   1 kalavatt  1.2G Jul 26 17:41 WT_Q_day8_tcn_SS_auxF_tcF_5781_rep1_batch1_R3.fq.gz
+-rw-rw----   1 kalavatt  1.3G Jul 26 17:35 WT_Q_day8_tcn_SS_auxF_tcF_5781_rep1_batch1.UTPD.bam
+-rw-rw----   1 kalavatt  8.4M Jul 26 17:35 WT_Q_day8_tcn_SS_auxF_tcF_5782_rep2_batch1.KLSC_m.bw
+-rw-rw----   1 kalavatt  8.5M Jul 26 17:35 WT_Q_day8_tcn_SS_auxF_tcF_5782_rep2_batch1.KLSC_p.bw
+-rw-rw----   1 kalavatt  1.1G Jul 26 17:41 WT_Q_day8_tcn_SS_auxF_tcF_5782_rep2_batch1_R1.fq.gz
+-rw-rw----   1 kalavatt  456M Jul 26 17:41 WT_Q_day8_tcn_SS_auxF_tcF_5782_rep2_batch1_R2.fq.gz
+-rw-rw----   1 kalavatt  1.1G Jul 26 17:41 WT_Q_day8_tcn_SS_auxF_tcF_5782_rep2_batch1_R3.fq.gz
+-rw-rw----   1 kalavatt  1.4G Jul 26 17:35 WT_Q_day8_tcn_SS_auxF_tcF_5782_rep2_batch1.UTPD.bam
+
+
+❯ ls -1 ~/tsukiyamalab/alisong/KA.2023-0726.GEO | wc -l
+321
+```
+</details>
+<br />
 <br />
