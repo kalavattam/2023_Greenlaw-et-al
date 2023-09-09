@@ -40,7 +40,7 @@
 ```bash
 #!/bin/bash
 
-cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215"
+cd "${HOME}/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215"
 source activate gff3_env
 
 if [[ ! -d infiles_gtf-gff3/representation ]]; then

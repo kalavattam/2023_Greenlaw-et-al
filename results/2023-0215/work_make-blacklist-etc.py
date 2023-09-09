@@ -23,8 +23,8 @@ import urllib.request
 
 
 os.getcwd()
-os.chdir('/Users/kalavattam/Dropbox/FHCC/2022_transcriptome-construction/results/2023-0215')
-# os.chdir('/Users/kalavatt/projects-etc/2022_transcriptome-construction/results/2023-0215')
+os.chdir('/Users/kalavattam/Dropbox/FHCC/2022-2023_RRP6-NAB3/results/2023-0215')
+# os.chdir('/Users/kalavatt/projects-etc/2022-2023_RRP6-NAB3/results/2023-0215')
 os.listdir(os.curdir)  # List files and directories
 
 d_comprehensive = "infiles_gtf-gff3/comprehensive"

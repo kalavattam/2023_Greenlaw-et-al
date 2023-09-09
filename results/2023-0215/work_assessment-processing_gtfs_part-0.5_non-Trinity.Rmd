@@ -31,7 +31,7 @@ if(stringr::str_detect(getwd(), "kalavattam")) {
 } else {
     p_local <- "/Users/kalavatt/projects-etc"
 }
-p_wd <- "2022_transcriptome-construction/results/2023-0215"
+p_wd <- "2022-2023_RRP6-NAB3/results/2023-0215"
 
 setwd(paste(p_local, p_wd, sep = "/"))
 getwd()
@@ -48,7 +48,7 @@ rm(p_local, p_wd)
 <details>
 <summary><i>Text: Describe the provenance of the files</i></summary>
 
-In notebook `work_assessment-processing_gtfs_part-0.md`, copied the following files into the new directory `infiles_gtf-gff3/already` within `2022_transcriptome-construction/results/2023-0215`:
+In notebook `work_assessment-processing_gtfs_part-0.md`, copied the following files into the new directory `infiles_gtf-gff3/already` within `2022-2023_RRP6-NAB3/results/2023-0215`:
 
 - `combined_SC_KL_20S.gff3`
 - `combined_SC_KL.gff3`

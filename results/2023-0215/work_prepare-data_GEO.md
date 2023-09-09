@@ -83,7 +83,7 @@
 tmux new -t "t"
 grabnode  # 4, 80, 1, N
 
-d_proj="${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction"
+d_proj="${HOME}/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3"
 d_exp_1201="results/2022-1201"
 d_exp_0115="results/2023-0115"
 d_exp_0215="results/2023-0215"
@@ -98,7 +98,7 @@ d_exp_0215="results/2023-0215"
 ...
 
 
-❯ d_proj="${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction"
+❯ d_proj="${HOME}/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3"
 
 
 ❯ d_exp_1201="results/2022-1201"
@@ -1157,187 +1157,187 @@ lrwxrwxrwx 1 kalavatt 133 Feb  5 10:40 Sample_CT4_6126_pIAA_Q_SteadyState_S7_R3_
 > done
     cp \
         5781_G1_IP_S1_R1_001.fastq.gz \
-        /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_G1_day1_ovn_N_auxF_tcF_5781_rep1_batch1_R1.fq.gz
+        /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_G1_day1_ovn_N_auxF_tcF_5781_rep1_batch1_R1.fq.gz
 
     cp \
         5782_G1_IP_S3_R1_001.fastq.gz \
-        /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_G1_day1_ovn_N_auxF_tcF_5782_rep2_batch1_R1.fq.gz
+        /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_G1_day1_ovn_N_auxF_tcF_5782_rep2_batch1_R1.fq.gz
 
     cp \
         5781_G1_IN_S5_R1_001.fastq.gz \
-        /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_G1_day1_ovn_SS_auxF_tcF_5781_rep1_batch1_R1.fq.gz
+        /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_G1_day1_ovn_SS_auxF_tcF_5781_rep1_batch1_R1.fq.gz
 
     cp \
         5782_G1_IN_S7_R1_001.fastq.gz \
-        /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_G1_day1_ovn_SS_auxF_tcF_5782_rep2_batch1_R1.fq.gz
+        /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_G1_day1_ovn_SS_auxF_tcF_5782_rep2_batch1_R1.fq.gz
 
     cp \
         5781_Q_IP_S2_R1_001.fastq.gz \
-        /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_Q_day7_ovn_N_auxF_tcF_5781_rep1_batch1_R1.fq.gz
+        /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_Q_day7_ovn_N_auxF_tcF_5781_rep1_batch1_R1.fq.gz
 
     cp \
         5782_Q_IP_S4_R1_001.fastq.gz \
-        /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_Q_day7_ovn_N_auxF_tcF_5782_rep2_batch1_R1.fq.gz
+        /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_Q_day7_ovn_N_auxF_tcF_5782_rep2_batch1_R1.fq.gz
 
     cp \
         5781_Q_IN_S6_R1_001.fastq.gz \
-        /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_Q_day7_ovn_SS_auxF_tcF_5781_rep1_batch1_R1.fq.gz
+        /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_Q_day7_ovn_SS_auxF_tcF_5781_rep1_batch1_R1.fq.gz
 
     cp \
         5782_Q_IN_S8_R1_001.fastq.gz \
-        /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_Q_day7_ovn_SS_auxF_tcF_5782_rep2_batch1_R1.fq.gz
+        /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_Q_day7_ovn_SS_auxF_tcF_5782_rep2_batch1_R1.fq.gz
 
     cp \
         SAMPLE_BM1_DSm2_5781_S13_R1_001.fastq.gz \
-        /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_DSm2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1_R1.fq.gz
+        /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_DSm2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1_R1.fq.gz
 
     cp \
         SAMPLE_Bp1_DSm2_5782_S1_R1_001.fastq.gz \
-        /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_DSm2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1_R1.fq.gz
+        /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_DSm2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1_R1.fq.gz
 
     cp \
         SAMPLE_BM4_DSp2_5781_S16_R1_001.fastq.gz \
-        /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_DSp2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1_R1.fq.gz
+        /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_DSp2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1_R1.fq.gz
 
     cp \
         SAMPLE_Bp4_DSp2_5782_S4_R1_001.fastq.gz \
-        /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_DSp2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1_R1.fq.gz
+        /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_DSp2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1_R1.fq.gz
 
     cp \
         SAMPLE_BM7_DSp24_5781_S19_R1_001.fastq.gz \
-        /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_DSp24_day3_tcn_SS_auxF_tcT_5781_rep1_batch1_R1.fq.gz
+        /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_DSp24_day3_tcn_SS_auxF_tcT_5781_rep1_batch1_R1.fq.gz
 
     cp \
         SAMPLE_Bp7_DSp24_5782_S7_R1_001.fastq.gz \
-        /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_DSp24_day3_tcn_SS_auxF_tcT_5782_rep2_batch1_R1.fq.gz
+        /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_DSp24_day3_tcn_SS_auxF_tcT_5782_rep2_batch1_R1.fq.gz
 
     cp \
         SAMPLE_BM10_DSp48_5781_S22_R1_001.fastq.gz \
-        /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch1_R1.fq.gz
+        /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch1_R1.fq.gz
 
     cp \
         BM10_5781_DSp48_S26_R1_001.fastq.gz \
-        /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch2_R1.fq.gz
+        /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch2_R1.fq.gz
 
     cp \
         SAMPLE_Bp10_DSp48_5782_S10_R1_001.fastq.gz \
-        /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_DSp48_day4_tcn_SS_auxF_tcT_5782_rep2_batch1_R1.fq.gz
+        /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_DSp48_day4_tcn_SS_auxF_tcT_5782_rep2_batch1_R1.fq.gz
 
     cp \
         SAMPLE_BM3_DSm2_7079_S15_R1_001.fastq.gz \
-        /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_DSm2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1_R1.fq.gz
+        /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_DSm2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1_R1.fq.gz
 
     cp \
         SAMPLE_Bp3_DSm2_7078_S3_R1_001.fastq.gz \
-        /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_DSm2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1_R1.fq.gz
+        /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_DSm2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1_R1.fq.gz
 
     cp \
         SAMPLE_BM6_DSp2_7079_S18_R1_001.fastq.gz \
-        /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_DSp2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1_R1.fq.gz
+        /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_DSp2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1_R1.fq.gz
 
     cp \
         SAMPLE_Bp6_DSp2_7078_S6_R1_001.fastq.gz \
-        /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_DSp2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1_R1.fq.gz
+        /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_DSp2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1_R1.fq.gz
 
     cp \
         SAMPLE_BM9_DSp24_7079_S21_R1_001.fastq.gz \
-        /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_DSp24_day3_tcn_SS_auxF_tcT_7079_rep1_batch1_R1.fq.gz
+        /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_DSp24_day3_tcn_SS_auxF_tcT_7079_rep1_batch1_R1.fq.gz
 
     cp \
         SAMPLE_Bp9_DSp24_7078_S9_R1_001.fastq.gz \
-        /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_DSp24_day3_tcn_SS_auxF_tcT_7078_rep2_batch1_R1.fq.gz
+        /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_DSp24_day3_tcn_SS_auxF_tcT_7078_rep2_batch1_R1.fq.gz
 
     cp \
         BM12_7079_DSp48_S27_R1_001.fastq.gz \
-        /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_DSp48_day4_tcn_SS_auxF_tcT_7079_rep1_batch2_R1.fq.gz
+        /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_DSp48_day4_tcn_SS_auxF_tcT_7079_rep1_batch2_R1.fq.gz
 
     cp \
         SAMPLE_Bp12_DSp48_7078_S12_R1_001.fastq.gz \
-        /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_DSp48_day4_tcn_SS_auxF_tcT_7078_rep2_batch1_R1.fq.gz
+        /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_DSp48_day4_tcn_SS_auxF_tcT_7078_rep2_batch1_R1.fq.gz
 
     cp \
         CW2_5781_8day_Q_PD_S7_R1_001.fastq.gz \
-        /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_Q_day8_tcn_N_auxF_tcF_5781_rep1_batch1_R1.fq.gz
+        /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_Q_day8_tcn_N_auxF_tcF_5781_rep1_batch1_R1.fq.gz
 
     cp \
         CW4_5782_8day_Q_PD_S8_R1_001.fastq.gz \
-        /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_Q_day8_tcn_N_auxF_tcF_5782_rep2_batch1_R1.fq.gz
+        /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_Q_day8_tcn_N_auxF_tcF_5782_rep2_batch1_R1.fq.gz
 
     cp \
         CW2_5781_8day_Q_IN_S1_R1_001.fastq.gz \
-        /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_Q_day8_tcn_SS_auxF_tcF_5781_rep1_batch1_R1.fq.gz
+        /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_Q_day8_tcn_SS_auxF_tcF_5781_rep1_batch1_R1.fq.gz
 
     cp \
         CW4_5782_8day_Q_IN_S2_R1_001.fastq.gz \
-        /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_Q_day8_tcn_SS_auxF_tcF_5782_rep2_batch1_R1.fq.gz
+        /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_Q_day8_tcn_SS_auxF_tcF_5782_rep2_batch1_R1.fq.gz
 
     cp \
         CW8_7079_8day_Q_PD_S10_R1_001.fastq.gz \
-        /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_Q_day8_tcn_N_auxF_tcF_7079_rep1_batch1_R1.fq.gz
+        /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_Q_day8_tcn_N_auxF_tcF_7079_rep1_batch1_R1.fq.gz
 
     cp \
         CW6_7078_8day_Q_PD_S9_R1_001.fastq.gz \
-        /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_Q_day8_tcn_N_auxF_tcF_7078_rep2_batch1_R1.fq.gz
+        /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_Q_day8_tcn_N_auxF_tcF_7078_rep2_batch1_R1.fq.gz
 
     cp \
         CW8_7079_8day_Q_IN_S4_R1_001.fastq.gz \
-        /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_Q_day8_tcn_SS_auxF_tcF_7079_rep1_batch1_R1.fq.gz
+        /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_Q_day8_tcn_SS_auxF_tcF_7079_rep1_batch1_R1.fq.gz
 
     cp \
         CW6_7078_8day_Q_IN_S3_R1_001.fastq.gz \
-        /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch1_R1.fq.gz
+        /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch1_R1.fq.gz
 
     cp \
         CW6_7078_day8_Q_SS_S28_R1_001.fastq.gz \
-        /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch2_R1.fq.gz
+        /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch2_R1.fq.gz
 
     cp \
         DA1_5781_SS_G1_S22_R1_001.fastq.gz \
-        /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_G1_day1_tcn_SS_auxF_tcF_5781_rep1_batch2_R1.fq.gz
+        /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_G1_day1_tcn_SS_auxF_tcF_5781_rep1_batch2_R1.fq.gz
 
     cp \
         DA2_5782_SS_G1_S23_R1_001.fastq.gz \
-        /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_G1_day1_tcn_SS_auxF_tcF_5782_rep2_batch2_R1.fq.gz
+        /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_G1_day1_tcn_SS_auxF_tcF_5782_rep2_batch2_R1.fq.gz
 
     cp \
         DA4_7079_SS_G1_S25_R1_001.fastq.gz \
-        /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_G1_day1_tcn_SS_auxF_tcF_7079_rep1_batch2_R1.fq.gz
+        /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_G1_day1_tcn_SS_auxF_tcF_7079_rep1_batch2_R1.fq.gz
 
     cp \
         DA3_7078_SS_G1_S24_R1_001.fastq.gz \
-        /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_G1_day1_tcn_SS_auxF_tcF_7078_rep2_batch2_R1.fq.gz
+        /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_G1_day1_tcn_SS_auxF_tcF_7078_rep2_batch2_R1.fq.gz
 
     cp \
         Sample_CT8_7716_pIAA_Q_Nascent_S4_R1_001.fastq.gz \
-        /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1_R1.fq.gz
+        /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1_R1.fq.gz
 
     cp \
         Sample_CT10_7718_pIAA_Q_Nascent_S5_R1_001.fastq.gz \
-        /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/Nab3-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1_R1.fq.gz
+        /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/Nab3-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1_R1.fq.gz
 
     cp \
         Sample_CT8_7716_pIAA_Q_SteadyState_S9_R1_001.fastq.gz \
-        /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1_R1.fq.gz
+        /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1_R1.fq.gz
 
     cp \
         Sample_CT10_7718_pIAA_Q_SteadyState_S10_R1_001.fastq.gz \
-        /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1_R1.fq.gz
+        /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1_R1.fq.gz
 
     cp \
         Sample_CT2_6125_pIAA_Q_Nascent_S1_R1_001.fastq.gz \
-        /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125_rep1_batch1_R1.fq.gz
+        /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125_rep1_batch1_R1.fq.gz
 
     cp \
         Sample_CT4_6126_pIAA_Q_Nascent_S2_R1_001.fastq.gz \
-        /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6126_rep2_batch1_R1.fq.gz
+        /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6126_rep2_batch1_R1.fq.gz
 
     cp \
         Sample_CT2_6125_pIAA_Q_SteadyState_S6_R1_001.fastq.gz \
-        /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125_rep1_batch1_R1.fq.gz
+        /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125_rep1_batch1_R1.fq.gz
 
     cp \
         Sample_CT4_6126_pIAA_Q_SteadyState_S7_R1_001.fastq.gz \
-        /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6126_rep2_batch1_R1.fq.gz
+        /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6126_rep2_batch1_R1.fq.gz
 
 
 ❯ for i in "${a_fq[@]}"; do
@@ -1351,555 +1351,555 @@ lrwxrwxrwx 1 kalavatt 133 Feb  5 10:40 Sample_CT4_6126_pIAA_Q_SteadyState_S7_R3_
 > done
         cp \
             5781_G1_IP_S1_R1_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_G1_day1_ovn_N_auxF_tcF_5781_rep1_batch1_R1.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_G1_day1_ovn_N_auxF_tcF_5781_rep1_batch1_R1.fq.gz
 
         cp \
             5781_G1_IP_S1_R2_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_G1_day1_ovn_N_auxF_tcF_5781_rep1_batch1_R2.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_G1_day1_ovn_N_auxF_tcF_5781_rep1_batch1_R2.fq.gz
 
         cp \
             5781_G1_IP_S1_R3_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_G1_day1_ovn_N_auxF_tcF_5781_rep1_batch1_R3.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_G1_day1_ovn_N_auxF_tcF_5781_rep1_batch1_R3.fq.gz
 
         cp \
             5782_G1_IP_S3_R1_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_G1_day1_ovn_N_auxF_tcF_5782_rep2_batch1_R1.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_G1_day1_ovn_N_auxF_tcF_5782_rep2_batch1_R1.fq.gz
 
         cp \
             5782_G1_IP_S3_R2_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_G1_day1_ovn_N_auxF_tcF_5782_rep2_batch1_R2.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_G1_day1_ovn_N_auxF_tcF_5782_rep2_batch1_R2.fq.gz
 
         cp \
             5782_G1_IP_S3_R3_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_G1_day1_ovn_N_auxF_tcF_5782_rep2_batch1_R3.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_G1_day1_ovn_N_auxF_tcF_5782_rep2_batch1_R3.fq.gz
 
         cp \
             5781_G1_IN_S5_R1_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_G1_day1_ovn_SS_auxF_tcF_5781_rep1_batch1_R1.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_G1_day1_ovn_SS_auxF_tcF_5781_rep1_batch1_R1.fq.gz
 
         cp \
             5781_G1_IN_S5_R2_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_G1_day1_ovn_SS_auxF_tcF_5781_rep1_batch1_R2.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_G1_day1_ovn_SS_auxF_tcF_5781_rep1_batch1_R2.fq.gz
 
         cp \
             5781_G1_IN_S5_R3_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_G1_day1_ovn_SS_auxF_tcF_5781_rep1_batch1_R3.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_G1_day1_ovn_SS_auxF_tcF_5781_rep1_batch1_R3.fq.gz
 
         cp \
             5782_G1_IN_S7_R1_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_G1_day1_ovn_SS_auxF_tcF_5782_rep2_batch1_R1.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_G1_day1_ovn_SS_auxF_tcF_5782_rep2_batch1_R1.fq.gz
 
         cp \
             5782_G1_IN_S7_R2_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_G1_day1_ovn_SS_auxF_tcF_5782_rep2_batch1_R2.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_G1_day1_ovn_SS_auxF_tcF_5782_rep2_batch1_R2.fq.gz
 
         cp \
             5782_G1_IN_S7_R3_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_G1_day1_ovn_SS_auxF_tcF_5782_rep2_batch1_R3.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_G1_day1_ovn_SS_auxF_tcF_5782_rep2_batch1_R3.fq.gz
 
         cp \
             5781_Q_IP_S2_R1_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_Q_day7_ovn_N_auxF_tcF_5781_rep1_batch1_R1.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_Q_day7_ovn_N_auxF_tcF_5781_rep1_batch1_R1.fq.gz
 
         cp \
             5781_Q_IP_S2_R2_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_Q_day7_ovn_N_auxF_tcF_5781_rep1_batch1_R2.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_Q_day7_ovn_N_auxF_tcF_5781_rep1_batch1_R2.fq.gz
 
         cp \
             5781_Q_IP_S2_R3_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_Q_day7_ovn_N_auxF_tcF_5781_rep1_batch1_R3.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_Q_day7_ovn_N_auxF_tcF_5781_rep1_batch1_R3.fq.gz
 
         cp \
             5782_Q_IP_S4_R1_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_Q_day7_ovn_N_auxF_tcF_5782_rep2_batch1_R1.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_Q_day7_ovn_N_auxF_tcF_5782_rep2_batch1_R1.fq.gz
 
         cp \
             5782_Q_IP_S4_R2_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_Q_day7_ovn_N_auxF_tcF_5782_rep2_batch1_R2.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_Q_day7_ovn_N_auxF_tcF_5782_rep2_batch1_R2.fq.gz
 
         cp \
             5782_Q_IP_S4_R3_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_Q_day7_ovn_N_auxF_tcF_5782_rep2_batch1_R3.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_Q_day7_ovn_N_auxF_tcF_5782_rep2_batch1_R3.fq.gz
 
         cp \
             5781_Q_IN_S6_R1_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_Q_day7_ovn_SS_auxF_tcF_5781_rep1_batch1_R1.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_Q_day7_ovn_SS_auxF_tcF_5781_rep1_batch1_R1.fq.gz
 
         cp \
             5781_Q_IN_S6_R2_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_Q_day7_ovn_SS_auxF_tcF_5781_rep1_batch1_R2.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_Q_day7_ovn_SS_auxF_tcF_5781_rep1_batch1_R2.fq.gz
 
         cp \
             5781_Q_IN_S6_R3_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_Q_day7_ovn_SS_auxF_tcF_5781_rep1_batch1_R3.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_Q_day7_ovn_SS_auxF_tcF_5781_rep1_batch1_R3.fq.gz
 
         cp \
             5782_Q_IN_S8_R1_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_Q_day7_ovn_SS_auxF_tcF_5782_rep2_batch1_R1.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_Q_day7_ovn_SS_auxF_tcF_5782_rep2_batch1_R1.fq.gz
 
         cp \
             5782_Q_IN_S8_R2_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_Q_day7_ovn_SS_auxF_tcF_5782_rep2_batch1_R2.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_Q_day7_ovn_SS_auxF_tcF_5782_rep2_batch1_R2.fq.gz
 
         cp \
             5782_Q_IN_S8_R3_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_Q_day7_ovn_SS_auxF_tcF_5782_rep2_batch1_R3.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_Q_day7_ovn_SS_auxF_tcF_5782_rep2_batch1_R3.fq.gz
 
         cp \
             SAMPLE_BM1_DSm2_5781_S13_R1_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_DSm2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1_R1.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_DSm2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1_R1.fq.gz
 
         cp \
             SAMPLE_BM1_DSm2_5781_S13_R2_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_DSm2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1_R2.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_DSm2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1_R2.fq.gz
 
         cp \
             SAMPLE_BM1_DSm2_5781_S13_R3_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_DSm2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1_R3.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_DSm2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1_R3.fq.gz
 
         cp \
             SAMPLE_Bp1_DSm2_5782_S1_R1_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_DSm2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1_R1.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_DSm2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1_R1.fq.gz
 
         cp \
             SAMPLE_Bp1_DSm2_5782_S1_R2_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_DSm2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1_R2.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_DSm2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1_R2.fq.gz
 
         cp \
             SAMPLE_Bp1_DSm2_5782_S1_R3_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_DSm2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1_R3.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_DSm2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1_R3.fq.gz
 
         cp \
             SAMPLE_BM4_DSp2_5781_S16_R1_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_DSp2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1_R1.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_DSp2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1_R1.fq.gz
 
         cp \
             SAMPLE_BM4_DSp2_5781_S16_R2_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_DSp2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1_R2.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_DSp2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1_R2.fq.gz
 
         cp \
             SAMPLE_BM4_DSp2_5781_S16_R3_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_DSp2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1_R3.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_DSp2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1_R3.fq.gz
 
         cp \
             SAMPLE_Bp4_DSp2_5782_S4_R1_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_DSp2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1_R1.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_DSp2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1_R1.fq.gz
 
         cp \
             SAMPLE_Bp4_DSp2_5782_S4_R2_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_DSp2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1_R2.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_DSp2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1_R2.fq.gz
 
         cp \
             SAMPLE_Bp4_DSp2_5782_S4_R3_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_DSp2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1_R3.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_DSp2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1_R3.fq.gz
 
         cp \
             SAMPLE_BM7_DSp24_5781_S19_R1_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_DSp24_day3_tcn_SS_auxF_tcT_5781_rep1_batch1_R1.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_DSp24_day3_tcn_SS_auxF_tcT_5781_rep1_batch1_R1.fq.gz
 
         cp \
             SAMPLE_BM7_DSp24_5781_S19_R2_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_DSp24_day3_tcn_SS_auxF_tcT_5781_rep1_batch1_R2.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_DSp24_day3_tcn_SS_auxF_tcT_5781_rep1_batch1_R2.fq.gz
 
         cp \
             SAMPLE_BM7_DSp24_5781_S19_R3_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_DSp24_day3_tcn_SS_auxF_tcT_5781_rep1_batch1_R3.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_DSp24_day3_tcn_SS_auxF_tcT_5781_rep1_batch1_R3.fq.gz
 
         cp \
             SAMPLE_Bp7_DSp24_5782_S7_R1_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_DSp24_day3_tcn_SS_auxF_tcT_5782_rep2_batch1_R1.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_DSp24_day3_tcn_SS_auxF_tcT_5782_rep2_batch1_R1.fq.gz
 
         cp \
             SAMPLE_Bp7_DSp24_5782_S7_R2_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_DSp24_day3_tcn_SS_auxF_tcT_5782_rep2_batch1_R2.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_DSp24_day3_tcn_SS_auxF_tcT_5782_rep2_batch1_R2.fq.gz
 
         cp \
             SAMPLE_Bp7_DSp24_5782_S7_R3_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_DSp24_day3_tcn_SS_auxF_tcT_5782_rep2_batch1_R3.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_DSp24_day3_tcn_SS_auxF_tcT_5782_rep2_batch1_R3.fq.gz
 
         cp \
             SAMPLE_BM10_DSp48_5781_S22_R1_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch1_R1.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch1_R1.fq.gz
 
         cp \
             SAMPLE_BM10_DSp48_5781_S22_R2_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch1_R2.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch1_R2.fq.gz
 
         cp \
             SAMPLE_BM10_DSp48_5781_S22_R3_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch1_R3.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch1_R3.fq.gz
 
         cp \
             BM10_5781_DSp48_S26_R1_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch2_R1.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch2_R1.fq.gz
 
         cp \
             BM10_5781_DSp48_S26_R2_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch2_R2.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch2_R2.fq.gz
 
         cp \
             BM10_5781_DSp48_S26_R3_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch2_R3.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch2_R3.fq.gz
 
         cp \
             SAMPLE_Bp10_DSp48_5782_S10_R1_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_DSp48_day4_tcn_SS_auxF_tcT_5782_rep2_batch1_R1.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_DSp48_day4_tcn_SS_auxF_tcT_5782_rep2_batch1_R1.fq.gz
 
         cp \
             SAMPLE_Bp10_DSp48_5782_S10_R2_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_DSp48_day4_tcn_SS_auxF_tcT_5782_rep2_batch1_R2.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_DSp48_day4_tcn_SS_auxF_tcT_5782_rep2_batch1_R2.fq.gz
 
         cp \
             SAMPLE_Bp10_DSp48_5782_S10_R3_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_DSp48_day4_tcn_SS_auxF_tcT_5782_rep2_batch1_R3.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_DSp48_day4_tcn_SS_auxF_tcT_5782_rep2_batch1_R3.fq.gz
 
         cp \
             SAMPLE_BM3_DSm2_7079_S15_R1_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_DSm2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1_R1.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_DSm2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1_R1.fq.gz
 
         cp \
             SAMPLE_BM3_DSm2_7079_S15_R2_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_DSm2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1_R2.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_DSm2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1_R2.fq.gz
 
         cp \
             SAMPLE_BM3_DSm2_7079_S15_R3_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_DSm2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1_R3.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_DSm2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1_R3.fq.gz
 
         cp \
             SAMPLE_Bp3_DSm2_7078_S3_R1_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_DSm2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1_R1.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_DSm2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1_R1.fq.gz
 
         cp \
             SAMPLE_Bp3_DSm2_7078_S3_R2_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_DSm2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1_R2.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_DSm2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1_R2.fq.gz
 
         cp \
             SAMPLE_Bp3_DSm2_7078_S3_R3_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_DSm2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1_R3.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_DSm2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1_R3.fq.gz
 
         cp \
             SAMPLE_BM6_DSp2_7079_S18_R1_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_DSp2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1_R1.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_DSp2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1_R1.fq.gz
 
         cp \
             SAMPLE_BM6_DSp2_7079_S18_R2_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_DSp2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1_R2.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_DSp2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1_R2.fq.gz
 
         cp \
             SAMPLE_BM6_DSp2_7079_S18_R3_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_DSp2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1_R3.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_DSp2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1_R3.fq.gz
 
         cp \
             SAMPLE_Bp6_DSp2_7078_S6_R1_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_DSp2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1_R1.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_DSp2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1_R1.fq.gz
 
         cp \
             SAMPLE_Bp6_DSp2_7078_S6_R2_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_DSp2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1_R2.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_DSp2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1_R2.fq.gz
 
         cp \
             SAMPLE_Bp6_DSp2_7078_S6_R3_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_DSp2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1_R3.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_DSp2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1_R3.fq.gz
 
         cp \
             SAMPLE_BM9_DSp24_7079_S21_R1_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_DSp24_day3_tcn_SS_auxF_tcT_7079_rep1_batch1_R1.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_DSp24_day3_tcn_SS_auxF_tcT_7079_rep1_batch1_R1.fq.gz
 
         cp \
             SAMPLE_BM9_DSp24_7079_S21_R2_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_DSp24_day3_tcn_SS_auxF_tcT_7079_rep1_batch1_R2.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_DSp24_day3_tcn_SS_auxF_tcT_7079_rep1_batch1_R2.fq.gz
 
         cp \
             SAMPLE_BM9_DSp24_7079_S21_R3_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_DSp24_day3_tcn_SS_auxF_tcT_7079_rep1_batch1_R3.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_DSp24_day3_tcn_SS_auxF_tcT_7079_rep1_batch1_R3.fq.gz
 
         cp \
             SAMPLE_Bp9_DSp24_7078_S9_R1_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_DSp24_day3_tcn_SS_auxF_tcT_7078_rep2_batch1_R1.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_DSp24_day3_tcn_SS_auxF_tcT_7078_rep2_batch1_R1.fq.gz
 
         cp \
             SAMPLE_Bp9_DSp24_7078_S9_R2_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_DSp24_day3_tcn_SS_auxF_tcT_7078_rep2_batch1_R2.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_DSp24_day3_tcn_SS_auxF_tcT_7078_rep2_batch1_R2.fq.gz
 
         cp \
             SAMPLE_Bp9_DSp24_7078_S9_R3_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_DSp24_day3_tcn_SS_auxF_tcT_7078_rep2_batch1_R3.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_DSp24_day3_tcn_SS_auxF_tcT_7078_rep2_batch1_R3.fq.gz
 
         cp \
             BM12_7079_DSp48_S27_R1_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_DSp48_day4_tcn_SS_auxF_tcT_7079_rep1_batch2_R1.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_DSp48_day4_tcn_SS_auxF_tcT_7079_rep1_batch2_R1.fq.gz
 
         cp \
             BM12_7079_DSp48_S27_R2_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_DSp48_day4_tcn_SS_auxF_tcT_7079_rep1_batch2_R2.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_DSp48_day4_tcn_SS_auxF_tcT_7079_rep1_batch2_R2.fq.gz
 
         cp \
             BM12_7079_DSp48_S27_R3_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_DSp48_day4_tcn_SS_auxF_tcT_7079_rep1_batch2_R3.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_DSp48_day4_tcn_SS_auxF_tcT_7079_rep1_batch2_R3.fq.gz
 
         cp \
             SAMPLE_Bp12_DSp48_7078_S12_R1_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_DSp48_day4_tcn_SS_auxF_tcT_7078_rep2_batch1_R1.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_DSp48_day4_tcn_SS_auxF_tcT_7078_rep2_batch1_R1.fq.gz
 
         cp \
             SAMPLE_Bp12_DSp48_7078_S12_R2_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_DSp48_day4_tcn_SS_auxF_tcT_7078_rep2_batch1_R2.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_DSp48_day4_tcn_SS_auxF_tcT_7078_rep2_batch1_R2.fq.gz
 
         cp \
             SAMPLE_Bp12_DSp48_7078_S12_R3_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_DSp48_day4_tcn_SS_auxF_tcT_7078_rep2_batch1_R3.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_DSp48_day4_tcn_SS_auxF_tcT_7078_rep2_batch1_R3.fq.gz
 
         cp \
             CW2_5781_8day_Q_PD_S7_R1_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_Q_day8_tcn_N_auxF_tcF_5781_rep1_batch1_R1.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_Q_day8_tcn_N_auxF_tcF_5781_rep1_batch1_R1.fq.gz
 
         cp \
             CW2_5781_8day_Q_PD_S7_R2_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_Q_day8_tcn_N_auxF_tcF_5781_rep1_batch1_R2.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_Q_day8_tcn_N_auxF_tcF_5781_rep1_batch1_R2.fq.gz
 
         cp \
             CW2_5781_8day_Q_PD_S7_R3_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_Q_day8_tcn_N_auxF_tcF_5781_rep1_batch1_R3.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_Q_day8_tcn_N_auxF_tcF_5781_rep1_batch1_R3.fq.gz
 
         cp \
             CW4_5782_8day_Q_PD_S8_R1_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_Q_day8_tcn_N_auxF_tcF_5782_rep2_batch1_R1.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_Q_day8_tcn_N_auxF_tcF_5782_rep2_batch1_R1.fq.gz
 
         cp \
             CW4_5782_8day_Q_PD_S8_R2_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_Q_day8_tcn_N_auxF_tcF_5782_rep2_batch1_R2.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_Q_day8_tcn_N_auxF_tcF_5782_rep2_batch1_R2.fq.gz
 
         cp \
             CW4_5782_8day_Q_PD_S8_R3_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_Q_day8_tcn_N_auxF_tcF_5782_rep2_batch1_R3.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_Q_day8_tcn_N_auxF_tcF_5782_rep2_batch1_R3.fq.gz
 
         cp \
             CW2_5781_8day_Q_IN_S1_R1_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_Q_day8_tcn_SS_auxF_tcF_5781_rep1_batch1_R1.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_Q_day8_tcn_SS_auxF_tcF_5781_rep1_batch1_R1.fq.gz
 
         cp \
             CW2_5781_8day_Q_IN_S1_R2_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_Q_day8_tcn_SS_auxF_tcF_5781_rep1_batch1_R2.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_Q_day8_tcn_SS_auxF_tcF_5781_rep1_batch1_R2.fq.gz
 
         cp \
             CW2_5781_8day_Q_IN_S1_R3_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_Q_day8_tcn_SS_auxF_tcF_5781_rep1_batch1_R3.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_Q_day8_tcn_SS_auxF_tcF_5781_rep1_batch1_R3.fq.gz
 
         cp \
             CW4_5782_8day_Q_IN_S2_R1_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_Q_day8_tcn_SS_auxF_tcF_5782_rep2_batch1_R1.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_Q_day8_tcn_SS_auxF_tcF_5782_rep2_batch1_R1.fq.gz
 
         cp \
             CW4_5782_8day_Q_IN_S2_R2_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_Q_day8_tcn_SS_auxF_tcF_5782_rep2_batch1_R2.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_Q_day8_tcn_SS_auxF_tcF_5782_rep2_batch1_R2.fq.gz
 
         cp \
             CW4_5782_8day_Q_IN_S2_R3_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_Q_day8_tcn_SS_auxF_tcF_5782_rep2_batch1_R3.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_Q_day8_tcn_SS_auxF_tcF_5782_rep2_batch1_R3.fq.gz
 
         cp \
             CW8_7079_8day_Q_PD_S10_R1_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_Q_day8_tcn_N_auxF_tcF_7079_rep1_batch1_R1.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_Q_day8_tcn_N_auxF_tcF_7079_rep1_batch1_R1.fq.gz
 
         cp \
             CW8_7079_8day_Q_PD_S10_R2_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_Q_day8_tcn_N_auxF_tcF_7079_rep1_batch1_R2.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_Q_day8_tcn_N_auxF_tcF_7079_rep1_batch1_R2.fq.gz
 
         cp \
             CW8_7079_8day_Q_PD_S10_R3_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_Q_day8_tcn_N_auxF_tcF_7079_rep1_batch1_R3.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_Q_day8_tcn_N_auxF_tcF_7079_rep1_batch1_R3.fq.gz
 
         cp \
             CW6_7078_8day_Q_PD_S9_R1_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_Q_day8_tcn_N_auxF_tcF_7078_rep2_batch1_R1.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_Q_day8_tcn_N_auxF_tcF_7078_rep2_batch1_R1.fq.gz
 
         cp \
             CW6_7078_8day_Q_PD_S9_R2_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_Q_day8_tcn_N_auxF_tcF_7078_rep2_batch1_R2.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_Q_day8_tcn_N_auxF_tcF_7078_rep2_batch1_R2.fq.gz
 
         cp \
             CW6_7078_8day_Q_PD_S9_R3_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_Q_day8_tcn_N_auxF_tcF_7078_rep2_batch1_R3.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_Q_day8_tcn_N_auxF_tcF_7078_rep2_batch1_R3.fq.gz
 
         cp \
             CW8_7079_8day_Q_IN_S4_R1_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_Q_day8_tcn_SS_auxF_tcF_7079_rep1_batch1_R1.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_Q_day8_tcn_SS_auxF_tcF_7079_rep1_batch1_R1.fq.gz
 
         cp \
             CW8_7079_8day_Q_IN_S4_R2_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_Q_day8_tcn_SS_auxF_tcF_7079_rep1_batch1_R2.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_Q_day8_tcn_SS_auxF_tcF_7079_rep1_batch1_R2.fq.gz
 
         cp \
             CW8_7079_8day_Q_IN_S4_R3_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_Q_day8_tcn_SS_auxF_tcF_7079_rep1_batch1_R3.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_Q_day8_tcn_SS_auxF_tcF_7079_rep1_batch1_R3.fq.gz
 
         cp \
             CW6_7078_8day_Q_IN_S3_R1_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch1_R1.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch1_R1.fq.gz
 
         cp \
             CW6_7078_8day_Q_IN_S3_R2_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch1_R2.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch1_R2.fq.gz
 
         cp \
             CW6_7078_8day_Q_IN_S3_R3_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch1_R3.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch1_R3.fq.gz
 
         cp \
             CW6_7078_day8_Q_SS_S28_R1_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch2_R1.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch2_R1.fq.gz
 
         cp \
             CW6_7078_day8_Q_SS_S28_R2_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch2_R2.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch2_R2.fq.gz
 
         cp \
             CW6_7078_day8_Q_SS_S28_R3_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch2_R3.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch2_R3.fq.gz
 
         cp \
             DA1_5781_SS_G1_S22_R1_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_G1_day1_tcn_SS_auxF_tcF_5781_rep1_batch2_R1.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_G1_day1_tcn_SS_auxF_tcF_5781_rep1_batch2_R1.fq.gz
 
         cp \
             DA1_5781_SS_G1_S22_R2_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_G1_day1_tcn_SS_auxF_tcF_5781_rep1_batch2_R2.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_G1_day1_tcn_SS_auxF_tcF_5781_rep1_batch2_R2.fq.gz
 
         cp \
             DA1_5781_SS_G1_S22_R3_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_G1_day1_tcn_SS_auxF_tcF_5781_rep1_batch2_R3.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_G1_day1_tcn_SS_auxF_tcF_5781_rep1_batch2_R3.fq.gz
 
         cp \
             DA2_5782_SS_G1_S23_R1_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_G1_day1_tcn_SS_auxF_tcF_5782_rep2_batch2_R1.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_G1_day1_tcn_SS_auxF_tcF_5782_rep2_batch2_R1.fq.gz
 
         cp \
             DA2_5782_SS_G1_S23_R2_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_G1_day1_tcn_SS_auxF_tcF_5782_rep2_batch2_R2.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_G1_day1_tcn_SS_auxF_tcF_5782_rep2_batch2_R2.fq.gz
 
         cp \
             DA2_5782_SS_G1_S23_R3_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_G1_day1_tcn_SS_auxF_tcF_5782_rep2_batch2_R3.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_G1_day1_tcn_SS_auxF_tcF_5782_rep2_batch2_R3.fq.gz
 
         cp \
             DA4_7079_SS_G1_S25_R1_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_G1_day1_tcn_SS_auxF_tcF_7079_rep1_batch2_R1.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_G1_day1_tcn_SS_auxF_tcF_7079_rep1_batch2_R1.fq.gz
 
         cp \
             DA4_7079_SS_G1_S25_R2_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_G1_day1_tcn_SS_auxF_tcF_7079_rep1_batch2_R2.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_G1_day1_tcn_SS_auxF_tcF_7079_rep1_batch2_R2.fq.gz
 
         cp \
             DA4_7079_SS_G1_S25_R3_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_G1_day1_tcn_SS_auxF_tcF_7079_rep1_batch2_R3.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_G1_day1_tcn_SS_auxF_tcF_7079_rep1_batch2_R3.fq.gz
 
         cp \
             DA3_7078_SS_G1_S24_R1_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_G1_day1_tcn_SS_auxF_tcF_7078_rep2_batch2_R1.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_G1_day1_tcn_SS_auxF_tcF_7078_rep2_batch2_R1.fq.gz
 
         cp \
             DA3_7078_SS_G1_S24_R2_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_G1_day1_tcn_SS_auxF_tcF_7078_rep2_batch2_R2.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_G1_day1_tcn_SS_auxF_tcF_7078_rep2_batch2_R2.fq.gz
 
         cp \
             DA3_7078_SS_G1_S24_R3_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_G1_day1_tcn_SS_auxF_tcF_7078_rep2_batch2_R3.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_G1_day1_tcn_SS_auxF_tcF_7078_rep2_batch2_R3.fq.gz
 
         cp \
             Sample_CT8_7716_pIAA_Q_Nascent_S4_R1_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1_R1.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1_R1.fq.gz
 
         cp \
             Sample_CT8_7716_pIAA_Q_Nascent_S4_R2_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1_R2.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1_R2.fq.gz
 
         cp \
             Sample_CT8_7716_pIAA_Q_Nascent_S4_R3_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1_R3.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1_R3.fq.gz
 
         cp \
             Sample_CT10_7718_pIAA_Q_Nascent_S5_R1_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/Nab3-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1_R1.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/Nab3-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1_R1.fq.gz
 
         cp \
             Sample_CT10_7718_pIAA_Q_Nascent_S5_R2_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/Nab3-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1_R2.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/Nab3-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1_R2.fq.gz
 
         cp \
             Sample_CT10_7718_pIAA_Q_Nascent_S5_R3_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/Nab3-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1_R3.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/Nab3-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1_R3.fq.gz
 
         cp \
             Sample_CT8_7716_pIAA_Q_SteadyState_S9_R1_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1_R1.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1_R1.fq.gz
 
         cp \
             Sample_CT8_7716_pIAA_Q_SteadyState_S9_R2_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1_R2.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1_R2.fq.gz
 
         cp \
             Sample_CT8_7716_pIAA_Q_SteadyState_S9_R3_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1_R3.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1_R3.fq.gz
 
         cp \
             Sample_CT10_7718_pIAA_Q_SteadyState_S10_R1_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1_R1.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1_R1.fq.gz
 
         cp \
             Sample_CT10_7718_pIAA_Q_SteadyState_S10_R2_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1_R2.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1_R2.fq.gz
 
         cp \
             Sample_CT10_7718_pIAA_Q_SteadyState_S10_R3_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1_R3.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1_R3.fq.gz
 
         cp \
             Sample_CT2_6125_pIAA_Q_Nascent_S1_R1_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125_rep1_batch1_R1.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125_rep1_batch1_R1.fq.gz
 
         cp \
             Sample_CT2_6125_pIAA_Q_Nascent_S1_R2_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125_rep1_batch1_R2.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125_rep1_batch1_R2.fq.gz
 
         cp \
             Sample_CT2_6125_pIAA_Q_Nascent_S1_R3_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125_rep1_batch1_R3.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125_rep1_batch1_R3.fq.gz
 
         cp \
             Sample_CT4_6126_pIAA_Q_Nascent_S2_R1_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6126_rep2_batch1_R1.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6126_rep2_batch1_R1.fq.gz
 
         cp \
             Sample_CT4_6126_pIAA_Q_Nascent_S2_R2_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6126_rep2_batch1_R2.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6126_rep2_batch1_R2.fq.gz
 
         cp \
             Sample_CT4_6126_pIAA_Q_Nascent_S2_R3_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6126_rep2_batch1_R3.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6126_rep2_batch1_R3.fq.gz
 
         cp \
             Sample_CT2_6125_pIAA_Q_SteadyState_S6_R1_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125_rep1_batch1_R1.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125_rep1_batch1_R1.fq.gz
 
         cp \
             Sample_CT2_6125_pIAA_Q_SteadyState_S6_R2_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125_rep1_batch1_R2.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125_rep1_batch1_R2.fq.gz
 
         cp \
             Sample_CT2_6125_pIAA_Q_SteadyState_S6_R3_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125_rep1_batch1_R3.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125_rep1_batch1_R3.fq.gz
 
         cp \
             Sample_CT4_6126_pIAA_Q_SteadyState_S7_R1_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6126_rep2_batch1_R1.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6126_rep2_batch1_R1.fq.gz
 
         cp \
             Sample_CT4_6126_pIAA_Q_SteadyState_S7_R2_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6126_rep2_batch1_R2.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6126_rep2_batch1_R2.fq.gz
 
         cp \
             Sample_CT4_6126_pIAA_Q_SteadyState_S7_R3_001.fastq.gz \
-            /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6126_rep2_batch1_R3.fq.gz
+            /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6126_rep2_batch1_R3.fq.gz
 
 
 ❯ #  Load GNU parallel
@@ -1920,144 +1920,144 @@ lrwxrwxrwx 1 kalavatt 133 Feb  5 10:40 Sample_CT4_6126_pIAA_Q_SteadyState_S7_R3_
 > ::: "${d_proj}/${d_exp_0215}/GEO/fastqs" \
 > ::: "${!A_fq[@]}" \
 > :::+ "${A_fq[@]}"
-cp "Sample_CT10_7718_pIAA_Q_SteadyState_S10_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1_R1.fq.gz"
-cp "SAMPLE_BM4_DSp2_5781_S16_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_DSp2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1_R1.fq.gz"
-cp "SAMPLE_Bp10_DSp48_5782_S10_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_DSp48_day4_tcn_SS_auxF_tcT_5782_rep2_batch1_R1.fq.gz"
-cp "5781_Q_IP_S2_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_Q_day7_ovn_N_auxF_tcF_5781_rep1_batch1_R1.fq.gz"
-cp "SAMPLE_BM3_DSm2_7079_S15_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_DSm2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1_R1.fq.gz"
-cp "Sample_CT10_7718_pIAA_Q_Nascent_S5_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/Nab3-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1_R1.fq.gz"
-cp "5781_Q_IN_S6_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_Q_day7_ovn_SS_auxF_tcF_5781_rep1_batch1_R1.fq.gz"
-cp "CW2_5781_8day_Q_IN_S1_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_Q_day8_tcn_SS_auxF_tcF_5781_rep1_batch1_R1.fq.gz"
-cp "SAMPLE_BM6_DSp2_7079_S18_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_DSp2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1_R1.fq.gz"
-cp "CW8_7079_8day_Q_PD_S10_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_Q_day8_tcn_N_auxF_tcF_7079_rep1_batch1_R1.fq.gz"
-cp "SAMPLE_Bp1_DSm2_5782_S1_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_DSm2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1_R1.fq.gz"
-cp "Sample_CT2_6125_pIAA_Q_SteadyState_S6_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125_rep1_batch1_R1.fq.gz"
-cp "Sample_CT4_6126_pIAA_Q_Nascent_S2_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6126_rep2_batch1_R1.fq.gz"
-cp "CW6_7078_8day_Q_PD_S9_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_Q_day8_tcn_N_auxF_tcF_7078_rep2_batch1_R1.fq.gz"
-cp "CW6_7078_8day_Q_IN_S3_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch1_R1.fq.gz"
-cp "CW8_7079_8day_Q_IN_S4_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_Q_day8_tcn_SS_auxF_tcF_7079_rep1_batch1_R1.fq.gz"
-cp "SAMPLE_BM9_DSp24_7079_S21_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_DSp24_day3_tcn_SS_auxF_tcT_7079_rep1_batch1_R1.fq.gz"
-cp "BM10_5781_DSp48_S26_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch2_R1.fq.gz"
-cp "Sample_CT8_7716_pIAA_Q_SteadyState_S9_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1_R1.fq.gz"
-cp "5781_G1_IN_S5_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_G1_day1_ovn_SS_auxF_tcF_5781_rep1_batch1_R1.fq.gz"
-cp "SAMPLE_Bp12_DSp48_7078_S12_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_DSp48_day4_tcn_SS_auxF_tcT_7078_rep2_batch1_R1.fq.gz"
-cp "Sample_CT4_6126_pIAA_Q_SteadyState_S7_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6126_rep2_batch1_R1.fq.gz"
-cp "CW6_7078_day8_Q_SS_S28_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch2_R1.fq.gz"
-cp "5782_Q_IN_S8_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_Q_day7_ovn_SS_auxF_tcF_5782_rep2_batch1_R1.fq.gz"
-cp "DA3_7078_SS_G1_S24_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_G1_day1_tcn_SS_auxF_tcF_7078_rep2_batch2_R1.fq.gz"
-cp "BM12_7079_DSp48_S27_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_DSp48_day4_tcn_SS_auxF_tcT_7079_rep1_batch2_R1.fq.gz"
-cp "DA1_5781_SS_G1_S22_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_G1_day1_tcn_SS_auxF_tcF_5781_rep1_batch2_R1.fq.gz"
-cp "SAMPLE_Bp7_DSp24_5782_S7_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_DSp24_day3_tcn_SS_auxF_tcT_5782_rep2_batch1_R1.fq.gz"
-cp "Sample_CT8_7716_pIAA_Q_Nascent_S4_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1_R1.fq.gz"
-cp "SAMPLE_Bp9_DSp24_7078_S9_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_DSp24_day3_tcn_SS_auxF_tcT_7078_rep2_batch1_R1.fq.gz"
-cp "SAMPLE_BM10_DSp48_5781_S22_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch1_R1.fq.gz"
-cp "SAMPLE_BM7_DSp24_5781_S19_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_DSp24_day3_tcn_SS_auxF_tcT_5781_rep1_batch1_R1.fq.gz"
-cp "DA4_7079_SS_G1_S25_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_G1_day1_tcn_SS_auxF_tcF_7079_rep1_batch2_R1.fq.gz"
-cp "5782_G1_IN_S7_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_G1_day1_ovn_SS_auxF_tcF_5782_rep2_batch1_R1.fq.gz"
-cp "SAMPLE_Bp3_DSm2_7078_S3_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_DSm2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1_R1.fq.gz"
-cp "SAMPLE_Bp4_DSp2_5782_S4_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_DSp2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1_R1.fq.gz"
-cp "Sample_CT2_6125_pIAA_Q_Nascent_S1_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125_rep1_batch1_R1.fq.gz"
-cp "DA2_5782_SS_G1_S23_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_G1_day1_tcn_SS_auxF_tcF_5782_rep2_batch2_R1.fq.gz"
-cp "CW4_5782_8day_Q_IN_S2_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_Q_day8_tcn_SS_auxF_tcF_5782_rep2_batch1_R1.fq.gz"
-cp "CW4_5782_8day_Q_PD_S8_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_Q_day8_tcn_N_auxF_tcF_5782_rep2_batch1_R1.fq.gz"
-cp "5781_G1_IP_S1_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_G1_day1_ovn_N_auxF_tcF_5781_rep1_batch1_R1.fq.gz"
-cp "SAMPLE_BM1_DSm2_5781_S13_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_DSm2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1_R1.fq.gz"
-cp "5782_Q_IP_S4_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_Q_day7_ovn_N_auxF_tcF_5782_rep2_batch1_R1.fq.gz"
-cp "5782_G1_IP_S3_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_G1_day1_ovn_N_auxF_tcF_5782_rep2_batch1_R1.fq.gz"
-cp "SAMPLE_Bp6_DSp2_7078_S6_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_DSp2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1_R1.fq.gz"
-cp "CW2_5781_8day_Q_PD_S7_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_Q_day8_tcn_N_auxF_tcF_5781_rep1_batch1_R1.fq.gz"
-cp "Sample_CT10_7718_pIAA_Q_SteadyState_S10_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1_R2.fq.gz"
-cp "SAMPLE_BM4_DSp2_5781_S16_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_DSp2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1_R2.fq.gz"
-cp "SAMPLE_Bp10_DSp48_5782_S10_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_DSp48_day4_tcn_SS_auxF_tcT_5782_rep2_batch1_R2.fq.gz"
-cp "5781_Q_IP_S2_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_Q_day7_ovn_N_auxF_tcF_5781_rep1_batch1_R2.fq.gz"
-cp "SAMPLE_BM3_DSm2_7079_S15_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_DSm2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1_R2.fq.gz"
-cp "Sample_CT10_7718_pIAA_Q_Nascent_S5_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/Nab3-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1_R2.fq.gz"
-cp "5781_Q_IN_S6_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_Q_day7_ovn_SS_auxF_tcF_5781_rep1_batch1_R2.fq.gz"
-cp "CW2_5781_8day_Q_IN_S1_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_Q_day8_tcn_SS_auxF_tcF_5781_rep1_batch1_R2.fq.gz"
-cp "SAMPLE_BM6_DSp2_7079_S18_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_DSp2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1_R2.fq.gz"
-cp "CW8_7079_8day_Q_PD_S10_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_Q_day8_tcn_N_auxF_tcF_7079_rep1_batch1_R2.fq.gz"
-cp "SAMPLE_Bp1_DSm2_5782_S1_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_DSm2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1_R2.fq.gz"
-cp "Sample_CT2_6125_pIAA_Q_SteadyState_S6_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125_rep1_batch1_R2.fq.gz"
-cp "Sample_CT4_6126_pIAA_Q_Nascent_S2_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6126_rep2_batch1_R2.fq.gz"
-cp "CW6_7078_8day_Q_PD_S9_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_Q_day8_tcn_N_auxF_tcF_7078_rep2_batch1_R2.fq.gz"
-cp "CW6_7078_8day_Q_IN_S3_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch1_R2.fq.gz"
-cp "CW8_7079_8day_Q_IN_S4_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_Q_day8_tcn_SS_auxF_tcF_7079_rep1_batch1_R2.fq.gz"
-cp "SAMPLE_BM9_DSp24_7079_S21_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_DSp24_day3_tcn_SS_auxF_tcT_7079_rep1_batch1_R2.fq.gz"
-cp "BM10_5781_DSp48_S26_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch2_R2.fq.gz"
-cp "Sample_CT8_7716_pIAA_Q_SteadyState_S9_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1_R2.fq.gz"
-cp "5781_G1_IN_S5_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_G1_day1_ovn_SS_auxF_tcF_5781_rep1_batch1_R2.fq.gz"
-cp "SAMPLE_Bp12_DSp48_7078_S12_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_DSp48_day4_tcn_SS_auxF_tcT_7078_rep2_batch1_R2.fq.gz"
-cp "Sample_CT4_6126_pIAA_Q_SteadyState_S7_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6126_rep2_batch1_R2.fq.gz"
-cp "CW6_7078_day8_Q_SS_S28_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch2_R2.fq.gz"
-cp "5782_Q_IN_S8_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_Q_day7_ovn_SS_auxF_tcF_5782_rep2_batch1_R2.fq.gz"
-cp "DA3_7078_SS_G1_S24_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_G1_day1_tcn_SS_auxF_tcF_7078_rep2_batch2_R2.fq.gz"
-cp "BM12_7079_DSp48_S27_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_DSp48_day4_tcn_SS_auxF_tcT_7079_rep1_batch2_R2.fq.gz"
-cp "DA1_5781_SS_G1_S22_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_G1_day1_tcn_SS_auxF_tcF_5781_rep1_batch2_R2.fq.gz"
-cp "SAMPLE_Bp7_DSp24_5782_S7_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_DSp24_day3_tcn_SS_auxF_tcT_5782_rep2_batch1_R2.fq.gz"
-cp "Sample_CT8_7716_pIAA_Q_Nascent_S4_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1_R2.fq.gz"
-cp "SAMPLE_Bp9_DSp24_7078_S9_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_DSp24_day3_tcn_SS_auxF_tcT_7078_rep2_batch1_R2.fq.gz"
-cp "SAMPLE_BM10_DSp48_5781_S22_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch1_R2.fq.gz"
-cp "SAMPLE_BM7_DSp24_5781_S19_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_DSp24_day3_tcn_SS_auxF_tcT_5781_rep1_batch1_R2.fq.gz"
-cp "DA4_7079_SS_G1_S25_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_G1_day1_tcn_SS_auxF_tcF_7079_rep1_batch2_R2.fq.gz"
-cp "5782_G1_IN_S7_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_G1_day1_ovn_SS_auxF_tcF_5782_rep2_batch1_R2.fq.gz"
-cp "SAMPLE_Bp3_DSm2_7078_S3_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_DSm2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1_R2.fq.gz"
-cp "SAMPLE_Bp4_DSp2_5782_S4_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_DSp2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1_R2.fq.gz"
-cp "Sample_CT2_6125_pIAA_Q_Nascent_S1_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125_rep1_batch1_R2.fq.gz"
-cp "DA2_5782_SS_G1_S23_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_G1_day1_tcn_SS_auxF_tcF_5782_rep2_batch2_R2.fq.gz"
-cp "CW4_5782_8day_Q_IN_S2_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_Q_day8_tcn_SS_auxF_tcF_5782_rep2_batch1_R2.fq.gz"
-cp "CW4_5782_8day_Q_PD_S8_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_Q_day8_tcn_N_auxF_tcF_5782_rep2_batch1_R2.fq.gz"
-cp "5781_G1_IP_S1_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_G1_day1_ovn_N_auxF_tcF_5781_rep1_batch1_R2.fq.gz"
-cp "SAMPLE_BM1_DSm2_5781_S13_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_DSm2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1_R2.fq.gz"
-cp "5782_Q_IP_S4_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_Q_day7_ovn_N_auxF_tcF_5782_rep2_batch1_R2.fq.gz"
-cp "5782_G1_IP_S3_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_G1_day1_ovn_N_auxF_tcF_5782_rep2_batch1_R2.fq.gz"
-cp "SAMPLE_Bp6_DSp2_7078_S6_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_DSp2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1_R2.fq.gz"
-cp "CW2_5781_8day_Q_PD_S7_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_Q_day8_tcn_N_auxF_tcF_5781_rep1_batch1_R2.fq.gz"
-cp "Sample_CT10_7718_pIAA_Q_SteadyState_S10_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1_R3.fq.gz"
-cp "SAMPLE_BM4_DSp2_5781_S16_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_DSp2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1_R3.fq.gz"
-cp "SAMPLE_Bp10_DSp48_5782_S10_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_DSp48_day4_tcn_SS_auxF_tcT_5782_rep2_batch1_R3.fq.gz"
-cp "5781_Q_IP_S2_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_Q_day7_ovn_N_auxF_tcF_5781_rep1_batch1_R3.fq.gz"
-cp "SAMPLE_BM3_DSm2_7079_S15_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_DSm2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1_R3.fq.gz"
-cp "Sample_CT10_7718_pIAA_Q_Nascent_S5_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/Nab3-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1_R3.fq.gz"
-cp "5781_Q_IN_S6_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_Q_day7_ovn_SS_auxF_tcF_5781_rep1_batch1_R3.fq.gz"
-cp "CW2_5781_8day_Q_IN_S1_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_Q_day8_tcn_SS_auxF_tcF_5781_rep1_batch1_R3.fq.gz"
-cp "SAMPLE_BM6_DSp2_7079_S18_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_DSp2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1_R3.fq.gz"
-cp "CW8_7079_8day_Q_PD_S10_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_Q_day8_tcn_N_auxF_tcF_7079_rep1_batch1_R3.fq.gz"
-cp "SAMPLE_Bp1_DSm2_5782_S1_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_DSm2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1_R3.fq.gz"
-cp "Sample_CT2_6125_pIAA_Q_SteadyState_S6_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125_rep1_batch1_R3.fq.gz"
-cp "Sample_CT4_6126_pIAA_Q_Nascent_S2_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6126_rep2_batch1_R3.fq.gz"
-cp "CW6_7078_8day_Q_PD_S9_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_Q_day8_tcn_N_auxF_tcF_7078_rep2_batch1_R3.fq.gz"
-cp "CW6_7078_8day_Q_IN_S3_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch1_R3.fq.gz"
-cp "CW8_7079_8day_Q_IN_S4_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_Q_day8_tcn_SS_auxF_tcF_7079_rep1_batch1_R3.fq.gz"
-cp "SAMPLE_BM9_DSp24_7079_S21_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_DSp24_day3_tcn_SS_auxF_tcT_7079_rep1_batch1_R3.fq.gz"
-cp "BM10_5781_DSp48_S26_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch2_R3.fq.gz"
-cp "Sample_CT8_7716_pIAA_Q_SteadyState_S9_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1_R3.fq.gz"
-cp "5781_G1_IN_S5_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_G1_day1_ovn_SS_auxF_tcF_5781_rep1_batch1_R3.fq.gz"
-cp "SAMPLE_Bp12_DSp48_7078_S12_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_DSp48_day4_tcn_SS_auxF_tcT_7078_rep2_batch1_R3.fq.gz"
-cp "Sample_CT4_6126_pIAA_Q_SteadyState_S7_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6126_rep2_batch1_R3.fq.gz"
-cp "CW6_7078_day8_Q_SS_S28_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch2_R3.fq.gz"
-cp "5782_Q_IN_S8_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_Q_day7_ovn_SS_auxF_tcF_5782_rep2_batch1_R3.fq.gz"
-cp "DA3_7078_SS_G1_S24_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_G1_day1_tcn_SS_auxF_tcF_7078_rep2_batch2_R3.fq.gz"
-cp "BM12_7079_DSp48_S27_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_DSp48_day4_tcn_SS_auxF_tcT_7079_rep1_batch2_R3.fq.gz"
-cp "DA1_5781_SS_G1_S22_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_G1_day1_tcn_SS_auxF_tcF_5781_rep1_batch2_R3.fq.gz"
-cp "SAMPLE_Bp7_DSp24_5782_S7_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_DSp24_day3_tcn_SS_auxF_tcT_5782_rep2_batch1_R3.fq.gz"
-cp "Sample_CT8_7716_pIAA_Q_Nascent_S4_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1_R3.fq.gz"
-cp "SAMPLE_Bp9_DSp24_7078_S9_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_DSp24_day3_tcn_SS_auxF_tcT_7078_rep2_batch1_R3.fq.gz"
-cp "SAMPLE_BM10_DSp48_5781_S22_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch1_R3.fq.gz"
-cp "SAMPLE_BM7_DSp24_5781_S19_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_DSp24_day3_tcn_SS_auxF_tcT_5781_rep1_batch1_R3.fq.gz"
-cp "DA4_7079_SS_G1_S25_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_G1_day1_tcn_SS_auxF_tcF_7079_rep1_batch2_R3.fq.gz"
-cp "5782_G1_IN_S7_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_G1_day1_ovn_SS_auxF_tcF_5782_rep2_batch1_R3.fq.gz"
-cp "SAMPLE_Bp3_DSm2_7078_S3_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_DSm2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1_R3.fq.gz"
-cp "SAMPLE_Bp4_DSp2_5782_S4_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_DSp2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1_R3.fq.gz"
-cp "Sample_CT2_6125_pIAA_Q_Nascent_S1_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125_rep1_batch1_R3.fq.gz"
-cp "DA2_5782_SS_G1_S23_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_G1_day1_tcn_SS_auxF_tcF_5782_rep2_batch2_R3.fq.gz"
-cp "CW4_5782_8day_Q_IN_S2_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_Q_day8_tcn_SS_auxF_tcF_5782_rep2_batch1_R3.fq.gz"
-cp "CW4_5782_8day_Q_PD_S8_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_Q_day8_tcn_N_auxF_tcF_5782_rep2_batch1_R3.fq.gz"
-cp "5781_G1_IP_S1_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_G1_day1_ovn_N_auxF_tcF_5781_rep1_batch1_R3.fq.gz"
-cp "SAMPLE_BM1_DSm2_5781_S13_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_DSm2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1_R3.fq.gz"
-cp "5782_Q_IP_S4_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_Q_day7_ovn_N_auxF_tcF_5782_rep2_batch1_R3.fq.gz"
-cp "5782_G1_IP_S3_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_G1_day1_ovn_N_auxF_tcF_5782_rep2_batch1_R3.fq.gz"
-cp "SAMPLE_Bp6_DSp2_7078_S6_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/rrp6_DSp2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1_R3.fq.gz"
-cp "CW2_5781_8day_Q_PD_S7_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/fastqs/WT_Q_day8_tcn_N_auxF_tcF_5781_rep1_batch1_R3.fq.gz"
+cp "Sample_CT10_7718_pIAA_Q_SteadyState_S10_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1_R1.fq.gz"
+cp "SAMPLE_BM4_DSp2_5781_S16_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_DSp2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1_R1.fq.gz"
+cp "SAMPLE_Bp10_DSp48_5782_S10_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_DSp48_day4_tcn_SS_auxF_tcT_5782_rep2_batch1_R1.fq.gz"
+cp "5781_Q_IP_S2_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_Q_day7_ovn_N_auxF_tcF_5781_rep1_batch1_R1.fq.gz"
+cp "SAMPLE_BM3_DSm2_7079_S15_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_DSm2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1_R1.fq.gz"
+cp "Sample_CT10_7718_pIAA_Q_Nascent_S5_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/Nab3-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1_R1.fq.gz"
+cp "5781_Q_IN_S6_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_Q_day7_ovn_SS_auxF_tcF_5781_rep1_batch1_R1.fq.gz"
+cp "CW2_5781_8day_Q_IN_S1_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_Q_day8_tcn_SS_auxF_tcF_5781_rep1_batch1_R1.fq.gz"
+cp "SAMPLE_BM6_DSp2_7079_S18_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_DSp2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1_R1.fq.gz"
+cp "CW8_7079_8day_Q_PD_S10_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_Q_day8_tcn_N_auxF_tcF_7079_rep1_batch1_R1.fq.gz"
+cp "SAMPLE_Bp1_DSm2_5782_S1_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_DSm2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1_R1.fq.gz"
+cp "Sample_CT2_6125_pIAA_Q_SteadyState_S6_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125_rep1_batch1_R1.fq.gz"
+cp "Sample_CT4_6126_pIAA_Q_Nascent_S2_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6126_rep2_batch1_R1.fq.gz"
+cp "CW6_7078_8day_Q_PD_S9_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_Q_day8_tcn_N_auxF_tcF_7078_rep2_batch1_R1.fq.gz"
+cp "CW6_7078_8day_Q_IN_S3_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch1_R1.fq.gz"
+cp "CW8_7079_8day_Q_IN_S4_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_Q_day8_tcn_SS_auxF_tcF_7079_rep1_batch1_R1.fq.gz"
+cp "SAMPLE_BM9_DSp24_7079_S21_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_DSp24_day3_tcn_SS_auxF_tcT_7079_rep1_batch1_R1.fq.gz"
+cp "BM10_5781_DSp48_S26_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch2_R1.fq.gz"
+cp "Sample_CT8_7716_pIAA_Q_SteadyState_S9_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1_R1.fq.gz"
+cp "5781_G1_IN_S5_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_G1_day1_ovn_SS_auxF_tcF_5781_rep1_batch1_R1.fq.gz"
+cp "SAMPLE_Bp12_DSp48_7078_S12_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_DSp48_day4_tcn_SS_auxF_tcT_7078_rep2_batch1_R1.fq.gz"
+cp "Sample_CT4_6126_pIAA_Q_SteadyState_S7_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6126_rep2_batch1_R1.fq.gz"
+cp "CW6_7078_day8_Q_SS_S28_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch2_R1.fq.gz"
+cp "5782_Q_IN_S8_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_Q_day7_ovn_SS_auxF_tcF_5782_rep2_batch1_R1.fq.gz"
+cp "DA3_7078_SS_G1_S24_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_G1_day1_tcn_SS_auxF_tcF_7078_rep2_batch2_R1.fq.gz"
+cp "BM12_7079_DSp48_S27_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_DSp48_day4_tcn_SS_auxF_tcT_7079_rep1_batch2_R1.fq.gz"
+cp "DA1_5781_SS_G1_S22_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_G1_day1_tcn_SS_auxF_tcF_5781_rep1_batch2_R1.fq.gz"
+cp "SAMPLE_Bp7_DSp24_5782_S7_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_DSp24_day3_tcn_SS_auxF_tcT_5782_rep2_batch1_R1.fq.gz"
+cp "Sample_CT8_7716_pIAA_Q_Nascent_S4_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1_R1.fq.gz"
+cp "SAMPLE_Bp9_DSp24_7078_S9_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_DSp24_day3_tcn_SS_auxF_tcT_7078_rep2_batch1_R1.fq.gz"
+cp "SAMPLE_BM10_DSp48_5781_S22_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch1_R1.fq.gz"
+cp "SAMPLE_BM7_DSp24_5781_S19_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_DSp24_day3_tcn_SS_auxF_tcT_5781_rep1_batch1_R1.fq.gz"
+cp "DA4_7079_SS_G1_S25_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_G1_day1_tcn_SS_auxF_tcF_7079_rep1_batch2_R1.fq.gz"
+cp "5782_G1_IN_S7_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_G1_day1_ovn_SS_auxF_tcF_5782_rep2_batch1_R1.fq.gz"
+cp "SAMPLE_Bp3_DSm2_7078_S3_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_DSm2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1_R1.fq.gz"
+cp "SAMPLE_Bp4_DSp2_5782_S4_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_DSp2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1_R1.fq.gz"
+cp "Sample_CT2_6125_pIAA_Q_Nascent_S1_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125_rep1_batch1_R1.fq.gz"
+cp "DA2_5782_SS_G1_S23_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_G1_day1_tcn_SS_auxF_tcF_5782_rep2_batch2_R1.fq.gz"
+cp "CW4_5782_8day_Q_IN_S2_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_Q_day8_tcn_SS_auxF_tcF_5782_rep2_batch1_R1.fq.gz"
+cp "CW4_5782_8day_Q_PD_S8_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_Q_day8_tcn_N_auxF_tcF_5782_rep2_batch1_R1.fq.gz"
+cp "5781_G1_IP_S1_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_G1_day1_ovn_N_auxF_tcF_5781_rep1_batch1_R1.fq.gz"
+cp "SAMPLE_BM1_DSm2_5781_S13_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_DSm2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1_R1.fq.gz"
+cp "5782_Q_IP_S4_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_Q_day7_ovn_N_auxF_tcF_5782_rep2_batch1_R1.fq.gz"
+cp "5782_G1_IP_S3_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_G1_day1_ovn_N_auxF_tcF_5782_rep2_batch1_R1.fq.gz"
+cp "SAMPLE_Bp6_DSp2_7078_S6_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_DSp2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1_R1.fq.gz"
+cp "CW2_5781_8day_Q_PD_S7_R1_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_Q_day8_tcn_N_auxF_tcF_5781_rep1_batch1_R1.fq.gz"
+cp "Sample_CT10_7718_pIAA_Q_SteadyState_S10_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1_R2.fq.gz"
+cp "SAMPLE_BM4_DSp2_5781_S16_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_DSp2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1_R2.fq.gz"
+cp "SAMPLE_Bp10_DSp48_5782_S10_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_DSp48_day4_tcn_SS_auxF_tcT_5782_rep2_batch1_R2.fq.gz"
+cp "5781_Q_IP_S2_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_Q_day7_ovn_N_auxF_tcF_5781_rep1_batch1_R2.fq.gz"
+cp "SAMPLE_BM3_DSm2_7079_S15_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_DSm2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1_R2.fq.gz"
+cp "Sample_CT10_7718_pIAA_Q_Nascent_S5_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/Nab3-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1_R2.fq.gz"
+cp "5781_Q_IN_S6_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_Q_day7_ovn_SS_auxF_tcF_5781_rep1_batch1_R2.fq.gz"
+cp "CW2_5781_8day_Q_IN_S1_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_Q_day8_tcn_SS_auxF_tcF_5781_rep1_batch1_R2.fq.gz"
+cp "SAMPLE_BM6_DSp2_7079_S18_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_DSp2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1_R2.fq.gz"
+cp "CW8_7079_8day_Q_PD_S10_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_Q_day8_tcn_N_auxF_tcF_7079_rep1_batch1_R2.fq.gz"
+cp "SAMPLE_Bp1_DSm2_5782_S1_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_DSm2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1_R2.fq.gz"
+cp "Sample_CT2_6125_pIAA_Q_SteadyState_S6_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125_rep1_batch1_R2.fq.gz"
+cp "Sample_CT4_6126_pIAA_Q_Nascent_S2_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6126_rep2_batch1_R2.fq.gz"
+cp "CW6_7078_8day_Q_PD_S9_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_Q_day8_tcn_N_auxF_tcF_7078_rep2_batch1_R2.fq.gz"
+cp "CW6_7078_8day_Q_IN_S3_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch1_R2.fq.gz"
+cp "CW8_7079_8day_Q_IN_S4_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_Q_day8_tcn_SS_auxF_tcF_7079_rep1_batch1_R2.fq.gz"
+cp "SAMPLE_BM9_DSp24_7079_S21_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_DSp24_day3_tcn_SS_auxF_tcT_7079_rep1_batch1_R2.fq.gz"
+cp "BM10_5781_DSp48_S26_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch2_R2.fq.gz"
+cp "Sample_CT8_7716_pIAA_Q_SteadyState_S9_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1_R2.fq.gz"
+cp "5781_G1_IN_S5_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_G1_day1_ovn_SS_auxF_tcF_5781_rep1_batch1_R2.fq.gz"
+cp "SAMPLE_Bp12_DSp48_7078_S12_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_DSp48_day4_tcn_SS_auxF_tcT_7078_rep2_batch1_R2.fq.gz"
+cp "Sample_CT4_6126_pIAA_Q_SteadyState_S7_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6126_rep2_batch1_R2.fq.gz"
+cp "CW6_7078_day8_Q_SS_S28_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch2_R2.fq.gz"
+cp "5782_Q_IN_S8_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_Q_day7_ovn_SS_auxF_tcF_5782_rep2_batch1_R2.fq.gz"
+cp "DA3_7078_SS_G1_S24_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_G1_day1_tcn_SS_auxF_tcF_7078_rep2_batch2_R2.fq.gz"
+cp "BM12_7079_DSp48_S27_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_DSp48_day4_tcn_SS_auxF_tcT_7079_rep1_batch2_R2.fq.gz"
+cp "DA1_5781_SS_G1_S22_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_G1_day1_tcn_SS_auxF_tcF_5781_rep1_batch2_R2.fq.gz"
+cp "SAMPLE_Bp7_DSp24_5782_S7_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_DSp24_day3_tcn_SS_auxF_tcT_5782_rep2_batch1_R2.fq.gz"
+cp "Sample_CT8_7716_pIAA_Q_Nascent_S4_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1_R2.fq.gz"
+cp "SAMPLE_Bp9_DSp24_7078_S9_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_DSp24_day3_tcn_SS_auxF_tcT_7078_rep2_batch1_R2.fq.gz"
+cp "SAMPLE_BM10_DSp48_5781_S22_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch1_R2.fq.gz"
+cp "SAMPLE_BM7_DSp24_5781_S19_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_DSp24_day3_tcn_SS_auxF_tcT_5781_rep1_batch1_R2.fq.gz"
+cp "DA4_7079_SS_G1_S25_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_G1_day1_tcn_SS_auxF_tcF_7079_rep1_batch2_R2.fq.gz"
+cp "5782_G1_IN_S7_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_G1_day1_ovn_SS_auxF_tcF_5782_rep2_batch1_R2.fq.gz"
+cp "SAMPLE_Bp3_DSm2_7078_S3_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_DSm2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1_R2.fq.gz"
+cp "SAMPLE_Bp4_DSp2_5782_S4_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_DSp2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1_R2.fq.gz"
+cp "Sample_CT2_6125_pIAA_Q_Nascent_S1_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125_rep1_batch1_R2.fq.gz"
+cp "DA2_5782_SS_G1_S23_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_G1_day1_tcn_SS_auxF_tcF_5782_rep2_batch2_R2.fq.gz"
+cp "CW4_5782_8day_Q_IN_S2_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_Q_day8_tcn_SS_auxF_tcF_5782_rep2_batch1_R2.fq.gz"
+cp "CW4_5782_8day_Q_PD_S8_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_Q_day8_tcn_N_auxF_tcF_5782_rep2_batch1_R2.fq.gz"
+cp "5781_G1_IP_S1_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_G1_day1_ovn_N_auxF_tcF_5781_rep1_batch1_R2.fq.gz"
+cp "SAMPLE_BM1_DSm2_5781_S13_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_DSm2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1_R2.fq.gz"
+cp "5782_Q_IP_S4_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_Q_day7_ovn_N_auxF_tcF_5782_rep2_batch1_R2.fq.gz"
+cp "5782_G1_IP_S3_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_G1_day1_ovn_N_auxF_tcF_5782_rep2_batch1_R2.fq.gz"
+cp "SAMPLE_Bp6_DSp2_7078_S6_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_DSp2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1_R2.fq.gz"
+cp "CW2_5781_8day_Q_PD_S7_R2_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_Q_day8_tcn_N_auxF_tcF_5781_rep1_batch1_R2.fq.gz"
+cp "Sample_CT10_7718_pIAA_Q_SteadyState_S10_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1_R3.fq.gz"
+cp "SAMPLE_BM4_DSp2_5781_S16_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_DSp2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1_R3.fq.gz"
+cp "SAMPLE_Bp10_DSp48_5782_S10_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_DSp48_day4_tcn_SS_auxF_tcT_5782_rep2_batch1_R3.fq.gz"
+cp "5781_Q_IP_S2_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_Q_day7_ovn_N_auxF_tcF_5781_rep1_batch1_R3.fq.gz"
+cp "SAMPLE_BM3_DSm2_7079_S15_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_DSm2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1_R3.fq.gz"
+cp "Sample_CT10_7718_pIAA_Q_Nascent_S5_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/Nab3-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1_R3.fq.gz"
+cp "5781_Q_IN_S6_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_Q_day7_ovn_SS_auxF_tcF_5781_rep1_batch1_R3.fq.gz"
+cp "CW2_5781_8day_Q_IN_S1_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_Q_day8_tcn_SS_auxF_tcF_5781_rep1_batch1_R3.fq.gz"
+cp "SAMPLE_BM6_DSp2_7079_S18_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_DSp2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1_R3.fq.gz"
+cp "CW8_7079_8day_Q_PD_S10_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_Q_day8_tcn_N_auxF_tcF_7079_rep1_batch1_R3.fq.gz"
+cp "SAMPLE_Bp1_DSm2_5782_S1_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_DSm2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1_R3.fq.gz"
+cp "Sample_CT2_6125_pIAA_Q_SteadyState_S6_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125_rep1_batch1_R3.fq.gz"
+cp "Sample_CT4_6126_pIAA_Q_Nascent_S2_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6126_rep2_batch1_R3.fq.gz"
+cp "CW6_7078_8day_Q_PD_S9_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_Q_day8_tcn_N_auxF_tcF_7078_rep2_batch1_R3.fq.gz"
+cp "CW6_7078_8day_Q_IN_S3_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch1_R3.fq.gz"
+cp "CW8_7079_8day_Q_IN_S4_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_Q_day8_tcn_SS_auxF_tcF_7079_rep1_batch1_R3.fq.gz"
+cp "SAMPLE_BM9_DSp24_7079_S21_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_DSp24_day3_tcn_SS_auxF_tcT_7079_rep1_batch1_R3.fq.gz"
+cp "BM10_5781_DSp48_S26_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch2_R3.fq.gz"
+cp "Sample_CT8_7716_pIAA_Q_SteadyState_S9_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1_R3.fq.gz"
+cp "5781_G1_IN_S5_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_G1_day1_ovn_SS_auxF_tcF_5781_rep1_batch1_R3.fq.gz"
+cp "SAMPLE_Bp12_DSp48_7078_S12_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_DSp48_day4_tcn_SS_auxF_tcT_7078_rep2_batch1_R3.fq.gz"
+cp "Sample_CT4_6126_pIAA_Q_SteadyState_S7_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6126_rep2_batch1_R3.fq.gz"
+cp "CW6_7078_day8_Q_SS_S28_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch2_R3.fq.gz"
+cp "5782_Q_IN_S8_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_Q_day7_ovn_SS_auxF_tcF_5782_rep2_batch1_R3.fq.gz"
+cp "DA3_7078_SS_G1_S24_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_G1_day1_tcn_SS_auxF_tcF_7078_rep2_batch2_R3.fq.gz"
+cp "BM12_7079_DSp48_S27_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_DSp48_day4_tcn_SS_auxF_tcT_7079_rep1_batch2_R3.fq.gz"
+cp "DA1_5781_SS_G1_S22_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_G1_day1_tcn_SS_auxF_tcF_5781_rep1_batch2_R3.fq.gz"
+cp "SAMPLE_Bp7_DSp24_5782_S7_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_DSp24_day3_tcn_SS_auxF_tcT_5782_rep2_batch1_R3.fq.gz"
+cp "Sample_CT8_7716_pIAA_Q_Nascent_S4_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1_R3.fq.gz"
+cp "SAMPLE_Bp9_DSp24_7078_S9_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_DSp24_day3_tcn_SS_auxF_tcT_7078_rep2_batch1_R3.fq.gz"
+cp "SAMPLE_BM10_DSp48_5781_S22_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch1_R3.fq.gz"
+cp "SAMPLE_BM7_DSp24_5781_S19_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_DSp24_day3_tcn_SS_auxF_tcT_5781_rep1_batch1_R3.fq.gz"
+cp "DA4_7079_SS_G1_S25_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_G1_day1_tcn_SS_auxF_tcF_7079_rep1_batch2_R3.fq.gz"
+cp "5782_G1_IN_S7_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_G1_day1_ovn_SS_auxF_tcF_5782_rep2_batch1_R3.fq.gz"
+cp "SAMPLE_Bp3_DSm2_7078_S3_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_DSm2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1_R3.fq.gz"
+cp "SAMPLE_Bp4_DSp2_5782_S4_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_DSp2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1_R3.fq.gz"
+cp "Sample_CT2_6125_pIAA_Q_Nascent_S1_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125_rep1_batch1_R3.fq.gz"
+cp "DA2_5782_SS_G1_S23_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_G1_day1_tcn_SS_auxF_tcF_5782_rep2_batch2_R3.fq.gz"
+cp "CW4_5782_8day_Q_IN_S2_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_Q_day8_tcn_SS_auxF_tcF_5782_rep2_batch1_R3.fq.gz"
+cp "CW4_5782_8day_Q_PD_S8_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_Q_day8_tcn_N_auxF_tcF_5782_rep2_batch1_R3.fq.gz"
+cp "5781_G1_IP_S1_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_G1_day1_ovn_N_auxF_tcF_5781_rep1_batch1_R3.fq.gz"
+cp "SAMPLE_BM1_DSm2_5781_S13_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_DSm2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1_R3.fq.gz"
+cp "5782_Q_IP_S4_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_Q_day7_ovn_N_auxF_tcF_5782_rep2_batch1_R3.fq.gz"
+cp "5782_G1_IP_S3_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_G1_day1_ovn_N_auxF_tcF_5782_rep2_batch1_R3.fq.gz"
+cp "SAMPLE_Bp6_DSp2_7078_S6_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/rrp6_DSp2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1_R3.fq.gz"
+cp "CW2_5781_8day_Q_PD_S7_R3_001.fastq.gz" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/fastqs/WT_Q_day8_tcn_N_auxF_tcF_5781_rep1_batch1_R3.fq.gz"
 ```
 </details>
 <br />
@@ -2637,7 +2637,7 @@ ls -lhaFG *.bam
 
 
 ❯ cd "bams/aligned_UT_primary_dedup-UMI" || echo "cd'ing failed; check on this..."
-/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/bams/aligned_UT_primary_dedup-UMI
+/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/bams/aligned_UT_primary_dedup-UMI
 
 
 ❯ ls -lhaFG *.bam
@@ -3099,52 +3099,52 @@ ls: cannot access 'CW2_5781_8day_Q_PD_S7*.bam': No such file or directory
 > ::: "${d_proj}/${d_exp_0215}/GEO/bams/standard-analyses" \
 > ::: "${!A_bam[@]}" \
 > :::+ "${A_bam[@]}"
-cp "5782_Q_IN_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bams/standard-analyses/WT_Q_day7_ovn_SS_auxF_tcF_5782_rep2_batch1.UTPD.bam"
-cp "CW4_5782_8day_Q_PD_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bams/standard-analyses/WT_Q_day8_tcn_N_auxF_tcF_5782_rep2_batch1.UTPD.bam"
-cp "CW6_7078_day8_Q_SS_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bams/standard-analyses/rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch2.UTPD.bam"
-cp "DA2_5782_SS_G1_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bams/standard-analyses/WT_G1_day1_tcn_SS_auxF_tcF_5782_rep2_batch2.UTPD.bam"
-cp "CW2_5781_8day_Q_PD_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bams/standard-analyses/WT_Q_day8_tcn_N_auxF_tcF_5781_rep1_batch1.UTPD.bam"
-cp "Bp10_DSp48_5782_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bams/standard-analyses/WT_DSp48_day4_tcn_SS_auxF_tcT_5782_rep2_batch1.UTPD.bam"
-cp "BM10_DSp48_5781_new_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bams/standard-analyses/WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch2.UTPD.bam"
-cp "BM4_DSp2_5781_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bams/standard-analyses/WT_DSp2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1.UTPD.bam"
-cp "CW8_7079_8day_Q_IN_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bams/standard-analyses/rrp6_Q_day8_tcn_SS_auxF_tcF_7079_rep1_batch1.UTPD.bam"
-cp "CT8_7716_pIAA_Q_Nascent_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bams/standard-analyses/Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1.UTPD.bam"
-cp "BM9_DSp24_7079_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bams/standard-analyses/rrp6_DSp24_day3_tcn_SS_auxF_tcT_7079_rep1_batch1.UTPD.bam"
-cp "Bp12_DSp48_7078_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bams/standard-analyses/rrp6_DSp48_day4_tcn_SS_auxF_tcT_7078_rep2_batch1.UTPD.bam"
-cp "5782_Q_IP_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bams/standard-analyses/WT_Q_day7_ovn_N_auxF_tcF_5782_rep2_batch1.UTPD.bam"
-cp "CW4_5782_8day_Q_IN_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bams/standard-analyses/WT_Q_day8_tcn_SS_auxF_tcF_5782_rep2_batch1.UTPD.bam"
-cp "Bp4_DSp2_5782_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bams/standard-analyses/WT_DSp2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1.UTPD.bam"
-cp "5781_G1_IN_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bams/standard-analyses/WT_G1_day1_ovn_SS_auxF_tcF_5781_rep1_batch1.UTPD.bam"
-cp "DA4_7079_SS_G1_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bams/standard-analyses/rrp6_G1_day1_tcn_SS_auxF_tcF_7078_rep2_batch2.UTPD.bam"
-cp "Bp6_DSp2_7078_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bams/standard-analyses/rrp6_DSp2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1.UTPD.bam"
-cp "5781_G1_IP_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bams/standard-analyses/WT_G1_day1_ovn_N_auxF_tcF_5781_rep1_batch1.UTPD.bam"
-cp "BM7_DSp24_5781_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bams/standard-analyses/WT_DSp24_day3_tcn_SS_auxF_tcT_5781_rep1_batch1.UTPD.bam"
-cp "DA3_7078_SS_G1_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bams/standard-analyses/rrp6_G1_day1_tcn_SS_auxF_tcF_7079_rep1_batch2.UTPD.bam"
-cp "CW6_7078_8day_Q_PD_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bams/standard-analyses/rrp6_Q_day8_tcn_N_auxF_tcF_7078_rep2_batch1.UTPD.bam"
-cp "CW8_7079_8day_Q_PD_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bams/standard-analyses/rrp6_Q_day8_tcn_N_auxF_tcF_7079_rep1_batch1.UTPD.bam"
-cp "5782_G1_IN_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bams/standard-analyses/WT_G1_day1_ovn_SS_auxF_tcF_5782_rep2_batch1.UTPD.bam"
-cp "Bp9_DSp24_7078_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bams/standard-analyses/rrp6_DSp24_day3_tcn_SS_auxF_tcT_7078_rep2_batch1.UTPD.bam"
-cp "CT2_6125_pIAA_Q_Nascent_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bams/standard-analyses/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125_rep1_batch1.UTPD.bam"
-cp "BM10_DSp48_5781_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bams/standard-analyses/WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch1.UTPD.bam"
-cp "Bp7_DSp24_5782_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bams/standard-analyses/WT_DSp24_day3_tcn_SS_auxF_tcT_5782_rep2_batch1.UTPD.bam"
-cp "Bp1_DSm2_5782_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bams/standard-analyses/WT_DSm2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1.UTPD.bam"
-cp "CT8_7716_pIAA_Q_SteadyState_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bams/standard-analyses/Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1.UTPD.bam"
-cp "5782_G1_IP_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bams/standard-analyses/WT_G1_day1_ovn_N_auxF_tcF_5782_rep2_batch1.UTPD.bam"
-cp "CT2_6125_pIAA_Q_SteadyState_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bams/standard-analyses/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125_rep1_batch1.UTPD.bam"
-cp "DA1_5781_SS_G1_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bams/standard-analyses/WT_G1_day1_tcn_SS_auxF_tcF_5781_rep1_batch2.UTPD.bam"
-cp "CW6_7078_8day_Q_IN_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bams/standard-analyses/rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch1.UTPD.bam"
-cp "CT10_7718_pIAA_Q_Nascent_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bams/standard-analyses/Nab3-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1.UTPD.bam"
-cp "CT10_7718_pIAA_Q_SteadyState_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bams/standard-analyses/Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1.UTPD.bam"
-cp "BM3_DSm2_7079_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bams/standard-analyses/rrp6_DSm2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1.UTPD.bam"
-cp "5781_Q_IP_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bams/standard-analyses/WT_Q_day7_ovn_N_auxF_tcF_5781_rep1_batch1.UTPD.bam"
-cp "BM12_DSp48_7079_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bams/standard-analyses/rrp6_DSp48_day4_tcn_SS_auxF_tcT_7079_rep1_batch2.UTPD.bam"
-cp "CT4_6126_pIAA_Q_SteadyState_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bams/standard-analyses/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6126_rep2_batch1.UTPD.bam"
-cp "CW2_5781_8day_Q_IN_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bams/standard-analyses/WT_Q_day8_tcn_SS_auxF_tcF_5781_rep1_batch1.UTPD.bam"
-cp "Bp3_DSm2_7078_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bams/standard-analyses/rrp6_DSm2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1.UTPD.bam"
-cp "5781_Q_IN_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bams/standard-analyses/WT_Q_day7_ovn_SS_auxF_tcF_5781_rep1_batch1.UTPD.bam"
-cp "BM1_DSm2_5781_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bams/standard-analyses/WT_DSm2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1.UTPD.bam"
-cp "BM6_DSp2_7079_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bams/standard-analyses/rrp6_DSp2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1.UTPD.bam"
-cp "CT4_6126_pIAA_Q_Nascent_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bams/standard-analyses/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6126_rep2_batch1.UTPD.bam"
+cp "5782_Q_IN_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/bams/standard-analyses/WT_Q_day7_ovn_SS_auxF_tcF_5782_rep2_batch1.UTPD.bam"
+cp "CW4_5782_8day_Q_PD_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/bams/standard-analyses/WT_Q_day8_tcn_N_auxF_tcF_5782_rep2_batch1.UTPD.bam"
+cp "CW6_7078_day8_Q_SS_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/bams/standard-analyses/rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch2.UTPD.bam"
+cp "DA2_5782_SS_G1_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/bams/standard-analyses/WT_G1_day1_tcn_SS_auxF_tcF_5782_rep2_batch2.UTPD.bam"
+cp "CW2_5781_8day_Q_PD_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/bams/standard-analyses/WT_Q_day8_tcn_N_auxF_tcF_5781_rep1_batch1.UTPD.bam"
+cp "Bp10_DSp48_5782_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/bams/standard-analyses/WT_DSp48_day4_tcn_SS_auxF_tcT_5782_rep2_batch1.UTPD.bam"
+cp "BM10_DSp48_5781_new_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/bams/standard-analyses/WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch2.UTPD.bam"
+cp "BM4_DSp2_5781_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/bams/standard-analyses/WT_DSp2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1.UTPD.bam"
+cp "CW8_7079_8day_Q_IN_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/bams/standard-analyses/rrp6_Q_day8_tcn_SS_auxF_tcF_7079_rep1_batch1.UTPD.bam"
+cp "CT8_7716_pIAA_Q_Nascent_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/bams/standard-analyses/Nab3-AID_Q_day7_tcn_N_auxT_tcF_7716_rep1_batch1.UTPD.bam"
+cp "BM9_DSp24_7079_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/bams/standard-analyses/rrp6_DSp24_day3_tcn_SS_auxF_tcT_7079_rep1_batch1.UTPD.bam"
+cp "Bp12_DSp48_7078_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/bams/standard-analyses/rrp6_DSp48_day4_tcn_SS_auxF_tcT_7078_rep2_batch1.UTPD.bam"
+cp "5782_Q_IP_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/bams/standard-analyses/WT_Q_day7_ovn_N_auxF_tcF_5782_rep2_batch1.UTPD.bam"
+cp "CW4_5782_8day_Q_IN_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/bams/standard-analyses/WT_Q_day8_tcn_SS_auxF_tcF_5782_rep2_batch1.UTPD.bam"
+cp "Bp4_DSp2_5782_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/bams/standard-analyses/WT_DSp2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1.UTPD.bam"
+cp "5781_G1_IN_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/bams/standard-analyses/WT_G1_day1_ovn_SS_auxF_tcF_5781_rep1_batch1.UTPD.bam"
+cp "DA4_7079_SS_G1_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/bams/standard-analyses/rrp6_G1_day1_tcn_SS_auxF_tcF_7078_rep2_batch2.UTPD.bam"
+cp "Bp6_DSp2_7078_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/bams/standard-analyses/rrp6_DSp2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1.UTPD.bam"
+cp "5781_G1_IP_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/bams/standard-analyses/WT_G1_day1_ovn_N_auxF_tcF_5781_rep1_batch1.UTPD.bam"
+cp "BM7_DSp24_5781_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/bams/standard-analyses/WT_DSp24_day3_tcn_SS_auxF_tcT_5781_rep1_batch1.UTPD.bam"
+cp "DA3_7078_SS_G1_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/bams/standard-analyses/rrp6_G1_day1_tcn_SS_auxF_tcF_7079_rep1_batch2.UTPD.bam"
+cp "CW6_7078_8day_Q_PD_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/bams/standard-analyses/rrp6_Q_day8_tcn_N_auxF_tcF_7078_rep2_batch1.UTPD.bam"
+cp "CW8_7079_8day_Q_PD_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/bams/standard-analyses/rrp6_Q_day8_tcn_N_auxF_tcF_7079_rep1_batch1.UTPD.bam"
+cp "5782_G1_IN_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/bams/standard-analyses/WT_G1_day1_ovn_SS_auxF_tcF_5782_rep2_batch1.UTPD.bam"
+cp "Bp9_DSp24_7078_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/bams/standard-analyses/rrp6_DSp24_day3_tcn_SS_auxF_tcT_7078_rep2_batch1.UTPD.bam"
+cp "CT2_6125_pIAA_Q_Nascent_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/bams/standard-analyses/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6125_rep1_batch1.UTPD.bam"
+cp "BM10_DSp48_5781_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/bams/standard-analyses/WT_DSp48_day4_tcn_SS_auxF_tcT_5781_rep1_batch1.UTPD.bam"
+cp "Bp7_DSp24_5782_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/bams/standard-analyses/WT_DSp24_day3_tcn_SS_auxF_tcT_5782_rep2_batch1.UTPD.bam"
+cp "Bp1_DSm2_5782_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/bams/standard-analyses/WT_DSm2_day2_tcn_SS_auxF_tcT_5782_rep2_batch1.UTPD.bam"
+cp "CT8_7716_pIAA_Q_SteadyState_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/bams/standard-analyses/Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7716_rep1_batch1.UTPD.bam"
+cp "5782_G1_IP_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/bams/standard-analyses/WT_G1_day1_ovn_N_auxF_tcF_5782_rep2_batch1.UTPD.bam"
+cp "CT2_6125_pIAA_Q_SteadyState_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/bams/standard-analyses/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6125_rep1_batch1.UTPD.bam"
+cp "DA1_5781_SS_G1_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/bams/standard-analyses/WT_G1_day1_tcn_SS_auxF_tcF_5781_rep1_batch2.UTPD.bam"
+cp "CW6_7078_8day_Q_IN_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/bams/standard-analyses/rrp6_Q_day8_tcn_SS_auxF_tcF_7078_rep2_batch1.UTPD.bam"
+cp "CT10_7718_pIAA_Q_Nascent_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/bams/standard-analyses/Nab3-AID_Q_day7_tcn_N_auxT_tcF_7718_rep2_batch1.UTPD.bam"
+cp "CT10_7718_pIAA_Q_SteadyState_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/bams/standard-analyses/Nab3-AID_Q_day7_tcn_SS_auxT_tcF_7718_rep2_batch1.UTPD.bam"
+cp "BM3_DSm2_7079_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/bams/standard-analyses/rrp6_DSm2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1.UTPD.bam"
+cp "5781_Q_IP_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/bams/standard-analyses/WT_Q_day7_ovn_N_auxF_tcF_5781_rep1_batch1.UTPD.bam"
+cp "BM12_DSp48_7079_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/bams/standard-analyses/rrp6_DSp48_day4_tcn_SS_auxF_tcT_7079_rep1_batch2.UTPD.bam"
+cp "CT4_6126_pIAA_Q_SteadyState_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/bams/standard-analyses/OsTIR-AID_Q_day7_tcn_SS_auxT_tcF_6126_rep2_batch1.UTPD.bam"
+cp "CW2_5781_8day_Q_IN_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/bams/standard-analyses/WT_Q_day8_tcn_SS_auxF_tcF_5781_rep1_batch1.UTPD.bam"
+cp "Bp3_DSm2_7078_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/bams/standard-analyses/rrp6_DSm2_day2_tcn_SS_auxF_tcT_7078_rep2_batch1.UTPD.bam"
+cp "5781_Q_IN_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/bams/standard-analyses/WT_Q_day7_ovn_SS_auxF_tcF_5781_rep1_batch1.UTPD.bam"
+cp "BM1_DSm2_5781_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/bams/standard-analyses/WT_DSm2_day2_tcn_SS_auxF_tcT_5781_rep1_batch1.UTPD.bam"
+cp "BM6_DSp2_7079_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/bams/standard-analyses/rrp6_DSp2_day2_tcn_SS_auxF_tcT_7079_rep1_batch1.UTPD.bam"
+cp "CT4_6126_pIAA_Q_Nascent_UT.primary.dedup-UMI.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/bams/standard-analyses/OsTIR-AID_Q_day7_tcn_N_auxT_tcF_6126_rep2_batch1.UTPD.bam"
 
 
 ❯ cd "${d_proj}/${d_exp_0215}/GEO/bams/standard-analyses" \
@@ -3350,7 +3350,7 @@ ls -lhaFG *.bam
 
 ❯ cd "bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_merged" \
 >     || echo "cd'ing failed; check on this..."
-/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0115/bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_merged
+/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0115/bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_merged
 
 
 ❯ ls -lhaFG *.bam
@@ -3453,7 +3453,7 @@ cat md5/*.txt
 
 ```txt
 ❯ pwd
-/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0115/bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_merged
+/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0115/bams_UMI-dedup/aligned_UTK_primary-secondary_sans-KL-20S_merged
 
 
 ❯ unset A_GG; unset a_GG
@@ -3519,10 +3519,10 @@ cat md5/*.txt
 > ::: "${d_proj}/${d_exp_0215}/GEO/bams/transcriptome-assembly" \
 > ::: "${!A_GG[@]}" \
 > :::+ "${A_GG[@]}"
-cp "merged_Q_IN_UTK.primary-secondary.SC.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bams/transcriptome-assembly/WT_Q_day7_ovn_SS_auxF_tcF_5781-2_rep-merge_batch1.UTKPSSc.bam"
-cp "merged_Q_IP_UTK.primary-secondary.SC.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bams/transcriptome-assembly/WT_Q_day7_ovn_N_auxF_tcF_5781-2_rep-merge_batch1.UTKPSSc.bam"
-cp "merged_G1_IN_UTK.primary-secondary.SC.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bams/transcriptome-assembly/WT_G1_day1_ovn_SS_auxF_tcF_5781-2_rep-merge_batch1.UTKPSSc.bam"
-cp "merged_G1_IP_UTK.primary-secondary.SC.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bams/transcriptome-assembly/WT_G1_day1_ovn_N_auxF_tcF_5781-2_rep-merge_batch1.UTKPSSc.bam"
+cp "merged_Q_IN_UTK.primary-secondary.SC.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/bams/transcriptome-assembly/WT_Q_day7_ovn_SS_auxF_tcF_5781-2_rep-merge_batch1.UTKPSSc.bam"
+cp "merged_Q_IP_UTK.primary-secondary.SC.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/bams/transcriptome-assembly/WT_Q_day7_ovn_N_auxF_tcF_5781-2_rep-merge_batch1.UTKPSSc.bam"
+cp "merged_G1_IN_UTK.primary-secondary.SC.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/bams/transcriptome-assembly/WT_G1_day1_ovn_SS_auxF_tcF_5781-2_rep-merge_batch1.UTKPSSc.bam"
+cp "merged_G1_IP_UTK.primary-secondary.SC.bam" "/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/bams/transcriptome-assembly/WT_G1_day1_ovn_N_auxF_tcF_5781-2_rep-merge_batch1.UTKPSSc.bam"
 
 
 ❯ #  Run the copy commands
@@ -3623,7 +3623,7 @@ b9fbe34f835db28c602adbb8acd2b587  WT_G1_day1_ovn_N_auxF_tcF_5781-2_rep-merge_bat
 ```bash
 #!/bin/bash
 
-d_proj="${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction"
+d_proj="${HOME}/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3"
 d_exp_0215="results/2023-0215"
 
 cd "${d_proj}/${d_exp_0215}" || echo "cd'ing failed; check on this..."
@@ -3741,7 +3741,7 @@ cat md5/*.txt
 <summary><i>Printed</i></summary>
 
 ```txt
-❯ d_proj="${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction"
+❯ d_proj="${HOME}/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3"
 
 
 ❯ d_exp_0215="results/2023-0215"
@@ -3923,7 +3923,7 @@ cp \
 
 
 ❯ cd "${d_gtfs}" || echo "cd'ing failed; check on this..."
-/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/gtfs
+/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/gtfs
 
 
 ❯ ls -lhaFG
@@ -4296,7 +4296,7 @@ cp \
 
 
 ❯ cd "${d_tsvs}" || echo "cd'ing failed; check on this..."
-/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/matrices
+/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/matrices
 
 
 ❯ [[ ! -d md5/ ]] && mkdir md5/
@@ -4543,7 +4543,7 @@ Check/document the files that I manually copied over:
 ```bash
 #!/bin/bash
 
-ls -lhaFG "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bws/individual"
+ls -lhaFG "${HOME}/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/bws/individual"
 ```
 </details>
 <br />
@@ -4554,7 +4554,7 @@ ls -lhaFG "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results
 <summary><i>Printed</i></summary>
 
 ```txt
-❯ ls -lhaFG "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bws/individual"
+❯ ls -lhaFG "${HOME}/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/bws/individual"
 total 1.2G
 drwxrws--- 2 kalavatt 3.1K Jul 20 06:03 ./
 drwxrws--- 4 kalavatt   50 Jul 20 06:07 ../
@@ -4687,7 +4687,7 @@ Nothing appears to be missing from this. Except for the time course datasets, co
 ```bash
 #!/bin/bash
 
-ls -lhaFG "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bws/mean"
+ls -lhaFG "${HOME}/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/bws/mean"
 ```
 </details>
 <br />
@@ -4698,7 +4698,7 @@ ls -lhaFG "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results
 <summary><i>Printed</i></summary>
 
 ```txt
-❯ ls -lhaFG "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bws/mean"
+❯ ls -lhaFG "${HOME}/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/bws/mean"
 total 1.4G
 drwxrws--- 2 kalavatt 1.6K Jul 19 17:18 ./
 drwxrws--- 4 kalavatt   50 Jul 20 06:07 ../
@@ -4744,7 +4744,7 @@ drwxrws--- 4 kalavatt   50 Jul 20 06:07 ../
 ```bash
 #!/bin/bash
 
-cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bws" ||
+cd "${HOME}/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/bws" ||
     echo "cd'ing failed; check on this..."
 
 ls -lhaFG ./*
@@ -4758,7 +4758,7 @@ ls -lhaFG ./*
 <summary><i>Printed</i></summary>
 
 ```txt
-❯ cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bws" ||
+❯ cd "${HOME}/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/bws" ||
 >     echo "cd'ing failed; check on this..."
 
 
@@ -5077,7 +5077,7 @@ Now, I need to copy over my Ovation and time course blacklisted BPM datasets:
 ```bash
 #!/bin/bash
 
-cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/bws/UT_prim_UMI" \
+cd "${HOME}/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/bws/UT_prim_UMI" \
     || echo "cd'ing failed; check on this..."
 
 ls -lhaFG ./*
@@ -5091,7 +5091,7 @@ ls -lhaFG ./*
 <summary><i>Printed</i></summary>
 
 ```txt
-❯ cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/bws/UT_prim_UMI" \
+❯ cd "${HOME}/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/bws/UT_prim_UMI" \
 >     || echo "cd'ing failed; check on this..."
 
 
@@ -5642,7 +5642,7 @@ cp \
 
 ```txt
 ❯ pwd
-/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/bws/UT_prim_UMI
+/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/bws/UT_prim_UMI
 
 
 ❯ cp \
@@ -6385,18 +6385,18 @@ done
 
 
 #  Rename the bws -------------------------------------------------------------
-cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bws/individual" \
+cd "${HOME}/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/bws/individual" \
     || echo "cd'ing failed; check on this..."
 
 for i in "${a_ind[@]}"; do mv "${i}" "${A_ind[${i}]}"; done
 
-cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bws/mean" \
+cd "${HOME}/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/bws/mean" \
     || echo "cd'ing failed; check on this..."
 
 for i in "${a_mean[@]}"; do mv "${i}" "${A_mean[${i}]}"; done
 
 #  Check on the renamed files
-cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bws" \
+cd "${HOME}/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/bws" \
     || echo "cd'ing failed; check on this..."
 
 ls -lhaFG ./*
@@ -6406,7 +6406,7 @@ ls mean | wc -l
 
 
 #  Generate MD5 checksums for the bws -----------------------------------------
-cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bws" \
+cd "${HOME}/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/bws" \
     || echo "cd'ing failed; check on this..."
 
 [[ ! -d "individual/md5" ]] && mkdir -p "individual/md5"
@@ -6948,7 +6948,7 @@ cd ../individual/ \
     value  WT_Q_day7_ovn_SS_auxF_tcF_5781-5782_rep-mean_batch1.BPM_p.bw
 
 
-❯ cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bws/individual" \
+❯ cd "${HOME}/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/bws/individual" \
 >     || echo "cd'ing failed; check on this..."
 
 
@@ -7045,7 +7045,7 @@ renamed 'WT_Q_SS_rep2.bl-TPM.m.bw' -> 'WT_Q_day7_ovn_SS_auxF_tcF_5782_rep2_batch
 renamed 'WT_Q_SS_rep2.bl-TPM.p.bw' -> 'WT_Q_day7_ovn_SS_auxF_tcF_5782_rep2_batch1.BPM_p.bw'
 
 
-❯ cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bws/mean" \
+❯ cd "${HOME}/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/bws/mean" \
 >     || echo "cd'ing failed; check on this..."
 
 
@@ -7080,7 +7080,7 @@ renamed 'mean_WT_Q_SS_.bl-TPM.m.bw' -> 'WT_Q_day7_ovn_SS_auxF_tcF_5781-5782_rep-
 renamed 'mean_WT_Q_SS_.bl-TPM.p.bw' -> 'WT_Q_day7_ovn_SS_auxF_tcF_5781-5782_rep-mean_batch1.BPM_p.bw'
 
 
-❯ cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bws" \
+❯ cd "${HOME}/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/bws" \
 >     || echo "cd'ing failed; check on this..."
 
 
@@ -7222,7 +7222,7 @@ drwxrws--- 4 kalavatt   50 Jul 20 07:21 ../
 28
 
 
-❯ cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bws" \
+❯ cd "${HOME}/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/bws" \
 >     || echo "cd'ing failed; check on this..."
 
 
@@ -7236,7 +7236,7 @@ mkdir: created directory 'mean/md5'
 
 ❯ cd individual/ \
 >     && for i in *.bw; do md5sum "${i}" > "md5/${i%.bw}.md5.txt"; done
-/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bws/individual
+/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/bws/individual
 
 
 ❯ cd -- ../mean/ \
@@ -7244,7 +7244,7 @@ mkdir: created directory 'mean/md5'
 
 
 ❯ pwd
-/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bws/mean
+/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/bws/mean
 
 
 #MD5  #DONOTUSE  #UPDATEDBELOW
@@ -7386,7 +7386,7 @@ ed56c83c3838357b376226539199286a  WT_Q_day8_tcn_SS_auxF_tcF_5782_rep2_batch1.KLS
 ```bash
 #!/bin/bash
 
-cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bws" \
+cd "${HOME}/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/bws" \
     || echo "cd'ing failed; check on this..."
 
 
@@ -7633,7 +7633,7 @@ cat mean/md5/*.txt
 <summary><i>Printed</i></summary>
 
 ```txt
-❯ cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bws" \
+❯ cd "${HOME}/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/bws" \
 >     || echo "cd'ing failed; check on this..."
 
 
@@ -7941,7 +7941,7 @@ renamed 'individual/rrp6_DSp48_day4_tcn_SS_auxF_tcF_7079_rep1_batch1.BPM_p.bw' -
 
 
 ❯ cd mean || echo "cd'ing failed; check on this..."
-/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bws/mean
+/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/bws/mean
 
 
 ❯ mv \
@@ -8107,12 +8107,12 @@ drwxrws--- 2 kalavatt 2.4K Jul 20 10:46 md5/
 
 
 ❯ cd individual/ && rmr md5/ && .. && cd mean/ && rmr md5/ && ..
-/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bws/individual
-/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bws/mean
+/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/bws/individual
+/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/bws/mean
 
 
 ❯ cd individual/ && for i in *.bw; do md5sum "${i}" > "md5/${i%.bw}.md5.txt"; done && ..
-/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO/bws/individual
+/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO/bws/individual
 
 
 #MD5
@@ -8254,7 +8254,7 @@ a7cf965f741772f30ba44e325f80b79d  WT_Q_day8_tcn_SS_auxF_tcF_5781-5782_rep-mean_b
 ```bash
 #!/bin/bash
 
-cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO" \
+cd "${HOME}/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO" \
     || echo "cd'ing failed; check on this..."
 
 tree .
@@ -8281,7 +8281,7 @@ echo $(( 46 + 4 + 90 + 28 + 138 + 8 + 7 ))
 <summary><i>Printed</i></summary>
 
 ```txt
-❯ cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO" \
+❯ cd "${HOME}/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO" \
 >     || echo "cd'ing failed; check on this..."
 
 
@@ -9106,7 +9106,7 @@ srun: job 25019242 has been allocated resources
 
 
 ❯ cd results/2023-0215 || echo "cd'ing failed; check on this..."
-/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215
+/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215
 
 
 ❯ [[ ! -d "${HOME}/tsukiyamalab/alisong/KA.2023-0726.GEO" ]] \
@@ -9115,7 +9115,7 @@ mkdir: created directory '/home/kalavatt/tsukiyamalab/alisong/KA.2023-0726.GEO'
 
 
 ❯ cd GEO/ && ls -lhaFG
-/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/GEO
+/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/GEO
 total 328K
 drwxrws---  7 kalavatt  115 Jul 26 17:17 ./
 drwxrws--- 10 kalavatt 5.1K Jul 26 17:14 ../

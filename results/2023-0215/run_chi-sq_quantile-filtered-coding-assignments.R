@@ -12,7 +12,7 @@ if(stringr::str_detect(getwd(), "kalavattam")) {
 } else {
     p_local <- "/Users/kalavatt/projects-etc"
 }
-p_wd <- "2022_transcriptome-construction/results/2023-0215"
+p_wd <- "2022-2023_RRP6-NAB3/results/2023-0215"
 
 setwd(p_wd)
 # getwd()

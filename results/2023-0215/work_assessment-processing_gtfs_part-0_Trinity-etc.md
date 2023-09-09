@@ -83,7 +83,7 @@ run=FALSE
     {
         #  Already ----------------------------
         p_gen="${HOME}/genomes"
-        p_gtf="${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/infiles_gtf-gff3/already"
+        p_gtf="${HOME}/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/infiles_gtf-gff3/already"
 
         if [[ ! -d "${p_gtf}" ]]; then mkdir -p "${p_gtf}"; fi
 
@@ -134,8 +134,8 @@ run=FALSE
 
 
         #  Trinity-GG -------------------------
-        p_trinity="${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0111/outfiles_GMAP_rough-draft/Trinity-GG"
-        p_gtf="${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/infiles_gtf-gff3"
+        p_trinity="${HOME}/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0111/outfiles_GMAP_rough-draft/Trinity-GG"
+        p_gtf="${HOME}/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/infiles_gtf-gff3"
 
         if [[ ! -d "${p_gtf}/Trinity-GG" ]]; then
             echo " No \${p_gtf}/Trinity-GG... Copying it in now"
@@ -960,7 +960,7 @@ exon
 run=FALSE
 [[ "${run}" == TRUE ]] &&
 {
-    cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/outfiles_htseq-count/Trinity-GG"
+    cd "${HOME}/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/outfiles_htseq-count/Trinity-GG"
     cd G_N/
     mv \
         trinity-gg_mkc-16_mir-0.05_mg-2_gf-0.05.hc-strd-eq-mRNA.tsv \

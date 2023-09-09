@@ -6,7 +6,7 @@
 
 
 #  Run grabnode with defaults except request 8 nodes
-cd ~/2022_transcriptome-construction/results/2023-0215 \
+cd ~/2022-2023_RRP6-NAB3/results/2023-0215 \
     || echo "cd'ing failed; check on this..."
 
 # mamba create -n coverage_env -c bioconda deeptools  # Only if not installed
@@ -18,8 +18,8 @@ source activate coverage_env
 #  Initialize variables, arrays -----------------------------------------------
 job_name="rough-draft_coverage-tracks"
 
-p_bam="${HOME}/2022_transcriptome-construction/results/2023-0215/bams_renamed/UT_prim_UMI"  # ., "${p_bam}"
-p_bw="${HOME}/2022_transcriptome-construction/results/2023-0215/bws/UT_prim_UMI"  # ., "${p_bw}"
+p_bam="${HOME}/2022-2023_RRP6-NAB3/results/2023-0215/bams_renamed/UT_prim_UMI"  # ., "${p_bam}"
+p_bw="${HOME}/2022-2023_RRP6-NAB3/results/2023-0215/bws/UT_prim_UMI"  # ., "${p_bw}"
 p_eo="${p_bw}/err_out"  # ., "${p_eo}"
 
 err_out="${p_eo}/${job_name}"  # echo "${err_out}"
@@ -27,7 +27,7 @@ err_out="${p_eo}/${job_name}"  # echo "${err_out}"
 # threads="${SLURM_CPUS_ON_NODE}"  # echo "${threads}"
 threads=8  # echo "${threads}"
 
-p_excl="/home/kalavatt/2022_transcriptome-construction_2023-0215/outfiles_gtf-gff3/already"  # ., "${p_excl}"
+p_excl="/home/kalavatt/2022-2023_RRP6-NAB3_2023-0215/outfiles_gtf-gff3/already"  # ., "${p_excl}"
 # f_excl="SC_features-rRNA-tRNA.bed"
 f_excl="SC_features-rRNA-tRNA_intergenic-MEP2-AAH1.bed"
 # do_blacklist=FALSE

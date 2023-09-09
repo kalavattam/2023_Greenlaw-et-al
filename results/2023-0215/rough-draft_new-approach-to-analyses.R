@@ -1628,7 +1628,7 @@ theme_AG_boxed_no_legend <- theme_AG_boxed + theme(legend.position = "none")
 
 #  Get situated, load counts matrix ===========================================
 p_base <- "/Users/kalavatt/projects-etc"
-p_exp <- "2022_transcriptome-construction/results/2023-0215"
+p_exp <- "2022-2023_RRP6-NAB3/results/2023-0215"
 
 #  Set work dir
 paste(p_base, p_exp, sep = "/") %>% setwd()

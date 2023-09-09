@@ -12,7 +12,7 @@ output: html_notebook
 ```{r Set working directory, echo=FALSE, results='hide', message=FALSE}
 # p_local <- "/Users/kalavattam/Dropbox/FHCC"  # KrisMac
 p_local <- "/Users/kalavatt/projects-etc"  # WorkMac
-p_wd <- "2022_transcriptome-construction/results/2023-0215"
+p_wd <- "2022-2023_RRP6-NAB3/results/2023-0215"
 #NOTE 1/3 Alison: you can adjust 'p_local' or 'p_wd' (path to working directory 
 #NOTE 2/3 on your personal or work computer ); I have two paths here with one
 #NOTE 3/3 commented out depending on which computer I am using

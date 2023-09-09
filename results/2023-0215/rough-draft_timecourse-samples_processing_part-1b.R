@@ -698,7 +698,7 @@ theme_slick_no_legend <- theme_slick + theme(legend.position = "none")
 
 #  Get situated, load counts matrix ===========================================
 p_base <- "/Users/kalavatt/projects-etc"
-p_exp <- "2022_transcriptome-construction/results/2023-0215"
+p_exp <- "2022-2023_RRP6-NAB3/results/2023-0215"
 p_tsv <- "outfiles_htseq-count/already/combined-SC-KL-20S/UT_prim_UMI"
 f_tsv <- "all-samples.combined-SC-KL-20S.hc-strd-eq.mRNA.tsv"
 # paste(p_base, p_exp, p_tsv, f_tsv, sep = "/") %>%

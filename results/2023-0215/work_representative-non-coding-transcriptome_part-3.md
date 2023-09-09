@@ -44,7 +44,7 @@
 ```bash
 #!/bin/bash
 
-cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215"
+cd "${HOME}/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215"
 source activate gff3_env
 ```
 </details>
@@ -463,7 +463,7 @@ Back from running code in [`work_representative-non-coding-transcriptome.Rmd`](.
 
 perform=FALSE
 if [[ "${perform}" == TRUE ]]; then
-    cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215"
+    cd "${HOME}/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215"
     source activate gff3_env
 fi
 ```

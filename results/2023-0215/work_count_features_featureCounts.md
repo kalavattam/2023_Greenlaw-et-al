@@ -84,42 +84,42 @@ find_relative_path() {
 path_UMI_UT="$(
     find_relative_path \
         . \
-        "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-UMI"
+        "${HOME}/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-UMI"
 )"
 echo "${path_UMI_UT}"
 
 path_pos_UT="$(
     find_relative_path \
         . \
-        "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-pos"
+        "${HOME}/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0115/bams_UMI-dedup/aligned_UT_primary_dedup-pos"
 )"
 echo "${path_pos_UT}"
 
 path_no_UT="$(
     find_relative_path \
         . \
-        "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0115/bams_UMI-dedup/aligned_UT_primary"
+        "${HOME}/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0115/bams_UMI-dedup/aligned_UT_primary"
 )"
 echo "${path_no_UT}"
 
 path_UMI_UTK="$(
     find_relative_path \
         . \
-        "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-UMI"
+        "${HOME}/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-UMI"
 )"
 echo "${path_UMI_UTK}"
 
 path_pos_UTK="$(
     find_relative_path \
         . \
-        "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-pos"
+        "${HOME}/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0115/bams_UMI-dedup/aligned_UTK_primary_dedup-pos"
 )"
 echo "${path_pos_UTK}"
 
 path_no_UTK="$(
     find_relative_path \
         . \
-        "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0115/bams_UMI-dedup/aligned_UTK_primary"
+        "${HOME}/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0115/bams_UMI-dedup/aligned_UTK_primary"
 )"
 echo "${path_no_UTK}"
 
@@ -180,21 +180,21 @@ cd bams_renamed/UTK_prim_no/
 UTK_prim_no="$(
     find_relative_path \
         . \
-        "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/bams/aligned_UTK_primary"
+        "${HOME}/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/bams/aligned_UTK_primary"
 )"
 
 cd ../UTK_prim_pos/
 UTK_prim_pos="$(
     find_relative_path \
         . \
-        "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/bams/aligned_UTK_primary_dedup-pos"
+        "${HOME}/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/bams/aligned_UTK_primary_dedup-pos"
 )"
 
 cd ../UTK_prim_UMI/
 UTK_prim_UMI="$(
     find_relative_path \
         . \
-        "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/bams/aligned_UTK_primary_dedup-UMI"
+        "${HOME}/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/bams/aligned_UTK_primary_dedup-UMI"
 )"
 
 #  UT
@@ -202,21 +202,21 @@ cd ../UT_prim_no/
 UT_prim_no="$(
     find_relative_path \
         . \
-        "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/bams/aligned_UT_primary"
+        "${HOME}/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/bams/aligned_UT_primary"
 )"
 
 cd ../UT_prim_pos/
 UT_prim_pos="$(
     find_relative_path \
         . \
-        "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/bams/aligned_UT_primary_dedup-pos"
+        "${HOME}/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/bams/aligned_UT_primary_dedup-pos"
 )"
 
 cd ../UT_prim_UMI/
 UT_prim_UMI="$(
     find_relative_path \
         . \
-        "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/bams/aligned_UT_primary_dedup-UMI"
+        "${HOME}/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/bams/aligned_UT_primary_dedup-UMI"
 )"
 
 echo "${UTK_prim_no}"

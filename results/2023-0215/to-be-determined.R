@@ -1,47 +1,11 @@
 #!/usr/bin/env Rscript
 
-#  rough-draft_estimate-RNA-degradation.R
+#  to-be-determined.R
 #  KA
 
 
-#  Goal: Estimate RNA degredation using a model based in Vock and Simon, RNA
-#+ 2023
-#+ 
-#+ From the paper (p. 4, partial ¶ 1):
-#+ "If RNA levels are assumed to be at steady-state, meaning that the total RNA
-#+ concentration during the experiment is the ratio of k_syn to k_deg, the
-#+ fraction new (denoted θ) is θ = 1 - e^(-k_deg * t_label)"
-#+ 
-#+ (Hereafter, denoting "k_deg" as "k" and "t_label" as "t".)
-#+ 
-#+ Rearrange θ = 1 - e^(-kt) to solve for k:
-#+     1. θ = 1 - e^(-kt)
-#+     2. θ - 1 = -e^(-kt)
-#+     3. 1 - θ = e^(-kt)
-#+     4. ln(1 - θ) = ln(e^(-kt))
-#+     5. ln(1 - θ) = -kt
-#+     6. ln(1 - θ)/t = -k
-#+     7. k = -ln(1 - θ)/t
-#+ 
-#+ ...where
-#+     - θ is the fraction of new transcription; we estimate this value by
-#+       dividing feature_N/input (feature_SS)
-#+     - k is RNA degradation in absolute units of inverse time, since θ is
-#+       dimensionless
-#+     - t is labeling time, which we set to 6 minutes per Alison's benchwork
-#+ 
-#+ Then, draw distributions for the samples G1 rep1, G1 rep2, Q rep1, Q rep2
-
-
-#  Initialize arguments =======================================================
-#TODO Parser
-type <- "mRNA"  #ARGUMENT
-samples <- "Ovation"  #ARGUMENT
-filtering <- "min-4-cts"
-
-
 #  Load libraries, set options ================================================
-# suppressMessages(library(DESeq2))
+suppressMessages(library(ggplot2))
 suppressMessages(library(tidyverse))
 
 options(scipen = 999)
@@ -131,6 +95,7 @@ theme_AG_boxed_no_legend <- theme_AG_boxed + theme(legend.position = "none")
 
 
 #  Get situated, load counts matrix ===========================================
+#  Set work directory
 if(stringr::str_detect(getwd(), "kalavattam")) {
     p_base <- "/Users/kalavattam/Dropbox/FHCC"
 } else {
@@ -138,33 +103,17 @@ if(stringr::str_detect(getwd(), "kalavattam")) {
 }
 p_exp <- "2022-2023_RRP6-NAB3/results/2023-0215"
 
-#  Set work dir
 paste(p_base, p_exp, sep = "/") %>% setwd()
-# getwd()
 
-#  Determine mRNA counts matrix to work with, then load it
-#  Check on "type" option
-if(base::isTRUE(type %notin% c(
-    "mRNA", "pa-ncRNA", "Trinity-Q", "Trinity-G1", "Trinity-Q-unique",
-    "Trinity-G1-unique", "representation"
-))) {
-    stop(paste(
-        "Variable \"type\" must be \"mRNA\", \"pa-ncRNA\",",
-        "\"Trinity-Q\", \"Trinity-G1\", \"Trinity-Q\", \"Trinity-G1\",",
-        "\"representation\""
-    ))
-}
+#  Initialize variables for matrix and gff3
+p_cm <- "outfiles_htseq-count/already/combined-SC-KL-20S/UT_prim_UMI"
+f_cm <- "all-samples.combined-SC-KL-20S.hc-strd-eq.mRNA.tsv"
+
+p_gtf <- "infiles_gtf-gff3/already"
+f_gtf <- "combined_SC_KL_20S.gff3"
 
 
 #  Read in htseq-count counts matrix ------------------------------------------
-if(type == "mRNA") {
-    p_cm <- "outfiles_htseq-count/already/combined-SC-KL-20S/UT_prim_UMI"
-    f_cm <- "all-samples.combined-SC-KL-20S.hc-strd-eq.mRNA.tsv"
-    
-    p_gtf <- "infiles_gtf-gff3/already"
-    f_gtf <- "combined_SC_KL_20S.gff3"
-}
-
 #  Check that counts matrix exists
 run <- FALSE
 if(base::isTRUE(run)) {
@@ -172,35 +121,21 @@ if(base::isTRUE(run)) {
         file.exists()  # [1] TRUE
 }
 
-#  Load counts matrix
-if(type == "mRNA") {
-    t_cm <- paste(p_base, p_exp, p_cm, f_cm, sep = "/") %>%
-        readr::read_tsv(show_col_types = FALSE) %>%
-        dplyr::slice(-1)  # Slice out the first row, which contains file info
-} else {
-    t_cm <- paste(p_base, p_exp, p_cm, f_cm, sep = "/") %>%
-        readr::read_tsv(show_col_types = FALSE)
-}
+#  Load matrix as tibble
+t_cm <- paste(p_base, p_exp, p_cm, f_cm, sep = "/") %>%
+    readr::read_tsv(show_col_types = FALSE) %>%
+    dplyr::slice(-1)  # Slice out the first row, which contains file info
 
-#  "Clean up" counts matrix column names and "features" elements
-if(base::isTRUE(type == "mRNA")) {
-    colnames(t_cm) <- colnames(t_cm) %>%
-        gsub(".UT_prim_UMI.hc-strd-eq.tsv", "", .)
-} else {
-    colnames(t_cm)[1] <- "features"
-    colnames(t_cm) <- colnames(t_cm) %>%
-        gsub("bams_renamed/UT_prim_UMI/", "", .) %>%
-        gsub(".UT_prim_UMI.bam", "", .)
-}
+#  Clean the data
+colnames(t_cm) <- colnames(t_cm) %>%
+    gsub(".UT_prim_UMI.hc-strd-eq.tsv", "", .)
 
-if(type == "mRNA") {
-    t_cm <- t_cm %>%
-        dplyr::mutate(
-            features = features %>%
-                gsub("^transcript\\:", "", .) %>%
-                gsub("_mRNA", "", .)
-        )
-}
+t_cm <- t_cm %>%
+    dplyr::mutate(
+        features = features %>%
+            gsub("^transcript\\:", "", .) %>%
+            gsub("_mRNA", "", .)
+    )
 
 #  Clean up, correct, and abbreviate sample names
 col_cor <- setNames(
@@ -349,60 +284,27 @@ if(base::isTRUE(run)) {
 }
 
 #  Load in, subset, and "clean up" gff3
-if(type == "mRNA") {
-    t_gtf <- paste(p_gtf, f_gtf, sep = "/") %>%
-        rtracklayer::import() %>%
-        as.data.frame() %>%
-        dplyr::as_tibble() %>%
-        dplyr::filter(type == "mRNA") %>%
-        dplyr::mutate(
-            ID = ID %>%
-                gsub("^transcript\\:", "", .) %>%
-                gsub("_mRNA", "", .)
-        ) %>%
-        dplyr::rename(
-            c(chr = seqnames, names = Name, features = ID)
-        )
-} else {
-    t_gtf <- paste(p_gtf, f_gtf, sep = "/") %>%
-        rtracklayer::import() %>%
-        as.data.frame() %>%
-        dplyr::as_tibble() %>%
-        dplyr::select(-c(score, phase))
-    
-    if(stringr::str_detect(type, "unique")) {
-        #  Load dataframe for custom annotations that do not overlap R64 or
-        #+ pa-ncRNA collapsed/merged annotations:
-        #+ "Trinity_putative-transcripts.2023-0620.unique"
-        p_df <- "notebook/KA.2023-0620.Trinity_putative-transcripts.Q_G1"
-        
-        if(stringr::str_detect(type, "Q")) {
-            f_df <- "Trinity_putative-transcripts.2023-0620.unique.Q.tsv"
-        } else if(stringr::str_detect(type, "G1")) {
-            f_df <- "Trinity_putative-transcripts.2023-0620.unique.G1.tsv"
-        }            
-        
-        df <- readr::read_tsv(
-            paste(p_df, f_df, sep = "/"), show_col_types = FALSE
-        )
-        
-        #  Filter gtf to retain only "unique" custom annotations
-        t_gtf <- t_gtf[t_gtf$locus_id %in% df$feature, ]
-        t_cm <- t_cm[t_cm$features %in% df$feature, ]
-        
-        rm(p_df, f_df, df)
-    }
-}
+t_gtf <- paste(p_gtf, f_gtf, sep = "/") %>%
+    rtracklayer::import() %>%
+    as.data.frame() %>%
+    dplyr::as_tibble() %>%
+    dplyr::filter(type == "mRNA") %>%
+    dplyr::mutate(
+        ID = ID %>%
+            gsub("^transcript\\:", "", .) %>%
+            gsub("_mRNA", "", .)
+    ) %>%
+    dplyr::rename(
+        c(chr = seqnames, names = Name, features = ID)
+    )
 
 #  Subset gff3 tibble to keep only relevant columns
-if(type == "mRNA") {
-    keep <- c(
-        "chr", "start", "end",
-        "width", "strand", "type",
-        "features", "biotype", "names"
-    )
-    t_gtf <- t_gtf[, colnames(t_gtf) %in% keep]
-}
+keep <- c(
+    "chr", "start", "end",
+    "width", "strand", "type",
+    "features", "biotype", "names"
+)
+t_gtf <- t_gtf[, colnames(t_gtf) %in% keep]
 
 #  Convert column names from list to character vector, and replace empty fields
 #+ with NA character values
@@ -411,6 +313,7 @@ t_gtf$names <- ifelse(
     NA_character_,
     as.character(t_gtf$names)
 )
+
 
 #  Combine "counts matrix tibble" and "gff3 tibble" ---------------------------
 t_mat <- dplyr::full_join(t_gtf, t_cm, by = "features")
@@ -462,50 +365,41 @@ t_mat$genome <- ifelse(
     as.factor()
 t_mat <- t_mat %>% dplyr::relocate(genome, .before = chr)
 
-#  (Optional) Give feature "20S" certain placeholder values
-run <- FALSE
-if(base::isTRUE(run)) {
-    t_mat$start[which(t_mat$genome == "20S")] <-
-        t_mat$end[which(t_mat$genome == "20S")] <-
-        0
-    t_mat$chr[which(t_mat$genome == "20S")] <- "20S"
-}
+t_mat$start[which(t_mat$genome == "20S")] <-
+    t_mat$end[which(t_mat$genome == "20S")] <-
+    0
+t_mat$chr[which(t_mat$genome == "20S")] <- "20S"
 
-#  Remove unneeded variables
+#  Remove unneeded variables again
 rm(chr_20S, chr_KL, chr_SC, chr_order)
 
 
-#  For analyses of non-"unique" feat., extract htseq-count summary metrics ----
-if(!stringr::str_detect(type, "unique")) {
-    #  They are at the end of the matrices and have names that begin with two
-    #+ underscore characters
-    underscore <- t_mat[
-        stringr::str_detect(t_mat$features, "^__[a-zA-Z0-9_]*$"), 
-    ]
+#  Extract htseq-count summary metrics ----------------------------------------
+#  They are at the end of the matrices and have names that begin with two
+#+ underscore characters
+underscore <- t_mat[
+    stringr::str_detect(t_mat$features, "^__[a-zA-Z0-9_]*$"), 
+]
 
-    #  Exclude htseq-count summary metrics from t_mat
-    t_mat <- t_mat[!stringr::str_detect(t_mat$features, "^__[a-zA-Z0-9_]*$"), ]
-}
+#  Exclude htseq-count summary metrics from t_mat
+t_mat <- t_mat[!stringr::str_detect(t_mat$features, "^__[a-zA-Z0-9_]*$"), ]
 
 run <- FALSE
 if(base::isTRUE(run)) t_mat %>% tail(10)
 
 
 #  Subset t_mat to include counts only for samples of interest ----------------
-run <- TRUE
+run <- FALSE
 if(base::isTRUE(run)) {
     t_mat.bak <- t_mat
     # t_mat <- t_mat.bak
     # colnames(t_mat)
 }
 
-if(samples %notin% c("Ovation")) {
-    stop(paste("Variable \"samples\" must be \"Ovation\""))
-}
-
 tmp_A <- t_mat[, 1:11]
 tmp_B <- t_mat[, 12:ncol(t_mat)]
 
+samples <- "Ovation"  #ARGUMENT
 if(samples == "Ovation") {
     tmp_C <- tmp_B[, stringr::str_detect(
         colnames(tmp_B), "ovn"
@@ -515,237 +409,372 @@ if(samples == "Ovation") {
 t_mat <- dplyr::bind_cols(tmp_A, tmp_C)
 rm(list = ls(pattern = "tmp_"))
 
+#  Convert counts columns to type integer
+t_mat[, 12:ncol(t_mat)] <- sapply(t_mat[, 12:ncol(t_mat)], as.integer)
 
-#  (Optional) Filter counts matrix --------------------------------------------
-#+ ...to exclude rows without a minimum of 10 counts in n - 1 samples
-if(filtering %notin% c("none", "min-4-cts-all-but-1-samps", "min-4-cts")) {
-    stop(paste(
-        "Argument for \"filtering\" must be \"none\",",
-        "\"min-10-cts-all-but-1-samps\", or \"min-4-cts\""
-    ))
-}
+#  Filter out zero-count rows
+keep <- rowSums(t_mat[, 12:ncol(t_mat)] >= 10) >= length(12:ncol(t_mat)) - 1
+filt_mat <- t_mat[keep, ]
 
-t_sub <- t_mat[t_mat$genome == "S_cerevisiae", ]
 
-if(filtering == "none") {
-    #  Do nothing...
-} else if(filtering == "min-4-cts-all-but-1-samps") {
-    counts <- sapply(t_sub[, 12:ncol(t_mat)], as.numeric)
-    keep <- rowSums(counts >= 4) >= ncol(counts) - 1
-    t_sub <- t_sub[keep, ]
+#  Make a TPM matrix --------------------------------------
+#  Calculate counts per kb of feature length (i.e., correct counts for feature
+#+ length with an "RPK normalization"); then, divide RPK-normalized elements by
+#+ the sum of sample RPK divided by one million
+# rpk <- t_mat[, 12:ncol(t_mat)] / t_mat$width
+# tpm <- t((t(rpk) * 1e6) / colSums(rpk)) %>% tibble::as_tibble()
+# 
+# norm_t <- dplyr::bind_cols(t_mat[, 1:11], tpm)
+# rm(rpk, tpm)
+
+rpk <- filt_mat[, 12:ncol(filt_mat)] / filt_mat$width
+tpm <- t((t(rpk) * 1e6) / colSums(rpk)) %>% tibble::as_tibble()
+
+norm_t <- dplyr::bind_cols(filt_mat[, 1:11], tpm)
+rm(rpk, tpm)
+
+
+#  Add columns for sample-specific means per row (feature) --------------------
+norm_t$mean_WT_G1_N <- rowMeans(norm_t[
+    , stringr::str_detect(colnames(norm_t), "WTovn_G1_N")
+])
+norm_t$mean_WT_G1_SS <- rowMeans(norm_t[
+    , stringr::str_detect(colnames(norm_t), "WTovn_G1_SS")
+])
+norm_t$mean_WT_Q_N <- rowMeans(norm_t[
+    , stringr::str_detect(colnames(norm_t), "WTovn_Q_N")
+])
+norm_t$mean_WT_Q_SS <- rowMeans(norm_t[
+    , stringr::str_detect(colnames(norm_t), "WTovn_Q_SS")
+])
+
+
+###############################################################################
+################################### SCRATCH ###################################
+###############################################################################
+
+#  Kaam karna chahie ==========================================================
+# df <- norm_t_KL
+# df <- filt_t_KL
+df <- norm_t
+df_KL <- df[df$genome == "K_lactis", ]
+df_SC <- df[df$genome == "S_cerevisiae", ]
+
+
+#  Calculate summary statistics -----------------------------------------------
+calculate_summary_stats <- function(vec) {
+    reg <- log2(vec + 1)
+    summary <- data.frame(
+          mean = mean(reg),
+        median = median(reg),
+           SEM = sd(reg) / sqrt(length(reg)),
+            SD = sd(reg),
+           MAD = mad(reg)
+    )
     
-    run <- TRUE
-    if(base::isTRUE(run)) rm(counts, keep)
-} else if(filtering == "min-4-cts") {
-    counts <- sapply(t_sub[, 12:ncol(t_mat)], as.numeric)
-    
-    sketch_1 <- FALSE
-    if(base::isTRUE(sketch_1)) {
-        #  Sketch 1 ---------------------------------
-        counts_G1_1 <- counts[, c(1, 3)]
-        counts_G1_2 <- counts[, c(2, 4)]
-        counts_Q_1 <- counts[, c(5, 7)]
-        counts_Q_2 <- counts[, c(6, 8)]
-        
-        keep_G1_1 <- rowSums(counts_G1_1 >= 4) >= ncol(counts_G1_1)
-        keep_G1_2 <- rowSums(counts_G1_2 >= 4) >= ncol(counts_G1_2)
-        keep_Q_1 <- rowSums(counts_Q_1 >= 4) >= ncol(counts_Q_1)
-        keep_Q_2 <- rowSums(counts_Q_2 >= 4) >= ncol(counts_Q_2)
-        
-        # table(keep_G1_1)
-        # table(keep_G1_2)
-        # table(keep_Q_1)
-        # table(keep_Q_2)
-    }
-    
-    sketch_2 <- TRUE
-    if(base::isTRUE(sketch_2)) {
-        #  Sketch 2 ---------------------------------
-        counts_G1 <- counts[, c(1, 3, 2, 4)]
-        counts_Q <- counts[, c(5, 7, 6, 8)]
-        
-        keep_G1 <- rowSums(counts_G1 >= 4) >= ncol(counts_G1)
-        keep_Q <- rowSums(counts_Q >= 4) >= ncol(counts_Q)
-        
-        # table(keep_G1)
-        # table(keep_Q)
-        
-        df_G1 <- dplyr::bind_cols(t_sub[keep_G1, 1:11], counts_G1[keep_G1, ])
-        df_Q <- dplyr::bind_cols(t_sub[keep_Q, 1:11], counts_G1[keep_Q, ])
-    }
-    
-    sketch_3 <- TRUE
-    if(base::isTRUE(sketch_3)) {
-        #  Sketch 3 ---------------------------------
-        counts_all <- counts[, c(1, 3, 2, 4, 5, 7, 6, 8)]
-        keep_all <- rowSums(counts_all >= 4) >= ncol(counts_all)
-        # table(keep_all)
-        
-        df_all <- dplyr::bind_cols(
-            t_sub[keep_all, 1:11],
-            counts_all[keep_all, ]
-        )
-    }
+    return(summary)
 }
 
 
-#  Calculate k = -ln(1 - θ)/t -------------------------------------------------
-#+ ...where
-#+     - θ is the fraction of new transcription; we estimate this value by
-#+       dividing feature_N ÷ feature_SS
-#+     - k is RNA degradation in absolute units of inverse time, since θ is
-#+       dimensionless
-#+     - t is labeling time, which we set to 6 minutes per Alison's benchwork
-calculate_k <- function(N, SS, t = 6) {
-    #  Perform debugging
+ sm_WT_G1_N <- calculate_summary_stats(df_KL$mean_WT_G1_N)
+  sm_WT_Q_N <- calculate_summary_stats(df_KL$mean_WT_Q_N)
+sm_WT_G1_SS <- calculate_summary_stats(df_KL$mean_WT_G1_SS)
+ sm_WT_Q_SS <- calculate_summary_stats(df_KL$mean_WT_Q_SS)
+
+print_summary_stats <- TRUE
+if(base::isTRUE(print_summary_stats)) {
+    print(sm_WT_G1_N)
+    print(sm_WT_Q_N)
+    print(sm_WT_G1_SS)
+    print(sm_WT_Q_SS)
+}
+
+
+#  Draw histogram(s) ----------------------------------------------------------
+determine_bin_width <- function(df, column, desired = 500) {
+    data_range <- range(
+        log2(df[[column]] + 1),
+        na.rm = TRUE
+    )
+    bin_width <- diff(data_range) / desired
+    
+    return(bin_width)
+}
+
+
+bin_WT_G1_N <- determine_bin_width(df_KL, "mean_WT_G1_N")
+bin_WT_Q_N <- determine_bin_width(df_KL, "mean_WT_Q_N")
+
+plot_histogram <- function(df, column, bin_width) {
+    histogram <- ggplot(df, aes(x = log2(.data[[column]] + 1))) +
+        geom_histogram(binwidth = bin_width, fill = "#00808075") +
+        labs(
+            title = paste0("Histogram, ", column),
+            x = "log2(TPM + 1)",
+            y = "Frequency"
+        ) +
+        theme_minimal()
+    
+    return(histogram)
+}
+
+
+hist_WT_G1_N <- plot_histogram(
+    df = df_KL,
+    column = "mean_WT_G1_N",
+    bin_width = bin_WT_G1_N
+)
+hist_WT_Q_N <- plot_histogram(
+    df = df_KL,
+    column = "mean_WT_Q_N",
+    bin_width = bin_WT_Q_N
+)
+
+print_histograms <- TRUE
+if(base::isTRUE(print_histograms)) {
+    hist_WT_G1_N %>% print()
+    hist_WT_Q_N %>% print()
+}
+
+
+#  Draw density plots(s) ------------------------------------------------------
+plot_density <- function(df, column, summary) {
+    density <- ggplot(data = df, aes(x = log2(.data[[column]] + 1))) +
+        geom_density(fill = "#00808075", linewidth = 0) +
+        labs(
+            title = paste0("Density plot, ", column),
+            x = "log2(TPM + 1)",
+            y = "Density"
+        ) +
+        geom_vline(
+            data = summary,
+            aes(xintercept = mean),
+            color = "#80008066",
+            linetype = "dashed",
+            size = 1
+        ) +
+        geom_vline(
+            data = summary,
+            aes(xintercept = median),
+            color = "#00000066",
+            linetype = "dotted",
+            size = 1
+        ) +
+        geom_text(
+            data = summary,
+            aes(x = mean, y = 0.25, label = paste("mean =", round(mean, 2))),
+            color = "#800080"
+        ) +
+        geom_text(
+            data = summary,
+            aes(x = median, y = 0.20, label = paste("median =", round(median, 2))),
+            color = "#000000"
+        ) +
+        theme_slick
+    
+    return(density)
+}
+
+
+dn_WT_G1_N <- plot_density(
+    df = df_KL,
+    column = "mean_WT_G1_N",
+    summary = sm_WT_G1_N
+)
+dn_WT_Q_N <- plot_density(
+    df = df_KL,
+    column = "mean_WT_Q_N",
+    summary = sm_WT_Q_N
+)
+
+print_densities <- TRUE
+if(base::isTRUE(print_densities)) {
+    print(dn_WT_G1_N)
+    print(dn_WT_Q_N)
+}
+
+
+#  Perform linear regressions -------------------------------------------------
+perform_linear_regression <- function(df, dv, iv) {
+    lr <- lm(log2(df[[dv]] + 1) ~ log2(df[[iv]]  + 1))
+    return(lr)
+}
+
+
+`obtain_beta-0_intercept` <- function(obj_lm) {
+    beta_0 <- coef(obj_lm)[1]
+    return(beta_0)
+}
+
+
+`obtain_beta-1_slope` <- function(obj_lm) {
+    beta_1 <- coef(obj_lm)[2]
+    return(beta_1)
+}
+
+
+`lr__dv-G1-N_on_iv-Q-N` <- perform_linear_regression(
+    df = df_KL, dv = "mean_WT_G1_N", iv = "mean_WT_Q_N"
+)
+beta_0 <- intercept <- `obtain_beta-0_intercept`(`lr__dv-G1-N_on_iv-Q-N`)
+beta_1 <- slope <- `obtain_beta-1_slope`(`lr__dv-G1-N_on_iv-Q-N`)
+cat("y =", round(beta_0, 2), "+", round(beta_1, 2), "* x + e\n")
+
+
+#PICKUP with changing the x and y values to remove intercept of -2.51 and slope of 0.83
+
+
+#  Draw scatter plot(s) -------------------------------------------------------
+plot_scatter <- function(
+    df, col_dv, col_iv, lr,
+    col = "#00808010",
+    draw_density = TRUE,
+    x_low = -5, y_low = -5,
+    x_high = 12.5, y_high = 12.5,
+    title = "Scatter plot, K. lactis transcripts"
+) {
+    debug <- TRUE
+    if(base::isTRUE) {
+        df <- df_KL
+        col_dv <- "mean_WT_G1_N"
+        col_iv <- "mean_WT_Q_N"
+        lr <- `lr__dv-G1-N_on_iv-Q-N`
+        col = "#00808010"
+        draw_density = TRUE
+        x_low = -5
+        y_low = -5
+        x_high = 12.5
+        y_high = 12.5
+        title = "Scatter plot, K. lactis transcripts"
+    }
+    
+    scatter <- ggplot2::ggplot(
+        df, aes(x = log2(.data[[col_iv]] + 1), y = log2(.data[[col_dv]] + 1))
+    ) +
+        geom_point(size = 2.5, col = col) +
+        { if(base::isTRUE(draw_density)) geom_density_2d(color = "#FFFFFF") } +
+        geom_abline(
+            intercept = 0,
+            slope = 1,
+            color = "black",
+            linetype = "solid"
+        ) +
+        geom_abline(
+            intercept = coef(lr)[1],
+            slope = coef(lr)[2],
+            color = "red",
+            linetype = "dashed"
+        ) +
+        labs(
+            x = paste0("log2(", col_iv, " + 1)"),
+            y = paste0("log2(", col_dv, " + 1)"),
+            title = title
+        ) +
+        xlim(c(x_low, x_high)) +
+        ylim(c(y_low, y_high)) +
+        theme_slick
+    
+    return(scatter)
+}
+
+
+`dv_G1-N__iv_Q-N` <- plot_scatter(
+    df = df_KL,
+    col_dv = "mean_WT_G1_N",
+    col_iv = "mean_WT_Q_N"
+)
+
+print_scatter_plots <- TRUE
+if(base::isTRUE(print_scatter_plots)) {
+    print(`dv_G1-N__iv_Q-N` )
+}
+
+
+#  Adjust scatter plot and linear regression on x = y -------------------------
+adjust_distribution_KL <- function(df, col_iv, col_dv) {
+    mean_iv <- mean(log2(df[[col_iv]] + 1))
+    mean_dv <- mean(log2(df[[col_dv]] + 1))
+    mean_diff <- mean_iv - mean_dv
+    
+    adj_iv <- log2(df_KL[["mean_WT_Q_N"]] + 1) - mean_diff
+    adj_dv <- log2(df_KL[["mean_WT_G1_N"]] + 1) - mean_diff
+    adj_lr <- lm(adj_dv ~ adj_iv)
+    
+    adj <- list()
+    adj[["log2_adj_iv"]] <- adj_iv
+    adj[["log2_adj_dv"]] <- adj_dv
+    adj[["adj_lr"]] <- adj_lr
+    
+    return(adj)
+}
+
+
+`adj-WT-G1_on_adj-WT-Q` <- adjust_distribution_KL(
+    df = df_KL,
+    col_iv = "mean_WT_Q_N",
+    col_dv = "mean_WT_G1_N"
+)
+
+df_KL[["adj_log2_WT_Q_N"]] <- `adj-WT-G1_on_adj-WT-Q`[["log2_adj_iv"]]
+df_KL[["adj_log2_WT_G1_N"]] <- `adj-WT-G1_on_adj-WT-Q`[["log2_adj_dv"]]
+
+
+plot_scatter_adj <- function(
+    df, col_dv, col_iv, lr,
+    color = "#185E9110",
+    draw_density = TRUE,
+    x_low = -5, y_low = -5,
+    x_high = 12.5, y_high = 12.5,
+    title = "Centered scatter plot and regression line"
+) {
     debug <- FALSE
     if(base::isTRUE(debug)) {
-        N <- G_N_1
-        SS <- G_S_1
+        df <- df_KL
+        col_iv <- "adj_log2_WT_Q_N"
+        col_dv <- "adj_log2_WT_G1_N"
+        lr <- `adj-WT-G1_on_adj-WT-Q`[["adj_lr"]]
+        color <- "#185E9110"
+        draw_density <- TRUE
+        x_low <- -5
+        y_low <- -5
+        x_high <- 12.5
+        y_high <- 12.5
+        title <- "Centered scatter plot and regression line"
     }
     
-    k <- -log(1 - N/SS)/t
+    adj_scatter <- ggplot(df, aes(x = .data[[col_iv]], y = .data[[col_dv]])) +
+        geom_point(size = 2.5, col = color) +
+        { if(base::isTRUE(draw_density)) geom_density_2d(color = "#FFFFFF") } +
+        geom_abline(
+            intercept = 0,
+            slope = 1,
+            color = "black",
+            linetype = "solid"
+        ) +
+        geom_abline(
+            intercept = coef(lr)[1],
+            slope = coef(lr)[2],
+            color = "red",
+            linetype = "dashed"
+        ) +
+        xlim(c(x_low, x_high)) +
+        ylim(c(y_low, y_high)) +
+        labs(x = col_iv, y = col_dv, title = title) +
+        theme_slick
     
-    return(k)
+    return(adj_scatter)
 }
 
 
-calculate_k_updated <- function(N, SS, t = 6) {
-    #  Perform debugging
-    debug <- FALSE
-    if(base::isTRUE(debug)) {
-        N <- G_N_1
-        SS <- G_S_1
-    }
-    
-    k <- -log(1 - N/(N + SS))/t
-    
-    return(k)
-}
-
-
-df_all[, 12:ncol(df_all)] <- sapply(df_all[, 12:ncol(df_all)], as.numeric)
-
-G_N_1 <- df_all$WTovn_G1_N_rep1_tech1
-G_S_1 <- df_all$WTovn_G1_SS_rep1_tech1
-
-G_N_2 <- df_all$WTovn_G1_N_rep2_tech1
-G_S_2 <- df_all$WTovn_G1_SS_rep2_tech1
-
-Q_N_1 <- df_all$WTovn_Q_N_rep1_tech1
-Q_S_1 <- df_all$WTovn_Q_SS_rep1_tech1
-
-Q_N_2 <- df_all$WTovn_Q_N_rep2_tech1
-Q_S_2 <- df_all$WTovn_Q_SS_rep2_tech1
-
-t <- 6
-
-# k_G_1 <- calculate_k(N = G_N_1, SS = G_S_1, t = t)
-# k_G_2 <- calculate_k(N = G_N_2, SS = G_S_2, t = t)
-# k_Q_1 <- calculate_k(N = Q_N_1, SS = Q_S_1, t = t)
-# k_Q_2 <- calculate_k(N = Q_N_2, SS = Q_S_2, t = t)
-
-k_G_1 <- calculate_k_updated(N = G_N_1, SS = G_S_1, t = t)
-k_G_2 <- calculate_k_updated(N = G_N_2, SS = G_S_2, t = t)
-k_Q_1 <- calculate_k_updated(N = Q_N_1, SS = Q_S_1, t = t)
-k_Q_2 <- calculate_k_updated(N = Q_N_2, SS = Q_S_2, t = t)
-
-k_all <- tibble::tibble(
-    k_G_1 = k_G_1,
-    k_G_2 = k_G_2,
-    k_Q_1 = k_Q_1,
-    k_Q_2 = k_Q_2
+`adj-dv_G1-N__adj-iv_Q-N` <- plot_scatter_adj(
+    df_KL,
+    col_dv = "adj_log2_WT_G1_N",
+    col_iv = "adj_log2_WT_Q_N",
+    lr = `adj-WT-G1_on_adj-WT-Q`[["adj_lr"]]
 )
 
-min(k_all)
-max(k_all)
+print(`adj-dv_G1-N__adj-iv_Q-N`)
 
-
-k_all_long <- reshape2::melt(k_all)
-colnames(k_all_long) <- c("sample", "k")
-ggplot2::ggplot(k_all_long, aes(x = sample, y = k, fill = sample)) +
-    geom_violin(trim = FALSE, color = "black") +
-    geom_boxplot(
-        width = 0.2,
-        fill = "white",
-        color = "black",
-        outlier.shape = NA
-    ) +
-    labs(x = "", y = "k_deg") +
-    ggtitle(
-        "Distributions of k_deg values",
-        subtitle = "theta = N / (N + SS)"
-    ) +
-    theme(plot.title = element_text(hjust = 0.5)) +
-    theme_minimal()
-
-#  Minimal reproducible example ###############################################
-suppressMessages(library(tidyverse))
-
-#  Load functions for two ways to calculate k
-calculate_k <- function(N, SS, t = 6) {
-    k <- -log(1 - (N/SS))/t  # Only SS in theta denominator
-    return(k)
-}
-
-
-calculate_k_updated <- function(N, SS, t = 6) {
-    k <- -log(1 - (N/(N + SS)))/t  # N plus SS in theta denominator
-    return(k)
-}
-
-
-#  Fill 100-row dataframe with random integers between 0 and 1000
-num_rows <- 100
-max_value <- 1000
-df <- data.frame(matrix(ncol = 8, nrow = num_rows))
-
-set.seed(24)
-for (col in 1:8) {
-    df[, col] <- sample(0:max_value, num_rows, replace = TRUE)
-}
-
-#  Give dataframe sample-like column names
-colnames(df) <- c(
-    paste(rep(c("G1_N", "G1_SS"), 2), c(1, 1, 2, 2), sep = "_"),
-    paste(rep(c("Q_N", "Q_SS"), 2), c(1, 1, 2, 2), sep = "_")
-)
-
-#  Make dataframe of k values when only feature_SS is in the denominator
-df_k_denom_SS <- data.frame(
-    k_G1_1 = calculate_k(df$G1_N_1, df$G1_SS_1, 6),
-    k_G1_2 = calculate_k(df$G1_N_2, df$G1_SS_2, 6),
-    k_Q_1 = calculate_k(df$Q_N_1, df$Q_SS_1, 6),
-    k_Q_2 = calculate_k(df$Q_N_2, df$Q_SS_2, 6)
-)  # Get NaN warnings
-
-#  Make dataframe of k values when feature_N + feature_SS is in the denominator
-df_k_denom_N_SS <- data.frame(
-    k_G1_1 = calculate_k_updated(df$G1_N_1, df$G1_SS_1, 6),
-    k_G1_2 = calculate_k_updated(df$G1_N_2, df$G1_SS_2, 6),
-    k_Q_1 = calculate_k_updated(df$Q_N_1, df$Q_SS_1, 6),
-    k_Q_2 = calculate_k_updated(df$Q_N_2, df$Q_SS_2, 6)
-)
-
-head(df_k_denom_SS)
-head(df_k_denom_N_SS)
-
-#  Plot the distributions of the simulated samples
-df_k_denom_N_SS_long <- reshape2::melt(df_k_denom_N_SS)
-colnames(df_k_denom_N_SS_long) <- c("sample", "k")
-ggplot2::ggplot(df_k_denom_N_SS_long, aes(x = sample, y = k, fill = sample)) +
-    geom_violin(trim = FALSE, color = "black") +
-    geom_boxplot(
-        width = 0.2,
-        fill = "white",
-        color = "black",
-        outlier.shape = NA
-    ) +
-    labs(x = "", y = "k_deg") +
-    ggtitle(
-        "Distributions of k_deg values",
-        subtitle = "theta = N / (N + SS)"
-    ) +
-    theme(plot.title = element_text(hjust = 0.5)) +
-    theme_minimal()
-    
+###############################################################################
+################################### SCRATCH ###################################
+###############################################################################

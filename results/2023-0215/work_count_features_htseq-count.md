@@ -79,7 +79,7 @@ source activate gff3_env
 >         cd "results/2023-0215/" \
 >             || echo "cd'ing failed; check on this..."
 >     }
-/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215
+/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215
 
 
 ❯ source activate gff3_env
@@ -473,7 +473,7 @@ done
 ```bash
 #!/bin/bash
 
-cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/outfiles_htseq-count/already/combined-SC-KL-20S/UT_prim_UMI"
+cd "${HOME}/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/outfiles_htseq-count/already/combined-SC-KL-20S/UT_prim_UMI"
 
 bash ../../../../../../bin/process_htseq-count_outfiles.sh \
     -u FALSE \
@@ -512,7 +512,7 @@ cp \
 <summary><i>Printed: Concatenate files, copy pertinent files to AG</i></summary>
 
 ```txt
-❯ cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/outfiles_htseq-count/already/combined-SC-KL-20S/UT_prim_UMI"
+❯ cd "${HOME}/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/outfiles_htseq-count/already/combined-SC-KL-20S/UT_prim_UMI"
 
 
 ❯ bash ../../../../../../bin/process_htseq-count_outfiles.sh \
@@ -642,11 +642,11 @@ sed 's/^chr//' combined_AG.gtf > combined_AG.sans-chr.gtf
 head combined_AG.sans-chr.gtf
 tail combined_AG.sans-chr.gtf
 
-cd ~/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215
+cd ~/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215
 
 cp \
     ~/genomes/combined_AG/gtf/combined_AG.sans-chr.gtf \
-    ~/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/infiles_gtf-gff3/already/combined_AG.sans-chr.gtf
+    ~/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/infiles_gtf-gff3/already/combined_AG.sans-chr.gtf
 head ~/genomes/combined_AG/gtf/combined_AG.sans-chr.gtf
 tail ~/genomes/combined_AG/gtf/combined_AG.sans-chr.gtf
 ```
@@ -981,13 +981,13 @@ typeset -a features=(
 # echo_test "${features[@]}"
 # echo "${#features[@]}"
 
-cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/outfiles_htseq-count/already/combined-AG"
+cd "${HOME}/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/outfiles_htseq-count/already/combined-AG"
 
 for i in "${features[@]}"; do
     echo "#  -------------------------------------"
     echo "#+ combined-AG/${i}/UT_prim_UMI"
     
-    cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/outfiles_htseq-count/already/combined-AG/${i}/UT_prim_UMI"
+    cd "${HOME}/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/outfiles_htseq-count/already/combined-AG/${i}/UT_prim_UMI"
     # .,
     # ls *.tsv | wc -l
     pwd
@@ -1036,7 +1036,7 @@ done
 >     echo "#  -------------------------------------"
 >     echo "#+ combined-AG/${i}/UT_prim_UMI"
 > 
->     cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/outfiles_htseq-count/already/combined-AG/${i}/UT_prim_UMI"
+>     cd "${HOME}/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/outfiles_htseq-count/already/combined-AG/${i}/UT_prim_UMI"
 >     # .,
 >     # ls *.tsv | wc -l
 >     pwd
@@ -1076,7 +1076,7 @@ done
 > done
 #  -------------------------------------
 #+ combined-AG/antisense_transcript/UT_prim_UMI
-/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/outfiles_htseq-count/already/combined-AG/antisense_transcript/UT_prim_UMI
+/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/outfiles_htseq-count/already/combined-AG/antisense_transcript/UT_prim_UMI
 
     bash ../../../../../../../bin/process_htseq-count_outfiles.sh \
         -u FALSE \
@@ -1099,7 +1099,7 @@ drwxrws--- 3 kalavatt  29 Mar 31 14:33 ../
 
 #  -------------------------------------
 #+ combined-AG/CUT/UT_prim_UMI
-/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/outfiles_htseq-count/already/combined-AG/CUT/UT_prim_UMI
+/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/outfiles_htseq-count/already/combined-AG/CUT/UT_prim_UMI
 
     bash ../../../../../../../bin/process_htseq-count_outfiles.sh \
         -u FALSE \
@@ -1122,7 +1122,7 @@ drwxrws--- 3 kalavatt   29 Mar 31 14:33 ../
 
 #  -------------------------------------
 #+ combined-AG/CUT_4X/UT_prim_UMI
-/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/outfiles_htseq-count/already/combined-AG/CUT_4X/UT_prim_UMI
+/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/outfiles_htseq-count/already/combined-AG/CUT_4X/UT_prim_UMI
 
     bash ../../../../../../../bin/process_htseq-count_outfiles.sh \
         -u FALSE \
@@ -1145,7 +1145,7 @@ drwxrws--- 3 kalavatt   29 Mar 31 14:33 ../
 
 #  -------------------------------------
 #+ combined-AG/mRNA/UT_prim_UMI
-/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/outfiles_htseq-count/already/combined-AG/mRNA/UT_prim_UMI
+/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/outfiles_htseq-count/already/combined-AG/mRNA/UT_prim_UMI
 
     bash ../../../../../../../bin/process_htseq-count_outfiles.sh \
         -u FALSE \
@@ -1168,7 +1168,7 @@ drwxrws--- 3 kalavatt   29 Mar 31 14:33 ../
 
 #  -------------------------------------
 #+ combined-AG/ncRNA/UT_prim_UMI
-/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/outfiles_htseq-count/already/combined-AG/ncRNA/UT_prim_UMI
+/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/outfiles_htseq-count/already/combined-AG/ncRNA/UT_prim_UMI
 
     bash ../../../../../../../bin/process_htseq-count_outfiles.sh \
         -u FALSE \
@@ -1191,7 +1191,7 @@ drwxrws--- 3 kalavatt  29 Mar 31 14:33 ../
 
 #  -------------------------------------
 #+ combined-AG/rRNA/UT_prim_UMI
-/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/outfiles_htseq-count/already/combined-AG/rRNA/UT_prim_UMI
+/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/outfiles_htseq-count/already/combined-AG/rRNA/UT_prim_UMI
 
     bash ../../../../../../../bin/process_htseq-count_outfiles.sh \
         -u FALSE \
@@ -1214,7 +1214,7 @@ drwxrws--- 3 kalavatt  29 Mar 31 14:33 ../
 
 #  -------------------------------------
 #+ combined-AG/snoRNA/UT_prim_UMI
-/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/outfiles_htseq-count/already/combined-AG/snoRNA/UT_prim_UMI
+/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/outfiles_htseq-count/already/combined-AG/snoRNA/UT_prim_UMI
 
     bash ../../../../../../../bin/process_htseq-count_outfiles.sh \
         -u FALSE \
@@ -1237,7 +1237,7 @@ drwxrws--- 3 kalavatt  29 Mar 31 14:33 ../
 
 #  -------------------------------------
 #+ combined-AG/snRNA/UT_prim_UMI
-/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/outfiles_htseq-count/already/combined-AG/snRNA/UT_prim_UMI
+/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/outfiles_htseq-count/already/combined-AG/snRNA/UT_prim_UMI
 
     bash ../../../../../../../bin/process_htseq-count_outfiles.sh \
         -u FALSE \
@@ -1260,7 +1260,7 @@ drwxrws--- 3 kalavatt  29 Mar 31 14:33 ../
 
 #  -------------------------------------
 #+ combined-AG/SUT/UT_prim_UMI
-/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/outfiles_htseq-count/already/combined-AG/SUT/UT_prim_UMI
+/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/outfiles_htseq-count/already/combined-AG/SUT/UT_prim_UMI
 
     bash ../../../../../../../bin/process_htseq-count_outfiles.sh \
         -u FALSE \
@@ -1283,7 +1283,7 @@ drwxrws--- 3 kalavatt   29 Mar 31 14:33 ../
 
 #  -------------------------------------
 #+ combined-AG/tRNA/UT_prim_UMI
-/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/outfiles_htseq-count/already/combined-AG/tRNA/UT_prim_UMI
+/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/outfiles_htseq-count/already/combined-AG/tRNA/UT_prim_UMI
 
     bash ../../../../../../../bin/process_htseq-count_outfiles.sh \
         -u FALSE \
@@ -1306,7 +1306,7 @@ drwxrws--- 3 kalavatt  29 Mar 31 14:33 ../
 
 #  -------------------------------------
 #+ combined-AG/XUT/UT_prim_UMI
-/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/outfiles_htseq-count/already/combined-AG/XUT/UT_prim_UMI
+/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/outfiles_htseq-count/already/combined-AG/XUT/UT_prim_UMI
 
     bash ../../../../../../../bin/process_htseq-count_outfiles.sh \
         -u FALSE \
@@ -1331,7 +1331,7 @@ drwxrws--- 3 kalavatt   29 Mar 31 14:33 ../
 >     echo "#  -------------------------------------"
 >     echo "#+ combined-AG/${i}/UT_prim_UMI"
 > 
->     cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/outfiles_htseq-count/already/combined-AG/${i}/UT_prim_UMI"
+>     cd "${HOME}/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/outfiles_htseq-count/already/combined-AG/${i}/UT_prim_UMI"
 >     # .,
 >     # ls *.tsv | wc -l
 >     pwd
@@ -1370,7 +1370,7 @@ drwxrws--- 3 kalavatt   29 Mar 31 14:33 ../
 > done
 #  -------------------------------------
 #+ combined-AG/CUT_2016/UT_prim_UMI
-/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/outfiles_htseq-count/already/combined-AG/CUT_2016/UT_prim_UMI
+/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/outfiles_htseq-count/already/combined-AG/CUT_2016/UT_prim_UMI
 
     bash ../../../../../../../bin/process_htseq-count_outfiles.sh \
         -u FALSE \
@@ -1395,7 +1395,7 @@ drwxrws--- 3 kalavatt   29 Mar 31 14:33 ../
 >     echo "#  -------------------------------------"
 >     echo "#+ combined-AG/${i}/UT_prim_UMI"
 > 
->     cd "${HOME}/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/outfiles_htseq-count/already/combined-AG/${i}/UT_prim_UMI"
+>     cd "${HOME}/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/outfiles_htseq-count/already/combined-AG/${i}/UT_prim_UMI"
 >     # .,
 >     # ls *.tsv | wc -l
 >     pwd
@@ -1434,7 +1434,7 @@ drwxrws--- 3 kalavatt   29 Mar 31 14:33 ../
 > done
 #  -------------------------------------
 #+ combined-AG/SRAT/UT_prim_UMI
-/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/outfiles_htseq-count/already/combined-AG/SRAT/UT_prim_UMI
+/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/outfiles_htseq-count/already/combined-AG/SRAT/UT_prim_UMI
 
     bash ../../../../../../../bin/process_htseq-count_outfiles.sh \
         -u FALSE \
@@ -1457,7 +1457,7 @@ drwxrws--- 3 kalavatt  29 Mar 31 14:33 ../
 
 #  -------------------------------------
 #+ combined-AG/NUTs/UT_prim_UMI
-/home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/outfiles_htseq-count/already/combined-AG/NUTs/UT_prim_UMI
+/home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/outfiles_htseq-count/already/combined-AG/NUTs/UT_prim_UMI
 
     bash ../../../../../../../bin/process_htseq-count_outfiles.sh \
         -u FALSE \
@@ -1491,7 +1491,7 @@ cd ~/tsukiyamalab/alisong/tsvs_htseq-count_2023-0331
 mkdir -p gtf-gff3/combined
 
 cp \
-    ~/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215/infiles_gtf-gff3/already/{combined_AG.sans-chr.gtf,combined_SC_KL_20S.gff3} \
+    ~/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215/infiles_gtf-gff3/already/{combined_AG.sans-chr.gtf,combined_SC_KL_20S.gff3} \
     gtf-gff3/combined
 
 mv already/ combined/

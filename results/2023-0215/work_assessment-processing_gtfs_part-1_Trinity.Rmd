@@ -228,7 +228,7 @@ mkdir -p /home/kalavatt/tsukiyamalab/alisong/KA.gtfs_quantile-filtered_Trinity-G
 # mkdir: created directory '/home/kalavatt/tsukiyamalab/alisong/KA.gtfs_quantile-filtered_Trinity-GG_G1-Q_2023-0410/gtf-gff3'
 # mkdir: created directory '/home/kalavatt/tsukiyamalab/alisong/KA.gtfs_quantile-filtered_Trinity-GG_G1-Q_2023-0410/tsv'
 
-cd /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction/results/2023-0215
+cd /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3/results/2023-0215
 
 cp -r \
     outfiles_gtf-gff3/Trinity-GG \
@@ -272,7 +272,7 @@ if(base::isTRUE(stringr::str_detect(getwd(), "kalavattam"))) {
 } else {
     p_local <- "/Users/kalavatt/projects-etc"
 }
-p_wd <- "2022_transcriptome-construction/results/2023-0215"
+p_wd <- "2022-2023_RRP6-NAB3/results/2023-0215"
 
 setwd(paste(p_local, p_wd, sep = "/"))
 getwd()

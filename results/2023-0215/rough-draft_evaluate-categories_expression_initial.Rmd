@@ -32,7 +32,7 @@ if(stringr::str_detect(getwd(), "kalavattam")) {
 } else {
     p_local <- "/Users/kalavatt/projects-etc"
 }
-p_wd <- "2022_transcriptome-construction/results/2023-0215"
+p_wd <- "2022-2023_RRP6-NAB3/results/2023-0215"
 
 setwd(paste(p_local, p_wd, sep = "/"))
 getwd()
@@ -185,7 +185,7 @@ underscore$`n3-d_Q_day7_tcn_N_aux-T_tc-F_rep1_tech1` %>% sum()  # [1] 21827889
 grabnode  # 1 CPU, defaults
 ml SAMtools/1.16.1-GCC-11.2.0
 
-cd /home/kalavatt/tsukiyamalab/kalavatt/2022_transcriptome-construction \
+cd /home/kalavatt/tsukiyamalab/kalavatt/2022-2023_RRP6-NAB3 \
     || echo "cd'ing failed; check on this"
 
 cd results/2023-0215/bams_renamed/UT_prim_UMI \

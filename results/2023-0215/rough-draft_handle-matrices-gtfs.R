@@ -11,7 +11,7 @@
 # library(rtracklayer)
 # library(tidyverse)
 # 
-# setwd("~/projects-etc/2022_transcriptome-construction/results/2023-0215")
+# setwd("~/projects-etc/2022-2023_RRP6-NAB3/results/2023-0215")
 # getwd()
 # 
 # list.dirs()
@@ -37,7 +37,7 @@ library(GenomicRanges)
 library(rtracklayer)
 library(tidyverse)
 
-setwd("~/projects-etc/2022_transcriptome-construction/results/2023-0215")
+setwd("~/projects-etc/2022-2023_RRP6-NAB3/results/2023-0215")
 getwd()
 
 t_mat <- "all-samples.combined-SC-KL-20S.hc-strd-eq.mRNA.tsv"
@@ -166,7 +166,7 @@ library(GenomicRanges)
 library(rtracklayer)
 library(tidyverse)
 
-setwd("~/projects-etc/2022_transcriptome-construction/results/2023-0215")
+setwd("~/projects-etc/2022-2023_RRP6-NAB3/results/2023-0215")
 getwd()
 
 t_mat <- "all-samples.combined-AG.hc-strd-eq.XUT.tsv"
