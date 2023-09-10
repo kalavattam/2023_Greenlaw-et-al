@@ -88,7 +88,6 @@ read_in_gtf <- function(file) {
 }
 
 
-#HERE
 organize_gtf <- function(tbl) {
     chr_SC <- c(
         "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI",
@@ -394,10 +393,10 @@ col_cor <- setNames(
         "r1-n_Q_day8_tcn_SS_aux-F_tc-F_rep2_tech1",          #FIXME* ∆ rep2 → rep1
         "r6-n_DSm2_day2_tcn_SS_aux-F_tc-T_rep1_tech1",       #FIXME* ∆ rep1 → rep2
         "r6-n_DSm2_day2_tcn_SS_aux-F_tc-T_rep2_tech1",       #FIXME* ∆ rep2 → rep1
-        "r6-n_DSp24_day3_tcn_SS_aux-F_tc-T_rep1_tech1",      #FIXME* ∆ rep1 → rep2
-        "r6-n_DSp24_day3_tcn_SS_aux-F_tc-T_rep2_tech1",      #FIXME* ∆ rep2 → rep1
         "r6-n_DSp2_day2_tcn_SS_aux-F_tc-T_rep1_tech1",       #FIXME* ∆ rep1 → rep2
         "r6-n_DSp2_day2_tcn_SS_aux-F_tc-T_rep2_tech1",       #FIXME* ∆ rep2 → rep1
+        "r6-n_DSp24_day3_tcn_SS_aux-F_tc-T_rep1_tech1",      #FIXME* ∆ rep1 → rep2
+        "r6-n_DSp24_day3_tcn_SS_aux-F_tc-T_rep2_tech1",      #FIXME* ∆ rep2 → rep1
         "r6-n_DSp48_day4_tcn_SS_aux-F_tc-T_rep1_tech1",      #FIXME* ∆ rep1 → rep2
         "r6-n_DSp48_day4_tcn_SS_aux-F_tc-T_rep2_tech1",      #FIXME* ∆ rep2 → rep1  #FIXME‡ ∆ tech1 → tech2
         "r6-n_G1_day1_tcn_SS_aux-F_tc-F_rep1_tech1",         #FIXME* ∆ rep1 → rep2  #FIXME‡ ∆ tech1 → tech2

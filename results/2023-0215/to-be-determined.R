@@ -6,6 +6,7 @@
 
 #  Load libraries, set options ================================================
 suppressMessages(library(ggplot2))
+suppressMessages(library(gridExtra))
 suppressMessages(library(tidyverse))
 
 options(scipen = 999)
@@ -416,54 +417,62 @@ t_mat[, 12:ncol(t_mat)] <- sapply(t_mat[, 12:ncol(t_mat)], as.integer)
 keep <- rowSums(t_mat[, 12:ncol(t_mat)] >= 10) >= length(12:ncol(t_mat)) - 1
 filt_mat <- t_mat[keep, ]
 
+#  Check on things
+test_for_NAs <- FALSE
+if(base::isTRUE(test_for_NAs)) {
+    which(is.na(filt_mat[, c(5, 12:ncol(filt_mat))]), arr.ind = TRUE)
+}
+
 
 #  Make a TPM matrix --------------------------------------
 #  Calculate counts per kb of feature length (i.e., correct counts for feature
 #+ length with an "RPK normalization"); then, divide RPK-normalized elements by
 #+ the sum of sample RPK divided by one million
-# rpk <- t_mat[, 12:ncol(t_mat)] / t_mat$width
-# tpm <- t((t(rpk) * 1e6) / colSums(rpk)) %>% tibble::as_tibble()
-# 
-# norm_t <- dplyr::bind_cols(t_mat[, 1:11], tpm)
-# rm(rpk, tpm)
-
 rpk <- filt_mat[, 12:ncol(filt_mat)] / filt_mat$width
-tpm <- t((t(rpk) * 1e6) / colSums(rpk)) %>% tibble::as_tibble()
+tpm <- t( t(rpk) * 1e6 / colSums(rpk) ) %>% tibble::as_tibble()
 
 norm_t <- dplyr::bind_cols(filt_mat[, 1:11], tpm)
+
+#  Check on things
+test_for_NAs <- FALSE
+if(base::isTRUE(test_for_NAs)) {
+    which(is.na(rpk), arr.ind = TRUE)
+    which(is.na(norm_t[, c(5, 12:ncol(norm_t))]), arr.ind = TRUE)
+}
+
+#  Clean up
 rm(rpk, tpm)
 
 
-#  Add columns for sample-specific means per row (feature) --------------------
-norm_t$mean_WT_G1_N <- rowMeans(norm_t[
-    , stringr::str_detect(colnames(norm_t), "WTovn_G1_N")
-])
-norm_t$mean_WT_G1_SS <- rowMeans(norm_t[
-    , stringr::str_detect(colnames(norm_t), "WTovn_G1_SS")
-])
-norm_t$mean_WT_Q_N <- rowMeans(norm_t[
-    , stringr::str_detect(colnames(norm_t), "WTovn_Q_N")
-])
-norm_t$mean_WT_Q_SS <- rowMeans(norm_t[
-    , stringr::str_detect(colnames(norm_t), "WTovn_Q_SS")
-])
+#  Add columns for sample-specific log2-regularized means per row -------------
+mean_reg_val <- function(df, col_str) {
+    mean_reg_val <- log2(
+        rowMeans(df[
+            , stringr::str_detect(colnames(df), col_str)
+        ]) + 1
+    )
+    
+    return(mean_reg_val)
+}
 
 
-###############################################################################
-################################### SCRATCH ###################################
-###############################################################################
+norm_t[["mlr_WT_G1_N"]] <- mean_reg_val(norm_t, "WTovn_G1_N")
+norm_t[["mlr_WT_G1_SS"]] <- mean_reg_val(norm_t, "WTovn_G1_SS")
+norm_t[["mlr_WT_Q_N"]] <- mean_reg_val(norm_t, "WTovn_Q_N")
+norm_t[["mlr_WT_Q_SS"]] <- mean_reg_val(norm_t, "WTovn_Q_SS")
+
 
 #  Kaam karna chahie ==========================================================
-# df <- norm_t_KL
-# df <- filt_t_KL
+#  Initialize dataframes to work with -----------------------------------------
 df <- norm_t
-df_KL <- df[df$genome == "K_lactis", ]
-df_SC <- df[df$genome == "S_cerevisiae", ]
+df_KL <- df[df[["genome"]] == "K_lactis", ]
+df_SC <- df[df[["genome"]] == "S_cerevisiae", ]
+df_20 <- df[df[["genome"]] == "20S", ]
 
 
 #  Calculate summary statistics -----------------------------------------------
 calculate_summary_stats <- function(vec) {
-    reg <- log2(vec + 1)
+        reg <- vec
     summary <- data.frame(
           mean = mean(reg),
         median = median(reg),
@@ -476,99 +485,84 @@ calculate_summary_stats <- function(vec) {
 }
 
 
- sm_WT_G1_N <- calculate_summary_stats(df_KL$mean_WT_G1_N)
-  sm_WT_Q_N <- calculate_summary_stats(df_KL$mean_WT_Q_N)
-sm_WT_G1_SS <- calculate_summary_stats(df_KL$mean_WT_G1_SS)
- sm_WT_Q_SS <- calculate_summary_stats(df_KL$mean_WT_Q_SS)
+#  Calculate summary statistics for K.L.
+ sm_WT_G1_N_KL <- calculate_summary_stats(df_KL[["mlr_WT_G1_N"]])
+  sm_WT_Q_N_KL <- calculate_summary_stats(df_KL[["mlr_WT_Q_N"]])
+sm_WT_G1_SS_KL <- calculate_summary_stats(df_KL[["mlr_WT_G1_SS"]])
+ sm_WT_Q_SS_KL <- calculate_summary_stats(df_KL[["mlr_WT_Q_SS"]])
 
 print_summary_stats <- TRUE
 if(base::isTRUE(print_summary_stats)) {
-    print(sm_WT_G1_N)
-    print(sm_WT_Q_N)
-    print(sm_WT_G1_SS)
-    print(sm_WT_Q_SS)
+    cat("\nsm_WT_G1_N_KL\n")
+    print(sm_WT_G1_N_KL)
+    cat("\nsm_WT_Q_N_KL\n")
+    print(sm_WT_Q_N_KL)
+    cat("\nsm_WT_G1_SS_KL\n")
+    print(sm_WT_G1_SS_KL)
+    cat("\nsm_WT_Q_SS_KL\n")
+    print(sm_WT_Q_SS_KL)
 }
 
+#  Calculate summary statistics for S.C.
+ sm_WT_G1_N_SC <- calculate_summary_stats(df_SC[["mlr_WT_G1_N"]])
+  sm_WT_Q_N_SC <- calculate_summary_stats(df_SC[["mlr_WT_Q_N"]])
+sm_WT_G1_SS_SC <- calculate_summary_stats(df_SC[["mlr_WT_G1_SS"]])
+ sm_WT_Q_SS_SC <- calculate_summary_stats(df_SC[["mlr_WT_Q_SS"]])
 
-#  Draw histogram(s) ----------------------------------------------------------
-determine_bin_width <- function(df, column, desired = 500) {
-    data_range <- range(
-        log2(df[[column]] + 1),
-        na.rm = TRUE
-    )
-    bin_width <- diff(data_range) / desired
-    
-    return(bin_width)
-}
-
-
-bin_WT_G1_N <- determine_bin_width(df_KL, "mean_WT_G1_N")
-bin_WT_Q_N <- determine_bin_width(df_KL, "mean_WT_Q_N")
-
-plot_histogram <- function(df, column, bin_width) {
-    histogram <- ggplot(df, aes(x = log2(.data[[column]] + 1))) +
-        geom_histogram(binwidth = bin_width, fill = "#00808075") +
-        labs(
-            title = paste0("Histogram, ", column),
-            x = "log2(TPM + 1)",
-            y = "Frequency"
-        ) +
-        theme_minimal()
-    
-    return(histogram)
-}
-
-
-hist_WT_G1_N <- plot_histogram(
-    df = df_KL,
-    column = "mean_WT_G1_N",
-    bin_width = bin_WT_G1_N
-)
-hist_WT_Q_N <- plot_histogram(
-    df = df_KL,
-    column = "mean_WT_Q_N",
-    bin_width = bin_WT_Q_N
-)
-
-print_histograms <- TRUE
-if(base::isTRUE(print_histograms)) {
-    hist_WT_G1_N %>% print()
-    hist_WT_Q_N %>% print()
+print_summary_stats <- TRUE
+if(base::isTRUE(print_summary_stats)) {
+    cat("\nsm_WT_G1_N_SC\n")
+    print(sm_WT_G1_N_SC)
+    cat("\nsm_WT_Q_N_SC\n")
+    print(sm_WT_Q_N_SC)
+    cat("\nsm_WT_G1_SS_SC\n")
+    print(sm_WT_G1_SS_SC)
+    cat("\nsm_WT_Q_SS_SC\n")
+    print(sm_WT_Q_SS_SC)
 }
 
 
 #  Draw density plots(s) ------------------------------------------------------
-plot_density <- function(df, column, summary) {
-    density <- ggplot(data = df, aes(x = log2(.data[[column]] + 1))) +
-        geom_density(fill = "#00808075", linewidth = 0) +
+plot_density <- function(
+    df, column, summary,
+    x_low = 0, x_high = 17.5,
+    col_density = "#00808075",
+    col_mean = "#80008066", txt_mean = "#800080",
+    col_median = "#00000066", txt_median = "#000000",
+    title = paste0("Density plot, ", column),
+    x_lab = "log2(TPM + 1)", y_lab = "density"
+) {
+    density <- ggplot(data = df, aes(x = .data[[column]])) +
+        geom_density(fill = col_density, linewidth = 0) +
+        xlim(c(x_low, x_high)) +
         labs(
-            title = paste0("Density plot, ", column),
-            x = "log2(TPM + 1)",
-            y = "Density"
+            title = title,
+            x = x_lab,
+            y = y_lab
         ) +
         geom_vline(
             data = summary,
             aes(xintercept = mean),
-            color = "#80008066",
+            color = col_mean,
             linetype = "dashed",
             size = 1
         ) +
         geom_vline(
             data = summary,
             aes(xintercept = median),
-            color = "#00000066",
+            color = col_median,
             linetype = "dotted",
             size = 1
         ) +
         geom_text(
             data = summary,
             aes(x = mean, y = 0.25, label = paste("mean =", round(mean, 2))),
-            color = "#800080"
+            color = txt_mean
         ) +
         geom_text(
             data = summary,
             aes(x = median, y = 0.20, label = paste("median =", round(median, 2))),
-            color = "#000000"
+            color = txt_median
         ) +
         theme_slick
     
@@ -576,27 +570,120 @@ plot_density <- function(df, column, summary) {
 }
 
 
-dn_WT_G1_N <- plot_density(
+#  Plot log2(TPM + 1) densities for K.L.
+dn_WT_G1_N_KL <- plot_density(
     df = df_KL,
-    column = "mean_WT_G1_N",
-    summary = sm_WT_G1_N
+    column = "mlr_WT_G1_N",
+    summary = sm_WT_G1_N_KL,
+    title = "KL, mlr_WT_G1_N"
 )
-dn_WT_Q_N <- plot_density(
+dn_WT_Q_N_KL <- plot_density(
     df = df_KL,
-    column = "mean_WT_Q_N",
-    summary = sm_WT_Q_N
+    column = "mlr_WT_Q_N",
+    summary = sm_WT_Q_N_KL,
+    title = "KL, mlr_WT_Q_N"
 )
+
+#  Plot log2(TPM + 1) densities for S.C.
+dn_WT_G1_N_SC <- plot_density(
+    df = df_SC,
+    column = "mlr_WT_G1_N",
+    summary = sm_WT_G1_N_SC,
+    title = "SC, mlr_WT_G1_N"
+)
+dn_WT_Q_N_SC <- plot_density(
+    df = df_SC,
+    column = "mlr_WT_Q_N",
+    summary = sm_WT_Q_N_SC,
+    title = "SC, mlr_WT_Q_N"
+)
+
+print_densities <- FALSE
+if(base::isTRUE(print_densities)) {
+    print(dn_WT_G1_N_KL)
+    print(dn_WT_Q_N_KL)
+}
+
+print_densities <- FALSE
+if(base::isTRUE(print_densities)) {
+    print(dn_WT_G1_N_SC)
+    print(dn_WT_Q_N_SC)
+}
 
 print_densities <- TRUE
 if(base::isTRUE(print_densities)) {
-    print(dn_WT_G1_N)
-    print(dn_WT_Q_N)
+    grid.arrange(
+        dn_WT_G1_N_KL, dn_WT_Q_N_KL,
+        dn_WT_G1_N_SC, dn_WT_Q_N_SC,
+        nrow = 2, ncol = 2
+    )
+}
+
+
+#  Determine mean difference, then adjust values for mean difference ----------
+apply_mean_diff <- function(df, col, sm_1, sm_2) {
+    debug <- FALSE
+    if(base::isTRUE(debug)) {
+        df <- df_KL
+        col <- "mlr_WT_G1_N"
+        sm_1 <- sm_WT_Q_N_KL
+        sm_2 <- sm_WT_G1_N_KL
+    }
+    
+    mean_diff <- sm_1[["mean"]] - sm_2[["mean"]]
+    shifted <- df[[col]] + mean_diff
+    return(shifted)
+}
+
+
+df_KL[["shift_WT_G1_N"]] <- apply_mean_diff(
+    df_KL, "mlr_WT_G1_N", sm_WT_Q_N_KL, sm_WT_G1_N_KL
+)
+df_SC[["shift_WT_G1_N"]] <- apply_mean_diff(
+    df_SC, "mlr_WT_G1_N", sm_WT_Q_N_KL, sm_WT_G1_N_KL
+)
+df_20[["shift_WT_G1_N"]] <- apply_mean_diff(
+    df_20, "mlr_WT_G1_N", sm_WT_Q_N_KL, sm_WT_G1_N_KL
+)
+
+#  Plot log2(TPM + 1) spike-in mean-shifted densities
+#+ ...for K.L.
+sm_WT_G1_N_KL_sh <- calculate_summary_stats(df_KL[["shift_WT_G1_N"]])
+dn_WT_G1_N_KL_sh <- plot_density(
+    df = df_KL,
+    column = "shift_WT_G1_N",
+    summary = sm_WT_G1_N_KL_sh,
+    title = "KL, shift_WT_G1_N"
+)
+
+#+ ...for S.C.
+sm_WT_G1_N_SC_sh <- calculate_summary_stats(df_SC[["shift_WT_G1_N"]])
+dn_WT_G1_N_SC_sh <- plot_density(
+    df = df_SC,
+    column = "shift_WT_G1_N",
+    summary = sm_WT_G1_N_SC_sh,
+    title = "SC, shift_WT_G1_N"
+)
+
+print_densities <- FALSE
+if(base::isTRUE(print_densities)) {
+    dn_WT_G1_N_KL_sh %>% print()
+    dn_WT_G1_N_SC_sh %>% print()
+}
+
+print_densities <- TRUE
+if(base::isTRUE(print_densities)) {
+    grid.arrange(
+        dn_WT_G1_N_KL, dn_WT_G1_N_KL_sh,
+        dn_WT_G1_N_SC, dn_WT_G1_N_SC_sh,
+        nrow = 2, ncol = 2
+    )
 }
 
 
 #  Perform linear regressions -------------------------------------------------
 perform_linear_regression <- function(df, dv, iv) {
-    lr <- lm(log2(df[[dv]] + 1) ~ log2(df[[iv]]  + 1))
+    lr <- lm(df[[dv]] ~ df[[iv]])
     return(lr)
 }
 
@@ -613,136 +700,133 @@ perform_linear_regression <- function(df, dv, iv) {
 }
 
 
-`lr__dv-G1-N_on_iv-Q-N` <- perform_linear_regression(
-    df = df_KL, dv = "mean_WT_G1_N", iv = "mean_WT_Q_N"
+`lr-KL__dv-G1-N_on_iv-Q-N` <- perform_linear_regression(
+    df = df_KL, dv = "mlr_WT_G1_N", iv = "mlr_WT_Q_N"
 )
-beta_0 <- intercept <- `obtain_beta-0_intercept`(`lr__dv-G1-N_on_iv-Q-N`)
-beta_1 <- slope <- `obtain_beta-1_slope`(`lr__dv-G1-N_on_iv-Q-N`)
-cat("y =", round(beta_0, 2), "+", round(beta_1, 2), "* x + e\n")
+`lr-KL__dv-G1-N-sh_on_iv-Q-N` <- perform_linear_regression(
+    df = df_KL, dv = "shift_WT_G1_N", iv = "mlr_WT_Q_N"
+)
+
+print_linear_equation <- TRUE
+if(base::isTRUE(print_linear_equation)) {
+    cat(
+        "y =",
+        round(coef(`lr-KL__dv-G1-N_on_iv-Q-N`)[1], 2),
+        "+",
+        round(coef(`lr-KL__dv-G1-N_on_iv-Q-N`)[2], 2),
+        "* x + e\n"
+    )
+    cat(
+        "y =",
+        round(coef(`lr-KL__dv-G1-N-sh_on_iv-Q-N`)[1], 2),
+        "+",
+        round(coef(`lr-KL__dv-G1-N-sh_on_iv-Q-N`)[2], 2),
+        "* x + e\n"
+    )
+}
+
+`lr-SC__dv-G1-N_on_iv-Q-N` <- perform_linear_regression(
+    df = df_SC, dv = "mlr_WT_G1_N", iv = "mlr_WT_Q_N"
+)
+`lr-SC__dv-G1-N-sh_on_iv-Q-N` <- perform_linear_regression(
+    df = df_SC, dv = "shift_WT_G1_N", iv = "mlr_WT_Q_N"
+)
+
+print_linear_equation <- TRUE
+if(base::isTRUE(print_linear_equation)) {
+    cat(
+        "y =",
+        round(coef(`lr-SC__dv-G1-N_on_iv-Q-N`)[1], 2),
+        "+",
+        round(coef(`lr-SC__dv-G1-N_on_iv-Q-N`)[2], 2),
+        "* x + e\n"
+    )
+    cat(
+        "y =",
+        round(coef(`lr-SC__dv-G1-N-sh_on_iv-Q-N`)[1], 2),
+        "+",
+        round(coef(`lr-SC__dv-G1-N-sh_on_iv-Q-N`)[2], 2),
+        "* x + e\n"
+    )
+}
 
 
-#PICKUP with changing the x and y values to remove intercept of -2.51 and slope of 0.83
+#  Adjust joint distribution so that linear equation is x = y -----------------
+calculate_xy_dv_values <- function(lr, dv) {
+    #  Transform values for dependent-variable values such that joint distri-
+    #+ bution has linear equation x = y (beta_0 = intercept, beta_1 = slope,
+    #+ dv = y)
+    beta_0 <- coef(lr)[1]
+    beta_1 <- coef(lr)[2] 
+    dv_adj <- (dv - beta_0) / beta_1
+    
+    return(dv_adj)
+}
+
+
+df_KL[["tf_WT_G1_N"]] <- calculate_xy_dv_values(
+    lr = `lr-KL__dv-G1-N_on_iv-Q-N`,
+    dv = df_KL[["mlr_WT_G1_N"]]
+)
+df_SC[["tf_WT_G1_N"]] <- calculate_xy_dv_values(
+    lr = `lr-KL__dv-G1-N_on_iv-Q-N`,
+    dv = df_SC[["mlr_WT_G1_N"]]
+)
+df_20[["tf_WT_G1_N"]] <- calculate_xy_dv_values(
+    lr = `lr-KL__dv-G1-N_on_iv-Q-N`,
+    dv = df_20[["mlr_WT_G1_N"]]
+)
+
+
+#  Apply concentration-based scaling factor -----------------------------------
+#+ ...to the to S. cerevisiae spike-in regression distribution values
+vol_spike_Q <- 50
+vol_spike_G1 <- 50
+OD_Q <- 100
+OD_G1 <- 12.5
+
+vol_spike_rat <- vol_spike_Q / vol_spike_G1
+OD_rat <- OD_Q / OD_G1
+
+conc_sf <- vol_spike_rat * OD_rat
+# df_SC[["conc_WT_G1_N"]] <- df_SC[["tf_WT_G1_N"]] + conc_sf
+df_SC[["conc_WT_G1_N"]] <- df_SC[["tf_WT_G1_N"]] * conc_sf
+
+check_scaled_values <- TRUE
+if(base::isTRUE(check_scaled_values)) {
+    head(df_SC[["tf_WT_G1_N"]]) %>% print()
+    head(df_SC[["conc_WT_G1_N"]]) %>% print()
+}
 
 
 #  Draw scatter plot(s) -------------------------------------------------------
 plot_scatter <- function(
     df, col_dv, col_iv, lr,
-    col = "#00808010",
+    color = "#00808010",
+    color_reg = "#FF0000",
     draw_density = TRUE,
-    x_low = -5, y_low = -5,
+    x_low = 0, y_low = 0,
     x_high = 12.5, y_high = 12.5,
-    title = "Scatter plot, K. lactis transcripts"
+    title = "K. lactis transcripts"
 ) {
-    debug <- TRUE
-    if(base::isTRUE) {
+    debug <- FALSE
+    if(base::isTRUE(debug)) {
         df <- df_KL
-        col_dv <- "mean_WT_G1_N"
-        col_iv <- "mean_WT_Q_N"
-        lr <- `lr__dv-G1-N_on_iv-Q-N`
-        col = "#00808010"
+        col_dv <- "mlr_WT_G1_N"
+        col_iv <- "mlr_WT_Q_N"
+        lr <- `lr-KL__dv-G1-N_on_iv-Q-N`
+        color = "#00808010"
         draw_density = TRUE
         x_low = -5
         y_low = -5
         x_high = 12.5
         y_high = 12.5
-        title = "Scatter plot, K. lactis transcripts"
+        title = "K. lactis transcripts"
     }
     
     scatter <- ggplot2::ggplot(
-        df, aes(x = log2(.data[[col_iv]] + 1), y = log2(.data[[col_dv]] + 1))
+        df, aes(x = .data[[col_iv]], y = .data[[col_dv]])
     ) +
-        geom_point(size = 2.5, col = col) +
-        { if(base::isTRUE(draw_density)) geom_density_2d(color = "#FFFFFF") } +
-        geom_abline(
-            intercept = 0,
-            slope = 1,
-            color = "black",
-            linetype = "solid"
-        ) +
-        geom_abline(
-            intercept = coef(lr)[1],
-            slope = coef(lr)[2],
-            color = "red",
-            linetype = "dashed"
-        ) +
-        labs(
-            x = paste0("log2(", col_iv, " + 1)"),
-            y = paste0("log2(", col_dv, " + 1)"),
-            title = title
-        ) +
-        xlim(c(x_low, x_high)) +
-        ylim(c(y_low, y_high)) +
-        theme_slick
-    
-    return(scatter)
-}
-
-
-`dv_G1-N__iv_Q-N` <- plot_scatter(
-    df = df_KL,
-    col_dv = "mean_WT_G1_N",
-    col_iv = "mean_WT_Q_N"
-)
-
-print_scatter_plots <- TRUE
-if(base::isTRUE(print_scatter_plots)) {
-    print(`dv_G1-N__iv_Q-N` )
-}
-
-
-#  Adjust scatter plot and linear regression on x = y -------------------------
-adjust_distribution_KL <- function(df, col_iv, col_dv) {
-    mean_iv <- mean(log2(df[[col_iv]] + 1))
-    mean_dv <- mean(log2(df[[col_dv]] + 1))
-    mean_diff <- mean_iv - mean_dv
-    
-    adj_iv <- log2(df_KL[["mean_WT_Q_N"]] + 1) - mean_diff
-    adj_dv <- log2(df_KL[["mean_WT_G1_N"]] + 1) - mean_diff
-    adj_lr <- lm(adj_dv ~ adj_iv)
-    
-    adj <- list()
-    adj[["log2_adj_iv"]] <- adj_iv
-    adj[["log2_adj_dv"]] <- adj_dv
-    adj[["adj_lr"]] <- adj_lr
-    
-    return(adj)
-}
-
-
-`adj-WT-G1_on_adj-WT-Q` <- adjust_distribution_KL(
-    df = df_KL,
-    col_iv = "mean_WT_Q_N",
-    col_dv = "mean_WT_G1_N"
-)
-
-df_KL[["adj_log2_WT_Q_N"]] <- `adj-WT-G1_on_adj-WT-Q`[["log2_adj_iv"]]
-df_KL[["adj_log2_WT_G1_N"]] <- `adj-WT-G1_on_adj-WT-Q`[["log2_adj_dv"]]
-
-
-plot_scatter_adj <- function(
-    df, col_dv, col_iv, lr,
-    color = "#185E9110",
-    draw_density = TRUE,
-    x_low = -5, y_low = -5,
-    x_high = 12.5, y_high = 12.5,
-    title = "Centered scatter plot and regression line"
-) {
-    debug <- FALSE
-    if(base::isTRUE(debug)) {
-        df <- df_KL
-        col_iv <- "adj_log2_WT_Q_N"
-        col_dv <- "adj_log2_WT_G1_N"
-        lr <- `adj-WT-G1_on_adj-WT-Q`[["adj_lr"]]
-        color <- "#185E9110"
-        draw_density <- TRUE
-        x_low <- -5
-        y_low <- -5
-        x_high <- 12.5
-        y_high <- 12.5
-        title <- "Centered scatter plot and regression line"
-    }
-    
-    adj_scatter <- ggplot(df, aes(x = .data[[col_iv]], y = .data[[col_dv]])) +
         geom_point(size = 2.5, col = color) +
         { if(base::isTRUE(draw_density)) geom_density_2d(color = "#FFFFFF") } +
         geom_abline(
@@ -757,24 +841,371 @@ plot_scatter_adj <- function(
             color = "red",
             linetype = "dashed"
         ) +
+        labs(x = col_iv, y = col_dv, title = title) +
         xlim(c(x_low, x_high)) +
         ylim(c(y_low, y_high)) +
-        labs(x = col_iv, y = col_dv, title = title) +
         theme_slick
     
-    return(adj_scatter)
+    return(scatter)
 }
 
 
-`adj-dv_G1-N__adj-iv_Q-N` <- plot_scatter_adj(
-    df_KL,
-    col_dv = "adj_log2_WT_G1_N",
-    col_iv = "adj_log2_WT_Q_N",
-    lr = `adj-WT-G1_on_adj-WT-Q`[["adj_lr"]]
+#+ ...for KL --------------------------
+`scatter-KL__dv_G1-N_on_iv_Q-N` <- plot_scatter(
+    df = df_KL,
+    col_dv = "mlr_WT_G1_N",
+    col_iv = "mlr_WT_Q_N",
+    lr = `lr-KL__dv-G1-N_on_iv-Q-N`,
+    color = "#00808010",
+    title = "K. lactis transcripts"
+)
+`scatter-KL__dv_G1-N-sh_on_iv_Q-N` <- plot_scatter(
+    df = df_KL,
+    col_dv = "shift_WT_G1_N",
+    col_iv = "mlr_WT_Q_N",
+    lr = `lr-KL__dv-G1-N-sh_on_iv-Q-N`,
+    color = "#8B008B10",
+    title = "Spike-in mean-adjusted K. lactis transcripts"
 )
 
-print(`adj-dv_G1-N__adj-iv_Q-N`)
+`lr-KL__dv-G1-N-tf_on_iv-Q-N` <- perform_linear_regression(
+    df = df_KL, dv = "tf_WT_G1_N", iv = "mlr_WT_Q_N"
+)
+`scatter-KL__dv_G1-N-tf_on_iv_Q-N` <- plot_scatter(
+    df = df_KL,
+    col_dv = "tf_WT_G1_N",
+    col_iv = "mlr_WT_Q_N",
+    lr = `lr-KL__dv-G1-N-tf_on_iv-Q-N`,
+    color = "#185E9110",
+    title = "Spike-in regression-adjusted K. lactis transcripts"
+)
 
-###############################################################################
-################################### SCRATCH ###################################
-###############################################################################
+print_scatter_plots <- FALSE
+if(base::isTRUE(print_scatter_plots)) {
+    `scatter-KL__dv_G1-N_on_iv_Q-N` %>% print()
+    `scatter-KL__dv_G1-N-sh_on_iv_Q-N` %>% print()
+    `scatter-KL__dv_G1-N-tf_on_iv_Q-N` %>% print()
+}
+
+print_scatter_plots <- FALSE
+if(base::isTRUE(print_scatter_plots)) {
+    grid.arrange(
+        `scatter-KL__dv_G1-N_on_iv_Q-N`,
+        `scatter-KL__dv_G1-N-sh_on_iv_Q-N`,
+        `scatter-KL__dv_G1-N-tf_on_iv_Q-N`,
+        ncol = 3
+    )
+}
+
+#+ ...for SC --------------------------
+`scatter-SC__dv_G1-N_on_iv_Q-N` <- plot_scatter(
+    df = df_SC,
+    x_high = 20,
+    y_high = 20,
+    col_dv = "mlr_WT_G1_N",
+    col_iv = "mlr_WT_Q_N",
+    lr = `lr-SC__dv-G1-N_on_iv-Q-N`,
+    color = "#00808010",
+    title = "S. cerevisiae transcripts"
+)
+`scatter-SC__dv_G1-N-sh_on_iv_Q-N` <- plot_scatter(
+    df = df_SC,
+    x_high = 20,
+    y_high = 20,
+    col_dv = "shift_WT_G1_N",
+    col_iv = "mlr_WT_Q_N",
+    lr = `lr-SC__dv-G1-N-sh_on_iv-Q-N`,
+    color = "#8B008B10",
+    title = "Spike-in mean-adjusted S. cerevisiae transcripts"
+)
+
+`lr-SC__dv-G1-N-tf_on_iv-Q-N` <- perform_linear_regression(
+    df = df_SC, dv = "tf_WT_G1_N", iv = "mlr_WT_Q_N"
+)
+`scatter-SC__dv_G1-N-tf_on_iv_Q-N` <- plot_scatter(
+    df = df_SC,
+    x_high = 20,
+    y_high = 20,
+    col_dv = "tf_WT_G1_N",
+    col_iv = "mlr_WT_Q_N",
+    lr = `lr-SC__dv-G1-N-tf_on_iv-Q-N`,
+    color = "#185E9110",
+    title = "Spike-in regression-adjusted S. cerevisiae transcripts"
+)
+
+print_scatter_plots <- FALSE
+if(base::isTRUE(print_scatter_plots)) {
+    `scatter-SC__dv_G1-N_on_iv_Q-N` %>% print()
+    `scatter-SC__dv_G1-N-sh_on_iv_Q-N` %>% print()
+    `scatter-SC__dv_G1-N-tf_on_iv_Q-N` %>% print()
+}
+
+print_scatter_plots <- FALSE
+if(base::isTRUE(print_scatter_plots)) {
+    grid.arrange(
+        `scatter-SC__dv_G1-N_on_iv_Q-N`,
+        `scatter-SC__dv_G1-N-sh_on_iv_Q-N`,
+        `scatter-SC__dv_G1-N-tf_on_iv_Q-N`,
+        ncol = 3
+    )
+}
+
+print_scatter_plots <- FALSE
+if(base::isTRUE(print_scatter_plots)) {
+    grid.arrange(
+        `scatter-KL__dv_G1-N_on_iv_Q-N`,
+        `scatter-KL__dv_G1-N-sh_on_iv_Q-N`,
+        `scatter-KL__dv_G1-N-tf_on_iv_Q-N`,
+        `scatter-SC__dv_G1-N_on_iv_Q-N`,
+        `scatter-SC__dv_G1-N-sh_on_iv_Q-N`,
+        `scatter-SC__dv_G1-N-tf_on_iv_Q-N`,
+        ncol = 3
+    )
+}
+
+
+#  Plot combination of S.C. and K.L. dists., adj. and unadj. ------------------
+plot_scatter_combined <- function(
+    df_KL, df_SC, df_20S,
+    col_dv, col_iv,
+    lr_KL, lr_SC,
+    color_KL = "#00808010",
+    color_SC = "#185E9110",
+    color_20 = "#00000050",
+    color_reg = "#FF0000",
+    draw_density = TRUE,
+    plot_20S = FALSE,
+    scale = FALSE, sf = 8,
+    x_low = 0, y_low = 0,
+    x_high = 20, y_high = 20,
+    x_label = NULL, y_label = NULL,
+    title = "Unadjusted transcripts"
+) {
+    debug <- FALSE
+    if(base::isTRUE(debug)) {
+        df_KL <- df_KL
+        df_SC <- df_SC
+        df_20 <- df_20
+        col_dv <- "tf_WT_G1_N"
+        col_iv <- "mlr_WT_Q_N"
+        lr_KL <- `lr-KL__dv-G1-N-tf_on_iv-Q-N`
+        lr_SC <- `lr-SC__dv-G1-N-tf_on_iv-Q-N`
+        color_KL <- "#00808010"
+        color_SC <- "#185E9110"
+        color_20 <- "#00000050"
+        draw_density <- TRUE
+        plot_20S <- TRUE
+        scale <- TRUE
+        sf <- 8
+        x_low <- 0
+        y_low <- 0
+        x_high <- 15
+        y_high <- 175
+        title <- "Spike-in regression-adjusted,\nconcentration-scaled transcripts"
+    }
+    
+    scatter_KL <- ggplot2::ggplot(
+        df_KL, aes(x = .data[[col_iv]], y = .data[[col_dv]])
+    ) +
+        geom_point(size = 2.5, col = color_KL) +
+        { if(base::isTRUE(draw_density)) geom_density_2d(color = "#FFFFFF") } +
+        geom_abline(
+            intercept = 0,
+            slope = 1,
+            color = "black",
+            linetype = "solid"
+        ) +
+        geom_abline(
+            intercept = coef(lr_KL)[1],
+            slope = coef(lr_KL)[2],
+            color = "red",
+            linetype = "dashed"
+        ) +
+        labs(
+            x = { 
+                if(base::isTRUE(is.null(x_label))) {
+                    col_iv
+                } else {
+                    x_label
+                }
+            },
+            y = {
+                if(base::isTRUE(is.null(y_label))) {
+                    col_dv
+                } else {
+                    y_label
+                }
+            },
+            title = title
+        ) +
+        xlim(c(x_low, x_high)) +
+        ylim(c(y_low, y_high)) +
+        theme_slick
+    if(base::isTRUE(debug)) print(scatter_KL)
+    
+    #  If applicable, initialize variables necessary for working with scaled
+    #+ (arithmetically y-shifted) data
+    if(base::isTRUE(scale)) {
+        col_conc <- colnames(df_SC)[
+            stringr::str_detect(colnames(df_SC), "conc_")
+        ]
+    }
+    if(base::isTRUE(scale)) {
+        lr_scaled <- perform_linear_regression(
+            df = df_SC, dv = col_conc, iv = col_iv
+        )
+    }
+    
+    scatter_comb <- scatter_KL +
+        geom_point(
+            df_SC,
+            mapping = { 
+                if(base::isFALSE(scale)) {
+                    aes(x = .data[[col_iv]], y = .data[[col_dv]])
+                } else if(base::isTRUE(scale)) {
+                    aes(x = .data[[col_iv]], y = .data[[col_conc]])
+                }
+            },
+            size = 2.5,
+            col = color_SC
+        ) +
+        { 
+            if(base::isTRUE(draw_density)) {
+                geom_density_2d(
+                    df_SC,
+                    mapping = { 
+                        if(base::isFALSE(scale)) {
+                            aes(x = .data[[col_iv]], y = .data[[col_dv]])
+                        } else if(base::isTRUE(scale)) {
+                            aes(x = .data[[col_iv]], y = .data[[col_conc]])
+                        }
+                    },
+                    color = "#FFFFFF"
+                )
+            }
+        } +
+        geom_abline(
+            intercept = 0,
+            slope = 1,
+            color = "black",
+            linetype = "solid"
+        ) +
+        {
+            if(base::isFALSE(scale)) {
+                geom_abline(
+                    intercept = coef(lr_SC)[1],
+                    slope = coef(lr_SC)[2],
+                    color = "red",
+                    linetype = "dashed"
+                )
+            } else if(base::isTRUE(scale)) {
+                geom_abline(
+                    intercept = coef(lr_scaled)[1],
+                    slope = coef(lr_scaled)[2],
+                    color = "red",
+                    linetype = "dashed"
+                )
+            }
+        } +
+        { 
+            if(base::isTRUE(plot_20S)) {
+                geom_point(
+                    df_20,
+                    mapping = aes(x = .data[[col_iv]], y = .data[[col_dv]]),
+                    size = 2.5,
+                    col = color_20,
+                    shape = 15
+                )
+            }
+        } +
+        { 
+            if(base::isTRUE(is.null(y_label))) {
+                if(base::isTRUE(scale)) {
+                    ylab(col_conc)
+                } else {
+                    ylab(col_dv)
+                }
+            } else {
+                ylab(y_label)
+            }
+        }
+    if(base::isTRUE(debug)) print(scatter_comb)
+
+    return(scatter_comb)
+}
+
+
+`scatter-comb__dv_G1-N_on_iv_Q-N` <- plot_scatter_combined(
+    df_KL = df_KL,
+    df_SC = df_SC,
+    df_20S = df_20,
+    col_dv = "mlr_WT_G1_N",
+    col_iv = "mlr_WT_Q_N",
+    lr_KL = `lr-KL__dv-G1-N_on_iv-Q-N`,
+    lr_SC = `lr-SC__dv-G1-N_on_iv-Q-N`,
+    draw_density = TRUE,
+    plot_20S = FALSE,
+    title = "Unadjusted transcripts\n",
+    x_label = "WT Q N:\nlog2(TPM + 1)",
+    y_label = "WT G1 N: log2(TPM + 1)"
+)
+`scatter-comb__dv_G1-N-sh_on_iv_Q-N` <- plot_scatter_combined(
+    df_KL = df_KL,
+    df_SC = df_SC,
+    df_20S = df_20,
+    col_dv = "shift_WT_G1_N",
+    col_iv = "mlr_WT_Q_N",
+    lr_KL = `lr-KL__dv-G1-N-sh_on_iv-Q-N`,
+    lr_SC = `lr-SC__dv-G1-N-sh_on_iv-Q-N`,
+    draw_density = TRUE,
+    plot_20S = FALSE,
+    title = "Spike-in mean-adjusted transcripts\n",
+    x_label = "WT Q N:\nlog2(TPM + 1)",
+    y_label = "WT G1 N: log2(TPM + 1)"
+)
+`scatter-comb__dv_G1-N-tf_on_iv_Q-N` <- plot_scatter_combined(
+    df_KL = df_KL,
+    df_SC = df_SC,
+    df_20S = df_20,
+    col_dv = "tf_WT_G1_N",
+    col_iv = "mlr_WT_Q_N",
+    lr_KL = `lr-KL__dv-G1-N-tf_on_iv-Q-N`,
+    lr_SC = `lr-SC__dv-G1-N-tf_on_iv-Q-N`,
+    draw_density = TRUE,
+    plot_20S = FALSE,
+    title = "Spike-in regression-adjusted\ntranscripts",
+    x_label = "WT Q N:\nlog2(TPM + 1)",
+    y_label = "WT G1 N: log2(TPM + 1)"
+)
+`scatter-comb__dv_G1-N-tf-sf_on_iv_Q-N` <- plot_scatter_combined(
+    df_KL = df_KL,
+    df_SC = df_SC,
+    df_20S = df_20,
+    col_dv = "tf_WT_G1_N",
+    col_iv = "mlr_WT_Q_N",
+    lr_KL = `lr-KL__dv-G1-N-tf_on_iv-Q-N`,
+    lr_SC = `lr-SC__dv-G1-N-tf_on_iv-Q-N`,
+    draw_density = TRUE,
+    plot_20S = FALSE,
+    scale = TRUE,
+    sf = conc_sf,
+    x_high = 20,
+    y_high = 175,
+    title = "Spike-in regression-adjusted,\nconcentration-scaled transcripts",
+    x_label = "WT Q N:\nlog2(TPM + 1)",
+    y_label = "WT G1 N: log2(TPM + 1)"
+)
+
+print_scatter_plots <- TRUE
+if(base::isTRUE(print_scatter_plots)) {
+    grid.arrange(
+        `scatter-comb__dv_G1-N_on_iv_Q-N`,
+        # `scatter-comb__dv_G1-N-sh_on_iv_Q-N`,
+        `scatter-comb__dv_G1-N-tf_on_iv_Q-N`,
+        `scatter-comb__dv_G1-N-tf-sf_on_iv_Q-N`,
+        # ncol = 4
+        ncol = 3
+    )
+}
+
+
