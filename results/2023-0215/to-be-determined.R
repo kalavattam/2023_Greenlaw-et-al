@@ -413,9 +413,16 @@ rm(list = ls(pattern = "tmp_"))
 #  Convert counts columns to type integer
 t_mat[, 12:ncol(t_mat)] <- sapply(t_mat[, 12:ncol(t_mat)], as.integer)
 
-#  Filter out zero-count rows
-keep <- rowSums(t_mat[, 12:ncol(t_mat)] >= 10) >= length(12:ncol(t_mat)) - 1
-filt_mat <- t_mat[keep, ]
+# #  Filter out zero-count rows
+# keep <- rowSums(t_mat[, 12:ncol(t_mat)] >= 10) >= length(12:ncol(t_mat)) - 1
+# filt_mat <- t_mat[keep, ]
+
+#  Keep only WTovn_*_SS samples and filter out zero-counts rows
+keep <- rowSums(t_mat[, stringr::str_detect(colnames(t_mat), "_SS")] >= 10) >=
+    length(t_mat[, stringr::str_detect(colnames(t_mat), "_SS")]) - 1
+filt_mat <- t_mat[
+    keep, c(1:11, which(stringr::str_detect(colnames(t_mat), "_SS")))
+]
 
 #  Check on things
 test_for_NAs <- FALSE
@@ -444,6 +451,13 @@ if(base::isTRUE(test_for_NAs)) {
 rm(rpk, tpm)
 
 
+#  Set up sample stem strings -------------------------------------------------
+# str_G1 <- "WT_G1_N"
+# str_N <- "WT_Q_N"
+str_G1 <- "WT_G1_SS"
+str_Q <- "WT_Q_SS"
+
+
 #  Add columns for sample-specific log2-regularized means per row -------------
 mean_reg_val <- function(df, col_str) {
     mean_reg_val <- log2(
@@ -456,10 +470,13 @@ mean_reg_val <- function(df, col_str) {
 }
 
 
-norm_t[["mlr_WT_G1_N"]] <- mean_reg_val(norm_t, "WTovn_G1_N")
+# norm_t[["mlr_WT_G1_N"]] <- mean_reg_val(norm_t, "WTovn_G1_N")
+# norm_t[["mlr_WT_Q_N"]] <- mean_reg_val(norm_t, "WTovn_Q_N")
 norm_t[["mlr_WT_G1_SS"]] <- mean_reg_val(norm_t, "WTovn_G1_SS")
-norm_t[["mlr_WT_Q_N"]] <- mean_reg_val(norm_t, "WTovn_Q_N")
 norm_t[["mlr_WT_Q_SS"]] <- mean_reg_val(norm_t, "WTovn_Q_SS")
+
+# norm_t[[paste0("mlr_", str_G1)]] <- mean_reg_val(norm_t, "WTovn_G1_SS")
+# norm_t[[paste0("mlr_", str_Q)]] <- mean_reg_val(norm_t, "WTovn_Q_SS")
 
 
 #  Kaam karna chahie ==========================================================
@@ -486,17 +503,17 @@ calculate_summary_stats <- function(vec) {
 
 
 #  Calculate summary statistics for K.L.
- sm_WT_G1_N_KL <- calculate_summary_stats(df_KL[["mlr_WT_G1_N"]])
-  sm_WT_Q_N_KL <- calculate_summary_stats(df_KL[["mlr_WT_Q_N"]])
+ # sm_WT_G1_N_KL <- calculate_summary_stats(df_KL[["mlr_WT_G1_N"]])
+ #  sm_WT_Q_N_KL <- calculate_summary_stats(df_KL[["mlr_WT_Q_N"]])
 sm_WT_G1_SS_KL <- calculate_summary_stats(df_KL[["mlr_WT_G1_SS"]])
  sm_WT_Q_SS_KL <- calculate_summary_stats(df_KL[["mlr_WT_Q_SS"]])
 
 print_summary_stats <- TRUE
 if(base::isTRUE(print_summary_stats)) {
-    cat("\nsm_WT_G1_N_KL\n")
-    print(sm_WT_G1_N_KL)
-    cat("\nsm_WT_Q_N_KL\n")
-    print(sm_WT_Q_N_KL)
+    # cat("\nsm_WT_G1_N_KL\n")
+    # print(sm_WT_G1_N_KL)
+    # cat("\nsm_WT_Q_N_KL\n")
+    # print(sm_WT_Q_N_KL)
     cat("\nsm_WT_G1_SS_KL\n")
     print(sm_WT_G1_SS_KL)
     cat("\nsm_WT_Q_SS_KL\n")
@@ -504,17 +521,17 @@ if(base::isTRUE(print_summary_stats)) {
 }
 
 #  Calculate summary statistics for S.C.
- sm_WT_G1_N_SC <- calculate_summary_stats(df_SC[["mlr_WT_G1_N"]])
-  sm_WT_Q_N_SC <- calculate_summary_stats(df_SC[["mlr_WT_Q_N"]])
+ # sm_WT_G1_N_SC <- calculate_summary_stats(df_SC[["mlr_WT_G1_N"]])
+ #  sm_WT_Q_N_SC <- calculate_summary_stats(df_SC[["mlr_WT_Q_N"]])
 sm_WT_G1_SS_SC <- calculate_summary_stats(df_SC[["mlr_WT_G1_SS"]])
  sm_WT_Q_SS_SC <- calculate_summary_stats(df_SC[["mlr_WT_Q_SS"]])
 
 print_summary_stats <- TRUE
 if(base::isTRUE(print_summary_stats)) {
-    cat("\nsm_WT_G1_N_SC\n")
-    print(sm_WT_G1_N_SC)
-    cat("\nsm_WT_Q_N_SC\n")
-    print(sm_WT_Q_N_SC)
+    # cat("\nsm_WT_G1_N_SC\n")
+    # print(sm_WT_G1_N_SC)
+    # cat("\nsm_WT_Q_N_SC\n")
+    # print(sm_WT_Q_N_SC)
     cat("\nsm_WT_G1_SS_SC\n")
     print(sm_WT_G1_SS_SC)
     cat("\nsm_WT_Q_SS_SC\n")
@@ -571,50 +588,50 @@ plot_density <- function(
 
 
 #  Plot log2(TPM + 1) densities for K.L.
-dn_WT_G1_N_KL <- plot_density(
+dn_WT_G1_SS_KL <- plot_density(
     df = df_KL,
-    column = "mlr_WT_G1_N",
-    summary = sm_WT_G1_N_KL,
-    title = "KL, mlr_WT_G1_N"
+    column = "mlr_WT_G1_SS",
+    summary = sm_WT_G1_SS_KL,
+    title = "KL, mlr_WT_G1_SS"
 )
-dn_WT_Q_N_KL <- plot_density(
+dn_WT_Q_SS_KL <- plot_density(
     df = df_KL,
-    column = "mlr_WT_Q_N",
-    summary = sm_WT_Q_N_KL,
-    title = "KL, mlr_WT_Q_N"
+    column = "mlr_WT_Q_SS",
+    summary = sm_WT_Q_SS_KL,
+    title = "KL, mlr_WT_Q_SS"
 )
 
 #  Plot log2(TPM + 1) densities for S.C.
-dn_WT_G1_N_SC <- plot_density(
+dn_WT_G1_SS_SC <- plot_density(
     df = df_SC,
-    column = "mlr_WT_G1_N",
-    summary = sm_WT_G1_N_SC,
-    title = "SC, mlr_WT_G1_N"
+    column = "mlr_WT_G1_SS",
+    summary = sm_WT_G1_SS_SC,
+    title = "SC, mlr_WT_G1_SS"
 )
-dn_WT_Q_N_SC <- plot_density(
+dn_WT_Q_SS_SC <- plot_density(
     df = df_SC,
-    column = "mlr_WT_Q_N",
-    summary = sm_WT_Q_N_SC,
-    title = "SC, mlr_WT_Q_N"
+    column = "mlr_WT_Q_SS",
+    summary = sm_WT_Q_SS_SC,
+    title = "SC, mlr_WT_Q_SS"
 )
 
 print_densities <- FALSE
 if(base::isTRUE(print_densities)) {
-    print(dn_WT_G1_N_KL)
-    print(dn_WT_Q_N_KL)
+    print(dn_WT_G1_SS_KL)
+    print(dn_WT_Q_SS_KL)
 }
 
 print_densities <- FALSE
 if(base::isTRUE(print_densities)) {
-    print(dn_WT_G1_N_SC)
-    print(dn_WT_Q_N_SC)
+    print(dn_WT_G1_SS_SC)
+    print(dn_WT_Q_SS_SC)
 }
 
 print_densities <- TRUE
 if(base::isTRUE(print_densities)) {
     grid.arrange(
-        dn_WT_G1_N_KL, dn_WT_Q_N_KL,
-        dn_WT_G1_N_SC, dn_WT_Q_N_SC,
+        dn_WT_G1_SS_KL, dn_WT_Q_SS_KL,
+        dn_WT_G1_SS_SC, dn_WT_Q_SS_SC,
         nrow = 2, ncol = 2
     )
 }
@@ -625,9 +642,9 @@ apply_mean_diff <- function(df, col, sm_1, sm_2) {
     debug <- FALSE
     if(base::isTRUE(debug)) {
         df <- df_KL
-        col <- "mlr_WT_G1_N"
-        sm_1 <- sm_WT_Q_N_KL
-        sm_2 <- sm_WT_G1_N_KL
+        col <- "mlr_WT_G1_SS"
+        sm_1 <- sm_WT_Q_SS_KL
+        sm_2 <- sm_WT_G1_SS_KL
     }
     
     mean_diff <- sm_1[["mean"]] - sm_2[["mean"]]
@@ -636,46 +653,46 @@ apply_mean_diff <- function(df, col, sm_1, sm_2) {
 }
 
 
-df_KL[["shift_WT_G1_N"]] <- apply_mean_diff(
-    df_KL, "mlr_WT_G1_N", sm_WT_Q_N_KL, sm_WT_G1_N_KL
+df_KL[["shift_WT_G1_SS"]] <- apply_mean_diff(
+    df_KL, "mlr_WT_G1_SS", sm_WT_Q_SS_KL, sm_WT_G1_SS_KL
 )
-df_SC[["shift_WT_G1_N"]] <- apply_mean_diff(
-    df_SC, "mlr_WT_G1_N", sm_WT_Q_N_KL, sm_WT_G1_N_KL
+df_SC[["shift_WT_G1_SS"]] <- apply_mean_diff(
+    df_SC, "mlr_WT_G1_SS", sm_WT_Q_SS_KL, sm_WT_G1_SS_KL
 )
-df_20[["shift_WT_G1_N"]] <- apply_mean_diff(
-    df_20, "mlr_WT_G1_N", sm_WT_Q_N_KL, sm_WT_G1_N_KL
+df_20[["shift_WT_G1_SS"]] <- apply_mean_diff(
+    df_20, "mlr_WT_G1_SS", sm_WT_Q_SS_KL, sm_WT_G1_SS_KL
 )
 
 #  Plot log2(TPM + 1) spike-in mean-shifted densities
 #+ ...for K.L.
-sm_WT_G1_N_KL_sh <- calculate_summary_stats(df_KL[["shift_WT_G1_N"]])
-dn_WT_G1_N_KL_sh <- plot_density(
+sm_WT_G1_SS_KL_sh <- calculate_summary_stats(df_KL[["shift_WT_G1_SS"]])
+dn_WT_G1_SS_KL_sh <- plot_density(
     df = df_KL,
-    column = "shift_WT_G1_N",
-    summary = sm_WT_G1_N_KL_sh,
-    title = "KL, shift_WT_G1_N"
+    column = "shift_WT_G1_SS",
+    summary = sm_WT_G1_SS_KL_sh,
+    title = "KL, shift_WT_G1_SS"
 )
 
 #+ ...for S.C.
-sm_WT_G1_N_SC_sh <- calculate_summary_stats(df_SC[["shift_WT_G1_N"]])
-dn_WT_G1_N_SC_sh <- plot_density(
+sm_WT_G1_SS_SC_sh <- calculate_summary_stats(df_SC[["shift_WT_G1_SS"]])
+dn_WT_G1_SS_SC_sh <- plot_density(
     df = df_SC,
-    column = "shift_WT_G1_N",
-    summary = sm_WT_G1_N_SC_sh,
-    title = "SC, shift_WT_G1_N"
+    column = "shift_WT_G1_SS",
+    summary = sm_WT_G1_SS_SC_sh,
+    title = "SC, shift_WT_G1_SS"
 )
 
 print_densities <- FALSE
 if(base::isTRUE(print_densities)) {
-    dn_WT_G1_N_KL_sh %>% print()
-    dn_WT_G1_N_SC_sh %>% print()
+    dn_WT_G1_SS_KL_sh %>% print()
+    dn_WT_G1_SS_SC_sh %>% print()
 }
 
 print_densities <- TRUE
 if(base::isTRUE(print_densities)) {
     grid.arrange(
-        dn_WT_G1_N_KL, dn_WT_G1_N_KL_sh,
-        dn_WT_G1_N_SC, dn_WT_G1_N_SC_sh,
+        dn_WT_G1_SS_KL, dn_WT_G1_SS_KL_sh,
+        dn_WT_G1_SS_SC, dn_WT_G1_SS_SC_sh,
         nrow = 2, ncol = 2
     )
 }
@@ -700,52 +717,52 @@ perform_linear_regression <- function(df, dv, iv) {
 }
 
 
-`lr-KL__dv-G1-N_on_iv-Q-N` <- perform_linear_regression(
-    df = df_KL, dv = "mlr_WT_G1_N", iv = "mlr_WT_Q_N"
+`lr-KL__dv-G1_on_iv-Q` <- perform_linear_regression(
+    df = df_KL, dv = "mlr_WT_G1_SS", iv = "mlr_WT_Q_SS"
 )
-`lr-KL__dv-G1-N-sh_on_iv-Q-N` <- perform_linear_regression(
-    df = df_KL, dv = "shift_WT_G1_N", iv = "mlr_WT_Q_N"
+`lr-KL__dv-G1-sh_on_iv-Q` <- perform_linear_regression(
+    df = df_KL, dv = "shift_WT_G1_SS", iv = "mlr_WT_Q_SS"
 )
 
 print_linear_equation <- TRUE
 if(base::isTRUE(print_linear_equation)) {
     cat(
         "y =",
-        round(coef(`lr-KL__dv-G1-N_on_iv-Q-N`)[1], 2),
+        round(coef(`lr-KL__dv-G1_on_iv-Q`)[1], 2),
         "+",
-        round(coef(`lr-KL__dv-G1-N_on_iv-Q-N`)[2], 2),
+        round(coef(`lr-KL__dv-G1_on_iv-Q`)[2], 2),
         "* x + e\n"
     )
     cat(
         "y =",
-        round(coef(`lr-KL__dv-G1-N-sh_on_iv-Q-N`)[1], 2),
+        round(coef(`lr-KL__dv-G1-sh_on_iv-Q`)[1], 2),
         "+",
-        round(coef(`lr-KL__dv-G1-N-sh_on_iv-Q-N`)[2], 2),
+        round(coef(`lr-KL__dv-G1-sh_on_iv-Q`)[2], 2),
         "* x + e\n"
     )
 }
 
-`lr-SC__dv-G1-N_on_iv-Q-N` <- perform_linear_regression(
-    df = df_SC, dv = "mlr_WT_G1_N", iv = "mlr_WT_Q_N"
+`lr-SC__dv-G1_on_iv-Q` <- perform_linear_regression(
+    df = df_SC, dv = "mlr_WT_G1_SS", iv = "mlr_WT_Q_SS"
 )
-`lr-SC__dv-G1-N-sh_on_iv-Q-N` <- perform_linear_regression(
-    df = df_SC, dv = "shift_WT_G1_N", iv = "mlr_WT_Q_N"
+`lr-SC__dv-G1-sh_on_iv-Q` <- perform_linear_regression(
+    df = df_SC, dv = "shift_WT_G1_SS", iv = "mlr_WT_Q_SS"
 )
 
 print_linear_equation <- TRUE
 if(base::isTRUE(print_linear_equation)) {
     cat(
         "y =",
-        round(coef(`lr-SC__dv-G1-N_on_iv-Q-N`)[1], 2),
+        round(coef(`lr-SC__dv-G1_on_iv-Q`)[1], 2),
         "+",
-        round(coef(`lr-SC__dv-G1-N_on_iv-Q-N`)[2], 2),
+        round(coef(`lr-SC__dv-G1_on_iv-Q`)[2], 2),
         "* x + e\n"
     )
     cat(
         "y =",
-        round(coef(`lr-SC__dv-G1-N-sh_on_iv-Q-N`)[1], 2),
+        round(coef(`lr-SC__dv-G1-sh_on_iv-Q`)[1], 2),
         "+",
-        round(coef(`lr-SC__dv-G1-N-sh_on_iv-Q-N`)[2], 2),
+        round(coef(`lr-SC__dv-G1-sh_on_iv-Q`)[2], 2),
         "* x + e\n"
     )
 }
@@ -764,17 +781,17 @@ calculate_xy_dv_values <- function(lr, dv) {
 }
 
 
-df_KL[["tf_WT_G1_N"]] <- calculate_xy_dv_values(
-    lr = `lr-KL__dv-G1-N_on_iv-Q-N`,
-    dv = df_KL[["mlr_WT_G1_N"]]
+df_KL[["tf_WT_G1_SS"]] <- calculate_xy_dv_values(
+    lr = `lr-KL__dv-G1_on_iv-Q`,
+    dv = df_KL[["mlr_WT_G1_SS"]]
 )
-df_SC[["tf_WT_G1_N"]] <- calculate_xy_dv_values(
-    lr = `lr-KL__dv-G1-N_on_iv-Q-N`,
-    dv = df_SC[["mlr_WT_G1_N"]]
+df_SC[["tf_WT_G1_SS"]] <- calculate_xy_dv_values(
+    lr = `lr-KL__dv-G1_on_iv-Q`,
+    dv = df_SC[["mlr_WT_G1_SS"]]
 )
-df_20[["tf_WT_G1_N"]] <- calculate_xy_dv_values(
-    lr = `lr-KL__dv-G1-N_on_iv-Q-N`,
-    dv = df_20[["mlr_WT_G1_N"]]
+df_20[["tf_WT_G1_SS"]] <- calculate_xy_dv_values(
+    lr = `lr-KL__dv-G1_on_iv-Q`,
+    dv = df_20[["mlr_WT_G1_SS"]]
 )
 
 
@@ -789,13 +806,13 @@ vol_spike_rat <- vol_spike_Q / vol_spike_G1
 OD_rat <- OD_Q / OD_G1
 
 conc_sf <- vol_spike_rat * OD_rat
-# df_SC[["conc_WT_G1_N"]] <- df_SC[["tf_WT_G1_N"]] + conc_sf
-df_SC[["conc_WT_G1_N"]] <- df_SC[["tf_WT_G1_N"]] * conc_sf
+# df_SC[["conc_WT_G1_SS"]] <- df_SC[["tf_WT_G1_SS"]] + conc_sf
+df_SC[["conc_WT_G1_SS"]] <- df_SC[["tf_WT_G1_SS"]] * conc_sf
 
 check_scaled_values <- TRUE
 if(base::isTRUE(check_scaled_values)) {
-    head(df_SC[["tf_WT_G1_N"]]) %>% print()
-    head(df_SC[["conc_WT_G1_N"]]) %>% print()
+    head(df_SC[["tf_WT_G1_SS"]]) %>% print()
+    head(df_SC[["conc_WT_G1_SS"]]) %>% print()
 }
 
 
@@ -812,9 +829,9 @@ plot_scatter <- function(
     debug <- FALSE
     if(base::isTRUE(debug)) {
         df <- df_KL
-        col_dv <- "mlr_WT_G1_N"
-        col_iv <- "mlr_WT_Q_N"
-        lr <- `lr-KL__dv-G1-N_on_iv-Q-N`
+        col_dv <- "mlr_WT_G1_SS"
+        col_iv <- "mlr_WT_Q_SS"
+        lr <- `lr-KL__dv-G1_on_iv-Q`
         color = "#00808010"
         draw_density = TRUE
         x_low = -5
@@ -851,101 +868,101 @@ plot_scatter <- function(
 
 
 #+ ...for KL --------------------------
-`scatter-KL__dv_G1-N_on_iv_Q-N` <- plot_scatter(
+`scatter-KL__dv_G1_on_iv_Q` <- plot_scatter(
     df = df_KL,
-    col_dv = "mlr_WT_G1_N",
-    col_iv = "mlr_WT_Q_N",
-    lr = `lr-KL__dv-G1-N_on_iv-Q-N`,
+    col_dv = "mlr_WT_G1_SS",
+    col_iv = "mlr_WT_Q_SS",
+    lr = `lr-KL__dv-G1_on_iv-Q`,
     color = "#00808010",
     title = "K. lactis transcripts"
 )
-`scatter-KL__dv_G1-N-sh_on_iv_Q-N` <- plot_scatter(
+`scatter-KL__dv_G1-sh_on_iv_Q` <- plot_scatter(
     df = df_KL,
-    col_dv = "shift_WT_G1_N",
-    col_iv = "mlr_WT_Q_N",
-    lr = `lr-KL__dv-G1-N-sh_on_iv-Q-N`,
+    col_dv = "shift_WT_G1_SS",
+    col_iv = "mlr_WT_Q_SS",
+    lr = `lr-KL__dv-G1-sh_on_iv-Q`,
     color = "#8B008B10",
     title = "Spike-in mean-adjusted K. lactis transcripts"
 )
 
-`lr-KL__dv-G1-N-tf_on_iv-Q-N` <- perform_linear_regression(
-    df = df_KL, dv = "tf_WT_G1_N", iv = "mlr_WT_Q_N"
+`lr-KL__dv-G1-tf_on_iv-Q` <- perform_linear_regression(
+    df = df_KL, dv = "tf_WT_G1_SS", iv = "mlr_WT_Q_SS"
 )
-`scatter-KL__dv_G1-N-tf_on_iv_Q-N` <- plot_scatter(
+`scatter-KL__dv_G1-tf_on_iv_Q` <- plot_scatter(
     df = df_KL,
-    col_dv = "tf_WT_G1_N",
-    col_iv = "mlr_WT_Q_N",
-    lr = `lr-KL__dv-G1-N-tf_on_iv-Q-N`,
+    col_dv = "tf_WT_G1_SS",
+    col_iv = "mlr_WT_Q_SS",
+    lr = `lr-KL__dv-G1-tf_on_iv-Q`,
     color = "#185E9110",
     title = "Spike-in regression-adjusted K. lactis transcripts"
 )
 
 print_scatter_plots <- FALSE
 if(base::isTRUE(print_scatter_plots)) {
-    `scatter-KL__dv_G1-N_on_iv_Q-N` %>% print()
-    `scatter-KL__dv_G1-N-sh_on_iv_Q-N` %>% print()
-    `scatter-KL__dv_G1-N-tf_on_iv_Q-N` %>% print()
+    `scatter-KL__dv_G1_on_iv_Q` %>% print()
+    `scatter-KL__dv_G1-sh_on_iv_Q` %>% print()
+    `scatter-KL__dv_G1-tf_on_iv_Q` %>% print()
 }
 
 print_scatter_plots <- FALSE
 if(base::isTRUE(print_scatter_plots)) {
     grid.arrange(
-        `scatter-KL__dv_G1-N_on_iv_Q-N`,
-        `scatter-KL__dv_G1-N-sh_on_iv_Q-N`,
-        `scatter-KL__dv_G1-N-tf_on_iv_Q-N`,
+        `scatter-KL__dv_G1_on_iv_Q`,
+        `scatter-KL__dv_G1-sh_on_iv_Q`,
+        `scatter-KL__dv_G1-tf_on_iv_Q`,
         ncol = 3
     )
 }
 
 #+ ...for SC --------------------------
-`scatter-SC__dv_G1-N_on_iv_Q-N` <- plot_scatter(
+`scatter-SC__dv_G1_on_iv_Q` <- plot_scatter(
     df = df_SC,
     x_high = 20,
     y_high = 20,
-    col_dv = "mlr_WT_G1_N",
-    col_iv = "mlr_WT_Q_N",
-    lr = `lr-SC__dv-G1-N_on_iv-Q-N`,
+    col_dv = "mlr_WT_G1_SS",
+    col_iv = "mlr_WT_Q_SS",
+    lr = `lr-SC__dv-G1_on_iv-Q`,
     color = "#00808010",
     title = "S. cerevisiae transcripts"
 )
-`scatter-SC__dv_G1-N-sh_on_iv_Q-N` <- plot_scatter(
+`scatter-SC__dv_G1-sh_on_iv_Q` <- plot_scatter(
     df = df_SC,
     x_high = 20,
     y_high = 20,
-    col_dv = "shift_WT_G1_N",
-    col_iv = "mlr_WT_Q_N",
-    lr = `lr-SC__dv-G1-N-sh_on_iv-Q-N`,
+    col_dv = "shift_WT_G1_SS",
+    col_iv = "mlr_WT_Q_SS",
+    lr = `lr-SC__dv-G1-sh_on_iv-Q`,
     color = "#8B008B10",
     title = "Spike-in mean-adjusted S. cerevisiae transcripts"
 )
 
-`lr-SC__dv-G1-N-tf_on_iv-Q-N` <- perform_linear_regression(
-    df = df_SC, dv = "tf_WT_G1_N", iv = "mlr_WT_Q_N"
+`lr-SC__dv-G1-tf_on_iv-Q` <- perform_linear_regression(
+    df = df_SC, dv = "tf_WT_G1_SS", iv = "mlr_WT_Q_SS"
 )
-`scatter-SC__dv_G1-N-tf_on_iv_Q-N` <- plot_scatter(
+`scatter-SC__dv_G1-tf_on_iv_Q` <- plot_scatter(
     df = df_SC,
     x_high = 20,
     y_high = 20,
-    col_dv = "tf_WT_G1_N",
-    col_iv = "mlr_WT_Q_N",
-    lr = `lr-SC__dv-G1-N-tf_on_iv-Q-N`,
+    col_dv = "tf_WT_G1_SS",
+    col_iv = "mlr_WT_Q_SS",
+    lr = `lr-SC__dv-G1-tf_on_iv-Q`,
     color = "#185E9110",
     title = "Spike-in regression-adjusted S. cerevisiae transcripts"
 )
 
 print_scatter_plots <- FALSE
 if(base::isTRUE(print_scatter_plots)) {
-    `scatter-SC__dv_G1-N_on_iv_Q-N` %>% print()
-    `scatter-SC__dv_G1-N-sh_on_iv_Q-N` %>% print()
-    `scatter-SC__dv_G1-N-tf_on_iv_Q-N` %>% print()
+    `scatter-SC__dv_G1_on_iv_Q` %>% print()
+    `scatter-SC__dv_G1-sh_on_iv_Q` %>% print()
+    `scatter-SC__dv_G1-tf_on_iv_Q` %>% print()
 }
 
 print_scatter_plots <- FALSE
 if(base::isTRUE(print_scatter_plots)) {
     grid.arrange(
-        `scatter-SC__dv_G1-N_on_iv_Q-N`,
-        `scatter-SC__dv_G1-N-sh_on_iv_Q-N`,
-        `scatter-SC__dv_G1-N-tf_on_iv_Q-N`,
+        `scatter-SC__dv_G1_on_iv_Q`,
+        `scatter-SC__dv_G1-sh_on_iv_Q`,
+        `scatter-SC__dv_G1-tf_on_iv_Q`,
         ncol = 3
     )
 }
@@ -953,12 +970,12 @@ if(base::isTRUE(print_scatter_plots)) {
 print_scatter_plots <- FALSE
 if(base::isTRUE(print_scatter_plots)) {
     grid.arrange(
-        `scatter-KL__dv_G1-N_on_iv_Q-N`,
-        `scatter-KL__dv_G1-N-sh_on_iv_Q-N`,
-        `scatter-KL__dv_G1-N-tf_on_iv_Q-N`,
-        `scatter-SC__dv_G1-N_on_iv_Q-N`,
-        `scatter-SC__dv_G1-N-sh_on_iv_Q-N`,
-        `scatter-SC__dv_G1-N-tf_on_iv_Q-N`,
+        `scatter-KL__dv_G1_on_iv_Q`,
+        `scatter-KL__dv_G1-sh_on_iv_Q`,
+        `scatter-KL__dv_G1-tf_on_iv_Q`,
+        `scatter-SC__dv_G1_on_iv_Q`,
+        `scatter-SC__dv_G1-sh_on_iv_Q`,
+        `scatter-SC__dv_G1-tf_on_iv_Q`,
         ncol = 3
     )
 }
@@ -986,10 +1003,10 @@ plot_scatter_combined <- function(
         df_KL <- df_KL
         df_SC <- df_SC
         df_20 <- df_20
-        col_dv <- "tf_WT_G1_N"
-        col_iv <- "mlr_WT_Q_N"
-        lr_KL <- `lr-KL__dv-G1-N-tf_on_iv-Q-N`
-        lr_SC <- `lr-SC__dv-G1-N-tf_on_iv-Q-N`
+        col_dv <- "tf_WT_G1_SS"
+        col_iv <- "mlr_WT_Q_SS"
+        lr_KL <- `lr-KL__dv-G1-tf_on_iv-Q`
+        lr_SC <- `lr-SC__dv-G1-tf_on_iv-Q`
         color_KL <- "#00808010"
         color_SC <- "#185E9110"
         color_20 <- "#00000050"
@@ -1135,56 +1152,56 @@ plot_scatter_combined <- function(
 }
 
 
-`scatter-comb__dv_G1-N_on_iv_Q-N` <- plot_scatter_combined(
+`scatter-comb__dv_G1_on_iv_Q` <- plot_scatter_combined(
     df_KL = df_KL,
     df_SC = df_SC,
     df_20S = df_20,
-    col_dv = "mlr_WT_G1_N",
-    col_iv = "mlr_WT_Q_N",
-    lr_KL = `lr-KL__dv-G1-N_on_iv-Q-N`,
-    lr_SC = `lr-SC__dv-G1-N_on_iv-Q-N`,
+    col_dv = "mlr_WT_G1_SS",
+    col_iv = "mlr_WT_Q_SS",
+    lr_KL = `lr-KL__dv-G1_on_iv-Q`,
+    lr_SC = `lr-SC__dv-G1_on_iv-Q`,
     draw_density = TRUE,
     plot_20S = FALSE,
     title = "Unadjusted transcripts\n",
-    x_label = "WT Q N:\nlog2(TPM + 1)",
-    y_label = "WT G1 N: log2(TPM + 1)"
+    x_label = "WT Q SS:\nlog2(TPM + 1)",
+    y_label = "WT G1 SS: log2(TPM + 1)"
 )
-`scatter-comb__dv_G1-N-sh_on_iv_Q-N` <- plot_scatter_combined(
+`scatter-comb__dv_G1-sh_on_iv_Q` <- plot_scatter_combined(
     df_KL = df_KL,
     df_SC = df_SC,
     df_20S = df_20,
-    col_dv = "shift_WT_G1_N",
-    col_iv = "mlr_WT_Q_N",
-    lr_KL = `lr-KL__dv-G1-N-sh_on_iv-Q-N`,
-    lr_SC = `lr-SC__dv-G1-N-sh_on_iv-Q-N`,
+    col_dv = "shift_WT_G1_SS",
+    col_iv = "mlr_WT_Q_SS",
+    lr_KL = `lr-KL__dv-G1-sh_on_iv-Q`,
+    lr_SC = `lr-SC__dv-G1-sh_on_iv-Q`,
     draw_density = TRUE,
     plot_20S = FALSE,
     title = "Spike-in mean-adjusted transcripts\n",
-    x_label = "WT Q N:\nlog2(TPM + 1)",
-    y_label = "WT G1 N: log2(TPM + 1)"
+    x_label = "WT Q SS:\nlog2(TPM + 1)",
+    y_label = "WT G1 SS: log2(TPM + 1)"
 )
-`scatter-comb__dv_G1-N-tf_on_iv_Q-N` <- plot_scatter_combined(
+`scatter-comb__dv_G1-tf_on_iv_Q` <- plot_scatter_combined(
     df_KL = df_KL,
     df_SC = df_SC,
     df_20S = df_20,
-    col_dv = "tf_WT_G1_N",
-    col_iv = "mlr_WT_Q_N",
-    lr_KL = `lr-KL__dv-G1-N-tf_on_iv-Q-N`,
-    lr_SC = `lr-SC__dv-G1-N-tf_on_iv-Q-N`,
+    col_dv = "tf_WT_G1_SS",
+    col_iv = "mlr_WT_Q_SS",
+    lr_KL = `lr-KL__dv-G1-tf_on_iv-Q`,
+    lr_SC = `lr-SC__dv-G1-tf_on_iv-Q`,
     draw_density = TRUE,
     plot_20S = FALSE,
     title = "Spike-in regression-adjusted\ntranscripts",
-    x_label = "WT Q N:\nlog2(TPM + 1)",
-    y_label = "WT G1 N: log2(TPM + 1)"
+    x_label = "WT Q SS:\nlog2(TPM + 1)",
+    y_label = "WT G1 SS: log2(TPM + 1)"
 )
-`scatter-comb__dv_G1-N-tf-sf_on_iv_Q-N` <- plot_scatter_combined(
+`scatter-comb__dv_G1-tf-sf_on_iv_Q` <- plot_scatter_combined(
     df_KL = df_KL,
     df_SC = df_SC,
     df_20S = df_20,
-    col_dv = "tf_WT_G1_N",
-    col_iv = "mlr_WT_Q_N",
-    lr_KL = `lr-KL__dv-G1-N-tf_on_iv-Q-N`,
-    lr_SC = `lr-SC__dv-G1-N-tf_on_iv-Q-N`,
+    col_dv = "tf_WT_G1_SS",
+    col_iv = "mlr_WT_Q_SS",
+    lr_KL = `lr-KL__dv-G1-tf_on_iv-Q`,
+    lr_SC = `lr-SC__dv-G1-tf_on_iv-Q`,
     draw_density = TRUE,
     plot_20S = FALSE,
     scale = TRUE,
@@ -1192,20 +1209,18 @@ plot_scatter_combined <- function(
     x_high = 20,
     y_high = 175,
     title = "Spike-in regression-adjusted,\nconcentration-scaled transcripts",
-    x_label = "WT Q N:\nlog2(TPM + 1)",
-    y_label = "WT G1 N: log2(TPM + 1)"
+    x_label = "WT Q SS:\nlog2(TPM + 1)",
+    y_label = "WT G1 SS: log2(TPM + 1)"
 )
 
 print_scatter_plots <- TRUE
 if(base::isTRUE(print_scatter_plots)) {
     grid.arrange(
-        `scatter-comb__dv_G1-N_on_iv_Q-N`,
-        # `scatter-comb__dv_G1-N-sh_on_iv_Q-N`,
-        `scatter-comb__dv_G1-N-tf_on_iv_Q-N`,
-        `scatter-comb__dv_G1-N-tf-sf_on_iv_Q-N`,
+        `scatter-comb__dv_G1_on_iv_Q`,
+        # `scatter-comb__dv_G1-sh_on_iv_Q`,
+        `scatter-comb__dv_G1-tf_on_iv_Q`,
+        `scatter-comb__dv_G1-tf-sf_on_iv_Q`,
         # ncol = 4
         ncol = 3
     )
 }
-
-
