@@ -868,7 +868,7 @@ if(base::isTRUE(print_scatter_plots)) {
     col_iv = "mean_WT_Q_SS",
     lr = `lr-SC__dv-G1_on_iv-Q`,
     color = "#185E9110",
-    title = "S.C. transcripts\n"
+    title = "S. cerevisiae transcripts\n"
 )
 `scatter-SC__dv_G1-adj_on_iv_Q` <- plot_scatter(
     df = df_SC,
