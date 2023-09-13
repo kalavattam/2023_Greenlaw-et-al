@@ -451,7 +451,7 @@ rm(rpk, tpm)
 
 
 #  Add columns for sample-specific log2-regularized means per row -------------
-ml_reg_val <- function(df, col_str, pseudocount = 1) {
+geom_reg_val <- function(df, col_str, pseudocount = 1) {
     debug <- FALSE
     if(base::isTRUE(debug)) {
         df <- norm_t
@@ -468,8 +468,8 @@ ml_reg_val <- function(df, col_str, pseudocount = 1) {
 }
 
 
-norm_t[["ml_WT_G1_SS"]] <- ml_reg_val(norm_t, "WTovn_G1_SS")
-norm_t[["ml_WT_Q_SS"]] <- ml_reg_val(norm_t, "WTovn_Q_SS")
+norm_t[["geom_WT_G1_SS"]] <- geom_reg_val(norm_t, "WTovn_G1_SS")
+norm_t[["geom_WT_Q_SS"]] <- geom_reg_val(norm_t, "WTovn_Q_SS")
 
 
 #  Kaam karna chahie ==========================================================
@@ -496,8 +496,8 @@ calculate_summary_stats <- function(vec) {
 
 
 #  Calculate summary statistics for K.L.
-sm_WT_G1_SS_KL <- calculate_summary_stats(df_KL[["ml_WT_G1_SS"]])
- sm_WT_Q_SS_KL <- calculate_summary_stats(df_KL[["ml_WT_Q_SS"]])
+sm_WT_G1_SS_KL <- calculate_summary_stats(df_KL[["geom_WT_G1_SS"]])
+ sm_WT_Q_SS_KL <- calculate_summary_stats(df_KL[["geom_WT_Q_SS"]])
 
 print_summary_stats <- TRUE
 if(base::isTRUE(print_summary_stats)) {
@@ -508,8 +508,8 @@ if(base::isTRUE(print_summary_stats)) {
 }
 
 #  Calculate summary statistics for S.C.
-sm_WT_G1_SS_SC <- calculate_summary_stats(df_SC[["ml_WT_G1_SS"]])
- sm_WT_Q_SS_SC <- calculate_summary_stats(df_SC[["ml_WT_Q_SS"]])
+sm_WT_G1_SS_SC <- calculate_summary_stats(df_SC[["geom_WT_G1_SS"]])
+ sm_WT_Q_SS_SC <- calculate_summary_stats(df_SC[["geom_WT_Q_SS"]])
 
 print_summary_stats <- TRUE
 if(base::isTRUE(print_summary_stats)) {
@@ -540,10 +540,10 @@ perform_linear_regression <- function(df, dv, iv) {
 
 
 `lr-KL__dv-G1_on_iv-Q` <- perform_linear_regression(
-    df = df_KL, dv = "ml_WT_G1_SS", iv = "ml_WT_Q_SS"
+    df = df_KL, dv = "geom_WT_G1_SS", iv = "geom_WT_Q_SS"
 )
 `lr-SC__dv-G1_on_iv-Q` <- perform_linear_regression(
-    df = df_SC, dv = "ml_WT_G1_SS", iv = "ml_WT_Q_SS"
+    df = df_SC, dv = "geom_WT_G1_SS", iv = "geom_WT_Q_SS"
 )
 
 print_linear_equation <- TRUE
@@ -580,19 +580,85 @@ calculate_xy_dv_values <- function(lr, dv) {
 
 df_KL[["adj_WT_G1_SS"]] <- calculate_xy_dv_values(
     lr = `lr-KL__dv-G1_on_iv-Q`,
-    dv = df_KL[["ml_WT_G1_SS"]]
+    dv = df_KL[["geom_WT_G1_SS"]]
 )
 df_SC[["adj_WT_G1_SS"]] <- calculate_xy_dv_values(
     lr = `lr-KL__dv-G1_on_iv-Q`,
-    dv = df_SC[["ml_WT_G1_SS"]]
+    dv = df_SC[["geom_WT_G1_SS"]]
 )
-df_20[["adj_WT_G1_SS"]] <- calculate_xy_dv_values(
+df_20[["adj_WT_G1_SS"]] <- as.numeric(calculate_xy_dv_values(
     lr = `lr-KL__dv-G1_on_iv-Q`,
-    dv = df_20[["ml_WT_G1_SS"]]
+    dv = df_20[["geom_WT_G1_SS"]]
+))
+
+compare_values <- TRUE
+if(base::isTRUE(compare_values)) {
+    cat("\ndf_KL\n")
+    cat("\n-----\n")
+    cat("\nmean:\n")
+    print(head(df_KL[["geom_WT_G1_SS"]]))
+    cat("\nadj:\n")
+    print(head(df_KL[["adj_WT_G1_SS"]]))
+    
+    cat("\n\ndf_SC\n")
+    cat("\n-----\n")
+    cat("\nmean:\n")
+    print(head(df_SC[["geom_WT_G1_SS"]]))
+    cat("\nadj:\n")
+    print(head(df_SC[["adj_WT_G1_SS"]]))
+    
+    cat("\n\ndf_20\n")
+    cat("\n-----\n")
+    cat("\nmean:\n")
+    print(head(df_20[["geom_WT_G1_SS"]]))
+    cat("\nadj:\n")
+    print(head(df_20[["adj_WT_G1_SS"]]))
+}
+
+
+#  Perform linear regressions for regression-adjusted values ------------------
+`lr-KL__dv-G1-adj_on_iv-Q` <- perform_linear_regression(
+    df = df_KL, dv = "adj_WT_G1_SS", iv = "geom_WT_Q_SS"
+)
+`lr-SC__dv-G1-adj_on_iv-Q` <- perform_linear_regression(
+    df = df_SC, dv = "adj_WT_G1_SS", iv = "geom_WT_Q_SS"
 )
 
+print_linear_equations <- TRUE
+if(base::isTRUE(print_linear_equations)) {
+    cat(
+        "Unadjusted, KL: y =",
+        round(coef(`lr-KL__dv-G1_on_iv-Q`)[1], 2),
+        "+",
+        round(coef(`lr-KL__dv-G1_on_iv-Q`)[2], 2),
+        "* x + e\n"
+    )
+    cat(
+        "Adjusted, KL: y =",
+        round(coef(`lr-KL__dv-G1-adj_on_iv-Q`)[1], 2),
+        "+",
+        round(coef(`lr-KL__dv-G1-adj_on_iv-Q`)[2], 2),
+        "* x + e\n"
+    )
+    cat("\n")
+    cat(
+        "Unadjusted, SC: y =",
+        round(coef(`lr-SC__dv-G1_on_iv-Q`)[1], 2),
+        "+",
+        round(coef(`lr-SC__dv-G1_on_iv-Q`)[2], 2),
+        "* x + e\n"
+    )
+    cat(
+        "Adjusted, SC: y =",
+        round(coef(`lr-SC__dv-G1-adj_on_iv-Q`)[1], 2),
+        "+",
+        round(coef(`lr-SC__dv-G1-adj_on_iv-Q`)[2], 2),
+        "* x + e\n"
+    )
+}
 
-#  Apply concentration-based scaling factor -----------------------------------
+
+#  Calculate and apply concentration-based scaling factor ---------------------
 #+ ...to the to S. cerevisiae spike-in regression distribution values
 vol_spike_Q <- 50
 vol_spike_G1 <- 50
@@ -612,4 +678,103 @@ if(base::isTRUE(check_scaled_values)) {
 }
 
 
-mean(df_SC[["conc_WT_G1_SS"]]) / mean(df_SC[["ml_WT_Q_SS"]])
+#  Perform linear regressions for concentration-adjusted values ---------------
+`lr-SC__dv-G1-conc_on_iv-Q` <- perform_linear_regression(
+    df = df_SC, dv = "conc_WT_G1_SS", iv = "geom_WT_Q_SS"
+)
+
+print_linear_equations <- TRUE
+if(base::isTRUE(print_linear_equations)) {
+    cat(
+        "Unadjusted, KL: y =",
+        round(coef(`lr-KL__dv-G1_on_iv-Q`)[1], 2),
+        "+",
+        round(coef(`lr-KL__dv-G1_on_iv-Q`)[2], 2),
+        "* x + e\n"
+    )
+    cat(
+        "Adjusted, KL: y =",
+        round(coef(`lr-KL__dv-G1-adj_on_iv-Q`)[1], 2),
+        "+",
+        round(coef(`lr-KL__dv-G1-adj_on_iv-Q`)[2], 2),
+        "* x + e\n"
+    )
+    cat("\n")
+    cat(
+        "Unadjusted, SC: y =",
+        round(coef(`lr-SC__dv-G1_on_iv-Q`)[1], 2),
+        "+",
+        round(coef(`lr-SC__dv-G1_on_iv-Q`)[2], 2),
+        "* x + e\n"
+    )
+    cat(
+        "Adjusted, SC: y =",
+        round(coef(`lr-SC__dv-G1-adj_on_iv-Q`)[1], 2),
+        "+",
+        round(coef(`lr-SC__dv-G1-adj_on_iv-Q`)[2], 2),
+        "* x + e\n"
+    )
+    cat(
+        "Concentration-adjusted, SC: y =",
+        round(coef(`lr-SC__dv-G1-conc_on_iv-Q`)[1], 2),
+        "+",
+        round(coef(`lr-SC__dv-G1-conc_on_iv-Q`)[2], 2),
+        "* x + e\n"
+    )
+}
+
+
+#  Calculate the adjusted fold-change difference between G1 and Q means -------
+fold_change <- mean(df_SC[["conc_WT_G1_SS"]]) / mean(df_SC[["geom_WT_Q_SS"]])
+
+print_fold_change <- TRUE
+if(base::isTRUE(print_fold_change)) {
+    cat("Mean RNA fold change", round(fold_change, 1), "\n")
+}
+
+
+#  Draw the expression distributions ------------------------------------------
+exclude <- c("conc_WT_" = "", "geom_WT_" = "", "_SS" = "")
+
+means <- df_SC %>%
+    dplyr::select(conc_WT_G1_SS, geom_WT_Q_SS) %>%
+    dplyr::summarize(
+        dplyr::across(tidyselect::everything(), \(x) mean(x, na.rm = TRUE))
+    ) %>%
+    tidyr::gather(key = "state", value = "TPM") %>%
+    dplyr::mutate(state = stringr::str_replace_all(state, exclude, ""))
+
+exp_dist <- df_SC %>%
+    dplyr::select(conc_WT_G1_SS, geom_WT_Q_SS) %>%
+    tidyr::gather(key = "state", value = "TPM") %>%
+    dplyr::mutate(state = stringr::str_replace_all(state, exclude, "")) %>%
+    ggplot2::ggplot(., aes(x = state, y = TPM)) +
+    geom_violin(aes(fill = state), alpha = 0.7) +
+    geom_boxplot(
+        width = 0.2, fill = "white", outlier.shape = NA
+    ) +
+    geom_jitter(
+        data = means, aes(x = state, y = TPM),
+        position = position_nudge(x = 0), color = "black", fill = "white",
+        size = 3, shape = 22
+    ) +
+    geom_text(
+        data = means,
+        aes(x = state, y = TPM + 10, label = paste("mean:", round(2^TPM))),
+        hjust = -0.35, vjust = 0.5, size = 3.5, color = "#3A3B3C"
+    ) +
+    scale_fill_manual(
+        breaks = c("G1", "Q"),
+        values = c("#89CF95", "#768CB8")
+    ) +
+    labs(x = NULL, y = "TPM") +
+    ggtitle(
+        "Adjusted TPM distributions",
+        subtitle = "Steady-state mRNA expression"
+    ) +
+    ylim(c(0, 2500)) +
+    theme_slick +
+    theme(axis.text.x = element_text(angle = 0, hjust = 0.5))
+
+print_exp_dist <- TRUE
+if(base::isTRUE(print_exp_dist)) print(exp_dist)
