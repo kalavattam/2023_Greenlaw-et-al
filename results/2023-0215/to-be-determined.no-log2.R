@@ -729,7 +729,7 @@ fold_change <- mean(df_SC[["conc_WT_G1_SS"]]) / mean(df_SC[["mean_WT_Q_SS"]])
 
 print_fold_change <- TRUE
 if(base::isTRUE(print_fold_change)) {
-    cat("Mean RNA fold change", round(fold_change, 1), "\n")
+    cat("Mean RNA fold change:", round(fold_change, 1), "\n")
 }
 
 
@@ -884,7 +884,7 @@ if(base::isTRUE(print_scatter_plots)) {
     x_high = 30000, y_high = 30000,
     col_dv = "conc_WT_G1_SS",
     col_iv = "mean_WT_Q_SS",
-    lr = `lr-SC__dv-G1-adj_on_iv-Q`,
+    lr = `lr-SC__dv-G1-conc_on_iv-Q`,
     color = "#185E9110",
     title = "Concentration-scaled, spike-in regression-\nadjusted S. cerevisiae transcripts"
 )
