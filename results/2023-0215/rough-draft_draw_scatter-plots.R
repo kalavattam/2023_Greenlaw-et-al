@@ -13,7 +13,7 @@ options(ggrepel.max.overlaps = Inf)
 
 #  Initialize functions and themes ============================================
 load_RDS_mRNA <- function(
-    p_RDS = "notebook/KA.2023-0608-0703.rds-data-objects_min-4-cts-all-but-1-samps",
+    p_RDS = "notebook/KA.2023-0608-0714.rds-data-objects_min-4-cts-all-but-1-samps",
     p_mRNA = "rds_mRNA",
     f_RDS
 ) {
@@ -22,7 +22,7 @@ load_RDS_mRNA <- function(
 
 
 load_RDS_ncRNA <- function(
-    p_RDS = "notebook/KA.2023-0608-0703.rds-data-objects_min-4-cts-all-but-1-samps",
+    p_RDS = "notebook/KA.2023-0608-0714.rds-data-objects_min-4-cts-all-but-1-samps",
     p_ncRNAcm = "rds_pa-ncRNA-collapsed-merged",
     f_RDS
 ) {
@@ -490,7 +490,7 @@ p_exp <- "2022-2023_RRP6-NAB3/results/2023-0215"
 setwd(paste(p_base, p_exp, sep = "/"))
 
 #  Load RDS files
-p_RDS <- "notebook/KA.2023-0608-0703.rds-data-objects_min-4-cts-all-but-1-samps"
+p_RDS <- "notebook/KA.2023-0608-0714.rds-data-objects_min-4-cts-all-but-1-samps"
 p_mRNA <- "rds_mRNA"
 p_mRNA_AS <- "rds_mRNA-AS"
 p_ncRNAcm <- "rds_ncRNA-collapsed"
@@ -507,7 +507,7 @@ if(base::isTRUE(load_mRNA_N_Q_r6n)) {
     ))
 }
 
-load_mRNA_SS_Q_r6n <- FALSE  #ARGUMENT
+load_mRNA_SS_Q_r6n <- TRUE  #ARGUMENT
 if(base::isTRUE(load_mRNA_SS_Q_r6n)) {
     mRNA_SS_Q_r6n <- readRDS(paste(
         p_RDS,
@@ -527,7 +527,7 @@ if(base::isTRUE(load_mRNA_SS_G1_r6n)) {
     ))
 }
 
-load_mRNA_N_Q_n3d <- FALSE  #ARGUMENT
+load_mRNA_N_Q_n3d <- TRUE  #ARGUMENT
 if(base::isTRUE(load_mRNA_N_Q_n3d)) {
     mRNA_N_Q_n3d <- readRDS(paste(
         p_RDS,
@@ -559,7 +559,7 @@ if(base::isTRUE(load_ncRNAcm_N_Q_r6n)) {
     ))
 }
 
-load_ncRNAcm_SS_Q_r6n <- FALSE  #ARGUMENT
+load_ncRNAcm_SS_Q_r6n <- TRUE  #ARGUMENT
 if(base::isTRUE(load_ncRNAcm_SS_Q_r6n)) {
     ncRNAcm_SS_Q_r6n <- readRDS(paste(
         p_RDS,
@@ -579,7 +579,7 @@ if(base::isTRUE(load_ncRNAcm_SS_G1_r6n)) {
     ))
 }
 
-load_ncRNAcm_N_Q_n3d <- FALSE  #ARGUMENT
+load_ncRNAcm_N_Q_n3d <- TRUE  #ARGUMENT
 if(base::isTRUE(load_ncRNAcm_N_Q_n3d)) {
     ncRNAcm_N_Q_n3d <- readRDS(paste(
         p_RDS,
@@ -709,7 +709,7 @@ if(base::isTRUE(`load_R64-etc_SS_Q_n3d`)) {
 rm(list = ls(pattern = "p_"))
 
 
-#TODO Plot/assess the following comparisons ===================================
+#DONE Plot/assess the following comparisons ===================================
 #+ 5 -  SS_Q_r6n ~ SS_Q_n3d    (y ~ x): 
 #+ 4 -   N_Q_n3d ~  N_Q_n3d_AS (y ~ x): mRNA_N_Q_n3d,  `mRNA-AS_N_Q_n3d`
 #+ 1 - SS_G1_r6n ~ SS_Q_r6n    (y ~ x): mRNA_SS_G1_r6n, mRNA_SS_Q_r6n; ncRNAcm_SS_G1_r6n, ncRNAcm_SS_Q_r6n
@@ -808,6 +808,43 @@ if(base::isTRUE(run)) {
     )
 }
 
+#  Supplemental table related to Fig. 4B (for revision) for mRNA
+run <- TRUE
+if(base::isTRUE(run)) {
+    x <- mRNA_N_Q_n3d$`09_lfc_0.58_fc_1.5`$`04_t_DGE_unshrunken`
+    y <- mRNA_SS_Q_r6n$`09_lfc_0.58_fc_1.5`$`04_t_DGE_unshrunken`
+    
+    colnames(x)[6:11] <- paste("x", colnames(x)[6:11], sep = "_")
+    # colnames(x)
+    
+    colnames(y)[6:11] <- paste("y", colnames(y)[6:11], sep = "_")
+    # colnames(y)
+    
+    vec_cols <- c(
+        "genome", "seqnames", "start", "end", "width", "strand", "type",
+        "features", "names", "thorough"
+    )
+    df <- dplyr::full_join(x, y, by = vec_cols) %>%
+        dplyr::relocate(vec_cols, .before = "x_baseMean")
+    
+    model <- lm(
+        y_log2FoldChange ~ x_log2FoldChange, data = df, na.action = na.omit
+    )
+    df$reg_line <- predict(model, newdata = df)
+    df <- df %>%
+        dplyr::mutate(
+            trend = dplyr::case_when(
+                y_log2FoldChange > reg_line ~ "y value above reg. line",
+                y_log2FoldChange < reg_line ~ "y value below reg. line",
+                TRUE ~ NA
+            )
+    )
+    check_trend <- TRUE
+    if(base::isTRUE(check_trend)) df$trend %>% table() %>% print()
+    
+    readr::write_tsv(df, "~/Desktop/supp-tbl_Fig-4B_mRNA.tsv")
+}
+
 #  Fig. 4B: Look at SS Q rrp6∆ ~ N Q nab3d for pa-ncRNA
 #+ i.e., ncRNAcm_SS_Q_r6n ~ ncRNAcm_N_Q_n3d
 run <- FALSE
@@ -823,6 +860,43 @@ if(base::isTRUE(run)) {
         y_low = -9,
         y_high = 9
     )
+}
+
+#  Supplemental table related to Fig. 4B (for revision) for pa-ncRNA
+run <- TRUE
+if(base::isTRUE(run)) {
+    x <- ncRNAcm_N_Q_n3d$`09_lfc_0.58_fc_1.5`$`04_t_DGE_unshrunken`
+    y <- ncRNAcm_SS_Q_r6n$`09_lfc_0.58_fc_1.5`$`04_t_DGE_unshrunken`
+    
+    colnames(x)[6:11] <- paste("x", colnames(x)[6:11], sep = "_")
+    # colnames(x)
+    
+    colnames(y)[6:11] <- paste("y", colnames(y)[6:11], sep = "_")
+    # colnames(y)
+    
+    vec_cols <- c(
+        "genome", "seqnames", "start", "end", "width", "strand", "type",
+        "features", "names", "thorough"
+    )
+    df <- dplyr::full_join(x, y, by = vec_cols) %>%
+        dplyr::relocate(vec_cols, .before = "x_baseMean")
+    
+    model <- lm(
+        y_log2FoldChange ~ x_log2FoldChange, data = df, na.action = na.omit
+    )
+    df$reg_line <- predict(model, newdata = df)
+    df <- df %>%
+        dplyr::mutate(
+            trend = dplyr::case_when(
+                y_log2FoldChange > reg_line ~ "y value above reg. line",
+                y_log2FoldChange < reg_line ~ "y value below reg. line",
+                TRUE ~ NA
+            )
+    )
+    check_trend <- TRUE
+    if(base::isTRUE(check_trend)) df$trend %>% table() %>% print()
+    
+    readr::write_tsv(df, "~/Desktop/supp-tbl_Fig-4B_pancRNA.tsv")
 }
 
 #  Fig. 4_: Look at SS Q rrp6∆ ~ SS Q nab3d for mRNA

@@ -98,7 +98,7 @@ perform_lm_LOESS_MW_etc <- function(
     #  Perform debugging
     debug <- FALSE
     if(base::isTRUE(debug)) {
-        df <- t_Tr_Q
+        df <- t_mRNA
         degree <- 2
         span <- 0.66
         draw_density <- FALSE
@@ -181,7 +181,7 @@ perform_lm_LOESS_MW_etc <- function(
         xlab("theoretical quantiles") +
         ylab("Q sample quantiles") +
         theme_AG_boxed_no_legend
-
+    
     #  Initialize objects for sample and theoretical residual quantiles
     qq_G1_val <- qqnorm(residuals(lm_G1), plot.it = FALSE)
     qq_Q_val <- qqnorm(residuals(lm_Q), plot.it = FALSE)
@@ -451,8 +451,57 @@ perform_lm_LOESS_MW_etc <- function(
         ylim(c(y_low, y_high)) +
         labs(x = x_lab, y = y_lab) +
         theme_AG_boxed_no_legend
-    
     if(base::isTRUE(debug)) lm_fit_plot
+    
+    
+    #  Create table of features above, below, or at the regression line -------
+    #+ With N on y and SS on x, values above the regression line are "actively
+    #+ degraded" [higher in N (y), lower in SS (x)]; values below the
+    #+ regression line are "stabilized" [lower in N (y), higher in SS (x)]
+    df <- df %>%
+        dplyr::mutate(
+            log2_pseudo_G1_N = log2(G1_N + 1),
+            log2_pseudo_G1_SS = log2(G1_SS + 1),
+            log2_pseudo_Q_N = log2(Q_N + 1),
+            log2_pseudo_Q_SS = log2(Q_SS + 1)
+        )
+    
+    model_G1 <- lm(log2_pseudo_G1_N ~ log2_pseudo_G1_SS, data = df)
+    model_Q <- lm(log2_pseudo_Q_N ~ log2_pseudo_Q_SS, data = df)
+    
+    df$G1_reg_line <- predict(model_G1, newdata = df)
+    df$Q_reg_line <- predict(model_Q, newdata = df)
+    
+    df <- df %>%
+        dplyr::mutate(
+            est_trans_kin_G1 = dplyr::case_when(
+                log2(G1_N + 1) > G1_reg_line ~ "degraded",
+                log2(G1_N + 1) < G1_reg_line ~ "stabilized",
+                TRUE ~ "same"
+            ),
+            est_trans_kin_Q = dplyr::case_when(
+                log2(Q_N + 1) > Q_reg_line ~ "degraded",
+                log2(Q_N + 1) < Q_reg_line ~ "stabilized",
+                TRUE ~ "same"
+            ),
+            est_kin_together = dplyr::case_when(
+                est_trans_kin_G1 == "stabilized" &
+                    est_trans_kin_Q == "stabilized" ~ "stabilized in both",
+                est_trans_kin_G1 == "degraded" &
+                    est_trans_kin_Q == "degraded" ~ "degraded in both",
+                est_trans_kin_G1 == "degraded" &
+                    est_trans_kin_Q == "stabilized" ~ "stabilized in Q",
+                est_trans_kin_G1 == "stabilized" &
+                    est_trans_kin_Q == "degraded" ~ "degraded in Q"
+            )
+    )
+    
+    check_trans_kin <- FALSE
+    if(base::isTRUE(check_trans_kin)) {
+        df$est_trans_kin_G1 %>% table() %>% print()
+        df$est_trans_kin_Q %>% table() %>% print()
+        df$est_kin_together %>% table() %>% print()
+    }
     
     
     #  Fit LOESS models on regularized TPM values -----------------------------
@@ -638,7 +687,6 @@ perform_lm_LOESS_MW_etc <- function(
         ylim(c(y_low, y_high)) +
         labs(x = x_lab, y = y_lab) +
         theme_AG_boxed_no_legend
-    
     if(base::isTRUE(debug)) loess_fit_plot
     
     
@@ -652,6 +700,7 @@ perform_lm_LOESS_MW_etc <- function(
     results_list[["01_p_MWU_G1-SS_Q-SS"]] <- `p_MWU_G1-SS_Q-SS`
     results_list[["01_p_MWU_G1-N_G1-SS"]] <- `p_MWU_G1-N_G1-SS`
     results_list[["01_p_MWU_Q-N_Q-SS"]] <- `p_MWU_Q-N_Q-SS`
+    results_list[["02_df"]] <- df
     results_list[["02_df_G1"]] <- df_G1
     results_list[["02_df_Q"]] <- df_Q
     results_list[["03_lm_G1"]] <- lm_G1
@@ -803,8 +852,9 @@ t_Tr_Q <- calculate_mean_TPMs(t_Tr_Q)
 t_Tr_G1 <- calculate_mean_TPMs(t_Tr_G1)
 
 
+#HERE
 #  Run linear and LOESS regressions, and statistical tests ====================
-run <- FALSE  #ARGUMENT
+run <- TRUE  #ARGUMENT
 if(base::isTRUE(run)) {
     etc_mRNA <- perform_lm_LOESS_MW_etc(t_mRNA)
     etc_pancRNA <- perform_lm_LOESS_MW_etc(t_pancRNA)
@@ -812,6 +862,7 @@ if(base::isTRUE(run)) {
     etc_Tr_G1 <- perform_lm_LOESS_MW_etc(t_Tr_G1)
     
     for(i in 1:4) {
+        # i <- 1
         if(i == 1) {
             etc <- etc_mRNA
             label <- "mRNA"
@@ -839,20 +890,44 @@ if(base::isTRUE(run)) {
             filename = paste0("lm-fit_", label, ".pdf")
         )
         
-        print_regression_plot(
-            object = etc[["12_loess_scatter_G1"]],
-            filename = paste("loess-scatter", label, "G1.pdf", sep = "_")
+        # print_regression_plot(
+        #     object = etc[["12_loess_scatter_G1"]],
+        #     filename = paste("loess-scatter", label, "G1.pdf", sep = "_")
+        # )
+        # print_regression_plot(
+        #     object = etc[["12_loess_scatter_Q"]],
+        #     filename = paste("loess-scatter", label, "Q.pdf", sep = "_")
+        # )
+        # print_regression_plot(
+        #     object = etc[["12_loess_fit_plot"]],
+        #     filename = paste0("loess-fit_", label, ".pdf")
+        # )
+        
+        supp_tbl <- etc[["02_df"]]
+        colnames(supp_tbl)[12:27] <- c(
+            paste("TPM", c(
+                "G1_N_rep1", "G1_N_rep2", "G1_SS_rep1", "G1_SS_rep2",
+                "Q_N_rep1", "Q_N_rep2", "Q_SS_rep1", "Q_SS_rep2"
+            ), sep = "_"),
+            paste("mean_TPM", c("G1_N", "G1_SS", "Q_N", "Q_SS"), sep = "_"),
+            paste("log2_pseudo_mean_TPM", c(
+                "G1_N", "G1_SS", "Q_N", "Q_SS")
+            , sep = "_")
         )
-        print_regression_plot(
-            object = etc[["12_loess_scatter_Q"]],
-            filename = paste("loess-scatter", label, "Q.pdf", sep = "_")
-        )
-        print_regression_plot(
-            object = etc[["12_loess_fit_plot"]],
-            filename = paste0("loess-fit_", label, ".pdf")
-        )
+        
+        supp_tbl_filename <- paste0("~/Desktop/", "supp-tbl_", label, ".tsv")
+        readr::write_tsv(supp_tbl, supp_tbl_filename, na =  "#N/A")
     }
 }
+
+
+# etc_mRNA$`02_df`$est_trans_kin_G1 %>% table() %>% print()
+# etc_mRNA$`02_df`$est_trans_kin_Q %>% table() %>% print()
+# etc_mRNA$`02_df`$est_kin_together %>% table() %>% print()
+# 
+# etc_pancRNA$`02_df`$est_trans_kin_G1 %>% table() %>% print()
+# etc_pancRNA$`02_df`$est_trans_kin_Q %>% table() %>% print()
+# etc_pancRNA$`02_df`$est_kin_together %>% table() %>% print()
 
 
 #  Examine Nab3-AID/Parent log2(FC) w/r/to Parent TPM =========================
