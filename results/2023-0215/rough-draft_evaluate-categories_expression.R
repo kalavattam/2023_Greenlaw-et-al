@@ -14,9 +14,9 @@ samples <- "ovation"  #ARGUMENT
 # samples <- "r6n_timecourse"  #ARGUMENT
 # samples <- "Rrp6∆.timecourse-G1-Q.SS"
 
-# tx <- "coding-non-pa-ncRNA"  #ARGUMENT  #IMPORTANT  #NOTE i.e., "R64"
+tx <- "coding-non-pa-ncRNA"  #ARGUMENT  #IMPORTANT  #NOTE i.e., "R64"
 # tx <- "noncoding-collapsed"  #ARGUMENT  #IMPORTANT
-tx <- "noncoding-non-collapsed"  #ARGUMENT
+# tx <- "noncoding-non-collapsed"  #ARGUMENT
 # tx <- "Trinity-G1"  #ARGUMENT
 # tx <- "Trinity-Q"  #ARGUMENT
 
@@ -1833,14 +1833,25 @@ print(`prop-plot_w-error_zoom` + theme_AG_boxed)
 dev.off()
 
 
-#TODO
-# #  Write out t_rel_summarize, prop_summarize as tsvs
-# readr::write_tsv(
-#     t_rel_summarize,
-#     file = "t_rel_summarize.tsv"
-# )
-# 
-# readr::write_tsv(
-#     prop_summarize,
-#     file = "prop_summarize.tsv"
-# )
+#DONE Write out t_rel_summarize, prop_summarize as tsvs
+#TODO Specify where to write things out, and use better names
+readr::write_tsv(  # Absolute values underlying bar plot
+    t_rel_summarize,
+    file = "t_rel_summarize.tsv"
+)
+
+readr::write_tsv(  # Relative values underlying bar plot
+    prop_summarize,
+    file = "prop_summarize.tsv"
+)
+
+readr::write_tsv(  # Table used to collated absolute values underlying bar plot
+    t_rel,
+    file = "t_rel.tsv"
+)
+
+readr::write_tsv(  # Everything
+    t_full,
+    file = "t_full.tsv"
+)
+
